@@ -97,6 +97,7 @@ buildNumber.properties
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
+.idea/
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/
@@ -110,6 +111,8 @@ buildNumber.properties
 # Gradle:
 .idea/**/gradle.xml
 .idea/**/libraries
+
+*.iml
 
 # CMake
 cmake-build-debug/
