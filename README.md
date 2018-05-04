@@ -6,3 +6,4 @@
 
 [Design of update mechanism](../../wiki/Design-of-update-mechanism)
 
+[Actor model for new soot ](../../wiki/Actor-Model)
