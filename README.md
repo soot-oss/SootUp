@@ -5,3 +5,5 @@
 [Coding guidelines](../../wiki/coding-guidelines)
 
 [Design of update mechanism](../../wiki/Design-of-update-mechanism)
+
+[Actor model for new soot ](../../wiki/Actor-model-for-new-soot)
