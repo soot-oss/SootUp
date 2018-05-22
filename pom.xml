@@ -18,7 +18,7 @@
         <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
         <checkstyle.version>8.9</checkstyle.version>
         <checkstyle.dir.path>${basedir}/codingstyle</checkstyle.dir.path>
-        <checkstyle.file.path>${checkstyle.dir.path}/soot_reloaded_checkstyle.xml</checkstyle.file.path>
+        <checkstyle.file.path>${checkstyle.dir.path}/google_checkstyle.xml</checkstyle.file.path>
         <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
     </properties>
 
