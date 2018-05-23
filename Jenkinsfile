@@ -10,6 +10,11 @@ pipeline {
             steps {
                 sh 'mvn clean compile'
             }
+            post {
+                success {
+                	junit 'target/surefire-reports/**/*.xml' 
+                }
+            }
         }
     }
 }
