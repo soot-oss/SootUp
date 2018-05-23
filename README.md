@@ -1,8 +1,8 @@
 # Future Soot core library
 
-[Notizen zum kick-off meeting](../../wiki/kickoff-meeting)
+[Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
 
-[Coding guidelines](../../wiki/coding-guidelines)
+[Notizen zum kick-off meeting](../../wiki/kickoff-meeting)
 
 [Design of update mechanism](../../wiki/Design-of-update-mechanism)
 
