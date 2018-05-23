@@ -1,18 +1,15 @@
-#!groovy
-
-// Mark the code build 'stage'....
-node {
-   // Mark the code checkout 'stage'....
-   stage 'Checkout'
-
-   // Checkout code from repository
-   checkout scm
-
-   stage 'Build'
-   // Run the maven build
-   mvn 'clean compile'
-}
-
-def mvn(args) {
-   sh "${tool 'Maven 3.x'}/bin/mvn ${args}"
+pipeline {
+    agent {
+        docker {
+            image 'maven:3-alpine'
+            args '-v $HOME/.m2:/root/.m2'
+        }
+    }
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+    }
 }
