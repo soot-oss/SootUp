@@ -58,7 +58,7 @@ public class SignatureFactory {
     String fqID = moduleName + "." + packageName + "." + className + "." + methodName;
     MethodSignature methodSignature = methods.get(fqID);
     if (methodSignature == null) {
-      ClassSignature classSignature = getClassSignature(packageName, className);
+      ClassSignature classSignature = getClassSignature(packageName, className,moduleName);
       methodSignature = new MethodSignature(methodName, classSignature);
       methods.put(fqID, methodSignature);
     }
