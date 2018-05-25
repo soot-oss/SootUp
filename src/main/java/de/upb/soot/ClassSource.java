@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import soot.javaToJimple.IInitialResolver.Dependencies;
 
 import de.upb.soot.ns.INamespace;
+import de.upb.soot.signatures.ClassSignature;
 
 /**
  * A class source is responsible for resolving a single class from a particular source format
@@ -31,14 +32,14 @@ import de.upb.soot.ns.INamespace;
  */
 public abstract class ClassSource {
   private final INamespace srcNS;
-  protected String className;
+  protected ClassSignature classSignature;
 
-  public ClassSource(String className, INamespace srcNS) {
-    Preconditions.checkNotNull(className);
+  public ClassSource(ClassSignature classSignature, INamespace srcNS) {
+    Preconditions.checkNotNull(classSignature);
     Preconditions.checkNotNull(srcNS);
 
     this.srcNS = srcNS;
-    this.className = className;
+    this.classSignature = classSignature;
   }
 
   /**
@@ -50,6 +51,6 @@ public abstract class ClassSource {
   public void close() {}
 
   public String getName() {
-    return className;
+    return classSignature.className;
   }
 }

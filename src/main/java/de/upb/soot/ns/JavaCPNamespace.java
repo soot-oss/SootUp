@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.upb.soot.signatures.ClassSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +57,7 @@ public class JavaCPNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Optional<ClassSource> getClass(String className) {
+  public Optional<ClassSource> getClass(ClassSignature className) {
     if (nameToSrc.isEmpty()) {
       getClasses();
     }
