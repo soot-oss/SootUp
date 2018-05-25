@@ -7,8 +7,6 @@ public class SignatureFactory {
 
   private static Map<String, ModuleSignature> modules = new HashMap<>();
   private static Map<String, PackageSignature> packages = new HashMap<>();
-  private static Map<String, ClassSignature> classes = new HashMap<>();
-  private static Map<String, MethodSignature> methods = new HashMap<>();
 
   public static ModuleSignature getModuleSignature(String moduleName) {
     if (moduleName == null) {
@@ -39,13 +37,8 @@ public class SignatureFactory {
 
   public static ClassSignature getClassSignature(
       String className, String packageName, String moduleName) {
-    String fqID = moduleName + "." + packageName + "." + className;
-    ClassSignature classSignature = classes.get(fqID);
-    if (classSignature == null) {
-      PackageSignature packageSignature = getPackageSignature(packageName, moduleName);
-      classSignature = new ClassSignature(className, packageSignature);
-      classes.put(fqID, classSignature);
-    }
+    PackageSignature packageSignature = getPackageSignature(packageName, moduleName);
+    ClassSignature classSignature = new ClassSignature(className, packageSignature);
     return classSignature;
   }
 
@@ -54,19 +47,8 @@ public class SignatureFactory {
   }
 
   public static MethodSignature getMethodSignature(
-      String methodName, String className, String packageName, String moduleName) {
-    String fqID = moduleName + "." + packageName + "." + className + "." + methodName;
-    MethodSignature methodSignature = methods.get(fqID);
-    if (methodSignature == null) {
-      ClassSignature classSignature = getClassSignature(packageName, className,moduleName);
-      methodSignature = new MethodSignature(methodName, classSignature);
-      methods.put(fqID, methodSignature);
-    }
+      String methodName, ClassSignature classSignature) {
+    MethodSignature methodSignature = new MethodSignature(methodName, classSignature);
     return methodSignature;
-  }
-
-  public static MethodSignature getMethodSignature(
-      String methodName, String className, String packageName) {
-    return getMethodSignature(methodName, className, packageName, null);
   }
 }
