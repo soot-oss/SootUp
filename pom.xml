@@ -1,12 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.upb</groupId>
     <artifactId>Soot</artifactId>
     <packaging>jar</packaging>
     <version>4.0-SNAPSHOT</version>
     <name>Soot</name>
-
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -22,7 +20,6 @@
         <checkstyle.file.path>${checkstyle.dir.path}/google_checkstyle.xml</checkstyle.file.path>
         <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
     </properties>
-
     <build>
         <plugins>
             <plugin>
@@ -44,11 +41,9 @@
                             <propertyExpansion>config_loc=${checkstyle.dir.path}</propertyExpansion>
                             <configLocation>${checkstyle.file.path}</configLocation>
                             <encoding>UTF-8</encoding>
-                            <consoleOutput>true</consoleOutput>
-                            <failsOnError>true</failsOnError>
+                            <logViolationsToConsole>true</logViolationsToConsole>
+                            <failOnViolation>${checkstyle.failOnViolation}</failOnViolation>
                             <violationSeverity>warning</violationSeverity>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-
                         </configuration>
                         <goals>
                             <goal>check</goal>
@@ -58,7 +53,6 @@
             </plugin>
         </plugins>
     </build>
-
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -75,7 +69,6 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
-
         <!-- testing -->
         <dependency>
             <groupId>junit</groupId>
@@ -98,5 +91,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>
