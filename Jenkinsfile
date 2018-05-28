@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 def rtMaven
 
+=======
+>>>>>>> dc502c49523d403a24df5838eaa2d3a99176c858
 pipeline {
     agent {
         docker {
@@ -26,17 +29,9 @@ pipeline {
 			}
 		}
 
-		stage ('Artifactory configuration') {
-
-        }
 
 		stage('Deploy'){
-            when {
-                 expression {
-                            currentBuild.result == null || currentBuild.result == 'SUCCESS'
-                          }
-                 }
-		    when {
+		  when {
 			    branch 'master'
 			}
 	        steps {
@@ -51,7 +46,6 @@ pipeline {
                       sh 'mvn -s settings.xml clean build'
                     }
                   }
-
 	        }
 		}
 
