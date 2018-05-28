@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-def rtMaven
-
-=======
->>>>>>> dc502c49523d403a24df5838eaa2d3a99176c858
 pipeline {
     agent {
         docker {
@@ -31,7 +26,7 @@ pipeline {
 
 
 		stage('Deploy'){
-		  when {
+		    when {
 			    branch 'master'
 			}
 	        steps {
