@@ -12,8 +12,8 @@ public class PackageSignature {
   public final String packageName;
 
   /**
-   * Internal: Construct Package Signature of a Java package.
-   * Instances should only be created a {@link SignatureFactory}
+   * Internal: Construct Package Signature of a Java package. Instances should only be created a
+   * {@link SignatureFactory}
    *
    * @param packageName the package's name
    */
@@ -23,8 +23,12 @@ public class PackageSignature {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     PackageSignature that = (PackageSignature) o;
     return Objects.equal(packageName, that.packageName);
   }

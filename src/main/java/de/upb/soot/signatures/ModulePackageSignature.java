@@ -9,8 +9,8 @@ public class ModulePackageSignature extends PackageSignature {
   public final ModuleSignature moduleSignature;
 
   /**
-   * Internal: Construct Package Signature for Java 9 Packages.
-   * Instances should only be created by a {@link SignatureFactory}
+   * Internal: Construct Package Signature for Java 9 Packages. Instances should only be created by
+   * a {@link SignatureFactory}
    *
    * @param packageName the package's name
    * @param moduleSignature the module declaring the package
@@ -23,11 +23,18 @@ public class ModulePackageSignature extends PackageSignature {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    if (!super.equals(o)) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
     ModulePackageSignature that = (ModulePackageSignature) o;
-    return Objects.equal(moduleSignature, that.moduleSignature) && Objects.equal(packageName, that.packageName);
+    return Objects.equal(moduleSignature, that.moduleSignature)
+        && Objects.equal(packageName, that.packageName);
   }
 
   @Override
