@@ -21,8 +21,6 @@ package de.upb.soot;
 
 import com.google.common.base.Preconditions;
 
-import soot.javaToJimple.IInitialResolver.Dependencies;
-
 import de.upb.soot.ns.INamespace;
 
 /**
@@ -45,7 +43,7 @@ public abstract class ClassSource {
    * Resolve the class into the SootClass sc. Returns a list of Strings or Types referenced by the
    * class.
    */
-  public abstract Dependencies resolve(SootClass sc);
+  //public abstract Dependencies resolve(SootClass sc);
 
   public void close() {}
 
