@@ -10,8 +10,8 @@ public class ClassSignature {
   public final PackageSignature packageSignature;
 
   /**
-   * Internal: Constructs the fully-qualified ClassSignature.
-   * Instances should only be created by a {@link SignatureFactory}
+   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
+   * {@link SignatureFactory}
    *
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
    * @param packageSignature the corresponding package

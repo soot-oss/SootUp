@@ -11,7 +11,7 @@ public class PackageSignature {
 
   /**
    * Internal: Construct Package Signature of a Java package.
-   * Instances should only be created a {@link SignatureFactory)
+   * Instances should only be created a {@link SignatureFactory}
    *
    * @param packageName the package's name
    */
