@@ -1,5 +1,7 @@
 package de.upb.soot.signatures;
 
+import com.google.common.base.Objects;
+
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
 public class ClassSignature {
 
@@ -19,5 +21,19 @@ public class ClassSignature {
   protected ClassSignature(final String className, final PackageSignature packageSignature) {
     this.className = className;
     this.packageSignature = packageSignature;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    ClassSignature that = (ClassSignature) o;
+    return Objects.equal(className, that.className) &&
+            Objects.equal(packageSignature, that.packageSignature);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(className, packageSignature);
   }
 }
