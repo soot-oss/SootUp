@@ -33,7 +33,7 @@ public class ModuleSignatureFactory extends SignatureFactory {
   }
 
   @Override
-  public PackageSignature getPackageSignature(final String packageName) {
+  public ModulePackageSignature getPackageSignature(final String packageName) {
     return getPackageSignature(packageName, null);
   }
 
@@ -46,9 +46,10 @@ public class ModuleSignatureFactory extends SignatureFactory {
    * @param moduleName the module containing the package
    * @return a PackageSignature
    */
-  public PackageSignature getPackageSignature(final String packageName, final String moduleName) {
+  public ModulePackageSignature getPackageSignature(
+      final String packageName, final String moduleName) {
     String fqId = moduleName + "." + packageName;
-    PackageSignature packageSignature = packages.get(fqId);
+    ModulePackageSignature packageSignature = (ModulePackageSignature) packages.get(fqId);
     if (packageSignature == null) {
       ModuleSignature moduleSignature = getModuleSignature(moduleName);
       packageSignature = new ModulePackageSignature(packageName, moduleSignature);
@@ -59,9 +60,7 @@ public class ModuleSignatureFactory extends SignatureFactory {
 
   @Override
   public ClassSignature getClassSignature(final String className, final String packageName) {
-    PackageSignature packageSignature = getPackageSignature(packageName, null);
-    ClassSignature classSignature = new ClassSignature(className, packageSignature);
-    return classSignature;
+    return getClassSignature(className, packageName, null);
   }
 
   /**
