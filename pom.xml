@@ -35,21 +35,21 @@
                 </dependencies>
                 <executions>
                     <execution>
-                        <id>validate</id>
+                        <id>checkstyle</id>
                         <phase>validate</phase>
-                        <configuration>
-                            <propertyExpansion>config_loc=${checkstyle.dir.path}</propertyExpansion>
-                            <configLocation>${checkstyle.file.path}</configLocation>
-                            <encoding>UTF-8</encoding>
-                            <logViolationsToConsole>true</logViolationsToConsole>
-                            <failOnViolation>${checkstyle.failOnViolation}</failOnViolation>
-                            <violationSeverity>warning</violationSeverity>
-                        </configuration>
                         <goals>
                             <goal>check</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <propertyExpansion>config_loc=${checkstyle.dir.path}</propertyExpansion>
+                    <configLocation>${checkstyle.file.path}</configLocation>
+                    <encoding>UTF-8</encoding>
+                    <logViolationsToConsole>true</logViolationsToConsole>
+                    <failOnViolation>${checkstyle.failOnViolation}</failOnViolation>
+                    <violationSeverity>warning</violationSeverity>
+                </configuration>
             </plugin>
         </plugins>
     </build>

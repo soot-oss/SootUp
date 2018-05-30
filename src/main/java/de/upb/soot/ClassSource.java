@@ -21,8 +21,6 @@ package de.upb.soot;
 
 import com.google.common.base.Preconditions;
 
-import soot.javaToJimple.IInitialResolver.Dependencies;
-
 import de.upb.soot.ns.INamespace;
 
 /**
@@ -30,14 +28,20 @@ import de.upb.soot.ns.INamespace;
  * (.class, .jimple, .java, etc.)
  */
 public abstract class ClassSource {
-  private final INamespace srcNS;
+  private final INamespace srcNamespace;
   protected String className;
 
-  public ClassSource(String className, INamespace srcNS) {
+  /**
+   * Unresolved source of a class provided by {@link INamespace}.
+   *
+   * @param className Name of the
+   * @param srcNamespace
+   */
+  public ClassSource(String className, INamespace srcNamespace) {
     Preconditions.checkNotNull(className);
-    Preconditions.checkNotNull(srcNS);
+    Preconditions.checkNotNull(srcNamespace);
 
-    this.srcNS = srcNS;
+    this.srcNamespace = srcNamespace;
     this.className = className;
   }
 
@@ -45,7 +49,7 @@ public abstract class ClassSource {
    * Resolve the class into the SootClass sc. Returns a list of Strings or Types referenced by the
    * class.
    */
-  public abstract Dependencies resolve(SootClass sc);
+  // public abstract Dependencies resolve(SootClass sc);
 
   public void close() {}
 
