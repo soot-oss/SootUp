@@ -12,11 +12,8 @@ public class ModuleSignatureFactory extends SignatureFactory {
 
   protected Map<String, ModuleSignature> modules = new HashMap<>();
 
-  /** The unnamed module. */
-  public static final ModuleSignature EMPTY_MODULE_SIGNATURE = new ModuleSignature(null);
-
   protected ModuleSignatureFactory() {
-    modules.put(null, EMPTY_MODULE_SIGNATURE);
+    modules.put(null, ModuleSignature.UNNAMED_MODULE_SIGNATURE);
   }
 
   /**

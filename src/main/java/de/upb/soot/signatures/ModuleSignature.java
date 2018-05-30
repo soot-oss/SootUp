@@ -4,6 +4,8 @@ import com.google.common.base.Objects;
 
 /** Represents a Java 9 module. */
 public class ModuleSignature {
+  /** The unnamed module. */
+  public static final ModuleSignature UNNAMED_MODULE_SIGNATURE = new ModuleSignature(null);
   /** The name of the module. */
   public final String moduleName;
 
