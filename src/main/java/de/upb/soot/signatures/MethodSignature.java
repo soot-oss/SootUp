@@ -1,5 +1,7 @@
 package de.upb.soot.signatures;
 
+import com.google.common.base.Objects;
+
 import java.util.List;
 
 /** Represents the fully qualified signature of a method. */
@@ -17,8 +19,8 @@ public class MethodSignature {
   public final TypeSignature returnTypeSignature;
 
   /**
-   * Internal: Constructs a MethodSignature. Instances should only be created by a
-   * {@link SignatureFactory}
+   * Internal: Constructs a MethodSignature. Instances should only be created by a {@link
+   * SignatureFactory}
    *
    * @param methodName the signature
    * @param declaringClass the declaring class signature
@@ -32,5 +34,26 @@ public class MethodSignature {
     this.declClassSignature = declaringClass;
     this.parameterSignatures = parameters;
     this.returnTypeSignature = returnType;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    MethodSignature that = (MethodSignature) o;
+    return Objects.equal(methodName, that.methodName)
+        && Objects.equal(declClassSignature, that.declClassSignature)
+        && Objects.equal(parameterSignatures, that.parameterSignatures)
+        && Objects.equal(returnTypeSignature, that.returnTypeSignature);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(
+        methodName, declClassSignature, parameterSignatures, returnTypeSignature);
   }
 }
