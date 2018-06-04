@@ -59,6 +59,10 @@ public class MethodSignature {
         methodName, declClassSignature, parameterSignatures, returnTypeSignature);
   }
 
+  /**
+   * The simple name of the method; the method's name and its parameters.
+   * @return a String of the form "returnTypeName methodName(ParameterName(,)*)"
+   */
   public String getSimpleMethodSignature() {
     StringBuilder sb = new StringBuilder();
     sb.append(returnTypeSignature.toString());
