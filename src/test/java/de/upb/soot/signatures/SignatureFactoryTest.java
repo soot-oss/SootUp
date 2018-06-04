@@ -78,4 +78,47 @@ public class SignatureFactoryTest {
     assertTrue(returnType.equals(methodSignature.returnTypeSignature));
     assertTrue(parameter.equals(methodSignature.parameterSignatures.get(0)));
   }
+
+  @Test
+  public void getTypeSignature() {
+    SignatureFactory signatureFactory = new SignatureFactory();
+    ClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
+    TypeSignature classSignature2 = signatureFactory.getTypeSignature("java.lang.System");
+    assertTrue(classSignature1.equals(classSignature2));
+  }
+
+  @Test
+  public void getTypeSignatureTypes() {
+    SignatureFactory signatureFactory = new SignatureFactory();
+
+    TypeSignature byteSig = signatureFactory.getTypeSignature("byte");
+    assertTrue(byteSig == PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE);
+
+    TypeSignature shortSig = signatureFactory.getTypeSignature("SHORT");
+    assertTrue(shortSig == PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE);
+
+    TypeSignature intSig = signatureFactory.getTypeSignature("int");
+    assertTrue(intSig == PrimitiveTypeSignature.INT_TYPE_SIGNATURE);
+
+    TypeSignature longSig = signatureFactory.getTypeSignature("loNg");
+    assertTrue(longSig == PrimitiveTypeSignature.LONG_TYPE_SIGNATURE);
+
+    TypeSignature floatSig = signatureFactory.getTypeSignature("floAt");
+    assertTrue(floatSig == PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE);
+
+    TypeSignature doubleSig = signatureFactory.getTypeSignature("doUble");
+    assertTrue(doubleSig == PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE);
+
+    TypeSignature charSig = signatureFactory.getTypeSignature("chaR");
+    assertTrue(charSig == PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE);
+
+    TypeSignature boolSig = signatureFactory.getTypeSignature("boolean");
+    assertTrue(boolSig == PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE);
+
+    TypeSignature nullSig = signatureFactory.getTypeSignature("nuLl");
+    assertTrue(nullSig == NullTypeSignature.NULL_TYPE_SIGNATURE);
+
+    TypeSignature voidSig = signatureFactory.getTypeSignature("void");
+    assertTrue(voidSig == VoidTypeSignature.VOID_TYPE_SIGNATURE);
+  }
 }
