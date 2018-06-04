@@ -30,8 +30,8 @@ public class MethodSignature {
   protected MethodSignature(
       final String methodName,
       final ClassSignature declaringClass,
-      final List<TypeSignature> parameters,
-      final TypeSignature returnType) {
+      final TypeSignature returnType,
+      final List<TypeSignature> parameters) {
     this.methodName = methodName;
     this.declClassSignature = declaringClass;
     this.parameterSignatures = parameters;
@@ -59,14 +59,13 @@ public class MethodSignature {
         methodName, declClassSignature, parameterSignatures, returnTypeSignature);
   }
 
-
-  public String getSimpleMethodSignature(){
+  public String getSimpleMethodSignature() {
     StringBuilder sb = new StringBuilder();
     sb.append(returnTypeSignature.toString());
     sb.append(' ');
     sb.append(methodName);
     sb.append('(');
-    sb.append(StringUtils.join(parameterSignatures,','));
+    sb.append(StringUtils.join(parameterSignatures, ','));
     sb.append(')');
     return sb.toString();
   }
@@ -81,5 +80,4 @@ public class MethodSignature {
     sb.append('>');
     return sb.toString();
   }
-
 }
