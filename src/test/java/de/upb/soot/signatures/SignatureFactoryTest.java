@@ -73,10 +73,46 @@ public class SignatureFactoryTest {
     List<String> parameters = Collections.singletonList("java.lang.Class");
 
     MethodSignature methodSignature =
-        signatureFactory.getMethodSignature("foo", "java.lang.System", parameters, "java.lang.A");
+        signatureFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
     assertTrue(declClass.equals(methodSignature.declClassSignature));
     assertTrue(returnType.equals(methodSignature.returnTypeSignature));
     assertTrue(parameter.equals(methodSignature.parameterSignatures.get(0)));
+  }
+
+  @Test
+  public void getMethodSignatureString() {
+    SignatureFactory signatureFactory = new SignatureFactory();
+
+    List<String> parameters = Collections.singletonList("java.lang.Class");
+
+    MethodSignature methodSignature =
+        signatureFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
+    assertTrue(
+        methodSignature.toString().equals("<java.lang.System:java.lang.A foo(java.lang.Class)>"));
+  }
+
+  @Test
+  public void getMethodSignatureString2() {
+    SignatureFactory signatureFactory = new SignatureFactory();
+
+    List<String> parameters = Collections.singletonList("java.lang.Class");
+
+    MethodSignature methodSignature =
+            signatureFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
+    assertTrue(
+            methodSignature.toString().equals("<java.lang.System:void foo(java.lang.Class)>"));
+  }
+
+  @Test
+  public void getMethodSignatureString3() {
+    SignatureFactory signatureFactory = new SignatureFactory();
+
+    List<String> parameters = Collections.EMPTY_LIST;
+
+    MethodSignature methodSignature =
+            signatureFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
+    assertTrue(
+            methodSignature.toString().equals("<java.lang.System:void foo()>"));
   }
 
   @Test
