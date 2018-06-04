@@ -22,6 +22,7 @@ package de.upb.soot;
 import com.google.common.base.Preconditions;
 
 import de.upb.soot.ns.INamespace;
+import de.upb.soot.signatures.ClassSignature;
 
 /**
  * A class source is responsible for resolving a single class from a particular source format
@@ -29,20 +30,19 @@ import de.upb.soot.ns.INamespace;
  */
 public abstract class ClassSource {
   private final INamespace srcNamespace;
-  protected String className;
+  protected ClassSignature classSignature;
 
   /**
    * Unresolved source of a class provided by {@link INamespace}.
    *
-   * @param className Name of the
+   * @param classSignature signature of the class to lookup
    * @param srcNamespace
    */
-  public ClassSource(String className, INamespace srcNamespace) {
-    Preconditions.checkNotNull(className);
+  public ClassSource(ClassSignature classSignature, INamespace srcNamespace) {
     Preconditions.checkNotNull(srcNamespace);
 
     this.srcNamespace = srcNamespace;
-    this.className = className;
+    this.classSignature = classSignature;
   }
 
   /**
@@ -54,6 +54,6 @@ public abstract class ClassSource {
   public void close() {}
 
   public String getName() {
-    return className;
+    return classSignature.toString();
   }
 }

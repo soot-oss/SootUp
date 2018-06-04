@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 
 import de.upb.soot.ClassSource;
 import de.upb.soot.IClassProvider;
+import de.upb.soot.signatures.ClassSignature;
 
 /** @author Manuel Benz created on 22.05.18 */
 public class PathBasedNamespace extends AbstractNamespace {
@@ -31,9 +32,9 @@ public class PathBasedNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Optional<ClassSource> getClass(String className) {
+  public Optional<ClassSource> getClass(ClassSignature className) {
     try {
-      return walk().filter(cs -> cs.getName().equals(className)).findFirst();
+      return walk().filter(cs -> cs.getName().equals(className.className)).findFirst();
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
