@@ -17,8 +17,8 @@ public class MethodSignature {
   public final TypeSignature returnTypeSignature;
 
   /**
-   * Internal: Constructs MethodSignature. Instances should only be created a {@link
-   * SignatureFactory}
+   * Internal: Constructs a MethodSignature. Instances should only be created by a
+   * {@link SignatureFactory}
    *
    * @param methodName the signature
    * @param declaringClass the declaring class signature
