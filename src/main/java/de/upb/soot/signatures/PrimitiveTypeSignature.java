@@ -26,7 +26,7 @@ public class PrimitiveTypeSignature extends TypeSignature {
   public static final PrimitiveTypeSignature BOOLEAN_TYPE_SIGNATURE =
       new PrimitiveTypeSignature("boolean");
 
-  /** The primitive type's name */
+  /** The primitive type's name. */
   public final String name;
 
   /**

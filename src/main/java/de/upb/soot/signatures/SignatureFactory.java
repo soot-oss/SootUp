@@ -61,6 +61,14 @@ public class SignatureFactory {
     return getClassSignature(className, packageName);
   }
 
+  /**
+   * Returns a TypeSignature which can be a {@link ClassSignature},{@link PrimitiveTypeSignature},
+   * {@link VoidTypeSignature}, or {@link NullTypeSignature}.
+   *
+   * @param typeName the fully-qualified name of the classe or for primitives its simple name, e.g.,
+   *     int, null, void, ...
+   * @return the type signature
+   */
   public TypeSignature getTypeSignature(final String typeName) {
     switch (typeName.toLowerCase()) {
       case "byte":
