@@ -40,4 +40,9 @@ public class ModuleSignature {
   public int hashCode() {
     return Objects.hashCode(moduleName);
   }
+
+  @Override
+  public String toString() {
+    return moduleName;
+  }
 }

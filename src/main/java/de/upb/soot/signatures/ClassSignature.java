@@ -40,4 +40,23 @@ public class ClassSignature extends TypeSignature {
   public int hashCode() {
     return Objects.hashCode(className, packageSignature);
   }
+
+  /**
+   * The fully-qualified name of the class. Concat package and class name , e.g.,
+   * "java.lang.System".
+   *
+   * @return fully-qualified name
+   */
+  public String getFullyQualifiedName() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(packageSignature.toString());
+    sb.append('.');
+    sb.append(className);
+    return sb.toString();
+  }
+
+  @Override
+  public String toString() {
+    return getFullyQualifiedName();
+  }
 }

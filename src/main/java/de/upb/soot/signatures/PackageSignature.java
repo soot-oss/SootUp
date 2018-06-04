@@ -37,4 +37,9 @@ public class PackageSignature {
   public int hashCode() {
     return Objects.hashCode(packageName);
   }
+
+  @Override
+  public String toString() {
+    return packageName;
+  }
 }

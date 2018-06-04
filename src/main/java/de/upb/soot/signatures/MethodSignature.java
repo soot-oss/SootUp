@@ -4,6 +4,8 @@ import com.google.common.base.Objects;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 /** Represents the fully qualified signature of a method. */
 public class MethodSignature {
   /** The method's signature. */
@@ -56,4 +58,28 @@ public class MethodSignature {
     return Objects.hashCode(
         methodName, declClassSignature, parameterSignatures, returnTypeSignature);
   }
+
+
+  public String getSimpleMethodSignature(){
+    StringBuilder sb = new StringBuilder();
+    sb.append(returnTypeSignature.toString());
+    sb.append(' ');
+    sb.append(methodName);
+    sb.append('(');
+    sb.append(StringUtils.join(parameterSignatures,','));
+    sb.append(')');
+    return sb.toString();
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append('<');
+    sb.append(declClassSignature.toString());
+    sb.append(':');
+    sb.append(getSimpleMethodSignature());
+    sb.append('>');
+    return sb.toString();
+  }
+
 }
