@@ -21,8 +21,6 @@ package de.upb.soot;
 
 import com.google.common.base.Preconditions;
 
-//import soot.javaToJimple.IInitialResolver.Dependencies;
-
 import de.upb.soot.ns.INamespace;
 import de.upb.soot.signatures.ClassSignature;
 
@@ -31,14 +29,19 @@ import de.upb.soot.signatures.ClassSignature;
  * (.class, .jimple, .java, etc.)
  */
 public abstract class ClassSource {
-  private final INamespace srcNS;
+  private final INamespace srcNamespace;
   protected ClassSignature classSignature;
 
-  public ClassSource(ClassSignature classSignature, INamespace srcNS) {
-    Preconditions.checkNotNull(classSignature);
-    Preconditions.checkNotNull(srcNS);
+  /**
+   * Unresolved source of a class provided by {@link INamespace}.
+   *
+   * @param classSignature signature of the class to lookup
+   * @param srcNamespace
+   */
+  public ClassSource(ClassSignature classSignature, INamespace srcNamespace) {
+    Preconditions.checkNotNull(srcNamespace);
 
-    this.srcNS = srcNS;
+    this.srcNamespace = srcNamespace;
     this.classSignature = classSignature;
   }
 
@@ -46,11 +49,11 @@ public abstract class ClassSource {
    * Resolve the class into the SootClass sc. Returns a list of Strings or Types referenced by the
    * class.
    */
-  //public abstract Dependencies resolve(SootClass sc);
+  // public abstract Dependencies resolve(SootClass sc);
 
   public void close() {}
 
   public String getName() {
-    return classSignature.className;
+    return classSignature.toString();
   }
 }
