@@ -1,5 +1,6 @@
 package de.upb.soot.signatures;
 
+/** Represents Java's primitive types. */
 public class PrimitiveTypeSignature extends TypeSignature {
 
   public static final PrimitiveTypeSignature BYTE_TYPE_SIGNATURE =
@@ -25,8 +26,15 @@ public class PrimitiveTypeSignature extends TypeSignature {
   public static final PrimitiveTypeSignature BOOLEAN_TYPE_SIGNATURE =
       new PrimitiveTypeSignature("boolean");
 
+  /** The primitive type's name */
   public final String name;
 
+  /**
+   * Signatures of primitive types are unique and should not be created from the outside, thus the
+   * constructor is private.
+   *
+   * @param name the primitive's name
+   */
   private PrimitiveTypeSignature(String name) {
     this.name = name;
   }
