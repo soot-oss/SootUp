@@ -1,21 +1,36 @@
 package de.upb.soot.signatures;
 
+import java.util.List;
+
 /** Represents the fully qualified signature of a method. */
 public class MethodSignature {
   /** The method's signature. */
-  public final String methodId;
+  public final String methodName;
 
-  /** The signature of the class that defines the method. */
-  public final ClassSignature classSignature;
+  /** The signature of the declaring class. */
+  public final ClassSignature declClassSignature;
+
+  /** The method's paremeters' signatures. */
+  public final List<ClassSignature> parameterSignatures;
+
+  /** The return type's signature. */
+  public final ClassSignature returnTypeSignature;
 
   /**
-   * Internal: Constructs MethodSignature.
-   * Instances should only be created a {@link SignatureFactory}
-   * @param methodId the signature
-   * @param classSignature the declaring class signature
+   * Internal: Constructs MethodSignature. Instances should only be created a {@link
+   * SignatureFactory}
+   *
+   * @param methodName the signature
+   * @param declaringClass the declaring class signature
    */
-  protected MethodSignature(final String methodId, final ClassSignature classSignature) {
-    this.methodId = methodId;
-    this.classSignature = classSignature;
+  protected MethodSignature(
+      final String methodName,
+      final ClassSignature declaringClass,
+      final List<ClassSignature> parameters,
+      final ClassSignature returnType) {
+    this.methodName = methodName;
+    this.declClassSignature = declaringClass;
+    this.parameterSignatures = parameters;
+    this.returnTypeSignature = returnType;
   }
 }

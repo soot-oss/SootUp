@@ -1,7 +1,11 @@
 package de.upb.soot.signatures;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.ClassUtils;
 
 /**
  * Factory to create valid signatures for Java classes in a classpath.
@@ -13,12 +17,15 @@ public class SignatureFactory {
   /** Caches the created signatures for packages. */
   protected Map<String, PackageSignature> packages = new HashMap<>();
 
-  protected SignatureFactory() {}
+  protected SignatureFactory() {
+    // TODO: Does it make sense to create/initalize default signatures for primitives, int, byte,
+    // boolean, ...?
+
+  }
 
   /**
-   * Returns a unique PackageSignature.
-   * The method looks up a cache if it already contains a signature with the
-   * given package name. If the cache lookup fails a new signature is created.
+   * Returns a unique PackageSignature. The method looks up a cache if it already contains a
+   * signature with the given package name. If the cache lookup fails a new signature is created.
    *
    * @param packageName the Java package name
    * @return a PackageSignature
@@ -47,15 +54,40 @@ public class SignatureFactory {
   }
 
   /**
+   * Always creates a new ClassSignature.
+   *
+   * @param fullyQualifiedClassName the fully-qualified name of the class
+   * @return a ClassSignature for a Java Class
+   */
+  public ClassSignature getClassSignature(final String fullyQualifiedClassName) {
+    String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
+    String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
+    return getClassSignature(className, packageName);
+  }
+
+  /**
    * Always creates a new MethodSignature.
    *
-   * @param methodName the signature of the method
-   * @param classSignature the signature of the declaring class
+   * @param methodName the method's name
+   * @param fqDeclaringClassName the fully-qualified name of the declaring class
+   * @param parameters the methods parameters fullyqualified
+   * @param fqReturnType the fully-qualified name of the return type
    * @return a MethodSignature
    */
   public MethodSignature getMethodSignature(
-      final String methodName, final ClassSignature classSignature) {
-    MethodSignature methodSignature = new MethodSignature(methodName, classSignature);
+      final String methodName,
+      final String fqDeclaringClassName,
+      final List<String> parameters,
+      final String fqReturnType) {
+    ClassSignature declaringClass = getClassSignature(fqDeclaringClassName);
+    ClassSignature returnTypeSignature = getClassSignature(fqReturnType);
+    List<ClassSignature> parameterSignatures = new ArrayList<>();
+    for (String fqParameterName : parameters) {
+      ClassSignature parameterSignature = getClassSignature(fqParameterName);
+      parameterSignatures.add(parameterSignature);
+    }
+    MethodSignature methodSignature =
+        new MethodSignature(methodName, declaringClass, parameterSignatures, returnTypeSignature);
     return methodSignature;
   }
 }

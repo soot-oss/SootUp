@@ -3,6 +3,9 @@ package de.upb.soot.signatures;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Test;
 
 public class SignatureFactoryTest {
@@ -33,8 +36,18 @@ public class SignatureFactoryTest {
     // Class Signatures are unique but not their package
     boolean sameObject = classSignature1 == classSignature2;
     assertFalse(sameObject);
-
   }
+
+  @Test
+  public void getClassSignatureFQN() {
+    SignatureFactory signatureFactory = new SignatureFactory();
+    ClassSignature classSignature1 = signatureFactory.getClassSignature("java.lang.System");
+    ClassSignature classSignature2 = signatureFactory.getClassSignature("System", "java.lang");
+    // Class Signatures are unique but not their package
+    boolean sameObject = classSignature1 == classSignature2;
+    assertFalse(sameObject);
+  }
+
   @Test
   public void getClassSignaturesPackage() {
     SignatureFactory signatureFactory = new SignatureFactory();
@@ -42,17 +55,27 @@ public class SignatureFactoryTest {
     ClassSignature classSignature2 = signatureFactory.getClassSignature("System", "java.lang");
     // Class Signatures are unique but not their package
     boolean samePackageSignature =
-            classSignature1.packageSignature == classSignature2.packageSignature;
+        classSignature1.packageSignature == classSignature2.packageSignature;
     assertTrue(samePackageSignature);
 
-    //but they are equal
+    // but they are equal
     assertTrue(classSignature1.equals(classSignature2));
     assertTrue(classSignature1.hashCode() == classSignature2.hashCode());
-
   }
 
   @Test
   public void getMethodSignature() {
     SignatureFactory signatureFactory = new SignatureFactory();
+    ClassSignature declClass = signatureFactory.getClassSignature("System", "java.lang");
+    ClassSignature parameter = signatureFactory.getClassSignature("java.lang.Class");
+    ClassSignature returnType = signatureFactory.getClassSignature("java.lang.A");
+
+    List<String> parameters = Collections.singletonList("java.lang.Class");
+
+    MethodSignature methodSignature =
+        signatureFactory.getMethodSignature("foo", "java.lang.System", parameters, "java.lang.A");
+    assertTrue(declClass.equals(methodSignature.declClassSignature));
+    assertTrue(returnType.equals(methodSignature.returnTypeSignature));
+    assertTrue(parameter.equals(methodSignature.parameterSignatures.get(0)));
   }
 }
