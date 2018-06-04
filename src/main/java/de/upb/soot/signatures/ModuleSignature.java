@@ -4,7 +4,12 @@ import com.google.common.base.Objects;
 
 /** Represents a Java 9 module. */
 public class ModuleSignature {
-  /** The unnamed module. */
+  /**
+   * The unnamed module. If a request is made to load a type whose package is not defined in any
+   * module then the module system load it from the classpath. To ensure that every type is
+   * associated with a module, the type is associated with the unnamed module. @see <a
+   * href=http://openjdk.java.net/projects/jigsaw/spec/sotms/#the-unnamed-module>http://openjdk.java.net/projects/jigsaw/spec/sotms/#the-unnamed-module</a>
+   */
   public static final ModuleSignature UNNAMED_MODULE_SIGNATURE = new ModuleSignature(null);
   /** The name of the module. */
   public final String moduleName;

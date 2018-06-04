@@ -13,6 +13,14 @@ public class ModuleSignatureFactory extends SignatureFactory {
   protected Map<String, ModuleSignature> modules = new HashMap<>();
 
   protected ModuleSignatureFactory() {
+
+    /**
+     * Represents the unnamed module in Java's module system. Every type that is not defined in any
+     * known module but loaded from the classpath is associated with this unnamed module, so as to
+     * ensure that every type is associated with a module.
+     *
+     * {@link ModuleSignature#UNNAMED_MODULE_SIGNATURE}
+     */
     modules.put(null, ModuleSignature.UNNAMED_MODULE_SIGNATURE);
   }
 
