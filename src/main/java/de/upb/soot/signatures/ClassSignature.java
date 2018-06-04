@@ -3,7 +3,7 @@ package de.upb.soot.signatures;
 import com.google.common.base.Objects;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
-public class ClassSignature {
+public class ClassSignature extends TypeSignature {
 
   /** The simple class name. */
   public final String className;

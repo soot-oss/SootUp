@@ -17,11 +17,7 @@ public class SignatureFactory {
   /** Caches the created signatures for packages. */
   protected Map<String, PackageSignature> packages = new HashMap<>();
 
-  protected SignatureFactory() {
-    // TODO: Does it make sense to create/initalize default signatures for primitives, int, byte,
-    // boolean, ...?
-
-  }
+  protected SignatureFactory() {}
 
   /**
    * Returns a unique PackageSignature. The method looks up a cache if it already contains a
@@ -65,6 +61,33 @@ public class SignatureFactory {
     return getClassSignature(className, packageName);
   }
 
+  public TypeSignature getTypeSignature(final String typeName) {
+    switch (typeName.toLowerCase()) {
+      case "byte":
+        return PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE;
+      case "short":
+        return PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE;
+      case "int":
+        return PrimitiveTypeSignature.INT_TYPE_SIGNATURE;
+      case "long":
+        return PrimitiveTypeSignature.LONG_TYPE_SIGNATURE;
+      case "float":
+        return PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE;
+      case "double":
+        return PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
+      case "char":
+        return PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE;
+      case "boolean":
+        return PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE;
+      case "null":
+        return NullTypeSignature.NULL_TYPE_SIGNATURE;
+      case "void":
+        return VoidTypeSignature.VOID_TYPE_SIGNATURE;
+      default:
+        return getClassSignature(typeName);
+    }
+  }
+
   /**
    * Always creates a new MethodSignature.
    *
@@ -80,8 +103,8 @@ public class SignatureFactory {
       final List<String> parameters,
       final String fqReturnType) {
     ClassSignature declaringClass = getClassSignature(fqDeclaringClassName);
-    ClassSignature returnTypeSignature = getClassSignature(fqReturnType);
-    List<ClassSignature> parameterSignatures = new ArrayList<>();
+    TypeSignature returnTypeSignature = getClassSignature(fqReturnType);
+    List<TypeSignature> parameterSignatures = new ArrayList<>();
     for (String fqParameterName : parameters) {
       ClassSignature parameterSignature = getClassSignature(fqParameterName);
       parameterSignatures.add(parameterSignature);

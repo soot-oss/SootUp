@@ -11,10 +11,10 @@ public class MethodSignature {
   public final ClassSignature declClassSignature;
 
   /** The method's paremeters' signatures. */
-  public final List<ClassSignature> parameterSignatures;
+  public final List<TypeSignature> parameterSignatures;
 
   /** The return type's signature. */
-  public final ClassSignature returnTypeSignature;
+  public final TypeSignature returnTypeSignature;
 
   /**
    * Internal: Constructs MethodSignature. Instances should only be created a {@link
@@ -26,8 +26,8 @@ public class MethodSignature {
   protected MethodSignature(
       final String methodName,
       final ClassSignature declaringClass,
-      final List<ClassSignature> parameters,
-      final ClassSignature returnType) {
+      final List<TypeSignature> parameters,
+      final TypeSignature returnType) {
     this.methodName = methodName;
     this.declClassSignature = declaringClass;
     this.parameterSignatures = parameters;
