@@ -10,7 +10,8 @@ public class ModuleSignature {
    * associated with a module, the type is associated with the unnamed module. @see <a
    * href=http://openjdk.java.net/projects/jigsaw/spec/sotms/#the-unnamed-module>http://openjdk.java.net/projects/jigsaw/spec/sotms/#the-unnamed-module</a>
    */
-  public static final ModuleSignature UNNAMED_MODULE_SIGNATURE = new ModuleSignature("");
+  public static final ModuleSignature UNNAMED_MODULE = new ModuleSignature("");
+
   /** The name of the module. */
   public final String moduleName;
 

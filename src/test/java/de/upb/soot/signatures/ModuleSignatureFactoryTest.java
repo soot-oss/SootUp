@@ -14,7 +14,7 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
     assertTrue(packageSignature1 instanceof ModulePackageSignature);
     assertTrue(
         ((ModulePackageSignature) packageSignature1).moduleSignature
-            == ModuleSignature.UNNAMED_MODULE_SIGNATURE);
+            == ModuleSignature.UNNAMED_MODULE);
   }
 
   @Test
@@ -24,7 +24,7 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
     assertTrue(packageSignature1 instanceof ModulePackageSignature);
     assertFalse(
             ((ModulePackageSignature) packageSignature1).moduleSignature
-                    == ModuleSignature.UNNAMED_MODULE_SIGNATURE);
+                    == ModuleSignature.UNNAMED_MODULE);
   }
 
   @Test
@@ -66,6 +66,18 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
     assertFalse(samePackage);
     boolean sameObject = packageSignature1.moduleSignature == packageSignature2.moduleSignature;
     assertFalse(sameObject);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void checkNullModule(){
+    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
+    ModulePackageSignature packageSignature = signatureFactory.getPackageSignature("myPackage",null);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void checkNullModule2(){
+    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
+    ClassSignature classSignature = signatureFactory.getClassSignature("A","mypackage",null);
   }
 
 

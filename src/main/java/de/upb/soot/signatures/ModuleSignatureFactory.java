@@ -1,5 +1,7 @@
 package de.upb.soot.signatures;
 
+import com.google.common.base.Preconditions;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,19 +21,22 @@ public class ModuleSignatureFactory extends SignatureFactory {
      * known module but loaded from the classpath is associated with this unnamed module, so as to
      * ensure that every type is associated with a module.
      *
-     * {@link ModuleSignature#UNNAMED_MODULE_SIGNATURE}
+     * <p>{@link ModuleSignature#UNNAMED_MODULE}
      */
-    modules.put(null, ModuleSignature.UNNAMED_MODULE_SIGNATURE);
+    modules.put(
+        ModuleSignature.UNNAMED_MODULE.moduleName,
+        ModuleSignature.UNNAMED_MODULE);
   }
 
   /**
    * Returns a unique ModuleSignature. The method looks up a cache if it already contains a
    * signature with the given module name. If the cache lookup fails a new signature is created.
    *
-   * @param moduleName the module name
+   * @param moduleName the module name; must not be null use empty string for the unnamed module
    * @return a ModuleSignature
    */
   public ModuleSignature getModuleSignature(final String moduleName) {
+    Preconditions.checkNotNull(moduleName);
     ModuleSignature moduleSignature = modules.get(moduleName);
     if (moduleSignature == null) {
       moduleSignature = new ModuleSignature(moduleName);
@@ -42,7 +47,7 @@ public class ModuleSignatureFactory extends SignatureFactory {
 
   @Override
   public ModulePackageSignature getPackageSignature(final String packageName) {
-    return getPackageSignature(packageName, null);
+    return getPackageSignature(packageName, ModuleSignature.UNNAMED_MODULE.moduleName);
   }
 
   /**
@@ -50,12 +55,15 @@ public class ModuleSignatureFactory extends SignatureFactory {
    * signature with the given package and module name. If the cache lookup fails a new signature is
    * created.
    *
-   * @param packageName the package name
-   * @param moduleName the module containing the package
-   * @return a PackageSignature
+   * @param packageName the package name; must not be null use empty string for the default package
+   * @param moduleName the module containing the package; must not be null use empty string for the
+   *     unnamed module {@link ModuleSignature#UNNAMED_MODULE}
+   * @return a ModulePackageSignature
    */
   public ModulePackageSignature getPackageSignature(
       final String packageName, final String moduleName) {
+    Preconditions.checkNotNull(moduleName);
+    Preconditions.checkNotNull(packageName);
     String fqId = moduleName + "." + packageName;
     ModulePackageSignature packageSignature = (ModulePackageSignature) packages.get(fqId);
     if (packageSignature == null) {
@@ -68,7 +76,8 @@ public class ModuleSignatureFactory extends SignatureFactory {
 
   @Override
   public ClassSignature getClassSignature(final String className, final String packageName) {
-    return getClassSignature(className, packageName, null);
+    return getClassSignature(
+        className, packageName, ModuleSignature.UNNAMED_MODULE.moduleName);
   }
 
   /**
