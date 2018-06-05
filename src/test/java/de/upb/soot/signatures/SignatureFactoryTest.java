@@ -134,6 +134,19 @@ public class SignatureFactoryTest {
   }
 
   @Test
+  public void getMethodSignatureString4() {
+    SignatureFactory signatureFactory = new SignatureFactory();
+
+    List<String> parameters = Collections.EMPTY_LIST;
+    ClassSignature classSignature = signatureFactory.getClassSignature("java.lang.System");
+    MethodSignature methodSignature =
+            signatureFactory.getMethodSignature("foo", classSignature, "void", parameters);
+    assertTrue(
+            methodSignature.toString().equals("<java.lang.System:void foo()>"));
+    assertTrue(methodSignature.declClassSignature == classSignature);
+  }
+
+  @Test
   public void getTypeSignature() {
     SignatureFactory signatureFactory = new SignatureFactory();
     ClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");

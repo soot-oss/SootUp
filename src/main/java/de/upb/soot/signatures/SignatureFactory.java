@@ -105,7 +105,7 @@ public class SignatureFactory {
   }
 
   /**
-   * Always creates a new MethodSignature.
+   * Always creates a new MethodSignature AND a new ClassSignature.
    *
    * @param methodName the method's name
    * @param fqDeclaringClassName the fully-qualified name of the declaring class
@@ -127,6 +127,32 @@ public class SignatureFactory {
     }
     MethodSignature methodSignature =
         new MethodSignature(methodName, declaringClass, returnTypeSignature, parameterSignatures);
+    return methodSignature;
+  }
+
+  /**
+   * Always creates a new MethodSignature reusing the given ClassSignature.
+   *
+   * @param methodName the method's name
+   * @param declaringClassSignature the ClassSignature of the declaring class
+   * @param parameters the methods parameters fully-qualified name or a primitive's name
+   * @param fqReturnType the fully-qualified name of the return type or a primitive's name
+   * @return a MethodSignature
+   */
+  public MethodSignature getMethodSignature(
+      final String methodName,
+      final ClassSignature declaringClassSignature,
+      final String fqReturnType,
+      final List<String> parameters) {
+    TypeSignature returnTypeSignature = getTypeSignature(fqReturnType);
+    List<TypeSignature> parameterSignatures = new ArrayList<>();
+    for (String fqParameterName : parameters) {
+      TypeSignature parameterSignature = getTypeSignature(fqParameterName);
+      parameterSignatures.add(parameterSignature);
+    }
+    MethodSignature methodSignature =
+        new MethodSignature(
+            methodName, declaringClassSignature, returnTypeSignature, parameterSignatures);
     return methodSignature;
   }
 }
