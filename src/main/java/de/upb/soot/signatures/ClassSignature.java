@@ -49,8 +49,10 @@ public class ClassSignature extends TypeSignature {
    */
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
-    sb.append(packageSignature.toString());
-    sb.append('.');
+    if (!(packageSignature.packageName.isEmpty() || packageSignature.packageName == null)) {
+      sb.append(packageSignature.toString());
+      sb.append('.');
+    }
     sb.append(className);
     return sb.toString();
   }

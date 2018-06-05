@@ -39,6 +39,24 @@ public class SignatureFactoryTest {
   }
 
   @Test
+  public void getClassSignatureEmptyPackage() {
+    SignatureFactory signatureFactory = new SignatureFactory();
+    ClassSignature classSignature1 = signatureFactory.getClassSignature("A", "");
+    ClassSignature classSignature2 = signatureFactory.getClassSignature("A");
+    // Class Signatures are unique but not their package
+    boolean sameObject = classSignature1 == classSignature2;
+    assertFalse(sameObject);
+
+    boolean samePackageSignatureObject = classSignature1.packageSignature == classSignature2.packageSignature;
+    assertTrue(samePackageSignatureObject);
+    String className = "A";
+
+    assertTrue(classSignature1.toString().equals(className));
+    assertTrue(classSignature2.toString().equals(className));
+
+  }
+
+  @Test
   public void getClassSignatureFQN() {
     SignatureFactory signatureFactory = new SignatureFactory();
     ClassSignature classSignature1 = signatureFactory.getClassSignature("java.lang.System");
