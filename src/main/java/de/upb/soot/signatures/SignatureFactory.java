@@ -1,5 +1,7 @@
 package de.upb.soot.signatures;
 
+import com.google.common.base.Preconditions;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,16 +19,21 @@ public class SignatureFactory {
   /** Caches the created signatures for packages. */
   protected Map<String, PackageSignature> packages = new HashMap<>();
 
-  protected SignatureFactory() {}
+  protected SignatureFactory() {
+    /** Represents the default package. */
+    packages.put(PackageSignature.DEFAULT_PACKAGE.packageName, PackageSignature.DEFAULT_PACKAGE);
+  }
 
   /**
    * Returns a unique PackageSignature. The method looks up a cache if it already contains a
    * signature with the given package name. If the cache lookup fails a new signature is created.
    *
-   * @param packageName the Java package name
+   * @param packageName the Java package name; must not be null use empty string for the default
+   *     package {@link PackageSignature#DEFAULT_PACKAGE}
    * @return a PackageSignature
    */
   public PackageSignature getPackageSignature(final String packageName) {
+    Preconditions.checkNotNull(packageName);
     PackageSignature packageSignature = packages.get(packageName);
     if (packageSignature == null) {
       packageSignature = new PackageSignature(packageName);
@@ -40,7 +47,8 @@ public class SignatureFactory {
    * cached because the are unique per class, and thus reusing them does not make sense.
    *
    * @param className the simple name of the class
-   * @param packageName the Java package name
+   * @param packageName the Java package name; must not be null use empty string for the default
+   *     package {@link PackageSignature#DEFAULT_PACKAGE}
    * @return a ClassSignature for a Java class
    */
   public ClassSignature getClassSignature(final String className, final String packageName) {

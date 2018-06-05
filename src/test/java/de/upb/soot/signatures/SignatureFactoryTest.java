@@ -175,4 +175,17 @@ public class SignatureFactoryTest {
     TypeSignature voidSig = signatureFactory.getTypeSignature("void");
     assertTrue(voidSig == VoidTypeSignature.VOID_TYPE_SIGNATURE);
   }
+
+
+  @Test(expected = NullPointerException.class)
+  public void checkNullPackage(){
+    SignatureFactory signatureFactory = new SignatureFactory();
+    PackageSignature packageSignature = signatureFactory.getPackageSignature(null);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void checkNullPackage2(){
+    SignatureFactory signatureFactory = new SignatureFactory();
+    ClassSignature classSignature = signatureFactory.getClassSignature("A",null);
+  }
 }
