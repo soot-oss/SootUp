@@ -36,5 +36,5 @@ public interface IClassProvider {
    * @param fileName
    * @return
    */
-  boolean handlesType(String fileName);
+  boolean handlesType(Path fileName);
 }

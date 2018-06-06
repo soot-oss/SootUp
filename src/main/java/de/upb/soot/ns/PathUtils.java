@@ -1,0 +1,42 @@
+package de.upb.soot.ns;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import org.apache.commons.io.FilenameUtils;
+
+import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
+
+/** @author Manuel Benz created on 06.06.18 */
+public class PathUtils {
+  public static Path signatureToPath(ClassSignature signature) {
+    return Paths.get(signature.getFullyQualifiedName().replace('.', '/') + ".class");
+  }
+
+  public static ClassSignature pathFromSignature(Path path, SignatureFactory fac) {
+    if (!hasExtension(path.getFileName(), "class")) {
+      throw new IllegalArgumentException("Given path is not a class file " + path);
+    }
+    return fac.getClassSignature(FilenameUtils.removeExtension(path.toString()).replace('/', '.'));
+  }
+
+  /**
+   * Matches the given path with the given file extension (without a leading dot) and returns true if the path ends with this
+   * extension, false otherwise.
+   * 
+   * @param path
+   *          An arbitrary path
+   * @param extension
+   *          A file extension without a leading dot (e.g., java, class, jimple)
+   * @return True if the path ends with the given extension, false otherwise.
+   */
+  public static boolean hasExtension(Path path, String extension) {
+    // TODO we might want to cache matcher for often used file extensions
+    if (Files.isDirectory(path)) {
+      return false;
+    }
+    return path.getFileSystem().getPathMatcher("glob:*." + extension).matches(path.getFileName());
+  }
+}

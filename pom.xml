@@ -14,6 +14,7 @@
         <slf4j.version>1.7.25</slf4j.version>
         <guava.version>24.0-jre</guava.version>
         <apache-commons.version>3.5</apache-commons.version>
+        <apache-commons-io.version>2.6</apache-commons-io.version>
         <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
         <checkstyle.version>8.9</checkstyle.version>
         <checkstyle.dir.path>${basedir}/codingstyle</checkstyle.dir.path>
@@ -63,6 +64,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>${apache-commons.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${apache-commons-io.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

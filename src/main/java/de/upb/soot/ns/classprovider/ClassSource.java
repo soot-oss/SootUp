@@ -28,7 +28,7 @@ public abstract class ClassSource {
   private final INamespace srcNamespace;
   protected ClassSignature classSignature;
 
-  public ClassSource(ClassSignature classSignature, INamespace srcNamespace) {
+  public ClassSource(INamespace srcNamespace, ClassSignature classSignature) {
     Preconditions.checkNotNull(srcNamespace);
 
     this.srcNamespace = srcNamespace;
