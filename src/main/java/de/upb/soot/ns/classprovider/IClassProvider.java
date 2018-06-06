@@ -17,27 +17,24 @@
  * Boston, MA 02111-1307, USA.
  */
 
-package de.upb.soot;
+package de.upb.soot.ns.classprovider;
 
-import java.io.InputStream;
+import java.nio.file.Path;
 
-/**
- * A class provider looks for a file of a specific format for a specified class, and returns a
- * ClassSource for it if it finds it.
- */
+import de.upb.soot.ns.INamespace;
+import de.upb.soot.ns.SootClassNotFoundException;
+
+/** Responsible for handling various types of class sources (.class, .jimple, .java, .dex, etc) */
 public interface IClassProvider {
-  /**
-   * Look for the specified class. Return a ClassSource for it if found, or null if it was not
-   * found.
-   */
-  ClassSource find(InputStream sourceStream);
+
+  ClassSource getClass(INamespace ns, Path sourcePath) throws SootClassNotFoundException;
 
   /**
    * Used to filter for files which are handled by the concrete ClassProvider, e.g. *.class,
    * *.jimple, etc
    *
-   * @param typeId
+   * @param fileName
    * @return
    */
-  boolean handlesType(String typeId);
+  boolean handlesType(String fileName);
 }

@@ -17,27 +17,17 @@
  * Boston, MA 02111-1307, USA.
  */
 
-package de.upb.soot;
+package de.upb.soot.ns.classprovider;
 
 import com.google.common.base.Preconditions;
 
 import de.upb.soot.ns.INamespace;
 import de.upb.soot.signatures.ClassSignature;
 
-/**
- * A class source is responsible for resolving a single class from a particular source format
- * (.class, .jimple, .java, etc.)
- */
 public abstract class ClassSource {
   private final INamespace srcNamespace;
   protected ClassSignature classSignature;
 
-  /**
-   * Unresolved source of a class provided by {@link INamespace}.
-   *
-   * @param classSignature signature of the class to lookup
-   * @param srcNamespace
-   */
   public ClassSource(ClassSignature classSignature, INamespace srcNamespace) {
     Preconditions.checkNotNull(srcNamespace);
 
@@ -45,15 +35,11 @@ public abstract class ClassSource {
     this.classSignature = classSignature;
   }
 
-  /**
-   * Resolve the class into the SootClass sc. Returns a list of Strings or Types referenced by the
-   * class.
-   */
   // public abstract Dependencies resolve(SootClass sc);
 
   public void close() {}
 
-  public String getName() {
-    return classSignature.toString();
+  public ClassSignature getClassSignature() {
+    return classSignature;
   }
 }

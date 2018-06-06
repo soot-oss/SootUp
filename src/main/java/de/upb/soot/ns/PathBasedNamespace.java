@@ -1,17 +1,15 @@
 package de.upb.soot.ns;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import de.upb.soot.ClassSource;
-import de.upb.soot.IClassProvider;
+import de.upb.soot.ns.classprovider.ClassSource;
+import de.upb.soot.ns.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureUtil;
 
 /** @author Manuel Benz created on 22.05.18 */
 public class PathBasedNamespace extends AbstractNamespace {
@@ -23,34 +21,28 @@ public class PathBasedNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Collection<ClassSource> getClasses() {
+  public Collection<ClassSource> getClassSources() {
     try {
-      return walk().collect(Collectors.toList());
+      return Files.walk(path)
+          .filter(p -> classProvider.handlesType(p.getFileName().toString()))
+          .map(
+              p -> {
+                try {
+                  return classProvider.getClass(this, p);
+                } catch (SootClassNotFoundException e) {
+                  // this should not happen since we are currently enumerating all classes on the
+                  // path
+                  throw new IllegalStateException(e);
+                }
+              })
+          .collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
   }
 
   @Override
-  public Optional<ClassSource> getClass(ClassSignature className) {
-    try {
-      return walk().filter(cs -> cs.getName().equals(className.className)).findFirst();
-    } catch (IOException e) {
-      throw new IllegalArgumentException(e);
-    }
-  }
-
-  private Stream<ClassSource> walk() throws IOException {
-    return Files.walk(path)
-        .filter(p -> classProvider.handlesType(p.getFileName().toString()))
-        .map(
-            p -> {
-              // FIXME this is not enough info to create a class source object!
-              try (InputStream in = Files.newInputStream(p)) {
-                return classProvider.find(in);
-              } catch (IOException e) {
-                throw new IllegalArgumentException(e);
-              }
-            });
+  public ClassSource getClassSource(ClassSignature signature) throws SootClassNotFoundException {
+    return classProvider.getClass(this, path.resolve(SignatureUtil.toPath(signature)));
   }
 }

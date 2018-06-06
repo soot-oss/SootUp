@@ -8,63 +8,64 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.upb.soot.signatures.ClassSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.upb.soot.ClassSource;
-import de.upb.soot.IClassProvider;
+import de.upb.soot.ns.classprovider.ClassSource;
+import de.upb.soot.ns.classprovider.IClassProvider;
+import de.upb.soot.signatures.ClassSignature;
 
 /** @author Manuel Benz created on 22.05.18 */
 public class JavaCPNamespace extends AbstractNamespace {
   private static final Logger logger = LoggerFactory.getLogger(JavaCPNamespace.class);
 
-  private final Map<Path, INamespace> cpEntries;
-  private final Map<String, ClassSource> nameToSrc = new HashMap<>();
+  private Collection<AbstractNamespace> cpEntries;
 
   public JavaCPNamespace(IClassProvider classProvider, String classPath) {
     super(classProvider);
-    cpEntries = explode(classPath).collect(Collectors.toMap(Function.identity(), p -> null));
+    cpEntries = explode(classPath).map(cp -> nsForPath(cp)).collect(Collectors.toList());
   }
 
   private Stream<Path> explode(String classPath) {
     // the classpath is split at every path separator which is not escaped
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
+    // TODO implement support for class path wildcards, e.g., lib/*.
+    // https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html
     return Stream.of(classPath.split(regex)).map(s -> Paths.get(s));
   }
 
   @Override
-  public Collection<ClassSource> getClasses() {
-    if (nameToSrc.isEmpty()) {
-      for (Path path : cpEntries.keySet()) {
-        final INamespace ns = nsForPath(path);
-        cpEntries.put(path, ns);
-        for (ClassSource classSource : ns.getClasses()) {
-          nameToSrc.put(classSource.getName(), classSource);
-        }
-      }
+  public Collection<ClassSource> getClassSources() {
+    // By using a set here, already added classes won't be overwritten and the class which is found
+    // first will be kept
+    Set<ClassSource> found = new HashSet<>();
+    for (AbstractNamespace ns : cpEntries) {
+      found.addAll(ns.getClassSources());
     }
-
-    return nameToSrc.values();
+    return found;
   }
 
   @Override
-  public Optional<ClassSource> getClass(ClassSignature className) {
-    if (nameToSrc.isEmpty()) {
-      getClasses();
+  public ClassSource getClassSource(ClassSignature signature) throws SootClassNotFoundException {
+    for (AbstractNamespace ns : cpEntries) {
+      try {
+        final ClassSource classSource = ns.getClassSource(signature);
+        return classSource;
+      } catch (SootClassNotFoundException e) {
+        // the next namespace might still contain the class
+      }
     }
-    return Optional.of(nameToSrc.get(className));
+
+    throw new SootClassNotFoundException(signature);
   }
 
-  private INamespace nsForPath(Path path) {
+  private AbstractNamespace nsForPath(Path path) {
     if (java.nio.file.Files.isDirectory(path)) {
       return new PathBasedNamespace(classProvider, path);
     } else {
