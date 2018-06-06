@@ -1,8 +1,11 @@
 package de.upb.soot.ns;
 
+import com.sun.nio.zipfs.ZipPath;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,12 +30,19 @@ public class PathBasedNamespaceTest {
     dummyProvider = new IClassProvider() {
       @Override
       public ClassSource getClass(INamespace ns, Path sourcePath) throws SootClassNotFoundException {
-        return new ClassSource(ns, PathUtils.pathFromSignature(sourcePath, signatureFac)) {
+        Path sigPath = null;
+        if (sourcePath instanceof ZipPath) {
+          sigPath = sourcePath.getRoot().relativize(sourcePath);
+        } else {
+          sigPath = Paths.get("target/classes").relativize(sourcePath);
+        }
+
+        return new ClassSource(ns, PathUtils.signatureFromPath(sigPath, signatureFac)) {
         };
       }
 
       @Override
-      public boolean handlesType(Path fileName) {
+      public boolean handlesFile(Path fileName) {
         return PathUtils.hasExtension(fileName, "class");
       }
     };
@@ -56,12 +66,36 @@ public class PathBasedNamespaceTest {
   @Test
   public void testFolder() throws SootClassNotFoundException, IOException {
     // TODO adapt to new testing folder structure
-    Path baseDir = Paths.get("target/test-classes/");
+    Path baseDir = Paths.get("target/classes/");
     PathBasedNamespace pathBasedNamespace = new PathBasedNamespace(dummyProvider, baseDir);
-    final ClassSignature sig = signatureFac.getClassSignature("PathBasedNamespaceTest", "de.upb.soot.ns");
+    final ClassSignature sig = signatureFac.getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
     final ClassSource clazz = pathBasedNamespace.getClassSource(sig);
 
     Assert.assertNotNull(clazz);
-    Assert.assertEquals(clazz.getClassSignature(), sig);
+    Assert.assertEquals(sig, clazz.getClassSignature());
+
+    final Collection<ClassSource> classSources = pathBasedNamespace.getClassSources();
+
+    Assert.assertNotNull(classSources);
+    Assert.assertFalse(classSources.isEmpty());
+    Assert.assertEquals(20, classSources.size());
+  }
+
+  @Test
+  public void testJar() throws SootClassNotFoundException, IOException {
+    // TODO adapt to new testing folder structure
+    Path jar = Paths.get("target/test-classes/de/upb/soot/ns/Soot-4.0-SNAPSHOT.jar");
+    PathBasedNamespace pathBasedNamespace = new PathBasedNamespace(dummyProvider, jar);
+    final ClassSignature sig = signatureFac.getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
+
+    final ClassSource clazz = pathBasedNamespace.getClassSource(sig);
+    Assert.assertNotNull(clazz);
+    Assert.assertEquals(sig, clazz.getClassSignature());
+
+    final Collection<ClassSource> classSources = pathBasedNamespace.getClassSources();
+
+    Assert.assertNotNull(classSources);
+    Assert.assertFalse(classSources.isEmpty());
+    Assert.assertEquals(20, classSources.size());
   }
 }

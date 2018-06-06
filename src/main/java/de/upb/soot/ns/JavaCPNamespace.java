@@ -1,10 +1,6 @@
 package de.upb.soot.ns;
 
-import com.google.common.io.Files;
-
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -66,23 +62,12 @@ public class JavaCPNamespace extends AbstractNamespace {
   }
 
   private AbstractNamespace nsForPath(Path path) {
-    if (java.nio.file.Files.isDirectory(path)) {
+    if (java.nio.file.Files.isDirectory(path) || PathUtils.hasExtension(path, "jar", "zip")) {
       return new PathBasedNamespace(classProvider, path);
     } else {
-      final String fileExtension = Files.getFileExtension(path.getFileName().toString());
-
-      if (fileExtension.equals("zip") || fileExtension.equals("jar")) {
-        try {
-          return new PathBasedNamespace(
-              classProvider, Paths.get(new URI("jar:" + path.toAbsolutePath().toString())));
-        } catch (URISyntaxException e) {
-          logger.warn("Invalid class path entry: " + path);
-        }
-      } else {
-        logger.warn("Invalid/Unknown class path entry: " + path);
-      }
+      logger.warn("Invalid/Unknown class path entry: " + path);
     }
 
-    throw new IllegalStateException("Empty class path");
+    throw new IllegalArgumentException("Empty class path");
   }
 }

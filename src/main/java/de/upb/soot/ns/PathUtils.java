@@ -11,11 +11,11 @@ import de.upb.soot.signatures.SignatureFactory;
 
 /** @author Manuel Benz created on 06.06.18 */
 public class PathUtils {
-  public static Path signatureToPath(ClassSignature signature) {
+  public static Path pathFromSignature(ClassSignature signature) {
     return Paths.get(signature.getFullyQualifiedName().replace('.', '/') + ".class");
   }
 
-  public static ClassSignature pathFromSignature(Path path, SignatureFactory fac) {
+  public static ClassSignature signatureFromPath(Path path, SignatureFactory fac) {
     if (!hasExtension(path.getFileName(), "class")) {
       throw new IllegalArgumentException("Given path is not a class file " + path);
     }
@@ -28,15 +28,18 @@ public class PathUtils {
    * 
    * @param path
    *          An arbitrary path
-   * @param extension
-   *          A file extension without a leading dot (e.g., java, class, jimple)
-   * @return True if the path ends with the given extension, false otherwise.
+   * @param extensions
+   *          One or more file extensions without a leading dot (e.g., java, class, jimple)
+   * @return True if the path ends with one of the given extensions, false otherwise.
    */
-  public static boolean hasExtension(Path path, String extension) {
-    // TODO we might want to cache matcher for often used file extensions
+  public static boolean hasExtension(Path path, String... extensions) {
     if (Files.isDirectory(path)) {
       return false;
     }
-    return path.getFileSystem().getPathMatcher("glob:*." + extension).matches(path.getFileName());
+    return path.getFileSystem().getPathMatcher("glob:*.{" + String.join(",", extensions) + "}").matches(path.getFileName());
+  }
+
+  public static boolean isArchive(Path path) {
+    return hasExtension(path, "jar", "apk", "zip");
   }
 }

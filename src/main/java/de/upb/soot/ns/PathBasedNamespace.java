@@ -1,6 +1,8 @@
 package de.upb.soot.ns;
 
 import java.io.IOException;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -17,9 +19,9 @@ public class PathBasedNamespace extends AbstractNamespace {
   public PathBasedNamespace(IClassProvider classProvider, Path path) {
     super(classProvider);
 
-    if (!Files.isDirectory(path)) {
+    if (!Files.isDirectory(path) && !PathUtils.isArchive(path)) {
       throw new IllegalArgumentException(
-          "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, etc.");
+          "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, etc.");
     }
 
     this.path = path;
@@ -27,8 +29,21 @@ public class PathBasedNamespace extends AbstractNamespace {
 
   @Override
   public Collection<ClassSource> getClassSources() {
+    if (Files.isDirectory(path)) {
+      return walk(path);
+    } else {
+      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
+        final Path archiveRoot = fs.getPath("/");
+        return walk(archiveRoot);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
+  private Collection<ClassSource> walk(Path path) {
     try {
-      return Files.walk(path).filter(p -> classProvider.handlesType(p.getFileName())).map(p -> {
+      return Files.walk(path).filter(p -> classProvider.handlesFile(p)).map(p -> {
         try {
           return classProvider.getClass(this, p);
         } catch (SootClassNotFoundException e) {
@@ -44,8 +59,20 @@ public class PathBasedNamespace extends AbstractNamespace {
 
   @Override
   public ClassSource getClassSource(ClassSignature signature) throws SootClassNotFoundException {
-    final Path pathToClass = path.resolve(PathUtils.signatureToPath(signature));
+    final Path subPath = PathUtils.pathFromSignature(signature);
+    if (Files.isDirectory(path)) {
+      return getClassSourceInternal(signature, path.resolve(subPath));
+    } else {
+      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
+        final Path pathInsideArchive = fs.getPath("/" + subPath.toString());
+        return getClassSourceInternal(signature, pathInsideArchive);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
 
+  private ClassSource getClassSourceInternal(ClassSignature signature, Path pathToClass) throws SootClassNotFoundException {
     if (!Files.exists(pathToClass)) {
       throw new SootClassNotFoundException(signature);
     }
