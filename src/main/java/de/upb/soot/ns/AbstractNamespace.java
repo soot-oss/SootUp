@@ -1,6 +1,7 @@
 package de.upb.soot.ns;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import de.upb.soot.core.SootClass;
@@ -22,12 +23,11 @@ public abstract class AbstractNamespace implements INamespace {
   }
 
   @Override
-  public SootClass getClass(ClassSignature classSignature) throws SootClassNotFoundException {
-    return new SootClass(getClassSource(classSignature));
+  public Optional<SootClass> getClass(ClassSignature classSignature) {
+    return getClassSource(classSignature).map(cs -> new SootClass(cs));
   }
 
   protected abstract Collection<ClassSource> getClassSources();
 
-  protected abstract ClassSource getClassSource(ClassSignature classSignature)
-      throws SootClassNotFoundException;
+  protected abstract Optional<ClassSource> getClassSource(ClassSignature classSignature);
 }

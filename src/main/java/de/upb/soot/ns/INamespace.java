@@ -1,6 +1,7 @@
 package de.upb.soot.ns;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.signatures.ClassSignature;
@@ -9,5 +10,5 @@ import de.upb.soot.signatures.ClassSignature;
 public interface INamespace {
   Collection<SootClass> getClasses();
 
-  SootClass getClass(ClassSignature classSignature) throws SootClassNotFoundException;
+  Optional<SootClass> getClass(ClassSignature classSignature);
 }

@@ -6,7 +6,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.upb.soot.ns.classprovider.ClassSource;
 import de.upb.soot.ns.classprovider.IClassProvider;
@@ -34,25 +36,19 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
 
   protected Collection<ClassSource> walkDirectory(Path path) {
     try {
-      return Files.walk(path).filter(p -> classProvider.handlesFile(p)).map(p -> {
-        try {
-          return classProvider.getClass(this, p);
-        } catch (SootClassNotFoundException e) {
-          // this should not happen since we are currently enumerating all classes on the
-          // path
-          throw new IllegalStateException(e);
-        }
-      }).collect(Collectors.toList());
+      return Files.walk(path).filter(p -> classProvider.handlesFile(p))
+          .flatMap(p -> classProvider.getClass(this, p).map(Stream::of).orElseGet(Stream::empty))
+          .collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
   }
 
-  protected ClassSource getClassSourceInternal(ClassSignature signature, Path path) throws SootClassNotFoundException {
+  protected Optional<ClassSource> getClassSourceInternal(ClassSignature signature, Path path) {
     Path pathToClass = path.resolve(PathUtils.pathFromSignature(signature, path.getFileSystem()));
 
     if (!Files.exists(pathToClass)) {
-      throw new SootClassNotFoundException(signature);
+      return Optional.empty();
     }
 
     return classProvider.getClass(this, pathToClass);
@@ -70,7 +66,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    public ClassSource getClassSource(ClassSignature signature) throws SootClassNotFoundException {
+    public Optional<ClassSource> getClassSource(ClassSignature signature) {
       return getClassSourceInternal(signature, path);
     }
   }
@@ -82,7 +78,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    public ClassSource getClassSource(ClassSignature signature) throws SootClassNotFoundException {
+    public Optional<ClassSource> getClassSource(ClassSignature signature) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path pathInsideArchive = fs.getPath("/");
         return getClassSourceInternal(signature, pathInsideArchive);

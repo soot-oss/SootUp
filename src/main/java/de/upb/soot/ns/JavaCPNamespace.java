@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -48,17 +49,14 @@ public class JavaCPNamespace extends AbstractNamespace {
   }
 
   @Override
-  public ClassSource getClassSource(ClassSignature signature) throws SootClassNotFoundException {
+  public Optional<ClassSource> getClassSource(ClassSignature signature) {
     for (AbstractNamespace ns : cpEntries) {
-      try {
-        final ClassSource classSource = ns.getClassSource(signature);
+      final Optional<ClassSource> classSource = ns.getClassSource(signature);
+      if (classSource.isPresent()) {
         return classSource;
-      } catch (SootClassNotFoundException e) {
-        // the next namespace might still contain the class
       }
     }
-
-    throw new SootClassNotFoundException(signature);
+    return Optional.empty();
   }
 
   private AbstractNamespace nsForPath(Path path) {
@@ -67,7 +65,6 @@ public class JavaCPNamespace extends AbstractNamespace {
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
     }
-
     throw new IllegalArgumentException("Empty class path");
   }
 }

@@ -20,15 +20,15 @@
 package de.upb.soot.ns.classprovider;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 import de.upb.soot.ns.INamespace;
-import de.upb.soot.ns.SootClassNotFoundException;
 
 /** Responsible for handling various types of class sources (.class, .jimple, .java, .dex, etc) */
 public interface IClassProvider {
 
   // TODO does the class provider need the signature or does it generate one
-  ClassSource getClass(INamespace ns, Path sourcePath) throws SootClassNotFoundException;
+  Optional<ClassSource> getClass(INamespace ns, Path sourcePath);
 
   /**
    * Used to filter for files which are handled by the concrete ClassProvider, e.g. *.class,
