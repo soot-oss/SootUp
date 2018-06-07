@@ -11,16 +11,18 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <guava.version>24.0-jre</guava.version>
-        <apache-commons.version>3.5</apache-commons.version>
-        <apache-commons-io.version>2.6</apache-commons-io.version>
         <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
         <checkstyle.version>8.9</checkstyle.version>
         <checkstyle.dir.path>${basedir}/codingstyle</checkstyle.dir.path>
         <checkstyle.file.path>${checkstyle.dir.path}/google_checkstyle.xml</checkstyle.file.path>
-        <checkstyle.failOnViolation>false</checkstyle.failOnViolation>
+        <slf4j.version>1.7.25</slf4j.version>
+        <slf4j-simple.version>1.7.25</slf4j-simple.version>
+        <guava.version>25.1-jre</guava.version>
+        <apache-commons.version>3.5</apache-commons.version>
+        <apache-commons-io.version>2.6</apache-commons-io.version>
+        <junit.version>4.12</junit.version>
+        <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
+        <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
     </properties>
     <build>
         <plugins>
@@ -38,7 +40,7 @@
                 <executions>
                     <execution>
                         <id>checkstyle</id>
-                        <phase>validate</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>check</goal>
                         </goals>
@@ -49,7 +51,7 @@
                     <configLocation>${checkstyle.file.path}</configLocation>
                     <encoding>UTF-8</encoding>
                     <logViolationsToConsole>true</logViolationsToConsole>
-                    <failOnViolation>${checkstyle.failOnViolation}</failOnViolation>
+                    <failOnViolation>true</failOnViolation>
                     <violationSeverity>warning</violationSeverity>
                 </configuration>
             </plugin>
@@ -64,7 +66,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.25</version>
+            <version>${slf4j-simple.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -86,21 +88,21 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.powermock/powermock-module-junit4 -->
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>1.7.3</version>
+            <version>${powermock-module-junit4.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.powermock/powermock-api-mockito -->
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
-            <version>1.7.3</version>
+            <version>${powermock-api-mockito.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
