@@ -3,7 +3,9 @@ package de.upb.soot.ns;
 import com.google.common.base.Strings;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -11,6 +13,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,13 +25,18 @@ import de.upb.soot.ns.classprovider.ClassSource;
 import de.upb.soot.ns.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 
-/** @author Manuel Benz created on 22.05.18 */
-public class JavaCPNamespace extends AbstractNamespace {
-  private static final Logger logger = LoggerFactory.getLogger(JavaCPNamespace.class);
+/**
+ * https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html
+ * 
+ * @author Manuel Benz created on 22.05.18
+ */
+public class JavaClassPathNamespace extends AbstractNamespace {
+  private static final Logger logger = LoggerFactory.getLogger(JavaClassPathNamespace.class);
+  private static final String WILDCARD_CHAR = "*";
 
   private Collection<AbstractNamespace> cpEntries;
 
-  public JavaCPNamespace(IClassProvider classProvider, String classPath) {
+  public JavaClassPathNamespace(IClassProvider classProvider, String classPath) {
     super(classProvider);
 
     if (Strings.isNullOrEmpty(classPath)) {
@@ -36,7 +44,8 @@ public class JavaCPNamespace extends AbstractNamespace {
     }
 
     try {
-      cpEntries = explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).collect(Collectors.toList());
+      cpEntries
+          = explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).distinct().collect(Collectors.toList());
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
     }
@@ -44,14 +53,37 @@ public class JavaCPNamespace extends AbstractNamespace {
     if (cpEntries.isEmpty()) {
       throw new InvalidClassPathException("Empty class path given");
     }
+
+    logger.trace("{} class path entries registered", cpEntries.size());
   }
 
   private Stream<Path> explode(String classPath) {
     // the classpath is split at every path separator which is not escaped
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
-    // TODO implement support for class path wildcards, e.g., lib/*.
-    // https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html
-    return Stream.of(classPath.split(regex)).map(s -> Paths.get(s));
+    return Stream.of(classPath.split(regex)).flatMap(this::handleWildCards);
+  }
+
+  /**
+   * The class path can have directories with wildcards as entries. All jar/JAR files inside those directories have to be
+   * added to the class path.
+   *
+   * @param entry
+   *          A class path entry
+   * @return A stream of class path entries with wildcards exploded
+   */
+  private Stream<Path> handleWildCards(String entry) {
+    if (entry.endsWith(WILDCARD_CHAR)) {
+      Path baseDir = Paths.get(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
+      try {
+        return Utils.iteratorToStream(Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
+      } catch (PatternSyntaxException | NotDirectoryException e) {
+        throw new InvalidClassPathException("Malformed wildcard entry", e);
+      } catch (IOException e) {
+        throw new InvalidClassPathException("Couldn't access entries denoted by wildcard", e);
+      }
+    } else {
+      return Stream.of(Paths.get(entry));
+    }
   }
 
   @Override
