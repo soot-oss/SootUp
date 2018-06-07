@@ -4,7 +4,8 @@ public class NullTypeSignature extends TypeSignature {
 
   public static final NullTypeSignature NULL_TYPE_SIGNATURE = new NullTypeSignature();
 
-  private NullTypeSignature() {}
+  private NullTypeSignature() {
+  }
 
   @Override
   public String toString() {

@@ -39,7 +39,7 @@ public class SignatureFactoryTest {
   }
 
   @Test
-  public void getClassSignatureFQN() {
+  public void getClassSignatureFullyQualified() {
     SignatureFactory signatureFactory = new SignatureFactory();
     ClassSignature classSignature1 = signatureFactory.getClassSignature("java.lang.System");
     ClassSignature classSignature2 = signatureFactory.getClassSignature("System", "java.lang");
@@ -54,8 +54,7 @@ public class SignatureFactoryTest {
     ClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
     ClassSignature classSignature2 = signatureFactory.getClassSignature("System", "java.lang");
     // Class Signatures are unique but not their package
-    boolean samePackageSignature =
-        classSignature1.packageSignature == classSignature2.packageSignature;
+    boolean samePackageSignature = classSignature1.packageSignature == classSignature2.packageSignature;
     assertTrue(samePackageSignature);
 
     // but they are equal
@@ -72,8 +71,8 @@ public class SignatureFactoryTest {
 
     List<String> parameters = Collections.singletonList("java.lang.Class");
 
-    MethodSignature methodSignature =
-        signatureFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
+    MethodSignature methodSignature
+        = signatureFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
     assertTrue(declClass.equals(methodSignature.declClassSignature));
     assertTrue(returnType.equals(methodSignature.returnTypeSignature));
     assertTrue(parameter.equals(methodSignature.parameterSignatures.get(0)));
@@ -85,10 +84,9 @@ public class SignatureFactoryTest {
 
     List<String> parameters = Collections.singletonList("java.lang.Class");
 
-    MethodSignature methodSignature =
-        signatureFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
-    assertTrue(
-        methodSignature.toString().equals("<java.lang.System:java.lang.A foo(java.lang.Class)>"));
+    MethodSignature methodSignature
+        = signatureFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
+    assertTrue(methodSignature.toString().equals("<java.lang.System:java.lang.A foo(java.lang.Class)>"));
   }
 
   @Test
@@ -97,10 +95,8 @@ public class SignatureFactoryTest {
 
     List<String> parameters = Collections.singletonList("java.lang.Class");
 
-    MethodSignature methodSignature =
-            signatureFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
-    assertTrue(
-            methodSignature.toString().equals("<java.lang.System:void foo(java.lang.Class)>"));
+    MethodSignature methodSignature = signatureFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
+    assertTrue(methodSignature.toString().equals("<java.lang.System:void foo(java.lang.Class)>"));
   }
 
   @Test
@@ -109,10 +105,8 @@ public class SignatureFactoryTest {
 
     List<String> parameters = Collections.EMPTY_LIST;
 
-    MethodSignature methodSignature =
-            signatureFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
-    assertTrue(
-            methodSignature.toString().equals("<java.lang.System:void foo()>"));
+    MethodSignature methodSignature = signatureFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
+    assertTrue(methodSignature.toString().equals("<java.lang.System:void foo()>"));
   }
 
   @Test

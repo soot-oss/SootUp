@@ -21,16 +21,14 @@ public class MethodSignature {
   public final TypeSignature returnTypeSignature;
 
   /**
-   * Internal: Constructs a MethodSignature. Instances should only be created by a {@link
-   * SignatureFactory}
+   * Internal: Constructs a MethodSignature. Instances should only be created by a {@link SignatureFactory}
    *
-   * @param methodName the signature
-   * @param declaringClass the declaring class signature
+   * @param methodName
+   *          the signature
+   * @param declaringClass
+   *          the declaring class signature
    */
-  protected MethodSignature(
-      final String methodName,
-      final ClassSignature declaringClass,
-      final TypeSignature returnType,
+  protected MethodSignature(final String methodName, final ClassSignature declaringClass, final TypeSignature returnType,
       final List<TypeSignature> parameters) {
     this.methodName = methodName;
     this.declClassSignature = declaringClass;
@@ -47,20 +45,19 @@ public class MethodSignature {
       return false;
     }
     MethodSignature that = (MethodSignature) o;
-    return Objects.equal(methodName, that.methodName)
-        && Objects.equal(declClassSignature, that.declClassSignature)
+    return Objects.equal(methodName, that.methodName) && Objects.equal(declClassSignature, that.declClassSignature)
         && Objects.equal(parameterSignatures, that.parameterSignatures)
         && Objects.equal(returnTypeSignature, that.returnTypeSignature);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(
-        methodName, declClassSignature, parameterSignatures, returnTypeSignature);
+    return Objects.hashCode(methodName, declClassSignature, parameterSignatures, returnTypeSignature);
   }
 
   /**
    * The simple name of the method; the method's name and its parameters.
+   * 
    * @return a String of the form "returnTypeName methodName(ParameterName(,)*)"
    */
   public String getSimpleMethodSignature() {
