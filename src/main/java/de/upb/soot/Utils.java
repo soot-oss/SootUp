@@ -10,8 +10,7 @@ import java.util.stream.StreamSupport;
 /**
  * Collection of common functionality that doesn't correspond to a class defined in the {@link de.upb.soot} package.
  * <p>
- * If too much methods of the same kind are gathering in this class, consider a specialized Utils class (like
- * {@link de.upb.soot.namespaces.PathUtils}.
+ * If too much methods of the same kind are gathering in this class, consider a specialized Utils class.
  * </p>
  *
  * @author Manuel Benz created on 07.06.18

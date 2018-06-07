@@ -59,8 +59,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
   }
 
   protected Optional<ClassSource> getClassSourceInternal(ClassSignature signature, Path path) {
-    Path pathToClass
-        = path.resolve(PathUtils.pathFromSignature(signature, classProvider.getHandledFileType(), path.getFileSystem()));
+    Path pathToClass = path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
 
     if (!Files.exists(pathToClass)) {
       return Optional.empty();

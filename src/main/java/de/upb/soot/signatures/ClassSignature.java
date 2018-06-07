@@ -2,6 +2,14 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 
+import de.upb.soot.namespaces.FileType;
+
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+
+import org.apache.commons.io.FilenameUtils;
+
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
 public class ClassSignature extends TypeSignature {
 
@@ -22,6 +30,10 @@ public class ClassSignature extends TypeSignature {
   protected ClassSignature(final String className, final PackageSignature packageSignature) {
     this.className = className;
     this.packageSignature = packageSignature;
+  }
+
+  public static ClassSignature fromPath(Path path, SignatureFactory fac) {
+    return fac.getClassSignature(FilenameUtils.removeExtension(path.toString()).replace('/', '.'));
   }
 
   @Override
@@ -57,5 +69,13 @@ public class ClassSignature extends TypeSignature {
   @Override
   public String toString() {
     return getFullyQualifiedName();
+  }
+
+  public Path toPath(FileType fileType) {
+    return toPath(fileType, FileSystems.getDefault());
+  }
+
+  public Path toPath(FileType fileType, FileSystem fs) {
+    return fs.getPath(getFullyQualifiedName().replace('.', '/') + "." + fileType.getExtension());
   }
 }

@@ -4,6 +4,7 @@ import com.sun.nio.zipfs.ZipPath;
 
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
 import java.nio.file.Path;
@@ -29,7 +30,7 @@ class DummyClassProvider implements IClassProvider {
       sigPath = Paths.get("target/classes").relativize(sourcePath);
     }
 
-    return Optional.of(new ClassSource(ns, PathUtils.signatureFromPath(sigPath, signatureFactory)) {
+    return Optional.of(new ClassSource(ns, ClassSignature.fromPath(sigPath, signatureFactory)) {
     });
   }
 
