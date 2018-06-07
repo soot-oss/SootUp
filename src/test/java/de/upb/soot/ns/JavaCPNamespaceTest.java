@@ -1,13 +1,9 @@
 package de.upb.soot.ns;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.Optional;
 
-import org.junit.Assert;
 import org.junit.Test;
 
-import de.upb.soot.ns.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 
 /**
@@ -38,54 +34,24 @@ public class JavaCPNamespaceTest extends AbstractNamespaceTest {
   @Test
   public void singleDir() {
     final JavaCPNamespace javaCPNamespace = new JavaCPNamespace(getClassProvider(), "target/classes");
-
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
-
-    final Optional<ClassSource> clazz = javaCPNamespace.getClassSource(sig);
-    Assert.assertTrue(clazz.isPresent());
-    Assert.assertEquals(sig, clazz.get().getClassSignature());
-
-    final Collection<ClassSource> classSources = javaCPNamespace.getClassSources();
-
-    Assert.assertNotNull(classSources);
-    Assert.assertFalse(classSources.isEmpty());
-    Assert.assertTrue(classSources.size() > 20);
+    testClassReceival(javaCPNamespace, sig, MIN_CLASSES_FOUND);
   }
 
   @Test
   public void twoDirs() {
     final JavaCPNamespace javaCPNamespace
         = new JavaCPNamespace(getClassProvider(), String.format("target/classes%starget/classes", File.pathSeparator));
-
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
-
-    final Optional<ClassSource> clazz = javaCPNamespace.getClassSource(sig);
-    Assert.assertTrue(clazz.isPresent());
-    Assert.assertEquals(sig, clazz.get().getClassSignature());
-
-    final Collection<ClassSource> classSources = javaCPNamespace.getClassSources();
-
-    Assert.assertNotNull(classSources);
-    Assert.assertFalse(classSources.isEmpty());
-    Assert.assertTrue(classSources.size() > 40);
+    testClassReceival(javaCPNamespace, sig, MIN_CLASSES_FOUND * 2);
   }
 
   @Test
   public void singleJar() {
     final JavaCPNamespace javaCPNamespace
         = new JavaCPNamespace(getClassProvider(), "target/test-classes/de/upb/soot/ns/Soot-4.0-SNAPSHOT.jar");
-
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
-
-    final Optional<ClassSource> clazz = javaCPNamespace.getClassSource(sig);
-    Assert.assertTrue(clazz.isPresent());
-    Assert.assertEquals(sig, clazz.get().getClassSignature());
-
-    final Collection<ClassSource> classSources = javaCPNamespace.getClassSources();
-
-    Assert.assertNotNull(classSources);
-    Assert.assertFalse(classSources.isEmpty());
-    Assert.assertEquals(20, classSources.size());
+    testClassReceival(javaCPNamespace, sig, MIN_CLASSES_FOUND);
   }
 
   @Test
@@ -93,54 +59,24 @@ public class JavaCPNamespaceTest extends AbstractNamespaceTest {
     final JavaCPNamespace javaCPNamespace = new JavaCPNamespace(getClassProvider(), String.format(
         "target/test-classes/de/upb/soot/ns/Soot-4.0-SNAPSHOT.jar%starget/test-classes/de/upb/soot/ns/Soot-4.0-SNAPSHOT.jar",
         File.pathSeparator));
-
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
-
-    final Optional<ClassSource> clazz = javaCPNamespace.getClassSource(sig);
-    Assert.assertTrue(clazz.isPresent());
-    Assert.assertEquals(sig, clazz.get().getClassSignature());
-
-    final Collection<ClassSource> classSources = javaCPNamespace.getClassSources();
-
-    Assert.assertNotNull(classSources);
-    Assert.assertFalse(classSources.isEmpty());
-    Assert.assertEquals(40, classSources.size());
+    testClassReceival(javaCPNamespace, sig, MIN_CLASSES_FOUND * 2);
   }
 
   @Test
   public void dirAndJar() {
     final JavaCPNamespace javaCPNamespace = new JavaCPNamespace(getClassProvider(),
         String.format("target/classes%starget/test-classes/de/upb/soot/ns/Soot-4.0-SNAPSHOT.jar", File.pathSeparator));
-
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
-
-    final Optional<ClassSource> clazz = javaCPNamespace.getClassSource(sig);
-    Assert.assertTrue(clazz.isPresent());
-    Assert.assertEquals(sig, clazz.get().getClassSignature());
-
-    final Collection<ClassSource> classSources = javaCPNamespace.getClassSources();
-
-    Assert.assertNotNull(classSources);
-    Assert.assertFalse(classSources.isEmpty());
-    Assert.assertTrue(classSources.size() > 40);
+    testClassReceival(javaCPNamespace, sig, MIN_CLASSES_FOUND * 2);
   }
 
   @Test
   public void correctAndInvalid() {
     final JavaCPNamespace javaCPNamespace
         = new JavaCPNamespace(getClassProvider(), String.format("target/classes%s;9tß2ng2nßg2ßgn", File.pathSeparator));
-
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
-
-    final Optional<ClassSource> clazz = javaCPNamespace.getClassSource(sig);
-    Assert.assertTrue(clazz.isPresent());
-    Assert.assertEquals(sig, clazz.get().getClassSignature());
-
-    final Collection<ClassSource> classSources = javaCPNamespace.getClassSources();
-
-    Assert.assertNotNull(classSources);
-    Assert.assertFalse(classSources.isEmpty());
-    Assert.assertTrue(classSources.size() > 20);
+    testClassReceival(javaCPNamespace, sig, MIN_CLASSES_FOUND);
   }
 
 }

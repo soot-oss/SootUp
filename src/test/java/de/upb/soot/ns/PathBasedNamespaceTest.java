@@ -2,7 +2,6 @@ package de.upb.soot.ns;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
 import java.util.Optional;
 
 import org.junit.Assert;
@@ -36,17 +35,7 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
     Path baseDir = Paths.get("target/classes/");
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(getClassProvider(), baseDir);
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
-    final Optional<ClassSource> clazz = pathBasedNamespace.getClassSource(sig);
-
-    Assert.assertTrue(clazz.isPresent());
-    Assert.assertEquals(sig, clazz.get().getClassSignature());
-
-    final Collection<ClassSource> classSources = pathBasedNamespace.getClassSources();
-
-    Assert.assertNotNull(classSources);
-    Assert.assertFalse(classSources.isEmpty());
-    // Since we continuously add new classes, we can just state a lower bound here
-    Assert.assertTrue(classSources.size() > 20);
+    testClassReceival(pathBasedNamespace, sig, MIN_CLASSES_FOUND);
   }
 
   @Test
@@ -55,16 +44,6 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
     Path jar = Paths.get("target/test-classes/de/upb/soot/ns/Soot-4.0-SNAPSHOT.jar");
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(getClassProvider(), jar);
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
-
-    final Optional<ClassSource> clazz = pathBasedNamespace.getClassSource(sig);
-    Assert.assertTrue(clazz.isPresent());
-    Assert.assertEquals(sig, clazz.get().getClassSignature());
-
-    final Collection<ClassSource> classSources = pathBasedNamespace.getClassSources();
-
-    Assert.assertNotNull(classSources);
-    Assert.assertFalse(classSources.isEmpty());
-    Assert.assertEquals(20, classSources.size());
+    testClassReceival(pathBasedNamespace, sig, MIN_CLASSES_FOUND);
   }
-
 }
