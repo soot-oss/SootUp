@@ -34,7 +34,7 @@ class DummyClassProvider implements IClassProvider {
   }
 
   @Override
-  public boolean handlesFile(Path fileName) {
-    return PathUtils.hasExtension(fileName, "class");
+  public FileType getHandledFileType() {
+    return FileType.CLASS;
   }
 }

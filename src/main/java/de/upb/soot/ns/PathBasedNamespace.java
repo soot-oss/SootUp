@@ -34,9 +34,10 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
   }
 
-  protected Collection<ClassSource> walkDirectory(Path path) {
+  protected Collection<ClassSource> walkDirectory(Path dirPath) {
     try {
-      return Files.walk(path).filter(p -> classProvider.handlesFile(p))
+      final FileType handledFileType = classProvider.getHandledFileType();
+      return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
           .flatMap(p -> Utils.optionalToStream(classProvider.getClass(this, p))).collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
@@ -44,7 +45,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
   }
 
   protected Optional<ClassSource> getClassSourceInternal(ClassSignature signature, Path path) {
-    Path pathToClass = path.resolve(PathUtils.pathFromSignature(signature, path.getFileSystem()));
+    Path pathToClass = path.resolve(PathUtils.pathFromSignature(signature, path.getFileSystem()) + "."
+        + classProvider.getHandledFileType().getExtension());
 
     if (!Files.exists(pathToClass)) {
       return Optional.empty();
@@ -79,8 +81,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     @Override
     public Optional<ClassSource> getClassSource(ClassSignature signature) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
-        final Path pathInsideArchive = fs.getPath("/");
-        return getClassSourceInternal(signature, pathInsideArchive);
+        final Path archiveRoot = fs.getPath("/");
+        return getClassSourceInternal(signature, archiveRoot);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

@@ -109,7 +109,8 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   private Optional<AbstractNamespace> nsForPath(Path path) {
-    if (Files.exists(path) && (java.nio.file.Files.isDirectory(path) || PathUtils.hasExtension(path, "jar", "zip"))) {
+    if (Files.exists(path)
+        && (java.nio.file.Files.isDirectory(path) || PathUtils.hasExtension(path, FileType.JAR, FileType.ZIP))) {
       return Optional.of(PathBasedNamespace.createForClassContainer(classProvider, path));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);

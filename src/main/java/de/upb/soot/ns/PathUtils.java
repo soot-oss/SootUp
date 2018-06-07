@@ -4,6 +4,9 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -17,13 +20,10 @@ public class PathUtils {
   }
 
   public static Path pathFromSignature(ClassSignature signature, FileSystem fs) {
-    return fs.getPath(signature.getFullyQualifiedName().replace('.', '/') + ".class");
+    return fs.getPath(signature.getFullyQualifiedName().replace('.', '/'));
   }
 
   public static ClassSignature signatureFromPath(Path path, SignatureFactory fac) {
-    if (!hasExtension(path.getFileName(), "class")) {
-      throw new IllegalArgumentException("Given path is not a class file " + path);
-    }
     return fac.getClassSignature(FilenameUtils.removeExtension(path.toString()).replace('/', '.'));
   }
 
@@ -37,14 +37,19 @@ public class PathUtils {
    *          One or more file extensions without a leading dot (e.g., java, class, jimple)
    * @return True if the path ends with one of the given extensions, false otherwise.
    */
-  public static boolean hasExtension(Path path, String... extensions) {
+  public static boolean hasExtension(Path path, FileType... extensions) {
+    return hasExtension(path, Arrays.asList(extensions));
+  }
+
+  public static boolean hasExtension(Path path, Collection<FileType> extensions) {
     if (Files.isDirectory(path)) {
       return false;
     }
-    return path.getFileSystem().getPathMatcher("glob:*.{" + String.join(",", extensions) + "}").matches(path.getFileName());
+    final String extensionList = extensions.stream().map(ft -> ft.getExtension()).collect(Collectors.joining(","));
+    return path.getFileSystem().getPathMatcher("glob:*.{" + extensionList + "}").matches(path.getFileName());
   }
 
   public static boolean isArchive(Path path) {
-    return hasExtension(path, "jar", "apk", "zip");
+    return hasExtension(path, FileType.ARCHIVE_TYPES);
   }
 }
