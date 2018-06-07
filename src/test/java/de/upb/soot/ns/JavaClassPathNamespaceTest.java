@@ -1,10 +1,10 @@
 package de.upb.soot.ns;
 
+import de.upb.soot.signatures.ClassSignature;
+
 import java.io.File;
 
 import org.junit.Test;
-
-import de.upb.soot.signatures.ClassSignature;
 
 /**
  * @author Manuel Benz created on 07.06.18

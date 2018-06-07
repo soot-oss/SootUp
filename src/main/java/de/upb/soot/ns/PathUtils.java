@@ -1,5 +1,8 @@
 package de.upb.soot.ns;
 
+import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
+
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -9,9 +12,6 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
-
-import de.upb.soot.signatures.ClassSignature;
-import de.upb.soot.signatures.SignatureFactory;
 
 /** @author Manuel Benz created on 06.06.18 */
 public class PathUtils {

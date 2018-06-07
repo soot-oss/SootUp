@@ -1,5 +1,10 @@
 package de.upb.soot.ns;
 
+import de.upb.soot.Utils;
+import de.upb.soot.ns.classprovider.ClassSource;
+import de.upb.soot.ns.classprovider.IClassProvider;
+import de.upb.soot.signatures.ClassSignature;
+
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -8,11 +13,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import de.upb.soot.Utils;
-import de.upb.soot.ns.classprovider.ClassSource;
-import de.upb.soot.ns.classprovider.IClassProvider;
-import de.upb.soot.signatures.ClassSignature;
 
 /** @author Manuel Benz created on 22.05.18 */
 public abstract class PathBasedNamespace extends AbstractNamespace {

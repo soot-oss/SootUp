@@ -1,15 +1,15 @@
 package de.upb.soot.ns;
 
+import de.upb.soot.ns.classprovider.ClassSource;
+import de.upb.soot.ns.classprovider.IClassProvider;
+import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
+
 import java.util.Collection;
 import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
-
-import de.upb.soot.ns.classprovider.ClassSource;
-import de.upb.soot.ns.classprovider.IClassProvider;
-import de.upb.soot.signatures.ClassSignature;
-import de.upb.soot.signatures.SignatureFactory;
 
 /**
  * @author Manuel Benz created on 07.06.18

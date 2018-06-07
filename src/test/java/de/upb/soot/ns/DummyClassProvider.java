@@ -1,14 +1,14 @@
 package de.upb.soot.ns;
 
+import de.upb.soot.ns.classprovider.ClassSource;
+import de.upb.soot.ns.classprovider.IClassProvider;
+import de.upb.soot.signatures.SignatureFactory;
+
 import com.sun.nio.zipfs.ZipPath;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-
-import de.upb.soot.ns.classprovider.ClassSource;
-import de.upb.soot.ns.classprovider.IClassProvider;
-import de.upb.soot.signatures.SignatureFactory;
 
 /**
  * @author Manuel Benz created on 07.06.18

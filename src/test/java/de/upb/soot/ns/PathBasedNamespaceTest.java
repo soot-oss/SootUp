@@ -1,14 +1,14 @@
 package de.upb.soot.ns;
 
+import de.upb.soot.ns.classprovider.ClassSource;
+import de.upb.soot.signatures.ClassSignature;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import de.upb.soot.ns.classprovider.ClassSource;
-import de.upb.soot.signatures.ClassSignature;
 
 /** @author Manuel Benz created on 06.06.18 */
 public class PathBasedNamespaceTest extends AbstractNamespaceTest {

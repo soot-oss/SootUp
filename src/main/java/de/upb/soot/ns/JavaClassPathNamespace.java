@@ -1,5 +1,10 @@
 package de.upb.soot.ns;
 
+import de.upb.soot.Utils;
+import de.upb.soot.ns.classprovider.ClassSource;
+import de.upb.soot.ns.classprovider.IClassProvider;
+import de.upb.soot.signatures.ClassSignature;
+
 import com.google.common.base.Strings;
 
 import java.io.File;
@@ -19,11 +24,6 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.upb.soot.Utils;
-import de.upb.soot.ns.classprovider.ClassSource;
-import de.upb.soot.ns.classprovider.IClassProvider;
-import de.upb.soot.signatures.ClassSignature;
 
 /**
  * https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html
