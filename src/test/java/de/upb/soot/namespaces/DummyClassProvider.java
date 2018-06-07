@@ -1,7 +1,7 @@
-package de.upb.soot.ns;
+package de.upb.soot.namespaces;
 
-import de.upb.soot.ns.classprovider.ClassSource;
-import de.upb.soot.ns.classprovider.IClassProvider;
+import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.SignatureFactory;
 
 import com.sun.nio.zipfs.ZipPath;

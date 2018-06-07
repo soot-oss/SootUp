@@ -12,10 +12,11 @@ public class PackageSignature {
   public final String packageName;
 
   /**
-   * Internal: Constructs a Package Signature of a Java package. Instances should only be created by
-   * a {@link SignatureFactory}
+   * Internal: Constructs a Package Signature of a Java package. Instances should only be created by a
+   * {@link SignatureFactory}
    *
-   * @param packageName the package's name
+   * @param packageName
+   *          the package's name
    */
   protected PackageSignature(final String packageName) {
     this.packageName = packageName;

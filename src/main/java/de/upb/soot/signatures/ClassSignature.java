@@ -12,11 +12,12 @@ public class ClassSignature extends TypeSignature {
   public final PackageSignature packageSignature;
 
   /**
-   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
-   * {@link SignatureFactory}
+   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a {@link SignatureFactory}
    *
-   * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
-   * @param packageSignature the corresponding package
+   * @param className
+   *          the simple name of the class, e.g., ClassA NOT my.package.ClassA
+   * @param packageSignature
+   *          the corresponding package
    */
   protected ClassSignature(final String className, final PackageSignature packageSignature) {
     this.className = className;
@@ -32,8 +33,7 @@ public class ClassSignature extends TypeSignature {
       return false;
     }
     ClassSignature that = (ClassSignature) o;
-    return Objects.equal(className, that.className)
-        && Objects.equal(packageSignature, that.packageSignature);
+    return Objects.equal(className, that.className) && Objects.equal(packageSignature, that.packageSignature);
   }
 
   @Override
@@ -42,8 +42,7 @@ public class ClassSignature extends TypeSignature {
   }
 
   /**
-   * The fully-qualified name of the class. Concat package and class name , e.g.,
-   * "java.lang.System".
+   * The fully-qualified name of the class. Concat package and class name , e.g., "java.lang.System".
    *
    * @return fully-qualified name
    */

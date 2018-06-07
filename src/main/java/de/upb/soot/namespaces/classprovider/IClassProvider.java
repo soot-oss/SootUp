@@ -1,7 +1,7 @@
-package de.upb.soot.ns.classprovider;
+package de.upb.soot.namespaces.classprovider;
 
-import de.upb.soot.ns.FileType;
-import de.upb.soot.ns.INamespace;
+import de.upb.soot.namespaces.FileType;
+import de.upb.soot.namespaces.INamespace;
 
 import java.nio.file.Path;
 import java.util.Optional;

@@ -1,8 +1,8 @@
-package de.upb.soot.ns;
+package de.upb.soot.namespaces;
 
 import de.upb.soot.Utils;
-import de.upb.soot.ns.classprovider.ClassSource;
-import de.upb.soot.ns.classprovider.IClassProvider;
+import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 
 import com.google.common.base.Strings;

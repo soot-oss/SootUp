@@ -1,4 +1,4 @@
-package de.upb.soot.ns;
+package de.upb.soot.namespaces;
 
 import java.util.EnumSet;
 

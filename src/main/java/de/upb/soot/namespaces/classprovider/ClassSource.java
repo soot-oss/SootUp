@@ -1,6 +1,6 @@
-package de.upb.soot.ns.classprovider;
+package de.upb.soot.namespaces.classprovider;
 
-import de.upb.soot.ns.INamespace;
+import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.ClassSignature;
 
 import com.google.common.base.Preconditions;

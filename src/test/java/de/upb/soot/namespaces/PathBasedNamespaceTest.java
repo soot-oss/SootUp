@@ -1,6 +1,6 @@
-package de.upb.soot.ns;
+package de.upb.soot.namespaces;
 
-import de.upb.soot.ns.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 
 import java.nio.file.Path;

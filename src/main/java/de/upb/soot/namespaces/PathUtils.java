@@ -1,4 +1,4 @@
-package de.upb.soot.ns;
+package de.upb.soot.namespaces;
 
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
