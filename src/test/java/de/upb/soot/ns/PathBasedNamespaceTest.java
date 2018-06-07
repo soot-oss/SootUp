@@ -51,14 +51,15 @@ public class PathBasedNamespaceTest {
   @Test(expected = IllegalArgumentException.class)
   public void failsOnFile() {
     // TODO adapt to new testing folder structure
-    new PathBasedNamespace(dummyProvider, Paths.get("target/test-classes/de/upb/soot/ns/PathBasedNamespaceTest.class"));
+    PathBasedNamespace.createForClassContainer(dummyProvider,
+        Paths.get("target/test-classes/de/upb/soot/ns/PathBasedNamespaceTest.class"));
   }
 
   @Test(expected = SootClassNotFoundException.class)
   public void failsOnClassNotFound() throws SootClassNotFoundException {
     // TODO adapt to new testing folder structure
     Path baseDir = Paths.get("target/test-classes/");
-    PathBasedNamespace pathBasedNamespace = new PathBasedNamespace(dummyProvider, baseDir);
+    PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(dummyProvider, baseDir);
     final ClassSignature sig = signatureFac.getClassSignature("NotExisting", "de.upb.soot.ns");
     pathBasedNamespace.getClassSource(sig);
   }
@@ -67,7 +68,7 @@ public class PathBasedNamespaceTest {
   public void testFolder() throws SootClassNotFoundException, IOException {
     // TODO adapt to new testing folder structure
     Path baseDir = Paths.get("target/classes/");
-    PathBasedNamespace pathBasedNamespace = new PathBasedNamespace(dummyProvider, baseDir);
+    PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(dummyProvider, baseDir);
     final ClassSignature sig = signatureFac.getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
     final ClassSource clazz = pathBasedNamespace.getClassSource(sig);
 
@@ -78,14 +79,15 @@ public class PathBasedNamespaceTest {
 
     Assert.assertNotNull(classSources);
     Assert.assertFalse(classSources.isEmpty());
-    Assert.assertEquals(20, classSources.size());
+    // Since we continuously add new classes, we can just state a lower bound here
+    Assert.assertTrue(classSources.size() > 20);
   }
 
   @Test
   public void testJar() throws SootClassNotFoundException, IOException {
     // TODO adapt to new testing folder structure
     Path jar = Paths.get("target/test-classes/de/upb/soot/ns/Soot-4.0-SNAPSHOT.jar");
-    PathBasedNamespace pathBasedNamespace = new PathBasedNamespace(dummyProvider, jar);
+    PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(dummyProvider, jar);
     final ClassSignature sig = signatureFac.getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
 
     final ClassSource clazz = pathBasedNamespace.getClassSource(sig);

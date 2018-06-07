@@ -1,8 +1,9 @@
 package de.upb.soot.ns;
 
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -12,7 +13,11 @@ import de.upb.soot.signatures.SignatureFactory;
 /** @author Manuel Benz created on 06.06.18 */
 public class PathUtils {
   public static Path pathFromSignature(ClassSignature signature) {
-    return Paths.get(signature.getFullyQualifiedName().replace('.', '/') + ".class");
+    return pathFromSignature(signature, FileSystems.getDefault());
+  }
+
+  public static Path pathFromSignature(ClassSignature signature, FileSystem fs) {
+    return fs.getPath(signature.getFullyQualifiedName().replace('.', '/') + ".class");
   }
 
   public static ClassSignature signatureFromPath(Path path, SignatureFactory fac) {

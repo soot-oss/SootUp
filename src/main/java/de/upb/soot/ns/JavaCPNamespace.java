@@ -63,7 +63,7 @@ public class JavaCPNamespace extends AbstractNamespace {
 
   private AbstractNamespace nsForPath(Path path) {
     if (java.nio.file.Files.isDirectory(path) || PathUtils.hasExtension(path, "jar", "zip")) {
-      return new PathBasedNamespace(classProvider, path);
+      return PathBasedNamespace.createForClassContainer(classProvider, path);
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
     }

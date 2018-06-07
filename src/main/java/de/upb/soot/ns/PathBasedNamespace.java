@@ -13,35 +13,26 @@ import de.upb.soot.ns.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 
 /** @author Manuel Benz created on 22.05.18 */
-public class PathBasedNamespace extends AbstractNamespace {
-  private final Path path;
+public abstract class PathBasedNamespace extends AbstractNamespace {
+  protected final Path path;
 
-  public PathBasedNamespace(IClassProvider classProvider, Path path) {
+  private PathBasedNamespace(IClassProvider classProvider, Path path) {
     super(classProvider);
-
-    if (!Files.isDirectory(path) && !PathUtils.isArchive(path)) {
-      throw new IllegalArgumentException(
-          "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, etc.");
-    }
-
     this.path = path;
   }
 
-  @Override
-  public Collection<ClassSource> getClassSources() {
+  public static PathBasedNamespace createForClassContainer(IClassProvider classProvider, Path path) {
     if (Files.isDirectory(path)) {
-      return walk(path);
+      return new DirectoryBasedNamespace(classProvider, path);
+    } else if (PathUtils.isArchive(path)) {
+      return new ArchiveBasedNamespace(classProvider, path);
     } else {
-      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
-        final Path archiveRoot = fs.getPath("/");
-        return walk(archiveRoot);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+      throw new IllegalArgumentException(
+          "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, etc.");
     }
   }
 
-  private Collection<ClassSource> walk(Path path) {
+  protected Collection<ClassSource> walkDirectory(Path path) {
     try {
       return Files.walk(path).filter(p -> classProvider.handlesFile(p)).map(p -> {
         try {
@@ -57,26 +48,57 @@ public class PathBasedNamespace extends AbstractNamespace {
     }
   }
 
-  @Override
-  public ClassSource getClassSource(ClassSignature signature) throws SootClassNotFoundException {
-    final Path subPath = PathUtils.pathFromSignature(signature);
-    if (Files.isDirectory(path)) {
-      return getClassSourceInternal(signature, path.resolve(subPath));
-    } else {
-      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
-        final Path pathInsideArchive = fs.getPath("/" + subPath.toString());
-        return getClassSourceInternal(signature, pathInsideArchive);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
+  protected ClassSource getClassSourceInternal(ClassSignature signature, Path path) throws SootClassNotFoundException {
+    Path pathToClass = path.resolve(PathUtils.pathFromSignature(signature, path.getFileSystem()));
 
-  private ClassSource getClassSourceInternal(ClassSignature signature, Path pathToClass) throws SootClassNotFoundException {
     if (!Files.exists(pathToClass)) {
       throw new SootClassNotFoundException(signature);
     }
 
     return classProvider.getClass(this, pathToClass);
+  }
+
+  private static final class DirectoryBasedNamespace extends PathBasedNamespace {
+
+    private DirectoryBasedNamespace(IClassProvider classProvider, Path path) {
+      super(classProvider, path);
+    }
+
+    @Override
+    public Collection<ClassSource> getClassSources() {
+      return walkDirectory(path);
+    }
+
+    @Override
+    public ClassSource getClassSource(ClassSignature signature) throws SootClassNotFoundException {
+      return getClassSourceInternal(signature, path);
+    }
+  }
+
+  private static final class ArchiveBasedNamespace extends PathBasedNamespace {
+
+    private ArchiveBasedNamespace(IClassProvider classProvider, Path path) {
+      super(classProvider, path);
+    }
+
+    @Override
+    public ClassSource getClassSource(ClassSignature signature) throws SootClassNotFoundException {
+      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
+        final Path pathInsideArchive = fs.getPath("/");
+        return getClassSourceInternal(signature, pathInsideArchive);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    @Override
+    protected Collection<ClassSource> getClassSources() {
+      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
+        final Path archiveRoot = fs.getPath("/");
+        return walkDirectory(archiveRoot);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    }
   }
 }
