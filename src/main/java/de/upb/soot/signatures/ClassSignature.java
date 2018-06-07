@@ -60,7 +60,7 @@ public class ClassSignature extends TypeSignature {
    */
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
-    if (!(packageSignature.packageName.isEmpty() || packageSignature.packageName == null)) {
+    if (!(packageSignature.packageName == null || packageSignature.packageName.isEmpty())) {
       sb.append(packageSignature.toString());
       sb.append('.');
     }

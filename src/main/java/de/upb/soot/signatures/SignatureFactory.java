@@ -17,7 +17,7 @@ import org.apache.commons.lang3.ClassUtils;
 public class SignatureFactory {
 
   /** Caches the created signatures for packages. */
-  protected Map<String, PackageSignature> packages = new HashMap<>();
+  protected final Map<String, PackageSignature> packages = new HashMap<>();
 
   protected SignatureFactory() {
     /** Represents the default package. */
@@ -25,11 +25,12 @@ public class SignatureFactory {
   }
 
   /**
-   * Returns a unique PackageSignature. The method looks up a cache if it already contains a
-   * signature with the given package name. If the cache lookup fails a new signature is created.
+   * Returns a unique PackageSignature. The method looks up a cache if it already contains a signature with the given package
+   * name. If the cache lookup fails a new signature is created.
    *
-   * @param packageName the Java package name; must not be null use empty string for the default
-   *     package {@link PackageSignature#DEFAULT_PACKAGE}
+   * @param packageName
+   *          the Java package name; must not be null use empty string for the default package
+   *          {@link PackageSignature#DEFAULT_PACKAGE}
    * @return a PackageSignature
    */
   public PackageSignature getPackageSignature(final String packageName) {
@@ -43,24 +44,26 @@ public class SignatureFactory {
   }
 
   /**
-   * Always creates a new ClassSignature. In opposite to PackageSignatures, ClassSignatures are not
-   * cached because the are unique per class, and thus reusing them does not make sense.
+   * Always creates a new ClassSignature. In opposite to PackageSignatures, ClassSignatures are not cached because the are
+   * unique per class, and thus reusing them does not make sense.
    *
    * @param className
-   * @param packageName the Java package name; must not be null use empty string for the default
-   *     package {@link PackageSignature#DEFAULT_PACKAGE} the Java package name
+   *          the simple class name
+   * @param packageName
+   *          the Java package name; must not be null use empty string for the default package
+   *          {@link PackageSignature#DEFAULT_PACKAGE} the Java package name
    * @return a ClassSignature for a Java class
    */
   public ClassSignature getClassSignature(final String className, final String packageName) {
     PackageSignature packageSignature = getPackageSignature(packageName);
-    ClassSignature classSignature = new ClassSignature(className, packageSignature);
-    return classSignature;
+    return new ClassSignature(className, packageSignature);
   }
 
   /**
    * Always creates a new ClassSignature.
    *
-   * @param fullyQualifiedClassName the fully-qualified name of the class
+   * @param fullyQualifiedClassName
+   *          the fully-qualified name of the class
    * @return a ClassSignature for a Java Class
    */
   public ClassSignature getClassSignature(final String fullyQualifiedClassName) {
@@ -70,11 +73,11 @@ public class SignatureFactory {
   }
 
   /**
-   * Returns a TypeSignature which can be a {@link ClassSignature},{@link PrimitiveTypeSignature},
-   * {@link VoidTypeSignature}, or {@link NullTypeSignature}.
+   * Returns a TypeSignature which can be a {@link ClassSignature},{@link PrimitiveTypeSignature}, {@link VoidTypeSignature},
+   * or {@link NullTypeSignature}.
    *
-   * @param typeName the fully-qualified name of the class or for primitives its simple name, e.g.,
-   *     int, null, void, ...
+   * @param typeName
+   *          the fully-qualified name of the class or for primitives its simple name, e.g., int, null, void, ...
    * @return the type signature
    */
   public TypeSignature getTypeSignature(final String typeName) {
@@ -107,17 +110,18 @@ public class SignatureFactory {
   /**
    * Always creates a new MethodSignature AND a new ClassSignature.
    *
-   * @param methodName the method's name
-   * @param fqDeclaringClassName the fully-qualified name of the declaring class
-   * @param parameters the methods parameters fully-qualified name or a primitive's name
-   * @param fqReturnType the fully-qualified name of the return type or a primitive's name
+   * @param methodName
+   *          the method's name
+   * @param fqDeclaringClassName
+   *          the fully-qualified name of the declaring class
+   * @param parameters
+   *          the methods parameters fully-qualified name or a primitive's name
+   * @param fqReturnType
+   *          the fully-qualified name of the return type or a primitive's name
    * @return a MethodSignature
    */
-  public MethodSignature getMethodSignature(
-      final String methodName,
-      final String fqDeclaringClassName,
-      final String fqReturnType,
-      final List<String> parameters) {
+  public MethodSignature getMethodSignature(final String methodName, final String fqDeclaringClassName,
+      final String fqReturnType, final List<String> parameters) {
     ClassSignature declaringClass = getClassSignature(fqDeclaringClassName);
     TypeSignature returnTypeSignature = getTypeSignature(fqReturnType);
     List<TypeSignature> parameterSignatures = new ArrayList<>();
@@ -125,34 +129,30 @@ public class SignatureFactory {
       TypeSignature parameterSignature = getTypeSignature(fqParameterName);
       parameterSignatures.add(parameterSignature);
     }
-    MethodSignature methodSignature =
-        new MethodSignature(methodName, declaringClass, returnTypeSignature, parameterSignatures);
-    return methodSignature;
+    return new MethodSignature(methodName, declaringClass, returnTypeSignature, parameterSignatures);
   }
 
   /**
    * Always creates a new MethodSignature reusing the given ClassSignature.
    *
-   * @param methodName the method's name
-   * @param declaringClassSignature the ClassSignature of the declaring class
-   * @param parameters the methods parameters fully-qualified name or a primitive's name
-   * @param fqReturnType the fully-qualified name of the return type or a primitive's name
+   * @param methodName
+   *          the method's name
+   * @param declaringClassSignature
+   *          the ClassSignature of the declaring class
+   * @param parameters
+   *          the methods parameters fully-qualified name or a primitive's name
+   * @param fqReturnType
+   *          the fully-qualified name of the return type or a primitive's name
    * @return a MethodSignature
    */
-  public MethodSignature getMethodSignature(
-      final String methodName,
-      final ClassSignature declaringClassSignature,
-      final String fqReturnType,
-      final List<String> parameters) {
+  public MethodSignature getMethodSignature(final String methodName, final ClassSignature declaringClassSignature,
+      final String fqReturnType, final List<String> parameters) {
     TypeSignature returnTypeSignature = getTypeSignature(fqReturnType);
     List<TypeSignature> parameterSignatures = new ArrayList<>();
     for (String fqParameterName : parameters) {
       TypeSignature parameterSignature = getTypeSignature(fqParameterName);
       parameterSignatures.add(parameterSignature);
     }
-    MethodSignature methodSignature =
-        new MethodSignature(
-            methodName, declaringClassSignature, returnTypeSignature, parameterSignatures);
-    return methodSignature;
+    return new MethodSignature(methodName, declaringClassSignature, returnTypeSignature, parameterSignatures);
   }
 }
