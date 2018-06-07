@@ -73,7 +73,7 @@ public class SignatureFactory {
    * Returns a TypeSignature which can be a {@link ClassSignature},{@link PrimitiveTypeSignature},
    * {@link VoidTypeSignature}, or {@link NullTypeSignature}.
    *
-   * @param typeName the fully-qualified name of the classe or for primitives its simple name, e.g.,
+   * @param typeName the fully-qualified name of the class or for primitives its simple name, e.g.,
    *     int, null, void, ...
    * @return the type signature
    */
