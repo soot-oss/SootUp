@@ -57,7 +57,7 @@ public class SignatureFactoryTest {
   }
 
   @Test
-  public void getClassSignatureFQN() {
+  public void getClassSignatureFullyQualified() {
     SignatureFactory signatureFactory = new SignatureFactory();
     ClassSignature classSignature1 = signatureFactory.getClassSignature("java.lang.System");
     ClassSignature classSignature2 = signatureFactory.getClassSignature("System", "java.lang");
@@ -115,10 +115,9 @@ public class SignatureFactoryTest {
 
     List<String> parameters = Collections.singletonList("java.lang.Class");
 
-    MethodSignature methodSignature =
-            signatureFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
-    assertTrue(
-            methodSignature.toString().equals("<java.lang.System:void foo(java.lang.Class)>"));
+    MethodSignature methodSignature = signatureFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
+    assertTrue(methodSignature.toString().equals("<java.lang.System:void foo(java.lang.Class)>"));
+
   }
 
   @Test

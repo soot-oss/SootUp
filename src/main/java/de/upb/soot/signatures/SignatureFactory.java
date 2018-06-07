@@ -46,9 +46,9 @@ public class SignatureFactory {
    * Always creates a new ClassSignature. In opposite to PackageSignatures, ClassSignatures are not
    * cached because the are unique per class, and thus reusing them does not make sense.
    *
-   * @param className the simple name of the class
+   * @param className
    * @param packageName the Java package name; must not be null use empty string for the default
-   *     package {@link PackageSignature#DEFAULT_PACKAGE}
+   *     package {@link PackageSignature#DEFAULT_PACKAGE} the Java package name
    * @return a ClassSignature for a Java class
    */
   public ClassSignature getClassSignature(final String className, final String packageName) {

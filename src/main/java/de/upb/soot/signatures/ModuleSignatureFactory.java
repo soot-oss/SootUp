@@ -17,9 +17,9 @@ public class ModuleSignatureFactory extends SignatureFactory {
   protected ModuleSignatureFactory() {
 
     /**
-     * Represents the unnamed module in Java's module system. Every type that is not defined in any
-     * known module but loaded from the classpath is associated with this unnamed module, so as to
-     * ensure that every type is associated with a module.
+     * Represents the unnamed module in Java's module system. Every type that is not defined in any known module but loaded
+     * from the classpath is associated with this unnamed module, so as to ensure that every type is associated with a
+     * module.
      *
      * <p>{@link ModuleSignature#UNNAMED_MODULE}
      */
@@ -29,10 +29,13 @@ public class ModuleSignatureFactory extends SignatureFactory {
   }
 
   /**
+   * Returns a unique ModuleSignature. The method looks up a cache if it already contains a signature with the given module
+   * name. If the cache lookup fails a new signature is created.
    * Returns a unique ModuleSignature. The method looks up a cache if it already contains a
    * signature with the given module name. If the cache lookup fails a new signature is created.
    *
-   * @param moduleName the module name; must not be null use empty string for the unnamed module
+   * @param moduleName the module name
+   *          the module name
    * @return a ModuleSignature
    */
   public ModuleSignature getModuleSignature(final String moduleName) {
@@ -51,15 +54,15 @@ public class ModuleSignatureFactory extends SignatureFactory {
   }
 
   /**
-   * Returns a unique PackageSignature. The method looks up a cache if it already contains a
-   * signature with the given package and module name. If the cache lookup fails a new signature is
-   * created.
+   * Returns a unique PackageSignature. The method looks up a cache if it already contains a signature with the given package
+   * and module name. If the cache lookup fails a new signature is created.
    *
    * @param packageName the package name; must not be null use empty string for the default package
    * @param moduleName the module containing the package; must not be null use empty string for the
    *     unnamed module {@link ModuleSignature#UNNAMED_MODULE}
    * @return a ModulePackageSignature
    */
+  public ModulePackageSignature getPackageSignature(final String packageName, final String moduleName) {
   public ModulePackageSignature getPackageSignature(
       final String packageName, final String moduleName) {
     Preconditions.checkNotNull(moduleName);
@@ -90,8 +93,7 @@ public class ModuleSignatureFactory extends SignatureFactory {
    * @param moduleName the declaring module
    * @return a ClassSignature for a Java 9 class
    */
-  public ClassSignature getClassSignature(
-      final String className, final String packageName, final String moduleName) {
+  public ClassSignature getClassSignature(final String className, final String packageName, final String moduleName) {
     PackageSignature packageSignature = getPackageSignature(packageName, moduleName);
     ClassSignature classSignature = new ClassSignature(className, packageSignature);
     return classSignature;
