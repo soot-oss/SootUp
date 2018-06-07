@@ -1,11 +1,11 @@
 package de.upb.soot.namespaces;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 import de.upb.soot.Utils;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
-
-import com.google.common.base.Strings;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +39,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   public JavaClassPathNamespace(IClassProvider classProvider, String classPath) {
     super(classProvider);
 
-    if (Strings.isNullOrEmpty(classPath)) {
+    if (isNullOrEmpty(classPath)) {
       throw new InvalidClassPathException("Empty class path given");
     }
 

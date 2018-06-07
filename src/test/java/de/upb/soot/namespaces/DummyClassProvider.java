@@ -1,10 +1,10 @@
 package de.upb.soot.namespaces;
 
+import com.sun.nio.zipfs.ZipPath;
+
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.SignatureFactory;
-
-import com.sun.nio.zipfs.ZipPath;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
