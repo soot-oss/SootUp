@@ -14,7 +14,11 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/** @author Manuel Benz created on 22.05.18 */
+/**
+ * Base class for {@link INamespace}s that can be located by a {@link Path} object.
+ *
+ * @author Manuel Benz created on 22.05.18
+ */
 public abstract class PathBasedNamespace extends AbstractNamespace {
   protected final Path path;
 
@@ -23,6 +27,16 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     this.path = path;
   }
 
+  /**
+   * Creates a {@link PathBasedNamespace} depending on the given {@link Path}, e.g., differs between directories, archives
+   * (and possibly network path's in the future).
+   * 
+   * @param classProvider
+   *          The {@link IClassProvider} for generating {@link ClassSource}es out of the found files on the given path
+   * @param path
+   *          The path to search in
+   * @return A {@link PathBasedNamespace} implementation dependent on the given {@link Path}'s {@link FileSystem}
+   */
   public static PathBasedNamespace createForClassContainer(IClassProvider classProvider, Path path) {
     if (Files.isDirectory(path)) {
       return new DirectoryBasedNamespace(classProvider, path);

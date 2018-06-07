@@ -13,7 +13,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 
-/** @author Manuel Benz created on 06.06.18 */
+/**
+ * Common functionality useful to cope with {@link Path}s.
+ *
+ * @author Manuel Benz created on 06.06.18
+ */
 public class PathUtils {
   public static Path pathFromSignature(ClassSignature signature, FileType fileType) {
     return pathFromSignature(signature, fileType, FileSystems.getDefault());
@@ -28,19 +32,24 @@ public class PathUtils {
   }
 
   /**
-   * Matches the given path with the given file extension (without a leading dot) and returns true if the path ends with this
-   * extension, false otherwise.
+   * Matches the given {@link Path} with the file extensions of the given {@link FileType}s.
    * 
    * @param path
-   *          An arbitrary path
+   *          An arbitrary {@link Path}
    * @param extensions
-   *          One or more file extensions without a leading dot (e.g., java, class, jimple)
-   * @return True if the path ends with one of the given extensions, false otherwise.
+   *          One or more {@link FileType}s to check against
+   * @return True if the given {@link Path} has the given {@link FileType}, i.e., the path ends with a dot followed by either
+   *         of the extensions defined by the given {@link FileType}s otherwise.
    */
   public static boolean hasExtension(Path path, FileType... extensions) {
     return hasExtension(path, Arrays.asList(extensions));
   }
 
+  /**
+   * Matches the given {@link Path} with the file extensions of the given {@link FileType}s.
+   *
+   * @see PathUtils#hasExtension(Path, FileType...)
+   */
   public static boolean hasExtension(Path path, Collection<FileType> extensions) {
     if (Files.isDirectory(path)) {
       return false;

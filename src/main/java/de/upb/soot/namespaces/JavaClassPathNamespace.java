@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * An implementation of the {@link INamespace} interface for the Java class path. Handles directories, archives (including
+ * wildcard denoted archives) as stated in the official documentation:
  * https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html
  * 
  * @author Manuel Benz created on 22.05.18
@@ -36,6 +38,14 @@ public class JavaClassPathNamespace extends AbstractNamespace {
 
   private Collection<AbstractNamespace> cpEntries;
 
+  /**
+   * Creates a {@link JavaClassPathNamespace} which locates classes based on the provided {@link IClassProvider}.
+   * 
+   * @param classProvider
+   *          The {@link IClassProvider} for generating {@link ClassSource}es for the files found on the class path
+   * @param classPath
+   *          The class path to search in
+   */
   public JavaClassPathNamespace(IClassProvider classProvider, String classPath) {
     super(classProvider);
 

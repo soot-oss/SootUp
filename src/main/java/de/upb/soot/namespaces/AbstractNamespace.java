@@ -10,6 +10,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
+ * Basic implementation of {@link INamespace}, encapsulating common behavior. Also used to keep the {@link INamespace}
+ * interface clean from internal methods like {@link AbstractNamespace#getClassSource(ClassSignature)}.
+ *
  * @author Manuel Benz created on 22.05.18
  */
 public abstract class AbstractNamespace implements INamespace {

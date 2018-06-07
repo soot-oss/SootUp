@@ -3,6 +3,8 @@ package de.upb.soot.namespaces;
 import java.util.EnumSet;
 
 /**
+ * An enumeration of common file types used for class loading/writing and other purposes.
+ *
  * @author Manuel Benz created on 07.06.18
  */
 public enum FileType {
