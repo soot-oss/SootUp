@@ -8,8 +8,8 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import de.upb.soot.Utils;
 import de.upb.soot.ns.classprovider.ClassSource;
 import de.upb.soot.ns.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
@@ -37,8 +37,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
   protected Collection<ClassSource> walkDirectory(Path path) {
     try {
       return Files.walk(path).filter(p -> classProvider.handlesFile(p))
-          .flatMap(p -> classProvider.getClass(this, p).map(Stream::of).orElseGet(Stream::empty))
-          .collect(Collectors.toList());
+          .flatMap(p -> Utils.optionalToStream(classProvider.getClass(this, p))).collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }

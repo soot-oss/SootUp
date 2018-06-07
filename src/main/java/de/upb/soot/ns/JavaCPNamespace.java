@@ -1,6 +1,9 @@
 package de.upb.soot.ns;
 
+import com.google.common.base.Strings;
+
 import java.io.File;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -14,6 +17,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.upb.soot.Utils;
 import de.upb.soot.ns.classprovider.ClassSource;
 import de.upb.soot.ns.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
@@ -26,7 +30,20 @@ public class JavaCPNamespace extends AbstractNamespace {
 
   public JavaCPNamespace(IClassProvider classProvider, String classPath) {
     super(classProvider);
-    cpEntries = explode(classPath).map(cp -> nsForPath(cp)).collect(Collectors.toList());
+
+    if (Strings.isNullOrEmpty(classPath)) {
+      throw new InvalidClassPathException("Empty class path given");
+    }
+
+    try {
+      cpEntries = explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).collect(Collectors.toList());
+    } catch (IllegalArgumentException e) {
+      throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
+    }
+
+    if (cpEntries.isEmpty()) {
+      throw new InvalidClassPathException("Empty class path given");
+    }
   }
 
   private Stream<Path> explode(String classPath) {
@@ -59,12 +76,26 @@ public class JavaCPNamespace extends AbstractNamespace {
     return Optional.empty();
   }
 
-  private AbstractNamespace nsForPath(Path path) {
-    if (java.nio.file.Files.isDirectory(path) || PathUtils.hasExtension(path, "jar", "zip")) {
-      return PathBasedNamespace.createForClassContainer(classProvider, path);
+  private Optional<AbstractNamespace> nsForPath(Path path) {
+    if (Files.exists(path) && (java.nio.file.Files.isDirectory(path) || PathUtils.hasExtension(path, "jar", "zip"))) {
+      return Optional.of(PathBasedNamespace.createForClassContainer(classProvider, path));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
+      return Optional.empty();
     }
-    throw new IllegalArgumentException("Empty class path");
+  }
+
+  static final class InvalidClassPathException extends IllegalArgumentException {
+    public InvalidClassPathException(String s) {
+      super(s);
+    }
+
+    public InvalidClassPathException(String message, Throwable cause) {
+      super(message, cause);
+    }
+
+    public InvalidClassPathException(Throwable cause) {
+      super(cause);
+    }
   }
 }
