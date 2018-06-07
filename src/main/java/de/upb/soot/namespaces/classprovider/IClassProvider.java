@@ -8,9 +8,7 @@ import java.util.Optional;
 
 /** Responsible for handling various types of class sources (.class, .jimple, .java, .dex, etc) */
 public interface IClassProvider {
-
-  // TODO does the class provider need the signature or does it generate one?
-
+  
   /**
    *
    * @param ns

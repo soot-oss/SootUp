@@ -34,7 +34,7 @@ public class JavaClassPathNamespaceTest extends AbstractNamespaceTest {
   @Test
   public void singleDir() {
     final JavaClassPathNamespace javaClassPathNamespace = new JavaClassPathNamespace(getClassProvider(), "target/classes");
-    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
+    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(javaClassPathNamespace, sig, MIN_CLASSES_FOUND);
   }
 
@@ -42,32 +42,32 @@ public class JavaClassPathNamespaceTest extends AbstractNamespaceTest {
   public void twoDirs() {
     final JavaClassPathNamespace javaClassPathNamespace = new JavaClassPathNamespace(getClassProvider(),
         String.format("target/classes%starget/classes", File.pathSeparator));
-    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
+    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(javaClassPathNamespace, sig, MIN_CLASSES_FOUND * 2);
   }
 
   @Test
   public void singleJar() {
     final JavaClassPathNamespace javaClassPathNamespace
-        = new JavaClassPathNamespace(getClassProvider(), "target/test-classes/de/upb/soot/ns/Soot-4.0-SNAPSHOT.jar");
-    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
+        = new JavaClassPathNamespace(getClassProvider(), "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
+    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(javaClassPathNamespace, sig, MIN_CLASSES_FOUND);
   }
 
   @Test
   public void twoJars() {
     final JavaClassPathNamespace javaClassPathNamespace = new JavaClassPathNamespace(getClassProvider(), String.format(
-        "target/test-classes/de/upb/soot/ns/Soot-4.0-SNAPSHOT.jar%starget/test-classes/de/upb/soot/ns/Soot-4.0-SNAPSHOT.jar",
+        "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar%starget/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar",
         File.pathSeparator));
-    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
+    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(javaClassPathNamespace, sig, MIN_CLASSES_FOUND * 2);
   }
 
   @Test
   public void dirAndJar() {
     final JavaClassPathNamespace javaClassPathNamespace = new JavaClassPathNamespace(getClassProvider(),
-        String.format("target/classes%starget/test-classes/de/upb/soot/ns/Soot-4.0-SNAPSHOT.jar", File.pathSeparator));
-    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
+        String.format("target/classes%starget/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar", File.pathSeparator));
+    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(javaClassPathNamespace, sig, MIN_CLASSES_FOUND * 2);
   }
 
@@ -75,23 +75,23 @@ public class JavaClassPathNamespaceTest extends AbstractNamespaceTest {
   public void correctAndInvalid() {
     final JavaClassPathNamespace javaClassPathNamespace = new JavaClassPathNamespace(getClassProvider(),
         String.format("target/classes%s;9tß2ng2nßg2ßgn", File.pathSeparator));
-    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
+    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(javaClassPathNamespace, sig, MIN_CLASSES_FOUND);
   }
 
   @Test
   public void wildCard() {
     final JavaClassPathNamespace javaClassPathNamespace
-        = new JavaClassPathNamespace(getClassProvider(), "target/test-classes/de/upb/soot/ns/*");
-    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
+        = new JavaClassPathNamespace(getClassProvider(), "target/test-classes/de/upb/soot/namespaces/*");
+    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(javaClassPathNamespace, sig, MIN_CLASSES_FOUND);
   }
 
   @Test
   public void wildCard2() {
     final JavaClassPathNamespace javaClassPathNamespace = new JavaClassPathNamespace(getClassProvider(),
-        String.format("target/test-classes/de/upb/soot/ns/*%starget/classes", File.pathSeparator));
-    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.ns");
+        String.format("target/test-classes/de/upb/soot/namespaces/*%starget/classes", File.pathSeparator));
+    final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(javaClassPathNamespace, sig, MIN_CLASSES_FOUND * 2);
   }
 

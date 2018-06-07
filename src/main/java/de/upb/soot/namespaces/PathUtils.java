@@ -15,12 +15,12 @@ import org.apache.commons.io.FilenameUtils;
 
 /** @author Manuel Benz created on 06.06.18 */
 public class PathUtils {
-  public static Path pathFromSignature(ClassSignature signature) {
-    return pathFromSignature(signature, FileSystems.getDefault());
+  public static Path pathFromSignature(ClassSignature signature, FileType fileType) {
+    return pathFromSignature(signature, fileType, FileSystems.getDefault());
   }
 
-  public static Path pathFromSignature(ClassSignature signature, FileSystem fs) {
-    return fs.getPath(signature.getFullyQualifiedName().replace('.', '/'));
+  public static Path pathFromSignature(ClassSignature signature, FileType fileType, FileSystem fs) {
+    return fs.getPath(signature.getFullyQualifiedName().replace('.', '/') + "." + fileType.getExtension());
   }
 
   public static ClassSignature signatureFromPath(Path path, SignatureFactory fac) {

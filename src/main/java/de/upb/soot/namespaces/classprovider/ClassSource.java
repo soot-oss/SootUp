@@ -16,11 +16,6 @@ public abstract class ClassSource {
     this.classSignature = classSignature;
   }
 
-  // public abstract Dependencies resolve(SootClass sc);
-
-  public void close() {
-  }
-
   public ClassSignature getClassSignature() {
     return classSignature;
   }

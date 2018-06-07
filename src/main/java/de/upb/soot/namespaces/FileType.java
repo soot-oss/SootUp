@@ -8,7 +8,7 @@ import java.util.EnumSet;
 public enum FileType {
   JAR("jar"), ZIP("zip"), APK("apk"), CLASS("class"), JAVA("java"), JIMPLE("jimple");
 
-  public static EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK);
+  public static final EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK);
 
   private final String extension;
 

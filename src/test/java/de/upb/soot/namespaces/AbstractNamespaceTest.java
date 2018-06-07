@@ -45,6 +45,7 @@ public abstract class AbstractNamespaceTest {
 
   protected void testClassReceival(AbstractNamespace ns, ClassSignature sig, int minClassesFound) {
     final Optional<ClassSource> clazz = ns.getClassSource(sig);
+
     Assert.assertTrue(clazz.isPresent());
     Assert.assertEquals(sig, clazz.get().getClassSignature());
 
