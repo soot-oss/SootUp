@@ -14,7 +14,7 @@ public class MethodSignature {
   /** The signature of the declaring class. */
   public final ClassSignature declClassSignature;
 
-  /** The method's paremeters' signatures. */
+  /** The method's parameters' signatures. */
   public final List<TypeSignature> parameterSignatures;
 
   /** The return type's signature. */
@@ -57,7 +57,7 @@ public class MethodSignature {
 
   /**
    * The simple name of the method; the method's name and its parameters.
-   * 
+   *
    * @return a String of the form "returnTypeName methodName(ParameterName(,)*)"
    */
   public String getSimpleMethodSignature() {

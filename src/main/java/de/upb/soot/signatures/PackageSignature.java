@@ -8,6 +8,10 @@ import com.google.common.base.Objects;
  * @author Andreas Dann
  */
 public class PackageSignature {
+
+  /** Represents the default package. */
+  public static final PackageSignature DEFAULT_PACKAGE = new PackageSignature("");
+
   /** The name of the package. */
   public final String packageName;
 
