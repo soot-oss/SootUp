@@ -32,6 +32,8 @@ public class SignatureFactory {
    *          the Java package name; must not be null use empty string for the default package
    *          {@link PackageSignature#DEFAULT_PACKAGE}
    * @return a PackageSignature
+   * @throws NullPointerException
+   *           if the given package name is null. Use the empty string to denote the default package.
    */
   public PackageSignature getPackageSignature(final String packageName) {
     Preconditions.checkNotNull(packageName);
@@ -53,6 +55,8 @@ public class SignatureFactory {
    *          the Java package name; must not be null use empty string for the default package
    *          {@link PackageSignature#DEFAULT_PACKAGE} the Java package name
    * @return a ClassSignature for a Java class
+   * @throws NullPointerException
+   *           if the given package name is null. Use the empty string to denote the default package.
    */
   public ClassSignature getClassSignature(final String className, final String packageName) {
     PackageSignature packageSignature = getPackageSignature(packageName);
@@ -112,7 +116,7 @@ public class SignatureFactory {
    *
    * @param methodName
    *          the method's name
-   * @param fqDeclaringClassName
+   * @param fullyQualifiedNameDeclClass
    *          the fully-qualified name of the declaring class
    * @param parameters
    *          the methods parameters fully-qualified name or a primitive's name
@@ -120,9 +124,9 @@ public class SignatureFactory {
    *          the fully-qualified name of the return type or a primitive's name
    * @return a MethodSignature
    */
-  public MethodSignature getMethodSignature(final String methodName, final String fqDeclaringClassName,
+  public MethodSignature getMethodSignature(final String methodName, final String fullyQualifiedNameDeclClass,
       final String fqReturnType, final List<String> parameters) {
-    ClassSignature declaringClass = getClassSignature(fqDeclaringClassName);
+    ClassSignature declaringClass = getClassSignature(fullyQualifiedNameDeclClass);
     TypeSignature returnTypeSignature = getTypeSignature(fqReturnType);
     List<TypeSignature> parameterSignatures = new ArrayList<>();
     for (String fqParameterName : parameters) {

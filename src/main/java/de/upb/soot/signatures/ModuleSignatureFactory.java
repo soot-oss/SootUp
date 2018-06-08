@@ -32,8 +32,10 @@ public class ModuleSignatureFactory extends SignatureFactory {
    * created.
    *
    * @param moduleName
-   *          the module name the module name
+   *          the module name; Must not be null. Use the empty string for the unnamed module
    * @return a ModuleSignature
+   * @throws NullPointerException
+   *           if the given module name is null. Use the empty string to denote the default module.
    */
   public ModuleSignature getModuleSignature(final String moduleName) {
     Preconditions.checkNotNull(moduleName);
@@ -60,6 +62,9 @@ public class ModuleSignatureFactory extends SignatureFactory {
    *          the module containing the package; must not be null use empty string for the unnamed module
    *          {@link ModuleSignature#UNNAMED_MODULE}
    * @return a ModulePackageSignature
+   * @throws NullPointerException
+   *           if the given module name or package name is null. Use the empty string to denote the unnamed module or the
+   *           default package.
    */
   public ModulePackageSignature getPackageSignature(final String packageName, final String moduleName) {
     Preconditions.checkNotNull(moduleName);
@@ -90,6 +95,9 @@ public class ModuleSignatureFactory extends SignatureFactory {
    * @param moduleName
    *          the declaring module
    * @return a ClassSignature for a Java 9 class
+   * @throws NullPointerException
+   *           if the given module name or package name is null. Use the empty string to denote the unnamed module or the
+   *           default package.
    */
   public ClassSignature getClassSignature(final String className, final String packageName, final String moduleName) {
     PackageSignature packageSignature = getPackageSignature(packageName, moduleName);

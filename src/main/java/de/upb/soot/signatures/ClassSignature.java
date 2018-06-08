@@ -1,8 +1,9 @@
 package de.upb.soot.signatures;
 
-import com.google.common.base.Objects;
-
 import de.upb.soot.namespaces.FileType;
+
+import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -60,7 +61,7 @@ public class ClassSignature extends TypeSignature {
    */
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
-    if (!(packageSignature.packageName == null || packageSignature.packageName.isEmpty())) {
+    if (!Strings.isNullOrEmpty(packageSignature.packageName)) {
       sb.append(packageSignature.toString());
       sb.append('.');
     }
