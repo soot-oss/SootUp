@@ -1,6 +1,6 @@
 pipeline {
     agent none
-    
+
     stages {
 
         stage('Build') {
@@ -9,7 +9,7 @@ pipeline {
 
               agent {
                 docker {
-                  image '3-jdk-8-slim'
+                  image 'maven:3-jdk-8-alpine'
                   args '-v $HOME/.m2:/root/.m2'
                 }
               }
@@ -25,7 +25,7 @@ pipeline {
 
               agent {
                 docker {
-                  image 'maven:3-jdk-9-slim'
+                  image 'maven:3-jdk-9-alpine'
                   args '-v $HOME/.m2:/root/.m2'
                 }
               }
@@ -45,7 +45,7 @@ pipeline {
 
             agent {
               docker {
-                image '3-jdk-8-slim'
+                image 'maven:3-jdk-8-alpine'
                 args '-v $HOME/.m2:/root/.m2'
               }
             }
@@ -74,7 +74,7 @@ pipeline {
   
             agent {
               docker {
-                image 'maven:3-jdk-9-slim'
+                image 'maven:3-jdk-9-alpine'
                 args '-v $HOME/.m2:/root/.m2'
               }
             }
