@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,8 +53,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     }
 
     try {
-      cpEntries
-          = explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).distinct().collect(Collectors.toList());
+      cpEntries = explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).collect(Collectors.toList());
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
     }
@@ -70,7 +68,9 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   private Stream<Path> explode(String classPath) {
     // the classpath is split at every path separator which is not escaped
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
-    return Stream.of(classPath.split(regex)).flatMap(this::handleWildCards);
+    final Stream<Path> exploded = Stream.of(classPath.split(regex)).flatMap(this::handleWildCards);
+    // we need to filter out duplicates of the same files to not generate duplicate namespaces
+    return exploded.map(cp -> cp.normalize()).distinct();
   }
 
   /**
@@ -86,7 +86,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
       Path baseDir = Paths.get(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
       try {
         return Utils.iteratorToStream(Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
-      } catch (PatternSyntaxException | NotDirectoryException e) {
+      } catch (NotDirectoryException e) {
         throw new InvalidClassPathException("Malformed wildcard entry", e);
       } catch (IOException e) {
         throw new InvalidClassPathException("Couldn't access entries denoted by wildcard", e);
