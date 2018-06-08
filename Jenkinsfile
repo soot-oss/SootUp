@@ -16,14 +16,24 @@ pipeline {
 	    stage('Test') {
 	        steps {
 	            sh 'mvn test'
+                jacoco(
+                    execPattern: '**/target/coverage-reports/jacoco-ut.exec',
+                    classPattern: '**/classes',
+                    sourcePattern: 'src/main/java',
+                    exclusionPattern: 'src/test*',
+                    changeBuildStatus: true,
+                    minimumMethodCoverage: "50",
+                    maximumMethodCoverage: "70",
+                    deltaMethodCoverage: "10"
+                )
 	        }
+
 	        post {
-			    success {
-			    	junit 'target/surefire-reports/**/*.xml' 
+			    always {
+			    	junit 'target/surefire-reports/**/*.xml'
 			    }
 			}
 		}
-
 
 		stage('Deploy'){
 		    when {
