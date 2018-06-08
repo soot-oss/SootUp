@@ -9,7 +9,7 @@ pipeline {
 
               agent {
                 docker {
-                  image 'maven:3.5.2-jdk-9'
+                  image '3-jdk-8-slim'
                   args '-v $HOME/.m2:/root/.m2'
                 }
               }
@@ -45,7 +45,7 @@ pipeline {
 
             agent {
               docker {
-                image 'maven:3-alpine'
+                image '3-jdk-8-slim'
                 args '-v $HOME/.m2:/root/.m2'
               }
             }
