@@ -14,7 +14,7 @@ pipeline {
         }
 
 	    stage('Test') {
-	       parallel jdk8:{
+	       parallel jdk8: {
 	           agent {
                     docker {
                         image 'maven:3-alpine'
@@ -37,8 +37,8 @@ pipeline {
                       	        }
 
 
-	       }
-	       jdk9:{
+	       },
+	       jdk9: {
 
 
 	            agent {
