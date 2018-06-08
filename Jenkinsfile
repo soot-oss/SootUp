@@ -17,14 +17,14 @@ pipeline {
 	        steps {
 	            sh 'mvn test'
                 jacoco(
-                          execPattern: 'target/*.exec',
-                          classPattern: 'target/classes',
-                          sourcePattern: 'src/main/java',
-                          exclusionPattern: 'src/test*',
-                          changeBuildStatus: true
-                          minimumMethodCoverage: 70,
-                          deltaMethodCoverage: 10
-                        )
+                    execPattern: 'target/*.exec',
+                    classPattern: 'target/classes',
+                    sourcePattern: 'src/main/java',
+                    exclusionPattern: 'src/test*',
+                    changeBuildStatus: true,
+                    minimumMethodCoverage: 70,
+                    deltaMethodCoverage: 10
+                )
 	        }
 
 	        post {
