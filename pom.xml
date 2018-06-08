@@ -17,6 +17,7 @@
         <checkstyle.file.path>${checkstyle.dir.path}/google_checkstyle.xml</checkstyle.file.path>
         <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.1</jacoco-maven-plugin.version>
+        <jacoco-badge-maven-plugin.version>0.1.3</jacoco-badge-maven-plugin.version>
         <slf4j.version>1.7.25</slf4j.version>
         <slf4j-simple.version>1.7.25</slf4j-simple.version>
         <guava.version>25.1-jre</guava.version>
@@ -87,6 +88,26 @@
                             <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
                             <!-- Sets the output directory for the code coverage report. -->
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.sigpwned</groupId>
+                <artifactId>jacoco-badge-maven-plugin</artifactId>
+                <version>${jacoco-badge-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>generate-jacoco-badge</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>badge</goal>
+                        </goals>
+                        <configuration>
+                            <reportFile>${project.reporting.outputDirectory}/jacoco-ut/jacoco.csv</reportFile>
+                            <passing>70</passing>
+                            <!-- Legal values: instruction, branch, line, method. Optional, default instruction. -->
+                            <metric>method</metric>
                         </configuration>
                     </execution>
                 </executions>
