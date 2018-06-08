@@ -1,6 +1,4 @@
-[![Build Status](http://soot-build.cs.uni-paderborn.de/jenkins/job/soot-reloaded/job/soot-reloaded-develop/badge/icon?style=plastic)](http://soot-build.cs.uni-paderborn.de/jenkins/job/soot-reloaded/job/soot-reloaded-develop/)
-
-# Future Soot core library
+# Future Soot core library [![Build Status](http://soot-build.cs.uni-paderborn.de/jenkins/job/soot-reloaded/job/soot-reloaded-develop/badge/icon?style=plastic)](http://soot-build.cs.uni-paderborn.de/jenkins/job/soot-reloaded/job/soot-reloaded-develop/)
 
 [Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
 
