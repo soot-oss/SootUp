@@ -22,8 +22,8 @@ pipeline {
                     sourcePattern: 'src/main/java',
                     exclusionPattern: 'src/test*',
                     changeBuildStatus: true,
-                    minimumMethodCoverage: 70,
-                    deltaMethodCoverage: 10
+                    minimumMethodCoverage: "70",
+                    deltaMethodCoverage: "10"
                 )
 	        }
 
