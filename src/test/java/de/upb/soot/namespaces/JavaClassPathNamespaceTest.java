@@ -92,7 +92,7 @@ public class JavaClassPathNamespaceTest extends AbstractNamespaceTest {
     final JavaClassPathNamespace javaClassPathNamespace = new JavaClassPathNamespace(getClassProvider(),
         String.format("target/test-classes/de/upb/soot/namespaces/*%starget/classes", File.pathSeparator));
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
-    testClassReceival(javaClassPathNamespace, sig, CLASSES_IN_JAR * 2);
+    testClassReceival(javaClassPathNamespace, sig, CLASSES_IN_JAR * 3);
   }
 
   @Test
