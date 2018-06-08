@@ -8,9 +8,38 @@ pipeline {
     stages {
 
         stage('Build') {
-            steps {
+          parallel{
+            stage('Build with JDK8'){
+
+              agent {
+                docker {
+                  image 'maven:3.5.2-jdk-9'
+                  args '-v $HOME/.m2:/root/.m2'
+                }
+              }
+
+              steps {
                 sh 'mvn clean compile'
+              }
+
             }
+
+
+            stage('Build with JDK9'){
+
+              agent {
+                docker {
+                  image 'maven:3-jdk-9-slim'
+                  args '-v $HOME/.m2:/root/.m2'
+                }
+              }
+
+              steps {
+                sh 'mvn clean compile'
+              }
+
+            }
+          }
         }
 
 	    stage('Test') {
