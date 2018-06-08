@@ -23,6 +23,7 @@ pipeline {
                     exclusionPattern: 'src/test*',
                     changeBuildStatus: true,
                     minimumMethodCoverage: "70",
+                    maximumMethodCoverage: "50",
                     deltaMethodCoverage: "10"
                 )
 	        }
