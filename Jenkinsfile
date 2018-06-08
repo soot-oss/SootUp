@@ -16,6 +16,11 @@ pipeline {
 	    stage('Test') {
 	        steps {
 	            sh 'mvn test'
+                [$class: 'JacocoPublisher', 
+                  execPattern: '**/*.exec',
+                  classPattern: '**/classes',
+                  sourcePattern: 'src/main/java',
+                  exclusionPattern: 'src/test*']
 	        }
 	        post {
 			    success {
