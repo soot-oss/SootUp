@@ -15,7 +15,7 @@
         <checkstyle.version>8.9</checkstyle.version>
         <checkstyle.dir.path>${basedir}/codingstyle</checkstyle.dir.path>
         <checkstyle.file.path>${checkstyle.dir.path}/google_checkstyle.xml</checkstyle.file.path>
-        <maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
         <jacoco-maven-plugin.version>0.8.1</jacoco-maven-plugin.version>
         <slf4j.version>1.7.25</slf4j.version>
         <slf4j-simple.version>1.7.25</slf4j-simple.version>
@@ -96,8 +96,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
-                    <reuseForks>false</reuseForks>
-                    <forkCount>1</forkCount>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>${surefireArgLine}</argLine>
                 </configuration>
