@@ -17,8 +17,8 @@ pipeline {
 	        steps {
 	            sh 'mvn test'
                 jacoco(
-                    execPattern: 'target/*.exec',
-                    classPattern: 'target/classes',
+                    execPattern: '**/target/coverage-reports/jacoco-ut.exec',
+                    classPattern: '**/classes',
                     sourcePattern: 'src/main/java',
                     exclusionPattern: 'src/test*',
                     changeBuildStatus: true,
