@@ -35,7 +35,7 @@ public class ModuleSignatureFactory extends SignatureFactory {
    *          the module name; Must not be null. Use the empty string for the unnamed module
    * @return a ModuleSignature
    * @throws NullPointerException
-   *           if the given module name is null. Use the empty string to denote the default module.
+   *           if the given module name is null. Use the empty string to denote the unnamed module.
    */
   public ModuleSignature getModuleSignature(final String moduleName) {
     Preconditions.checkNotNull(moduleName);
