@@ -4,6 +4,7 @@ import de.upb.soot.Utils;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -13,6 +14,8 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Base class for {@link INamespace}s that can be located by a {@link Path} object.
@@ -48,14 +51,22 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
   }
 
-  protected Collection<ClassSource> walkDirectory(Path dirPath) {
+  protected Collection<ClassSource> walkDirectory(Path dirPath, SignatureFactory factory) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
       return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
-          .flatMap(p -> Utils.optionalToStream(classProvider.getClass(this, p))).collect(Collectors.toList());
+          .flatMap(p -> Utils.optionalToStream(classProvider.getClass(this, p, PathBasedNamespace.fromPath(p, factory))))
+          .collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  // TODO: this would not work for java 9 modules: their path is e.g., modules/java.base/java/lang/System
+  // thus, I moved it to the corresponding namespace
+  // currently, I cannot think of a general way for java 9 modules anyway....
+  public static ClassSignature fromPath(Path path, SignatureFactory fac) {
+    return fac.getClassSignature(FilenameUtils.removeExtension(path.toString()).replace('/', '.'));
   }
 
   protected Optional<ClassSource> getClassSourceInternal(ClassSignature signature, Path path) {
@@ -65,7 +76,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
       return Optional.empty();
     }
 
-    return classProvider.getClass(this, pathToClass);
+    return classProvider.getClass(this, pathToClass, signature);
   }
 
   private static final class DirectoryBasedNamespace extends PathBasedNamespace {
@@ -75,8 +86,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    public Collection<ClassSource> getClassSources() {
-      return walkDirectory(path);
+    public Collection<ClassSource> getClassSources(SignatureFactory factory) {
+      return walkDirectory(path,factory);
     }
 
     @Override
@@ -102,10 +113,10 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    protected Collection<ClassSource> getClassSources() {
+    protected Collection<ClassSource> getClassSources(SignatureFactory factory) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
-        return walkDirectory(archiveRoot);
+        return walkDirectory(archiveRoot, factory);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

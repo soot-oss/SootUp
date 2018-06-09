@@ -4,7 +4,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+@Category(Java8Test.class)
 
 public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
 

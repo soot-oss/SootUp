@@ -9,6 +9,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import categories.Java8Test;
+
+@Category(Java8Test.class)
 
 public class SignatureFactoryTest {
 

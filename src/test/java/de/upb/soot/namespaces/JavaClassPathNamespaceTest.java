@@ -5,10 +5,14 @@ import de.upb.soot.signatures.ClassSignature;
 import java.io.File;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import categories.Java8Test;
 
 /**
  * @author Manuel Benz created on 07.06.18
  */
+@Category(Java8Test.class)
 public class JavaClassPathNamespaceTest extends AbstractNamespaceTest {
 
   @Test(expected = JavaClassPathNamespace.InvalidClassPathException.class)
@@ -65,8 +69,8 @@ public class JavaClassPathNamespaceTest extends AbstractNamespaceTest {
 
   @Test
   public void dirAndJar() {
-    final JavaClassPathNamespace javaClassPathNamespace = new JavaClassPathNamespace(getClassProvider(),
-        String.format("target/classes%starget/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar", File.pathSeparator));
+    final JavaClassPathNamespace javaClassPathNamespace = new JavaClassPathNamespace(getClassProvider(), String
+        .format("target/classes%starget/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar", File.pathSeparator));
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(javaClassPathNamespace, sig, MIN_CLASSES_FOUND * 2);
   }
