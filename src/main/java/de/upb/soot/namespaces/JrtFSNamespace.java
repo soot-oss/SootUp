@@ -5,6 +5,8 @@ import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModulePackageSignature;
+import de.upb.soot.signatures.ModuleSignatureFactory;
+import de.upb.soot.signatures.SignatureFactory;
 
 import com.google.common.base.Preconditions;
 
@@ -19,12 +21,16 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
+
 /**
  * Base class for {@link INamespace}s that can be located by a {@link Path} object.
  *
  * @author Andreas Dann created on 06.06.18
  */
 public class JrtFSNamespace extends AbstractNamespace {
+
+  private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
   protected JrtFSNamespace(IClassProvider classProvider) {
     super(classProvider);
@@ -38,68 +44,99 @@ public class JrtFSNamespace extends AbstractNamespace {
   }
 
   private Optional<ClassSource> getClassSourceInternalForClassPath(ClassSignature classSignature) {
-    try (FileSystem fs = FileSystems.getFileSystem(URI.create("jrt:/"))) {
-      Path filepath = classSignature.toPath(classProvider.getHandledFileType(), fs);
-      final Path moduleRoot = fs.getPath("modules");
-      try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
+
+    Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
+    final Path moduleRoot = theFileSystem.getPath("modules");
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
+      {
 
         for (Path entry : stream) {
           // check each module folder for the class
           Path foundfile = entry.resolve(filepath);
           if (Files.isRegularFile(foundfile)) {
-            return classProvider.getClass(this, foundfile);
+            return classProvider.getClass(this, foundfile, classSignature);
 
           }
         }
       }
-
     } catch (IOException e) {
       e.printStackTrace();
     }
 
     return Optional.empty();
+
   }
 
   private Optional<ClassSource> getClassSourceInternalForModule(ClassSignature classSignature) {
     Preconditions.checkArgument(classSignature.packageSignature instanceof ModulePackageSignature);
 
     ModulePackageSignature modulePackageSignature = (ModulePackageSignature) classSignature.packageSignature;
-    try (FileSystem fs = FileSystems.getFileSystem(URI.create("jrt:/"))) {
-      Path filepath = classSignature.toPath(classProvider.getHandledFileType(), fs);
-      final Path moduleRoot = fs.getPath("modules");
-      Path modulePath = moduleRoot.resolve(modulePackageSignature.moduleSignature.moduleName);
-      Path foundClass = modulePath.resolve(filepath);
-      if (Files.isRegularFile(foundClass)) {
-        return classProvider.getClass(this, foundClass);
 
-      } else {
-        return Optional.empty();
-      }
+    Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
+    final Path module = theFileSystem.getPath("modules", modulePackageSignature.moduleSignature.moduleName);
+    Path foundClass = module.resolve(filepath);
 
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    // this does not improve the performance
+    // String filename = classSignature.getFullyQualifiedName().replace('.', '/') + "." +
+    // classProvider.getHandledFileType().getExtension();
+    // Path foundClass = theFileSystem.getPath("modules",modulePackageSignature.moduleSignature.moduleName,filename);
+
+    if (Files.isRegularFile(foundClass)) {
+      return classProvider.getClass(this, foundClass, classSignature);
+
+    } else {
+      return Optional.empty();
     }
 
   }
 
+  // get the factory, which I should use the create the correspond class signatures
   @Override
-  protected Collection<ClassSource> getClassSources() {
-    try (FileSystem fs = FileSystems.getFileSystem(URI.create("jrt:/"))) {
-      final Path archiveRoot = fs.getPath("modules");
-      return walkDirectory(archiveRoot);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+  protected Collection<ClassSource> getClassSources(SignatureFactory factory) {
+
+    final Path archiveRoot = theFileSystem.getPath("modules");
+    return walkDirectory(archiveRoot, factory);
+
   }
 
-  protected Collection<ClassSource> walkDirectory(Path dirPath) {
+  protected Collection<ClassSource> walkDirectory(Path dirPath, SignatureFactory factory) {
+
+    final FileType handledFileType = classProvider.getHandledFileType();
     try {
-      final FileType handledFileType = classProvider.getHandledFileType();
       return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
-          .flatMap(p -> Utils.optionalToStream(classProvider.getClass(this, p))).collect(Collectors.toList());
+          .flatMap(
+              p -> Utils.optionalToStream(classProvider.getClass(this, p, JrtFSNamespace.fromPath(p, dirPath, factory))))
+          .collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
+
+  }
+
+  // TODO: originally, I could create a ModuleSingatre in any case, however, then
+  // every signature factory needs a method create from path
+  // however, I cannot think of a general way for java 9 modules anyway....
+  // how to create the module name if we have a jar file..., or a multi jar, or the jrt file system
+  // nevertheless, one general method for all signatures seems reasonable
+  public static ClassSignature fromPath(Path file, Path moduleDir, SignatureFactory fac) {
+
+    // else use the module system and create fully class signature
+    if (fac instanceof ModuleSignatureFactory) {
+      String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
+      int index = filename.lastIndexOf('.');
+      // get the package
+      String packagename = filename.substring(0, index);
+      String classname = filename.substring(0, index);
+      return ((ModuleSignatureFactory) fac).getClassSignature(classname, packagename, moduleDir.toString());
+    }
+
+    // if we are using the normal signature factory, than trim the module from the path
+    if (fac instanceof SignatureFactory) {
+      return fac.getClassSignature(FilenameUtils.removeExtension(file.toString()).replace('/', '.'));
+
+    }
+    return null;
+
   }
 
 }
