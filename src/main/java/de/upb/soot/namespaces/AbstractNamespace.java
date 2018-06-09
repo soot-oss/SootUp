@@ -4,6 +4,7 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -23,8 +24,8 @@ public abstract class AbstractNamespace implements INamespace {
   }
 
   @Override
-  public Collection<SootClass> getClasses() {
-    return getClassSources().stream().map(cs -> new SootClass(cs)).collect(Collectors.toList());
+  public Collection<SootClass> getClasses(SignatureFactory factory) {
+    return getClassSources(factory).stream().map(cs -> new SootClass(cs)).collect(Collectors.toList());
   }
 
   @Override
@@ -32,7 +33,7 @@ public abstract class AbstractNamespace implements INamespace {
     return getClassSource(classSignature).map(cs -> new SootClass(cs));
   }
 
-  protected abstract Collection<ClassSource> getClassSources();
+  protected abstract Collection<ClassSource> getClassSources(SignatureFactory factory);
 
   protected abstract Optional<ClassSource> getClassSource(ClassSignature classSignature);
 }

@@ -33,10 +33,7 @@ public class ClassSignature extends TypeSignature {
     this.packageSignature = packageSignature;
   }
 
-  //TODO: this would not work for java 9 modules: their path is e.g., modules/java.base/java/lang/System
-  public static ClassSignature fromPath(Path path, SignatureFactory fac) {
-    return fac.getClassSignature(FilenameUtils.removeExtension(path.toString()).replace('/', '.'));
-  }
+
 
   @Override
   public boolean equals(Object o) {

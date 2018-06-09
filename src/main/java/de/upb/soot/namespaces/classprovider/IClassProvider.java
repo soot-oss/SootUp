@@ -2,6 +2,7 @@ package de.upb.soot.namespaces.classprovider;
 
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
+import de.upb.soot.signatures.ClassSignature;
 
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -24,9 +25,10 @@ public interface IClassProvider {
    * @param sourcePath
    *          Path to the source file of the to-be-created {@link ClassSource}. The given path has to exist and requires to
    *          be handled by this {@link IClassProvider}. Implementations might double check this if wanted.
+   * @param classSignature the signature that has been used to resolve this class
    * @return A not yet resolved {@link ClassSource}, backed up by the given file
    */
-  Optional<ClassSource> getClass(INamespace ns, Path sourcePath);
+  Optional<ClassSource> getClass(INamespace ns, Path sourcePath, ClassSignature classSignature);
 
   /**
    * Returns the file type that is handled by this provider, e.g. class, jimple, java

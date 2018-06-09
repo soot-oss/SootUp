@@ -6,6 +6,7 @@ import de.upb.soot.Utils;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -97,12 +98,12 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Collection<ClassSource> getClassSources() {
+  public Collection<ClassSource> getClassSources(SignatureFactory factory) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
     Set<ClassSource> found = new HashSet<>();
     for (AbstractNamespace ns : cpEntries) {
-      found.addAll(ns.getClassSources());
+      found.addAll(ns.getClassSources(factory));
     }
     return found;
   }

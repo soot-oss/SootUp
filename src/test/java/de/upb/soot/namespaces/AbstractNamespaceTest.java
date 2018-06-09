@@ -1,5 +1,6 @@
 package de.upb.soot.namespaces;
 
+import categories.Java8Test;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
@@ -10,10 +11,12 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.experimental.categories.Category;
 
 /**
  * @author Manuel Benz created on 07.06.18
  */
+@Category(Java8Test.class)
 public abstract class AbstractNamespaceTest {
 
   protected static final int MIN_CLASSES_FOUND = 20;
@@ -40,7 +43,7 @@ public abstract class AbstractNamespaceTest {
   }
 
   protected IClassProvider createClassProvider() {
-    return new DummyClassProvider(getSignatureFactory());
+    return new DummyClassProvider();
   }
 
   protected void testClassReceival(AbstractNamespace ns, ClassSignature sig, int minClassesFound) {
@@ -49,7 +52,7 @@ public abstract class AbstractNamespaceTest {
     Assert.assertTrue(clazz.isPresent());
     Assert.assertEquals(sig, clazz.get().getClassSignature());
 
-    final Collection<ClassSource> classSources = ns.getClassSources();
+    final Collection<ClassSource> classSources = ns.getClassSources(getSignatureFactory());
     Assert.assertNotNull(classSources);
     Assert.assertFalse(classSources.isEmpty());
     Assert.assertTrue(classSources.size() >= minClassesFound);

@@ -2,6 +2,7 @@ package de.upb.soot.namespaces;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -18,7 +19,7 @@ public interface INamespace {
    * 
    * @return A collection of not-yet-resolved {@link SootClass}es
    */
-  Collection<SootClass> getClasses();
+  Collection<SootClass> getClasses(SignatureFactory factory);
 
   /**
    * Searches the namespace and all sub-namespaces for a {@link SootClass} matching the given {@link ClassSignature}.
