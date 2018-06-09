@@ -51,7 +51,7 @@ pipeline {
             }
 
             steps {
-              sh 'mvn test'
+              sh 'mvn test -Dgroups="categories.Java8Test"'
               jacoco(   execPattern: '**/target/coverage-reports/jacoco-ut.exec',
               classPattern: '**/classes',
               sourcePattern: 'src/main/java',
@@ -80,7 +80,7 @@ pipeline {
             }
 
             steps {
-              sh 'mvn test'
+              sh 'mvn test -Dgroups="categories.Java9Test"'
               jacoco(
               execPattern: '**/target/coverage-reports/jacoco-ut.exec',
               classPattern: '**/classes',
