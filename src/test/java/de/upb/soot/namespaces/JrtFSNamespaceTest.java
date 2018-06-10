@@ -1,12 +1,12 @@
 package de.upb.soot.namespaces;
 
-import categories.Java8Test;
-import categories.Java9Test;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import categories.Java9Test;
 
 @Category(Java9Test.class)
 
@@ -20,7 +20,7 @@ public class JrtFSNamespaceTest extends AbstractNamespaceTest {
   }
 
   @Test
-  //todo findout why this test is slow, extremly > 1 sec
+  // todo findout why this test is slow, extremly > 1 sec
   public void getClassSourceModule() {
     JrtFSNamespace ns = new JrtFSNamespace(getClassProvider());
     final ClassSignature sig = new ModuleSignatureFactory() {
@@ -30,9 +30,17 @@ public class JrtFSNamespaceTest extends AbstractNamespaceTest {
   }
 
   @Test
-  public void getClassSources() {
+  public void getClassSourcesClasspath() {
     JrtFSNamespace ns = new JrtFSNamespace(getClassProvider());
     ns.getClasses(getSignatureFactory());
+
+  }
+
+  @Test
+  public void getClassSourcesModulepath() {
+    JrtFSNamespace ns = new JrtFSNamespace(getClassProvider());
+    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory(){};
+    ns.getClasses(signatureFactory);
 
   }
 }

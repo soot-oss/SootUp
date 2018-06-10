@@ -103,9 +103,8 @@ public class JrtFSNamespace extends AbstractNamespace {
 
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
-      return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
-          .flatMap(
-              p -> Utils.optionalToStream(classProvider.getClass(this, p, JrtFSNamespace.fromPath(p, dirPath, factory))))
+      return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType)).flatMap(
+          p -> Utils.optionalToStream(classProvider.getClass(this, p, JrtFSNamespace.fromPath(p, p.subpath(1, 2), factory))))
           .collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
@@ -118,21 +117,23 @@ public class JrtFSNamespace extends AbstractNamespace {
   // however, I cannot think of a general way for java 9 modules anyway....
   // how to create the module name if we have a jar file..., or a multi jar, or the jrt file system
   // nevertheless, one general method for all signatures seems reasonable
-  public static ClassSignature fromPath(Path file, Path moduleDir, SignatureFactory fac) {
+  public static ClassSignature fromPath(final Path filename, final Path moduleDir, final SignatureFactory fac) {
 
     // else use the module system and create fully class signature
     if (fac instanceof ModuleSignatureFactory) {
-      String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
-      int index = filename.lastIndexOf('.');
+      // String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
+      // int index = filename.lastIndexOf('.');
+      Path parentDir = filename.subpath(0, 2);
+      Path packageFileName = parentDir.relativize(filename);
       // get the package
-      String packagename = filename.substring(0, index);
-      String classname = filename.substring(0, index);
+      String packagename = packageFileName.toString().replace('/', '.');
+      String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
       return ((ModuleSignatureFactory) fac).getClassSignature(classname, packagename, moduleDir.toString());
     }
 
     // if we are using the normal signature factory, than trim the module from the path
     if (fac instanceof SignatureFactory) {
-      return fac.getClassSignature(FilenameUtils.removeExtension(file.toString()).replace('/', '.'));
+      return fac.getClassSignature(FilenameUtils.removeExtension(filename.toString()).replace('/', '.'));
 
     }
     return null;
