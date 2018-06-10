@@ -119,15 +119,19 @@ public class ModuleSignatureFactory extends SignatureFactory {
 
     String moduleName = parent.toString();
 
-    // Path parentDir = filename.subpath(0, 2);
-    Path packageFileName = file.subpath(0, file.getNameCount() - 1);
+    String packageName = "";
 
-    // get the package
-    String packagename = packageFileName.toString().replace('/', '.');
+    // check if the path contains a package
+    int filePathLength = file.getNameCount();
+    if (filePathLength > 1) {
+      Path packageFileName = file.subpath(0, filePathLength - 1);
 
+      // get the package
+      packageName = packageFileName.toString().replace('/', '.');
+    }
     // get the className
-    String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
-    return this.getClassSignature(classname, packagename, moduleName);
+    String classname = FilenameUtils.removeExtension(file.getFileName().toString());
+    return this.getClassSignature(classname, packageName, moduleName);
 
   }
 }
