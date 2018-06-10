@@ -2,11 +2,13 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Preconditions;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
 
 /**
@@ -158,5 +160,13 @@ public class SignatureFactory {
       parameterSignatures.add(parameterSignature);
     }
     return new MethodSignature(methodName, declaringClassSignature, returnTypeSignature, parameterSignatures);
+  }
+
+  // TODO: this would not work for java 9 modules: their path is e.g., modules/java.base/java/lang/System
+  // thus, I moved it to the corresponding namespace
+  // currently, I cannot think of a general way for java 9 modules anyway....
+  public ClassSignature fromPath(final Path file, final Path parent) {
+    String fullyQualifiedName = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
+    return this.getClassSignature(fullyQualifiedName);
   }
 }

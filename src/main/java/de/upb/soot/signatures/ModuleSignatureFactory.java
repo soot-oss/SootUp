@@ -2,8 +2,11 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Preconditions;
 
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Factory to create valid signatures for Java classes in a modulepath.
@@ -11,6 +14,8 @@ import java.util.Map;
  * @author Andreas Dann
  */
 public class ModuleSignatureFactory extends SignatureFactory {
+
+  public static final ClassSignature MODULE_INFO_CLASS = new ClassSignature("module-info", PackageSignature.DEFAULT_PACKAGE);
 
   protected final Map<String, ModuleSignature> modules = new HashMap<>();
 
@@ -102,5 +107,27 @@ public class ModuleSignatureFactory extends SignatureFactory {
   public ClassSignature getClassSignature(final String className, final String packageName, final String moduleName) {
     PackageSignature packageSignature = getPackageSignature(packageName, moduleName);
     return new ClassSignature(className, packageSignature);
+  }
+
+  // TODO: originally, I could create a ModuleSingatre in any case, however, then
+  // every signature factory needs a method create from path
+  // however, I cannot think of a general way for java 9 modules anyway....
+  // how to create the module name if we have a jar file..., or a multi jar, or the jrt file system
+  // nevertheless, one general method for all signatures seems reasonable
+  // first part is the module, rest is package, than class
+  public ClassSignature fromPath(final Path file, final Path parent) {
+
+    String moduleName = parent.toString();
+
+    // Path parentDir = filename.subpath(0, 2);
+    Path packageFileName = file.subpath(0, file.getNameCount() - 1);
+
+    // get the package
+    String packagename = packageFileName.toString().replace('/', '.');
+
+    // get the className
+    String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
+    return this.getClassSignature(classname, packagename, moduleName);
+
   }
 }

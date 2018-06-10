@@ -104,13 +104,14 @@ public class JrtFSNamespace extends AbstractNamespace {
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
       return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType)).flatMap(
-          p -> Utils.optionalToStream(classProvider.getClass(this, p, JrtFSNamespace.fromPath(p, p.subpath(1, 2), factory))))
+          p -> Utils.optionalToStream(classProvider.getClass(this, p, factory.fromPath(p.subpath(2,p.getNameCount()),p.subpath(1,2)) )))
           .collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
 
   }
+
 
   // TODO: originally, I could create a ModuleSingatre in any case, however, then
   // every signature factory needs a method create from path

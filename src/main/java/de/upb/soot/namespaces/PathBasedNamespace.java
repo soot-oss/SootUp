@@ -55,19 +55,14 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
       return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
-          .flatMap(p -> Utils.optionalToStream(classProvider.getClass(this, p, PathBasedNamespace.fromPath(p, factory))))
+          .flatMap(p -> Utils.optionalToStream(classProvider.getClass(this, p, factory.fromPath(p, dirPath))))
           .collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
   }
 
-  // TODO: this would not work for java 9 modules: their path is e.g., modules/java.base/java/lang/System
-  // thus, I moved it to the corresponding namespace
-  // currently, I cannot think of a general way for java 9 modules anyway....
-  public static ClassSignature fromPath(Path path, SignatureFactory fac) {
-    return fac.getClassSignature(FilenameUtils.removeExtension(path.toString()).replace('/', '.'));
-  }
+
 
   protected Optional<ClassSource> getClassSourceInternal(ClassSignature signature, Path path) {
     Path pathToClass = path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));

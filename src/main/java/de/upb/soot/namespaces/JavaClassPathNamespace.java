@@ -37,7 +37,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   private static final Logger logger = LoggerFactory.getLogger(JavaClassPathNamespace.class);
   private static final String WILDCARD_CHAR = "*";
 
-  private Collection<AbstractNamespace> cpEntries;
+  protected Collection<AbstractNamespace> cpEntries;
 
   /**
    * Creates a {@link JavaClassPathNamespace} which locates classes based on the provided {@link IClassProvider}.
