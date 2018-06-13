@@ -9,8 +9,6 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
-import org.apache.commons.io.FilenameUtils;
-
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
 public class ClassSignature extends TypeSignature {
 
@@ -21,7 +19,7 @@ public class ClassSignature extends TypeSignature {
   public final PackageSignature packageSignature;
 
   /**
-   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a {@link SignatureFactory}
+   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a {@link DefaultSignatureFactory}
    *
    * @param className
    *          the simple name of the class, e.g., ClassA NOT my.package.ClassA

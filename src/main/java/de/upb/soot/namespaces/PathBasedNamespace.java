@@ -15,8 +15,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FilenameUtils;
-
 /**
  * Base class for {@link INamespace}s that can be located by a {@link Path} object.
  *
@@ -55,8 +53,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
       return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
-          .flatMap(p -> Utils.optionalToStream(classProvider.getClass(this, p, factory.fromPath(p, dirPath))))
-          .collect(Collectors.toList());
+          .flatMap(p -> Utils.optionalToStream(classProvider.getClass(this, p, factory.fromPath(p)))).collect(Collectors.toList());
+
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }

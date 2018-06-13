@@ -10,7 +10,7 @@ public class ModulePackageSignature extends PackageSignature {
 
   /**
    * Internal: Constructs a Package Signature for Java 9 Packages. Instances should only be created by a
-   * {@link SignatureFactory}
+   * {@link DefaultSignatureFactory}
    *
    * @param packageName
    *          the package's name

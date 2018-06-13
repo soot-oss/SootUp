@@ -9,6 +9,7 @@ import de.upb.soot.signatures.SignatureFactory;
 import java.util.Collection;
 import java.util.Optional;
 
+import de.upb.soot.signatures.DefaultSignatureFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.experimental.categories.Category;
@@ -38,7 +39,7 @@ public abstract class AbstractNamespaceTest {
   }
 
   protected SignatureFactory createSignatureFactory() {
-    return new SignatureFactory() {
+    return new DefaultSignatureFactory() {
     };
   }
 
