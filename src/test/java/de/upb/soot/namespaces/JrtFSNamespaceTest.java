@@ -3,6 +3,9 @@ package de.upb.soot.namespaces;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 
+import java.util.Collection;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -39,8 +42,16 @@ public class JrtFSNamespaceTest extends AbstractNamespaceTest {
   @Test
   public void getClassSourcesModulepath() {
     JrtFSNamespace ns = new JrtFSNamespace(getClassProvider());
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory(){};
-    ns.getClasses(signatureFactory);
+    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory() {
+    };
+
+  }
+
+  @Test
+  public void discoverModules() {
+    JrtFSNamespace ns = new JrtFSNamespace(getClassProvider());
+    Collection<String> modules = ns.discoverModules();
+    Assert.assertEquals(modules.size(), 99);
 
   }
 }

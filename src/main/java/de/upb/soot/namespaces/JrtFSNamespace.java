@@ -17,7 +17,9 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -111,6 +113,25 @@ public class JrtFSNamespace extends AbstractNamespace {
       throw new IllegalArgumentException(e);
     }
 
+  }
+
+  public Collection<String> discoverModules() {
+    final Path moduleRoot = theFileSystem.getPath("modules");
+    List<String> foundModules = new ArrayList<>();
+
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
+      {
+
+        for (Path entry : stream) {
+          if (Files.isDirectory(entry)) {
+            foundModules.add(entry.subpath(1, 2).toString());
+          }
+        }
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    return foundModules;
   }
 
   // TODO: originally, I could create a ModuleSingatre in any case, however, then
