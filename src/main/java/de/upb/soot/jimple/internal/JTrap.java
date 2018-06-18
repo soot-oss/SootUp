@@ -31,9 +31,9 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.core.Unit;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.UnitBox;
+import de.upb.soot.jimple.stmt.Unit;
+import de.upb.soot.jimple.stmt.UnitBox;
 
 public class JTrap extends AbstractTrap
 {

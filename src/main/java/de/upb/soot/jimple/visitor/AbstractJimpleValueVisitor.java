@@ -1,7 +1,9 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.visitor;
 
+import de.upb.soot.jimple.Local;
 import de.upb.soot.jimple.expr.AddExpr;
 import de.upb.soot.jimple.expr.AndExpr;
+import de.upb.soot.jimple.expr.ArrayRef;
 import de.upb.soot.jimple.expr.CastExpr;
 import de.upb.soot.jimple.expr.CmpExpr;
 import de.upb.soot.jimple.expr.CmpgExpr;
@@ -32,10 +34,19 @@ import de.upb.soot.jimple.expr.SubExpr;
 import de.upb.soot.jimple.expr.UshrExpr;
 import de.upb.soot.jimple.expr.VirtualInvokeExpr;
 import de.upb.soot.jimple.expr.XorExpr;
+import de.upb.soot.jimple.ref.CaughtExceptionRef;
+import de.upb.soot.jimple.ref.InstanceFieldRef;
+import de.upb.soot.jimple.ref.ParameterRef;
+import de.upb.soot.jimple.ref.StaticFieldRef;
+import de.upb.soot.jimple.ref.ThisRef;
 
-public abstract class AbstractExprSwitch implements ExprSwitch
+public abstract class AbstractJimpleValueVisitor extends AbstractConstantVisitor implements IJimpleValueVisitor
 {
-    Object result;
+    @Override
+    public void caseArrayRef(ArrayRef v)
+    {
+        defaultCase(v);
+    }
 
     @Override
     public void caseAddExpr(AddExpr v)
@@ -80,12 +91,6 @@ public abstract class AbstractExprSwitch implements ExprSwitch
     }
 
     @Override
-    public void caseNeExpr(NeExpr v)
-    {
-        defaultCase(v);
-    }
-
-    @Override
     public void caseGeExpr(GeExpr v)
     {
         defaultCase(v);
@@ -116,6 +121,12 @@ public abstract class AbstractExprSwitch implements ExprSwitch
     }
 
     @Override
+    public void caseNeExpr(NeExpr v)
+    {
+        defaultCase(v);
+    }
+
+    @Override
     public void caseOrExpr(OrExpr v)
     {
         defaultCase(v);
@@ -140,13 +151,13 @@ public abstract class AbstractExprSwitch implements ExprSwitch
     }
 
     @Override
-    public void caseUshrExpr(UshrExpr v)
+    public void caseSubExpr(SubExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseSubExpr(SubExpr v)
+    public void caseUshrExpr(UshrExpr v)
     {
         defaultCase(v);
     }
@@ -180,9 +191,9 @@ public abstract class AbstractExprSwitch implements ExprSwitch
     {
         defaultCase(v);
     }
-
+    
     @Override
-    public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
+    public void caseDynamicInvokeExpr(DynamicInvokeExpr v){
     	defaultCase(v);
     }
 
@@ -229,17 +240,39 @@ public abstract class AbstractExprSwitch implements ExprSwitch
     }
 
     @Override
-    public void defaultCase(Object obj)
+    public void caseInstanceFieldRef(InstanceFieldRef v)
     {
+        defaultCase(v);
     }
 
-    public void setResult(Object result)
+    public void caseLocal(Local v)
     {
-        this.result = result;
+        defaultCase(v);
     }
 
-    public Object getResult()
+    @Override
+    public void caseParameterRef(ParameterRef v)
     {
-        return result;
+        defaultCase(v);
     }
+
+    @Override
+    public void caseCaughtExceptionRef(CaughtExceptionRef v)
+    {
+        defaultCase(v);
+    }
+
+    @Override
+    public void caseThisRef(ThisRef v)
+    {
+        defaultCase(v);
+    }
+
+    @Override
+    public void caseStaticFieldRef(StaticFieldRef v)
+    {
+        defaultCase(v);
+    }
+  
 }
+

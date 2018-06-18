@@ -35,11 +35,11 @@ import java.util.List;
 
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.StmtSwitch;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.stmt.RetStmt;
+import de.upb.soot.jimple.visitor.IStmtVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JRetStmt extends AbstractStmt implements RetStmt
 {
@@ -107,7 +107,7 @@ public class JRetStmt extends AbstractStmt implements RetStmt
     @Override
     public void accept(IVisitor sw)
     {
-        ((StmtSwitch) sw).caseRetStmt(this);
+        ((IStmtVisitor) sw).caseRetStmt(this);
     }    
 
     @Override

@@ -30,12 +30,12 @@ import java.util.List;
 
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.expr.StaticInvokeExpr;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
 public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr
@@ -127,7 +127,7 @@ public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr
 
 	@Override
   public void accept(IVisitor sw) {
-		((ExprSwitch) sw).caseStaticInvokeExpr(this);
+		((IExprVisitor) sw).caseStaticInvokeExpr(this);
 	}
 
 }

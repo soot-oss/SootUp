@@ -27,14 +27,15 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.expr;
 
 import java.util.List;
 
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.type.ArrayType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public interface NewMultiArrayExpr extends Expr, AnyNewExpr
 {
@@ -46,5 +47,5 @@ public interface NewMultiArrayExpr extends Expr, AnyNewExpr
     public List<Value> getSizes();
     public void setSize(int index, Value size);
     public Type getType();
-    public void apply(Switch sw);
+    public void accept(IVisitor sw);
 }

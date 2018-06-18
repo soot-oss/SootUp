@@ -1,4 +1,4 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.visitor;
 
 import de.upb.soot.jimple.stmt.AssignStmt;
 import de.upb.soot.jimple.stmt.BreakpointStmt;
@@ -16,7 +16,7 @@ import de.upb.soot.jimple.stmt.ReturnVoidStmt;
 import de.upb.soot.jimple.stmt.TableSwitchStmt;
 import de.upb.soot.jimple.stmt.ThrowStmt;
 
-public abstract class AbstractStmtSwitch implements StmtSwitch
+public abstract class AbstractStmtVisitor implements IStmtVisitor
 {
     Object result;
 

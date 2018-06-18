@@ -1,4 +1,4 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.visitor;
 
 import de.upb.soot.jimple.expr.AddExpr;
 import de.upb.soot.jimple.expr.AndExpr;
@@ -33,7 +33,7 @@ import de.upb.soot.jimple.expr.UshrExpr;
 import de.upb.soot.jimple.expr.VirtualInvokeExpr;
 import de.upb.soot.jimple.expr.XorExpr;
 
-public interface ExprSwitch extends IVisitor
+public interface IExprVisitor extends IVisitor
 {
     public abstract void caseAddExpr(AddExpr v);
     public abstract void caseAndExpr(AndExpr v);

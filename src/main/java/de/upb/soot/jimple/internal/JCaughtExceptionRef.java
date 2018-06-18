@@ -30,12 +30,12 @@ import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.CaughtExceptionRef;
-import de.upb.soot.jimple.RefSwitch;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.ref.CaughtExceptionRef;
 import de.upb.soot.jimple.type.RefType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IRefVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JCaughtExceptionRef implements CaughtExceptionRef
 {
@@ -88,6 +88,6 @@ public class JCaughtExceptionRef implements CaughtExceptionRef
     @Override
     public void accept(IVisitor sw)
     {
-        ((RefSwitch) sw).caseCaughtExceptionRef(this);
+        ((IRefVisitor) sw).caseCaughtExceptionRef(this);
     }
 }

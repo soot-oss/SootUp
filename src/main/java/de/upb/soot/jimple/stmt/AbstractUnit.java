@@ -1,10 +1,11 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.stmt;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.upb.soot.core.Unit;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public abstract class AbstractUnit implements Unit {
 

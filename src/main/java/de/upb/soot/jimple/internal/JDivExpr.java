@@ -31,11 +31,11 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.expr.DivExpr;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JDivExpr extends AbstractJimpleFloatBinopExpr implements DivExpr
 {
@@ -43,7 +43,7 @@ public class JDivExpr extends AbstractJimpleFloatBinopExpr implements DivExpr
     @Override
     public final String getSymbol() { return " / "; }
     @Override
-    public void accept(IVisitor sw) { ((ExprSwitch) sw).caseDivExpr(this); }
+    public void accept(IVisitor sw) { ((IExprVisitor) sw).caseDivExpr(this); }
 
     @Override
     public Object clone() 

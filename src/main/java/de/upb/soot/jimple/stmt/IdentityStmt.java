@@ -27,8 +27,9 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.stmt;
 
+import de.upb.soot.jimple.ref.IdentityRef;
 
 public interface IdentityStmt extends DefinitionStmt, IdentityRef 
 {

@@ -27,9 +27,12 @@
 
 
 
-package de.upb.soot.jimple;
 
-public interface IdentityRef extends Ref
+package de.upb.soot.jimple.ref;
+
+import de.upb.soot.jimple.Value;
+
+public interface Ref extends Value
 {
 }
 

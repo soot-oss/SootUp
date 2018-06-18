@@ -27,11 +27,9 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.stmt;
 
 import java.util.List;
-
-import de.upb.soot.core.Unit;
 
 public interface TableSwitchStmt extends SwitchStmt
 {

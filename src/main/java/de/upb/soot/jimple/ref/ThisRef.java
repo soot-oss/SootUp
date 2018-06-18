@@ -24,14 +24,17 @@
  */
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.ref;
 
 import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
+import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.type.RefType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IRefVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class ThisRef implements IdentityRef
 {
@@ -79,7 +82,7 @@ public class ThisRef implements IdentityRef
 
     public void accept(IVisitor sw)
     {
-        ((RefSwitch) sw).caseThisRef(this);
+        ((IRefVisitor) sw).caseThisRef(this);
     }
     
     @Override

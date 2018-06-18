@@ -28,7 +28,7 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.ref;
 
 import java.util.Collections;
 import java.util.List;
@@ -36,15 +36,17 @@ import java.util.List;
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootFieldRef;
+import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IRefVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class StaticFieldRef implements FieldRef
 {
 
-
 	protected SootFieldRef fieldRef;
 
-    protected StaticFieldRef(SootFieldRef fieldRef)
+  public StaticFieldRef(SootFieldRef fieldRef)
     {
         if( !fieldRef.isStatic() ) {
           throw new RuntimeException("wrong static-ness");
@@ -64,6 +66,7 @@ public class StaticFieldRef implements FieldRef
         return fieldRef.getSignature();
     }
 
+    @Override
     public void toString( UnitPrinter up ) {
         up.fieldRef(fieldRef);
     }
@@ -84,21 +87,25 @@ public class StaticFieldRef implements FieldRef
         return fieldRef.resolve();
     }
 
+    @Override
     public List<ValueBox> getUseBoxes()
     {
         return Collections.emptyList();
     }
 
+    @Override
     public Type getType()
     {
         return fieldRef.type();
     }
 
+    @Override
     public void accept(IVisitor sw)
     {
-        ((RefSwitch) sw).caseStaticFieldRef(this);
+        ((IRefVisitor) sw).caseStaticFieldRef(this);
     }
     
+    @Override
     public boolean equivTo(Object o)
     {
         if (o instanceof StaticFieldRef) {
@@ -108,6 +115,7 @@ public class StaticFieldRef implements FieldRef
         return false;
     }
 
+    @Override
     public int equivHashCode()
     {
         return getField().equivHashCode();

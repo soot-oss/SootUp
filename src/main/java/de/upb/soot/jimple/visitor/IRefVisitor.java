@@ -1,6 +1,5 @@
 /* Soot - a J*va Optimization Framework
  * Copyright (C) 1997-1999 Raja Vallee-Rai
- * Copyright (C) 2004 Ondrej Lhotak
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,15 +27,25 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootFieldRef;
-import de.upb.soot.jimple.expr.ConcreteRef;
+import de.upb.soot.jimple.expr.ArrayRef;
+import de.upb.soot.jimple.ref.CaughtExceptionRef;
+import de.upb.soot.jimple.ref.InstanceFieldRef;
+import de.upb.soot.jimple.ref.ParameterRef;
+import de.upb.soot.jimple.ref.StaticFieldRef;
+import de.upb.soot.jimple.ref.ThisRef;
 
-public interface FieldRef extends ConcreteRef
+public interface IRefVisitor extends IVisitor
 {
-    public SootFieldRef getFieldRef();
-    public void setFieldRef(SootFieldRef sfr);
-    public SootField getField();
+    public abstract void caseArrayRef(ArrayRef v);
+    public abstract void caseStaticFieldRef(StaticFieldRef v);
+    public abstract void caseInstanceFieldRef(InstanceFieldRef v);
+    public abstract void caseParameterRef(ParameterRef v);
+    public abstract void caseCaughtExceptionRef(CaughtExceptionRef v);
+    public abstract void caseThisRef(ThisRef v);
+    public abstract void defaultCase(Object obj);
 }
+
+
+

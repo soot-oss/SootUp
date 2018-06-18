@@ -31,11 +31,11 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.expr.OrExpr;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JOrExpr extends AbstractJimpleIntLongBinopExpr implements OrExpr
 {
@@ -43,7 +43,7 @@ public class JOrExpr extends AbstractJimpleIntLongBinopExpr implements OrExpr
     @Override
     public String getSymbol() { return " | "; }
     @Override
-    public void accept(IVisitor sw) { ((ExprSwitch) sw).caseOrExpr(this); }
+    public void accept(IVisitor sw) { ((IExprVisitor) sw).caseOrExpr(this); }
 
     @Override
     public Object clone() 

@@ -31,11 +31,11 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.expr.NeExpr;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JNeExpr extends AbstractJimpleIntBinopExpr implements NeExpr
 {
@@ -43,7 +43,7 @@ public class JNeExpr extends AbstractJimpleIntBinopExpr implements NeExpr
     @Override
     public final String getSymbol() { return " != "; }
     @Override
-    public void accept(IVisitor sw) { ((ExprSwitch) sw).caseNeExpr(this); }
+    public void accept(IVisitor sw) { ((IExprVisitor) sw).caseNeExpr(this); }
 
     @Override
     public Object clone() 

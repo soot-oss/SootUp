@@ -27,7 +27,10 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.ref;
+
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
 
 public interface InstanceFieldRef extends FieldRef
 {

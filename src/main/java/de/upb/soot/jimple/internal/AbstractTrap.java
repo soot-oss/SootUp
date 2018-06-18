@@ -10,8 +10,8 @@ import java.util.List;
 
 import de.upb.soot.Scene;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.core.Unit;
-import de.upb.soot.jimple.UnitBox;
+import de.upb.soot.jimple.stmt.Unit;
+import de.upb.soot.jimple.stmt.UnitBox;
 
 /* Soot - a J*va Optimization Framework
  * Copyright (C) 1997-1999 Raja Vallee-Rai

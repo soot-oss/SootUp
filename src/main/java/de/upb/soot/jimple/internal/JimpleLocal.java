@@ -30,11 +30,11 @@ import java.util.List;
 
 import de.upb.soot.Scene;
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.JimpleValueSwitch;
 import de.upb.soot.jimple.Local;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IJimpleValueVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JimpleLocal implements Local {
 	protected String name;
@@ -118,7 +118,7 @@ public class JimpleLocal implements Local {
 
 	@Override
 	public void accept(IVisitor sw) {
-		((JimpleValueSwitch) sw).caseLocal(this);
+		((IJimpleValueVisitor) sw).caseLocal(this);
 	}
 
 	@Override

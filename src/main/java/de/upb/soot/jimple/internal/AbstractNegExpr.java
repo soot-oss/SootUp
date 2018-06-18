@@ -32,9 +32,7 @@ package de.upb.soot.jimple.internal;
 
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.expr.NegExpr;
@@ -48,6 +46,8 @@ import de.upb.soot.jimple.type.LongType;
 import de.upb.soot.jimple.type.ShortType;
 import de.upb.soot.jimple.type.Type;
 import de.upb.soot.jimple.type.UnknownType;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
 public abstract class AbstractNegExpr extends AbstractUnopExpr implements NegExpr
@@ -106,6 +106,6 @@ public abstract class AbstractNegExpr extends AbstractUnopExpr implements NegExp
 
     public void accept(IVisitor sw)
     {
-        ((ExprSwitch) sw).caseNegExpr(this);
+        ((IExprVisitor) sw).caseNegExpr(this);
     }
 }

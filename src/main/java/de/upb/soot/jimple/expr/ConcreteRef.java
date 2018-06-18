@@ -27,7 +27,9 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.expr;
+
+import de.upb.soot.jimple.ref.Ref;
 
 public interface ConcreteRef extends Ref
 {

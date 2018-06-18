@@ -32,9 +32,9 @@ package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.StmtSwitch;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.stmt.BreakpointStmt;
+import de.upb.soot.jimple.visitor.IStmtVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JBreakpointStmt extends AbstractStmt implements BreakpointStmt
 {
@@ -55,7 +55,7 @@ public class JBreakpointStmt extends AbstractStmt implements BreakpointStmt
     @Override
     public void accept(IVisitor sw)
     {
-        ((StmtSwitch) sw).caseBreakpointStmt(this);
+        ((IStmtVisitor) sw).caseBreakpointStmt(this);
     }
     
     @Override

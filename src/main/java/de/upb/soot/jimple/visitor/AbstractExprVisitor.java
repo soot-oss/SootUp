@@ -1,8 +1,7 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.visitor;
 
 import de.upb.soot.jimple.expr.AddExpr;
 import de.upb.soot.jimple.expr.AndExpr;
-import de.upb.soot.jimple.expr.ArrayRef;
 import de.upb.soot.jimple.expr.CastExpr;
 import de.upb.soot.jimple.expr.CmpExpr;
 import de.upb.soot.jimple.expr.CmpgExpr;
@@ -34,13 +33,9 @@ import de.upb.soot.jimple.expr.UshrExpr;
 import de.upb.soot.jimple.expr.VirtualInvokeExpr;
 import de.upb.soot.jimple.expr.XorExpr;
 
-public abstract class AbstractJimpleValueSwitch extends AbstractConstantSwitch implements JimpleValueSwitch
+public abstract class AbstractExprVisitor implements IExprVisitor
 {
-    @Override
-    public void caseArrayRef(ArrayRef v)
-    {
-        defaultCase(v);
-    }
+    Object result;
 
     @Override
     public void caseAddExpr(AddExpr v)
@@ -85,6 +80,12 @@ public abstract class AbstractJimpleValueSwitch extends AbstractConstantSwitch i
     }
 
     @Override
+    public void caseNeExpr(NeExpr v)
+    {
+        defaultCase(v);
+    }
+
+    @Override
     public void caseGeExpr(GeExpr v)
     {
         defaultCase(v);
@@ -115,12 +116,6 @@ public abstract class AbstractJimpleValueSwitch extends AbstractConstantSwitch i
     }
 
     @Override
-    public void caseNeExpr(NeExpr v)
-    {
-        defaultCase(v);
-    }
-
-    @Override
     public void caseOrExpr(OrExpr v)
     {
         defaultCase(v);
@@ -145,13 +140,13 @@ public abstract class AbstractJimpleValueSwitch extends AbstractConstantSwitch i
     }
 
     @Override
-    public void caseSubExpr(SubExpr v)
+    public void caseUshrExpr(UshrExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseUshrExpr(UshrExpr v)
+    public void caseSubExpr(SubExpr v)
     {
         defaultCase(v);
     }
@@ -185,9 +180,9 @@ public abstract class AbstractJimpleValueSwitch extends AbstractConstantSwitch i
     {
         defaultCase(v);
     }
-    
+
     @Override
-    public void caseDynamicInvokeExpr(DynamicInvokeExpr v){
+    public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
     	defaultCase(v);
     }
 
@@ -234,39 +229,17 @@ public abstract class AbstractJimpleValueSwitch extends AbstractConstantSwitch i
     }
 
     @Override
-    public void caseInstanceFieldRef(InstanceFieldRef v)
+    public void defaultCase(Object obj)
     {
-        defaultCase(v);
     }
 
-    public void caseLocal(Local v)
+    public void setResult(Object result)
     {
-        defaultCase(v);
+        this.result = result;
     }
 
-    @Override
-    public void caseParameterRef(ParameterRef v)
+    public Object getResult()
     {
-        defaultCase(v);
+        return result;
     }
-
-    @Override
-    public void caseCaughtExceptionRef(CaughtExceptionRef v)
-    {
-        defaultCase(v);
-    }
-
-    @Override
-    public void caseThisRef(ThisRef v)
-    {
-        defaultCase(v);
-    }
-
-    @Override
-    public void caseStaticFieldRef(StaticFieldRef v)
-    {
-        defaultCase(v);
-    }
-  
 }
-

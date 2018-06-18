@@ -1,4 +1,4 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.stmt;
 
 import java.util.List;
 

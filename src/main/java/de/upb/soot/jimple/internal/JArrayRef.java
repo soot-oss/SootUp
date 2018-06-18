@@ -36,8 +36,6 @@ import java.util.List;
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Local;
-import de.upb.soot.jimple.RefSwitch;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.expr.ArrayRef;
@@ -45,6 +43,8 @@ import de.upb.soot.jimple.type.ArrayType;
 import de.upb.soot.jimple.type.NullType;
 import de.upb.soot.jimple.type.Type;
 import de.upb.soot.jimple.type.UnknownType;
+import de.upb.soot.jimple.visitor.IRefVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JArrayRef implements ArrayRef
 {
@@ -185,7 +185,7 @@ public class JArrayRef implements ArrayRef
     @Override
     public void accept(IVisitor sw)
     {
-        ((RefSwitch) sw).caseArrayRef(this);
+        ((IRefVisitor) sw).caseArrayRef(this);
     }
 
 }

@@ -32,9 +32,9 @@ package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.StmtSwitch;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.stmt.ReturnVoidStmt;
+import de.upb.soot.jimple.visitor.IStmtVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JReturnVoidStmt extends AbstractStmt implements ReturnVoidStmt
 {
@@ -61,7 +61,7 @@ public class JReturnVoidStmt extends AbstractStmt implements ReturnVoidStmt
     @Override
     public void accept(IVisitor sw)
     {
-        ((StmtSwitch) sw).caseReturnVoidStmt(this);
+        ((IStmtVisitor) sw).caseReturnVoidStmt(this);
     }
     
 

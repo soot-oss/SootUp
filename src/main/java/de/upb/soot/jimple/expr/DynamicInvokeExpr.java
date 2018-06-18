@@ -27,12 +27,12 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.expr;
 
 import java.util.List;
 
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.core.Value;
+import de.upb.soot.jimple.Value;
 
 public interface DynamicInvokeExpr extends InvokeExpr
 {

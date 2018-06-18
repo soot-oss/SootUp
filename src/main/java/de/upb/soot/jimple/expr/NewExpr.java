@@ -27,15 +27,16 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.expr;
 
 import de.upb.soot.jimple.type.RefType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public interface NewExpr extends Expr, AnyNewExpr
 {
     public RefType getBaseType();
     public void setBaseType(RefType type);
     public Type getType();
-    public void apply(Switch sw);
+    public void accept(IVisitor sw);
 }

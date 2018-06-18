@@ -30,9 +30,9 @@
 
 package de.upb.soot.jimple.internal;
 
-import de.upb.soot.core.Unit;
-import de.upb.soot.jimple.AbstractUnitBox;
+import de.upb.soot.jimple.stmt.AbstractUnitBox;
 import de.upb.soot.jimple.stmt.Stmt;
+import de.upb.soot.jimple.stmt.Unit;
 
 public class StmtBox extends AbstractUnitBox
 {

@@ -35,14 +35,14 @@ import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.expr.NewMultiArrayExpr;
 import de.upb.soot.jimple.type.ArrayType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
 public abstract class AbstractNewMultiArrayExpr implements NewMultiArrayExpr
@@ -190,7 +190,7 @@ public abstract class AbstractNewMultiArrayExpr implements NewMultiArrayExpr
     @Override
     public void accept(IVisitor sw)
     {
-        ((ExprSwitch) sw).caseNewMultiArrayExpr(this);
+        ((IExprVisitor) sw).caseNewMultiArrayExpr(this);
     }
 
 }

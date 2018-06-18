@@ -28,11 +28,11 @@ package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.expr.SpecialInvokeExpr;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
 public abstract class AbstractSpecialInvokeExpr extends AbstractInstanceInvokeExpr
@@ -117,7 +117,7 @@ public abstract class AbstractSpecialInvokeExpr extends AbstractInstanceInvokeEx
 	}
 
 	public void accept(IVisitor sw) {
-		((ExprSwitch) sw).caseSpecialInvokeExpr(this);
+		((IExprVisitor) sw).caseSpecialInvokeExpr(this);
 	}
 
 

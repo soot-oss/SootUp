@@ -27,12 +27,12 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.stmt;
 
 
 import java.util.List;
 
-import de.upb.soot.core.Unit;
+import de.upb.soot.jimple.constant.IntConstant;
 
 public interface LookupSwitchStmt extends SwitchStmt
 {

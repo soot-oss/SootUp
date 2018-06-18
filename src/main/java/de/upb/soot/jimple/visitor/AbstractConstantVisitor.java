@@ -1,5 +1,6 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.visitor;
 
+import de.upb.soot.jimple.MethodHandle;
 import de.upb.soot.jimple.constant.ClassConstant;
 import de.upb.soot.jimple.constant.DoubleConstant;
 import de.upb.soot.jimple.constant.FloatConstant;
@@ -8,7 +9,7 @@ import de.upb.soot.jimple.constant.LongConstant;
 import de.upb.soot.jimple.constant.NullConstant;
 import de.upb.soot.jimple.constant.StringConstant;
 
-public abstract class AbstractConstantSwitch implements ConstantSwitch
+public abstract class AbstractConstantVisitor implements IConstantVisitor
 {
     Object result;
 

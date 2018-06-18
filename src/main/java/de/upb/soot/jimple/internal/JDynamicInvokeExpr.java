@@ -35,12 +35,12 @@ import de.upb.soot.UnitPrinter;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.expr.DynamicInvokeExpr;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
 public class JDynamicInvokeExpr extends AbstractInvokeExpr implements DynamicInvokeExpr {
@@ -225,7 +225,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr implements DynamicInv
 
 	@Override
   public void accept(IVisitor sw) {
-		((ExprSwitch) sw).caseDynamicInvokeExpr(this);
+		((IExprVisitor) sw).caseDynamicInvokeExpr(this);
 	}
 
 	@Override

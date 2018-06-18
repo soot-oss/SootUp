@@ -28,15 +28,15 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.expr;
 
 
 import java.util.List;
 
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.type.Type;
 
 public interface InvokeExpr extends Expr

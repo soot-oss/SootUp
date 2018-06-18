@@ -27,11 +27,12 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.expr;
 
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public interface InstanceOfExpr extends Expr
 {
@@ -41,5 +42,5 @@ public interface InstanceOfExpr extends Expr
     public Type getType();
     public Type getCheckType();
     public void setCheckType(Type checkType);
-    public void apply(Switch sw);
+    public void accept(IVisitor sw);
 }

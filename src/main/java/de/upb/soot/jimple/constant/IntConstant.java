@@ -27,10 +27,12 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.constant;
 
 import de.upb.soot.jimple.type.IntType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IConstantVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class IntConstant extends ArithmeticConstant
 {
@@ -230,9 +232,9 @@ public class IntConstant extends ArithmeticConstant
         return IntType.v();
     }
 
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
-        ((ConstantSwitch) sw).caseIntConstant(this);
+        ((IConstantVisitor) sw).caseIntConstant(this);
     }
     
 }

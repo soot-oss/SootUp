@@ -1,4 +1,4 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.constant;
 
 @SuppressWarnings("serial")
 public abstract class ArithmeticConstant extends NumericConstant

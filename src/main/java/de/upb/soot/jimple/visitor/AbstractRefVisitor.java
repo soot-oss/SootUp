@@ -1,8 +1,13 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.visitor;
 
 import de.upb.soot.jimple.expr.ArrayRef;
+import de.upb.soot.jimple.ref.CaughtExceptionRef;
+import de.upb.soot.jimple.ref.InstanceFieldRef;
+import de.upb.soot.jimple.ref.ParameterRef;
+import de.upb.soot.jimple.ref.StaticFieldRef;
+import de.upb.soot.jimple.ref.ThisRef;
 
-public abstract class AbstractRefSwitch implements RefSwitch
+public abstract class AbstractRefVisitor implements IRefVisitor
 {
     @Override
     public void caseArrayRef(ArrayRef v)

@@ -23,7 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.constant;
 
 import de.upb.soot.jimple.type.ArrayType;
 import de.upb.soot.jimple.type.BooleanType;
@@ -37,6 +37,8 @@ import de.upb.soot.jimple.type.PrimType;
 import de.upb.soot.jimple.type.RefType;
 import de.upb.soot.jimple.type.ShortType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IConstantVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class ClassConstant extends Constant {
 	public final String value;
@@ -158,7 +160,7 @@ public class ClassConstant extends Constant {
 		return RefType.v("java.lang.Class");
 	}
 
-	public void apply(Switch sw) {
-		((ConstantSwitch) sw).caseClassConstant(this);
+	public void accept(IVisitor sw) {
+		((IConstantVisitor) sw).caseClassConstant(this);
 	}
 }

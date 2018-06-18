@@ -2,12 +2,12 @@ package de.upb.soot;
 
 import de.upb.soot.core.SootFieldRef;
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.core.Unit;
-import de.upb.soot.jimple.IdentityRef;
 import de.upb.soot.jimple.Local;
-import de.upb.soot.jimple.UnitBox;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.constant.Constant;
+import de.upb.soot.jimple.ref.IdentityRef;
+import de.upb.soot.jimple.stmt.Unit;
+import de.upb.soot.jimple.stmt.UnitBox;
 import de.upb.soot.jimple.type.Type;
 
 /**

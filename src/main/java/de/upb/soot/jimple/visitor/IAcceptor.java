@@ -24,11 +24,11 @@
  */
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.visitor;
 
 /** Basic interface used for visited objects in the Visitor design pattern. */
-public interface IVisitorAcceptor
+public interface IAcceptor
 {
     /** Called when this object is visited. */
-    void accept(IVisitor sw);
+  public void accept(IVisitor sw);
 }

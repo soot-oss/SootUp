@@ -27,13 +27,13 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.expr.LengthExpr;
 import de.upb.soot.jimple.type.IntType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
 public abstract class AbstractLengthExpr extends AbstractUnopExpr implements LengthExpr
@@ -77,6 +77,6 @@ public abstract class AbstractLengthExpr extends AbstractUnopExpr implements Len
 
     public void accept(IVisitor sw)
     {
-        ((ExprSwitch) sw).caseLengthExpr(this);
+        ((IExprVisitor) sw).caseLengthExpr(this);
     }
 }

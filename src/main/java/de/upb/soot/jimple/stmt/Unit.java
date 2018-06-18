@@ -1,14 +1,13 @@
-package de.upb.soot.core;
+package de.upb.soot.jimple.stmt;
 
 import java.io.Serializable;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.IVisitorAcceptor;
-import de.upb.soot.jimple.UnitBox;
 import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.visitor.IAcceptor;
 
-public interface Unit extends IVisitorAcceptor, Serializable {
+public interface Unit extends IAcceptor, Serializable {
 
   /** Returns a list of Boxes containing Values used in this Unit. */
   public List<ValueBox> getUseBoxes();

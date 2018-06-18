@@ -33,6 +33,8 @@ import de.upb.soot.core.SootMethodRef;
 import de.upb.soot.jimple.constant.Constant;
 import de.upb.soot.jimple.type.RefType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IConstantVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class MethodHandle extends Constant
 {
@@ -68,7 +70,7 @@ public class MethodHandle extends Constant
 
     public void accept(IVisitor sw)
     {
-        ((ConstantSwitch) sw).caseMethodHandle(this);
+        ((IConstantVisitor) sw).caseMethodHandle(this);
     }
 
 	@Override

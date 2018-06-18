@@ -33,14 +33,14 @@ package de.upb.soot.jimple.internal;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Unit;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.StmtSwitch;
-import de.upb.soot.jimple.IVisitor;
-import de.upb.soot.jimple.UnitBox;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.stmt.TableSwitchStmt;
+import de.upb.soot.jimple.stmt.Unit;
+import de.upb.soot.jimple.stmt.UnitBox;
+import de.upb.soot.jimple.visitor.IStmtVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JTableSwitchStmt extends AbstractSwitchStmt 
     implements TableSwitchStmt
@@ -195,7 +195,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt
     @Override
     public void accept(IVisitor sw)
     {
-        ((StmtSwitch) sw).caseTableSwitchStmt(this);
+        ((IStmtVisitor) sw).caseTableSwitchStmt(this);
     }    
 
 }

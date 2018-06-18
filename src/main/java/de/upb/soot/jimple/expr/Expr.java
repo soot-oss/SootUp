@@ -27,9 +27,9 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.expr;
 
-import de.upb.soot.core.Value;
+import de.upb.soot.jimple.Value;
 
 public interface Expr extends Value
 {

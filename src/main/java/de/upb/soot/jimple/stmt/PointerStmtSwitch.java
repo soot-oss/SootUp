@@ -17,14 +17,27 @@
  * Boston, MA 02111-1307, USA.
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.stmt;
 
-import de.upb.soot.core.Local;
-import de.upb.soot.core.Value;
+import de.upb.soot.jimple.Local;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.constant.Constant;
+import de.upb.soot.jimple.expr.ArrayRef;
+import de.upb.soot.jimple.expr.CastExpr;
+import de.upb.soot.jimple.expr.Expr;
+import de.upb.soot.jimple.expr.InvokeExpr;
+import de.upb.soot.jimple.expr.NewArrayExpr;
+import de.upb.soot.jimple.expr.NewExpr;
+import de.upb.soot.jimple.expr.NewMultiArrayExpr;
+import de.upb.soot.jimple.ref.CaughtExceptionRef;
+import de.upb.soot.jimple.ref.IdentityRef;
+import de.upb.soot.jimple.ref.InstanceFieldRef;
+import de.upb.soot.jimple.ref.StaticFieldRef;
 import de.upb.soot.jimple.type.ArrayType;
 import de.upb.soot.jimple.type.RefType;
+import de.upb.soot.jimple.visitor.AbstractStmtVisitor;
 
-public abstract class PointerStmtSwitch extends AbstractStmtSwitch {
+public abstract class PointerStmtSwitch extends AbstractStmtVisitor {
     Stmt statement;
 
     /** A statement of the form l = constant; */

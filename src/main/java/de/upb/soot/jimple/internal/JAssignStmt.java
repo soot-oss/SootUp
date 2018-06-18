@@ -28,18 +28,18 @@ package de.upb.soot.jimple.internal;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.FieldRef;
 import de.upb.soot.jimple.Immediate;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.StmtSwitch;
-import de.upb.soot.jimple.IVisitor;
-import de.upb.soot.jimple.UnitBox;
-import de.upb.soot.jimple.UnitBoxOwner;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.expr.ArrayRef;
 import de.upb.soot.jimple.expr.InvokeExpr;
+import de.upb.soot.jimple.ref.FieldRef;
 import de.upb.soot.jimple.stmt.AssignStmt;
+import de.upb.soot.jimple.stmt.UnitBox;
+import de.upb.soot.jimple.stmt.UnitBoxOwner;
+import de.upb.soot.jimple.visitor.IStmtVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JAssignStmt extends AbstractDefinitionStmt implements AssignStmt {
   private static class LinkedVariableBox extends VariableBox {
@@ -236,7 +236,7 @@ public class JAssignStmt extends AbstractDefinitionStmt implements AssignStmt {
 
   @Override
   public void accept(IVisitor sw) {
-    ((StmtSwitch) sw).caseAssignStmt(this);
+    ((IStmtVisitor) sw).caseAssignStmt(this);
   }
 
 }

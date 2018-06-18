@@ -28,11 +28,11 @@ package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.expr.VirtualInvokeExpr;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public abstract class AbstractVirtualInvokeExpr extends AbstractInstanceInvokeExpr
     implements VirtualInvokeExpr {
@@ -73,7 +73,7 @@ public abstract class AbstractVirtualInvokeExpr extends AbstractInstanceInvokeEx
   public abstract Object clone();
 
 	public void accept(IVisitor sw) {
-		((ExprSwitch) sw).caseVirtualInvokeExpr(this);
+		((IExprVisitor) sw).caseVirtualInvokeExpr(this);
 	}
 
 	@Override

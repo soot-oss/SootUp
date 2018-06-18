@@ -27,10 +27,10 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.stmt;
 
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
 
 public interface ExitMonitorStmt extends MonitorStmt
 {

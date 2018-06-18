@@ -27,13 +27,16 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.ref;
 
 import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
+import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IRefVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 /** <code>ParameterRef</code> objects are used by <code>Body</code>
  * objects to refer to the parameter slots on method entry. <br>
@@ -114,6 +117,6 @@ public class ParameterRef implements IdentityRef
     /** Used with RefSwitch. */
     public void accept(IVisitor sw)
     {
-        ((RefSwitch) sw).caseParameterRef(this);
+        ((IRefVisitor) sw).caseParameterRef(this);
     }
 }

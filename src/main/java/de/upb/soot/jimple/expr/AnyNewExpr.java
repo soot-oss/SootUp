@@ -1,4 +1,4 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.expr;
 
 /** Any expression that allocates objects.
  */

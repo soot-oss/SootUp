@@ -27,7 +27,7 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.stmt;
 
 public interface NopStmt extends Stmt
 {

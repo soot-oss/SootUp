@@ -27,11 +27,12 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.expr;
 
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public interface NewArrayExpr extends Expr, AnyNewExpr
 {
@@ -44,5 +45,5 @@ public interface NewArrayExpr extends Expr, AnyNewExpr
     @Override
     public Type getType();
     @Override
-    public void apply(Switch sw);
+    public void accept(IVisitor sw);
 }

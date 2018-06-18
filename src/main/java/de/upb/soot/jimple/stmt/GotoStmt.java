@@ -27,10 +27,7 @@
 
 
 
-package de.upb.soot.jimple;
-
-import de.upb.soot.core.Unit;
-import de.upb.soot.core.UnitBox;
+package de.upb.soot.jimple.stmt;
 
 public interface GotoStmt extends Stmt
 {

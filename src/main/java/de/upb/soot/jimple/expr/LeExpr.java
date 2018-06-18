@@ -28,7 +28,7 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.expr;
 
 public interface LeExpr extends ConditionExpr
 {

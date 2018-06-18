@@ -4,15 +4,15 @@ import java.io.Serializable;
 
 import de.upb.soot.Scene;
 import de.upb.soot.jimple.Numberable;
-import de.upb.soot.jimple.IVisitor;
-import de.upb.soot.jimple.IVisitorAcceptor;
+import de.upb.soot.jimple.visitor.IAcceptor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 /**
  * Represents types within Soot, eg <code>int</code>, <code>java.lang.String</code>.
  * 
  *
  */
-public abstract class Type implements IVisitorAcceptor, Serializable, Numberable {
+public abstract class Type implements IAcceptor, Serializable, Numberable {
   public Type() {
     Scene.v().getTypeNumberer().add(this);
   }

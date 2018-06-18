@@ -27,9 +27,9 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.stmt;
 
-import de.upb.soot.core.Value;
+import de.upb.soot.jimple.Value;
 
 public interface AssignStmt extends DefinitionStmt
 {

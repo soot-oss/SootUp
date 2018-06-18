@@ -1,8 +1,10 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.stmt;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Unit;
-import de.upb.soot.core.ValueBox;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.ArrayRef;
+import de.upb.soot.jimple.expr.InvokeExpr;
+import de.upb.soot.jimple.ref.FieldRef;
 
 public interface Stmt extends Unit
 {

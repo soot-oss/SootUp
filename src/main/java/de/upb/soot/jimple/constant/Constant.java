@@ -27,15 +27,15 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.constant;
 
 import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Immediate;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
+import de.upb.soot.jimple.Immediate;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
 
 public abstract class Constant implements Value, Immediate
 {

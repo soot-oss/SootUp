@@ -24,10 +24,12 @@
  */
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.constant;
 
 import de.upb.soot.jimple.type.DoubleType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IConstantVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 /**
  * Floating point constant with double precision.
@@ -175,8 +177,8 @@ public class DoubleConstant extends RealConstant {
     }
 
   @Override
-  public void apply(Switch sw) {
-    ((ConstantSwitch) sw).caseDoubleConstant(this);
+  public void accept(IVisitor sw) {
+    ((IConstantVisitor) sw).caseDoubleConstant(this);
   }
 
     /**

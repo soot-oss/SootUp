@@ -27,10 +27,12 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.constant;
 
 import de.upb.soot.jimple.type.RefType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IConstantVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class StringConstant extends Constant
 {
@@ -66,8 +68,8 @@ public class StringConstant extends Constant
         return RefType.v("java.lang.String");
     }
 
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
-        ((ConstantSwitch) sw).caseStringConstant(this);
+        ((IConstantVisitor) sw).caseStringConstant(this);
     }
 }

@@ -30,7 +30,6 @@ import java.util.List;
 
 import de.upb.soot.core.SootFieldRef;
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.core.Unit;
 import de.upb.soot.jimple.constant.IntConstant;
 import de.upb.soot.jimple.expr.AddExpr;
 import de.upb.soot.jimple.expr.AndExpr;
@@ -111,6 +110,11 @@ import de.upb.soot.jimple.internal.JUshrExpr;
 import de.upb.soot.jimple.internal.JVirtualInvokeExpr;
 import de.upb.soot.jimple.internal.JXorExpr;
 import de.upb.soot.jimple.internal.JimpleLocal;
+import de.upb.soot.jimple.ref.CaughtExceptionRef;
+import de.upb.soot.jimple.ref.InstanceFieldRef;
+import de.upb.soot.jimple.ref.ParameterRef;
+import de.upb.soot.jimple.ref.StaticFieldRef;
+import de.upb.soot.jimple.ref.ThisRef;
 import de.upb.soot.jimple.stmt.AssignStmt;
 import de.upb.soot.jimple.stmt.BreakpointStmt;
 import de.upb.soot.jimple.stmt.EnterMonitorStmt;
@@ -126,6 +130,8 @@ import de.upb.soot.jimple.stmt.ReturnStmt;
 import de.upb.soot.jimple.stmt.ReturnVoidStmt;
 import de.upb.soot.jimple.stmt.TableSwitchStmt;
 import de.upb.soot.jimple.stmt.ThrowStmt;
+import de.upb.soot.jimple.stmt.Unit;
+import de.upb.soot.jimple.stmt.UnitBox;
 import de.upb.soot.jimple.type.RefType;
 import de.upb.soot.jimple.type.Type;
 /**

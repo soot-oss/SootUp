@@ -1,6 +1,6 @@
 package de.upb.soot.jimple.type;
 
-import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class BooleanType extends Type {
 

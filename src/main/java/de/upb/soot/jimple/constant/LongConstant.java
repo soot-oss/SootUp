@@ -27,10 +27,12 @@
 
 
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.constant;
 
 import de.upb.soot.jimple.type.LongType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IConstantVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 public class LongConstant extends ArithmeticConstant
 {
@@ -244,9 +246,9 @@ public class LongConstant extends ArithmeticConstant
         return LongType.v();
     }
 
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
-        ((ConstantSwitch) sw).caseLongConstant(this);
+        ((IConstantVisitor) sw).caseLongConstant(this);
     }
 }
 

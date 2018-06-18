@@ -30,13 +30,13 @@ import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.IVisitor;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.expr.NewExpr;
 import de.upb.soot.jimple.type.RefType;
 import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
 public abstract class AbstractNewExpr implements NewExpr
@@ -103,6 +103,6 @@ public abstract class AbstractNewExpr implements NewExpr
     @Override
     public void accept(IVisitor sw)
     {
-        ((ExprSwitch) sw).caseNewExpr(this);
+        ((IExprVisitor) sw).caseNewExpr(this);
     }
 }
