@@ -10,13 +10,15 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.mockito.internal.matchers.GreaterOrEqual;
+import org.mockito.internal.matchers.LessOrEqual;
 
 /**
  * @author Manuel Benz created on 07.06.18
  */
 public abstract class AbstractNamespaceTest {
 
-  protected static final int MIN_CLASSES_FOUND = 20;
+  protected static final int CLASSES_IN_JAR = 25;
   private SignatureFactory signatureFactory;
   private IClassProvider classProvider;
 
@@ -44,6 +46,10 @@ public abstract class AbstractNamespaceTest {
   }
 
   protected void testClassReceival(AbstractNamespace ns, ClassSignature sig, int minClassesFound) {
+    testClassReceival(ns, sig, minClassesFound, -1);
+  }
+
+  protected void testClassReceival(AbstractNamespace ns, ClassSignature sig, int minClassesFound, int maxClassesFound) {
     final Optional<ClassSource> clazz = ns.getClassSource(sig);
 
     Assert.assertTrue(clazz.isPresent());
@@ -52,6 +58,9 @@ public abstract class AbstractNamespaceTest {
     final Collection<ClassSource> classSources = ns.getClassSources();
     Assert.assertNotNull(classSources);
     Assert.assertFalse(classSources.isEmpty());
-    Assert.assertTrue(classSources.size() >= minClassesFound);
+    Assert.assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));
+    if (maxClassesFound != -1) {
+      Assert.assertThat(classSources.size(), new LessOrEqual<>(maxClassesFound));
+    }
   }
 }
