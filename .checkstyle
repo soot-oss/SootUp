@@ -6,10 +6,13 @@
     <property name="config_loc" value="/Users/eric/git/soot-reloaded/codingstyle"/>
     <property name="checkstyle.header.file" value="/Users/eric/Documents/workspaces/soot-reloaded/.metadata/.plugins/org.eclipse.core.resources/.projects/Soot/com.basistech.m2e.code.quality.checkstyleConfigurator/checkstyle-header-validate.txt"/>
   </local-check-config>
-  <fileset name="java-sources-validate" enabled="true" check-config-name="maven-checkstyle-plugin validate" local="true">
-    <file-match-pattern match-pattern="^src/main/java/.*\.java" include-pattern="true"/>
-    <file-match-pattern match-pattern="^src/test/java/.*\.java" include-pattern="true"/>
+  <local-check-config name="maven-checkstyle-plugin checkstyle" location="file:/E:/Git/Develop/soot-reloaded/codingstyle/google_checkstyle.xml" type="remote" description="maven-checkstyle-plugin configuration checkstyle">
+    <property name="checkstyle.cache.file" value="${project_loc}/target/checkstyle-cachefile"/>
+    <property name="config_loc" value="E:\Git\Develop\soot-reloaded/codingstyle"/>
+    <property name="checkstyle.header.file" value="E:\Git\Develop\.metadata\.plugins\org.eclipse.core.resources\.projects\soot-reloaded\com.basistech.m2e.code.quality.checkstyleConfigurator\checkstyle-header-checkstyle.txt"/>
+  </local-check-config>
+  <fileset name="java-sources-checkstyle" enabled="true" check-config-name="maven-checkstyle-plugin checkstyle" local="true">
     <file-match-pattern match-pattern="^src/main/resources.*\.properties" include-pattern="true"/>
-    <file-match-pattern match-pattern="^src/test/resources.*\.properties" include-pattern="true"/>
+    <file-match-pattern match-pattern="^src/test/resources/.*\.properties" include-pattern="true"/>
   </fileset>
 </fileset-config>
