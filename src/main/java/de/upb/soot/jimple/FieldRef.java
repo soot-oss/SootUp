@@ -32,6 +32,7 @@ package de.upb.soot.jimple;
 
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootFieldRef;
+import de.upb.soot.jimple.expr.ConcreteRef;
 
 public interface FieldRef extends ConcreteRef
 {

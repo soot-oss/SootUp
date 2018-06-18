@@ -30,8 +30,6 @@
 
 package de.upb.soot.jimple;
 
-import de.upb.soot.core.Value;
-
 public interface Ref extends Value
 {
 }

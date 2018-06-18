@@ -4,8 +4,11 @@ import java.io.Serializable;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
+import de.upb.soot.jimple.IVisitorAcceptor;
+import de.upb.soot.jimple.UnitBox;
+import de.upb.soot.jimple.ValueBox;
 
-public interface Unit extends Switchable, Serializable {
+public interface Unit extends IVisitorAcceptor, Serializable {
 
   /** Returns a list of Boxes containing Values used in this Unit. */
   public List<ValueBox> getUseBoxes();

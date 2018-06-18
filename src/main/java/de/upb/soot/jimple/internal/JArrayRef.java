@@ -34,13 +34,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Local;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
-import de.upb.soot.jimple.ArrayRef;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.Local;
 import de.upb.soot.jimple.RefSwitch;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.ArrayRef;
 import de.upb.soot.jimple.type.ArrayType;
 import de.upb.soot.jimple.type.NullType;
 import de.upb.soot.jimple.type.Type;
@@ -183,7 +183,7 @@ public class JArrayRef implements ArrayRef
     }
 
     @Override
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((RefSwitch) sw).caseArrayRef(this);
     }

@@ -33,12 +33,12 @@ import java.util.List;
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootFieldRef;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.InstanceFieldRef;
 import de.upb.soot.jimple.PrecedenceTest;
 import de.upb.soot.jimple.RefSwitch;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.type.Type;
 
 @SuppressWarnings("serial")
@@ -130,7 +130,7 @@ public abstract class AbstractInstanceFieldRef implements InstanceFieldRef
     }
 
     @Override
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((RefSwitch) sw).caseInstanceFieldRef(this);
     }

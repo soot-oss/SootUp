@@ -29,9 +29,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
-import de.upb.soot.jimple.DefinitionStmt;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.stmt.DefinitionStmt;
 
 
 @SuppressWarnings("serial")

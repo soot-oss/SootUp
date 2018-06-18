@@ -35,12 +35,12 @@ import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.NewMultiArrayExpr;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.NewMultiArrayExpr;
 import de.upb.soot.jimple.type.ArrayType;
 import de.upb.soot.jimple.type.Type;
 
@@ -188,7 +188,7 @@ public abstract class AbstractNewMultiArrayExpr implements NewMultiArrayExpr
     }
 
     @Override
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((ExprSwitch) sw).caseNewMultiArrayExpr(this);
     }

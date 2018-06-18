@@ -30,9 +30,9 @@
 
 package de.upb.soot.jimple.internal;
 
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
 
 @SuppressWarnings("serial")
 abstract public class AbstractJimpleFloatBinopExpr

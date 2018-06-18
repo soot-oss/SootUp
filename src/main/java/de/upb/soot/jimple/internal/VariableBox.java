@@ -30,10 +30,10 @@
 
 package de.upb.soot.jimple.internal;
 
-import de.upb.soot.core.Local;
-import de.upb.soot.core.Value;
 import de.upb.soot.jimple.AbstractValueBox;
-import de.upb.soot.jimple.ConcreteRef;
+import de.upb.soot.jimple.Local;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.expr.ConcreteRef;
 
 public class VariableBox extends AbstractValueBox
 {

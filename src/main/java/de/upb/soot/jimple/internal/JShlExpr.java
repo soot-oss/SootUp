@@ -31,11 +31,11 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Value;
 import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.ShlExpr;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.expr.ShlExpr;
 import de.upb.soot.jimple.type.IntType;
 import de.upb.soot.jimple.type.LongType;
 import de.upb.soot.jimple.type.Type;
@@ -47,7 +47,7 @@ public class JShlExpr extends AbstractJimpleIntLongBinopExpr implements ShlExpr
     @Override
     public String getSymbol() { return " << "; }
     @Override
-    public void apply(Switch sw) { ((ExprSwitch) sw).caseShlExpr(this); }
+    public void accept(IVisitor sw) { ((ExprSwitch) sw).caseShlExpr(this); }
 
     @Override
     public Type getType()

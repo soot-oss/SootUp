@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.type.Type;
 
 /** <code>ParameterRef</code> objects are used by <code>Body</code>
@@ -113,7 +112,7 @@ public class ParameterRef implements IdentityRef
     }
 
     /** Used with RefSwitch. */
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((RefSwitch) sw).caseParameterRef(this);
     }

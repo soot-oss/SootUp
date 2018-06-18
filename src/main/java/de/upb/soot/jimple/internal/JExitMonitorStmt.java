@@ -34,16 +34,16 @@ import java.util.List;
 
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.core.Unit;
-import de.upb.soot.core.UnitBox;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
-import de.upb.soot.jimple.ArrayRef;
-import de.upb.soot.jimple.ExitMonitorStmt;
 import de.upb.soot.jimple.FieldRef;
-import de.upb.soot.jimple.InvokeExpr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.StmtSwitch;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.UnitBox;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.ArrayRef;
+import de.upb.soot.jimple.expr.InvokeExpr;
+import de.upb.soot.jimple.stmt.ExitMonitorStmt;
 
 public class JExitMonitorStmt extends AbstractOpStmt 
     implements ExitMonitorStmt
@@ -77,7 +77,7 @@ public class JExitMonitorStmt extends AbstractOpStmt
     }
 
     @Override
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((StmtSwitch) sw).caseExitMonitorStmt(this);
 

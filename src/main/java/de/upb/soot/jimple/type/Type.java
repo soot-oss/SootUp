@@ -3,16 +3,16 @@ package de.upb.soot.jimple.type;
 import java.io.Serializable;
 
 import de.upb.soot.Scene;
-import de.upb.soot.core.Numberable;
-import de.upb.soot.core.Switchable;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.Numberable;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.IVisitorAcceptor;
 
 /**
  * Represents types within Soot, eg <code>int</code>, <code>java.lang.String</code>.
  * 
  *
  */
-public abstract class Type implements Switchable, Serializable, Numberable {
+public abstract class Type implements IVisitorAcceptor, Serializable, Numberable {
   public Type() {
     Scene.v().getTypeNumberer().add(this);
   }
@@ -56,7 +56,7 @@ public abstract class Type implements Switchable, Serializable, Numberable {
 
   /** Method required for use of Switchable. */
   @Override
-  public void apply(Switch sw) {
+  public void accept(IVisitor sw) {
   }
 
   public void setArrayType(ArrayType at) {

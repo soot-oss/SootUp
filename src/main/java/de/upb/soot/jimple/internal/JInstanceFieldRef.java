@@ -28,8 +28,8 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.core.SootFieldRef;
-import de.upb.soot.core.Value;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.Value;
 
 public class JInstanceFieldRef extends AbstractInstanceFieldRef
 {

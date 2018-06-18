@@ -33,9 +33,9 @@ package de.upb.soot.jimple.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
-import de.upb.soot.jimple.UnopExpr;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.UnopExpr;
 
 @SuppressWarnings("serial")
 abstract public class AbstractUnopExpr implements UnopExpr

@@ -29,9 +29,9 @@ package de.upb.soot.jimple.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
-import de.upb.soot.jimple.Expr;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.Expr;
 
 @SuppressWarnings("serial")
 public abstract class AbstractBinopExpr implements Expr

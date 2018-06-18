@@ -34,10 +34,10 @@ package de.upb.soot.jimple.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.upb.soot.core.Local;
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.core.Value;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.Local;
+import de.upb.soot.jimple.Value;
 
 public class JSpecialInvokeExpr extends AbstractSpecialInvokeExpr 
 {	

@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.type.RefType;
 import de.upb.soot.jimple.type.Type;
 
@@ -78,7 +77,7 @@ public class ThisRef implements IdentityRef
         return thisType;
     }
 
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((RefSwitch) sw).caseThisRef(this);
     }

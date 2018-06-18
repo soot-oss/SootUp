@@ -1,4 +1,6 @@
-package de.upb.soot.core;
+package de.upb.soot.jimple;
+
+import de.upb.soot.core.SootMethod;
 
 public class Body {
 

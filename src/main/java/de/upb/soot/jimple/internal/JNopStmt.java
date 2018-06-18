@@ -32,9 +32,9 @@ package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.NopStmt;
 import de.upb.soot.jimple.StmtSwitch;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.stmt.NopStmt;
 
 public class JNopStmt extends AbstractStmt implements NopStmt
 {
@@ -61,7 +61,7 @@ public class JNopStmt extends AbstractStmt implements NopStmt
     }
     
     @Override
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((StmtSwitch) sw).caseNopStmt(this);
     }    

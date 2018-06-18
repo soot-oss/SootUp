@@ -29,12 +29,12 @@ package de.upb.soot.jimple.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.ExprSwitch;
-import de.upb.soot.jimple.InstanceOfExpr;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.InstanceOfExpr;
 import de.upb.soot.jimple.type.BooleanType;
 import de.upb.soot.jimple.type.Type;
 
@@ -125,7 +125,7 @@ public abstract class AbstractInstanceOfExpr implements InstanceOfExpr
     }
 
     @Override
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((ExprSwitch) sw).caseInstanceOfExpr(this);
     }

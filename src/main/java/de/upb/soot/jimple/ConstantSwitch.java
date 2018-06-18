@@ -1,6 +1,14 @@
 package de.upb.soot.jimple;
 
-public interface ConstantSwitch extends Switch
+import de.upb.soot.jimple.constant.ClassConstant;
+import de.upb.soot.jimple.constant.DoubleConstant;
+import de.upb.soot.jimple.constant.FloatConstant;
+import de.upb.soot.jimple.constant.IntConstant;
+import de.upb.soot.jimple.constant.LongConstant;
+import de.upb.soot.jimple.constant.NullConstant;
+import de.upb.soot.jimple.constant.StringConstant;
+
+public interface ConstantSwitch extends IVisitor
 {
     public abstract void caseDoubleConstant(DoubleConstant v);
     public abstract void caseFloatConstant(FloatConstant v);

@@ -3,8 +3,8 @@ package de.upb.soot.jimple.internal;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
 
 public abstract class AbstractOpStmt extends AbstractStmt {
 

@@ -31,12 +31,12 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
-import de.upb.soot.jimple.EnterMonitorStmt;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.StmtSwitch;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.stmt.EnterMonitorStmt;
 
 public class JEnterMonitorStmt extends AbstractOpStmt 
     implements EnterMonitorStmt
@@ -70,7 +70,7 @@ public class JEnterMonitorStmt extends AbstractOpStmt
     }
     
     @Override
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((StmtSwitch) sw).caseEnterMonitorStmt(this);
 

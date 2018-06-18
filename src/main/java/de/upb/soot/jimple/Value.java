@@ -1,4 +1,4 @@
-package de.upb.soot.core;
+package de.upb.soot.jimple;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,7 +12,7 @@ import de.upb.soot.jimple.type.Type;
  *
  * Values are typed, clonable and must declare which other Values they use (contain).
  */
-public interface Value extends Switchable, EquivTo, Serializable {
+public interface Value extends IVisitorAcceptor, EquivTo, Serializable {
   /**
    * Returns a List of boxes corresponding to Values which are used by (ie contained within) this
    * Value.

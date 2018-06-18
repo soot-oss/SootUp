@@ -1,4 +1,4 @@
-package de.upb.soot.core;
+package de.upb.soot.jimple;
 
 import java.io.Serializable;
 

@@ -30,9 +30,9 @@
 
 package de.upb.soot.jimple.internal;
 
-import de.upb.soot.core.Value;
 import de.upb.soot.jimple.AbstractValueBox;
-import de.upb.soot.jimple.ConditionExpr;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.expr.ConditionExpr;
 
 public class ConditionExprBox extends AbstractValueBox
 {

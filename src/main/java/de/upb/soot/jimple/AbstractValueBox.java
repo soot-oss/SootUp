@@ -1,8 +1,6 @@
 package de.upb.soot.jimple;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
 
 /**
  * Reference implementation for ValueBox; just add a canContainValue method.

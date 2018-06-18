@@ -36,7 +36,6 @@ import java.util.List;
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootFieldRef;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.type.Type;
 
 public class StaticFieldRef implements FieldRef
@@ -95,7 +94,7 @@ public class StaticFieldRef implements FieldRef
         return fieldRef.type();
     }
 
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((RefSwitch) sw).caseStaticFieldRef(this);
     }

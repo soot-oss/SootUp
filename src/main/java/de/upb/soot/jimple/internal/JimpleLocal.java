@@ -30,10 +30,10 @@ import java.util.List;
 
 import de.upb.soot.Scene;
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Local;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.JimpleValueSwitch;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.Local;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.type.Type;
 
 public class JimpleLocal implements Local {
@@ -117,7 +117,7 @@ public class JimpleLocal implements Local {
 	}
 
 	@Override
-	public void apply(Switch sw) {
+	public void accept(IVisitor sw) {
 		((JimpleValueSwitch) sw).caseLocal(this);
 	}
 

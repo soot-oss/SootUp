@@ -31,11 +31,11 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Value;
 import de.upb.soot.jimple.ExprSwitch;
-import de.upb.soot.jimple.GtExpr;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.expr.GtExpr;
 
 public class JGtExpr extends AbstractJimpleIntBinopExpr implements GtExpr
 {
@@ -43,7 +43,7 @@ public class JGtExpr extends AbstractJimpleIntBinopExpr implements GtExpr
     @Override
     public final String getSymbol() { return " > "; }
     @Override
-    public void apply(Switch sw) { ((ExprSwitch) sw).caseGtExpr(this); }
+    public void accept(IVisitor sw) { ((ExprSwitch) sw).caseGtExpr(this); }
     @Override
     public Object clone() 
     {

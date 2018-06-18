@@ -30,6 +30,7 @@
 package de.upb.soot.jimple;
 
 import de.upb.soot.core.SootMethodRef;
+import de.upb.soot.jimple.constant.Constant;
 import de.upb.soot.jimple.type.RefType;
 import de.upb.soot.jimple.type.Type;
 
@@ -65,7 +66,7 @@ public class MethodHandle extends Constant
 		return methodRef;
 	}
 
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((ConstantSwitch) sw).caseMethodHandle(this);
     }

@@ -1,5 +1,7 @@
 package de.upb.soot.jimple;
 
+import de.upb.soot.jimple.expr.ArrayRef;
+
 public abstract class AbstractRefSwitch implements RefSwitch
 {
     @Override

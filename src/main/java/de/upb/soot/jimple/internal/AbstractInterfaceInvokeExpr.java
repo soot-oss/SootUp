@@ -28,11 +28,11 @@ package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.ExprSwitch;
-import de.upb.soot.jimple.InterfaceInvokeExpr;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.InterfaceInvokeExpr;
 import de.upb.soot.jimple.type.DoubleType;
 import de.upb.soot.jimple.type.LongType;
 import de.upb.soot.jimple.type.Type;
@@ -120,7 +120,7 @@ public abstract class AbstractInterfaceInvokeExpr extends AbstractInstanceInvoke
 		up.literal(")");
 	}
 
-	public void apply(Switch sw) {
+	public void accept(IVisitor sw) {
 		((ExprSwitch) sw).caseInterfaceInvokeExpr(this);
 	}
 

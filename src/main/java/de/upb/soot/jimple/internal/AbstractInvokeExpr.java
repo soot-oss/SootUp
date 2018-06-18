@@ -37,9 +37,9 @@ import java.util.List;
 
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
-import de.upb.soot.jimple.InvokeExpr;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.InvokeExpr;
 import de.upb.soot.jimple.type.Type;
 
 @SuppressWarnings("serial")

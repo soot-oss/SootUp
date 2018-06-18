@@ -31,11 +31,11 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Value;
 import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.RemExpr;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.expr.RemExpr;
 
 public class JRemExpr extends AbstractJimpleFloatBinopExpr implements RemExpr
 {
@@ -43,7 +43,7 @@ public class JRemExpr extends AbstractJimpleFloatBinopExpr implements RemExpr
     @Override
     public String getSymbol() { return " % "; }
     @Override
-    public void apply(Switch sw) { ((ExprSwitch) sw).caseRemExpr(this); }
+    public void accept(IVisitor sw) { ((ExprSwitch) sw).caseRemExpr(this); }
 
     @Override
     public Object clone() 

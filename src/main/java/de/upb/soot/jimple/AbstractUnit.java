@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.core.Unit;
-import de.upb.soot.core.UnitBox;
-import de.upb.soot.core.ValueBox;
 
 public abstract class AbstractUnit implements Unit {
 
@@ -97,7 +95,7 @@ public abstract class AbstractUnit implements Unit {
 
   /** Used to implement the Switchable construct. */
   @Override
-  public void apply(Switch sw) {
+  public void accept(IVisitor sw) {
   }
 
   @Override

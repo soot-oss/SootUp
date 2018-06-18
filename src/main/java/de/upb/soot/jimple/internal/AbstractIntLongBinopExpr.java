@@ -30,7 +30,7 @@
 
 package de.upb.soot.jimple.internal;
 
-import de.upb.soot.core.Value;
+import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.type.BooleanType;
 import de.upb.soot.jimple.type.ByteType;
 import de.upb.soot.jimple.type.CharType;

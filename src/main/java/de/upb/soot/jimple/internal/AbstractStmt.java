@@ -30,12 +30,12 @@
 
 package de.upb.soot.jimple.internal;
 
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.AbstractUnit;
-import de.upb.soot.jimple.ArrayRef;
 import de.upb.soot.jimple.FieldRef;
-import de.upb.soot.jimple.InvokeExpr;
-import de.upb.soot.jimple.Stmt;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.ArrayRef;
+import de.upb.soot.jimple.expr.InvokeExpr;
+import de.upb.soot.jimple.stmt.Stmt;
 
 public abstract class AbstractStmt extends AbstractUnit implements Stmt
 {

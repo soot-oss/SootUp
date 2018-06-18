@@ -30,11 +30,11 @@
 
 package de.upb.soot.jimple.internal;
 
-import de.upb.soot.core.Immediate;
-import de.upb.soot.core.Value;
 import de.upb.soot.jimple.AbstractValueBox;
-import de.upb.soot.jimple.ConcreteRef;
-import de.upb.soot.jimple.Expr;
+import de.upb.soot.jimple.Immediate;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.expr.ConcreteRef;
+import de.upb.soot.jimple.expr.Expr;
 
 public class RValueBox extends AbstractValueBox
 {

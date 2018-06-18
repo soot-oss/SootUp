@@ -30,12 +30,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
-import de.upb.soot.jimple.CastExpr;
 import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.PrecedenceTest;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.CastExpr;
 import de.upb.soot.jimple.type.Type;
 
 @SuppressWarnings("serial")
@@ -137,7 +137,7 @@ abstract public class AbstractCastExpr implements CastExpr
     }
 
     @Override
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((ExprSwitch) sw).caseCastExpr(this);
     }

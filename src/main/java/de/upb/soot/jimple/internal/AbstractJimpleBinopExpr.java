@@ -30,8 +30,8 @@
 
 package de.upb.soot.jimple.internal;
 
-import de.upb.soot.core.Value;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.Value;
 
 @SuppressWarnings("serial")
 abstract public class AbstractJimpleBinopExpr extends AbstractBinopExpr

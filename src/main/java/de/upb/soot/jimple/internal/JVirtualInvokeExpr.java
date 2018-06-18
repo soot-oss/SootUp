@@ -33,9 +33,9 @@ import java.util.List;
 import de.upb.soot.Options;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
 
 public class JVirtualInvokeExpr extends AbstractVirtualInvokeExpr 
 {

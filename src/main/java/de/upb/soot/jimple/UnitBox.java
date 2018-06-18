@@ -1,6 +1,7 @@
-package de.upb.soot.core;
+package de.upb.soot.jimple;
 
 import de.upb.soot.UnitPrinter;
+import de.upb.soot.core.Unit;
 
 public interface UnitBox {
 

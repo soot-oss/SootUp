@@ -1,4 +1,4 @@
-package de.upb.soot.core;
+package de.upb.soot;
 
 public class AttributesUnitPrinter {
 

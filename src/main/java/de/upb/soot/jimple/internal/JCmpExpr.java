@@ -31,11 +31,11 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.Value;
-import de.upb.soot.jimple.CmpExpr;
 import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.expr.CmpExpr;
 
 public class JCmpExpr extends AbstractJimpleIntBinopExpr implements CmpExpr
 {
@@ -43,7 +43,7 @@ public class JCmpExpr extends AbstractJimpleIntBinopExpr implements CmpExpr
     @Override
     public final String getSymbol() { return " " + Jimple.CMP + " " ; }
     @Override
-    public void apply(Switch sw) { ((ExprSwitch) sw).caseCmpExpr(this); }
+    public void accept(IVisitor sw) { ((ExprSwitch) sw).caseCmpExpr(this); }
     
     @Override
     public Object clone() 

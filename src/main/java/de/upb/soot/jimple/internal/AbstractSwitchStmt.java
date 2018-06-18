@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.core.Unit;
-import de.upb.soot.core.UnitBox;
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
-import de.upb.soot.jimple.SwitchStmt;
+import de.upb.soot.jimple.UnitBox;
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.stmt.SwitchStmt;
 
 public abstract class AbstractSwitchStmt extends AbstractStmt implements SwitchStmt {
 

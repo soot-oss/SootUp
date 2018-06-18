@@ -26,7 +26,6 @@
 
 package de.upb.soot.jimple;
 
-import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 
 /** Abstract base class for Body's on Stmts (Jimple and Grimp). */

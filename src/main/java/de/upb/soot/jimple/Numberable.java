@@ -1,4 +1,4 @@
-package de.upb.soot.core;
+package de.upb.soot.jimple;
 
 /**
  * /** A class that numbers objects, so they can be placed in bitsets.

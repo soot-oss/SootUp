@@ -29,7 +29,9 @@
 
 package de.upb.soot.jimple;
 
-public interface RefSwitch extends Switch
+import de.upb.soot.jimple.expr.ArrayRef;
+
+public interface RefSwitch extends IVisitor
 {
     public abstract void caseArrayRef(ArrayRef v);
     public abstract void caseStaticFieldRef(StaticFieldRef v);

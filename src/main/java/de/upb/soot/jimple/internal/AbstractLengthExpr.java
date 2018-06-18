@@ -27,11 +27,11 @@
 package de.upb.soot.jimple.internal;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.ExprSwitch;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.LengthExpr;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.expr.LengthExpr;
 import de.upb.soot.jimple.type.IntType;
 import de.upb.soot.jimple.type.Type;
 
@@ -75,7 +75,7 @@ public abstract class AbstractLengthExpr extends AbstractUnopExpr implements Len
         return IntType.v();
     }
 
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((ExprSwitch) sw).caseLengthExpr(this);
     }

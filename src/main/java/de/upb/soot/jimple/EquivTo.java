@@ -1,4 +1,4 @@
-package de.upb.soot.core;
+package de.upb.soot.jimple;
 
 /**
  * An alternate equivalence relation between objects. The standard interpretation will be structural

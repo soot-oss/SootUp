@@ -29,9 +29,6 @@
 
 package de.upb.soot.jimple;
 
-import de.upb.soot.core.Value;
-import de.upb.soot.core.ValueBox;
-
 public interface InstanceFieldRef extends FieldRef
 {
     public Value getBase();

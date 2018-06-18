@@ -1,6 +1,6 @@
 package de.upb.soot.jimple.type;
 
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
 
 public class ArrayType extends Type {
 
@@ -8,7 +8,7 @@ public class ArrayType extends Type {
   public Type baseType;
 
   @Override
-  public void apply(Switch sw) {
+  public void accept(IVisitor sw) {
     // TODO Auto-generated method stub
 
   }

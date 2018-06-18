@@ -24,13 +24,11 @@
  */
 
 
-package de.upb.soot.core;
-
-import de.upb.soot.jimple.Switch;
+package de.upb.soot.jimple;
 
 /** Basic interface used for visited objects in the Visitor design pattern. */
-public interface Switchable
+public interface IVisitorAcceptor
 {
     /** Called when this object is visited. */
-    void apply(Switch sw);
+    void accept(IVisitor sw);
 }

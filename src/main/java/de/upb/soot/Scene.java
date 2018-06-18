@@ -2,8 +2,8 @@ package de.upb.soot;
 
 import java.util.List;
 
-import de.upb.soot.core.Local;
 import de.upb.soot.core.SootClass;
+import de.upb.soot.jimple.Local;
 import de.upb.soot.jimple.type.Type;
 
 public class Scene {

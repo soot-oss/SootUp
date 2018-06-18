@@ -1,6 +1,6 @@
 package de.upb.soot.jimple.type;
 
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
 
 public class FloatType extends Type {
 
@@ -10,7 +10,7 @@ public class FloatType extends Type {
   }
 
   @Override
-  public void apply(Switch sw) {
+  public void accept(IVisitor sw) {
     // TODO Auto-generated method stub
 
   }

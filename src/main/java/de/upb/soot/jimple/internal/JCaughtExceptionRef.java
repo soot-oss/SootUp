@@ -30,10 +30,10 @@ import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.ValueBox;
 import de.upb.soot.jimple.CaughtExceptionRef;
 import de.upb.soot.jimple.RefSwitch;
-import de.upb.soot.jimple.Switch;
+import de.upb.soot.jimple.IVisitor;
+import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.type.RefType;
 import de.upb.soot.jimple.type.Type;
 
@@ -86,7 +86,7 @@ public class JCaughtExceptionRef implements CaughtExceptionRef
     }
 
     @Override
-    public void apply(Switch sw)
+    public void accept(IVisitor sw)
     {
         ((RefSwitch) sw).caseCaughtExceptionRef(this);
     }
