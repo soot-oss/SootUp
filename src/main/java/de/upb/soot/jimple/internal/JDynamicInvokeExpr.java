@@ -26,11 +26,10 @@
 
 package de.upb.soot.jimple.internal;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mockito.asm.Opcodes;
+import org.objectweb.asm.Opcodes;
 
 import de.upb.soot.UnitPrinter;
 import de.upb.soot.core.SootClass;
@@ -76,7 +75,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr implements DynamicInv
 		 * Here the static-handle is chosen as default value, because this works
 		 * for Java.
 		 */
-    this(bootstrapMethodRef, bootstrapArgs, methodRef, Opcodes.INVOKESTATIC, methodArgs);
+    this(bootstrapMethodRef, bootstrapArgs, methodRef, Opcodes.H_INVOKESTATIC, methodArgs);
 	}
 
 	@Override

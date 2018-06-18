@@ -150,6 +150,11 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+        <dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm-debug-all</artifactId>
+			<version>5.2</version>
+		</dependency>
         <!-- testing -->
         <dependency>
             <groupId>junit</groupId>
