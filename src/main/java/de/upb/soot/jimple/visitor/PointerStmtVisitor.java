@@ -42,7 +42,6 @@ import de.upb.soot.jimple.common.stmt.JThrowStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.RefType;
-import javassist.compiler.ast.CastExpr;
 
 public abstract class PointerStmtVisitor extends AbstractStmtVisitor {
   Stmt statement;
@@ -156,7 +155,7 @@ public abstract class PointerStmtVisitor extends AbstractStmtVisitor {
         caseNewArrayStmt((Local) lhs, (JNewArrayExpr) rhs);
       } else if (rhs instanceof JNewMultiArrayExpr) {
         caseNewMultiArrayStmt((Local) lhs, (JNewMultiArrayExpr) rhs);
-      } else if (rhs instanceof CastExpr) {
+      } else if (rhs instanceof JCastExpr) {
         JCastExpr r = (JCastExpr) rhs;
         Value rv = r.getOp();
         if (rv instanceof Constant) {
