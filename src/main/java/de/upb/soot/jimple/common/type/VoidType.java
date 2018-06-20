@@ -1,4 +1,4 @@
-package de.upb.soot.jimple.type;
+package de.upb.soot.jimple.common.type;
 
 public class VoidType extends Type {
 

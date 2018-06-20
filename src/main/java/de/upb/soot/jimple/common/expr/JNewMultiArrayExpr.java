@@ -28,7 +28,7 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.util.List;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.type.ArrayType;
+import de.upb.soot.jimple.common.type.ArrayType;
 
 public class JNewMultiArrayExpr extends AbstractNewMultiArrayExpr
 {

@@ -25,9 +25,8 @@
  */
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.core.SootFieldRef;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 

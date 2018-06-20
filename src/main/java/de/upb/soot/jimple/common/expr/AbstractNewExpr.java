@@ -23,86 +23,73 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import java.util.Collections;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.NewExpr;
-import de.upb.soot.jimple.type.RefType;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
-public abstract class AbstractNewExpr implements NewExpr
-{
-    RefType type;
+public abstract class AbstractNewExpr implements Expr {
+  RefType type;
 
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof AbstractNewExpr)
-        {
-            AbstractNewExpr ae = (AbstractNewExpr)o;
-            return type.equals(ae.type);
-        }
-        return false;
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof AbstractNewExpr) {
+      AbstractNewExpr ae = (AbstractNewExpr) o;
+      return type.equals(ae.type);
     }
+    return false;
+  }
 
-    /** Returns a hash code for this object, consistent with structural equality. */
-    public int equivHashCode() 
-    {
-        return type.hashCode();
-    }
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return type.hashCode();
+  }
 
-    @Override
-    public abstract Object clone(); 
+  @Override
+  public abstract Object clone();
 
-    @Override
-    public String toString()
-    {
-        return Jimple.NEW + " " + type.toString();
-    }
-    
-    public void toString( UnitPrinter up )
-    {
-        up.literal(Jimple.NEW);
-        up.literal(" ");
-        up.type(type);
-    }
+  @Override
+  public String toString() {
+    return Jimple.NEW + " " + type.toString();
+  }
 
-    @Override
-    public RefType getBaseType()
-    {
-        return type;
-    }
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.NEW);
+    up.literal(" ");
+    up.type(type);
+  }
 
-    @Override
-    public void setBaseType(RefType type)
-    {
-        this.type = type;
-    }
+  public RefType getBaseType() {
+    return type;
+  }
 
-    @Override
-    public Type getType()
-    {
-        return type;
-    }
+  public void setBaseType(RefType type) {
+    this.type = type;
+  }
 
+  @Override
+  public Type getType() {
+    return type;
+  }
 
-    @Override
-    public List<ValueBox> getUseBoxes()
-    {
-        return Collections.emptyList();
-    }
+  @Override
+  public List<ValueBox> getUseBoxes() {
+    return Collections.emptyList();
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IExprVisitor) sw).caseNewExpr(this);
-    }
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseNewExpr(this);
+  }
 }

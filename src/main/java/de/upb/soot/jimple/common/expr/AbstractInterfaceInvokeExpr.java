@@ -24,23 +24,21 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.SootMethodRef;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.InterfaceInvokeExpr;
-import de.upb.soot.jimple.type.DoubleType;
-import de.upb.soot.jimple.type.LongType;
-import de.upb.soot.jimple.type.Type;
-import de.upb.soot.jimple.type.VoidType;
+import de.upb.soot.jimple.common.ref.SootMethodRef;
+import de.upb.soot.jimple.common.type.DoubleType;
+import de.upb.soot.jimple.common.type.LongType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
-public abstract class AbstractInterfaceInvokeExpr extends AbstractInstanceInvokeExpr
-    implements InterfaceInvokeExpr {
+public abstract class AbstractInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 	protected AbstractInterfaceInvokeExpr(ValueBox baseBox, SootMethodRef methodRef, ValueBox[] argBoxes) {
 		super(methodRef, baseBox, argBoxes);
 		if (methodRef.isStatic()) {
@@ -48,7 +46,8 @@ public abstract class AbstractInterfaceInvokeExpr extends AbstractInstanceInvoke
     }
 	}
 
-	public boolean equivTo(Object o) {
+	@Override
+  public boolean equivTo(Object o) {
 		if (o instanceof AbstractInterfaceInvokeExpr) {
 			AbstractInterfaceInvokeExpr ie = (AbstractInterfaceInvokeExpr) o;
 			if (!(baseBox.getValue().equivTo(ie.baseBox.getValue()) && getMethod().equals(ie.getMethod())
@@ -70,7 +69,8 @@ public abstract class AbstractInterfaceInvokeExpr extends AbstractInstanceInvoke
 	/**
 	 * Returns a hash code for this object, consistent with structural equality.
 	 */
-	public int equivHashCode() {
+	@Override
+  public int equivHashCode() {
 		return baseBox.getValue().equivHashCode() * 101 + getMethod().equivHashCode() * 17;
 	}
 
@@ -99,7 +99,8 @@ public abstract class AbstractInterfaceInvokeExpr extends AbstractInstanceInvoke
 		return buffer.toString();
 	}
 
-	public void toString(UnitPrinter up) {
+	@Override
+  public void toString(StmtPrinter up) {
 		up.literal(Jimple.INTERFACEINVOKE);
 		up.literal(" ");
 		baseBox.toString(up);
@@ -120,7 +121,8 @@ public abstract class AbstractInterfaceInvokeExpr extends AbstractInstanceInvoke
 		up.literal(")");
 	}
 
-	public void accept(IVisitor sw) {
+	@Override
+  public void accept(IVisitor sw) {
 		((IExprVisitor) sw).caseInterfaceInvokeExpr(this);
 	}
 

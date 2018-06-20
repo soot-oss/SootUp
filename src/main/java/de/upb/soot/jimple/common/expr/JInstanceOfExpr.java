@@ -28,12 +28,12 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.Type;
 
 public class JInstanceOfExpr extends AbstractInstanceOfExpr
 {
@@ -49,7 +49,7 @@ public class JInstanceOfExpr extends AbstractInstanceOfExpr
     }
 
   @Override
-  public void toString(UnitPrinter up) {
+  public void toString(StmtPrinter up) {
     // TODO Auto-generated method stub
 
   }

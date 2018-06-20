@@ -27,7 +27,7 @@
 
 
 
-package de.upb.soot.jimple.ref;
+package de.upb.soot.jimple.common.ref;
 
 public interface IdentityRef extends Ref
 {

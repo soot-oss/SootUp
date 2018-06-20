@@ -28,18 +28,17 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.javabyte;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.stmt.EnterMonitorStmt;
+import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JEnterMonitorStmt extends AbstractOpStmt 
-    implements EnterMonitorStmt
 {
     public JEnterMonitorStmt(Value op)
     {
@@ -57,13 +56,14 @@ public class JEnterMonitorStmt extends AbstractOpStmt
         return new JEnterMonitorStmt(Jimple.cloneIfNecessary(getOp()));
     }
 
+    @Override
     public String toString()
     {
         return Jimple.ENTERMONITOR + " "  + opBox.getValue().toString();
     }
     
     @Override
-    public void toString(UnitPrinter up) {
+    public void toString(StmtPrinter up) {
         up.literal(Jimple.ENTERMONITOR);
         up.literal(" ");
         opBox.toString(up);

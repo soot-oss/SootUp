@@ -1,6 +1,7 @@
-package de.upb.soot.core;
+package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.core.SootField;
+import de.upb.soot.jimple.common.type.Type;
 
 public class SootFieldRef {
 

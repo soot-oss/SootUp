@@ -24,15 +24,15 @@
  */
 
 
-package de.upb.soot.jimple.ref;
+package de.upb.soot.jimple.common.ref;
 
 import java.util.Collections;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.type.RefType;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -45,6 +45,7 @@ public class ThisRef implements IdentityRef
         this.thisType = thisType;
     }
 
+    @Override
     public boolean equivTo(Object o)
     {
         if (o instanceof ThisRef)
@@ -54,6 +55,7 @@ public class ThisRef implements IdentityRef
         return false;
     }
 
+    @Override
     public int equivHashCode()
     {
         return thisType.hashCode();
@@ -65,10 +67,12 @@ public class ThisRef implements IdentityRef
         return "@this: "+thisType;
     }
     
-    public void toString( UnitPrinter up ) {
+    @Override
+    public void toString( StmtPrinter up ) {
         up.identityRef(this);
     }
 
+    @Override
     public final List<ValueBox> getUseBoxes()
     {
         return Collections.emptyList();
@@ -80,6 +84,7 @@ public class ThisRef implements IdentityRef
         return thisType;
     }
 
+    @Override
     public void accept(IVisitor sw)
     {
         ((IRefVisitor) sw).caseThisRef(this);

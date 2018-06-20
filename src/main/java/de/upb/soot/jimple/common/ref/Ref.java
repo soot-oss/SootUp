@@ -28,7 +28,7 @@
 
 
 
-package de.upb.soot.jimple.ref;
+package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.Value;
 

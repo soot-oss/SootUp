@@ -28,17 +28,16 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.stmt.ReturnStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JReturnStmt extends AbstractOpStmt implements ReturnStmt
+public class JReturnStmt extends AbstractOpStmt
 {
     public JReturnStmt(Value returnValue)
     {
@@ -56,13 +55,14 @@ public class JReturnStmt extends AbstractOpStmt implements ReturnStmt
         return new JReturnStmt(Jimple.cloneIfNecessary(getOp()));
     }
 
+    @Override
     public String toString()
     {
         return Jimple.RETURN + " "  + opBox.getValue().toString();
     }
     
     @Override
-    public void toString( UnitPrinter up) {
+    public void toString( StmtPrinter up) {
         up.literal(Jimple.RETURN);
         up.literal(" ");
         opBox.toString(up);

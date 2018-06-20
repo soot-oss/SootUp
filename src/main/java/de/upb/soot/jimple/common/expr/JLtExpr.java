@@ -28,17 +28,15 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.expr.LtExpr;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JLtExpr extends AbstractJimpleIntBinopExpr implements LtExpr
-{
+public class JLtExpr extends AbstractJimpleIntBinopExpr {
     public JLtExpr(Value op1, Value op2) { super(op1, op2); }
     @Override
     public final String getSymbol() { return " < "; }
@@ -52,7 +50,7 @@ public class JLtExpr extends AbstractJimpleIntBinopExpr implements LtExpr
     }
 
   @Override
-  public void toString(UnitPrinter up) {
+  public void toString(StmtPrinter up) {
     // TODO Auto-generated method stub
 
   }

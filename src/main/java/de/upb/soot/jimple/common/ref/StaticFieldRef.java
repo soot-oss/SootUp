@@ -28,16 +28,15 @@
 
 
 
-package de.upb.soot.jimple.ref;
+package de.upb.soot.jimple.common.ref;
 
 import java.util.Collections;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootFieldRef;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -66,8 +65,7 @@ public class StaticFieldRef implements FieldRef
         return fieldRef.getSignature();
     }
 
-    @Override
-    public void toString( UnitPrinter up ) {
+    public void toString( StmtPrinter up ) {
         up.fieldRef(fieldRef);
     }
 
@@ -87,13 +85,13 @@ public class StaticFieldRef implements FieldRef
         return fieldRef.resolve();
     }
 
-    @Override
+
     public List<ValueBox> getUseBoxes()
     {
         return Collections.emptyList();
     }
 
-    @Override
+
     public Type getType()
     {
         return fieldRef.type();

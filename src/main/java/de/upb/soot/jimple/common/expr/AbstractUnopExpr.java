@@ -28,17 +28,16 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.UnopExpr;
 
 @SuppressWarnings("serial")
-abstract public class AbstractUnopExpr implements UnopExpr
+abstract public class AbstractUnopExpr implements Expr
 {
     final ValueBox opBox;
 
@@ -49,25 +48,21 @@ abstract public class AbstractUnopExpr implements UnopExpr
     @Override
     public abstract Object clone();
     
-    @Override
     public Value getOp()
     {
         return opBox.getValue();
     }
 
-    @Override
     public void setOp(Value op)
     {
         opBox.setValue(op);
     }
     
-    @Override
     public ValueBox getOpBox()
     {
         return opBox;
     }
 
-    @Override
     public final List<ValueBox> getUseBoxes()
     {
         List<ValueBox> list = new ArrayList<ValueBox>();

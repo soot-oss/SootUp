@@ -28,33 +28,33 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.NegExpr;
-import de.upb.soot.jimple.type.BooleanType;
-import de.upb.soot.jimple.type.ByteType;
-import de.upb.soot.jimple.type.CharType;
-import de.upb.soot.jimple.type.DoubleType;
-import de.upb.soot.jimple.type.FloatType;
-import de.upb.soot.jimple.type.IntType;
-import de.upb.soot.jimple.type.LongType;
-import de.upb.soot.jimple.type.ShortType;
-import de.upb.soot.jimple.type.Type;
-import de.upb.soot.jimple.type.UnknownType;
+import de.upb.soot.jimple.common.type.BooleanType;
+import de.upb.soot.jimple.common.type.ByteType;
+import de.upb.soot.jimple.common.type.CharType;
+import de.upb.soot.jimple.common.type.DoubleType;
+import de.upb.soot.jimple.common.type.FloatType;
+import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.LongType;
+import de.upb.soot.jimple.common.type.ShortType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
-public abstract class AbstractNegExpr extends AbstractUnopExpr implements NegExpr
+public abstract class AbstractNegExpr extends AbstractUnopExpr
 {
     protected AbstractNegExpr(ValueBox opBox) { super(opBox); }
 
     /** Compares the specified object with this one for structural equality. */
+  @Override
     public boolean equivTo(Object o)
     {
         if (o instanceof AbstractNegExpr)
@@ -65,6 +65,7 @@ public abstract class AbstractNegExpr extends AbstractUnopExpr implements NegExp
     }
 
     /** Returns a hash code for this object, consistent with structural equality. */
+    @Override
     public int equivHashCode() 
     {
         return opBox.getValue().equivHashCode();
@@ -79,12 +80,14 @@ public abstract class AbstractNegExpr extends AbstractUnopExpr implements NegExp
         return Jimple.NEG + " " + opBox.getValue().toString();
     }
     
-    public void toString(UnitPrinter up) {
+    @Override
+    public void toString(StmtPrinter up) {
         up.literal(Jimple.NEG);
         up.literal(" ");
         opBox.toString(up);
     }
 
+    @Override
     public Type getType()
     {
         Value op = opBox.getValue();
@@ -104,6 +107,7 @@ public abstract class AbstractNegExpr extends AbstractUnopExpr implements NegExp
         }
     }
 
+    @Override
     public void accept(IVisitor sw)
     {
         ((IExprVisitor) sw).caseNegExpr(this);

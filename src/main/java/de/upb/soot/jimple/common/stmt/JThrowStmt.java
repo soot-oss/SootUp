@@ -28,17 +28,16 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.stmt.ThrowStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JThrowStmt extends AbstractOpStmt implements ThrowStmt
+public class JThrowStmt extends AbstractOpStmt
 {
 
     public JThrowStmt(Value op)
@@ -57,13 +56,14 @@ public class JThrowStmt extends AbstractOpStmt implements ThrowStmt
         return new JThrowStmt(Jimple.cloneIfNecessary(getOp()));
     }
 
+    @Override
     public String toString()
     {
         return "throw " + opBox.getValue().toString();
     }
     
     @Override
-    public void toString(UnitPrinter up) {
+    public void toString(StmtPrinter up) {
         up.literal(Jimple.THROW);
         up.literal(" ");
         opBox.toString(up);

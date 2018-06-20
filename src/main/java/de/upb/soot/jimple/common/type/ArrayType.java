@@ -1,4 +1,4 @@
-package de.upb.soot.jimple.type;
+package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.IVisitor;
 

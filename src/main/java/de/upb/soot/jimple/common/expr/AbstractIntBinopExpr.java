@@ -28,10 +28,10 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.jimple.type.IntType;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.Type;
 
 @SuppressWarnings("serial")
 abstract public class AbstractIntBinopExpr extends AbstractBinopExpr

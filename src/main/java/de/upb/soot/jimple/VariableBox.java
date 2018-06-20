@@ -28,12 +28,9 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple;
 
-import de.upb.soot.jimple.AbstractValueBox;
-import de.upb.soot.jimple.Local;
-import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.expr.ConcreteRef;
+import de.upb.soot.jimple.common.ref.ConcreteRef;
 
 public class VariableBox extends AbstractValueBox
 {

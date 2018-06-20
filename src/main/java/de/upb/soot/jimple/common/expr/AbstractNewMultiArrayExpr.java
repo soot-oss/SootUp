@@ -28,24 +28,23 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.NewMultiArrayExpr;
-import de.upb.soot.jimple.type.ArrayType;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.ArrayType;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
-public abstract class AbstractNewMultiArrayExpr implements NewMultiArrayExpr
+public abstract class AbstractNewMultiArrayExpr implements Expr
 {
     ArrayType baseType;
     final protected ValueBox[] sizeBoxes;
@@ -100,7 +99,7 @@ public abstract class AbstractNewMultiArrayExpr implements NewMultiArrayExpr
     }
     
     @Override
-    public void toString(UnitPrinter up)
+    public void toString(StmtPrinter up)
     {
         Type t = baseType.baseType;
         
@@ -120,37 +119,32 @@ public abstract class AbstractNewMultiArrayExpr implements NewMultiArrayExpr
         }
     }
 
-    @Override
+
     public ArrayType getBaseType()
     {
         return baseType;
     }
 
-    @Override
     public void setBaseType(ArrayType baseType)
     {
         this.baseType = baseType;
     }
 
-    @Override
     public ValueBox getSizeBox(int index)
     {
         return sizeBoxes[index];
     }
 
-    @Override
     public int getSizeCount()
     {
         return sizeBoxes.length;
     }
 
-    @Override
     public Value getSize(int index)
     {
         return sizeBoxes[index].getValue();
     }
 
-    @Override
     public List<Value> getSizes()
     {
         List<Value> toReturn = new ArrayList<Value>();
@@ -162,7 +156,6 @@ public abstract class AbstractNewMultiArrayExpr implements NewMultiArrayExpr
         return toReturn;
     }
 
-    @Override
     public void setSize(int index, Value size)
     {
         sizeBoxes[index].setValue(size);

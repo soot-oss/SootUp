@@ -28,27 +28,28 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.javabyte;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.stmt.BreakpointStmt;
+import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JBreakpointStmt extends AbstractStmt implements BreakpointStmt
+public class JBreakpointStmt extends AbstractStmt
 {
     public JBreakpointStmt()
     {
     }
 
+    @Override
     public String toString()
     {
         return Jimple.BREAKPOINT;
     }
     
     @Override
-    public void toString(UnitPrinter up) {
+    public void toString(StmtPrinter up) {
         up.literal(Jimple.BREAKPOINT);
     }
     

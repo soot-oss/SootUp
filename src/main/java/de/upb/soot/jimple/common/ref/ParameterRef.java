@@ -27,14 +27,14 @@
 
 
 
-package de.upb.soot.jimple.ref;
+package de.upb.soot.jimple.common.ref;
 
 import java.util.Collections;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -84,7 +84,7 @@ public class ParameterRef implements IdentityRef
         return "@parameter" + n + ": " + paramType;                                                   
     }
     
-    public void toString( UnitPrinter up )
+    public void toString( StmtPrinter up )
     {
         up.identityRef(this);
     }

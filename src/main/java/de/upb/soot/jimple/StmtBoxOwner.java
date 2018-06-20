@@ -1,12 +1,10 @@
-package de.upb.soot.jimple.stmt;
+package de.upb.soot.jimple;
 
 import java.util.List;
 
-public class UnitBoxOwner {
+public interface StmtBoxOwner {
 
-  public List<UnitBox> getUnitBoxes() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+  public List<StmtBox> getStmtBoxes();
 
+  public void clearStmtBoxes();
 }

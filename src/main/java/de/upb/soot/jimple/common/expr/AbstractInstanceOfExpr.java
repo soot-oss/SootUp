@@ -23,8 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,101 +31,82 @@ import java.util.List;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.InstanceOfExpr;
-import de.upb.soot.jimple.type.BooleanType;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.BooleanType;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
-public abstract class AbstractInstanceOfExpr implements InstanceOfExpr
-{
-    final ValueBox opBox;
-    Type checkType;
+public abstract class AbstractInstanceOfExpr implements Expr {
+  final ValueBox opBox;
+  Type checkType;
 
-    protected AbstractInstanceOfExpr(ValueBox opBox, Type checkType)
-    {
-        this.opBox = opBox; 
-        this.checkType = checkType;
-    }
-    
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof AbstractInstanceOfExpr)
-        {
-            AbstractInstanceOfExpr aie = (AbstractInstanceOfExpr)o;
-            return opBox.getValue().equivTo(aie.opBox.getValue()) &&
-                checkType.equals(aie.checkType);
-        }
-        return false;
-    }
+  protected AbstractInstanceOfExpr(ValueBox opBox, Type checkType) {
+    this.opBox = opBox;
+    this.checkType = checkType;
+  }
 
-    /** Returns a hash code for this object, consistent with structural equality. */
-    public int equivHashCode() 
-    {
-        return opBox.getValue().equivHashCode() * 101 + checkType.hashCode() * 17;
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof AbstractInstanceOfExpr) {
+      AbstractInstanceOfExpr aie = (AbstractInstanceOfExpr) o;
+      return opBox.getValue().equivTo(aie.opBox.getValue()) && checkType.equals(aie.checkType);
     }
+    return false;
+  }
 
-    @Override
-    public abstract Object clone();
-    
-    @Override
-    public String toString()
-    {
-        return opBox.getValue().toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
-    }
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return opBox.getValue().equivHashCode() * 101 + checkType.hashCode() * 17;
+  }
 
-    
-    @Override
-    public Value getOp()
-    {
-        return opBox.getValue();
-    }
+  @Override
+  public abstract Object clone();
 
-    @Override
-    public void setOp(Value op)
-    {
-        opBox.setValue(op);
-    }
-    
-    @Override
-    public ValueBox getOpBox()
-    {
-        return opBox;
-    }
+  @Override
+  public String toString() {
+    return opBox.getValue().toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
+  }
 
-    @Override
-    public final List<ValueBox> getUseBoxes()
-    {
-        List<ValueBox> list = new ArrayList<ValueBox>();
+  public Value getOp() {
+    return opBox.getValue();
+  }
 
-        list.addAll(opBox.getValue().getUseBoxes());
-        list.add(opBox);
-    
-        return list;
-    }
-    
-    @Override
-    public Type getType()
-    {
-        return BooleanType.v();
-    }
+  public void setOp(Value op) {
+    opBox.setValue(op);
+  }
 
-    @Override
-    public Type getCheckType()
-    {
-        return checkType;
-    }
 
-    @Override
-    public void setCheckType(Type checkType)
-    {
-        this.checkType = checkType;
-    }
+  public ValueBox getOpBox() {
+    return opBox;
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IExprVisitor) sw).caseInstanceOfExpr(this);
-    }
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+    List<ValueBox> list = new ArrayList<ValueBox>();
+
+    list.addAll(opBox.getValue().getUseBoxes());
+    list.add(opBox);
+
+    return list;
+  }
+
+  @Override
+  public Type getType() {
+    return BooleanType.v();
+  }
+
+  public Type getCheckType() {
+    return checkType;
+  }
+
+  public void setCheckType(Type checkType) {
+    this.checkType = checkType;
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseInstanceOfExpr(this);
+  }
 }

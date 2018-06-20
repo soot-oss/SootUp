@@ -24,20 +24,18 @@
  */
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import de.upb.soot.core.SootMethodRef;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.InstanceInvokeExpr;
+import de.upb.soot.jimple.common.ref.SootMethodRef;
 
 @SuppressWarnings("serial")
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr 
-                      implements InstanceInvokeExpr
 {
     final protected ValueBox baseBox;    
     
@@ -46,19 +44,16 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr
     	this.baseBox = baseBox;
     }
     
-    @Override
     public Value getBase()
     {
         return baseBox.getValue();
     }
 
-    @Override
     public ValueBox getBaseBox()
     {
         return baseBox;
     }
 
-    @Override
     public void setBase(Value base)
     {
         baseBox.setValue(base);

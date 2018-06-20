@@ -24,19 +24,17 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.UnitPrinter;
-import de.upb.soot.core.SootMethodRef;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.SpecialInvokeExpr;
+import de.upb.soot.jimple.common.ref.SootMethodRef;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
-public abstract class AbstractSpecialInvokeExpr extends AbstractInstanceInvokeExpr
-    implements SpecialInvokeExpr {
+public abstract class AbstractSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 	protected AbstractSpecialInvokeExpr(ValueBox baseBox, SootMethodRef methodRef, ValueBox[] argBoxes) {
 		super(methodRef, baseBox, argBoxes);
 		if (methodRef.isStatic()) {
@@ -95,7 +93,7 @@ public abstract class AbstractSpecialInvokeExpr extends AbstractInstanceInvokeEx
 		return buffer.toString();
 	}
 
-	public void toString(UnitPrinter up) {
+	public void toString(StmtPrinter up) {
 		up.literal(Jimple.SPECIALINVOKE);
 		up.literal(" ");
 		baseBox.toString(up);

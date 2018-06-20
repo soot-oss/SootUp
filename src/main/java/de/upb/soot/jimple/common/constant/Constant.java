@@ -27,12 +27,12 @@
 
 
 
-package de.upb.soot.jimple.constant;
+package de.upb.soot.jimple.common.constant;
 
 import java.util.Collections;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Immediate;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
@@ -65,7 +65,7 @@ public abstract class Constant implements Value, Immediate
         return hashCode();
     }
     
-    public void toString( UnitPrinter up ) {
+    public void toString( StmtPrinter up ) {
         up.constant(this);
     }
 }

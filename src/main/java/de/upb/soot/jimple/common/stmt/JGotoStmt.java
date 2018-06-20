@@ -28,30 +28,28 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.stmt;
 
 import java.util.Collections;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.stmt.GotoStmt;
-import de.upb.soot.jimple.stmt.Unit;
-import de.upb.soot.jimple.stmt.UnitBox;
+import de.upb.soot.jimple.StmtBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JGotoStmt extends AbstractStmt implements GotoStmt
+public class JGotoStmt extends AbstractStmt
 {
-    final UnitBox targetBox;
-    final List<UnitBox> targetBoxes;
+    final StmtBox targetBox;
+    final List<StmtBox> targetBoxes;
 
-    public JGotoStmt(Unit target)
+  public JGotoStmt(Stmt target)
     {
         this(Jimple.v().newStmtBox(target));
     }
 
-    public JGotoStmt(UnitBox box)
+    public JGotoStmt(StmtBox box)
     {
         targetBox = box;
         targetBoxes = Collections.singletonList(box);
@@ -63,9 +61,10 @@ public class JGotoStmt extends AbstractStmt implements GotoStmt
         return new JGotoStmt(getTarget());
     }
 
+    @Override
     public String toString()
     {
-        Unit t = getTarget();
+    Stmt t = getTarget();
         String target = "(branch)";
         if(!t.branches()) {
           target = t.toString();
@@ -74,32 +73,29 @@ public class JGotoStmt extends AbstractStmt implements GotoStmt
     }
     
     @Override
-    public void toString(UnitPrinter up) {
+    public void toString(StmtPrinter up) {
         up.literal(Jimple.GOTO);
         up.literal(" ");
         targetBox.toString(up);
     }
-    
-    @Override
-    public Unit getTarget()
+
+  public Stmt getTarget()
     {
-        return targetBox.getUnit();
+        return targetBox.getStmt();
     }
 
-    @Override
-    public void setTarget(Unit target)
+  public void setTarget(Stmt target)
     {
-        targetBox.setUnit(target);
+        targetBox.setStmt(target);
     }
 
-    @Override
-    public UnitBox getTargetBox()
+    public StmtBox getTargetBox()
     {
         return targetBox;
     }
 
     @Override
-    public List<UnitBox> getUnitBoxes()
+    public List<StmtBox> getUnitBoxes()
     {
         return targetBoxes;
     }

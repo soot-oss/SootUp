@@ -23,7 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.constant;
+package de.upb.soot.jimple.common.constant;
 
 public abstract class NumericConstant extends Constant
 {

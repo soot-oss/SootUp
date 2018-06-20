@@ -28,44 +28,43 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.stmt.Unit;
-import de.upb.soot.jimple.stmt.UnitBox;
+import de.upb.soot.jimple.common.stmt.Stmt;
 
 public class JTrap extends AbstractTrap
 {
 
-    public JTrap(SootClass exception, Unit beginStmt, Unit endStmt, Unit handlerStmt)
+  public JTrap(SootClass exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt)
     {
         super(exception, Jimple.v().newStmtBox(beginStmt),
               Jimple.v().newStmtBox(endStmt),
               Jimple.v().newStmtBox(handlerStmt));
     }
 
-    public JTrap(SootClass exception, UnitBox beginStmt, UnitBox endStmt, UnitBox handlerStmt)
+    public JTrap(SootClass exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt)
     {
         super(exception, beginStmt,
               endStmt,
               handlerStmt);
     }
 
+    @Override
     public Object clone() 
     {
-        return new JTrap(exception, getBeginUnit(), 
-                         getEndUnit(), getHandlerUnit());
+    return new JTrap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
     }
 
+  @Override
   public String toString(){
     StringBuffer buf = new StringBuffer("Trap :");
     buf.append("\nbegin  : ");
-    buf.append(getBeginUnit());
+    buf.append(getBeginStmt());
     buf.append("\nend    : ");
-    buf.append(getEndUnit());
+    buf.append(getEndStmt());
     buf.append("\nhandler: ");
-    buf.append(getHandlerUnit());
+    buf.append(getHandlerStmt());
     return new String(buf);
   }
 }

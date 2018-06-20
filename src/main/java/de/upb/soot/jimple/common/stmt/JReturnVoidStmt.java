@@ -28,15 +28,14 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.stmt.ReturnVoidStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JReturnVoidStmt extends AbstractStmt implements ReturnVoidStmt
+public class JReturnVoidStmt extends AbstractStmt
 {
     public JReturnVoidStmt()
     {
@@ -48,13 +47,14 @@ public class JReturnVoidStmt extends AbstractStmt implements ReturnVoidStmt
         return new JReturnVoidStmt();
     }
 
+    @Override
     public String toString()
     {
         return Jimple.RETURN;
     }
     
     @Override
-    public void toString(UnitPrinter up) {
+    public void toString(StmtPrinter up) {
         up.literal(Jimple.RETURN);
     }
     

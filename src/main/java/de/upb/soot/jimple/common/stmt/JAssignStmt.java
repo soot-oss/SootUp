@@ -23,25 +23,26 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.stmt;
 
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Immediate;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.RValueBox;
+import de.upb.soot.jimple.StmtBox;
+import de.upb.soot.jimple.StmtBoxOwner;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.ArrayRef;
-import de.upb.soot.jimple.expr.InvokeExpr;
-import de.upb.soot.jimple.ref.FieldRef;
-import de.upb.soot.jimple.stmt.AssignStmt;
-import de.upb.soot.jimple.stmt.UnitBox;
-import de.upb.soot.jimple.stmt.UnitBoxOwner;
+import de.upb.soot.jimple.VariableBox;
+import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.soot.jimple.common.ref.ArrayRef;
+import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JAssignStmt extends AbstractDefinitionStmt implements AssignStmt {
+public class JAssignStmt extends AbstractDefinitionStmt {
   private static class LinkedVariableBox extends VariableBox {
     ValueBox otherBox = null;
 
@@ -111,16 +112,16 @@ public class JAssignStmt extends AbstractDefinitionStmt implements AssignStmt {
 
   @Override
   public boolean containsInvokeExpr() {
-    return getRightOp() instanceof InvokeExpr;
+    return getRightOp() instanceof AbstractInvokeExpr;
   }
 
   @Override
-  public InvokeExpr getInvokeExpr() {
+  public AbstractInvokeExpr getInvokeExpr() {
     if (!containsInvokeExpr()) {
       throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
     }
 
-    return (InvokeExpr) rightBox.getValue();
+    return (AbstractInvokeExpr) rightBox.getValue();
   }
 
   @Override
@@ -196,11 +197,11 @@ public class JAssignStmt extends AbstractDefinitionStmt implements AssignStmt {
   }
 
   @Override
-  public List<UnitBox> getUnitBoxes() {
+  public List<StmtBox> getUnitBoxes() {
     // handle possible PhiExpr's
     Value rValue = rightBox.getValue();
-    if (rValue instanceof UnitBoxOwner) {
-      return ((UnitBoxOwner) rValue).getUnitBoxes();
+    if (rValue instanceof StmtBoxOwner) {
+      return ((StmtBoxOwner) rValue).getStmtBoxes();
     }
 
     return super.getUnitBoxes();
@@ -212,7 +213,7 @@ public class JAssignStmt extends AbstractDefinitionStmt implements AssignStmt {
   }
 
   @Override
-  public void toString(UnitPrinter up) {
+  public void toString(StmtPrinter up) {
     leftBox.toString(up);
     up.literal(" = ");
     rightBox.toString(up);
@@ -224,12 +225,10 @@ public class JAssignStmt extends AbstractDefinitionStmt implements AssignStmt {
         Jimple.cloneIfNecessary(getRightOp()));
   }
 
-  @Override
   public void setLeftOp(Value variable) {
     getLeftOpBox().setValue(variable);
   }
 
-  @Override
   public void setRightOp(Value rvalue) {
     getRightOpBox().setValue(rvalue);
   }

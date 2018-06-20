@@ -28,7 +28,7 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 
 import de.upb.soot.jimple.Jimple;

@@ -1,25 +1,87 @@
-package de.upb.soot.jimple.stmt;
+package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.UnitPrinter;
+import java.io.Serializable;
+import java.util.List;
+
+import de.upb.soot.StmtPrinter;
+import de.upb.soot.jimple.StmtBox;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.ArrayRef;
-import de.upb.soot.jimple.expr.InvokeExpr;
-import de.upb.soot.jimple.ref.FieldRef;
+import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.soot.jimple.common.ref.ArrayRef;
+import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.visitor.IAcceptor;
 
-public interface Stmt extends Unit
-{
-    public void toString(UnitPrinter up);
+public interface Stmt extends IAcceptor, Serializable {
 
-    public boolean containsInvokeExpr();
-    public InvokeExpr getInvokeExpr();
-    public ValueBox getInvokeExprBox();
+  /** Returns a list of Boxes containing Values used in this Unit. */
+  public List<ValueBox> getUseBoxes();
 
-    public boolean containsArrayRef();
-    public ArrayRef getArrayRef();
-    public ValueBox getArrayRefBox();
+  /** Returns a list of Boxes containing Values defined in this Unit. */
+  public List<ValueBox> getDefBoxes();
 
-    public boolean containsFieldRef();
-    public FieldRef getFieldRef();
-    public ValueBox getFieldRefBox();
+  /**
+   * Returns a list of Boxes containing Units defined in this Unit; typically branch targets.
+   */
+  public List<StmtBox> getUnitBoxes();
+
+  /** Returns a list of Boxes pointing to this Unit. */
+  public List<StmtBox> getBoxesPointingToThis();
+
+  /** Adds a box to the list returned by getBoxesPointingToThis. */
+  public void addBoxPointingToThis(StmtBox b);
+
+  /** Removes a box from the list returned by getBoxesPointingToThis. */
+  public void removeBoxPointingToThis(StmtBox b);
+
+  /** Clears any pointers to and from this Unit's UnitBoxes. */
+  public void clearUnitBoxes();
+
+  /**
+   * Returns a list of Boxes containing any Value either used or defined in this Unit.
+   */
+  public List<ValueBox> getUseAndDefBoxes();
+
+  public Object clone();
+
+  /**
+   * Returns true if execution after this statement may continue at the following statement.
+   * GotoStmt will return false but IfStmt will return true.
+   */
+  public boolean fallsThrough();
+
+  /**
+   * Returns true if execution after this statement does not necessarily continue at the following
+   * statement. GotoStmt and IfStmt will both return true.
+   */
+  public boolean branches();
+
+  /**
+   * Redirects jumps to this Unit to newLocation. In general, you shouldn't have to use this
+   * directly.
+   * 
+   * @see PatchingChain#getNonPatchingChain()
+   * @see soot.shimple.Shimple#redirectToPreds(Chain, Unit)
+   * @see soot.shimple.Shimple#redirectPointers(Unit, Unit)
+   **/
+  public void redirectJumpsToThisTo(Stmt newLocation);
+
+  public void toString(StmtPrinter up);
+
+  public boolean containsInvokeExpr();
+
+  public AbstractInvokeExpr getInvokeExpr();
+
+  public ValueBox getInvokeExprBox();
+
+  public boolean containsArrayRef();
+
+  public ArrayRef getArrayRef();
+
+  public ValueBox getArrayRefBox();
+
+  public boolean containsFieldRef();
+
+  public FieldRef getFieldRef();
+
+  public ValueBox getFieldRefBox();
 }
-

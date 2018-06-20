@@ -28,10 +28,7 @@
 
 
 
-package de.upb.soot.jimple.internal;
-
-import de.upb.soot.jimple.AbstractValueBox;
-import de.upb.soot.jimple.Value;
+package de.upb.soot.jimple;
 
 public class JimpleLocalBox extends AbstractValueBox
 {

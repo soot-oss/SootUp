@@ -23,7 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.stmt;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,70 +31,54 @@ import java.util.List;
 
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.stmt.DefinitionStmt;
-
 
 @SuppressWarnings("serial")
-public abstract class AbstractDefinitionStmt extends AbstractStmt 
-    implements DefinitionStmt
-{	
-	public final ValueBox leftBox;
-	public final ValueBox rightBox;
-	
-	protected AbstractDefinitionStmt(ValueBox leftBox, ValueBox rightBox) {
-		this.leftBox = leftBox;
-		this.rightBox = rightBox;
-	}
-    
-    @Override
-    public final Value getLeftOp()
-    {
-        return leftBox.getValue();
-    }
-    
-    @Override
-    public final Value getRightOp()
-    {
-        return rightBox.getValue();
-    }
+public abstract class AbstractDefinitionStmt extends AbstractStmt {
+  public final ValueBox leftBox;
+  public final ValueBox rightBox;
 
-    @Override
-    public final ValueBox getLeftOpBox()
-    {
-        return leftBox;
-    }
-    
-    @Override
-    public final ValueBox getRightOpBox()
-    {
-        return rightBox;
-    }
+  protected AbstractDefinitionStmt(ValueBox leftBox, ValueBox rightBox) {
+    this.leftBox = leftBox;
+    this.rightBox = rightBox;
+  }
 
-	@Override
-    public final List<ValueBox> getDefBoxes()
-    {
-        return Collections.singletonList(leftBox);
-    }
+  public final Value getLeftOp() {
+    return leftBox.getValue();
+  }
 
-    @Override
-    public final List<ValueBox> getUseBoxes()
-    {
-        List<ValueBox> list = new ArrayList<ValueBox>();
-        list.addAll(getLeftOp().getUseBoxes());
-        list.add(rightBox);
-        list.addAll(getRightOp().getUseBoxes());
-        return list;
-    }
-    
-    @Override
-    public boolean fallsThrough() 
-    { 
-    	return true;
-	}      
-    
-    @Override
-    public boolean branches() 
-    { 
-    	return false;
-	}
+  public final Value getRightOp() {
+    return rightBox.getValue();
+  }
+
+  public final ValueBox getLeftOpBox() {
+    return leftBox;
+  }
+
+  public final ValueBox getRightOpBox() {
+    return rightBox;
+  }
+
+  @Override
+  public final List<ValueBox> getDefBoxes() {
+    return Collections.singletonList(leftBox);
+  }
+
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+    List<ValueBox> list = new ArrayList<ValueBox>();
+    list.addAll(getLeftOp().getUseBoxes());
+    list.add(rightBox);
+    list.addAll(getRightOp().getUseBoxes());
+    return list;
+  }
+
+  @Override
+  public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
+  public boolean branches() {
+    return false;
+  }
 }

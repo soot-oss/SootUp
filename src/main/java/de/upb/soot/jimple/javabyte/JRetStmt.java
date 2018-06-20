@@ -28,20 +28,20 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.javabyte;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.stmt.RetStmt;
+import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JRetStmt extends AbstractStmt implements RetStmt
+public class JRetStmt extends AbstractStmt
 {
     final ValueBox stmtAddressBox;
     //List useBoxes;
@@ -63,31 +63,29 @@ public class JRetStmt extends AbstractStmt implements RetStmt
         return new JRetStmt(Jimple.cloneIfNecessary(getStmtAddress()));
     }
 
+    @Override
     public String toString()
     {
         return Jimple.RET + " "  + stmtAddressBox.getValue().toString();
     }
     
     @Override
-    public void toString(UnitPrinter up) {
+    public void toString(StmtPrinter up) {
         up.literal(Jimple.RET);
         up.literal(" ");
         stmtAddressBox.toString(up);
     }
 
-    @Override
     public Value getStmtAddress()
     {
         return stmtAddressBox.getValue();
     }
 
-    @Override
     public ValueBox getStmtAddressBox()
     {
         return stmtAddressBox;
     }
 
-    @Override
     public void setStmtAddress(Value stmtAddress)
     {
         stmtAddressBox.setValue(stmtAddress);

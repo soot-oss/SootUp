@@ -23,19 +23,17 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.stmt.IdentityStmt;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JIdentityStmt extends AbstractDefinitionStmt implements
-		IdentityStmt {
+public class JIdentityStmt extends AbstractDefinitionStmt {
 	public JIdentityStmt(Value local, Value identityValue) {
 		this(Jimple.v().newLocalBox(local), Jimple.v().newIdentityRefBox(
 				identityValue));
@@ -58,7 +56,7 @@ public class JIdentityStmt extends AbstractDefinitionStmt implements
 	}
 
 	@Override
-  public void toString(UnitPrinter up) {
+  public void toString(StmtPrinter up) {
 		leftBox.toString(up);
 		up.literal(" := ");
 		rightBox.toString(up);
@@ -77,19 +75,16 @@ public class JIdentityStmt extends AbstractDefinitionStmt implements
 		((IStmtVisitor) sw).caseIdentityStmt(this);
 	}
 
-  @Override
   public Type getType() {
     // TODO Auto-generated method stub
     return null;
   }
 
-  @Override
   public boolean equivTo(Object o) {
     // TODO Auto-generated method stub
     return false;
   }
 
-  @Override
   public int equivHashCode() {
     // TODO Auto-generated method stub
     return 0;

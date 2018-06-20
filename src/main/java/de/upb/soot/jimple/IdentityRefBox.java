@@ -28,11 +28,9 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple;
 
-import de.upb.soot.jimple.AbstractValueBox;
-import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.ref.IdentityRef;
+import de.upb.soot.jimple.common.ref.IdentityRef;
 
 public class IdentityRefBox extends AbstractValueBox
 {

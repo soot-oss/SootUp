@@ -28,11 +28,9 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple;
 
-import de.upb.soot.jimple.AbstractValueBox;
-import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.expr.ConditionExpr;
+import de.upb.soot.jimple.common.expr.AbstractConditionExpr;
 
 public class ConditionExprBox extends AbstractValueBox
 {
@@ -41,8 +39,9 @@ public class ConditionExprBox extends AbstractValueBox
         setValue(value);
     }
 
+    @Override
     public boolean canContainValue(Value value)
     {
-        return value instanceof ConditionExpr;
+    return value instanceof AbstractConditionExpr;
     }
 }

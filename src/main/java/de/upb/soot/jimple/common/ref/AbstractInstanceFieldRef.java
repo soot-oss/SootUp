@@ -25,24 +25,22 @@
  */
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.ref;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootFieldRef;
 import de.upb.soot.jimple.PrecedenceTest;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.ref.InstanceFieldRef;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
-public abstract class AbstractInstanceFieldRef implements InstanceFieldRef
+public abstract class AbstractInstanceFieldRef implements FieldRef
 {
     protected SootFieldRef fieldRef;
     final ValueBox baseBox;
@@ -65,7 +63,8 @@ public abstract class AbstractInstanceFieldRef implements InstanceFieldRef
         return baseBox.getValue().toString() + "." + fieldRef.getSignature();
     }
     
-    public void toString( UnitPrinter up ) {
+    @Override
+    public void toString( StmtPrinter up ) {
         if( PrecedenceTest.needsBrackets( baseBox, this ) ) {
           up.literal("(");
         }
@@ -77,19 +76,16 @@ public abstract class AbstractInstanceFieldRef implements InstanceFieldRef
         up.fieldRef(fieldRef);
     }
 
-    @Override
     public Value getBase()
     {
         return baseBox.getValue();
     }
 
-    @Override
     public ValueBox getBaseBox()
     {
         return baseBox;
     }
 
-    @Override
     public void setBase(Value base)
     {
         baseBox.setValue(base);
@@ -112,7 +108,7 @@ public abstract class AbstractInstanceFieldRef implements InstanceFieldRef
         return fieldRef.resolve();
     }
 
-    @Override
+
     public final List<ValueBox> getUseBoxes()
     {
         List<ValueBox> useBoxes = new ArrayList<ValueBox>();
@@ -123,7 +119,7 @@ public abstract class AbstractInstanceFieldRef implements InstanceFieldRef
         return useBoxes;
     }
 
-    @Override
+  @Override
     public Type getType()
     {
         return fieldRef.type();
@@ -135,7 +131,7 @@ public abstract class AbstractInstanceFieldRef implements InstanceFieldRef
         ((IRefVisitor) sw).caseInstanceFieldRef(this);
     }
     
-    @Override
+  @Override
     public boolean equivTo(Object o)
     {
         if (o instanceof AbstractInstanceFieldRef)

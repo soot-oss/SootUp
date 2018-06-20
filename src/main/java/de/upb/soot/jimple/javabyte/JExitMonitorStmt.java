@@ -28,25 +28,24 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.javabyte;
 
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.StmtBox;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.ArrayRef;
-import de.upb.soot.jimple.expr.InvokeExpr;
-import de.upb.soot.jimple.ref.FieldRef;
-import de.upb.soot.jimple.stmt.ExitMonitorStmt;
-import de.upb.soot.jimple.stmt.Unit;
-import de.upb.soot.jimple.stmt.UnitBox;
+import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.soot.jimple.common.ref.ArrayRef;
+import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JExitMonitorStmt extends AbstractOpStmt 
-    implements ExitMonitorStmt
 {
     public JExitMonitorStmt(Value op)
     {
@@ -64,13 +63,14 @@ public class JExitMonitorStmt extends AbstractOpStmt
         return new JExitMonitorStmt(Jimple.cloneIfNecessary(getOp()));
     }
 
+    @Override
     public String toString()
     {
         return Jimple.EXITMONITOR + " "  + opBox.getValue().toString();
     }
     
     @Override
-    public void toString(UnitPrinter up) {
+    public void toString(StmtPrinter up) {
         up.literal(Jimple.EXITMONITOR);
         up.literal(" ");
         opBox.toString(up);
@@ -92,7 +92,7 @@ public class JExitMonitorStmt extends AbstractOpStmt
   }
 
   @Override
-  public InvokeExpr getInvokeExpr() {
+  public AbstractInvokeExpr getInvokeExpr() {
     // TODO Auto-generated method stub
     return null;
   }
@@ -134,25 +134,25 @@ public class JExitMonitorStmt extends AbstractOpStmt
   }
 
   @Override
-  public List<UnitBox> getUnitBoxes() {
+  public List<StmtBox> getUnitBoxes() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public List<UnitBox> getBoxesPointingToThis() {
+  public List<StmtBox> getBoxesPointingToThis() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public void addBoxPointingToThis(UnitBox b) {
+  public void addBoxPointingToThis(StmtBox b) {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void removeBoxPointingToThis(UnitBox b) {
+  public void removeBoxPointingToThis(StmtBox b) {
     // TODO Auto-generated method stub
 
   }
@@ -170,7 +170,7 @@ public class JExitMonitorStmt extends AbstractOpStmt
   }
 
   @Override
-  public void redirectJumpsToThisTo(Unit newLocation) {
+  public void redirectJumpsToThisTo(Stmt newLocation) {
     // TODO Auto-generated method stub
 
   }

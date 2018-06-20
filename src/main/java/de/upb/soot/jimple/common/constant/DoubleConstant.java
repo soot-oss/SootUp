@@ -24,10 +24,10 @@
  */
 
 
-package de.upb.soot.jimple.constant;
+package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.type.DoubleType;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.DoubleType;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 

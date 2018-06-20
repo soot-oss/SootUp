@@ -28,9 +28,9 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.jimple.type.RefType;
+import de.upb.soot.jimple.common.type.RefType;
 
 public class JNewExpr extends AbstractNewExpr
 {

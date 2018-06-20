@@ -28,19 +28,19 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.type.BooleanType;
-import de.upb.soot.jimple.type.ByteType;
-import de.upb.soot.jimple.type.CharType;
-import de.upb.soot.jimple.type.DoubleType;
-import de.upb.soot.jimple.type.FloatType;
-import de.upb.soot.jimple.type.IntType;
-import de.upb.soot.jimple.type.LongType;
-import de.upb.soot.jimple.type.ShortType;
-import de.upb.soot.jimple.type.Type;
-import de.upb.soot.jimple.type.UnknownType;
+import de.upb.soot.jimple.common.type.BooleanType;
+import de.upb.soot.jimple.common.type.ByteType;
+import de.upb.soot.jimple.common.type.CharType;
+import de.upb.soot.jimple.common.type.DoubleType;
+import de.upb.soot.jimple.common.type.FloatType;
+import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.LongType;
+import de.upb.soot.jimple.common.type.ShortType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.common.type.UnknownType;
 
 @SuppressWarnings("serial")
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr

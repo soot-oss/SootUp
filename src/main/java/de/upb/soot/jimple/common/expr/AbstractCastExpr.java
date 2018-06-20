@@ -24,22 +24,21 @@
  */
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.PrecedenceTest;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.CastExpr;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
-abstract public class AbstractCastExpr implements CastExpr
+abstract public class AbstractCastExpr implements Expr
 {	    
 	final ValueBox opBox;
     Type type;
@@ -53,6 +52,7 @@ abstract public class AbstractCastExpr implements CastExpr
         this.type = type;
     }
 
+    @Override
     public boolean equivTo(Object o)
     {
         if (o instanceof AbstractCastExpr)
@@ -65,6 +65,7 @@ abstract public class AbstractCastExpr implements CastExpr
     }
 
     /** Returns a hash code for this object, consistent with structural equality. */
+    @Override
     public int equivHashCode() 
     {
         return opBox.getValue().equivHashCode() * 101 + type.hashCode() + 17;
@@ -76,7 +77,8 @@ abstract public class AbstractCastExpr implements CastExpr
         return "("  + type.toString() + ") " + opBox.getValue().toString();
     }
     
-    public void toString(UnitPrinter up) {
+    @Override
+    public void toString(StmtPrinter up) {
         up.literal("(");
         up.type(type);
         up.literal(") ");
@@ -89,19 +91,16 @@ abstract public class AbstractCastExpr implements CastExpr
         }
     }
     
-    @Override
     public Value getOp()
     {
         return opBox.getValue();
     }
 
-    @Override
     public void setOp(Value op)
     {
         opBox.setValue(op);
     }
     
-    @Override
     public ValueBox getOpBox()
     {
         return opBox;
@@ -118,13 +117,12 @@ abstract public class AbstractCastExpr implements CastExpr
         return list;
     }
 
-    @Override
     public Type getCastType()
     {
         return type;
     }
 
-    @Override
+
     public void setCastType(Type castType)
     {
         this.type = castType;

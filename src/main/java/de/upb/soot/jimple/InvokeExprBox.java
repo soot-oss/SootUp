@@ -28,11 +28,9 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple;
 
-import de.upb.soot.jimple.AbstractValueBox;
-import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.expr.InvokeExpr;
+import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 
 public class InvokeExprBox extends AbstractValueBox
 {
@@ -41,8 +39,9 @@ public class InvokeExprBox extends AbstractValueBox
         setValue(value);
     }
 
+    @Override
     public boolean canContainValue(Value value)
     {
-        return value instanceof InvokeExpr;
+    return value instanceof AbstractInvokeExpr;
     }
 }

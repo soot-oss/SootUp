@@ -1,4 +1,4 @@
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,8 +10,7 @@ import java.util.List;
 
 import de.upb.soot.Scene;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.jimple.stmt.Unit;
-import de.upb.soot.jimple.stmt.UnitBox;
+import de.upb.soot.jimple.common.stmt.Stmt;
 
 /* Soot - a J*va Optimization Framework
  * Copyright (C) 1997-1999 Raja Vallee-Rai
@@ -47,16 +46,16 @@ public class AbstractTrap implements Trap, Serializable {
   protected transient SootClass exception;
 
   /** The first unit being trapped. */
-  protected UnitBox beginUnitBox;
+  protected StmtBox beginStmtBox;
 
   /** The unit just before the last unit being trapped. */
-  protected UnitBox endUnitBox;
+  protected StmtBox endStmtBox;
 
   /** The unit to which execution flows after the caught exception is triggered. */
-  protected UnitBox handlerUnitBox;
+  protected StmtBox handlerStmtBox;
 
   /** The list of unitBoxes referred to in this Trap (begin, end and handler. */
-  protected List<UnitBox> unitBoxes;
+  protected List<StmtBox> unitBoxes;
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
@@ -69,47 +68,49 @@ public class AbstractTrap implements Trap, Serializable {
   }
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
-  protected AbstractTrap(SootClass exception, UnitBox beginUnitBox, UnitBox endUnitBox,
-      UnitBox handlerUnitBox) {
+  protected AbstractTrap(SootClass exception, StmtBox beginStmtBox, StmtBox endStmtBox,
+      StmtBox handlerStmtBox) {
     this.exception = exception;
-    this.beginUnitBox = beginUnitBox;
-    this.endUnitBox = endUnitBox;
-    this.handlerUnitBox = handlerUnitBox;
+    this.beginStmtBox = beginStmtBox;
+    this.endStmtBox = endStmtBox;
+    this.handlerStmtBox = handlerStmtBox;
     this.unitBoxes = Collections
-        .unmodifiableList(Arrays.asList(beginUnitBox, endUnitBox, handlerUnitBox));
+        .unmodifiableList(Arrays.asList(beginStmtBox, endStmtBox, handlerStmtBox));
   }
 
-  public Unit getBeginUnit() {
-    return beginUnitBox.getUnit();
+  public Stmt getBeginStmt() {
+    return beginStmtBox.getStmt();
   }
 
-  public Unit getEndUnit() {
-    return endUnitBox.getUnit();
+  public Stmt getEndStmt() {
+    return endStmtBox.getStmt();
   }
 
-  public Unit getHandlerUnit() {
-    return handlerUnitBox.getUnit();
+  public Stmt getHandlerStmt() {
+    return handlerStmtBox.getStmt();
   }
 
-  public UnitBox getHandlerUnitBox() {
-    return handlerUnitBox;
+  public StmtBox getHandlerStmtBox() {
+    return handlerStmtBox;
   }
 
-  public UnitBox getBeginUnitBox() {
-    return beginUnitBox;
+  public StmtBox getBeginStmtBox() {
+    return beginStmtBox;
   }
 
-  public UnitBox getEndUnitBox() {
-    return endUnitBox;
+  public StmtBox getEndStmtBox() {
+    return endStmtBox;
   }
 
-  public List<UnitBox> getUnitBoxes() {
+  @Override
+  public List<StmtBox> getStmtBoxes() {
     return unitBoxes;
   }
 
-  public void clearUnitBoxes() {
-    for (UnitBox box : getUnitBoxes()) {
-      box.setUnit(null);
+  @Override
+  public void clearStmtBoxes() {
+    for (StmtBox box : getStmtBoxes()) {
+      box.setStmt(null);
     }
   }
 
@@ -117,16 +118,16 @@ public class AbstractTrap implements Trap, Serializable {
     return exception;
   }
 
-  public void setBeginUnit(Unit beginUnit) {
-    beginUnitBox.setUnit(beginUnit);
+  public void setBeginStmt(Stmt beginStmt) {
+    beginStmtBox.setStmt(beginStmt);
   }
 
-  public void setEndUnit(Unit endUnit) {
-    endUnitBox.setUnit(endUnit);
+  public void setEndStmt(Stmt endStmt) {
+    endStmtBox.setStmt(endStmt);
   }
 
-  public void setHandlerUnit(Unit handlerUnit) {
-    handlerUnitBox.setUnit(handlerUnit);
+  public void setHandlerStmt(Stmt handlerStmt) {
+    handlerStmtBox.setStmt(handlerStmt);
   }
 
   public void setException(SootClass exception) {
@@ -137,4 +138,6 @@ public class AbstractTrap implements Trap, Serializable {
   public Object clone() {
     throw new RuntimeException();
   }
+
+
 }

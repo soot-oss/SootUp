@@ -24,112 +24,88 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.core.SootMethodRef;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.InvokeExpr;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.ref.SootMethodRef;
+import de.upb.soot.jimple.common.type.Type;
 
 @SuppressWarnings("serial")
-abstract public class AbstractInvokeExpr implements InvokeExpr
-{
-    protected SootMethodRef methodRef;
-    final protected ValueBox[] argBoxes;
-    
-    protected AbstractInvokeExpr(SootMethodRef methodRef, ValueBox[] argBoxes) {
-        this.methodRef = methodRef;
-    	this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
-    }
+abstract public class AbstractInvokeExpr implements Expr {
+  protected SootMethodRef methodRef;
+  final protected ValueBox[] argBoxes;
 
-	@Override
+  protected AbstractInvokeExpr(SootMethodRef methodRef, ValueBox[] argBoxes) {
+    this.methodRef = methodRef;
+    this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
+  }
+
   public void setMethodRef(SootMethodRef methodRef) {
-		this.methodRef = methodRef;
-	}
-	
-    @Override
-    public SootMethodRef getMethodRef()
-    {
-        return methodRef;
-    }
+    this.methodRef = methodRef;
+  }
 
-    @Override
-    public SootMethod getMethod()
-    {
-        return methodRef.resolve();
-    }
+  public SootMethodRef getMethodRef() {
+    return methodRef;
+  }
 
-    @Override
-    public abstract Object clone();
-    
-    @Override
-    public Value getArg(int index)
-    {
-        return argBoxes[index].getValue();
-    }
+  public SootMethod getMethod() {
+    return methodRef.resolve();
+  }
 
-    @Override
-    public List<Value> getArgs()
-    {
-        List<Value> l = new ArrayList<>();
-        if (argBoxes != null) {
-            for (ValueBox element : argBoxes) {
-              l.add(element.getValue());
-            }
-        }
-        return l;
-    }
+  @Override
+  public abstract Object clone();
 
-    @Override
-    public int getArgCount()
-    {
-        return argBoxes == null ? 0 : argBoxes.length;
-    }
+  public Value getArg(int index) {
+    return argBoxes[index].getValue();
+  }
 
-    @Override
-    public void setArg(int index, Value arg)
-    {
-        argBoxes[index].setValue(arg);
-    }
-
-    @Override
-    public ValueBox getArgBox(int index)
-    {
-        return argBoxes[index];
-    }
-
-    @Override
-    public Type getType()
-    {
-        return methodRef.returnType();
-    }
-    
-    @Override
-    public List<ValueBox> getUseBoxes()
-    {    	
-    	if (argBoxes == null) {
-        return Collections.emptyList();
+  public List<Value> getArgs() {
+    List<Value> l = new ArrayList<>();
+    if (argBoxes != null) {
+      for (ValueBox element : argBoxes) {
+        l.add(element.getValue());
       }
-    	
-    	List<ValueBox> list = new ArrayList<ValueBox>();      
-        Collections.addAll(list, argBoxes);
-        
-        for (ValueBox element : argBoxes) {
-            list.addAll(element.getValue().getUseBoxes());
-        }
-
-        return list;
     }
+    return l;
+  }
+
+  public int getArgCount() {
+    return argBoxes == null ? 0 : argBoxes.length;
+  }
+
+  public void setArg(int index, Value arg) {
+    argBoxes[index].setValue(arg);
+  }
+
+  public ValueBox getArgBox(int index) {
+    return argBoxes[index];
+  }
+
+  @Override
+  public Type getType() {
+    return methodRef.returnType();
+  }
+
+  @Override
+  public List<ValueBox> getUseBoxes() {
+    if (argBoxes == null) {
+      return Collections.emptyList();
+    }
+
+    List<ValueBox> list = new ArrayList<ValueBox>();
+    Collections.addAll(list, argBoxes);
+
+    for (ValueBox element : argBoxes) {
+      list.addAll(element.getValue().getUseBoxes());
+    }
+
+    return list;
+  }
 
 }

@@ -1,4 +1,4 @@
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.stmt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import de.upb.soot.jimple.ValueBox;
 
 public abstract class AbstractOpStmt extends AbstractStmt {
 
-	final ValueBox opBox;
+  final protected ValueBox opBox;
 	
 	protected AbstractOpStmt(ValueBox opBox)
     {

@@ -23,20 +23,20 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.constant;
+package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.type.ArrayType;
-import de.upb.soot.jimple.type.BooleanType;
-import de.upb.soot.jimple.type.ByteType;
-import de.upb.soot.jimple.type.CharType;
-import de.upb.soot.jimple.type.DoubleType;
-import de.upb.soot.jimple.type.FloatType;
-import de.upb.soot.jimple.type.IntType;
-import de.upb.soot.jimple.type.LongType;
-import de.upb.soot.jimple.type.PrimType;
-import de.upb.soot.jimple.type.RefType;
-import de.upb.soot.jimple.type.ShortType;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.ArrayType;
+import de.upb.soot.jimple.common.type.BooleanType;
+import de.upb.soot.jimple.common.type.ByteType;
+import de.upb.soot.jimple.common.type.CharType;
+import de.upb.soot.jimple.common.type.DoubleType;
+import de.upb.soot.jimple.common.type.FloatType;
+import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.LongType;
+import de.upb.soot.jimple.common.type.PrimType;
+import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.ShortType;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 

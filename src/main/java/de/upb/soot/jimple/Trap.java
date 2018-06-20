@@ -1,5 +1,5 @@
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple;
 
-public interface Trap {
+public interface Trap extends StmtBoxOwner {
 
 }

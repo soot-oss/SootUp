@@ -23,179 +23,152 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.javabyte;
 
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.StmtBox;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.stmt.TableSwitchStmt;
-import de.upb.soot.jimple.stmt.Unit;
-import de.upb.soot.jimple.stmt.UnitBox;
+import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JTableSwitchStmt extends AbstractSwitchStmt 
-    implements TableSwitchStmt
-{
-    int lowIndex;
-    int highIndex;
-    
-    // This method is necessary to deal with constructor-must-be-first-ism.
-    private static UnitBox[] getTargetBoxesArray(List<? extends Unit> targets)
-    {
-        UnitBox[] targetBoxes = new UnitBox[targets.size()];
-        for(int i = 0; i < targetBoxes.length; i++) {
-          targetBoxes[i] = Jimple.v().newStmtBox(targets.get(i));
-        }
-        return targetBoxes;
-    }
-    
-    @Override
-    public Object clone() 
-    {
-        return new JTableSwitchStmt(Jimple.cloneIfNecessary(getKey()), 
-        		lowIndex, highIndex, getTargets(), getDefaultTarget() );
-    }
-    
-    public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends Unit> targets, Unit defaultTarget)
-    {
-        this(Jimple.v().newImmediateBox(key), lowIndex, highIndex, 
-        		getTargetBoxesArray(targets),
-        		Jimple.v().newStmtBox(defaultTarget)
-             );
-    }  
-    
-    public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends UnitBox> targets, UnitBox defaultTarget)
-    {
-        this(Jimple.v().newImmediateBox(key), lowIndex, highIndex, 
-        		targets.toArray(new UnitBox[targets.size()]), defaultTarget
-             );
-    }
+public class JTableSwitchStmt extends AbstractSwitchStmt {
+  int lowIndex;
+  int highIndex;
 
-    protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, 
-    		UnitBox[] targetBoxes, UnitBox defaultTargetBox )
-    {
-    	super(keyBox, defaultTargetBox, targetBoxes);
+  // This method is necessary to deal with constructor-must-be-first-ism.
+  private static StmtBox[] getTargetBoxesArray(List<? extends Stmt> targets) {
+    StmtBox[] targetBoxes = new StmtBox[targets.size()];
+    for (int i = 0; i < targetBoxes.length; i++) {
+      targetBoxes[i] = Jimple.v().newStmtBox(targets.get(i));
+    }
+    return targetBoxes;
+  }
 
-        if(lowIndex > highIndex) {
-          throw new RuntimeException("Error creating tableswitch: lowIndex(" 
-                                     + lowIndex +  ") can't be greater than highIndex(" + highIndex + ").");
-        }
+  @Override
+  public Object clone() {
+    return new JTableSwitchStmt(Jimple.cloneIfNecessary(getKey()), lowIndex, highIndex,
+        getTargets(), getDefaultTarget());
+  }
 
-        this.lowIndex = lowIndex;
-        this.highIndex = highIndex;
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends Stmt> targets,
+      Stmt defaultTarget) {
+    this(Jimple.v().newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets),
+        Jimple.v().newStmtBox(defaultTarget));
+  }
+
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends StmtBox> targets,
+      StmtBox defaultTarget) {
+    this(Jimple.v().newImmediateBox(key), lowIndex, highIndex,
+        targets.toArray(new StmtBox[targets.size()]), defaultTarget);
+  }
+
+  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, StmtBox[] targetBoxes,
+      StmtBox defaultTargetBox) {
+    super(keyBox, defaultTargetBox, targetBoxes);
+
+    if (lowIndex > highIndex) {
+      throw new RuntimeException("Error creating tableswitch: lowIndex(" + lowIndex
+          + ") can't be greater than highIndex(" + highIndex + ").");
     }
 
-    public String toString()
-    {
-        StringBuffer buffer = new StringBuffer();
-        String endOfLine = " ";
-        
-        buffer.append(Jimple.TABLESWITCH + "(" +
-            keyBox.getValue().toString() + ")" + endOfLine);
-            
-        buffer.append("{" + endOfLine);
-        
-        // In this for-loop, we cannot use "<=" since 'i' would wrap around.
-        // The case for "i == highIndex" is handled separately after the loop.
-        for (int i = lowIndex; i < highIndex; i++) {
-          Unit target = getTarget(i - lowIndex);
-          buffer.append("    " + Jimple.CASE + " " + i + ": " +
-              Jimple.GOTO + " " + (target == this ? "self" : target) + ";" +
-              endOfLine);
-        }
-        Unit target = getTarget(highIndex - lowIndex);
-        buffer.append("    " + Jimple.CASE + " " + highIndex + ": " +
-            Jimple.GOTO + " " + (target == this ? "self" : target) + ";" +
-            endOfLine);
+    this.lowIndex = lowIndex;
+    this.highIndex = highIndex;
+  }
 
-        target = getDefaultTarget();
-        buffer.append("    " +  Jimple.DEFAULT + ": " + Jimple.GOTO + " " +
-            (target == this ? "self" : target) + ";" + endOfLine);
+  @Override
+  public String toString() {
+    StringBuffer buffer = new StringBuffer();
+    String endOfLine = " ";
 
-        buffer.append("}");
+    buffer.append(Jimple.TABLESWITCH + "(" + keyBox.getValue().toString() + ")" + endOfLine);
 
-        return buffer.toString();
+    buffer.append("{" + endOfLine);
+
+    // In this for-loop, we cannot use "<=" since 'i' would wrap around.
+    // The case for "i == highIndex" is handled separately after the loop.
+    for (int i = lowIndex; i < highIndex; i++) {
+      Stmt target = getTarget(i - lowIndex);
+      buffer.append("    " + Jimple.CASE + " " + i + ": " + Jimple.GOTO + " "
+          + (target == this ? "self" : target) + ";" + endOfLine);
     }
-    
-    @Override
-    public void toString(UnitPrinter up)
-    {
-        up.literal(Jimple.TABLESWITCH);
-        up.literal("(");
-        keyBox.toString(up);
-        up.literal(")");
-        up.newline();
-        up.literal("{");
-        up.newline();
-        // In this for-loop, we cannot use "<=" since 'i' would wrap around.
-        // The case for "i == highIndex" is handled separately after the loop.
-        for(int i = lowIndex; i < highIndex; i++) {
-            printCaseTarget(up, i);
-        }
-        printCaseTarget(up, highIndex);
+    Stmt target = getTarget(highIndex - lowIndex);
+    buffer.append("    " + Jimple.CASE + " " + highIndex + ": " + Jimple.GOTO + " "
+        + (target == this ? "self" : target) + ";" + endOfLine);
 
-        up.literal("    ");
-        up.literal(Jimple.DEFAULT);
-        up.literal(": ");
-        up.literal(Jimple.GOTO);
-        up.literal(" ");
-        defaultTargetBox.toString(up);
-        up.literal(";");
-        up.newline();
-        up.literal("}");
+    target = getDefaultTarget();
+    buffer.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " "
+        + (target == this ? "self" : target) + ";" + endOfLine);
+
+    buffer.append("}");
+
+    return buffer.toString();
+  }
+
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.TABLESWITCH);
+    up.literal("(");
+    keyBox.toString(up);
+    up.literal(")");
+    up.newline();
+    up.literal("{");
+    up.newline();
+    // In this for-loop, we cannot use "<=" since 'i' would wrap around.
+    // The case for "i == highIndex" is handled separately after the loop.
+    for (int i = lowIndex; i < highIndex; i++) {
+      printCaseTarget(up, i);
     }
+    printCaseTarget(up, highIndex);
 
+    up.literal("    ");
+    up.literal(Jimple.DEFAULT);
+    up.literal(": ");
+    up.literal(Jimple.GOTO);
+    up.literal(" ");
+    defaultTargetBox.toString(up);
+    up.literal(";");
+    up.newline();
+    up.literal("}");
+  }
 
-	private void printCaseTarget(UnitPrinter up, int targetIndex) {
-		up.literal("    ");
-		up.literal(Jimple.CASE);
-		up.literal(" ");
-		up.literal(Integer.toString(targetIndex));
-		up.literal(": ");
-		up.literal(Jimple.GOTO);
-		up.literal(" ");
-		targetBoxes[targetIndex-lowIndex].toString(up);
-		up.literal(";");
-		up.newline();
-	}
+  private void printCaseTarget(StmtPrinter up, int targetIndex) {
+    up.literal("    ");
+    up.literal(Jimple.CASE);
+    up.literal(" ");
+    up.literal(Integer.toString(targetIndex));
+    up.literal(": ");
+    up.literal(Jimple.GOTO);
+    up.literal(" ");
+    targetBoxes[targetIndex - lowIndex].toString(up);
+    up.literal(";");
+    up.newline();
+  }
 
-    @Override
-    public void setLowIndex(int lowIndex)
-    {
-        this.lowIndex = lowIndex;
-    }
+  public void setLowIndex(int lowIndex) {
+    this.lowIndex = lowIndex;
+  }
 
-    @Override
-    public void setHighIndex(int highIndex)
-    {
-        this.highIndex = highIndex;
-    }
+  public void setHighIndex(int highIndex) {
+    this.highIndex = highIndex;
+  }
 
-    @Override
-    public int getLowIndex()
-    {
-        return lowIndex;
-    }
+  public int getLowIndex() {
+    return lowIndex;
+  }
 
-    @Override
-    public int getHighIndex()
-    {
-        return highIndex;
-    }
+  public int getHighIndex() {
+    return highIndex;
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IStmtVisitor) sw).caseTableSwitchStmt(this);
-    }    
+  @Override
+  public void accept(IVisitor sw) {
+    ((IStmtVisitor) sw).caseTableSwitchStmt(this);
+  }
 
 }

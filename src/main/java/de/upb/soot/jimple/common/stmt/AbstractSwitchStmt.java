@@ -1,74 +1,73 @@
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.stmt;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import de.upb.soot.jimple.StmtBox;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.stmt.SwitchStmt;
-import de.upb.soot.jimple.stmt.Unit;
-import de.upb.soot.jimple.stmt.UnitBox;
 
-public abstract class AbstractSwitchStmt extends AbstractStmt implements SwitchStmt {
+public abstract class AbstractSwitchStmt extends AbstractStmt {
 
-    final UnitBox defaultTargetBox;
+  final protected StmtBox defaultTargetBox;
     
-    final ValueBox keyBox;
+  final protected ValueBox keyBox;
 
-    final List<UnitBox> stmtBoxes;
+  final protected List<StmtBox> stmtBoxes;
     
-    final protected UnitBox[] targetBoxes;
+  final protected StmtBox[] targetBoxes;
     
-    protected AbstractSwitchStmt(ValueBox keyBox, UnitBox defaultTargetBox, UnitBox ... targetBoxes) {
+    protected AbstractSwitchStmt(ValueBox keyBox, StmtBox defaultTargetBox, StmtBox ... targetBoxes) {
     	this.keyBox = keyBox;
     	this.defaultTargetBox = defaultTargetBox;
     	this.targetBoxes = targetBoxes;
     	
         // Build up stmtBoxes
-        List<UnitBox> list = new ArrayList<UnitBox>();
+        List<StmtBox> list = new ArrayList<StmtBox>();
         stmtBoxes = Collections.unmodifiableList(list);
         
         Collections.addAll(list, targetBoxes);
         list.add(defaultTargetBox);
     }
 
-    @Override
-    final public Unit getDefaultTarget()
+
+  final public Stmt getDefaultTarget()
     {
-        return defaultTargetBox.getUnit();
+        return defaultTargetBox.getStmt();
     }
 
-    @Override
-    final public void setDefaultTarget(Unit defaultTarget)
+
+  final public void setDefaultTarget(Stmt defaultTarget)
     {
-        defaultTargetBox.setUnit(defaultTarget);
+        defaultTargetBox.setStmt(defaultTarget);
     }
 
-    @Override
-    final public UnitBox getDefaultTargetBox()
+
+    final public StmtBox getDefaultTargetBox()
     {
         return defaultTargetBox;
     }
 
-    @Override
+
     final public Value getKey()
     {
         return keyBox.getValue();
     }
 
-    @Override
+
     final public void setKey(Value key)
     {
         keyBox.setValue(key);
     }
 
-    @Override
+
     final public ValueBox getKeyBox()
     {
         return keyBox;
     }    
     
+
     @Override
     final public List<ValueBox> getUseBoxes()
     {
@@ -85,52 +84,51 @@ public abstract class AbstractSwitchStmt extends AbstractStmt implements SwitchS
         return targetBoxes.length;
     }
     
-    @Override
-    final public Unit getTarget(int index)
+
+  final public Stmt getTarget(int index)
     {
-        return targetBoxes[index].getUnit();
+        return targetBoxes[index].getStmt();
     }
 
-    @Override
-    final public UnitBox getTargetBox(int index)
+
+    final public StmtBox getTargetBox(int index)
     {
         return targetBoxes[index];
     }
 
-    @Override
-    final public void setTarget(int index, Unit target)
+
+  final public void setTarget(int index, Stmt target)
     {
-        targetBoxes[index].setUnit(target);
+        targetBoxes[index].setStmt(target);
     }
     
-    @Override
-    final public List<Unit> getTargets()
+  final public List<Stmt> getTargets()
     {
-        List<Unit> targets = new ArrayList<Unit>();
+    List<Stmt> targets = new ArrayList<Stmt>();
 
-        for (UnitBox element : targetBoxes) {
-          targets.add(element.getUnit());
+        for (StmtBox element : targetBoxes) {
+          targets.add(element.getStmt());
         }
 
         return targets;
     }
     
-    final public void setTargets(List<? extends Unit> targets)
+  final public void setTargets(List<? extends Stmt> targets)
     {
         for(int i = 0; i < targets.size(); i++) {
-          targetBoxes[i].setUnit(targets.get(i));
+          targetBoxes[i].setStmt(targets.get(i));
         }
     }
     
-    final public void setTargets(Unit[] targets)
+  final public void setTargets(Stmt[] targets)
     {
         for(int i = 0; i < targets.length; i++) {
-          targetBoxes[i].setUnit(targets[i]);
+          targetBoxes[i].setStmt(targets[i]);
         }
     }
 
     @Override
-    final public List<UnitBox> getUnitBoxes()
+    final public List<StmtBox> getUnitBoxes()
     {
         return stmtBoxes;
     }

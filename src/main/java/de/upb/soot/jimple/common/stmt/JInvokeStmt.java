@@ -28,21 +28,20 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.stmt;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.InvokeExpr;
-import de.upb.soot.jimple.stmt.InvokeStmt;
+import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JInvokeStmt extends AbstractStmt implements InvokeStmt
+public class JInvokeStmt extends AbstractStmt
 {
     final ValueBox invokeExprBox;
 
@@ -69,26 +68,26 @@ public class JInvokeStmt extends AbstractStmt implements InvokeStmt
         return true;
     }
 
+    @Override
     public String toString()
     {
         return invokeExprBox.getValue().toString();
     }
     
     @Override
-    public void toString(UnitPrinter up) {
+    public void toString(StmtPrinter up) {
         invokeExprBox.toString(up);
     }
     
-    @Override
     public void setInvokeExpr(Value invokeExpr)
     {
         invokeExprBox.setValue(invokeExpr);
     }
 
     @Override
-    public InvokeExpr getInvokeExpr()
+  public AbstractInvokeExpr getInvokeExpr()
     {
-        return (InvokeExpr) invokeExprBox.getValue();
+    return (AbstractInvokeExpr) invokeExprBox.getValue();
     }
 
     @Override

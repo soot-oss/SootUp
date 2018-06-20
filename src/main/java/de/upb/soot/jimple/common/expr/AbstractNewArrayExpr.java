@@ -23,23 +23,22 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.NewArrayExpr;
-import de.upb.soot.jimple.type.ArrayType;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.ArrayType;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
-public abstract class AbstractNewArrayExpr implements NewArrayExpr {
+public abstract class AbstractNewArrayExpr implements Expr {
   Type baseType;
   final ValueBox sizeBox;
 
@@ -74,7 +73,7 @@ public abstract class AbstractNewArrayExpr implements NewArrayExpr {
     return buffer.toString();
   }
 
-  public void toString(UnitPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.NEWARRAY);
     up.literal(" ");
     up.literal("(");
@@ -89,32 +88,26 @@ public abstract class AbstractNewArrayExpr implements NewArrayExpr {
     return baseType.toString();
   }
 
-  @Override
   public Type getBaseType() {
     return baseType;
   }
 
-  @Override
   public void setBaseType(Type type) {
     baseType = type;
   }
 
-  @Override
   public ValueBox getSizeBox() {
     return sizeBox;
   }
 
-  @Override
   public Value getSize() {
     return sizeBox.getValue();
   }
 
-  @Override
   public void setSize(Value size) {
     sizeBox.setValue(size);
   }
 
-  @Override
   public final List<ValueBox> getUseBoxes() {
     List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
@@ -124,7 +117,7 @@ public abstract class AbstractNewArrayExpr implements NewArrayExpr {
     return useBoxes;
   }
 
-  @Override
+
   public Type getType() {
     if (baseType instanceof ArrayType) {
       return ArrayType.v(((ArrayType) baseType).baseType, ((ArrayType) baseType).numDimensions + 1);

@@ -23,95 +23,84 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.Expr;
 
 @SuppressWarnings("serial")
-public abstract class AbstractBinopExpr implements Expr
-{	
-	protected ValueBox op1Box;
-    protected ValueBox op2Box;
+public abstract class AbstractBinopExpr implements Expr {
+  protected ValueBox op1Box;
+  protected ValueBox op2Box;
 
-    public Value getOp1()
-    {
-        return op1Box.getValue();
+  public Value getOp1() {
+    return op1Box.getValue();
+  }
+
+  public Value getOp2() {
+    return op2Box.getValue();
+  }
+
+  public ValueBox getOp1Box() {
+    return op1Box;
+  }
+
+  public ValueBox getOp2Box() {
+    return op2Box;
+  }
+
+  public void setOp1(Value op1) {
+    op1Box.setValue(op1);
+  }
+
+  public void setOp2(Value op2) {
+    op2Box.setValue(op2);
+  }
+
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+    List<ValueBox> list = new ArrayList<ValueBox>();
+
+    list.addAll(op1Box.getValue().getUseBoxes());
+    list.add(op1Box);
+    list.addAll(op2Box.getValue().getUseBoxes());
+    list.add(op2Box);
+
+    return list;
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof AbstractBinopExpr) {
+      AbstractBinopExpr abe = (AbstractBinopExpr) o;
+      return op1Box.getValue().equivTo(abe.op1Box.getValue())
+          && op2Box.getValue().equivTo(abe.op2Box.getValue())
+          && getSymbol().equals(abe.getSymbol());
     }
+    return false;
+  }
 
-    public Value getOp2()
-    {
-        return op2Box.getValue();
-    }
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return op1Box.getValue().equivHashCode() * 101 + op2Box.getValue().equivHashCode() + 17
+        ^ getSymbol().hashCode();
+  }
 
-    public ValueBox getOp1Box()
-    {
-        return op1Box;
-    }
+  /** Returns the unique symbol for an operator. */
+  abstract protected String getSymbol();
 
-    public ValueBox getOp2Box()
-    {
-        return op2Box;
-    }
+  @Override
+  abstract public Object clone();
 
-    public void setOp1(Value op1)
-    {
-        op1Box.setValue(op1);
-    }
+  @Override
+  public String toString() {
+    Value op1 = op1Box.getValue(), op2 = op2Box.getValue();
+    String leftOp = op1.toString(), rightOp = op2.toString();
 
-    public void setOp2(Value op2)
-    {
-        op2Box.setValue(op2);
-    }
-
-    @Override
-    public final List<ValueBox> getUseBoxes()
-    {
-        List<ValueBox> list = new ArrayList<ValueBox>();
-
-        list.addAll(op1Box.getValue().getUseBoxes());
-        list.add(op1Box);
-        list.addAll(op2Box.getValue().getUseBoxes());
-        list.add(op2Box);
-
-        return list;
-    }
-
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof AbstractBinopExpr)
-        {
-            AbstractBinopExpr abe = (AbstractBinopExpr)o;
-            return op1Box.getValue().equivTo(abe.op1Box.getValue()) &&
-                op2Box.getValue().equivTo(abe.op2Box.getValue()) &&
-                getSymbol().equals(abe.getSymbol());
-        }
-        return false;
-    }
-
-    /** Returns a hash code for this object, consistent with structural equality. */
-    public int equivHashCode() 
-    {
-        return op1Box.getValue().equivHashCode() * 101 + op2Box.getValue().equivHashCode() + 17
-            ^ getSymbol().hashCode();
-    }
-
-    /** Returns the unique symbol for an operator. */
-    abstract protected String getSymbol();
-    @Override
-    abstract public Object clone();
-
-    @Override
-    public String toString()
-    {
-        Value op1 = op1Box.getValue(), op2 = op2Box.getValue();
-        String leftOp = op1.toString(), rightOp = op2.toString();
-
-        return leftOp + getSymbol() + rightOp;
-    }
+    return leftOp + getSymbol() + rightOp;
+  }
 }

@@ -28,15 +28,14 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.stmt.NopStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JNopStmt extends AbstractStmt implements NopStmt
+public class JNopStmt extends AbstractStmt
 {
     public JNopStmt()
     {
@@ -50,13 +49,14 @@ public class JNopStmt extends AbstractStmt implements NopStmt
     }
 
 
+    @Override
     public String toString()
     {
         return Jimple.NOP;
     }
     
     @Override
-    public void toString(UnitPrinter up) {
+    public void toString(StmtPrinter up) {
         up.literal(Jimple.NOP);
     }
     

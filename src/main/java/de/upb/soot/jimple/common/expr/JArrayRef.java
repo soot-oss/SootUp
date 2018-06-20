@@ -28,21 +28,21 @@
 
 
 
-package de.upb.soot.jimple.internal;
+package de.upb.soot.jimple.common.expr;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Local;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.expr.ArrayRef;
-import de.upb.soot.jimple.type.ArrayType;
-import de.upb.soot.jimple.type.NullType;
-import de.upb.soot.jimple.type.Type;
-import de.upb.soot.jimple.type.UnknownType;
+import de.upb.soot.jimple.common.ref.ArrayRef;
+import de.upb.soot.jimple.common.type.ArrayType;
+import de.upb.soot.jimple.common.type.NullType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -95,7 +95,7 @@ public class JArrayRef implements ArrayRef
     }
     
     @Override
-    public void toString(UnitPrinter up) {
+    public void toString(StmtPrinter up) {
         baseBox.toString(up);
         up.literal("[");
         indexBox.toString(up);
