@@ -19,7 +19,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,7 +53,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     }
 
     try {
-      cpEntries
+      cpEntries = explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).collect(Collectors.toList());
           = PathUtils.explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).distinct().collect(Collectors.toList());
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
@@ -67,6 +66,8 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     logger.trace("{} class path entries registered", cpEntries.size());
   }
 
+    // we need to filter out duplicates of the same files to not generate duplicate namespaces
+    return exploded.map(cp -> cp.normalize()).distinct();
 
 
   @Override

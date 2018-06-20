@@ -17,8 +17,14 @@ class DummyClassProvider implements IClassProvider {
 
   @Override
   public Optional<ClassSource> getClass(INamespace ns, Path sourcePath, ClassSignature classSignature) {
+    // if it is not in target, it is located in a zip archive
+    if (!sourcePath.startsWith("target")) {
+      sigPath = sourcePath.getRoot().relativize(sourcePath);
+    } else {
+      sigPath = Paths.get("target/classes").relativize(sourcePath);
+    }
 
-    return Optional.of(new ClassSource(ns, classSignature) {
+    return Optional.of(new ClassSource(ns, ClassSignature.fromPath(sigPath, signatureFactory)) {
     });
   }
 

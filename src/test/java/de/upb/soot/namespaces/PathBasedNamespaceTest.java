@@ -23,6 +23,7 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
         Paths.get("target/test-classes/de/upb/soot/namespaces/PathBasedNamespaceTest.class"));
   }
 
+  @Test
   public void classNotFound() {
     // TODO adapt to new testing folder structure
     Path baseDir = Paths.get("target/test-classes/");
@@ -38,7 +39,7 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
     Path baseDir = Paths.get("target/classes/");
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(getClassProvider(), baseDir);
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
-    testClassReceival(pathBasedNamespace, sig, MIN_CLASSES_FOUND);
+    testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
   }
 
   @Test
@@ -47,6 +48,6 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
     Path jar = Paths.get("target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(getClassProvider(), jar);
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
-    testClassReceival(pathBasedNamespace, sig, MIN_CLASSES_FOUND);
+    testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
   }
 }
