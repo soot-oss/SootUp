@@ -2,7 +2,7 @@ package de.upb.soot.core;
 
 import java.util.List;
 
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.Type;
 
 public class SootMethod {
 

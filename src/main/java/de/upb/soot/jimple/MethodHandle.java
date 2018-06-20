@@ -29,10 +29,10 @@
 
 package de.upb.soot.jimple;
 
-import de.upb.soot.core.SootMethodRef;
-import de.upb.soot.jimple.constant.Constant;
-import de.upb.soot.jimple.type.RefType;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.constant.Constant;
+import de.upb.soot.jimple.common.ref.SootMethodRef;
+import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 

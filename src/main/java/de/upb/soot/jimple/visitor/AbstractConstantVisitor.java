@@ -1,13 +1,13 @@
 package de.upb.soot.jimple.visitor;
 
 import de.upb.soot.jimple.MethodHandle;
-import de.upb.soot.jimple.constant.ClassConstant;
-import de.upb.soot.jimple.constant.DoubleConstant;
-import de.upb.soot.jimple.constant.FloatConstant;
-import de.upb.soot.jimple.constant.IntConstant;
-import de.upb.soot.jimple.constant.LongConstant;
-import de.upb.soot.jimple.constant.NullConstant;
-import de.upb.soot.jimple.constant.StringConstant;
+import de.upb.soot.jimple.common.constant.ClassConstant;
+import de.upb.soot.jimple.common.constant.DoubleConstant;
+import de.upb.soot.jimple.common.constant.FloatConstant;
+import de.upb.soot.jimple.common.constant.IntConstant;
+import de.upb.soot.jimple.common.constant.LongConstant;
+import de.upb.soot.jimple.common.constant.NullConstant;
+import de.upb.soot.jimple.common.constant.StringConstant;
 
 public abstract class AbstractConstantVisitor implements IConstantVisitor
 {

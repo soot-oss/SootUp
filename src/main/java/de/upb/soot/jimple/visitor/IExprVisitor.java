@@ -1,71 +1,102 @@
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.expr.AddExpr;
-import de.upb.soot.jimple.expr.AndExpr;
-import de.upb.soot.jimple.expr.CastExpr;
-import de.upb.soot.jimple.expr.CmpExpr;
-import de.upb.soot.jimple.expr.CmpgExpr;
-import de.upb.soot.jimple.expr.CmplExpr;
-import de.upb.soot.jimple.expr.DivExpr;
-import de.upb.soot.jimple.expr.DynamicInvokeExpr;
-import de.upb.soot.jimple.expr.EqExpr;
-import de.upb.soot.jimple.expr.GeExpr;
-import de.upb.soot.jimple.expr.GtExpr;
-import de.upb.soot.jimple.expr.InstanceOfExpr;
-import de.upb.soot.jimple.expr.InterfaceInvokeExpr;
-import de.upb.soot.jimple.expr.LeExpr;
-import de.upb.soot.jimple.expr.LengthExpr;
-import de.upb.soot.jimple.expr.LtExpr;
-import de.upb.soot.jimple.expr.MulExpr;
-import de.upb.soot.jimple.expr.NeExpr;
-import de.upb.soot.jimple.expr.NegExpr;
-import de.upb.soot.jimple.expr.NewArrayExpr;
-import de.upb.soot.jimple.expr.NewExpr;
-import de.upb.soot.jimple.expr.NewMultiArrayExpr;
-import de.upb.soot.jimple.expr.OrExpr;
-import de.upb.soot.jimple.expr.RemExpr;
-import de.upb.soot.jimple.expr.ShlExpr;
-import de.upb.soot.jimple.expr.ShrExpr;
-import de.upb.soot.jimple.expr.SpecialInvokeExpr;
-import de.upb.soot.jimple.expr.StaticInvokeExpr;
-import de.upb.soot.jimple.expr.SubExpr;
-import de.upb.soot.jimple.expr.UshrExpr;
-import de.upb.soot.jimple.expr.VirtualInvokeExpr;
-import de.upb.soot.jimple.expr.XorExpr;
+import de.upb.soot.jimple.common.expr.AbstractCastExpr;
+import de.upb.soot.jimple.common.expr.AbstractInstanceOfExpr;
+import de.upb.soot.jimple.common.expr.AbstractInterfaceInvokeExpr;
+import de.upb.soot.jimple.common.expr.AbstractLengthExpr;
+import de.upb.soot.jimple.common.expr.AbstractNegExpr;
+import de.upb.soot.jimple.common.expr.AbstractNewArrayExpr;
+import de.upb.soot.jimple.common.expr.AbstractNewExpr;
+import de.upb.soot.jimple.common.expr.AbstractNewMultiArrayExpr;
+import de.upb.soot.jimple.common.expr.AbstractSpecialInvokeExpr;
+import de.upb.soot.jimple.common.expr.AbstractStaticInvokeExpr;
+import de.upb.soot.jimple.common.expr.AbstractVirtualInvokeExpr;
+import de.upb.soot.jimple.common.expr.JAddExpr;
+import de.upb.soot.jimple.common.expr.JAndExpr;
+import de.upb.soot.jimple.common.expr.JCmpExpr;
+import de.upb.soot.jimple.common.expr.JCmpgExpr;
+import de.upb.soot.jimple.common.expr.JCmplExpr;
+import de.upb.soot.jimple.common.expr.JDivExpr;
+import de.upb.soot.jimple.common.expr.JDynamicInvokeExpr;
+import de.upb.soot.jimple.common.expr.JEqExpr;
+import de.upb.soot.jimple.common.expr.JGeExpr;
+import de.upb.soot.jimple.common.expr.JGtExpr;
+import de.upb.soot.jimple.common.expr.JLeExpr;
+import de.upb.soot.jimple.common.expr.JLtExpr;
+import de.upb.soot.jimple.common.expr.JMulExpr;
+import de.upb.soot.jimple.common.expr.JNeExpr;
+import de.upb.soot.jimple.common.expr.JOrExpr;
+import de.upb.soot.jimple.common.expr.JRemExpr;
+import de.upb.soot.jimple.common.expr.JShlExpr;
+import de.upb.soot.jimple.common.expr.JShrExpr;
+import de.upb.soot.jimple.common.expr.JSubExpr;
+import de.upb.soot.jimple.common.expr.JUshrExpr;
+import de.upb.soot.jimple.common.expr.JXorExpr;
 
-public interface IExprVisitor extends IVisitor
-{
-    public abstract void caseAddExpr(AddExpr v);
-    public abstract void caseAndExpr(AndExpr v);
-    public abstract void caseCmpExpr(CmpExpr v);
-    public abstract void caseCmpgExpr(CmpgExpr v);
-    public abstract void caseCmplExpr(CmplExpr v);
-    public abstract void caseDivExpr(DivExpr v);
-    public abstract void caseEqExpr(EqExpr v);
-    public abstract void caseNeExpr(NeExpr v);
-    public abstract void caseGeExpr(GeExpr v);
-    public abstract void caseGtExpr(GtExpr v);
-    public abstract void caseLeExpr(LeExpr v);
-    public abstract void caseLtExpr(LtExpr v);
-    public abstract void caseMulExpr(MulExpr v);
-    public abstract void caseOrExpr(OrExpr v);
-    public abstract void caseRemExpr(RemExpr v);
-    public abstract void caseShlExpr(ShlExpr v);
-    public abstract void caseShrExpr(ShrExpr v);
-    public abstract void caseUshrExpr(UshrExpr v);
-    public abstract void caseSubExpr(SubExpr v);
-    public abstract void caseXorExpr(XorExpr v);
-    public abstract void caseInterfaceInvokeExpr(InterfaceInvokeExpr v);
-    public abstract void caseSpecialInvokeExpr(SpecialInvokeExpr v);
-    public abstract void caseStaticInvokeExpr(StaticInvokeExpr v);
-    public abstract void caseVirtualInvokeExpr(VirtualInvokeExpr v);
-    public abstract void caseDynamicInvokeExpr(DynamicInvokeExpr v);
-    public abstract void caseCastExpr(CastExpr v);
-    public abstract void caseInstanceOfExpr(InstanceOfExpr v);
-    public abstract void caseNewArrayExpr(NewArrayExpr v);
-    public abstract void caseNewMultiArrayExpr(NewMultiArrayExpr v);
-    public abstract void caseNewExpr(NewExpr v);
-    public abstract void caseLengthExpr(LengthExpr v);
-    public abstract void caseNegExpr(NegExpr v);
-    public abstract void defaultCase(Object obj);
+public interface IExprVisitor extends IVisitor {
+  public abstract void caseAddExpr(JAddExpr v);
+
+  public abstract void caseAndExpr(JAndExpr v);
+
+  public abstract void caseCmpExpr(JCmpExpr v);
+
+  public abstract void caseCmpgExpr(JCmpgExpr v);
+
+  public abstract void caseCmplExpr(JCmplExpr v);
+
+  public abstract void caseDivExpr(JDivExpr v);
+
+  public abstract void caseEqExpr(JEqExpr v);
+
+  public abstract void caseNeExpr(JNeExpr v);
+
+  public abstract void caseGeExpr(JGeExpr v);
+
+  public abstract void caseGtExpr(JGtExpr v);
+
+  public abstract void caseLeExpr(JLeExpr v);
+
+  public abstract void caseLtExpr(JLtExpr v);
+
+  public abstract void caseMulExpr(JMulExpr v);
+
+  public abstract void caseOrExpr(JOrExpr v);
+
+  public abstract void caseRemExpr(JRemExpr v);
+
+  public abstract void caseShlExpr(JShlExpr v);
+
+  public abstract void caseShrExpr(JShrExpr v);
+
+  public abstract void caseUshrExpr(JUshrExpr v);
+
+  public abstract void caseSubExpr(JSubExpr v);
+
+  public abstract void caseXorExpr(JXorExpr v);
+
+  public abstract void caseInterfaceInvokeExpr(AbstractInterfaceInvokeExpr v);
+
+  public abstract void caseSpecialInvokeExpr(AbstractSpecialInvokeExpr v);
+
+  public abstract void caseStaticInvokeExpr(AbstractStaticInvokeExpr v);
+
+  public abstract void caseVirtualInvokeExpr(AbstractVirtualInvokeExpr v);
+
+  public abstract void caseDynamicInvokeExpr(JDynamicInvokeExpr v);
+
+  public abstract void caseCastExpr(AbstractCastExpr v);
+
+  public abstract void caseInstanceOfExpr(AbstractInstanceOfExpr v);
+
+  public abstract void caseNewArrayExpr(AbstractNewArrayExpr v);
+
+  public abstract void caseNewMultiArrayExpr(AbstractNewMultiArrayExpr v);
+
+  public abstract void caseNewExpr(AbstractNewExpr v);
+
+  public abstract void caseLengthExpr(AbstractLengthExpr v);
+
+  public abstract void caseNegExpr(AbstractNegExpr v);
+
+  public abstract void defaultCase(Object obj);
 }

@@ -3,8 +3,8 @@ package de.upb.soot.jimple;
 import java.io.Serializable;
 import java.util.List;
 
-import de.upb.soot.UnitPrinter;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.StmtPrinter;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IAcceptor;
 
 /**
@@ -26,5 +26,5 @@ public interface Value extends IAcceptor, EquivTo, Serializable {
   /** Returns a clone of this Value. */
   public Object clone();
 
-  public void toString(UnitPrinter up);
+  public void toString(StmtPrinter up);
 }

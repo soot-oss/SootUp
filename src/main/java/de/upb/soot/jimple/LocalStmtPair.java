@@ -29,7 +29,7 @@
 
 package de.upb.soot.jimple;
 
-import de.upb.soot.jimple.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 
 public class LocalStmtPair
 {

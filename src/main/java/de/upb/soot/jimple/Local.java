@@ -1,6 +1,6 @@
 package de.upb.soot.jimple;
 
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.Type;
 
 public interface Local extends Value, Numberable, Immediate {
   /** Returns the name of the current Local variable. */

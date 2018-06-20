@@ -31,7 +31,7 @@ package de.upb.soot.jimple;
 
 import java.util.List;
 
-import de.upb.soot.jimple.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 
 public interface EqualLocals
 {

@@ -1,26 +1,26 @@
 package de.upb.soot;
 
-import de.upb.soot.core.SootFieldRef;
-import de.upb.soot.core.SootMethodRef;
 import de.upb.soot.jimple.Local;
+import de.upb.soot.jimple.StmtBox;
 import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.constant.Constant;
-import de.upb.soot.jimple.ref.IdentityRef;
-import de.upb.soot.jimple.stmt.Unit;
-import de.upb.soot.jimple.stmt.UnitBox;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.constant.Constant;
+import de.upb.soot.jimple.common.ref.IdentityRef;
+import de.upb.soot.jimple.common.ref.SootFieldRef;
+import de.upb.soot.jimple.common.ref.SootMethodRef;
+import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.type.Type;
 
 /**
  * Interface for different methods of printing out a Unit.
  */
-public interface UnitPrinter {
-  public void startUnit(Unit u);
+public interface StmtPrinter {
+  public void startUnit(Stmt u);
 
-  public void endUnit(Unit u);
+  public void endUnit(Stmt u);
 
-  public void startUnitBox(UnitBox u);
+  public void startUnitBox(StmtBox u);
 
-  public void endUnitBox(UnitBox u);
+  public void endUnitBox(StmtBox u);
 
   public void startValueBox(ValueBox u);
 
@@ -50,7 +50,7 @@ public interface UnitPrinter {
 
   public void fieldRef(SootFieldRef f);
 
-  public void unitRef(Unit u, boolean branchTarget);
+  public void unitRef(Stmt u, boolean branchTarget);
 
   public void identityRef(IdentityRef r);
 

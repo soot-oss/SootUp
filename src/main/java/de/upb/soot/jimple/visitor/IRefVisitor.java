@@ -23,29 +23,27 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.expr.ArrayRef;
-import de.upb.soot.jimple.ref.CaughtExceptionRef;
-import de.upb.soot.jimple.ref.InstanceFieldRef;
-import de.upb.soot.jimple.ref.ParameterRef;
-import de.upb.soot.jimple.ref.StaticFieldRef;
-import de.upb.soot.jimple.ref.ThisRef;
+import de.upb.soot.jimple.common.ref.AbstractInstanceFieldRef;
+import de.upb.soot.jimple.common.ref.ArrayRef;
+import de.upb.soot.jimple.common.ref.CaughtExceptionRef;
+import de.upb.soot.jimple.common.ref.ParameterRef;
+import de.upb.soot.jimple.common.ref.StaticFieldRef;
+import de.upb.soot.jimple.common.ref.ThisRef;
 
-public interface IRefVisitor extends IVisitor
-{
-    public abstract void caseArrayRef(ArrayRef v);
-    public abstract void caseStaticFieldRef(StaticFieldRef v);
-    public abstract void caseInstanceFieldRef(InstanceFieldRef v);
-    public abstract void caseParameterRef(ParameterRef v);
-    public abstract void caseCaughtExceptionRef(CaughtExceptionRef v);
-    public abstract void caseThisRef(ThisRef v);
-    public abstract void defaultCase(Object obj);
+public interface IRefVisitor extends IVisitor {
+  public abstract void caseArrayRef(ArrayRef v);
+
+  public abstract void caseStaticFieldRef(StaticFieldRef v);
+
+  public abstract void caseInstanceFieldRef(AbstractInstanceFieldRef v);
+
+  public abstract void caseParameterRef(ParameterRef v);
+
+  public abstract void caseCaughtExceptionRef(CaughtExceptionRef v);
+
+  public abstract void caseThisRef(ThisRef v);
+
+  public abstract void defaultCase(Object obj);
 }
-
-
-

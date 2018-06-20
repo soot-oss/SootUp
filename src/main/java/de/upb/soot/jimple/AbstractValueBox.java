@@ -1,6 +1,6 @@
 package de.upb.soot.jimple;
 
-import de.upb.soot.UnitPrinter;
+import de.upb.soot.StmtPrinter;
 
 /**
  * Reference implementation for ValueBox; just add a canContainValue method.
@@ -25,7 +25,7 @@ public abstract class AbstractValueBox implements ValueBox {
     return value;
   }
 
-  public void toString(UnitPrinter up) {
+  public void toString(StmtPrinter up) {
     up.startValueBox(this);
     value.toString(up);
     up.endValueBox(this);

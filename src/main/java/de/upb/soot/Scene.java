@@ -4,7 +4,7 @@ import java.util.List;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.Local;
-import de.upb.soot.jimple.type.Type;
+import de.upb.soot.jimple.common.type.Type;
 
 public class Scene {
   private Scene() {

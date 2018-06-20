@@ -1,229 +1,229 @@
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.expr.AddExpr;
-import de.upb.soot.jimple.expr.AndExpr;
-import de.upb.soot.jimple.expr.CastExpr;
-import de.upb.soot.jimple.expr.CmpExpr;
-import de.upb.soot.jimple.expr.CmpgExpr;
-import de.upb.soot.jimple.expr.CmplExpr;
-import de.upb.soot.jimple.expr.DivExpr;
-import de.upb.soot.jimple.expr.DynamicInvokeExpr;
-import de.upb.soot.jimple.expr.EqExpr;
-import de.upb.soot.jimple.expr.GeExpr;
-import de.upb.soot.jimple.expr.GtExpr;
-import de.upb.soot.jimple.expr.InstanceOfExpr;
-import de.upb.soot.jimple.expr.InterfaceInvokeExpr;
-import de.upb.soot.jimple.expr.LeExpr;
-import de.upb.soot.jimple.expr.LengthExpr;
-import de.upb.soot.jimple.expr.LtExpr;
-import de.upb.soot.jimple.expr.MulExpr;
-import de.upb.soot.jimple.expr.NeExpr;
-import de.upb.soot.jimple.expr.NegExpr;
-import de.upb.soot.jimple.expr.NewArrayExpr;
-import de.upb.soot.jimple.expr.NewExpr;
-import de.upb.soot.jimple.expr.NewMultiArrayExpr;
-import de.upb.soot.jimple.expr.OrExpr;
-import de.upb.soot.jimple.expr.RemExpr;
-import de.upb.soot.jimple.expr.ShlExpr;
-import de.upb.soot.jimple.expr.ShrExpr;
-import de.upb.soot.jimple.expr.SpecialInvokeExpr;
-import de.upb.soot.jimple.expr.StaticInvokeExpr;
-import de.upb.soot.jimple.expr.SubExpr;
-import de.upb.soot.jimple.expr.UshrExpr;
-import de.upb.soot.jimple.expr.VirtualInvokeExpr;
-import de.upb.soot.jimple.expr.XorExpr;
+import de.upb.soot.jimple.common.expr.AbstractCastExpr;
+import de.upb.soot.jimple.common.expr.AbstractInstanceOfExpr;
+import de.upb.soot.jimple.common.expr.AbstractInterfaceInvokeExpr;
+import de.upb.soot.jimple.common.expr.AbstractLengthExpr;
+import de.upb.soot.jimple.common.expr.AbstractNegExpr;
+import de.upb.soot.jimple.common.expr.AbstractNewArrayExpr;
+import de.upb.soot.jimple.common.expr.AbstractNewExpr;
+import de.upb.soot.jimple.common.expr.AbstractNewMultiArrayExpr;
+import de.upb.soot.jimple.common.expr.AbstractSpecialInvokeExpr;
+import de.upb.soot.jimple.common.expr.AbstractStaticInvokeExpr;
+import de.upb.soot.jimple.common.expr.AbstractVirtualInvokeExpr;
+import de.upb.soot.jimple.common.expr.JAddExpr;
+import de.upb.soot.jimple.common.expr.JAndExpr;
+import de.upb.soot.jimple.common.expr.JCmpExpr;
+import de.upb.soot.jimple.common.expr.JCmpgExpr;
+import de.upb.soot.jimple.common.expr.JCmplExpr;
+import de.upb.soot.jimple.common.expr.JDivExpr;
+import de.upb.soot.jimple.common.expr.JDynamicInvokeExpr;
+import de.upb.soot.jimple.common.expr.JEqExpr;
+import de.upb.soot.jimple.common.expr.JGeExpr;
+import de.upb.soot.jimple.common.expr.JGtExpr;
+import de.upb.soot.jimple.common.expr.JLeExpr;
+import de.upb.soot.jimple.common.expr.JLtExpr;
+import de.upb.soot.jimple.common.expr.JMulExpr;
+import de.upb.soot.jimple.common.expr.JNeExpr;
+import de.upb.soot.jimple.common.expr.JOrExpr;
+import de.upb.soot.jimple.common.expr.JRemExpr;
+import de.upb.soot.jimple.common.expr.JShlExpr;
+import de.upb.soot.jimple.common.expr.JShrExpr;
+import de.upb.soot.jimple.common.expr.JSubExpr;
+import de.upb.soot.jimple.common.expr.JUshrExpr;
+import de.upb.soot.jimple.common.expr.JXorExpr;
 
 public abstract class AbstractExprVisitor implements IExprVisitor
 {
     Object result;
 
     @Override
-    public void caseAddExpr(AddExpr v)
+  public void caseAddExpr(JAddExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseAndExpr(AndExpr v)
+  public void caseAndExpr(JAndExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseCmpExpr(CmpExpr v)
+  public void caseCmpExpr(JCmpExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseCmpgExpr(CmpgExpr v)
+  public void caseCmpgExpr(JCmpgExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseCmplExpr(CmplExpr v)
+  public void caseCmplExpr(JCmplExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseDivExpr(DivExpr v)
+  public void caseDivExpr(JDivExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseEqExpr(EqExpr v)
+  public void caseEqExpr(JEqExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseNeExpr(NeExpr v)
+  public void caseNeExpr(JNeExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseGeExpr(GeExpr v)
+  public void caseGeExpr(JGeExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseGtExpr(GtExpr v)
+  public void caseGtExpr(JGtExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseLeExpr(LeExpr v)
+  public void caseLeExpr(JLeExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseLtExpr(LtExpr v)
+  public void caseLtExpr(JLtExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseMulExpr(MulExpr v)
+  public void caseMulExpr(JMulExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseOrExpr(OrExpr v)
+  public void caseOrExpr(JOrExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseRemExpr(RemExpr v)
+  public void caseRemExpr(JRemExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseShlExpr(ShlExpr v)
+  public void caseShlExpr(JShlExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseShrExpr(ShrExpr v)
+  public void caseShrExpr(JShrExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseUshrExpr(UshrExpr v)
+  public void caseUshrExpr(JUshrExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseSubExpr(SubExpr v)
+  public void caseSubExpr(JSubExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseXorExpr(XorExpr v)
+  public void caseXorExpr(JXorExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseInterfaceInvokeExpr(InterfaceInvokeExpr v)
+  public void caseInterfaceInvokeExpr(AbstractInterfaceInvokeExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseSpecialInvokeExpr(SpecialInvokeExpr v)
+  public void caseSpecialInvokeExpr(AbstractSpecialInvokeExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseStaticInvokeExpr(StaticInvokeExpr v)
+  public void caseStaticInvokeExpr(AbstractStaticInvokeExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseVirtualInvokeExpr(VirtualInvokeExpr v)
+  public void caseVirtualInvokeExpr(AbstractVirtualInvokeExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseDynamicInvokeExpr(DynamicInvokeExpr v) {
+  public void caseDynamicInvokeExpr(JDynamicInvokeExpr v) {
     	defaultCase(v);
     }
 
     @Override
-    public void caseCastExpr(CastExpr v)
+  public void caseCastExpr(AbstractCastExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseInstanceOfExpr(InstanceOfExpr v)
+  public void caseInstanceOfExpr(AbstractInstanceOfExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseNewArrayExpr(NewArrayExpr v)
+  public void caseNewArrayExpr(AbstractNewArrayExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseNewMultiArrayExpr(NewMultiArrayExpr v)
+  public void caseNewMultiArrayExpr(AbstractNewMultiArrayExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseNewExpr(NewExpr v)
+  public void caseNewExpr(AbstractNewExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseLengthExpr(LengthExpr v)
+  public void caseLengthExpr(AbstractLengthExpr v)
     {
         defaultCase(v);
     }
 
     @Override
-    public void caseNegExpr(NegExpr v)
+  public void caseNegExpr(AbstractNegExpr v)
     {
         defaultCase(v);
     }

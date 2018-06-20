@@ -1,11 +1,11 @@
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.expr.ArrayRef;
-import de.upb.soot.jimple.ref.CaughtExceptionRef;
-import de.upb.soot.jimple.ref.InstanceFieldRef;
-import de.upb.soot.jimple.ref.ParameterRef;
-import de.upb.soot.jimple.ref.StaticFieldRef;
-import de.upb.soot.jimple.ref.ThisRef;
+import de.upb.soot.jimple.common.ref.AbstractInstanceFieldRef;
+import de.upb.soot.jimple.common.ref.ArrayRef;
+import de.upb.soot.jimple.common.ref.CaughtExceptionRef;
+import de.upb.soot.jimple.common.ref.ParameterRef;
+import de.upb.soot.jimple.common.ref.StaticFieldRef;
+import de.upb.soot.jimple.common.ref.ThisRef;
 
 public abstract class AbstractRefVisitor implements IRefVisitor
 {
@@ -22,7 +22,7 @@ public abstract class AbstractRefVisitor implements IRefVisitor
     }
 
     @Override
-    public void caseInstanceFieldRef(InstanceFieldRef v)
+  public void caseInstanceFieldRef(AbstractInstanceFieldRef v)
     {
         defaultCase(v);
     }
