@@ -23,10 +23,18 @@ import java.util.stream.Stream;
 public class PathUtils {
   private static final String WILDCARD_CHAR = "*";
 
-  public static Stream<Path> explode(String classPath) {
+
+  /**
+   * Explode the class or modulepath entries, separated by {@link File#pathSeparator}.
+   * @param paths entries as one string
+   * @return path entries
+   */
+  public static Stream<Path> explode(String paths) {
     // the classpath is split at every path separator which is not escaped
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
-    return Stream.of(classPath.split(regex)).flatMap(PathUtils::handleWildCards);
+    final Stream<Path> exploded = Stream.of(paths.split(regex)).flatMap(PathUtils::handleWildCards);
+    // we need to filter out duplicates of the same files to not generate duplicate namespaces
+    return exploded.map(cp -> cp.normalize()).distinct();
   }
 
   /**

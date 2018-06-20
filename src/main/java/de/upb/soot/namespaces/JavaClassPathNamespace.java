@@ -8,19 +8,13 @@ import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +47,8 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     }
 
     try {
-      cpEntries = explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).collect(Collectors.toList());
-          = PathUtils.explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).distinct().collect(Collectors.toList());
+      cpEntries
+          = PathUtils.explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).collect(Collectors.toList());
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
     }
@@ -65,10 +59,6 @@ public class JavaClassPathNamespace extends AbstractNamespace {
 
     logger.trace("{} class path entries registered", cpEntries.size());
   }
-
-    // we need to filter out duplicates of the same files to not generate duplicate namespaces
-    return exploded.map(cp -> cp.normalize()).distinct();
-
 
   @Override
   public Collection<ClassSource> getClassSources(SignatureFactory factory) {

@@ -1,5 +1,7 @@
 package de.upb.soot.namespaces;
 
+import com.google.common.base.Preconditions;
+
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
@@ -9,8 +11,6 @@ import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
-
-import com.google.common.base.Preconditions;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * wildcard denoted archives) as stated in the official documentation:
  * https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html
  * 
- * @author Manuel Benz created on 22.05.18
+ * @author Andreas Dann created on 28.05.18
  */
 public class JavaModulePathNamespace extends AbstractNamespace {
   private static final Logger logger = LoggerFactory.getLogger(JavaModulePathNamespace.class);
@@ -50,7 +50,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   private Map<String, AbstractNamespace> moduleNamespace = new HashMap<>();
   private int next = 0;
 
-  private JrtFSNamespace jrtFSNamespace;
+  private JrtFileSystemNamespace jrtFileSystemNamespace;
 
   /**
    * Creates a {@link JavaModulePathNamespace} which locates classes based on the provided {@link IClassProvider}.
@@ -65,10 +65,10 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     this.modulePathEntries = PathUtils.explode(modulePath).collect(Collectors.toList());
 
     // add the namespace for the jrt virtual file system
-    jrtFSNamespace = new JrtFSNamespace(classProvider);
+    jrtFileSystemNamespace = new JrtFileSystemNamespace(classProvider);
     // discover all system's modules
-    Collection<String> modules = jrtFSNamespace.discoverModules();
-    modules.forEach(m -> moduleNamespace.put(m, jrtFSNamespace));
+    Collection<String> modules = jrtFileSystemNamespace.discoverModules();
+    modules.forEach(m -> moduleNamespace.put(m, jrtFileSystemNamespace));
 
     // the rest of the modules are discovered on demand...
 
@@ -108,7 +108,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   // TODO: in general it make sense to traverse the directories further and associate packages with a module
   // this is, for instance, done in the JDK
   /**
-   * Searches in a directory for module definitions currently only one level of hierarchy is traversed
+   * Searches in a directory for module definitions currently only one level of hierarchy is traversed.
    *
    * @param path
    *          the directory
@@ -264,7 +264,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     Set<ClassSource> found = new HashSet<>();
     for (Map.Entry<String, AbstractNamespace> entry : moduleNamespace.entrySet()) {
       AbstractNamespace ns = entry.getValue();
-      if (ns instanceof JrtFSNamespace) {
+      if (ns instanceof JrtFileSystemNamespace) {
         continue;
       }
       String moduleName = entry.getKey();
@@ -275,7 +275,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     }
 
     // add the end add the system libraries
-    found.addAll(jrtFSNamespace.getClassSources(factory));
+    found.addAll(jrtFileSystemNamespace.getClassSources(factory));
 
     return found;
 

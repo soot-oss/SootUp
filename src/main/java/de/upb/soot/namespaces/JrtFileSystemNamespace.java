@@ -30,18 +30,19 @@ import org.apache.commons.io.FilenameUtils;
  *
  * @author Andreas Dann created on 06.06.18
  */
-public class JrtFSNamespace extends AbstractNamespace {
+public class JrtFileSystemNamespace extends AbstractNamespace {
 
   private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
-  protected JrtFSNamespace(IClassProvider classProvider) {
+  protected JrtFileSystemNamespace(IClassProvider classProvider) {
     super(classProvider);
   }
 
   @Override
   public Optional<ClassSource> getClassSource(ClassSignature signature) {
-    if (signature.packageSignature instanceof ModulePackageSignature)
+    if (signature.packageSignature instanceof ModulePackageSignature) {
       return this.getClassSourceInternalForModule(signature);
+    }
     return this.getClassSourceInternalForClassPath(signature);
   }
 
@@ -115,6 +116,10 @@ public class JrtFSNamespace extends AbstractNamespace {
 
   }
 
+  /**
+   * Discover and return all modules contained in the jrt filesystem.
+   * @return Collection of found module names.
+   */
   public Collection<String> discoverModules() {
     final Path moduleRoot = theFileSystem.getPath("modules");
     List<String> foundModules = new ArrayList<>();
