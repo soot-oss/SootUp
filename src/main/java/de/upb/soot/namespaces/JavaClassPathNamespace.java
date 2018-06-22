@@ -47,8 +47,8 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     }
 
     try {
-      cpEntries
-          = AbstractNamespace.explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).collect(Collectors.toList());
+      cpEntries = AbstractNamespace.explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp)))
+          .collect(Collectors.toList());
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
     }
