@@ -23,11 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.javabyte;
 
 import de.upb.soot.StmtPrinter;
@@ -36,38 +31,38 @@ import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JBreakpointStmt extends AbstractStmt
-{
-    public JBreakpointStmt()
-    {
-    }
+public class JBreakpointStmt extends AbstractStmt {
+  public JBreakpointStmt() {
+  }
 
-    @Override
-    public String toString()
-    {
-        return Jimple.BREAKPOINT;
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal(Jimple.BREAKPOINT);
-    }
-    
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IStmtVisitor) sw).caseBreakpointStmt(this);
-    }
-    
-    @Override
-    public    Object clone() 
-    {
-        return new JBreakpointStmt();
-    }
- 
-    @Override
-    public boolean fallsThrough(){return true;}        
-    @Override
-    public boolean branches(){return false;}
-   
+  @Override
+  public String toString() {
+    return Jimple.BREAKPOINT;
+  }
+
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.BREAKPOINT);
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IStmtVisitor) sw).caseBreakpointStmt(this);
+  }
+
+  @Override
+  public Object clone() {
+    return new JBreakpointStmt();
+  }
+
+  @Override
+  public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
+  public boolean branches() {
+    return false;
+  }
+
 }

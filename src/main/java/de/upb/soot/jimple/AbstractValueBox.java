@@ -16,8 +16,7 @@ public abstract class AbstractValueBox implements ValueBox {
     if (canContainValue(value)) {
       this.value = value;
     } else {
-      throw new RuntimeException(
-          "Box " + this + " cannot contain value: " + value + "(" + value.getClass() + ")");
+      throw new RuntimeException("Box " + this + " cannot contain value: " + value + "(" + value.getClass() + ")");
     }
   }
 

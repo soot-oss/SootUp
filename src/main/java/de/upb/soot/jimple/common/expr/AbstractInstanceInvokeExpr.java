@@ -23,55 +23,49 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
 package de.upb.soot.jimple.common.expr;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.common.ref.SootMethodRef;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @SuppressWarnings("serial")
-public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr 
-{
-    final protected ValueBox baseBox;    
-    
-    protected AbstractInstanceInvokeExpr(SootMethodRef methodRef, ValueBox baseBox, ValueBox[] argBoxes) {
-    	super(methodRef, argBoxes);
-    	this.baseBox = baseBox;
-    }
-    
-    public Value getBase()
-    {
-        return baseBox.getValue();
-    }
+public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
+  final protected ValueBox baseBox;
 
-    public ValueBox getBaseBox()
-    {
-        return baseBox;
-    }
+  protected AbstractInstanceInvokeExpr(SootMethodRef methodRef, ValueBox baseBox, ValueBox[] argBoxes) {
+    super(methodRef, argBoxes);
+    this.baseBox = baseBox;
+  }
 
-    public void setBase(Value base)
-    {
-        baseBox.setValue(base);
-    }
+  public Value getBase() {
+    return baseBox.getValue();
+  }
 
-    @Override
-    public List<ValueBox> getUseBoxes()
-    {
-        List<ValueBox> list = new ArrayList<ValueBox>();
-        if (argBoxes != null) {
-        	Collections.addAll(list, argBoxes);
-	        for (ValueBox element : argBoxes) {
-	            list.addAll(element.getValue().getUseBoxes());            
-	        }
-        }
-        list.addAll(baseBox.getValue().getUseBoxes());
-        list.add(baseBox);
-        
-        return list;
+  public ValueBox getBaseBox() {
+    return baseBox;
+  }
+
+  public void setBase(Value base) {
+    baseBox.setValue(base);
+  }
+
+  @Override
+  public List<ValueBox> getUseBoxes() {
+    List<ValueBox> list = new ArrayList<ValueBox>();
+    if (argBoxes != null) {
+      Collections.addAll(list, argBoxes);
+      for (ValueBox element : argBoxes) {
+        list.addAll(element.getValue().getUseBoxes());
+      }
     }
+    list.addAll(baseBox.getValue().getUseBoxes());
+    list.add(baseBox);
+
+    return list;
+  }
 }

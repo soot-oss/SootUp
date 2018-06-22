@@ -23,10 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
 package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.jimple.common.type.NullType;
@@ -34,9 +30,9 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class NullConstant extends Constant
-{
+public class NullConstant extends Constant {
   private static NullConstant nullconstant;
+
   public NullConstant() {
   }
 
@@ -44,26 +40,22 @@ public class NullConstant extends Constant
     return nullconstant;
   }
 
-    @Override
-    public boolean equals(Object c)
-    {
+  @Override
+  public boolean equals(Object c) {
     return c == nullconstant;
-    }
+  }
 
-    @Override
-    public int hashCode() 
-    {
-        return 982;
-    }
+  @Override
+  public int hashCode() {
+    return 982;
+  }
 
-    @Override
-    public Type getType()
-    {
-        return NullType.v();
-    }
+  @Override
+  public Type getType() {
+    return NullType.v();
+  }
 
-    public void accept(IVisitor sw)
-    {
-        ((IConstantVisitor) sw).caseNullConstant(this);
-    }
+  public void accept(IVisitor sw) {
+    ((IConstantVisitor) sw).caseNullConstant(this);
+  }
 }

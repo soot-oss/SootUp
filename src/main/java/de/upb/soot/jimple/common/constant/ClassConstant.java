@@ -41,31 +41,31 @@ import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 public class ClassConstant extends Constant {
-	public final String value;
+  public final String value;
 
-	private ClassConstant(String s) {
-		this.value = s;
-	}
+  private ClassConstant(String s) {
+    this.value = s;
+  }
 
-	public static ClassConstant v(String value) {
-		if (value.contains(".")) {
+  public static ClassConstant v(String value) {
+    if (value.contains(".")) {
       throw new RuntimeException("ClassConstants must use class names separated by '/', not '.'!");
     }
-		return new ClassConstant(value);
-	}
+    return new ClassConstant(value);
+  }
 
-	public static ClassConstant fromType(Type tp) {
-		return v(sootTypeToString(tp));
-	}
+  public static ClassConstant fromType(Type tp) {
+    return v(sootTypeToString(tp));
+  }
 
-	private static String sootTypeToString(Type tp) {
-		if (tp instanceof RefType) {
+  private static String sootTypeToString(Type tp) {
+    if (tp instanceof RefType) {
       return "L" + ((RefType) tp).getClassName().replaceAll("\\.", "/") + ";";
     } else if (tp instanceof ArrayType) {
-			ArrayType at = (ArrayType) tp;
-			return "[" + sootTypeToString(at.getElementType());
-		} else if (tp instanceof PrimType) {
-			if (tp instanceof IntType) {
+      ArrayType at = (ArrayType) tp;
+      return "[" + sootTypeToString(at.getElementType());
+    } else if (tp instanceof PrimType) {
+      if (tp instanceof IntType) {
         return "I";
       } else if (tp instanceof ByteType) {
         return "B";
@@ -84,39 +84,37 @@ public class ClassConstant extends Constant {
       } else {
         throw new RuntimeException("Unsupported primitive type");
       }
-		} else {
+    } else {
       throw new RuntimeException("Unsupported type" + tp);
     }
-	}
+  }
 
-	/**
-	 * Gets whether this class constant denotes a reference type. This does not
-	 * check for arrays.
-	 *
-	 * @return True if this class constant denotes a reference type, otherwise
-	 *         false
-	 */
-	public boolean isRefType() {
-		return value.startsWith("L") && value.endsWith(";");
-	}
+  /**
+   * Gets whether this class constant denotes a reference type. This does not check for arrays.
+   *
+   * @return True if this class constant denotes a reference type, otherwise false
+   */
+  public boolean isRefType() {
+    return value.startsWith("L") && value.endsWith(";");
+  }
 
-	public Type toSootType() {
-		int numDimensions = 0;
-		String tmp = value;
-		while (tmp.startsWith("[")) {
-			numDimensions++;
-			tmp = tmp.substring(1);
-		}
+  public Type toSootType() {
+    int numDimensions = 0;
+    String tmp = value;
+    while (tmp.startsWith("[")) {
+      numDimensions++;
+      tmp = tmp.substring(1);
+    }
 
-		Type baseType = null;
-		if (tmp.startsWith("L")) {
-			tmp = tmp.substring(1);
-			if (tmp.endsWith(";")) {
+    Type baseType = null;
+    if (tmp.startsWith("L")) {
+      tmp = tmp.substring(1);
+      if (tmp.endsWith(";")) {
         tmp = tmp.substring(0, tmp.length() - 1);
       }
-			tmp = tmp.replace("/", ".");
-			baseType = RefType.v(tmp);
-		} else if (tmp.equals("I")) {
+      tmp = tmp.replace("/", ".");
+      baseType = RefType.v(tmp);
+    } else if (tmp.equals("I")) {
       baseType = IntType.v();
     } else if (tmp.equals("B")) {
       baseType = ByteType.v();
@@ -136,31 +134,31 @@ public class ClassConstant extends Constant {
       throw new RuntimeException("Unsupported class constant: " + value);
     }
 
-		return numDimensions > 0 ? ArrayType.v(baseType, numDimensions) : baseType;
-	}
+    return numDimensions > 0 ? ArrayType.v(baseType, numDimensions) : baseType;
+  }
 
-	// In this case, equals should be structural equality.
-	@Override
-	public boolean equals(Object c) {
-		return (c instanceof ClassConstant && ((ClassConstant) c).value.equals(this.value));
-	}
+  // In this case, equals should be structural equality.
+  @Override
+  public boolean equals(Object c) {
+    return (c instanceof ClassConstant && ((ClassConstant) c).value.equals(this.value));
+  }
 
-	/** Returns a hash code for this ClassConstant object. */
-	@Override
-	public int hashCode() {
-		return value.hashCode();
-	}
+  /** Returns a hash code for this ClassConstant object. */
+  @Override
+  public int hashCode() {
+    return value.hashCode();
+  }
 
-	public String getValue() {
-		return value;
-	}
+  public String getValue() {
+    return value;
+  }
 
-	@Override
+  @Override
   public Type getType() {
-		return RefType.v("java.lang.Class");
-	}
+    return RefType.v("java.lang.Class");
+  }
 
-	public void accept(IVisitor sw) {
-		((IConstantVisitor) sw).caseClassConstant(this);
-	}
+  public void accept(IVisitor sw) {
+    ((IConstantVisitor) sw).caseClassConstant(this);
+  }
 }

@@ -23,11 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.StmtPrinter;
@@ -37,49 +32,46 @@ import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JThrowStmt extends AbstractOpStmt
-{
+public class JThrowStmt extends AbstractOpStmt {
 
-    public JThrowStmt(Value op)
-    {
-        this(Jimple.v().newImmediateBox(op));
-    }
+  public JThrowStmt(Value op) {
+    this(Jimple.v().newImmediateBox(op));
+  }
 
-    protected JThrowStmt(ValueBox opBox)
-    {
-        super(opBox);
-    }
+  protected JThrowStmt(ValueBox opBox) {
+    super(opBox);
+  }
 
-    @Override
-    public Object clone() 
-    {
-        return new JThrowStmt(Jimple.cloneIfNecessary(getOp()));
-    }
+  @Override
+  public Object clone() {
+    return new JThrowStmt(Jimple.cloneIfNecessary(getOp()));
+  }
 
-    @Override
-    public String toString()
-    {
-        return "throw " + opBox.getValue().toString();
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal(Jimple.THROW);
-        up.literal(" ");
-        opBox.toString(up);
-    }
+  @Override
+  public String toString() {
+    return "throw " + opBox.getValue().toString();
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IStmtVisitor) sw).caseThrowStmt(this);
-    }
-    
-    @Override
-    public boolean fallsThrough(){return false;}
-    @Override
-    public boolean branches(){return false;}
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.THROW);
+    up.literal(" ");
+    opBox.toString(up);
+  }
 
+  @Override
+  public void accept(IVisitor sw) {
+    ((IStmtVisitor) sw).caseThrowStmt(this);
+  }
 
+  @Override
+  public boolean fallsThrough() {
+    return false;
+  }
+
+  @Override
+  public boolean branches() {
+    return false;
+  }
 
 }

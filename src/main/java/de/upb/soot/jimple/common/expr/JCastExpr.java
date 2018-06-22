@@ -23,28 +23,20 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.common.type.Type;
 
-public class JCastExpr extends AbstractCastExpr
-{
-    public JCastExpr(Value op, Type type)
-    {
-        super(Jimple.v().newImmediateBox(op), type);
-    }
-    
-    @Override
-    public Object clone()
-    {
-        return new JCastExpr(Jimple.cloneIfNecessary(getOp()), type);
-    }
-        
+public class JCastExpr extends AbstractCastExpr {
+  public JCastExpr(Value op, Type type) {
+    super(Jimple.v().newImmediateBox(op), type);
+  }
+
+  @Override
+  public Object clone() {
+    return new JCastExpr(Jimple.cloneIfNecessary(getOp()), type);
+  }
+
 }

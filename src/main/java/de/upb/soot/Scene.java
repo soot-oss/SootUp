@@ -1,15 +1,16 @@
 package de.upb.soot;
 
-import java.util.List;
-
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.Local;
 import de.upb.soot.jimple.common.type.Type;
+
+import java.util.List;
 
 public class Scene {
   private Scene() {
 
   }
+
   public static Scene v() {
     return new Scene();
   }

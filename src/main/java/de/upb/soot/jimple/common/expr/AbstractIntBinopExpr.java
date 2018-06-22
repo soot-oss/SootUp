@@ -23,21 +23,14 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.Type;
 
 @SuppressWarnings("serial")
-abstract public class AbstractIntBinopExpr extends AbstractBinopExpr
-{
-    public Type getType()
-    {
-        return IntType.v();
-    }
+abstract public class AbstractIntBinopExpr extends AbstractBinopExpr {
+  public Type getType() {
+    return IntType.v();
+  }
 }

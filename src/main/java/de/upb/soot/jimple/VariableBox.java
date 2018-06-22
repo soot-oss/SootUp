@@ -23,28 +23,16 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple;
 
 import de.upb.soot.jimple.common.ref.ConcreteRef;
 
-public class VariableBox extends AbstractValueBox
-{
-    public VariableBox(Value value)
-    {
-        setValue(value);
-    }
+public class VariableBox extends AbstractValueBox {
+  public VariableBox(Value value) {
+    setValue(value);
+  }
 
-    public boolean canContainValue(Value value)
-    {
-        return value instanceof Local || value instanceof ConcreteRef;
-    }
+  public boolean canContainValue(Value value) {
+    return value instanceof Local || value instanceof ConcreteRef;
+  }
 }
-
-
-
-

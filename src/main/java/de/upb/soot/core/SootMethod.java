@@ -1,8 +1,8 @@
 package de.upb.soot.core;
 
-import java.util.List;
-
 import de.upb.soot.jimple.common.type.Type;
+
+import java.util.List;
 
 public class SootMethod {
 

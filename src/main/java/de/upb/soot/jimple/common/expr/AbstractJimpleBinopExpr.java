@@ -23,22 +23,15 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 
 @SuppressWarnings("serial")
-abstract public class AbstractJimpleBinopExpr extends AbstractBinopExpr
-{
-    protected AbstractJimpleBinopExpr (Value op1, Value op2)
-    {
-        op1Box = Jimple.v().newArgBox(op1); 
-        op2Box = Jimple.v().newArgBox(op2);
-    }
+abstract public class AbstractJimpleBinopExpr extends AbstractBinopExpr {
+  protected AbstractJimpleBinopExpr(Value op1, Value op2) {
+    op1Box = Jimple.v().newArgBox(op1);
+    op2Box = Jimple.v().newArgBox(op2);
+  }
 }

@@ -23,24 +23,16 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple;
 
 import de.upb.soot.jimple.common.ref.IdentityRef;
 
-public class IdentityRefBox extends AbstractValueBox
-{
-    public IdentityRefBox(Value value)
-    {
-        setValue(value);
-    }
+public class IdentityRefBox extends AbstractValueBox {
+  public IdentityRefBox(Value value) {
+    setValue(value);
+  }
 
-    public boolean canContainValue(Value value)
-    {
-        return value instanceof IdentityRef;
-    }
+  public boolean canContainValue(Value value) {
+    return value instanceof IdentityRef;
+  }
 }

@@ -23,16 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.stmt;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
@@ -42,116 +33,109 @@ import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JIfStmt extends AbstractStmt
-{
-    final ValueBox conditionBox;
-    final StmtBox targetBox;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-    final List<StmtBox> targetBoxes;
+public class JIfStmt extends AbstractStmt {
+  final ValueBox conditionBox;
+  final StmtBox targetBox;
 
-  public JIfStmt(Value condition, Stmt target)
-    {
-        this(condition, Jimple.v().newStmtBox(target));
-    }
+  final List<StmtBox> targetBoxes;
 
-    public JIfStmt(Value condition, StmtBox target)
-    {
-        this(Jimple.v().newConditionExprBox(condition), target);
-    }
+  public JIfStmt(Value condition, Stmt target) {
+    this(condition, Jimple.v().newStmtBox(target));
+  }
 
-    protected JIfStmt(ValueBox conditionBox, StmtBox targetBox)
-    {
-        this.conditionBox = conditionBox;
-        this.targetBox = targetBox;
+  public JIfStmt(Value condition, StmtBox target) {
+    this(Jimple.v().newConditionExprBox(condition), target);
+  }
 
-        targetBoxes = Collections.singletonList(targetBox);
-    }
-    
-    @Override
-    public Object clone()
-    {
-        return new JIfStmt(Jimple.cloneIfNecessary(getCondition()), getTarget());
-    }
-    
-    @Override
-    public String toString()
-    {
+  protected JIfStmt(ValueBox conditionBox, StmtBox targetBox) {
+    this.conditionBox = conditionBox;
+    this.targetBox = targetBox;
+
+    targetBoxes = Collections.singletonList(targetBox);
+  }
+
+  @Override
+  public Object clone() {
+    return new JIfStmt(Jimple.cloneIfNecessary(getCondition()), getTarget());
+  }
+
+  @Override
+  public String toString() {
     Stmt t = getTarget();
-        String target = "(branch)";
-        if(!t.branches()) {
-          target = t.toString();
-        }
-        return Jimple.IF + " "  + getCondition().toString() + " " + Jimple.GOTO + " "  + target;
+    String target = "(branch)";
+    if (!t.branches()) {
+      target = t.toString();
     }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal(Jimple.IF);
-        up.literal(" ");
-        conditionBox.toString(up);
-        up.literal(" ");
-        up.literal(Jimple.GOTO);
-        up.literal(" ");
-        targetBox.toString(up);
-    }
-    
-    public Value getCondition()
-    {
-        return conditionBox.getValue();
-    }
-    
-    public void setCondition(Value condition)
-    {
-        conditionBox.setValue(condition);
-    }
+    return Jimple.IF + " " + getCondition().toString() + " " + Jimple.GOTO + " " + target;
+  }
 
-    public ValueBox getConditionBox()
-    {
-        return conditionBox;
-    }
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.IF);
+    up.literal(" ");
+    conditionBox.toString(up);
+    up.literal(" ");
+    up.literal(Jimple.GOTO);
+    up.literal(" ");
+    targetBox.toString(up);
+  }
 
-    public Stmt getTarget()
-    {
-        return targetBox.getStmt();
-    }
+  public Value getCondition() {
+    return conditionBox.getValue();
+  }
 
-  public void setTarget(Stmt target)
-    {
-        targetBox.setStmt(target);
-    }
+  public void setCondition(Value condition) {
+    conditionBox.setValue(condition);
+  }
 
-    public StmtBox getTargetBox()
-    {
-        return targetBox;
-    }
-    
-    @Override
-    public List<ValueBox> getUseBoxes()
-    {
-        List<ValueBox> useBoxes = new ArrayList<ValueBox>();
+  public ValueBox getConditionBox() {
+    return conditionBox;
+  }
 
-        useBoxes.addAll(conditionBox.getValue().getUseBoxes());
-        useBoxes.add(conditionBox);
+  public Stmt getTarget() {
+    return targetBox.getStmt();
+  }
 
-        return useBoxes;
-    }
+  public void setTarget(Stmt target) {
+    targetBox.setStmt(target);
+  }
 
-    @Override
-    public final List<StmtBox> getUnitBoxes()
-    {
-        return targetBoxes;
-    }
+  public StmtBox getTargetBox() {
+    return targetBox;
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IStmtVisitor) sw).caseIfStmt(this);
-    }    
+  @Override
+  public List<ValueBox> getUseBoxes() {
+    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
+    useBoxes.addAll(conditionBox.getValue().getUseBoxes());
+    useBoxes.add(conditionBox);
 
-    @Override
-    public boolean fallsThrough(){return true;}        
-    @Override
-    public boolean branches(){return true;}
+    return useBoxes;
+  }
+
+  @Override
+  public final List<StmtBox> getUnitBoxes() {
+    return targetBoxes;
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IStmtVisitor) sw).caseIfStmt(this);
+  }
+
+  @Override
+  public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
+  public boolean branches() {
+    return true;
+  }
 
 }

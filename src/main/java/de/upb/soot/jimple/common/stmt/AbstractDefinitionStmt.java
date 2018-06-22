@@ -25,12 +25,12 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.ValueBox;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.ValueBox;
 
 @SuppressWarnings("serial")
 public abstract class AbstractDefinitionStmt extends AbstractStmt {

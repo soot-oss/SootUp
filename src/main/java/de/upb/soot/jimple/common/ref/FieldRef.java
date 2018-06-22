@@ -24,18 +24,15 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
 package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.core.SootField;
 
-public interface FieldRef extends ConcreteRef
-{
-    public SootFieldRef getFieldRef();
-    public void setFieldRef(SootFieldRef sfr);
-    public SootField getField();
+public interface FieldRef extends ConcreteRef {
+  public SootFieldRef getFieldRef();
+
+  public void setFieldRef(SootFieldRef sfr);
+
+  public SootField getField();
 
 }

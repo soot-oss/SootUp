@@ -25,8 +25,6 @@
 
 package de.upb.soot.jimple.javabyte;
 
-import java.util.List;
-
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.StmtBox;
@@ -36,6 +34,8 @@ import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+
+import java.util.List;
 
 public class JTableSwitchStmt extends AbstractSwitchStmt {
   int lowIndex;
@@ -52,29 +52,24 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public Object clone() {
-    return new JTableSwitchStmt(Jimple.cloneIfNecessary(getKey()), lowIndex, highIndex,
-        getTargets(), getDefaultTarget());
+    return new JTableSwitchStmt(Jimple.cloneIfNecessary(getKey()), lowIndex, highIndex, getTargets(), getDefaultTarget());
   }
 
-  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends Stmt> targets,
-      Stmt defaultTarget) {
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends Stmt> targets, Stmt defaultTarget) {
     this(Jimple.v().newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets),
         Jimple.v().newStmtBox(defaultTarget));
   }
 
-  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends StmtBox> targets,
-      StmtBox defaultTarget) {
-    this(Jimple.v().newImmediateBox(key), lowIndex, highIndex,
-        targets.toArray(new StmtBox[targets.size()]), defaultTarget);
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends StmtBox> targets, StmtBox defaultTarget) {
+    this(Jimple.v().newImmediateBox(key), lowIndex, highIndex, targets.toArray(new StmtBox[targets.size()]), defaultTarget);
   }
 
-  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, StmtBox[] targetBoxes,
-      StmtBox defaultTargetBox) {
+  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, StmtBox[] targetBoxes, StmtBox defaultTargetBox) {
     super(keyBox, defaultTargetBox, targetBoxes);
 
     if (lowIndex > highIndex) {
-      throw new RuntimeException("Error creating tableswitch: lowIndex(" + lowIndex
-          + ") can't be greater than highIndex(" + highIndex + ").");
+      throw new RuntimeException(
+          "Error creating tableswitch: lowIndex(" + lowIndex + ") can't be greater than highIndex(" + highIndex + ").");
     }
 
     this.lowIndex = lowIndex;
@@ -94,16 +89,15 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     // The case for "i == highIndex" is handled separately after the loop.
     for (int i = lowIndex; i < highIndex; i++) {
       Stmt target = getTarget(i - lowIndex);
-      buffer.append("    " + Jimple.CASE + " " + i + ": " + Jimple.GOTO + " "
-          + (target == this ? "self" : target) + ";" + endOfLine);
+      buffer.append(
+          "    " + Jimple.CASE + " " + i + ": " + Jimple.GOTO + " " + (target == this ? "self" : target) + ";" + endOfLine);
     }
     Stmt target = getTarget(highIndex - lowIndex);
-    buffer.append("    " + Jimple.CASE + " " + highIndex + ": " + Jimple.GOTO + " "
-        + (target == this ? "self" : target) + ";" + endOfLine);
+    buffer.append("    " + Jimple.CASE + " " + highIndex + ": " + Jimple.GOTO + " " + (target == this ? "self" : target)
+        + ";" + endOfLine);
 
     target = getDefaultTarget();
-    buffer.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " "
-        + (target == this ? "self" : target) + ";" + endOfLine);
+    buffer.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " " + (target == this ? "self" : target) + ";" + endOfLine);
 
     buffer.append("}");
 

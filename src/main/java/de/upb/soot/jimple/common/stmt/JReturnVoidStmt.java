@@ -23,11 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.StmtPrinter;
@@ -35,40 +30,38 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JReturnVoidStmt extends AbstractStmt
-{
-    public JReturnVoidStmt()
-    {
-    }
-  
-    @Override
-    public Object clone() 
-    {
-        return new JReturnVoidStmt();
-    }
+public class JReturnVoidStmt extends AbstractStmt {
+  public JReturnVoidStmt() {
+  }
 
-    @Override
-    public String toString()
-    {
-        return Jimple.RETURN;
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal(Jimple.RETURN);
-    }
-    
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IStmtVisitor) sw).caseReturnVoidStmt(this);
-    }
-    
+  @Override
+  public Object clone() {
+    return new JReturnVoidStmt();
+  }
 
-    @Override
-    public boolean fallsThrough(){return false;}
-    @Override
-    public boolean branches(){return false;}
+  @Override
+  public String toString() {
+    return Jimple.RETURN;
+  }
+
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.RETURN);
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IStmtVisitor) sw).caseReturnVoidStmt(this);
+  }
+
+  @Override
+  public boolean fallsThrough() {
+    return false;
+  }
+
+  @Override
+  public boolean branches() {
+    return false;
+  }
 
 }
-

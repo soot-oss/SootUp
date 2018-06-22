@@ -23,11 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
 package de.upb.soot.jimple.common.expr;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.PrecedenceTest;
@@ -37,107 +33,94 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SuppressWarnings("serial")
-abstract public class AbstractCastExpr implements Expr
-{	    
-	final ValueBox opBox;
-    Type type;
+abstract public class AbstractCastExpr implements Expr {
+  final ValueBox opBox;
+  Type type;
 
-    @Override
-    public abstract Object clone();
+  @Override
+  public abstract Object clone();
 
-    protected AbstractCastExpr(ValueBox opBox, Type type)
-    {
-        this.opBox = opBox; 
-        this.type = type;
-    }
+  protected AbstractCastExpr(ValueBox opBox, Type type) {
+    this.opBox = opBox;
+    this.type = type;
+  }
 
-    @Override
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof AbstractCastExpr)
-        {
-            AbstractCastExpr ace = (AbstractCastExpr)o;
-            return opBox.getValue().equivTo(ace.opBox.getValue()) &&
-                type.equals(ace.type);
-        }
-        return false;
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof AbstractCastExpr) {
+      AbstractCastExpr ace = (AbstractCastExpr) o;
+      return opBox.getValue().equivTo(ace.opBox.getValue()) && type.equals(ace.type);
     }
+    return false;
+  }
 
-    /** Returns a hash code for this object, consistent with structural equality. */
-    @Override
-    public int equivHashCode() 
-    {
-        return opBox.getValue().equivHashCode() * 101 + type.hashCode() + 17;
-    }
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return opBox.getValue().equivHashCode() * 101 + type.hashCode() + 17;
+  }
 
-    @Override
-    public String toString()
-    {
-        return "("  + type.toString() + ") " + opBox.getValue().toString();
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal("(");
-        up.type(type);
-        up.literal(") ");
-        if( PrecedenceTest.needsBrackets( opBox, this ) ) {
-          up.literal("(");
-        }
-        opBox.toString(up);
-        if( PrecedenceTest.needsBrackets( opBox, this ) ) {
-          up.literal(")");
-        }
-    }
-    
-    public Value getOp()
-    {
-        return opBox.getValue();
-    }
+  @Override
+  public String toString() {
+    return "(" + type.toString() + ") " + opBox.getValue().toString();
+  }
 
-    public void setOp(Value op)
-    {
-        opBox.setValue(op);
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal("(");
+    up.type(type);
+    up.literal(") ");
+    if (PrecedenceTest.needsBrackets(opBox, this)) {
+      up.literal("(");
     }
-    
-    public ValueBox getOpBox()
-    {
-        return opBox;
+    opBox.toString(up);
+    if (PrecedenceTest.needsBrackets(opBox, this)) {
+      up.literal(")");
     }
+  }
 
-    @Override
-    public final List<ValueBox> getUseBoxes()
-    {
-        List<ValueBox> list = new ArrayList<ValueBox>();
+  public Value getOp() {
+    return opBox.getValue();
+  }
 
-        list.addAll(opBox.getValue().getUseBoxes());
-        list.add(opBox);
-    
-        return list;
-    }
+  public void setOp(Value op) {
+    opBox.setValue(op);
+  }
 
-    public Type getCastType()
-    {
-        return type;
-    }
+  public ValueBox getOpBox() {
+    return opBox;
+  }
 
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+    List<ValueBox> list = new ArrayList<ValueBox>();
 
-    public void setCastType(Type castType)
-    {
-        this.type = castType;
-    }
+    list.addAll(opBox.getValue().getUseBoxes());
+    list.add(opBox);
 
-    @Override
-    public Type getType()
-    {
-        return type;
-    }
+    return list;
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IExprVisitor) sw).caseCastExpr(this);
-    }
+  public Type getCastType() {
+    return type;
+  }
+
+  public void setCastType(Type castType) {
+    this.type = castType;
+  }
+
+  @Override
+  public Type getType() {
+    return type;
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseCastExpr(this);
+  }
 
 }

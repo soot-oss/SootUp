@@ -25,9 +25,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
@@ -36,6 +33,9 @@ import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public abstract class AbstractNewArrayExpr implements Expr {
@@ -116,7 +116,6 @@ public abstract class AbstractNewArrayExpr implements Expr {
 
     return useBoxes;
   }
-
 
   public Type getType() {
     if (baseType instanceof ArrayType) {

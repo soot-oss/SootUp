@@ -23,15 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.javabyte;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
@@ -41,77 +33,74 @@ import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JRetStmt extends AbstractStmt
-{
-    final ValueBox stmtAddressBox;
-    //List useBoxes;
+import java.util.ArrayList;
+import java.util.List;
 
-    public JRetStmt(Value stmtAddress)
-    {
-        this(Jimple.v().newLocalBox(stmtAddress));
-    }
+public class JRetStmt extends AbstractStmt {
+  final ValueBox stmtAddressBox;
+  // List useBoxes;
 
-    protected JRetStmt(ValueBox stmtAddressBox)
-    {
-            this.stmtAddressBox = stmtAddressBox;
+  public JRetStmt(Value stmtAddress) {
+    this(Jimple.v().newLocalBox(stmtAddress));
+  }
 
-    }
+  protected JRetStmt(ValueBox stmtAddressBox) {
+    this.stmtAddressBox = stmtAddressBox;
 
-    @Override
-    public Object clone() 
-    {
-        return new JRetStmt(Jimple.cloneIfNecessary(getStmtAddress()));
-    }
+  }
 
-    @Override
-    public String toString()
-    {
-        return Jimple.RET + " "  + stmtAddressBox.getValue().toString();
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal(Jimple.RET);
-        up.literal(" ");
-        stmtAddressBox.toString(up);
-    }
+  @Override
+  public Object clone() {
+    return new JRetStmt(Jimple.cloneIfNecessary(getStmtAddress()));
+  }
 
-    public Value getStmtAddress()
-    {
-        return stmtAddressBox.getValue();
-    }
+  @Override
+  public String toString() {
+    return Jimple.RET + " " + stmtAddressBox.getValue().toString();
+  }
 
-    public ValueBox getStmtAddressBox()
-    {
-        return stmtAddressBox;
-    }
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.RET);
+    up.literal(" ");
+    stmtAddressBox.toString(up);
+  }
 
-    public void setStmtAddress(Value stmtAddress)
-    {
-        stmtAddressBox.setValue(stmtAddress);
-    }
+  public Value getStmtAddress() {
+    return stmtAddressBox.getValue();
+  }
 
-    @Override
-    public List<ValueBox> getUseBoxes()
-    {
-        List<ValueBox> useBoxes = new ArrayList<ValueBox>();
+  public ValueBox getStmtAddressBox() {
+    return stmtAddressBox;
+  }
 
-        useBoxes.addAll(stmtAddressBox.getValue().getUseBoxes());
-        useBoxes.add(stmtAddressBox);
+  public void setStmtAddress(Value stmtAddress) {
+    stmtAddressBox.setValue(stmtAddress);
+  }
 
-        return useBoxes;
-    }
+  @Override
+  public List<ValueBox> getUseBoxes() {
+    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IStmtVisitor) sw).caseRetStmt(this);
-    }    
+    useBoxes.addAll(stmtAddressBox.getValue().getUseBoxes());
+    useBoxes.add(stmtAddressBox);
 
-    @Override
-    public boolean fallsThrough(){return true;}        
-    @Override
-    public boolean branches(){return false;}
+    return useBoxes;
+  }
 
+  @Override
+  public void accept(IVisitor sw) {
+    ((IStmtVisitor) sw).caseRetStmt(this);
+  }
+
+  @Override
+  public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
+  public boolean branches() {
+    return false;
+  }
 
 }

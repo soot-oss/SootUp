@@ -34,46 +34,43 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JIdentityStmt extends AbstractDefinitionStmt {
-	public JIdentityStmt(Value local, Value identityValue) {
-		this(Jimple.v().newLocalBox(local), Jimple.v().newIdentityRefBox(
-				identityValue));
-	}
+  public JIdentityStmt(Value local, Value identityValue) {
+    this(Jimple.v().newLocalBox(local), Jimple.v().newIdentityRefBox(identityValue));
+  }
 
-	protected JIdentityStmt(ValueBox localBox, ValueBox identityValueBox) {
-		super(localBox, identityValueBox);
-	}
+  protected JIdentityStmt(ValueBox localBox, ValueBox identityValueBox) {
+    super(localBox, identityValueBox);
+  }
 
-	@Override
+  @Override
   public Object clone() {
-		return new JIdentityStmt(Jimple.cloneIfNecessary(getLeftOp()),
-				Jimple.cloneIfNecessary(getRightOp()));
-	}
+    return new JIdentityStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()));
+  }
 
-	@Override
+  @Override
   public String toString() {
-		return leftBox.getValue().toString() + " := "
-				+ rightBox.getValue().toString();
-	}
+    return leftBox.getValue().toString() + " := " + rightBox.getValue().toString();
+  }
 
-	@Override
+  @Override
   public void toString(StmtPrinter up) {
-		leftBox.toString(up);
-		up.literal(" := ");
-		rightBox.toString(up);
-	}
+    leftBox.toString(up);
+    up.literal(" := ");
+    rightBox.toString(up);
+  }
 
-	public void setLeftOp(Value local) {
-		leftBox.setValue(local);
-	}
+  public void setLeftOp(Value local) {
+    leftBox.setValue(local);
+  }
 
-	public void setRightOp(Value identityRef) {
-		rightBox.setValue(identityRef);
-	}
+  public void setRightOp(Value identityRef) {
+    rightBox.setValue(identityRef);
+  }
 
-	@Override
+  @Override
   public void accept(IVisitor sw) {
-		((IStmtVisitor) sw).caseIdentityStmt(this);
-	}
+    ((IStmtVisitor) sw).caseIdentityStmt(this);
+  }
 
   public Type getType() {
     // TODO Auto-generated method stub

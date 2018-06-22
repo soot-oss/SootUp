@@ -1,5 +1,9 @@
 package de.upb.soot.jimple;
 
+import de.upb.soot.Scene;
+import de.upb.soot.core.SootClass;
+import de.upb.soot.jimple.common.stmt.Stmt;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -7,10 +11,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import de.upb.soot.Scene;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.jimple.common.stmt.Stmt;
 
 /* Soot - a J*va Optimization Framework
  * Copyright (C) 1997-1999 Raja Vallee-Rai
@@ -68,14 +68,12 @@ public class AbstractTrap implements Trap, Serializable {
   }
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
-  protected AbstractTrap(SootClass exception, StmtBox beginStmtBox, StmtBox endStmtBox,
-      StmtBox handlerStmtBox) {
+  protected AbstractTrap(SootClass exception, StmtBox beginStmtBox, StmtBox endStmtBox, StmtBox handlerStmtBox) {
     this.exception = exception;
     this.beginStmtBox = beginStmtBox;
     this.endStmtBox = endStmtBox;
     this.handlerStmtBox = handlerStmtBox;
-    this.unitBoxes = Collections
-        .unmodifiableList(Arrays.asList(beginStmtBox, endStmtBox, handlerStmtBox));
+    this.unitBoxes = Collections.unmodifiableList(Arrays.asList(beginStmtBox, endStmtBox, handlerStmtBox));
   }
 
   public Stmt getBeginStmt() {
@@ -138,6 +136,5 @@ public class AbstractTrap implements Trap, Serializable {
   public Object clone() {
     throw new RuntimeException();
   }
-
 
 }

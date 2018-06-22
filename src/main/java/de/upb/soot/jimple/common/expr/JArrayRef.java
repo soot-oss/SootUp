@@ -23,15 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
@@ -46,149 +38,129 @@ import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JArrayRef implements ArrayRef
-{
-    protected ValueBox baseBox;
-    protected ValueBox indexBox;
+import java.util.ArrayList;
+import java.util.List;
 
-  public JArrayRef(Value base, Value index)
-    {
-        this(Jimple.v().newLocalBox(base),
-             Jimple.v().newImmediateBox(index));
+public class JArrayRef implements ArrayRef {
+  protected ValueBox baseBox;
+  protected ValueBox indexBox;
+
+  public JArrayRef(Value base, Value index) {
+    this(Jimple.v().newLocalBox(base), Jimple.v().newImmediateBox(index));
+  }
+
+  protected JArrayRef(ValueBox baseBox, ValueBox indexBox) {
+    this.baseBox = baseBox;
+    this.indexBox = indexBox;
+  }
+
+  @Override
+  public Object clone() {
+    return new JArrayRef(Jimple.cloneIfNecessary(getBase()), Jimple.cloneIfNecessary(getIndex()));
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof ArrayRef) {
+      return (getBase().equivTo(((ArrayRef) o).getBase()) && getIndex().equivTo(((ArrayRef) o).getIndex()));
     }
+    return false;
+  }
 
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return getBase().equivHashCode() * 101 + getIndex().equivHashCode() + 17;
+  }
 
-    protected JArrayRef(ValueBox baseBox, ValueBox indexBox)
-    {
-        this.baseBox = baseBox;
-        this.indexBox = indexBox;
+  @Override
+  public String toString() {
+    return baseBox.getValue().toString() + "[" + indexBox.getValue().toString() + "]";
+  }
+
+  @Override
+  public void toString(StmtPrinter up) {
+    baseBox.toString(up);
+    up.literal("[");
+    indexBox.toString(up);
+    up.literal("]");
+  }
+
+  @Override
+  public Value getBase() {
+    return baseBox.getValue();
+  }
+
+  @Override
+  public void setBase(Local base) {
+    baseBox.setValue(base);
+  }
+
+  @Override
+  public ValueBox getBaseBox() {
+    return baseBox;
+  }
+
+  @Override
+  public Value getIndex() {
+    return indexBox.getValue();
+  }
+
+  @Override
+  public void setIndex(Value index) {
+    indexBox.setValue(index);
+  }
+
+  @Override
+  public ValueBox getIndexBox() {
+    return indexBox;
+  }
+
+  @Override
+  public List getUseBoxes() {
+    List useBoxes = new ArrayList();
+
+    useBoxes.addAll(baseBox.getValue().getUseBoxes());
+    useBoxes.add(baseBox);
+
+    useBoxes.addAll(indexBox.getValue().getUseBoxes());
+    useBoxes.add(indexBox);
+
+    return useBoxes;
+  }
+
+  @Override
+  public Type getType() {
+    Value base = baseBox.getValue();
+    Type type = base.getType();
+
+    if (type.equals(UnknownType.v())) {
+      return UnknownType.v();
+    } else if (type.equals(NullType.v())) {
+      return NullType.v();
+    } else {
+      // use makeArrayType on non-array type references when they propagate to this point.
+      // kludge, most likely not correct.
+      // may stop spark from complaining when it gets passed phantoms.
+      // ideally I'd want to find out just how they manage to get this far.
+      ArrayType arrayType;
+      if (type instanceof ArrayType) {
+        arrayType = (ArrayType) type;
+      } else {
+        arrayType = type.makeArrayType();
+      }
+
+      if (arrayType.numDimensions == 1) {
+        return arrayType.baseType;
+      } else {
+        return ArrayType.v(arrayType.baseType, arrayType.numDimensions - 1);
+      }
     }
-    
-    @Override
-    public Object clone() 
-    {
-        return new JArrayRef(Jimple.cloneIfNecessary(getBase()), Jimple.cloneIfNecessary(getIndex()));
-    }
+  }
 
-    @Override
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof ArrayRef)
-          {
-            return (getBase().equivTo(((ArrayRef)o).getBase())
-                    && getIndex().equivTo(((ArrayRef)o).getIndex()));
-          }
-        return false;
-    }
-
-    /** Returns a hash code for this object, consistent with structural equality. */
-    @Override
-    public int equivHashCode() 
-    {
-        return getBase().equivHashCode() * 101 + getIndex().equivHashCode() + 17;
-    }
-
-    @Override
-    public String toString()
-    {
-        return baseBox.getValue().toString() + "[" + indexBox.getValue().toString() + "]";
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        baseBox.toString(up);
-        up.literal("[");
-        indexBox.toString(up);
-        up.literal("]");
-    }
-
-    @Override
-    public Value getBase()
-    {
-        return baseBox.getValue();
-    }
-
-    @Override
-    public void setBase(Local base)
-    {
-        baseBox.setValue(base);
-    }
-
-    @Override
-    public ValueBox getBaseBox()
-    {
-        return baseBox;
-    }
-
-    @Override
-    public Value getIndex()
-    {
-        return indexBox.getValue();
-    }
-
-    @Override
-    public void setIndex(Value index)
-    {
-        indexBox.setValue(index);
-    }
-
-    @Override
-    public ValueBox getIndexBox()
-    {
-        return indexBox;
-    }
-
-    @Override
-    public List getUseBoxes()
-    {
-        List useBoxes = new ArrayList();
-
-        useBoxes.addAll(baseBox.getValue().getUseBoxes());
-        useBoxes.add(baseBox);
-
-        useBoxes.addAll(indexBox.getValue().getUseBoxes());
-        useBoxes.add(indexBox);
-
-        return useBoxes;
-    }
-
-    @Override
-    public Type getType()
-    {
-        Value base = baseBox.getValue();
-        Type type = base.getType();
-
-        if(type.equals(UnknownType.v())) {
-          return UnknownType.v();
-        } else if(type.equals(NullType.v())) {
-          return NullType.v();
-        } else {
-        	//use makeArrayType on non-array type references when they propagate to this point.
-        	//kludge, most likely not correct.
-        	//may stop spark from complaining when it gets passed phantoms.
-        	// ideally I'd want to find out just how they manage to get this far.
-        	ArrayType arrayType;
-        	if (type instanceof ArrayType) {
-            arrayType = (ArrayType) type;
-          } else {
-            arrayType = type.makeArrayType();
-          }
-
-            if(arrayType.numDimensions == 1) {
-              return arrayType.baseType;
-            } else {
-              return ArrayType.v(arrayType.baseType, arrayType.numDimensions - 1);
-            }
-        }
-    }
-
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IRefVisitor) sw).caseArrayRef(this);
-    }
+  @Override
+  public void accept(IVisitor sw) {
+    ((IRefVisitor) sw).caseArrayRef(this);
+  }
 
 }
-
-
-

@@ -24,11 +24,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
 package de.upb.soot.jimple.common.ref;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootField;
@@ -39,115 +35,102 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @SuppressWarnings("serial")
-public abstract class AbstractInstanceFieldRef implements FieldRef
-{
-    protected SootFieldRef fieldRef;
-    final ValueBox baseBox;
+public abstract class AbstractInstanceFieldRef implements FieldRef {
+  protected SootFieldRef fieldRef;
+  final ValueBox baseBox;
 
-	protected AbstractInstanceFieldRef(ValueBox baseBox, SootFieldRef fieldRef)
-    {
-        if( fieldRef.isStatic() ) {
-          throw new RuntimeException("wrong static-ness");
-        }
-        this.baseBox = baseBox;
-        this.fieldRef = fieldRef;
+  protected AbstractInstanceFieldRef(ValueBox baseBox, SootFieldRef fieldRef) {
+    if (fieldRef.isStatic()) {
+      throw new RuntimeException("wrong static-ness");
     }
+    this.baseBox = baseBox;
+    this.fieldRef = fieldRef;
+  }
 
-    @Override
-    public abstract Object clone();
+  @Override
+  public abstract Object clone();
 
-    @Override
-    public String toString()
-    {
-        return baseBox.getValue().toString() + "." + fieldRef.getSignature();
-    }
-    
-    @Override
-    public void toString( StmtPrinter up ) {
-        if( PrecedenceTest.needsBrackets( baseBox, this ) ) {
-          up.literal("(");
-        }
-        baseBox.toString(up);
-        if( PrecedenceTest.needsBrackets( baseBox, this ) ) {
-          up.literal(")");
-        }
-        up.literal(".");
-        up.fieldRef(fieldRef);
-    }
+  @Override
+  public String toString() {
+    return baseBox.getValue().toString() + "." + fieldRef.getSignature();
+  }
 
-    public Value getBase()
-    {
-        return baseBox.getValue();
+  @Override
+  public void toString(StmtPrinter up) {
+    if (PrecedenceTest.needsBrackets(baseBox, this)) {
+      up.literal("(");
     }
+    baseBox.toString(up);
+    if (PrecedenceTest.needsBrackets(baseBox, this)) {
+      up.literal(")");
+    }
+    up.literal(".");
+    up.fieldRef(fieldRef);
+  }
 
-    public ValueBox getBaseBox()
-    {
-        return baseBox;
-    }
+  public Value getBase() {
+    return baseBox.getValue();
+  }
 
-    public void setBase(Value base)
-    {
-        baseBox.setValue(base);
-    }
+  public ValueBox getBaseBox() {
+    return baseBox;
+  }
 
-    @Override
-    public SootFieldRef getFieldRef()
-    {
-        return fieldRef;
-    }
-    
-	@Override
+  public void setBase(Value base) {
+    baseBox.setValue(base);
+  }
+
+  @Override
+  public SootFieldRef getFieldRef() {
+    return fieldRef;
+  }
+
+  @Override
   public void setFieldRef(SootFieldRef fieldRef) {
-		this.fieldRef = fieldRef;
-	}
-
-    @Override
-    public SootField getField()
-    {
-        return fieldRef.resolve();
-    }
-
-
-    public final List<ValueBox> getUseBoxes()
-    {
-        List<ValueBox> useBoxes = new ArrayList<ValueBox>();
-
-        useBoxes.addAll(baseBox.getValue().getUseBoxes());
-        useBoxes.add(baseBox);
-
-        return useBoxes;
-    }
+    this.fieldRef = fieldRef;
+  }
 
   @Override
-    public Type getType()
-    {
-        return fieldRef.type();
-    }
+  public SootField getField() {
+    return fieldRef.resolve();
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IRefVisitor) sw).caseInstanceFieldRef(this);
-    }
-    
+  public final List<ValueBox> getUseBoxes() {
+    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
+
+    useBoxes.addAll(baseBox.getValue().getUseBoxes());
+    useBoxes.add(baseBox);
+
+    return useBoxes;
+  }
+
   @Override
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof AbstractInstanceFieldRef)
-        {
-            AbstractInstanceFieldRef fr = (AbstractInstanceFieldRef)o;
-            return fr.getField().equals(getField()) &&
-                fr.baseBox.getValue().equivTo(baseBox.getValue());
-        }
-        return false;
-    }
+  public Type getType() {
+    return fieldRef.type();
+  }
 
-    /** Returns a hash code for this object, consistent with structural equality. */
-    @Override
-    public int equivHashCode() 
-    {
-        return getField().equivHashCode() * 101 + baseBox.getValue().equivHashCode() + 17;
+  @Override
+  public void accept(IVisitor sw) {
+    ((IRefVisitor) sw).caseInstanceFieldRef(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof AbstractInstanceFieldRef) {
+      AbstractInstanceFieldRef fr = (AbstractInstanceFieldRef) o;
+      return fr.getField().equals(getField()) && fr.baseBox.getValue().equivTo(baseBox.getValue());
     }
+    return false;
+  }
+
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return getField().equivHashCode() * 101 + baseBox.getValue().equivHashCode() + 17;
+  }
 
 }

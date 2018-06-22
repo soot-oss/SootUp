@@ -24,22 +24,18 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
 package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 
-public class JInstanceFieldRef extends AbstractInstanceFieldRef
-{
-    public JInstanceFieldRef(Value base, SootFieldRef fieldRef)
-    {
-        super(Jimple.v().newLocalBox(base), fieldRef);
-    }
-   
-    @Override
-    public Object clone() 
-    {
-        return new JInstanceFieldRef( Jimple.cloneIfNecessary(getBase()), fieldRef);
-    }
+public class JInstanceFieldRef extends AbstractInstanceFieldRef {
+  public JInstanceFieldRef(Value base, SootFieldRef fieldRef) {
+    super(Jimple.v().newLocalBox(base), fieldRef);
+  }
+
+  @Override
+  public Object clone() {
+    return new JInstanceFieldRef(Jimple.cloneIfNecessary(getBase()), fieldRef);
+  }
 }

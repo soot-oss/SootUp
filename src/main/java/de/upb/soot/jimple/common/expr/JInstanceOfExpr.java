@@ -23,11 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.StmtPrinter;
@@ -35,23 +30,20 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.common.type.Type;
 
-public class JInstanceOfExpr extends AbstractInstanceOfExpr
-{
-    public JInstanceOfExpr(Value op, Type checkType)
-    {
-        super(Jimple.v().newImmediateBox(op), checkType);
-    }
-  
-    @Override
-    public Object clone() 
-    {
-        return new JInstanceOfExpr(Jimple.cloneIfNecessary(getOp()), checkType);
-    }
+public class JInstanceOfExpr extends AbstractInstanceOfExpr {
+  public JInstanceOfExpr(Value op, Type checkType) {
+    super(Jimple.v().newImmediateBox(op), checkType);
+  }
+
+  @Override
+  public Object clone() {
+    return new JInstanceOfExpr(Jimple.cloneIfNecessary(getOp()), checkType);
+  }
 
   @Override
   public void toString(StmtPrinter up) {
     // TODO Auto-generated method stub
 
   }
-    
+
 }

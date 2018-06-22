@@ -23,7 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.StmtPrinter;
@@ -35,52 +34,47 @@ import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
-public abstract class AbstractLengthExpr extends AbstractUnopExpr
-{
-    protected AbstractLengthExpr(ValueBox opBox) { super(opBox); }
+public abstract class AbstractLengthExpr extends AbstractUnopExpr {
+  protected AbstractLengthExpr(ValueBox opBox) {
+    super(opBox);
+  }
 
-    @Override
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof AbstractLengthExpr)
-        {
-            return opBox.getValue().equivTo(((AbstractLengthExpr)o).opBox.getValue());
-        }
-        return false;
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof AbstractLengthExpr) {
+      return opBox.getValue().equivTo(((AbstractLengthExpr) o).opBox.getValue());
     }
+    return false;
+  }
 
-    /** Returns a hash code for this object, consistent with structural equality. */
-    @Override
-    public int equivHashCode() 
-    {
-        return opBox.getValue().equivHashCode();
-    }
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return opBox.getValue().equivHashCode();
+  }
 
-    @Override
-    public abstract Object clone();
+  @Override
+  public abstract Object clone();
 
-    @Override
-    public String toString()
-    {
-        return Jimple.LENGTHOF + " " + opBox.getValue().toString();
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal(Jimple.LENGTHOF);
-        up.literal(" ");
-        opBox.toString(up);
-    }
+  @Override
+  public String toString() {
+    return Jimple.LENGTHOF + " " + opBox.getValue().toString();
+  }
 
-    @Override
-    public Type getType()
-    {
-        return IntType.v();
-    }
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.LENGTHOF);
+    up.literal(" ");
+    opBox.toString(up);
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IExprVisitor) sw).caseLengthExpr(this);
-    }
+  @Override
+  public Type getType() {
+    return IntType.v();
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseLengthExpr(this);
+  }
 }

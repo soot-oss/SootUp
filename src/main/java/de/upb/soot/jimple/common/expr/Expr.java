@@ -23,14 +23,9 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Value;
 
-public interface Expr extends Value
-{
+public interface Expr extends Value {
 }

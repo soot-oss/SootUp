@@ -23,14 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.javabyte;
-
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
@@ -45,48 +38,46 @@ import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JExitMonitorStmt extends AbstractOpStmt 
-{
-    public JExitMonitorStmt(Value op)
-    {
-        this(Jimple.v().newImmediateBox(op));
-    }
+import java.util.List;
 
-    protected JExitMonitorStmt(ValueBox opBox)
-    {
-        super(opBox);
-    }
+public class JExitMonitorStmt extends AbstractOpStmt {
+  public JExitMonitorStmt(Value op) {
+    this(Jimple.v().newImmediateBox(op));
+  }
 
-    @Override
-    public Object clone() 
-    {
-        return new JExitMonitorStmt(Jimple.cloneIfNecessary(getOp()));
-    }
+  protected JExitMonitorStmt(ValueBox opBox) {
+    super(opBox);
+  }
 
-    @Override
-    public String toString()
-    {
-        return Jimple.EXITMONITOR + " "  + opBox.getValue().toString();
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal(Jimple.EXITMONITOR);
-        up.literal(" ");
-        opBox.toString(up);
-    }
+  @Override
+  public Object clone() {
+    return new JExitMonitorStmt(Jimple.cloneIfNecessary(getOp()));
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IStmtVisitor) sw).caseExitMonitorStmt(this);
+  @Override
+  public String toString() {
+    return Jimple.EXITMONITOR + " " + opBox.getValue().toString();
+  }
 
-    }    
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.EXITMONITOR);
+    up.literal(" ");
+    opBox.toString(up);
+  }
 
-    
-    @Override
-    public boolean fallsThrough(){return true;}
-    @Override
+  @Override
+  public void accept(IVisitor sw) {
+    ((IStmtVisitor) sw).caseExitMonitorStmt(this);
+
+  }
+
+  @Override
+  public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
   public boolean branches() {
     return false;
   }
@@ -174,7 +165,5 @@ public class JExitMonitorStmt extends AbstractOpStmt
     // TODO Auto-generated method stub
 
   }
-    
-
 
 }

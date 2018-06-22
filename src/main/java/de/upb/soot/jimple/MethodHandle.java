@@ -23,10 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
 package de.upb.soot.jimple;
 
 import de.upb.soot.jimple.common.constant.Constant;
@@ -36,70 +32,64 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class MethodHandle extends Constant
-{
-    public final SootMethodRef methodRef;
-    public int tag;
+public class MethodHandle extends Constant {
+  public final SootMethodRef methodRef;
+  public int tag;
 
-    private MethodHandle(SootMethodRef ref, int tag)
-    {
-        this.methodRef = ref;
-        this.tag = tag;
-    }
+  private MethodHandle(SootMethodRef ref, int tag) {
+    this.methodRef = ref;
+    this.tag = tag;
+  }
 
-    public static MethodHandle v(SootMethodRef ref, int tag)
-    {
-        return new MethodHandle(ref, tag);
-    }
+  public static MethodHandle v(SootMethodRef ref, int tag) {
+    return new MethodHandle(ref, tag);
+  }
 
-    @Override
-    public String toString()
-    {
-        return "handle: "+ methodRef;
-    }
+  @Override
+  public String toString() {
+    return "handle: " + methodRef;
+  }
 
-    @Override
-    public Type getType()
-    {
-        return RefType.v("java.lang.invoke.MethodHandle");
-    }
-    
-    public SootMethodRef getMethodRef() {
-		return methodRef;
-	}
+  @Override
+  public Type getType() {
+    return RefType.v("java.lang.invoke.MethodHandle");
+  }
 
-    public void accept(IVisitor sw)
-    {
-        ((IConstantVisitor) sw).caseMethodHandle(this);
-    }
+  public SootMethodRef getMethodRef() {
+    return methodRef;
+  }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((methodRef == null) ? 0 : methodRef.hashCode());
-		return result;
-	}
+  public void accept(IVisitor sw) {
+    ((IConstantVisitor) sw).caseMethodHandle(this);
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((methodRef == null) ? 0 : methodRef.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
       return true;
     }
-		if (obj == null) {
+    if (obj == null) {
       return false;
     }
-		if (getClass() != obj.getClass()) {
+    if (getClass() != obj.getClass()) {
       return false;
     }
-		MethodHandle other = (MethodHandle) obj;
-		if (methodRef == null) {
-			if (other.methodRef != null) {
+    MethodHandle other = (MethodHandle) obj;
+    if (methodRef == null) {
+      if (other.methodRef != null) {
         return false;
       }
-		} else if (!methodRef.equals(other.methodRef)) {
+    } else if (!methodRef.equals(other.methodRef)) {
       return false;
     }
-		return true;
-	}
+    return true;
+  }
 }

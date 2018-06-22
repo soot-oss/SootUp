@@ -23,15 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.stmt;
-
-import java.util.Collections;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
@@ -39,79 +31,74 @@ import de.upb.soot.jimple.StmtBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JGotoStmt extends AbstractStmt
-{
-    final StmtBox targetBox;
-    final List<StmtBox> targetBoxes;
+import java.util.Collections;
+import java.util.List;
 
-  public JGotoStmt(Stmt target)
-    {
-        this(Jimple.v().newStmtBox(target));
-    }
+public class JGotoStmt extends AbstractStmt {
+  final StmtBox targetBox;
+  final List<StmtBox> targetBoxes;
 
-    public JGotoStmt(StmtBox box)
-    {
-        targetBox = box;
-        targetBoxes = Collections.singletonList(box);
-    }
+  public JGotoStmt(Stmt target) {
+    this(Jimple.v().newStmtBox(target));
+  }
 
-    @Override
-    public Object clone() 
-    {
-        return new JGotoStmt(getTarget());
-    }
+  public JGotoStmt(StmtBox box) {
+    targetBox = box;
+    targetBoxes = Collections.singletonList(box);
+  }
 
-    @Override
-    public String toString()
-    {
+  @Override
+  public Object clone() {
+    return new JGotoStmt(getTarget());
+  }
+
+  @Override
+  public String toString() {
     Stmt t = getTarget();
-        String target = "(branch)";
-        if(!t.branches()) {
-          target = t.toString();
-        }
-        return Jimple.GOTO + " [?= " + target + "]";
+    String target = "(branch)";
+    if (!t.branches()) {
+      target = t.toString();
     }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal(Jimple.GOTO);
-        up.literal(" ");
-        targetBox.toString(up);
-    }
+    return Jimple.GOTO + " [?= " + target + "]";
+  }
 
-  public Stmt getTarget()
-    {
-        return targetBox.getStmt();
-    }
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.GOTO);
+    up.literal(" ");
+    targetBox.toString(up);
+  }
 
-  public void setTarget(Stmt target)
-    {
-        targetBox.setStmt(target);
-    }
+  public Stmt getTarget() {
+    return targetBox.getStmt();
+  }
 
-    public StmtBox getTargetBox()
-    {
-        return targetBox;
-    }
+  public void setTarget(Stmt target) {
+    targetBox.setStmt(target);
+  }
 
-    @Override
-    public List<StmtBox> getUnitBoxes()
-    {
-        return targetBoxes;
-    }
+  public StmtBox getTargetBox() {
+    return targetBox;
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IStmtVisitor) sw).caseGotoStmt(this);
-    }    
-    
-    @Override
-    public boolean fallsThrough(){return false;}        
-    @Override
-    public boolean branches() { return true;}
-    
+  @Override
+  public List<StmtBox> getUnitBoxes() {
+    return targetBoxes;
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IStmtVisitor) sw).caseGotoStmt(this);
+  }
+
+  @Override
+  public boolean fallsThrough() {
+    return false;
+  }
+
+  @Override
+  public boolean branches() {
+    return true;
+  }
+
 }
-
-
-

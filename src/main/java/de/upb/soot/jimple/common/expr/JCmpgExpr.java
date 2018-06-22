@@ -23,11 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.StmtPrinter;
@@ -36,19 +31,25 @@ import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JCmpgExpr extends AbstractJimpleIntBinopExpr
-{
-    public JCmpgExpr(Value op1, Value op2) { super(op1, op2); }
-    @Override
-    public final String getSymbol() { return " " + Jimple.CMPG + " " ; }
-    @Override
-    public void accept(IVisitor sw) { ((IExprVisitor) sw).caseCmpgExpr(this); }
-    
-    @Override
-    public Object clone() 
-    {
-        return new JCmpgExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
-    }
+public class JCmpgExpr extends AbstractJimpleIntBinopExpr {
+  public JCmpgExpr(Value op1, Value op2) {
+    super(op1, op2);
+  }
+
+  @Override
+  public final String getSymbol() {
+    return " " + Jimple.CMPG + " ";
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseCmpgExpr(this);
+  }
+
+  @Override
+  public Object clone() {
+    return new JCmpgExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
+  }
 
   @Override
   public void toString(StmtPrinter up) {

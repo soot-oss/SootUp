@@ -1,11 +1,11 @@
 package de.upb.soot.jimple.common.type;
 
-import java.io.Serializable;
-
 import de.upb.soot.Scene;
 import de.upb.soot.jimple.Numberable;
 import de.upb.soot.jimple.visitor.IAcceptor;
 import de.upb.soot.jimple.visitor.IVisitor;
+
+import java.io.Serializable;
 
 /**
  * Represents types within Soot, eg <code>int</code>, <code>java.lang.String</code>.
@@ -22,16 +22,15 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
   public abstract String toString();
 
   /**
-   * Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to
-   * .jimple format
+   * Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to .jimple format
    */
   public String toQuotedString() {
     return toString();
   }
 
   /**
-   * Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to
-   * .jimple format Replaced by toQuotedString; only here for backwards compatibility.
+   * Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to .jimple format Replaced
+   * by toQuotedString; only here for backwards compatibility.
    */
   @Deprecated
   public String getEscapedName() {
@@ -40,8 +39,7 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /** Converts the int-like types (short, byte, boolean and char) to IntType. */
   public static Type toMachineType(Type t) {
-    if (t.equals(ShortType.v()) || t.equals(ByteType.v()) || t.equals(BooleanType.v())
-        || t.equals(CharType.v())) {
+    if (t.equals(ShortType.v()) || t.equals(ByteType.v()) || t.equals(BooleanType.v()) || t.equals(CharType.v())) {
       return IntType.v();
     } else {
       return t;

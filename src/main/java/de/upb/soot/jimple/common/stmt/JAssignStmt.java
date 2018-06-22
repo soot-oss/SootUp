@@ -25,8 +25,6 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import java.util.List;
-
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Immediate;
 import de.upb.soot.jimple.Jimple;
@@ -41,6 +39,8 @@ import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+
+import java.util.List;
 
 public class JAssignStmt extends AbstractDefinitionStmt {
   private static class LinkedVariableBox extends VariableBox {
@@ -221,8 +221,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   @Override
   public Object clone() {
-    return new JAssignStmt(Jimple.cloneIfNecessary(getLeftOp()),
-        Jimple.cloneIfNecessary(getRightOp()));
+    return new JAssignStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()));
   }
 
   public void setLeftOp(Value variable) {

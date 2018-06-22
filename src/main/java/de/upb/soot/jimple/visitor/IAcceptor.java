@@ -23,12 +23,10 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
 package de.upb.soot.jimple.visitor;
 
 /** Basic interface used for visited objects in the Visitor design pattern. */
-public interface IAcceptor
-{
-    /** Called when this object is visited. */
+public interface IAcceptor {
+  /** Called when this object is visited. */
   public void accept(IVisitor sw);
 }

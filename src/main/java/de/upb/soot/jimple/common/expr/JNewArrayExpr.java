@@ -23,27 +23,19 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.common.type.Type;
 
-public class JNewArrayExpr extends AbstractNewArrayExpr
-{
-    public JNewArrayExpr(Type type, Value size)
-    {
-        super(type, Jimple.v().newImmediateBox(size));
-    }
+public class JNewArrayExpr extends AbstractNewArrayExpr {
+  public JNewArrayExpr(Type type, Value size) {
+    super(type, Jimple.v().newImmediateBox(size));
+  }
 
-    @Override
-    public Object clone() 
-    {
-        return new JNewArrayExpr(getBaseType(), Jimple.cloneIfNecessary(getSize()));
-    }
+  @Override
+  public Object clone() {
+    return new JNewArrayExpr(getBaseType(), Jimple.cloneIfNecessary(getSize()));
+  }
 }

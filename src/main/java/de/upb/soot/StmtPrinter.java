@@ -60,4 +60,3 @@ public interface StmtPrinter {
 
   public StringBuffer output();
 }
-

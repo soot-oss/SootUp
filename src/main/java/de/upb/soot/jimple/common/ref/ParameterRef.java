@@ -23,14 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
 package de.upb.soot.jimple.common.ref;
-
-import java.util.Collections;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.ValueBox;
@@ -38,85 +31,74 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-/** <code>ParameterRef</code> objects are used by <code>Body</code>
- * objects to refer to the parameter slots on method entry. <br>
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter slots on method entry.
+ * <br>
  *
- * For instance, in an instance method, the first statement will
- * often be <code> this := @parameter0; </code> */
-public class ParameterRef implements IdentityRef
-{
-    int n;
-    Type paramType;
+ * For instance, in an instance method, the first statement will often be <code> this := @parameter0; </code>
+ */
+public class ParameterRef implements IdentityRef {
+  int n;
+  Type paramType;
 
-    /** Constructs a ParameterRef object of the specified type, representing the specified parameter number. */
-    public ParameterRef(Type paramType, int number)
-    {
-        this.n = number;
-        this.paramType = paramType;
-    }
+  /** Constructs a ParameterRef object of the specified type, representing the specified parameter number. */
+  public ParameterRef(Type paramType, int number) {
+    this.n = number;
+    this.paramType = paramType;
+  }
 
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof ParameterRef)
-        {
-            return n == ((ParameterRef)o).n &&
-                paramType.equals(((ParameterRef)o).paramType);
-        }
-        return false;
+  public boolean equivTo(Object o) {
+    if (o instanceof ParameterRef) {
+      return n == ((ParameterRef) o).n && paramType.equals(((ParameterRef) o).paramType);
     }
+    return false;
+  }
 
-    public int equivHashCode()
-    {
-        return n * 101 + paramType.hashCode() * 17;
-    }
-    
-    /** Create a new ParameterRef object with the same paramType and number. */
-    @Override
-    public Object clone() 
-    {
-        return new ParameterRef(paramType, n);
-    }
-    
-    /** Converts the given ParameterRef into a String i.e. <code>@parameter0: .int</code>. */
-    @Override
-    public String toString()
-    {
-        return "@parameter" + n + ": " + paramType;                                                   
-    }
-    
-    public void toString( StmtPrinter up )
-    {
-        up.identityRef(this);
-    }
+  public int equivHashCode() {
+    return n * 101 + paramType.hashCode() * 17;
+  }
 
-    /** Returns the index of this ParameterRef. */
-    public int getIndex()
-    {
-        return n;
-    }
+  /** Create a new ParameterRef object with the same paramType and number. */
+  @Override
+  public Object clone() {
+    return new ParameterRef(paramType, n);
+  }
 
-    /** Sets the index of this ParameterRef. */
-    public void setIndex(int index)
-    {
-        n = index;
-    }
+  /** Converts the given ParameterRef into a String i.e. <code>@parameter0: .int</code>. */
+  @Override
+  public String toString() {
+    return "@parameter" + n + ": " + paramType;
+  }
 
+  public void toString(StmtPrinter up) {
+    up.identityRef(this);
+  }
 
-    public final List<ValueBox> getUseBoxes()
-    {
-        return Collections.emptyList();
-    }
+  /** Returns the index of this ParameterRef. */
+  public int getIndex() {
+    return n;
+  }
 
-    /** Returns the type of this ParameterRef. */
-    @Override
-    public Type getType()
-    {
-        return paramType;
-    }
+  /** Sets the index of this ParameterRef. */
+  public void setIndex(int index) {
+    n = index;
+  }
 
-    /** Used with RefSwitch. */
-    public void accept(IVisitor sw)
-    {
-        ((IRefVisitor) sw).caseParameterRef(this);
-    }
+  public final List<ValueBox> getUseBoxes() {
+    return Collections.emptyList();
+  }
+
+  /** Returns the type of this ParameterRef. */
+  @Override
+  public Type getType() {
+    return paramType;
+  }
+
+  /** Used with RefSwitch. */
+  public void accept(IVisitor sw) {
+    ((IRefVisitor) sw).caseParameterRef(this);
+  }
 }

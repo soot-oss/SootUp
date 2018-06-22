@@ -23,11 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
 package de.upb.soot.jimple.common.expr;
-
-import java.util.Collections;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.ValueBox;
@@ -37,57 +33,50 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JCaughtExceptionRef implements CaughtExceptionRef
-{
-    public JCaughtExceptionRef()
-    {
-    }
-    
-    @Override
-    public boolean equivTo(Object c)
-    {
-        return c instanceof CaughtExceptionRef;
-    }
+import java.util.Collections;
+import java.util.List;
 
-    /** Returns a hash code for this object, consistent with structural equality. */
-    @Override
-    public int equivHashCode() 
-    {
-        return 1729;
-    }
+public class JCaughtExceptionRef implements CaughtExceptionRef {
+  public JCaughtExceptionRef() {
+  }
 
-    @Override
-    public Object clone() 
-    {
-        return new JCaughtExceptionRef();
-    }
+  @Override
+  public boolean equivTo(Object c) {
+    return c instanceof CaughtExceptionRef;
+  }
 
-    @Override
-    public String toString()
-    {
-        return "@caughtexception";
-    }
-    
-    public void toString(StmtPrinter up)
-    {
-        up.identityRef(this);
-    }
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return 1729;
+  }
 
-    @Override
-    public final List<ValueBox> getUseBoxes()
-    {
-        return Collections.emptyList();
-    }
+  @Override
+  public Object clone() {
+    return new JCaughtExceptionRef();
+  }
 
-    @Override
-    public Type getType()
-    {
-        return RefType.v("java.lang.Throwable");
-    }
+  @Override
+  public String toString() {
+    return "@caughtexception";
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IRefVisitor) sw).caseCaughtExceptionRef(this);
-    }
+  public void toString(StmtPrinter up) {
+    up.identityRef(this);
+  }
+
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public Type getType() {
+    return RefType.v("java.lang.Throwable");
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IRefVisitor) sw).caseCaughtExceptionRef(this);
+  }
 }

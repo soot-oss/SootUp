@@ -24,14 +24,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
 package de.upb.soot.jimple.common.ref;
-
-import java.util.Collections;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootField;
@@ -40,83 +33,74 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class StaticFieldRef implements FieldRef
-{
+import java.util.Collections;
+import java.util.List;
 
-	protected SootFieldRef fieldRef;
+public class StaticFieldRef implements FieldRef {
 
-  public StaticFieldRef(SootFieldRef fieldRef)
-    {
-        if( !fieldRef.isStatic() ) {
-          throw new RuntimeException("wrong static-ness");
-        }
-        this.fieldRef = fieldRef;
+  protected SootFieldRef fieldRef;
+
+  public StaticFieldRef(SootFieldRef fieldRef) {
+    if (!fieldRef.isStatic()) {
+      throw new RuntimeException("wrong static-ness");
     }
+    this.fieldRef = fieldRef;
+  }
 
-    @Override
-    public Object clone() 
-    {
-        return new StaticFieldRef(fieldRef);
-    }
+  @Override
+  public Object clone() {
+    return new StaticFieldRef(fieldRef);
+  }
 
-    @Override
-    public String toString()
-    {
-        return fieldRef.getSignature();
-    }
+  @Override
+  public String toString() {
+    return fieldRef.getSignature();
+  }
 
-    public void toString( StmtPrinter up ) {
-        up.fieldRef(fieldRef);
-    }
+  public void toString(StmtPrinter up) {
+    up.fieldRef(fieldRef);
+  }
 
-    @Override
-    public SootFieldRef getFieldRef()
-    {
-        return fieldRef;
-    }
+  @Override
+  public SootFieldRef getFieldRef() {
+    return fieldRef;
+  }
 
-	@Override
+  @Override
   public void setFieldRef(SootFieldRef fieldRef) {
-		this.fieldRef = fieldRef;
-	}
-    @Override
-    public SootField getField()
-    {
-        return fieldRef.resolve();
+    this.fieldRef = fieldRef;
+  }
+
+  @Override
+  public SootField getField() {
+    return fieldRef.resolve();
+  }
+
+  public List<ValueBox> getUseBoxes() {
+    return Collections.emptyList();
+  }
+
+  public Type getType() {
+    return fieldRef.type();
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IRefVisitor) sw).caseStaticFieldRef(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof StaticFieldRef) {
+      return ((StaticFieldRef) o).getField().equals(getField());
     }
 
+    return false;
+  }
 
-    public List<ValueBox> getUseBoxes()
-    {
-        return Collections.emptyList();
-    }
-
-
-    public Type getType()
-    {
-        return fieldRef.type();
-    }
-
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IRefVisitor) sw).caseStaticFieldRef(this);
-    }
-    
-    @Override
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof StaticFieldRef) {
-          return ((StaticFieldRef)o).getField().equals(getField());
-        }
-        
-        return false;
-    }
-
-    @Override
-    public int equivHashCode()
-    {
-        return getField().equivHashCode();
-    }
+  @Override
+  public int equivHashCode() {
+    return getField().equivHashCode();
+  }
 
 }

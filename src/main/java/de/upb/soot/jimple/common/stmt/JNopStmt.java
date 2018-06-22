@@ -23,11 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.StmtPrinter;
@@ -35,45 +30,38 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JNopStmt extends AbstractStmt
-{
-    public JNopStmt()
-    {
-    }
-    
+public class JNopStmt extends AbstractStmt {
+  public JNopStmt() {
+  }
 
-    @Override
-    public Object clone() 
-    {
-        return new JNopStmt();
-    }
+  @Override
+  public Object clone() {
+    return new JNopStmt();
+  }
 
+  @Override
+  public String toString() {
+    return Jimple.NOP;
+  }
 
-    @Override
-    public String toString()
-    {
-        return Jimple.NOP;
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal(Jimple.NOP);
-    }
-    
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IStmtVisitor) sw).caseNopStmt(this);
-    }    
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.NOP);
+  }
 
-    @Override
-    public boolean fallsThrough(){return true;}        
-    @Override
-    public boolean branches(){return false;}
+  @Override
+  public void accept(IVisitor sw) {
+    ((IStmtVisitor) sw).caseNopStmt(this);
+  }
 
+  @Override
+  public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
+  public boolean branches() {
+    return false;
+  }
 
 }
-
-
-
-

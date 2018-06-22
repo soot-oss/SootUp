@@ -23,25 +23,17 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple;
 
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 
-public class InvokeExprBox extends AbstractValueBox
-{
-    public InvokeExprBox(Value value)
-    {
-        setValue(value);
-    }
+public class InvokeExprBox extends AbstractValueBox {
+  public InvokeExprBox(Value value) {
+    setValue(value);
+  }
 
-    @Override
-    public boolean canContainValue(Value value)
-    {
+  @Override
+  public boolean canContainValue(Value value) {
     return value instanceof AbstractInvokeExpr;
-    }
+  }
 }

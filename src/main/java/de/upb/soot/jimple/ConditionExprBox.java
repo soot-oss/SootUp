@@ -23,25 +23,17 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple;
 
 import de.upb.soot.jimple.common.expr.AbstractConditionExpr;
 
-public class ConditionExprBox extends AbstractValueBox
-{
-    public ConditionExprBox(Value value)
-    {
-        setValue(value);
-    }
+public class ConditionExprBox extends AbstractValueBox {
+  public ConditionExprBox(Value value) {
+    setValue(value);
+  }
 
-    @Override
-    public boolean canContainValue(Value value)
-    {
+  @Override
+  public boolean canContainValue(Value value) {
     return value instanceof AbstractConditionExpr;
-    }
+  }
 }

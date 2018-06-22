@@ -26,11 +26,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.objectweb.asm.Opcodes;
-
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
@@ -41,20 +36,24 @@ import de.upb.soot.jimple.common.ref.SootMethodRef;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.objectweb.asm.Opcodes;
+
 @SuppressWarnings("serial")
 public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   protected SootMethodRef bsmRef;
   protected ValueBox[] bsmArgBoxes;
   protected int tag;
 
-  public JDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      SootMethodRef methodRef, int tag, List<? extends Value> methodArgs) {
+  public JDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs, SootMethodRef methodRef,
+      int tag, List<? extends Value> methodArgs) {
     super(methodRef, new ValueBox[methodArgs.size()]);
 
-    if (!methodRef.getSignature()
-        .startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
-      throw new IllegalArgumentException("Receiver type of JDynamicInvokeExpr must be "
-          + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + "!");
+    if (!methodRef.getSignature().startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
+      throw new IllegalArgumentException(
+          "Receiver type of JDynamicInvokeExpr must be " + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + "!");
     }
 
     this.bsmRef = bootstrapMethodRef;
@@ -69,8 +68,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     }
   }
 
-  public JDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      SootMethodRef methodRef, List<? extends Value> methodArgs) {
+  public JDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs, SootMethodRef methodRef,
+      List<? extends Value> methodArgs) {
     /*
      * Here the static-handle is chosen as default value, because this works for Java.
      */
@@ -114,8 +113,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
         }
         i++;
       }
-      if (!(getMethod().equals(ie.getMethod()) && (argBoxes == null ? 0
-          : argBoxes.length) == (ie.argBoxes == null ? 0 : ie.argBoxes.length))) {
+      if (!(getMethod().equals(ie.getMethod())
+          && (argBoxes == null ? 0 : argBoxes.length) == (ie.argBoxes == null ? 0 : ie.argBoxes.length))) {
         return false;
       }
       if (argBoxes != null) {
@@ -159,8 +158,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     buffer.append(methodRef.name()); // quoted method name (can be any UTF8
     // string)
     buffer.append("\" <");
-    buffer.append(SootMethod.getSubSignature(""/* no method name here */,
-        methodRef.parameterTypes(), methodRef.returnType()));
+    buffer
+        .append(SootMethod.getSubSignature(""/* no method name here */, methodRef.parameterTypes(), methodRef.returnType()));
     buffer.append(">(");
 
     if (argBoxes != null) {
@@ -192,8 +191,9 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
-    up.literal(" \"" + methodRef.name() + "\" <" + SootMethod.getSubSignature(
-        ""/* no method name here */, methodRef.parameterTypes(), methodRef.returnType()) + ">(");
+    up.literal(" \"" + methodRef.name() + "\" <"
+        + SootMethod.getSubSignature(""/* no method name here */, methodRef.parameterTypes(), methodRef.returnType())
+        + ">(");
 
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {

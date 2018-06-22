@@ -23,15 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.stmt;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
@@ -41,82 +33,77 @@ import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JInvokeStmt extends AbstractStmt
-{
-    final ValueBox invokeExprBox;
+import java.util.ArrayList;
+import java.util.List;
 
-    public JInvokeStmt(Value c)
-    {
-        this(Jimple.v().newInvokeExprBox(c));
-    }
+public class JInvokeStmt extends AbstractStmt {
+  final ValueBox invokeExprBox;
 
-    protected JInvokeStmt(ValueBox invokeExprBox)
-    {
-        this.invokeExprBox = invokeExprBox;
-    }
+  public JInvokeStmt(Value c) {
+    this(Jimple.v().newInvokeExprBox(c));
+  }
 
- 
-    @Override
-    public Object clone() 
-    {
-        return new JInvokeStmt(Jimple.cloneIfNecessary(getInvokeExpr()));
-    }
+  protected JInvokeStmt(ValueBox invokeExprBox) {
+    this.invokeExprBox = invokeExprBox;
+  }
 
-    @Override
-    public boolean containsInvokeExpr()
-    {
-        return true;
-    }
+  @Override
+  public Object clone() {
+    return new JInvokeStmt(Jimple.cloneIfNecessary(getInvokeExpr()));
+  }
 
-    @Override
-    public String toString()
-    {
-        return invokeExprBox.getValue().toString();
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        invokeExprBox.toString(up);
-    }
-    
-    public void setInvokeExpr(Value invokeExpr)
-    {
-        invokeExprBox.setValue(invokeExpr);
-    }
+  @Override
+  public boolean containsInvokeExpr() {
+    return true;
+  }
 
-    @Override
-  public AbstractInvokeExpr getInvokeExpr()
-    {
+  @Override
+  public String toString() {
+    return invokeExprBox.getValue().toString();
+  }
+
+  @Override
+  public void toString(StmtPrinter up) {
+    invokeExprBox.toString(up);
+  }
+
+  public void setInvokeExpr(Value invokeExpr) {
+    invokeExprBox.setValue(invokeExpr);
+  }
+
+  @Override
+  public AbstractInvokeExpr getInvokeExpr() {
     return (AbstractInvokeExpr) invokeExprBox.getValue();
-    }
+  }
 
-    @Override
-    public ValueBox getInvokeExprBox()
-    {
-        return invokeExprBox;
-    }
+  @Override
+  public ValueBox getInvokeExprBox() {
+    return invokeExprBox;
+  }
 
-    @Override
-    public List<ValueBox> getUseBoxes()
-    {
-        List<ValueBox> list = new ArrayList<ValueBox>();
+  @Override
+  public List<ValueBox> getUseBoxes() {
+    List<ValueBox> list = new ArrayList<ValueBox>();
 
-        list.addAll(invokeExprBox.getValue().getUseBoxes());
-        list.add(invokeExprBox);
+    list.addAll(invokeExprBox.getValue().getUseBoxes());
+    list.add(invokeExprBox);
 
-        return list;
-    }
+    return list;
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IStmtVisitor) sw).caseInvokeStmt(this);
-    }
-   
+  @Override
+  public void accept(IVisitor sw) {
+    ((IStmtVisitor) sw).caseInvokeStmt(this);
+  }
 
-    @Override
-    public boolean fallsThrough() {return true;}
-    @Override
-    public boolean branches() {return false;}
+  @Override
+  public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
+  public boolean branches() {
+    return false;
+  }
 
 }

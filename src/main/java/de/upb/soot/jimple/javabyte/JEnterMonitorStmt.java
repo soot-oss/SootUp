@@ -23,11 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.javabyte;
 
 import de.upb.soot.StmtPrinter;
@@ -38,47 +33,46 @@ import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JEnterMonitorStmt extends AbstractOpStmt 
-{
-    public JEnterMonitorStmt(Value op)
-    {
-        this(Jimple.v().newImmediateBox(op));
-    }
+public class JEnterMonitorStmt extends AbstractOpStmt {
+  public JEnterMonitorStmt(Value op) {
+    this(Jimple.v().newImmediateBox(op));
+  }
 
-    protected JEnterMonitorStmt(ValueBox opBox)
-    {
-        super(opBox);
-    }
-
-    @Override
-    public Object clone() 
-    {
-        return new JEnterMonitorStmt(Jimple.cloneIfNecessary(getOp()));
-    }
-
-    @Override
-    public String toString()
-    {
-        return Jimple.ENTERMONITOR + " "  + opBox.getValue().toString();
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal(Jimple.ENTERMONITOR);
-        up.literal(" ");
-        opBox.toString(up);
-    }
-    
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IStmtVisitor) sw).caseEnterMonitorStmt(this);
-
-    }
+  protected JEnterMonitorStmt(ValueBox opBox) {
+    super(opBox);
+  }
 
   @Override
-  public boolean fallsThrough(){return true;}
+  public Object clone() {
+    return new JEnterMonitorStmt(Jimple.cloneIfNecessary(getOp()));
+  }
+
   @Override
-  public boolean branches() { return false;}
-  
+  public String toString() {
+    return Jimple.ENTERMONITOR + " " + opBox.getValue().toString();
+  }
+
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.ENTERMONITOR);
+    up.literal(" ");
+    opBox.toString(up);
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IStmtVisitor) sw).caseEnterMonitorStmt(this);
+
+  }
+
+  @Override
+  public boolean fallsThrough() {
+    return true;
+  }
+
+  @Override
+  public boolean branches() {
+    return false;
+  }
+
 }

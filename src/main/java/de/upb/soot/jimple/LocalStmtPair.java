@@ -23,42 +23,32 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
 package de.upb.soot.jimple;
 
 import de.upb.soot.jimple.common.stmt.Stmt;
 
-public class LocalStmtPair
-{
-    Local local;
-    Stmt stmt;
+public class LocalStmtPair {
+  Local local;
+  Stmt stmt;
 
-    public LocalStmtPair(Local local, Stmt stmt)
-    {
-        this.local = local;
-        this.stmt = stmt;
-    }
+  public LocalStmtPair(Local local, Stmt stmt) {
+    this.local = local;
+    this.stmt = stmt;
+  }
 
-    @Override
-    public boolean equals(Object other)
-    {
-        if(other instanceof LocalStmtPair &&
-            ((LocalStmtPair) other).local == this.local &&
-            ((LocalStmtPair) other).stmt == this.stmt)
-        {
-            return true;
-        } else {
-          return false;
-        }
+  @Override
+  public boolean equals(Object other) {
+    if (other instanceof LocalStmtPair && ((LocalStmtPair) other).local == this.local
+        && ((LocalStmtPair) other).stmt == this.stmt) {
+      return true;
+    } else {
+      return false;
     }
+  }
 
-    @Override
-    public int hashCode()
-    {
-        return local.hashCode() * 101 + stmt.hashCode() + 17;
-    }
+  @Override
+  public int hashCode() {
+    return local.hashCode() * 101 + stmt.hashCode() + 17;
+  }
 
 }

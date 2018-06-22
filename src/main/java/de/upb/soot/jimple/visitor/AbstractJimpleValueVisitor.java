@@ -40,240 +40,200 @@ import de.upb.soot.jimple.common.ref.ParameterRef;
 import de.upb.soot.jimple.common.ref.StaticFieldRef;
 import de.upb.soot.jimple.common.ref.ThisRef;
 
-public abstract class AbstractJimpleValueVisitor extends AbstractConstantVisitor implements IJimpleValueVisitor
-{
-    @Override
-    public void caseArrayRef(ArrayRef v)
-    {
-        defaultCase(v);
-    }
+public abstract class AbstractJimpleValueVisitor extends AbstractConstantVisitor implements IJimpleValueVisitor {
+  @Override
+  public void caseArrayRef(ArrayRef v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseAddExpr(JAddExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseAddExpr(JAddExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseAndExpr(JAndExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseAndExpr(JAndExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseCmpExpr(JCmpExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseCmpExpr(JCmpExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseCmpgExpr(JCmpgExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseCmpgExpr(JCmpgExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseCmplExpr(JCmplExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseCmplExpr(JCmplExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseDivExpr(JDivExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseDivExpr(JDivExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseEqExpr(JEqExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseEqExpr(JEqExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseGeExpr(JGeExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseGeExpr(JGeExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseGtExpr(JGtExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseGtExpr(JGtExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseLeExpr(JLeExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseLeExpr(JLeExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseLtExpr(JLtExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseLtExpr(JLtExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseMulExpr(JMulExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseMulExpr(JMulExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseNeExpr(JNeExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseNeExpr(JNeExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseOrExpr(JOrExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseOrExpr(JOrExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseRemExpr(JRemExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseRemExpr(JRemExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseShlExpr(JShlExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseShlExpr(JShlExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseShrExpr(JShrExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseShrExpr(JShrExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseSubExpr(JSubExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseSubExpr(JSubExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseUshrExpr(JUshrExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseUshrExpr(JUshrExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseXorExpr(JXorExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseXorExpr(JXorExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseInterfaceInvokeExpr(AbstractInterfaceInvokeExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseInterfaceInvokeExpr(AbstractInterfaceInvokeExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseSpecialInvokeExpr(AbstractSpecialInvokeExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseSpecialInvokeExpr(AbstractSpecialInvokeExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseStaticInvokeExpr(AbstractStaticInvokeExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseStaticInvokeExpr(AbstractStaticInvokeExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseVirtualInvokeExpr(AbstractVirtualInvokeExpr v)
-    {
-        defaultCase(v);
-    }
-    
-    @Override
+  @Override
+  public void caseVirtualInvokeExpr(AbstractVirtualInvokeExpr v) {
+    defaultCase(v);
+  }
+
+  @Override
   public void caseDynamicInvokeExpr(JDynamicInvokeExpr v) {
-    	defaultCase(v);
-    }
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseCastExpr(AbstractCastExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseCastExpr(AbstractCastExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseInstanceOfExpr(AbstractInstanceOfExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseInstanceOfExpr(AbstractInstanceOfExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseNewArrayExpr(AbstractNewArrayExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseNewArrayExpr(AbstractNewArrayExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseNewMultiArrayExpr(AbstractNewMultiArrayExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseNewMultiArrayExpr(AbstractNewMultiArrayExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseNewExpr(AbstractNewExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseNewExpr(AbstractNewExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseLengthExpr(AbstractLengthExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseLengthExpr(AbstractLengthExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseNegExpr(AbstractNegExpr v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseNegExpr(AbstractNegExpr v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseInstanceFieldRef(AbstractInstanceFieldRef v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseInstanceFieldRef(AbstractInstanceFieldRef v) {
+    defaultCase(v);
+  }
 
-    @Override
-  public void caseLocal(Local v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseLocal(Local v) {
+    defaultCase(v);
+  }
 
-    @Override
-    public void caseParameterRef(ParameterRef v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseParameterRef(ParameterRef v) {
+    defaultCase(v);
+  }
 
-    @Override
-    public void caseCaughtExceptionRef(CaughtExceptionRef v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseCaughtExceptionRef(CaughtExceptionRef v) {
+    defaultCase(v);
+  }
 
-    @Override
-    public void caseThisRef(ThisRef v)
-    {
-        defaultCase(v);
-    }
+  @Override
+  public void caseThisRef(ThisRef v) {
+    defaultCase(v);
+  }
 
-    @Override
-    public void caseStaticFieldRef(StaticFieldRef v)
-    {
-        defaultCase(v);
-    }
-  
+  @Override
+  public void caseStaticFieldRef(StaticFieldRef v) {
+    defaultCase(v);
+  }
+
 }
-

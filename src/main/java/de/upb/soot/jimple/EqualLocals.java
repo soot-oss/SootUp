@@ -23,20 +23,15 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
 package de.upb.soot.jimple;
-
-import java.util.List;
 
 import de.upb.soot.jimple.common.stmt.Stmt;
 
-public interface EqualLocals
-{
-    public boolean isLocalEqualToAt(Local l1, Local l2, Stmt s);
-    public List getCopiesAt(Stmt s);
-    
-} 
+import java.util.List;
 
+public interface EqualLocals {
+  public boolean isLocalEqualToAt(Local l1, Local l2, Stmt s);
+
+  public List getCopiesAt(Stmt s);
+
+}

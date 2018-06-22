@@ -23,27 +23,19 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 
-public class JNegExpr extends AbstractNegExpr
-{
-    public JNegExpr(Value op)
-    {
-        super(Jimple.v().newImmediateBox(op));
-    }
-    
-    @Override
-    public Object clone()  
-    {
-        return new JNegExpr(Jimple.cloneIfNecessary(getOp()));
-    }
+public class JNegExpr extends AbstractNegExpr {
+  public JNegExpr(Value op) {
+    super(Jimple.v().newImmediateBox(op));
+  }
+
+  @Override
+  public Object clone() {
+    return new JNegExpr(Jimple.cloneIfNecessary(getOp()));
+  }
 
 }

@@ -1,8 +1,5 @@
 package de.upb.soot.jimple.common.stmt;
 
-import java.io.Serializable;
-import java.util.List;
-
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.StmtBox;
 import de.upb.soot.jimple.ValueBox;
@@ -10,6 +7,9 @@ import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.visitor.IAcceptor;
+
+import java.io.Serializable;
+import java.util.List;
 
 public interface Stmt extends IAcceptor, Serializable {
 
@@ -44,20 +44,19 @@ public interface Stmt extends IAcceptor, Serializable {
   public Object clone();
 
   /**
-   * Returns true if execution after this statement may continue at the following statement.
-   * GotoStmt will return false but IfStmt will return true.
+   * Returns true if execution after this statement may continue at the following statement. GotoStmt will return false but
+   * IfStmt will return true.
    */
   public boolean fallsThrough();
 
   /**
-   * Returns true if execution after this statement does not necessarily continue at the following
-   * statement. GotoStmt and IfStmt will both return true.
+   * Returns true if execution after this statement does not necessarily continue at the following statement. GotoStmt and
+   * IfStmt will both return true.
    */
   public boolean branches();
 
   /**
-   * Redirects jumps to this Unit to newLocation. In general, you shouldn't have to use this
-   * directly.
+   * Redirects jumps to this Unit to newLocation. In general, you shouldn't have to use this directly.
    * 
    * @see PatchingChain#getNonPatchingChain()
    * @see soot.shimple.Shimple#redirectToPreds(Chain, Unit)

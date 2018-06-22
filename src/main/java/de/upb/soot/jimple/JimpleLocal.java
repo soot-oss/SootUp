@@ -25,109 +25,109 @@
 
 package de.upb.soot.jimple;
 
-import java.util.Collections;
-import java.util.List;
-
 import de.upb.soot.Scene;
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IJimpleValueVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JimpleLocal implements Local {
-	protected String name;
-	Type type;
+import java.util.Collections;
+import java.util.List;
 
-	/** Constructs a JimpleLocal of the given name and type. */
-	public JimpleLocal(String name, Type type) {
-		setName(name);
-		setType(type);
+public class JimpleLocal implements Local {
+  protected String name;
+  Type type;
+
+  /** Constructs a JimpleLocal of the given name and type. */
+  public JimpleLocal(String name, Type type) {
+    setName(name);
+    setType(type);
     List<Local> numberer = Scene.v().getLocalNumberer();
-		if (numberer != null) {
+    if (numberer != null) {
       numberer.add(this);
     }
-	}
+  }
 
-	/** Returns true if the given object is structurally equal to this one. */
-	@Override
-	public boolean equivTo(Object o) {
-		return this.equals(o);
-	}
+  /** Returns true if the given object is structurally equal to this one. */
+  @Override
+  public boolean equivTo(Object o) {
+    return this.equals(o);
+  }
 
-	/**
-	 * Returns a hash code for this object, consistent with structural equality.
-	 */
-	@Override
-	public int equivHashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
+  /**
+   * Returns a hash code for this object, consistent with structural equality.
+   */
+  @Override
+  public int equivHashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + ((type == null) ? 0 : type.hashCode());
+    return result;
+  }
 
-	/** Returns a clone of the current JimpleLocal. */
-	@Override
-	public Object clone() {
-		// do not intern the name again
-		JimpleLocal local = new JimpleLocal(null, type);
-		local.name = name;
-		return local;
-	}
+  /** Returns a clone of the current JimpleLocal. */
+  @Override
+  public Object clone() {
+    // do not intern the name again
+    JimpleLocal local = new JimpleLocal(null, type);
+    local.name = name;
+    return local;
+  }
 
-	/** Returns the name of this object. */
-	@Override
-	public String getName() {
-		return name;
-	}
+  /** Returns the name of this object. */
+  @Override
+  public String getName() {
+    return name;
+  }
 
-	/** Sets the name of this object as given. */
-	@Override
-	public void setName(String name) {
-		this.name = (name == null) ? null : name.intern();
-	}
+  /** Sets the name of this object as given. */
+  @Override
+  public void setName(String name) {
+    this.name = (name == null) ? null : name.intern();
+  }
 
-	/** Returns the type of this local. */
-	@Override
-	public Type getType() {
-		return type;
-	}
+  /** Returns the type of this local. */
+  @Override
+  public Type getType() {
+    return type;
+  }
 
-	/** Sets the type of this local. */
-	@Override
-	public void setType(Type t) {
-		this.type = t;
-	}
+  /** Sets the type of this local. */
+  @Override
+  public void setType(Type t) {
+    this.type = t;
+  }
 
-	@Override
-	public String toString() {
-		return getName();
-	}
+  @Override
+  public String toString() {
+    return getName();
+  }
 
-	@Override
-	public void toString(StmtPrinter up) {
-		up.local(this);
-	}
+  @Override
+  public void toString(StmtPrinter up) {
+    up.local(this);
+  }
 
-	@Override
-	public final List<ValueBox> getUseBoxes() {
-		return Collections.emptyList();
-	}
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+    return Collections.emptyList();
+  }
 
-	@Override
-	public void accept(IVisitor sw) {
-		((IJimpleValueVisitor) sw).caseLocal(this);
-	}
+  @Override
+  public void accept(IVisitor sw) {
+    ((IJimpleValueVisitor) sw).caseLocal(this);
+  }
 
-	@Override
-	public final int getNumber() {
-		return number;
-	}
+  @Override
+  public final int getNumber() {
+    return number;
+  }
 
-	@Override
-	public final void setNumber(int number) {
-		this.number = number;
-	}
+  @Override
+  public final void setNumber(int number) {
+    this.number = number;
+  }
 
-	private int number = 0;
+  private int number = 0;
 }

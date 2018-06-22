@@ -23,13 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
-
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
@@ -49,67 +43,61 @@ import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
-public abstract class AbstractNegExpr extends AbstractUnopExpr
-{
-    protected AbstractNegExpr(ValueBox opBox) { super(opBox); }
+public abstract class AbstractNegExpr extends AbstractUnopExpr {
+  protected AbstractNegExpr(ValueBox opBox) {
+    super(opBox);
+  }
 
-    /** Compares the specified object with this one for structural equality. */
+  /** Compares the specified object with this one for structural equality. */
   @Override
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof AbstractNegExpr)
-        {
-            return opBox.getValue().equivTo(((AbstractNegExpr)o).opBox.getValue());
-        }
-        return false;
+  public boolean equivTo(Object o) {
+    if (o instanceof AbstractNegExpr) {
+      return opBox.getValue().equivTo(((AbstractNegExpr) o).opBox.getValue());
     }
+    return false;
+  }
 
-    /** Returns a hash code for this object, consistent with structural equality. */
-    @Override
-    public int equivHashCode() 
-    {
-        return opBox.getValue().equivHashCode();
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return opBox.getValue().equivHashCode();
+  }
+
+  @Override
+  public abstract Object clone();
+
+  @Override
+  public String toString() {
+    return Jimple.NEG + " " + opBox.getValue().toString();
+  }
+
+  @Override
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.NEG);
+    up.literal(" ");
+    opBox.toString(up);
+  }
+
+  @Override
+  public Type getType() {
+    Value op = opBox.getValue();
+
+    if (op.getType().equals(IntType.v()) || op.getType().equals(ByteType.v()) || op.getType().equals(ShortType.v())
+        || op.getType().equals(BooleanType.v()) || op.getType().equals(CharType.v())) {
+      return IntType.v();
+    } else if (op.getType().equals(LongType.v())) {
+      return LongType.v();
+    } else if (op.getType().equals(DoubleType.v())) {
+      return DoubleType.v();
+    } else if (op.getType().equals(FloatType.v())) {
+      return FloatType.v();
+    } else {
+      return UnknownType.v();
     }
+  }
 
-    @Override
-    public abstract Object clone();
-
-    @Override
-    public String toString()
-    {
-        return Jimple.NEG + " " + opBox.getValue().toString();
-    }
-    
-    @Override
-    public void toString(StmtPrinter up) {
-        up.literal(Jimple.NEG);
-        up.literal(" ");
-        opBox.toString(up);
-    }
-
-    @Override
-    public Type getType()
-    {
-        Value op = opBox.getValue();
-
-        if(op.getType().equals(IntType.v()) || op.getType().equals(ByteType.v()) ||
-            op.getType().equals(ShortType.v()) || op.getType().equals(BooleanType.v()) || 
-            op.getType().equals(CharType.v())) {
-          return IntType.v();
-        } else if(op.getType().equals(LongType.v())) {
-          return LongType.v();
-        } else if(op.getType().equals(DoubleType.v())) {
-          return DoubleType.v();
-        } else if(op.getType().equals(FloatType.v())) {
-          return FloatType.v();
-        } else {
-          return UnknownType.v();
-        }
-    }
-
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IExprVisitor) sw).caseNegExpr(this);
-    }
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseNegExpr(this);
+  }
 }

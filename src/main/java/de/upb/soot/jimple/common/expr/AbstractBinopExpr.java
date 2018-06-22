@@ -25,11 +25,11 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public abstract class AbstractBinopExpr implements Expr {
@@ -76,8 +76,7 @@ public abstract class AbstractBinopExpr implements Expr {
   public boolean equivTo(Object o) {
     if (o instanceof AbstractBinopExpr) {
       AbstractBinopExpr abe = (AbstractBinopExpr) o;
-      return op1Box.getValue().equivTo(abe.op1Box.getValue())
-          && op2Box.getValue().equivTo(abe.op2Box.getValue())
+      return op1Box.getValue().equivTo(abe.op1Box.getValue()) && op2Box.getValue().equivTo(abe.op2Box.getValue())
           && getSymbol().equals(abe.getSymbol());
     }
     return false;
@@ -86,8 +85,7 @@ public abstract class AbstractBinopExpr implements Expr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return op1Box.getValue().equivHashCode() * 101 + op2Box.getValue().equivHashCode() + 17
-        ^ getSymbol().hashCode();
+    return op1Box.getValue().equivHashCode() * 101 + op2Box.getValue().equivHashCode() + 17 ^ getSymbol().hashCode();
   }
 
   /** Returns the unique symbol for an operator. */

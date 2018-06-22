@@ -25,10 +25,6 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import de.upb.soot.jimple.StmtBox;
 import de.upb.soot.jimple.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
@@ -36,15 +32,18 @@ import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public abstract class AbstractStmt implements Stmt {
   /** Returns a deep clone of this object. */
   @Override
   public abstract Object clone();
 
   /**
-   * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically
-   * updated as the structure changes. Note that they are returned in usual evaluation order. (this
-   * is important for aggregation)
+   * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically updated as the structure
+   * changes. Note that they are returned in usual evaluation order. (this is important for aggregation)
    */
   @Override
   public List<ValueBox> getUseBoxes() {
@@ -52,8 +51,8 @@ public abstract class AbstractStmt implements Stmt {
   }
 
   /**
-   * Returns a list of Boxes containing Values defined in this Unit. The list of boxes is
-   * dynamically updated as the structure changes.
+   * Returns a list of Boxes containing Values defined in this Unit. The list of boxes is dynamically updated as the
+   * structure changes.
    */
   @Override
   public List<ValueBox> getDefBoxes() {
@@ -61,8 +60,8 @@ public abstract class AbstractStmt implements Stmt {
   }
 
   /**
-   * Returns a list of Boxes containing Units defined in this Unit; typically branch targets. The
-   * list of boxes is dynamically updated as the structure changes.
+   * Returns a list of Boxes containing Units defined in this Unit; typically branch targets. The list of boxes is
+   * dynamically updated as the structure changes.
    */
   @Override
   public List<StmtBox> getUnitBoxes() {

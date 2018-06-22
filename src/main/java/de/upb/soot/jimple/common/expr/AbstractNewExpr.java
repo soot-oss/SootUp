@@ -25,9 +25,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import java.util.Collections;
-import java.util.List;
-
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.ValueBox;
@@ -35,6 +32,9 @@ import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+
+import java.util.Collections;
+import java.util.List;
 
 @SuppressWarnings("serial")
 public abstract class AbstractNewExpr implements Expr {

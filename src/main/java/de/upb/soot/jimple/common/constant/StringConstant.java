@@ -23,10 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
 package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.jimple.common.type.RefType;
@@ -34,42 +30,34 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class StringConstant extends Constant
-{
-    public final String value;
+public class StringConstant extends Constant {
+  public final String value;
 
-    private StringConstant(String s)
-    {
-        this.value = s;
-    }
+  private StringConstant(String s) {
+    this.value = s;
+  }
 
-    public static StringConstant v(String value)
-    {
-        return new StringConstant(value);
-    }
+  public static StringConstant v(String value) {
+    return new StringConstant(value);
+  }
 
-    // In this case, equals should be structural equality.
-    @Override
-    public boolean equals(Object c)
-    {
-        return (c instanceof StringConstant && ((StringConstant) c).value.equals(this.value));
-    }
+  // In this case, equals should be structural equality.
+  @Override
+  public boolean equals(Object c) {
+    return (c instanceof StringConstant && ((StringConstant) c).value.equals(this.value));
+  }
 
-    /** Returns a hash code for this StringConstant object. */
-    @Override
-    public int hashCode()
-    {
-        return value.hashCode();
-    }
+  /** Returns a hash code for this StringConstant object. */
+  @Override
+  public int hashCode() {
+    return value.hashCode();
+  }
 
+  public Type getType() {
+    return RefType.v("java.lang.String");
+  }
 
-    public Type getType()
-    {
-        return RefType.v("java.lang.String");
-    }
-
-    public void accept(IVisitor sw)
-    {
-        ((IConstantVisitor) sw).caseStringConstant(this);
-    }
+  public void accept(IVisitor sw) {
+    ((IConstantVisitor) sw).caseStringConstant(this);
+  }
 }

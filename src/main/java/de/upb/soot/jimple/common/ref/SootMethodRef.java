@@ -1,10 +1,10 @@
 package de.upb.soot.jimple.common.ref;
 
-import java.util.List;
-
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.common.type.Type;
+
+import java.util.List;
 
 public class SootMethodRef {
 

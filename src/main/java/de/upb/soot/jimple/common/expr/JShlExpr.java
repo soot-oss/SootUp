@@ -23,11 +23,6 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.StmtPrinter;
@@ -40,39 +35,44 @@ import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JShlExpr extends AbstractJimpleIntLongBinopExpr
-{
-    public JShlExpr(Value op1, Value op2) { super(op1, op2); }
-    @Override
-    public String getSymbol() { return " << "; }
-    @Override
-    public void accept(IVisitor sw) { ((IExprVisitor) sw).caseShlExpr(this); }
+public class JShlExpr extends AbstractJimpleIntLongBinopExpr {
+  public JShlExpr(Value op1, Value op2) {
+    super(op1, op2);
+  }
 
-    @Override
-    public Type getType()
-    {
-        Value op1 = op1Box.getValue();
-        Value op2 = op2Box.getValue();
-        
-        if (!isIntLikeType(op2.getType())) {
-          return UnknownType.v();
-        }
-        
-        if (isIntLikeType(op1.getType())) {
-          return IntType.v();
-        }
-        if (op1.getType().equals(LongType.v())) {
-          return LongType.v();
-        }
-        
-    	return UnknownType.v();
+  @Override
+  public String getSymbol() {
+    return " << ";
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseShlExpr(this);
+  }
+
+  @Override
+  public Type getType() {
+    Value op1 = op1Box.getValue();
+    Value op2 = op2Box.getValue();
+
+    if (!isIntLikeType(op2.getType())) {
+      return UnknownType.v();
     }
 
-    @Override
-    public Object clone() 
-    {
-        return new JShlExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
+    if (isIntLikeType(op1.getType())) {
+      return IntType.v();
     }
+    if (op1.getType().equals(LongType.v())) {
+      return LongType.v();
+    }
+
+    return UnknownType.v();
+  }
+
+  @Override
+  public Object clone() {
+    return new JShlExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
+  }
 
   @Override
   public void toString(StmtPrinter up) {

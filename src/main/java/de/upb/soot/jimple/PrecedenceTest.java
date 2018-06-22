@@ -21,4 +21,3 @@ public class PrecedenceTest {
     return subP.getPrecedence() <= exprP.getPrecedence();
   }
 }
-

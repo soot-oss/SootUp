@@ -23,23 +23,18 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 
-public class JLengthExpr extends AbstractLengthExpr
-{
-    public JLengthExpr(Value op) { super(Jimple.v().newImmediateBox(op)); }
+public class JLengthExpr extends AbstractLengthExpr {
+  public JLengthExpr(Value op) {
+    super(Jimple.v().newImmediateBox(op));
+  }
 
   @Override
-  public Object clone() 
-  {
+  public Object clone() {
     return new JLengthExpr(Jimple.cloneIfNecessary(getOp()));
   }
 

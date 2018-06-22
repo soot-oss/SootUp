@@ -23,23 +23,18 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.common.type.RefType;
 
-public class JNewExpr extends AbstractNewExpr
-{
-    public JNewExpr(RefType type) { this.type = type; }
+public class JNewExpr extends AbstractNewExpr {
+  public JNewExpr(RefType type) {
+    this.type = type;
+  }
 
-    @Override
-    public Object clone() 
-    {
-        return new JNewExpr(type);
-    }
+  @Override
+  public Object clone() {
+    return new JNewExpr(type);
+  }
 
 }

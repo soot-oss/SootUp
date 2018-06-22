@@ -26,8 +26,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import java.util.List;
-
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
@@ -36,96 +34,98 @@ import de.upb.soot.jimple.common.ref.SootMethodRef;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.List;
+
 @SuppressWarnings("serial")
 public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
-	AbstractStaticInvokeExpr(SootMethodRef methodRef, List<Value> args) {
-		this(methodRef, new ValueBox[args.size()]);
+  AbstractStaticInvokeExpr(SootMethodRef methodRef, List<Value> args) {
+    this(methodRef, new ValueBox[args.size()]);
 
-		for (int i = 0; i < args.size(); i++) {
+    for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.v().newImmediateBox(args.get(i));
     }
-	}
+  }
 
-	public boolean equivTo(Object o) {
-		if (o instanceof AbstractStaticInvokeExpr) {
-			AbstractStaticInvokeExpr ie = (AbstractStaticInvokeExpr) o;
-			if (!(getMethod().equals(ie.getMethod())
-					&& (argBoxes == null ? 0 : argBoxes.length) == (ie.argBoxes == null ? 0 : ie.argBoxes.length))) {
+  public boolean equivTo(Object o) {
+    if (o instanceof AbstractStaticInvokeExpr) {
+      AbstractStaticInvokeExpr ie = (AbstractStaticInvokeExpr) o;
+      if (!(getMethod().equals(ie.getMethod())
+          && (argBoxes == null ? 0 : argBoxes.length) == (ie.argBoxes == null ? 0 : ie.argBoxes.length))) {
         return false;
       }
-			if (argBoxes != null) {
-				for (int i = 0; i < argBoxes.length; i++) {
-					if (!(argBoxes[i]).getValue().equivTo(ie.argBoxes[i].getValue())) {
+      if (argBoxes != null) {
+        for (int i = 0; i < argBoxes.length; i++) {
+          if (!(argBoxes[i]).getValue().equivTo(ie.argBoxes[i].getValue())) {
             return false;
           }
-				}
-			}
-			return true;
-		}
-		return false;
-	}
+        }
+      }
+      return true;
+    }
+    return false;
+  }
 
-	/**
-	 * Returns a hash code for this object, consistent with structural equality.
-	 */
-	public int equivHashCode() {
-		return getMethod().equivHashCode();
-	}
+  /**
+   * Returns a hash code for this object, consistent with structural equality.
+   */
+  public int equivHashCode() {
+    return getMethod().equivHashCode();
+  }
 
-	@Override
+  @Override
   public abstract Object clone();
 
-	protected AbstractStaticInvokeExpr(SootMethodRef methodRef, ValueBox[] argBoxes) {
-		super(methodRef, argBoxes);
-		if (!methodRef.isStatic()) {
+  protected AbstractStaticInvokeExpr(SootMethodRef methodRef, ValueBox[] argBoxes) {
+    super(methodRef, argBoxes);
+    if (!methodRef.isStatic()) {
       throw new RuntimeException("wrong static-ness");
     }
-		this.methodRef = methodRef;
-	}
+    this.methodRef = methodRef;
+  }
 
-	@Override
+  @Override
   public String toString() {
-		StringBuffer buffer = new StringBuffer();
+    StringBuffer buffer = new StringBuffer();
 
-		buffer.append(Jimple.STATICINVOKE + " " + methodRef.getSignature() + "(");
+    buffer.append(Jimple.STATICINVOKE + " " + methodRef.getSignature() + "(");
 
-		if (argBoxes != null) {
-			for (int i = 0; i < argBoxes.length; i++) {
-				if (i != 0) {
+    if (argBoxes != null) {
+      for (int i = 0; i < argBoxes.length; i++) {
+        if (i != 0) {
           buffer.append(", ");
         }
-	
-				buffer.append(argBoxes[i].getValue().toString());
-			}
-		}
 
-		buffer.append(")");
+        buffer.append(argBoxes[i].getValue().toString());
+      }
+    }
 
-		return buffer.toString();
-	}
+    buffer.append(")");
 
-	public void toString(StmtPrinter up) {
-		up.literal(Jimple.STATICINVOKE);
-		up.literal(" ");
-		up.methodRef(methodRef);
-		up.literal("(");
+    return buffer.toString();
+  }
 
-		if (argBoxes != null) {
-			for (int i = 0; i < argBoxes.length; i++) {
-				if (i != 0) {
+  public void toString(StmtPrinter up) {
+    up.literal(Jimple.STATICINVOKE);
+    up.literal(" ");
+    up.methodRef(methodRef);
+    up.literal("(");
+
+    if (argBoxes != null) {
+      for (int i = 0; i < argBoxes.length; i++) {
+        if (i != 0) {
           up.literal(", ");
         }
-	
-				argBoxes[i].toString(up);
-			}
-		}
 
-		up.literal(")");
-	}
+        argBoxes[i].toString(up);
+      }
+    }
 
-	@Override
+    up.literal(")");
+  }
+
+  @Override
   public void accept(IVisitor sw) {
-		((IExprVisitor) sw).caseStaticInvokeExpr(this);
-	}
+    ((IExprVisitor) sw).caseStaticInvokeExpr(this);
+  }
 
 }

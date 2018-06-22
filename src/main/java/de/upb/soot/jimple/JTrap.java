@@ -23,41 +23,28 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.common.stmt.Stmt;
 
-public class JTrap extends AbstractTrap
-{
+public class JTrap extends AbstractTrap {
 
-  public JTrap(SootClass exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt)
-    {
-        super(exception, Jimple.v().newStmtBox(beginStmt),
-              Jimple.v().newStmtBox(endStmt),
-              Jimple.v().newStmtBox(handlerStmt));
-    }
+  public JTrap(SootClass exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
+    super(exception, Jimple.v().newStmtBox(beginStmt), Jimple.v().newStmtBox(endStmt), Jimple.v().newStmtBox(handlerStmt));
+  }
 
-    public JTrap(SootClass exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt)
-    {
-        super(exception, beginStmt,
-              endStmt,
-              handlerStmt);
-    }
-
-    @Override
-    public Object clone() 
-    {
-    return new JTrap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
-    }
+  public JTrap(SootClass exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
+    super(exception, beginStmt, endStmt, handlerStmt);
+  }
 
   @Override
-  public String toString(){
+  public Object clone() {
+    return new JTrap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
+  }
+
+  @Override
+  public String toString() {
     StringBuffer buf = new StringBuffer("Trap :");
     buf.append("\nbegin  : ");
     buf.append(getBeginStmt());

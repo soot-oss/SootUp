@@ -18,16 +18,6 @@ package de.upb.soot.jimple;
  * Boston, MA 02111-1307, USA.
  */
 
-/*
- * Modified by the Sable Research Group and others 1997-1999.  
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- */
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
 import de.upb.soot.jimple.common.expr.JAndExpr;
@@ -86,9 +76,19 @@ import de.upb.soot.jimple.javabyte.JExitMonitorStmt;
 import de.upb.soot.jimple.javabyte.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabyte.JRetStmt;
 import de.upb.soot.jimple.javabyte.JTableSwitchStmt;
+
+/*
+ * Modified by the Sable Research Group and others 1997-1999.  
+ * See the 'credits' file distributed with Soot for the complete list of
+ * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
+ */
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
- * The Jimple class contains all the constructors for the components of the Jimple grammar for the
- * Jimple body. <br>
+ * The Jimple class contains all the constructors for the components of the Jimple grammar for the Jimple body. <br>
  * <br>
  * 
  * Immediate -> Local | Constant <br>
@@ -172,13 +172,12 @@ public class Jimple {
 
   public static List<String> jimpleKeywordList() {
     List<String> l = new LinkedList<String>();
-    Collections.addAll(l, NEWARRAY, NEWMULTIARRAY, NOP, RET, SPECIALINVOKE, STATICINVOKE,
-        TABLESWITCH, VIRTUALINVOKE, NULL_TYPE, UNKNOWN, CMP, CMPG, CMPL, ENTERMONITOR, EXITMONITOR,
-        INTERFACEINVOKE, LENGTHOF, LOOKUPSWITCH, NEG, IF, ABSTRACT, BOOLEAN, BREAK, BYTE, CASE,
-        CATCH, CHAR, CLASS, FINAL, NATIVE, PUBLIC, PROTECTED, PRIVATE, STATIC, SYNCHRONIZED,
-        TRANSIENT, VOLATILE, STRICTFP, ENUM, ANNOTATION, INTERFACE, VOID, SHORT, INT, LONG, FLOAT,
-        DOUBLE, EXTENDS, IMPLEMENTS, BREAKPOINT, DEFAULT, GOTO, INSTANCEOF, NEW, RETURN, THROW,
-        THROWS, NULL, FROM, TO, WITH, CLS, TRUE, FALSE);
+    Collections.addAll(l, NEWARRAY, NEWMULTIARRAY, NOP, RET, SPECIALINVOKE, STATICINVOKE, TABLESWITCH, VIRTUALINVOKE,
+        NULL_TYPE, UNKNOWN, CMP, CMPG, CMPL, ENTERMONITOR, EXITMONITOR, INTERFACEINVOKE, LENGTHOF, LOOKUPSWITCH, NEG, IF,
+        ABSTRACT, BOOLEAN, BREAK, BYTE, CASE, CATCH, CHAR, CLASS, FINAL, NATIVE, PUBLIC, PROTECTED, PRIVATE, STATIC,
+        SYNCHRONIZED, TRANSIENT, VOLATILE, STRICTFP, ENUM, ANNOTATION, INTERFACE, VOID, SHORT, INT, LONG, FLOAT, DOUBLE,
+        EXTENDS, IMPLEMENTS, BREAKPOINT, DEFAULT, GOTO, INSTANCEOF, NEW, RETURN, THROW, THROWS, NULL, FROM, TO, WITH, CLS,
+        TRUE, FALSE);
     return l;
   }
 
@@ -392,17 +391,14 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewSpecialInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar
-   * chunk.
+   * Constructs a NewSpecialInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
    */
-  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethodRef method,
-      List<? extends Value> args) {
+  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethodRef method, List<? extends Value> args) {
     return new JSpecialInvokeExpr(base, method, args);
   }
 
   /**
-   * Constructs a NewSpecialInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar
-   * chunk.
+   * Constructs a NewSpecialInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
    */
   public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethodRef method, Value... args) {
     return newSpecialInvokeExpr(base, method, Arrays.asList(args));
@@ -417,36 +413,32 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List bootstrapArgs,
-   * SootMethodRef methodRef, List args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List bootstrapArgs, SootMethodRef methodRef, List
+   * args) grammar chunk.
    */
-  public JDynamicInvokeExpr newDynamicInvokeExpr(SootMethodRef bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs, SootMethodRef methodRef, List<? extends Value> args) {
+  public JDynamicInvokeExpr newDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs,
+      SootMethodRef methodRef, List<? extends Value> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List bootstrapArgs,
-   * SootMethodRef methodRef, List args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List bootstrapArgs, SootMethodRef methodRef, List
+   * args) grammar chunk.
    */
-  public JDynamicInvokeExpr newDynamicInvokeExpr(SootMethodRef bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs, SootMethodRef methodRef, int tag,
-      List<? extends Value> args) {
+  public JDynamicInvokeExpr newDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs,
+      SootMethodRef methodRef, int tag, List<? extends Value> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
 
   /**
-   * Constructs a NewVirtualInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar
-   * chunk.
+   * Constructs a NewVirtualInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
    */
-  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethodRef method,
-      List<? extends Value> args) {
+  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethodRef method, List<? extends Value> args) {
     return new JVirtualInvokeExpr(base, method, args);
   }
 
   /**
-   * Constructs a NewVirtualInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar
-   * chunk.
+   * Constructs a NewVirtualInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
    */
   public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethodRef method, Value... args) {
     return newVirtualInvokeExpr(base, method, Arrays.asList(args));
@@ -461,20 +453,16 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethodRef method, List of Immediate)
-   * grammar chunk.
+   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
    */
-  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethodRef method,
-      List<? extends Value> args) {
+  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethodRef method, List<? extends Value> args) {
     return new JInterfaceInvokeExpr(base, method, args);
   }
 
   /**
-   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethodRef method, List of Immediate)
-   * grammar chunk.
+   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
    */
-  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethodRef method,
-      Value... args) {
+  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethodRef method, Value... args) {
     return newInterfaceInvokeExpr(base, method, Arrays.asList(args));
   }
 
@@ -591,26 +579,26 @@ public class Jimple {
   /**
    * Constructs a TableSwitchStmt(Immediate, int, int, List of Unit, Stmt) grammar chunk.
    */
-  public JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex,
-      List<? extends Stmt> targets, Stmt defaultTarget) {
+  public JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends Stmt> targets,
+      Stmt defaultTarget) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget);
   }
 
-  public JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex,
-      List<? extends StmtBox> targets, StmtBox defaultTarget) {
+  public JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends StmtBox> targets,
+      StmtBox defaultTarget) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget);
   }
 
   /**
    * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
    */
-  public JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
-      List<? extends Stmt> targets, Stmt defaultTarget) {
+  public JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends Stmt> targets,
+      Stmt defaultTarget) {
     return null;
   }
 
-  public JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
-      List<? extends StmtBox> targets, StmtBox defaultTarget) {
+  public JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends StmtBox> targets,
+      StmtBox defaultTarget) {
     return null;
   }
 
@@ -620,6 +608,7 @@ public class Jimple {
   public Local newLocal(String name, Type t) {
     return new JimpleLocal(name, t);
   }
+
   /**
    * Constructs a StaticFieldRef(SootFieldRef) grammar chunk.
    */

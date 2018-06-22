@@ -24,15 +24,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.upb.soot.jimple.ImmediateBox;
 import de.upb.soot.jimple.Jimple;
@@ -40,27 +32,26 @@ import de.upb.soot.jimple.Local;
 import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.common.ref.SootMethodRef;
 
-public class JSpecialInvokeExpr extends AbstractSpecialInvokeExpr 
-{	
-    public JSpecialInvokeExpr(Local base, SootMethodRef methodRef, List<? extends Value> args)
-    {
-        super(Jimple.v().newLocalBox(base), methodRef,
-             new ImmediateBox[args.size()]);
+import java.util.ArrayList;
+import java.util.List;
+
+public class JSpecialInvokeExpr extends AbstractSpecialInvokeExpr {
+  public JSpecialInvokeExpr(Local base, SootMethodRef methodRef, List<? extends Value> args) {
+    super(Jimple.v().newLocalBox(base), methodRef, new ImmediateBox[args.size()]);
 
     for (int i = 0; i < args.size(); i++) {
-            this.argBoxes[i] = Jimple.v().newImmediateBox(args.get(i));
+      this.argBoxes[i] = Jimple.v().newImmediateBox(args.get(i));
     }
+  }
+
+  @Override
+  public Object clone() {
+    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+
+    for (int i = 0; i < getArgCount(); i++) {
+      clonedArgs.add(i, getArg(i));
     }
 
-    @Override
-    public Object clone() 
-    {
-        List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
- 
-        for(int i = 0; i < getArgCount(); i++) {
-            clonedArgs.add(i, getArg(i));
-        }
-        
-        return new  JSpecialInvokeExpr((Local) getBase(), methodRef, clonedArgs);
-    }
+    return new JSpecialInvokeExpr((Local) getBase(), methodRef, clonedArgs);
+  }
 }

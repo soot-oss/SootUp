@@ -7,5 +7,6 @@ package de.upb.soot.jimple;
  */
 public interface Numberable {
   public void setNumber(int number);
+
   public int getNumber();
 }

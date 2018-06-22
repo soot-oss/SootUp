@@ -23,11 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
 package de.upb.soot.jimple.common.ref;
-
-import java.util.Collections;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.ValueBox;
@@ -36,64 +32,57 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class ThisRef implements IdentityRef
-{
-    RefType thisType;
+import java.util.Collections;
+import java.util.List;
 
-    public ThisRef(RefType thisType)
-    {
-        this.thisType = thisType;
-    }
+public class ThisRef implements IdentityRef {
+  RefType thisType;
 
-    @Override
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof ThisRef)
-        {
-            return thisType.equals(((ThisRef)o).thisType);
-        }
-        return false;
-    }
-
-    @Override
-    public int equivHashCode()
-    {
-        return thisType.hashCode();
-    }
-    
-    @Override
-    public String toString()
-    {
-        return "@this: "+thisType;
-    }
-    
-    @Override
-    public void toString( StmtPrinter up ) {
-        up.identityRef(this);
-    }
-
-    @Override
-    public final List<ValueBox> getUseBoxes()
-    {
-        return Collections.emptyList();
-    }
+  public ThisRef(RefType thisType) {
+    this.thisType = thisType;
+  }
 
   @Override
-  public Type getType()
-    {
-        return thisType;
+  public boolean equivTo(Object o) {
+    if (o instanceof ThisRef) {
+      return thisType.equals(((ThisRef) o).thisType);
     }
+    return false;
+  }
 
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IRefVisitor) sw).caseThisRef(this);
-    }
-    
-    @Override
-    public Object clone()
-    {
-        return new ThisRef(thisType);
-    }
+  @Override
+  public int equivHashCode() {
+    return thisType.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return "@this: " + thisType;
+  }
+
+  @Override
+  public void toString(StmtPrinter up) {
+    up.identityRef(this);
+  }
+
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public Type getType() {
+    return thisType;
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IRefVisitor) sw).caseThisRef(this);
+  }
+
+  @Override
+  public Object clone() {
+    return new ThisRef(thisType);
+  }
 
 }

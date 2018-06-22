@@ -1,8 +1,8 @@
 package de.upb.soot.jimple;
 
-import java.io.Serializable;
-
 import de.upb.soot.StmtPrinter;
+
+import java.io.Serializable;
 
 /**
  * A box which can contain values.

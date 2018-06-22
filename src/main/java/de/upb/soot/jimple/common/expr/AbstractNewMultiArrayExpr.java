@@ -23,16 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-
-
-
-
-
 package de.upb.soot.jimple.common.expr;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
@@ -43,147 +34,133 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 @SuppressWarnings("serial")
-public abstract class AbstractNewMultiArrayExpr implements Expr
-{
-    ArrayType baseType;
-    final protected ValueBox[] sizeBoxes;
+public abstract class AbstractNewMultiArrayExpr implements Expr {
+  ArrayType baseType;
+  final protected ValueBox[] sizeBoxes;
 
-    @Override
-    public abstract Object clone();
-    
-    protected AbstractNewMultiArrayExpr(ArrayType type, ValueBox[] sizeBoxes)
-    {
-        this.baseType = type; this.sizeBoxes = sizeBoxes;
-    }
+  @Override
+  public abstract Object clone();
 
-    @Override
-    public boolean equivTo(Object o)
-    {
-        if (o instanceof AbstractNewMultiArrayExpr)
-        {
-            AbstractNewMultiArrayExpr ae = (AbstractNewMultiArrayExpr)o;
-            if (!baseType.equals(ae.baseType) || 
-                    sizeBoxes.length != ae.sizeBoxes.length) {
-              return false;
-            }
-            return true;
-        }
+  protected AbstractNewMultiArrayExpr(ArrayType type, ValueBox[] sizeBoxes) {
+    this.baseType = type;
+    this.sizeBoxes = sizeBoxes;
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof AbstractNewMultiArrayExpr) {
+      AbstractNewMultiArrayExpr ae = (AbstractNewMultiArrayExpr) o;
+      if (!baseType.equals(ae.baseType) || sizeBoxes.length != ae.sizeBoxes.length) {
         return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return baseType.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    StringBuffer buffer = new StringBuffer();
+
+    Type t = baseType.baseType;
+    buffer.append(Jimple.NEWMULTIARRAY + " (" + t.toString() + ")");
+
+    for (ValueBox element : sizeBoxes) {
+      buffer.append("[" + element.getValue().toString() + "]");
     }
 
-    /** Returns a hash code for this object, consistent with structural equality. */
-    @Override
-    public int equivHashCode() 
-    {
-        return baseType.hashCode();
+    for (int i = 0; i < baseType.numDimensions - sizeBoxes.length; i++) {
+      buffer.append("[]");
     }
 
-    @Override
-    public String toString()
-    {
-        StringBuffer buffer = new StringBuffer();
+    return buffer.toString();
+  }
 
-        Type t = baseType.baseType;
-    buffer.append(Jimple.NEWMULTIARRAY + " (" +  t.toString() + ")");
+  @Override
+  public void toString(StmtPrinter up) {
+    Type t = baseType.baseType;
 
-        for (ValueBox element : sizeBoxes) {
-          buffer.append("[" + element.getValue().toString() + "]");
-        }
+    up.literal(Jimple.NEWMULTIARRAY);
+    up.literal(" (");
+    up.type(t);
+    up.literal(")");
 
-        for(int i = 0; i < baseType.numDimensions - sizeBoxes.length; i++) {
-          buffer.append("[]");
-        }
-
-        return buffer.toString();
-    }
-    
-    @Override
-    public void toString(StmtPrinter up)
-    {
-        Type t = baseType.baseType;
-        
-        up.literal(Jimple.NEWMULTIARRAY);
-        up.literal(" (");
-        up.type(t);
-        up.literal(")");
-
-        for (ValueBox element : sizeBoxes) {
-            up.literal("[");
-            element.toString(up);
-            up.literal("]");
-        }
-        
-        for(int i = 0; i < baseType.numDimensions - sizeBoxes.length; i++) {
-            up.literal("[]");
-        }
+    for (ValueBox element : sizeBoxes) {
+      up.literal("[");
+      element.toString(up);
+      up.literal("]");
     }
 
+    for (int i = 0; i < baseType.numDimensions - sizeBoxes.length; i++) {
+      up.literal("[]");
+    }
+  }
 
-    public ArrayType getBaseType()
-    {
-        return baseType;
+  public ArrayType getBaseType() {
+    return baseType;
+  }
+
+  public void setBaseType(ArrayType baseType) {
+    this.baseType = baseType;
+  }
+
+  public ValueBox getSizeBox(int index) {
+    return sizeBoxes[index];
+  }
+
+  public int getSizeCount() {
+    return sizeBoxes.length;
+  }
+
+  public Value getSize(int index) {
+    return sizeBoxes[index].getValue();
+  }
+
+  public List<Value> getSizes() {
+    List<Value> toReturn = new ArrayList<Value>();
+
+    for (ValueBox element : sizeBoxes) {
+      toReturn.add(element.getValue());
     }
 
-    public void setBaseType(ArrayType baseType)
-    {
-        this.baseType = baseType;
+    return toReturn;
+  }
+
+  public void setSize(int index, Value size) {
+    sizeBoxes[index].setValue(size);
+  }
+
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+    List<ValueBox> list = new ArrayList<ValueBox>();
+    Collections.addAll(list, sizeBoxes);
+
+    for (ValueBox element : sizeBoxes) {
+      list.addAll(element.getValue().getUseBoxes());
     }
 
-    public ValueBox getSizeBox(int index)
-    {
-        return sizeBoxes[index];
-    }
+    return list;
+  }
 
-    public int getSizeCount()
-    {
-        return sizeBoxes.length;
-    }
+  @Override
+  public Type getType() {
+    return baseType;
+  }
 
-    public Value getSize(int index)
-    {
-        return sizeBoxes[index].getValue();
-    }
-
-    public List<Value> getSizes()
-    {
-        List<Value> toReturn = new ArrayList<Value>();
-
-        for (ValueBox element : sizeBoxes) {
-          toReturn.add(element.getValue());
-        }
-
-        return toReturn;
-    }
-
-    public void setSize(int index, Value size)
-    {
-        sizeBoxes[index].setValue(size);
-    }
-
-    @Override
-    public final List<ValueBox> getUseBoxes()
-    {
-        List<ValueBox> list = new ArrayList<ValueBox>();
-        Collections.addAll(list, sizeBoxes);
-        
-        for (ValueBox element : sizeBoxes) {
-            list.addAll(element.getValue().getUseBoxes());
-        }
-
-        return list;
-    }
-
-    @Override
-    public Type getType()
-    {
-        return baseType;
-    }
-
-    @Override
-    public void accept(IVisitor sw)
-    {
-        ((IExprVisitor) sw).caseNewMultiArrayExpr(this);
-    }
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseNewMultiArrayExpr(this);
+  }
 
 }
