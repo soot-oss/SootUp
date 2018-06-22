@@ -62,7 +62,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
    */
   public JavaModulePathNamespace(IClassProvider classProvider, String modulePath) {
     super(classProvider);
-    this.modulePathEntries = PathUtils.explode(modulePath).collect(Collectors.toList());
+    this.modulePathEntries = AbstractNamespace.explode(modulePath).collect(Collectors.toList());
 
     // add the namespace for the jrt virtual file system
     jrtFileSystemNamespace = new JrtFileSystemNamespace(classProvider);
