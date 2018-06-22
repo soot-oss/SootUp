@@ -34,13 +34,13 @@ import java.util.List;
 
 public abstract class AbstractSwitchStmt extends AbstractStmt {
 
-  final protected StmtBox defaultTargetBox;
+  protected final StmtBox defaultTargetBox;
 
-  final protected ValueBox keyBox;
+  protected final ValueBox keyBox;
 
-  final protected List<StmtBox> stmtBoxes;
+  protected final List<StmtBox> stmtBoxes;
 
-  final protected StmtBox[] targetBoxes;
+  protected final StmtBox[] targetBoxes;
 
   protected AbstractSwitchStmt(ValueBox keyBox, StmtBox defaultTargetBox, StmtBox... targetBoxes) {
     this.keyBox = keyBox;
@@ -55,32 +55,32 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     list.add(defaultTargetBox);
   }
 
-  final public Stmt getDefaultTarget() {
+  public final Stmt getDefaultTarget() {
     return defaultTargetBox.getStmt();
   }
 
-  final public void setDefaultTarget(Stmt defaultTarget) {
+  public final void setDefaultTarget(Stmt defaultTarget) {
     defaultTargetBox.setStmt(defaultTarget);
   }
 
-  final public StmtBox getDefaultTargetBox() {
+  public final StmtBox getDefaultTargetBox() {
     return defaultTargetBox;
   }
 
-  final public Value getKey() {
+  public final Value getKey() {
     return keyBox.getValue();
   }
 
-  final public void setKey(Value key) {
+  public final void setKey(Value key) {
     keyBox.setValue(key);
   }
 
-  final public ValueBox getKeyBox() {
+  public final ValueBox getKeyBox() {
     return keyBox;
   }
 
   @Override
-  final public List<ValueBox> getUseBoxes() {
+  public final List<ValueBox> getUseBoxes() {
     List<ValueBox> list = new ArrayList<ValueBox>();
 
     list.addAll(keyBox.getValue().getUseBoxes());
@@ -89,23 +89,23 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return list;
   }
 
-  final public int getTargetCount() {
+  public final int getTargetCount() {
     return targetBoxes.length;
   }
 
-  final public Stmt getTarget(int index) {
+  public final Stmt getTarget(int index) {
     return targetBoxes[index].getStmt();
   }
 
-  final public StmtBox getTargetBox(int index) {
+  public final StmtBox getTargetBox(int index) {
     return targetBoxes[index];
   }
 
-  final public void setTarget(int index, Stmt target) {
+  public final void setTarget(int index, Stmt target) {
     targetBoxes[index].setStmt(target);
   }
 
-  final public List<Stmt> getTargets() {
+  public final List<Stmt> getTargets() {
     List<Stmt> targets = new ArrayList<Stmt>();
 
     for (StmtBox element : targetBoxes) {
@@ -115,20 +115,20 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return targets;
   }
 
-  final public void setTargets(List<? extends Stmt> targets) {
+  public final void setTargets(List<? extends Stmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
       targetBoxes[i].setStmt(targets.get(i));
     }
   }
 
-  final public void setTargets(Stmt[] targets) {
+  public final void setTargets(Stmt[] targets) {
     for (int i = 0; i < targets.length; i++) {
       targetBoxes[i].setStmt(targets[i]);
     }
   }
 
   @Override
-  final public List<StmtBox> getUnitBoxes() {
+  public final List<StmtBox> getUnitBoxes() {
     return stmtBoxes;
   }
 

@@ -30,7 +30,7 @@ import de.upb.soot.jimple.Value;
 import de.upb.soot.jimple.ValueBox;
 
 @SuppressWarnings("serial")
-abstract public class AbstractJimpleFloatBinopExpr extends AbstractFloatBinopExpr {
+public abstract class AbstractJimpleFloatBinopExpr extends AbstractFloatBinopExpr {
   AbstractJimpleFloatBinopExpr(Value op1, Value op2) {
     this(Jimple.v().newArgBox(op1), Jimple.v().newArgBox(op2));
   }

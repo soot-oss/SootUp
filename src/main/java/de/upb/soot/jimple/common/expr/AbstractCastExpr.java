@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("serial")
-abstract public class AbstractCastExpr implements Expr {
+public abstract class AbstractCastExpr implements Expr {
   final ValueBox opBox;
   Type type;
 

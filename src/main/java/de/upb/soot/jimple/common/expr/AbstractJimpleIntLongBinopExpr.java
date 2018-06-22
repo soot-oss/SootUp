@@ -29,7 +29,7 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.Value;
 
 @SuppressWarnings("serial")
-abstract public class AbstractJimpleIntLongBinopExpr extends AbstractIntLongBinopExpr {
+public abstract class AbstractJimpleIntLongBinopExpr extends AbstractIntLongBinopExpr {
   protected AbstractJimpleIntLongBinopExpr(Value op1, Value op2) {
     this.op1Box = Jimple.v().newArgBox(op1);
     this.op2Box = Jimple.v().newArgBox(op2);

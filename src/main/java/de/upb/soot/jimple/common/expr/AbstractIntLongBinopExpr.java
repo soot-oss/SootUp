@@ -36,7 +36,7 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
 
 @SuppressWarnings("serial")
-abstract public class AbstractIntLongBinopExpr extends AbstractBinopExpr {
+public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
 
   public static boolean isIntLikeType(Type t) {
     return t.equals(IntType.v()) || t.equals(ByteType.v()) || t.equals(ShortType.v()) || t.equals(CharType.v())

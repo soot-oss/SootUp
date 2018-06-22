@@ -37,9 +37,9 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("serial")
-abstract public class AbstractInvokeExpr implements Expr {
+public abstract class AbstractInvokeExpr implements Expr {
   protected SootMethodRef methodRef;
-  final protected ValueBox[] argBoxes;
+  protected final ValueBox[] argBoxes;
 
   protected AbstractInvokeExpr(SootMethodRef methodRef, ValueBox[] argBoxes) {
     this.methodRef = methodRef;

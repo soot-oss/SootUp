@@ -41,7 +41,7 @@ import java.util.List;
 @SuppressWarnings("serial")
 public abstract class AbstractNewMultiArrayExpr implements Expr {
   ArrayType baseType;
-  final protected ValueBox[] sizeBoxes;
+  protected final ValueBox[] sizeBoxes;
 
   @Override
   public abstract Object clone();

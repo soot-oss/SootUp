@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("serial")
-abstract public class AbstractUnopExpr implements Expr {
+public abstract class AbstractUnopExpr implements Expr {
   final ValueBox opBox;
 
   protected AbstractUnopExpr(ValueBox opBox) {

@@ -35,7 +35,7 @@ import java.util.List;
 
 @SuppressWarnings("serial")
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
-  final protected ValueBox baseBox;
+  protected final ValueBox baseBox;
 
   protected AbstractInstanceInvokeExpr(SootMethodRef methodRef, ValueBox baseBox, ValueBox[] argBoxes) {
     super(methodRef, argBoxes);

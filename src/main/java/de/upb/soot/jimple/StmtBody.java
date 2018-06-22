@@ -29,7 +29,7 @@ import de.upb.soot.core.SootMethod;
 
 /** Abstract base class for Body's on Stmts (Jimple and Grimp). */
 @SuppressWarnings("serial")
-abstract public class StmtBody extends Body {
+public abstract class StmtBody extends Body {
   /** Creates a StmtBody associated with the given method. */
   protected StmtBody(SootMethod m) {
     super(m);

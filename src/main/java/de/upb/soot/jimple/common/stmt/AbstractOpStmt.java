@@ -32,26 +32,26 @@ import java.util.List;
 
 public abstract class AbstractOpStmt extends AbstractStmt {
 
-  final protected ValueBox opBox;
+  protected final ValueBox opBox;
 
   protected AbstractOpStmt(ValueBox opBox) {
     this.opBox = opBox;
   }
 
-  final public Value getOp() {
+  public final Value getOp() {
     return opBox.getValue();
   }
 
-  final public void setOp(Value op) {
+  public final void setOp(Value op) {
     opBox.setValue(op);
   }
 
-  final public ValueBox getOpBox() {
+  public final ValueBox getOpBox() {
     return opBox;
   }
 
   @Override
-  final public List<ValueBox> getUseBoxes() {
+  public final List<ValueBox> getUseBoxes() {
     List<ValueBox> list = new ArrayList<ValueBox>();
 
     list.addAll(opBox.getValue().getUseBoxes());

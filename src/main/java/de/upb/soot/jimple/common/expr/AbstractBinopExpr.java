@@ -89,10 +89,10 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   /** Returns the unique symbol for an operator. */
-  abstract protected String getSymbol();
+  protected abstract String getSymbol();
 
   @Override
-  abstract public Object clone();
+  public abstract Object clone();
 
   @Override
   public String toString() {
