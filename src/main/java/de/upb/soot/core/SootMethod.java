@@ -4,6 +4,11 @@ import de.upb.soot.jimple.common.type.Type;
 
 import java.util.List;
 
+/**
+ * 
+ * @author Linghui Luo
+ *
+ */
 public class SootMethod {
 
   public int equivHashCode() {

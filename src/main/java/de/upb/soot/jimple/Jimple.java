@@ -1,4 +1,3 @@
-package de.upb.soot.jimple;
 /* Soot - a J*va Optimization Framework
  * Copyright (C) 1997-1999 Raja Vallee-Rai
  *
@@ -17,6 +16,12 @@ package de.upb.soot.jimple;
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
+/*
+ * Modified by the Sable Research Group and others 1997-1999.  
+ * See the 'credits' file distributed with Soot for the complete list of
+ * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
+ */
+package de.upb.soot.jimple;
 
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
@@ -77,11 +82,6 @@ import de.upb.soot.jimple.javabyte.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabyte.JRetStmt;
 import de.upb.soot.jimple.javabyte.JTableSwitchStmt;
 
-/*
- * Modified by the Sable Research Group and others 1997-1999.  
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- */
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;

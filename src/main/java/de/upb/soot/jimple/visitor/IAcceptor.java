@@ -22,7 +22,6 @@
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
-
 package de.upb.soot.jimple.visitor;
 
 /** Basic interface used for visited objects in the Visitor design pattern. */

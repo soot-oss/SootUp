@@ -1,5 +1,5 @@
 /* Soot - a J*va Optimization Framework
- * Copyright (C) 1997-1999 Raja Vallee-Rai
+ * Copyright (C) 1997-1999 Etienne Gagnon
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,6 @@
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
-
 package de.upb.soot.jimple.visitor;
 
 import de.upb.soot.jimple.common.ref.AbstractInstanceFieldRef;
