@@ -145,3 +145,7 @@ crashlytics-build.properties
 fabric.properties
 
 \.checkstyle
+
+\.classpath
+
+\.project
