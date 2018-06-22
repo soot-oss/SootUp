@@ -126,9 +126,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
 
     if (attrs.isRegularFile() && PathUtils.hasExtension(path, FileType.JAR, FileType.ZIP)) {
       buildModuleForJar(path);
-    }
-
-    else if (attrs.isDirectory()) {
+    } else if (attrs.isDirectory()) {
 
       try (DirectoryStream<Path> stream = Files.newDirectoryStream(path)) {
         for (Path entry : stream) {
@@ -173,7 +171,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   }
 
   /**
-   * Creates a module definition and the namesapce for either a modular jar or an automatic module
+   * Creates a module definition and the namesapce for either a modular jar or an automatic module.
    *
    * @param jar
    *          the jar file
@@ -212,8 +210,8 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   }
 
   /**
-   * Creates a name for an automatic module based on the name of a jar file this is based on the jdk parsing of module name
-   * in the JDK 9{@link ModulePathFinder} at least the patterns are the same
+   * Creates a name for an automatic module based on the name of a jar file. The implementation is consistent with parsing
+   * module names in the JDK 9{@link ModulePathFinder}.
    *
    * @param filename
    *          the name of the jar file
@@ -258,7 +256,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   // TODO: Do we want class sources for all entries, or all classes under a certian module?
   @Override
   public Collection<ClassSource> getClassSources(SignatureFactory factory) {
-    Preconditions.checkState(factory instanceof ModuleSignatureFactory, "Factory must be a ModuleSignatureFactory");
+    Preconditions.checkArgument(factory instanceof ModuleSignatureFactory, "Factory must be a ModuleSignatureFactory");
 
     // TODO: problem is the classprovider creates classSignatures without module information
     Set<ClassSource> found = new HashSet<>();

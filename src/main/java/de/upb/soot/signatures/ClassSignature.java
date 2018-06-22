@@ -19,7 +19,8 @@ public class ClassSignature extends TypeSignature {
   public final PackageSignature packageSignature;
 
   /**
-   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a {@link DefaultSignatureFactory}
+   * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
+   * {@link DefaultSignatureFactory}
    *
    * @param className
    *          the simple name of the class, e.g., ClassA NOT my.package.ClassA
@@ -30,8 +31,6 @@ public class ClassSignature extends TypeSignature {
     this.className = className;
     this.packageSignature = packageSignature;
   }
-
-
 
   @Override
   public boolean equals(Object o) {
