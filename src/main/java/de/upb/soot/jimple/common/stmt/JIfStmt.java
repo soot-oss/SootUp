@@ -44,11 +44,11 @@ public class JIfStmt extends AbstractStmt {
   final List<StmtBox> targetBoxes;
 
   public JIfStmt(Value condition, Stmt target) {
-    this(condition, Jimple.v().newStmtBox(target));
+    this(condition, Jimple.getInstance().newStmtBox(target));
   }
 
   public JIfStmt(Value condition, StmtBox target) {
-    this(Jimple.v().newConditionExprBox(condition), target);
+    this(Jimple.getInstance().newConditionExprBox(condition), target);
   }
 
   protected JIfStmt(ValueBox conditionBox, StmtBox targetBox) {

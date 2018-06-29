@@ -39,7 +39,7 @@ public class JGotoStmt extends AbstractStmt {
   final List<StmtBox> targetBoxes;
 
   public JGotoStmt(Stmt target) {
-    this(Jimple.v().newStmtBox(target));
+    this(Jimple.getInstance().newStmtBox(target));
   }
 
   public JGotoStmt(StmtBox box) {

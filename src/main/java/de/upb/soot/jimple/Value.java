@@ -34,8 +34,9 @@ import java.util.List;
 
 /**
  * Data used as, for instance, arguments to instructions; typical implementations are constants or expressions.
- *
+ * <p>
  * Values are typed, clonable and must declare which other Values they use (contain).
+ * </p>
  */
 public interface Value extends IAcceptor, EquivTo, Serializable {
   /**

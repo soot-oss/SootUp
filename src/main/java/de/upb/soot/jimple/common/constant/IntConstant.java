@@ -37,7 +37,7 @@ public class IntConstant extends ArithmeticConstant {
     this.value = value;
   }
 
-  public static IntConstant v(int value) {
+  public static IntConstant getInstance(int value) {
     return new IntConstant(value);
   }
 
@@ -57,7 +57,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v(this.value + ((IntConstant) c).value);
+    return IntConstant.getInstance(this.value + ((IntConstant) c).value);
   }
 
   @Override
@@ -65,7 +65,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v(this.value - ((IntConstant) c).value);
+    return IntConstant.getInstance(this.value - ((IntConstant) c).value);
   }
 
   @Override
@@ -73,7 +73,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v(this.value * ((IntConstant) c).value);
+    return IntConstant.getInstance(this.value * ((IntConstant) c).value);
   }
 
   @Override
@@ -81,7 +81,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v(this.value / ((IntConstant) c).value);
+    return IntConstant.getInstance(this.value / ((IntConstant) c).value);
   }
 
   @Override
@@ -89,7 +89,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v(this.value % ((IntConstant) c).value);
+    return IntConstant.getInstance(this.value % ((IntConstant) c).value);
   }
 
   @Override
@@ -97,7 +97,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v((this.value == ((IntConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value == ((IntConstant) c).value) ? 1 : 0);
   }
 
   @Override
@@ -105,7 +105,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v((this.value != ((IntConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value != ((IntConstant) c).value) ? 1 : 0);
   }
 
   @Override
@@ -113,7 +113,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v((this.value < ((IntConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value < ((IntConstant) c).value) ? 1 : 0);
   }
 
   @Override
@@ -121,7 +121,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v((this.value <= ((IntConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value <= ((IntConstant) c).value) ? 1 : 0);
   }
 
   @Override
@@ -129,7 +129,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v((this.value > ((IntConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value > ((IntConstant) c).value) ? 1 : 0);
   }
 
   @Override
@@ -137,12 +137,12 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v((this.value >= ((IntConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value >= ((IntConstant) c).value) ? 1 : 0);
   }
 
   @Override
   public NumericConstant negate() {
-    return IntConstant.v(-(this.value));
+    return IntConstant.getInstance(-(this.value));
   }
 
   @Override
@@ -150,7 +150,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v(this.value & ((IntConstant) c).value);
+    return IntConstant.getInstance(this.value & ((IntConstant) c).value);
   }
 
   @Override
@@ -158,7 +158,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v(this.value | ((IntConstant) c).value);
+    return IntConstant.getInstance(this.value | ((IntConstant) c).value);
   }
 
   @Override
@@ -166,7 +166,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v(this.value ^ ((IntConstant) c).value);
+    return IntConstant.getInstance(this.value ^ ((IntConstant) c).value);
   }
 
   @Override
@@ -174,7 +174,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v(this.value << ((IntConstant) c).value);
+    return IntConstant.getInstance(this.value << ((IntConstant) c).value);
   }
 
   @Override
@@ -182,7 +182,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v(this.value >> ((IntConstant) c).value);
+    return IntConstant.getInstance(this.value >> ((IntConstant) c).value);
   }
 
   @Override
@@ -190,7 +190,7 @@ public class IntConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.v(this.value >>> ((IntConstant) c).value);
+    return IntConstant.getInstance(this.value >>> ((IntConstant) c).value);
   }
 
   @Override
@@ -200,7 +200,7 @@ public class IntConstant extends ArithmeticConstant {
 
   @Override
   public Type getType() {
-    return IntType.v();
+    return IntType.getInstance();
   }
 
   public void accept(IVisitor sw) {

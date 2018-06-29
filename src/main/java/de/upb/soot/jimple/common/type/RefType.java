@@ -10,7 +10,7 @@ public class RefType extends Type {
 
   }
 
-  public static Type v(String string) {
+  public static Type getInstance(String string) {
     // TODO Auto-generated method stub
     return null;
   }

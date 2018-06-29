@@ -37,7 +37,7 @@ public class LongConstant extends ArithmeticConstant {
     this.value = value;
   }
 
-  public static LongConstant v(long value) {
+  public static LongConstant getInstance(long value) {
     return new LongConstant(value);
   }
 
@@ -58,7 +58,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return LongConstant.v(this.value + ((LongConstant) c).value);
+    return LongConstant.getInstance(this.value + ((LongConstant) c).value);
   }
 
   @Override
@@ -66,7 +66,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return LongConstant.v(this.value - ((LongConstant) c).value);
+    return LongConstant.getInstance(this.value - ((LongConstant) c).value);
   }
 
   @Override
@@ -74,7 +74,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return LongConstant.v(this.value * ((LongConstant) c).value);
+    return LongConstant.getInstance(this.value * ((LongConstant) c).value);
   }
 
   @Override
@@ -82,7 +82,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return LongConstant.v(this.value / ((LongConstant) c).value);
+    return LongConstant.getInstance(this.value / ((LongConstant) c).value);
   }
 
   @Override
@@ -90,7 +90,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return LongConstant.v(this.value % ((LongConstant) c).value);
+    return LongConstant.getInstance(this.value % ((LongConstant) c).value);
   }
 
   @Override
@@ -98,7 +98,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return IntConstant.v((this.value == ((LongConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value == ((LongConstant) c).value) ? 1 : 0);
   }
 
   @Override
@@ -106,7 +106,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return IntConstant.v((this.value != ((LongConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value != ((LongConstant) c).value) ? 1 : 0);
   }
 
   @Override
@@ -114,7 +114,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return IntConstant.v((this.value < ((LongConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value < ((LongConstant) c).value) ? 1 : 0);
   }
 
   @Override
@@ -122,7 +122,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return IntConstant.v((this.value <= ((LongConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value <= ((LongConstant) c).value) ? 1 : 0);
   }
 
   @Override
@@ -130,7 +130,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return IntConstant.v((this.value > ((LongConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value > ((LongConstant) c).value) ? 1 : 0);
   }
 
   @Override
@@ -138,22 +138,22 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return IntConstant.v((this.value >= ((LongConstant) c).value) ? 1 : 0);
+    return IntConstant.getInstance((this.value >= ((LongConstant) c).value) ? 1 : 0);
   }
 
   public IntConstant cmp(LongConstant c) {
     if (this.value > c.value) {
-      return IntConstant.v(1);
+      return IntConstant.getInstance(1);
     } else if (this.value == c.value) {
-      return IntConstant.v(0);
+      return IntConstant.getInstance(0);
     } else {
-      return IntConstant.v(-1);
+      return IntConstant.getInstance(-1);
     }
   }
 
   @Override
   public NumericConstant negate() {
-    return LongConstant.v(-(this.value));
+    return LongConstant.getInstance(-(this.value));
   }
 
   @Override
@@ -161,7 +161,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return LongConstant.v(this.value & ((LongConstant) c).value);
+    return LongConstant.getInstance(this.value & ((LongConstant) c).value);
   }
 
   @Override
@@ -169,7 +169,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return LongConstant.v(this.value | ((LongConstant) c).value);
+    return LongConstant.getInstance(this.value | ((LongConstant) c).value);
   }
 
   @Override
@@ -177,7 +177,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return LongConstant.v(this.value ^ ((LongConstant) c).value);
+    return LongConstant.getInstance(this.value ^ ((LongConstant) c).value);
   }
 
   @Override
@@ -188,7 +188,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return LongConstant.v(this.value << ((IntConstant) c).value);
+    return LongConstant.getInstance(this.value << ((IntConstant) c).value);
   }
 
   @Override
@@ -196,7 +196,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return LongConstant.v(this.value >> ((IntConstant) c).value);
+    return LongConstant.getInstance(this.value >> ((IntConstant) c).value);
   }
 
   @Override
@@ -204,7 +204,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return LongConstant.v(this.value >>> ((IntConstant) c).value);
+    return LongConstant.getInstance(this.value >>> ((IntConstant) c).value);
   }
 
   @Override
@@ -214,7 +214,7 @@ public class LongConstant extends ArithmeticConstant {
 
   @Override
   public Type getType() {
-    return LongType.v();
+    return LongType.getInstance();
   }
 
   public void accept(IVisitor sw) {

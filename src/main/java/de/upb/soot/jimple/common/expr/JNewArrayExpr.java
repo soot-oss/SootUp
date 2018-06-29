@@ -31,7 +31,7 @@ import de.upb.soot.jimple.common.type.Type;
 
 public class JNewArrayExpr extends AbstractNewArrayExpr {
   public JNewArrayExpr(Type type, Value size) {
-    super(type, Jimple.v().newImmediateBox(size));
+    super(type, Jimple.getInstance().newImmediateBox(size));
   }
 
   @Override

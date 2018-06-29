@@ -37,10 +37,10 @@ import java.util.List;
 
 public class JSpecialInvokeExpr extends AbstractSpecialInvokeExpr {
   public JSpecialInvokeExpr(Local base, SootMethodRef methodRef, List<? extends Value> args) {
-    super(Jimple.v().newLocalBox(base), methodRef, new ImmediateBox[args.size()]);
+    super(Jimple.getInstance().newLocalBox(base), methodRef, new ImmediateBox[args.size()]);
 
     for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.v().newImmediateBox(args.get(i));
+      this.argBoxes[i] = Jimple.getInstance().newImmediateBox(args.get(i));
     }
   }
 

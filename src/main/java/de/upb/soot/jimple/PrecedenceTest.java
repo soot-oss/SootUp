@@ -27,27 +27,33 @@ package de.upb.soot.jimple;
 
 /**
  * Provides static helper methods to indicate if parenthesization is required.
- *
+ * <p>
  * If your sub-expression has strictly higher precedence than you, then no brackets are required: 2 + (4 * 5) = 2 + 4 * 5 is
  * unambiguous, because * has precedence 800 and + has precedence 700.
- *
+ * </p>
+ * <p>
  * If your subexpression has lower precedence than you, then brackets are required; otherwise you will bind to your
  * grandchild instead of the subexpression. 2 * (4 + 5) without brackets would mean (2 * 4) + 5.
- *
+ * </p>
+ * <p>
  * For a binary operation, if your left sub-expression has the same precedence as you, no brackets are needed, since binary
  * operations are all left-associative. If your right sub-expression has the same precedence than you, then brackets are
  * needed to reproduce the parse tree (otherwise, parsing will give e.g. (2 + 4) + 5 instead of the 2 + (4 + 5) that you had
  * to start with.) This is OK for integer addition and subtraction, but not OK for floating point multiplication. To be safe,
  * let's put the brackets on.
- *
+ * </p>
+ * <p>
  * For the high-precedence operations, I've assigned precedences of 950 to field reads and invoke expressions (.), as well as
  * array reads ([]). I've assigned 850 to cast, newarray and newinvoke.
- *
+ * </p>
+ * <p>
  * The Dava DCmp?Expr precedences look fishy to me; I've assigned DLengthExpr a precedence of 950, because it looks like it
  * should parse like a field read to me.
- *
+ * </p>
+ * <p>
  * Basically, the only time I can see that brackets should be required seems to occur when a cast or a newarray occurs as a
  * subexpression of an invoke or field read; hence 850 and 950. -PL
+ * </p>
  */
 public class PrecedenceTest {
   public static boolean needsBrackets(ValueBox subExprBox, Value expr) {

@@ -18,7 +18,7 @@ public class ArrayType extends Type {
     return null;
   }
 
-  public static ArrayType v(Type baseType, int numDimensions) {
+  public static ArrayType getInstance(Type baseType, int numDimensions) {
     // TODO Auto-generated method stub
     return null;
   }

@@ -41,7 +41,7 @@ public class FloatConstant extends RealConstant {
     this.value = value;
   }
 
-  public static FloatConstant v(float value) {
+  public static FloatConstant getInstance(float value) {
     return new FloatConstant(value);
   }
 
@@ -62,67 +62,67 @@ public class FloatConstant extends RealConstant {
   @Override
   public NumericConstant add(NumericConstant c) {
     assertInstanceOf(c);
-    return FloatConstant.v(this.value + ((FloatConstant) c).value);
+    return FloatConstant.getInstance(this.value + ((FloatConstant) c).value);
   }
 
   @Override
   public NumericConstant subtract(NumericConstant c) {
     assertInstanceOf(c);
-    return FloatConstant.v(this.value - ((FloatConstant) c).value);
+    return FloatConstant.getInstance(this.value - ((FloatConstant) c).value);
   }
 
   @Override
   public NumericConstant multiply(NumericConstant c) {
     assertInstanceOf(c);
-    return FloatConstant.v(this.value * ((FloatConstant) c).value);
+    return FloatConstant.getInstance(this.value * ((FloatConstant) c).value);
   }
 
   @Override
   public NumericConstant divide(NumericConstant c) {
     assertInstanceOf(c);
-    return FloatConstant.v(this.value / ((FloatConstant) c).value);
+    return FloatConstant.getInstance(this.value / ((FloatConstant) c).value);
   }
 
   @Override
   public NumericConstant remainder(NumericConstant c) {
     assertInstanceOf(c);
-    return FloatConstant.v(this.value % ((FloatConstant) c).value);
+    return FloatConstant.getInstance(this.value % ((FloatConstant) c).value);
   }
 
   @Override
   public NumericConstant equalEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Float.compare(this.value, ((FloatConstant) c).value) == 0 ? 1 : 0);
+    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) == 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant notEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Float.compare(this.value, ((FloatConstant) c).value) != 0 ? 1 : 0);
+    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) != 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant lessThan(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Float.compare(this.value, ((FloatConstant) c).value) < 0 ? 1 : 0);
+    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) < 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant lessThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Float.compare(this.value, ((FloatConstant) c).value) <= 0 ? 1 : 0);
+    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) <= 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant greaterThan(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Float.compare(this.value, ((FloatConstant) c).value) > 0 ? 1 : 0);
+    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) > 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant greaterThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Float.compare(this.value, ((FloatConstant) c).value) >= 0 ? 1 : 0);
+    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) >= 0 ? 1 : 0);
   }
 
   @Override
@@ -130,11 +130,11 @@ public class FloatConstant extends RealConstant {
     assertInstanceOf(constant);
     final float cValue = ((FloatConstant) constant).value;
     if (this.value < cValue) {
-      return IntConstant.v(-1);
+      return IntConstant.getInstance(-1);
     } else if (this.value == cValue) {
-      return IntConstant.v(0);
+      return IntConstant.getInstance(0);
     } else {
-      return IntConstant.v(1);
+      return IntConstant.getInstance(1);
     }
   }
 
@@ -143,17 +143,17 @@ public class FloatConstant extends RealConstant {
     assertInstanceOf(constant);
     final float cValue = ((FloatConstant) constant).value;
     if (this.value > cValue) {
-      return IntConstant.v(1);
+      return IntConstant.getInstance(1);
     } else if (this.value == cValue) {
-      return IntConstant.v(0);
+      return IntConstant.getInstance(0);
     } else {
-      return IntConstant.v(-1);
+      return IntConstant.getInstance(-1);
     }
   }
 
   @Override
   public NumericConstant negate() {
-    return FloatConstant.v(-(this.value));
+    return FloatConstant.getInstance(-(this.value));
   }
 
   @Override
@@ -169,7 +169,7 @@ public class FloatConstant extends RealConstant {
 
   @Override
   public Type getType() {
-    return FloatType.v();
+    return FloatType.getInstance();
   }
 
   @Override

@@ -199,9 +199,9 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   @Override
   public List<StmtBox> getUnitBoxes() {
     // handle possible PhiExpr's
-    Value rValue = rightBox.getValue();
-    if (rValue instanceof StmtBoxOwner) {
-      return ((StmtBoxOwner) rValue).getStmtBoxes();
+    Value rvalue = rightBox.getValue();
+    if (rvalue instanceof StmtBoxOwner) {
+      return ((StmtBoxOwner) rvalue).getStmtBoxes();
     }
 
     return super.getUnitBoxes();

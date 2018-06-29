@@ -72,7 +72,7 @@ public class JCaughtExceptionRef implements CaughtExceptionRef {
 
   @Override
   public Type getType() {
-    return RefType.v("java.lang.Throwable");
+    return RefType.getInstance("java.lang.Throwable");
   }
 
   @Override

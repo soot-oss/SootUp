@@ -39,24 +39,25 @@ import de.upb.soot.jimple.common.type.UnknownType;
 
 @SuppressWarnings("serial")
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
+  @Override
   public Type getType() {
     Value op1 = op1Box.getValue();
     Value op2 = op2Box.getValue();
     Type op1t = op1.getType();
     Type op2t = op2.getType();
-    if ((op1t.equals(IntType.v()) || op1t.equals(ByteType.v()) || op1t.equals(ShortType.v()) || op1t.equals(CharType.v())
-        || op1t.equals(BooleanType.v()))
-        && (op2t.equals(IntType.v()) || op2t.equals(ByteType.v()) || op2t.equals(ShortType.v()) || op2t.equals(CharType.v())
-            || op2t.equals(BooleanType.v()))) {
-      return IntType.v();
-    } else if (op1t.equals(LongType.v()) || op2t.equals(LongType.v())) {
-      return LongType.v();
-    } else if (op1t.equals(DoubleType.v()) || op2t.equals(DoubleType.v())) {
-      return DoubleType.v();
-    } else if (op1t.equals(FloatType.v()) || op2t.equals(FloatType.v())) {
-      return FloatType.v();
+    if ((op1t.equals(IntType.getInstance()) || op1t.equals(ByteType.getInstance()) || op1t.equals(ShortType.getInstance())
+        || op1t.equals(CharType.getInstance()) || op1t.equals(BooleanType.getInstance()))
+        && (op2t.equals(IntType.getInstance()) || op2t.equals(ByteType.getInstance()) || op2t.equals(ShortType.getInstance())
+            || op2t.equals(CharType.getInstance()) || op2t.equals(BooleanType.getInstance()))) {
+      return IntType.getInstance();
+    } else if (op1t.equals(LongType.getInstance()) || op2t.equals(LongType.getInstance())) {
+      return LongType.getInstance();
+    } else if (op1t.equals(DoubleType.getInstance()) || op2t.equals(DoubleType.getInstance())) {
+      return DoubleType.getInstance();
+    } else if (op1t.equals(FloatType.getInstance()) || op2t.equals(FloatType.getInstance())) {
+      return FloatType.getInstance();
     } else {
-      return UnknownType.v();
+      return UnknownType.getInstance();
     }
   }
 }

@@ -21,6 +21,7 @@
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
+
 package de.upb.soot.jimple;
 
 import de.upb.soot.jimple.common.constant.IntConstant;
@@ -90,17 +91,18 @@ import java.util.List;
 /**
  * The Jimple class contains all the constructors for the components of the Jimple grammar for the Jimple body. <br>
  * <br>
- * 
+ * <p>
  * Immediate -> Local | Constant <br>
  * RValue -> Local | Constant | ConcreteRef | Expr<br>
  * Variable -> Local | ArrayRef | InstanceFieldRef | StaticFieldRef <br>
+ * </p>
  */
 
 public class Jimple {
   public Jimple() {
   }
 
-  public static Jimple v() {
+  public static Jimple getInstance() {
     return null;
   }
 
@@ -482,7 +484,7 @@ public class Jimple {
   }
 
   /**
-   * Constructs a ExitMonitorStmt(Immediate) grammar chunk
+   * Constructs a ExitMonitorStmt(Immediate) grammar chunk.
    */
   public JExitMonitorStmt newExitMonitorStmt(Value op) {
     return new JExitMonitorStmt(op);

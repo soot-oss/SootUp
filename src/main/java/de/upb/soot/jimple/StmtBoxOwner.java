@@ -19,6 +19,7 @@
 /*
  *  The original class name was UnitBoxOwner in soot, renamed by Linghui Luo, 22.06.2018
  */
+
 package de.upb.soot.jimple;
 
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.List;
  * 
  * <p>
  * Currently this is implemented by soot.shimple.PhiExpr and used by soot.jimple.internal.JAssignStmt.
+ * </p>
  *
  * @author Navindra Umanee
  **/

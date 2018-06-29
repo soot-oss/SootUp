@@ -37,7 +37,7 @@ public class StringConstant extends Constant {
     this.value = s;
   }
 
-  public static StringConstant v(String value) {
+  public static StringConstant getInstance(String value) {
     return new StringConstant(value);
   }
 
@@ -54,7 +54,7 @@ public class StringConstant extends Constant {
   }
 
   public Type getType() {
-    return RefType.v("java.lang.String");
+    return RefType.getInstance("java.lang.String");
   }
 
   public void accept(IVisitor sw) {

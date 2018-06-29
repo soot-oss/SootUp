@@ -40,7 +40,7 @@ public class JInvokeStmt extends AbstractStmt {
   final ValueBox invokeExprBox;
 
   public JInvokeStmt(Value c) {
-    this(Jimple.v().newInvokeExprBox(c));
+    this(Jimple.getInstance().newInvokeExprBox(c));
   }
 
   protected JInvokeStmt(ValueBox invokeExprBox) {

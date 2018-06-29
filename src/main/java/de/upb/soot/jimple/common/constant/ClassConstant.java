@@ -47,7 +47,7 @@ public class ClassConstant extends Constant {
     this.value = s;
   }
 
-  public static ClassConstant v(String value) {
+  public static ClassConstant getInstance(String value) {
     if (value.contains(".")) {
       throw new RuntimeException("ClassConstants must use class names separated by '/', not '.'!");
     }
@@ -55,7 +55,7 @@ public class ClassConstant extends Constant {
   }
 
   public static ClassConstant fromType(Type tp) {
-    return v(sootTypeToString(tp));
+    return getInstance(sootTypeToString(tp));
   }
 
   private static String sootTypeToString(Type tp) {
@@ -113,28 +113,28 @@ public class ClassConstant extends Constant {
         tmp = tmp.substring(0, tmp.length() - 1);
       }
       tmp = tmp.replace("/", ".");
-      baseType = RefType.v(tmp);
+      baseType = RefType.getInstance(tmp);
     } else if (tmp.equals("I")) {
-      baseType = IntType.v();
+      baseType = IntType.getInstance();
     } else if (tmp.equals("B")) {
-      baseType = ByteType.v();
+      baseType = ByteType.getInstance();
     } else if (tmp.equals("C")) {
-      baseType = CharType.v();
+      baseType = CharType.getInstance();
     } else if (tmp.equals("D")) {
-      baseType = DoubleType.v();
+      baseType = DoubleType.getInstance();
     } else if (tmp.equals("F")) {
-      baseType = FloatType.v();
+      baseType = FloatType.getInstance();
     } else if (tmp.equals("L")) {
-      baseType = LongType.v();
+      baseType = LongType.getInstance();
     } else if (tmp.equals("S")) {
-      baseType = ShortType.v();
+      baseType = ShortType.getInstance();
     } else if (tmp.equals("Z")) {
-      baseType = BooleanType.v();
+      baseType = BooleanType.getInstance();
     } else {
       throw new RuntimeException("Unsupported class constant: " + value);
     }
 
-    return numDimensions > 0 ? ArrayType.v(baseType, numDimensions) : baseType;
+    return numDimensions > 0 ? ArrayType.getInstance(baseType, numDimensions) : baseType;
   }
 
   // In this case, equals should be structural equality.
@@ -155,7 +155,7 @@ public class ClassConstant extends Constant {
 
   @Override
   public Type getType() {
-    return RefType.v("java.lang.Class");
+    return RefType.getInstance("java.lang.Class");
   }
 
   public void accept(IVisitor sw) {

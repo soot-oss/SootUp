@@ -35,7 +35,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JIdentityStmt extends AbstractDefinitionStmt {
   public JIdentityStmt(Value local, Value identityValue) {
-    this(Jimple.v().newLocalBox(local), Jimple.v().newIdentityRefBox(identityValue));
+    this(Jimple.getInstance().newLocalBox(local), Jimple.getInstance().newIdentityRefBox(identityValue));
   }
 
   protected JIdentityStmt(ValueBox localBox, ValueBox identityValueBox) {

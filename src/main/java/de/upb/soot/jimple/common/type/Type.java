@@ -14,7 +14,7 @@ import java.io.Serializable;
  */
 public abstract class Type implements IAcceptor, Serializable, Numberable {
   public Type() {
-    Scene.v().getTypeNumberer().add(this);
+    Scene.getInstance().getTypeNumberer().add(this);
   }
 
   /** Returns a textual representation of this type. */
@@ -39,8 +39,9 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /** Converts the int-like types (short, byte, boolean and char) to IntType. */
   public static Type toMachineType(Type t) {
-    if (t.equals(ShortType.v()) || t.equals(ByteType.v()) || t.equals(BooleanType.v()) || t.equals(CharType.v())) {
-      return IntType.v();
+    if (t.equals(ShortType.getInstance()) || t.equals(ByteType.getInstance()) || t.equals(BooleanType.getInstance())
+        || t.equals(CharType.getInstance())) {
+      return IntType.getInstance();
     } else {
       return t;
     }
@@ -66,7 +67,7 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
   }
 
   public ArrayType makeArrayType() {
-    return ArrayType.v(this, 1);
+    return ArrayType.getInstance(this, 1);
   }
 
   /**

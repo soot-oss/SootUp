@@ -11,7 +11,7 @@ public class Scene {
 
   }
 
-  public static Scene v() {
+  public static Scene getInstance() {
     return new Scene();
   }
 

@@ -96,9 +96,10 @@ public abstract class AbstractBinopExpr implements Expr {
 
   @Override
   public String toString() {
-    Value op1 = op1Box.getValue(), op2 = op2Box.getValue();
-    String leftOp = op1.toString(), rightOp = op2.toString();
-
+    Value op1 = op1Box.getValue();
+    Value op2 = op2Box.getValue();
+    String leftOp = op1.toString();
+    String rightOp = op2.toString();
     return leftOp + getSymbol() + rightOp;
   }
 }

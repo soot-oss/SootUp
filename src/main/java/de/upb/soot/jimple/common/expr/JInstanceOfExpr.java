@@ -32,7 +32,7 @@ import de.upb.soot.jimple.common.type.Type;
 
 public class JInstanceOfExpr extends AbstractInstanceOfExpr {
   public JInstanceOfExpr(Value op, Type checkType) {
-    super(Jimple.v().newImmediateBox(op), checkType);
+    super(Jimple.getInstance().newImmediateBox(op), checkType);
   }
 
   @Override

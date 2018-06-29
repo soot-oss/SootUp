@@ -26,6 +26,7 @@
 /*
  *  The original class name was AbstractUnitBox in soot, renamed by Linghui Luo, 22.06.2018
  */
+
 package de.upb.soot.jimple;
 
 import de.upb.soot.StmtPrinter;

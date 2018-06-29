@@ -4,7 +4,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 
 public class FloatType extends Type {
 
-  public static Type v() {
+  public static Type getInstance() {
     // TODO Auto-generated method stub
     return null;
   }

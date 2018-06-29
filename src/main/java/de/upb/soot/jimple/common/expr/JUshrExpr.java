@@ -56,17 +56,17 @@ public class JUshrExpr extends AbstractJimpleIntLongBinopExpr {
     Value op2 = op2Box.getValue();
 
     if (!isIntLikeType(op2.getType())) {
-      return UnknownType.v();
+      return UnknownType.getInstance();
     }
 
     if (isIntLikeType(op1.getType())) {
-      return IntType.v();
+      return IntType.getInstance();
     }
-    if (op1.getType().equals(LongType.v())) {
-      return LongType.v();
+    if (op1.getType().equals(LongType.getInstance())) {
+      return LongType.getInstance();
     }
 
-    return UnknownType.v();
+    return UnknownType.getInstance();
   }
 
   @Override

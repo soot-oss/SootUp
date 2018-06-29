@@ -22,6 +22,7 @@
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
+
 package de.upb.soot.jimple.common.ref;
 
 public interface ConcreteRef extends Ref {

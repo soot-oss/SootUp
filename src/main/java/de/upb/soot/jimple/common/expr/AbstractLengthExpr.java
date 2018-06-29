@@ -70,7 +70,7 @@ public abstract class AbstractLengthExpr extends AbstractUnopExpr {
 
   @Override
   public Type getType() {
-    return IntType.v();
+    return IntType.getInstance();
   }
 
   @Override

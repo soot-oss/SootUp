@@ -35,7 +35,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 public class JThrowStmt extends AbstractOpStmt {
 
   public JThrowStmt(Value op) {
-    this(Jimple.v().newImmediateBox(op));
+    this(Jimple.getInstance().newImmediateBox(op));
   }
 
   protected JThrowStmt(ValueBox opBox) {

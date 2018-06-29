@@ -59,7 +59,7 @@ public class AbstractTrap implements Trap, Serializable {
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
-    exception = Scene.v().getSootClass((String) in.readObject());
+    exception = Scene.getInstance().getSootClass((String) in.readObject());
   }
 
   private void writeObject(ObjectOutputStream out) throws IOException {

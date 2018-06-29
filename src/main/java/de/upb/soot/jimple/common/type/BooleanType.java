@@ -10,7 +10,7 @@ public class BooleanType extends Type {
 
   }
 
-  public static Type v() {
+  public static Type getInstance() {
     // TODO Auto-generated method stub
     return null;
   }

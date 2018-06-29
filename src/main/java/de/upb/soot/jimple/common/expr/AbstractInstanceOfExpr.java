@@ -93,7 +93,7 @@ public abstract class AbstractInstanceOfExpr implements Expr {
 
   @Override
   public Type getType() {
-    return BooleanType.v();
+    return BooleanType.getInstance();
   }
 
   public Type getCheckType() {

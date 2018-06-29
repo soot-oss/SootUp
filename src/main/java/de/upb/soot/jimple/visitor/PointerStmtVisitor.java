@@ -35,7 +35,6 @@ import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.ref.StaticFieldRef;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
-import de.upb.soot.jimple.common.stmt.JInvokeStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.soot.jimple.common.stmt.JThrowStmt;
@@ -46,13 +45,13 @@ import de.upb.soot.jimple.common.type.RefType;
 public abstract class PointerStmtVisitor extends AbstractStmtVisitor {
   Stmt statement;
 
-  /** A statement of the form l = constant; */
+  /** A statement of the form l = constant. */
   protected abstract void caseAssignConstStmt(Value dest, Constant c);
 
-  /** A statement of the form l = v; */
+  /** A statement of the form l = v. */
   protected abstract void caseCopyStmt(Local dest, Local src);
 
-  /** A statement of the form l = (cl) v; */
+  /** A statement of the form l = (cl) v. */
   protected void caseCastStmt(Local dest, Local src, JCastExpr c) {
     // default is to just ignore the cast
     caseCopyStmt(dest, src);
@@ -61,16 +60,34 @@ public abstract class PointerStmtVisitor extends AbstractStmtVisitor {
   /** An identity statement assigning a parameter to a local. */
   protected abstract void caseIdentityStmt(Local dest, IdentityRef src);
 
-  /** A statement of the form l1 = l2.f; */
+  @Override
+  public final void caseIdentityStmt(JIdentityStmt s) {
+    statement = s;
+    Value lhs = s.getLeftOp();
+    Value rhs = s.getRightOp();
+    if (!(lhs.getType() instanceof RefType) && !(lhs.getType() instanceof ArrayType)) {
+      caseUninterestingStmt(s);
+      return;
+    }
+    Local llhs = (Local) lhs;
+    if (rhs instanceof CaughtExceptionRef) {
+      caseCatchStmt(llhs, (CaughtExceptionRef) rhs);
+    } else {
+      IdentityRef rrhs = (IdentityRef) rhs;
+      caseIdentityStmt(llhs, rrhs);
+    }
+  }
+
+  /** A statement of the form l1 = l2.f. */
   protected abstract void caseLoadStmt(Local dest, AbstractInstanceFieldRef src);
 
-  /** A statement of the form l1.f = l2; */
+  /** A statement of the form l1.f = l2. */
   protected abstract void caseStoreStmt(AbstractInstanceFieldRef dest, Local src);
 
-  /** A statement of the form l1 = l2[i]; */
+  /** A statement of the form l1 = l2[i]. */
   protected abstract void caseArrayLoadStmt(Local dest, ArrayRef src);
 
-  /** A statement of the form l1[i] = l2; */
+  /** A statement of the form l1[i] = l2. */
   protected abstract void caseArrayStoreStmt(ArrayRef dest, Local src);
 
   /** A statement of the form l = cl.f; */
@@ -82,26 +99,41 @@ public abstract class PointerStmtVisitor extends AbstractStmtVisitor {
   /** A return statement. e is null if a non-reference type is returned. */
   protected abstract void caseReturnStmt(Local val);
 
+  @Override
+  public final void caseReturnStmt(JReturnStmt s) {
+    statement = s;
+    Value op = s.getOp();
+    if (op.getType() instanceof RefType || op.getType() instanceof ArrayType) {
+      if (op instanceof Constant) {
+        caseReturnConstStmt((Constant) op);
+      } else {
+        caseReturnStmt((Local) op);
+      }
+    } else {
+      caseReturnStmt((Local) null);
+    }
+  }
+
   /** A return statement returning a constant. */
   protected void caseReturnConstStmt(Constant val) {
     // default is uninteresting
     caseUninterestingStmt(statement);
   }
 
-  /** Any type of new statement (NewStmt, NewArrayStmt, NewMultiArrayStmt) */
+  /** Any type of new statement (NewStmt, NewArrayStmt, NewMultiArrayStmt). */
   protected abstract void caseAnyNewStmt(Local dest, Expr e);
 
-  /** A new statement */
+  /** A new statement. */
   protected void caseNewStmt(Local dest, JNewExpr e) {
     caseAnyNewStmt(dest, e);
   }
 
-  /** A newarray statement */
+  /** A newarray statement. */
   protected void caseNewArrayStmt(Local dest, JNewArrayExpr e) {
     caseAnyNewStmt(dest, e);
   }
 
-  /** A anewarray statement */
+  /** A anewarray statement. */
   protected void caseNewMultiArrayStmt(Local dest, JNewMultiArrayExpr e) {
     caseAnyNewStmt(dest, e);
   }
@@ -109,19 +141,25 @@ public abstract class PointerStmtVisitor extends AbstractStmtVisitor {
   /** A method invocation. dest is null if there is no reference type return value. */
   protected abstract void caseInvokeStmt(Local dest, AbstractInvokeExpr e);
 
-  /** A throw statement */
+  /** A throw statement. */
   protected void caseThrowStmt(Local thrownException) {
     caseUninterestingStmt(statement);
   }
 
-  /** A catch statement */
+  @Override
+  public final void caseThrowStmt(JThrowStmt s) {
+    statement = s;
+    caseThrowStmt((Local) s.getOp());
+  }
+
+  /** A catch statement. */
   protected void caseCatchStmt(Local dest, CaughtExceptionRef cer) {
     caseUninterestingStmt(statement);
   }
 
-  /** Any other statement */
+  /** Any other statement. */
   protected void caseUninterestingStmt(Stmt s) {
-  };
+  }
 
   @Override
   public final void caseAssignStmt(JAssignStmt s) {
@@ -200,53 +238,9 @@ public abstract class PointerStmtVisitor extends AbstractStmtVisitor {
   }
 
   @Override
-  public final void caseReturnStmt(JReturnStmt s) {
-    statement = s;
-    Value op = s.getOp();
-    if (op.getType() instanceof RefType || op.getType() instanceof ArrayType) {
-      if (op instanceof Constant) {
-        caseReturnConstStmt((Constant) op);
-      } else {
-        caseReturnStmt((Local) op);
-      }
-    } else {
-      caseReturnStmt((Local) null);
-    }
-  }
-
-  @Override
   public final void caseReturnVoidStmt(JReturnVoidStmt s) {
     statement = s;
     caseReturnStmt((Local) null);
   }
 
-  @Override
-  public final void caseInvokeStmt(JInvokeStmt s) {
-    statement = s;
-    caseInvokeStmt(null, s.getInvokeExpr());
-  }
-
-  @Override
-  public final void caseIdentityStmt(JIdentityStmt s) {
-    statement = s;
-    Value lhs = s.getLeftOp();
-    Value rhs = s.getRightOp();
-    if (!(lhs.getType() instanceof RefType) && !(lhs.getType() instanceof ArrayType)) {
-      caseUninterestingStmt(s);
-      return;
-    }
-    Local llhs = (Local) lhs;
-    if (rhs instanceof CaughtExceptionRef) {
-      caseCatchStmt(llhs, (CaughtExceptionRef) rhs);
-    } else {
-      IdentityRef rrhs = (IdentityRef) rhs;
-      caseIdentityStmt(llhs, rrhs);
-    }
-  }
-
-  @Override
-  public final void caseThrowStmt(JThrowStmt s) {
-    statement = s;
-    caseThrowStmt((Local) s.getOp());
-  }
 }

@@ -82,17 +82,18 @@ public abstract class AbstractNegExpr extends AbstractUnopExpr {
   public Type getType() {
     Value op = opBox.getValue();
 
-    if (op.getType().equals(IntType.v()) || op.getType().equals(ByteType.v()) || op.getType().equals(ShortType.v())
-        || op.getType().equals(BooleanType.v()) || op.getType().equals(CharType.v())) {
-      return IntType.v();
-    } else if (op.getType().equals(LongType.v())) {
-      return LongType.v();
-    } else if (op.getType().equals(DoubleType.v())) {
-      return DoubleType.v();
-    } else if (op.getType().equals(FloatType.v())) {
-      return FloatType.v();
+    if (op.getType().equals(IntType.getInstance()) || op.getType().equals(ByteType.getInstance())
+        || op.getType().equals(ShortType.getInstance()) || op.getType().equals(BooleanType.getInstance())
+        || op.getType().equals(CharType.getInstance())) {
+      return IntType.getInstance();
+    } else if (op.getType().equals(LongType.getInstance())) {
+      return LongType.getInstance();
+    } else if (op.getType().equals(DoubleType.getInstance())) {
+      return DoubleType.getInstance();
+    } else if (op.getType().equals(FloatType.getInstance())) {
+      return FloatType.getInstance();
     } else {
-      return UnknownType.v();
+      return UnknownType.getInstance();
     }
   }
 

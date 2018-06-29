@@ -39,20 +39,21 @@ import de.upb.soot.jimple.common.type.UnknownType;
 public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
 
   public static boolean isIntLikeType(Type t) {
-    return t.equals(IntType.v()) || t.equals(ByteType.v()) || t.equals(ShortType.v()) || t.equals(CharType.v())
-        || t.equals(BooleanType.v());
+    return t.equals(IntType.getInstance()) || t.equals(ByteType.getInstance()) || t.equals(ShortType.getInstance())
+        || t.equals(CharType.getInstance()) || t.equals(BooleanType.getInstance());
   }
 
+  @Override
   public Type getType() {
     Value op1 = op1Box.getValue();
     Value op2 = op2Box.getValue();
 
     if (isIntLikeType(op1.getType()) && isIntLikeType(op2.getType())) {
-      return IntType.v();
-    } else if (op1.getType().equals(LongType.v()) && op2.getType().equals(LongType.v())) {
-      return LongType.v();
+      return IntType.getInstance();
+    } else if (op1.getType().equals(LongType.getInstance()) && op2.getType().equals(LongType.getInstance())) {
+      return LongType.getInstance();
     } else {
-      return UnknownType.v();
+      return UnknownType.getInstance();
     }
   }
 }

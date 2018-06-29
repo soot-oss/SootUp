@@ -36,7 +36,7 @@ public class NullConstant extends Constant {
   public NullConstant() {
   }
 
-  public static NullConstant v() {
+  public static NullConstant getInstance() {
     return nullconstant;
   }
 
@@ -52,7 +52,7 @@ public class NullConstant extends Constant {
 
   @Override
   public Type getType() {
-    return NullType.v();
+    return NullType.getInstance();
   }
 
   public void accept(IVisitor sw) {

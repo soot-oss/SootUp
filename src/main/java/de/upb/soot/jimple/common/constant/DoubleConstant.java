@@ -41,7 +41,7 @@ public class DoubleConstant extends RealConstant {
     this.value = value;
   }
 
-  public static DoubleConstant v(double value) {
+  public static DoubleConstant getInstance(double value) {
     return new DoubleConstant(value);
   }
 
@@ -63,67 +63,67 @@ public class DoubleConstant extends RealConstant {
   @Override
   public NumericConstant add(NumericConstant c) {
     assertInstanceOf(c);
-    return DoubleConstant.v(this.value + ((DoubleConstant) c).value);
+    return DoubleConstant.getInstance(this.value + ((DoubleConstant) c).value);
   }
 
   @Override
   public NumericConstant subtract(NumericConstant c) {
     assertInstanceOf(c);
-    return DoubleConstant.v(this.value - ((DoubleConstant) c).value);
+    return DoubleConstant.getInstance(this.value - ((DoubleConstant) c).value);
   }
 
   @Override
   public NumericConstant multiply(NumericConstant c) {
     assertInstanceOf(c);
-    return DoubleConstant.v(this.value * ((DoubleConstant) c).value);
+    return DoubleConstant.getInstance(this.value * ((DoubleConstant) c).value);
   }
 
   @Override
   public NumericConstant divide(NumericConstant c) {
     assertInstanceOf(c);
-    return DoubleConstant.v(this.value / ((DoubleConstant) c).value);
+    return DoubleConstant.getInstance(this.value / ((DoubleConstant) c).value);
   }
 
   @Override
   public NumericConstant remainder(NumericConstant c) {
     assertInstanceOf(c);
-    return DoubleConstant.v(this.value % ((DoubleConstant) c).value);
+    return DoubleConstant.getInstance(this.value % ((DoubleConstant) c).value);
   }
 
   @Override
   public NumericConstant equalEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Double.compare(this.value, ((DoubleConstant) c).value) == 0 ? 1 : 0);
+    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) == 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant notEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Double.compare(this.value, ((DoubleConstant) c).value) != 0 ? 1 : 0);
+    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) != 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant lessThan(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Double.compare(this.value, ((DoubleConstant) c).value) < 0 ? 1 : 0);
+    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) < 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant lessThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Double.compare(this.value, ((DoubleConstant) c).value) <= 0 ? 1 : 0);
+    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) <= 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant greaterThan(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Double.compare(this.value, ((DoubleConstant) c).value) > 0 ? 1 : 0);
+    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) > 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant greaterThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.v(Double.compare(this.value, ((DoubleConstant) c).value) >= 0 ? 1 : 0);
+    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) >= 0 ? 1 : 0);
   }
 
   @Override
@@ -131,11 +131,11 @@ public class DoubleConstant extends RealConstant {
     assertInstanceOf(constant);
     final double cValue = ((DoubleConstant) constant).value;
     if (this.value < cValue) {
-      return IntConstant.v(-1);
+      return IntConstant.getInstance(-1);
     } else if (this.value == cValue) {
-      return IntConstant.v(0);
+      return IntConstant.getInstance(0);
     } else {
-      return IntConstant.v(1);
+      return IntConstant.getInstance(1);
     }
   }
 
@@ -144,17 +144,17 @@ public class DoubleConstant extends RealConstant {
     assertInstanceOf(constant);
     final double cValue = ((DoubleConstant) constant).value;
     if (this.value > cValue) {
-      return IntConstant.v(1);
+      return IntConstant.getInstance(1);
     } else if (this.value == cValue) {
-      return IntConstant.v(0);
+      return IntConstant.getInstance(0);
     } else {
-      return IntConstant.v(-1);
+      return IntConstant.getInstance(-1);
     }
   }
 
   @Override
   public NumericConstant negate() {
-    return DoubleConstant.v(-(this.value));
+    return DoubleConstant.getInstance(-(this.value));
   }
 
   @Override
@@ -170,7 +170,7 @@ public class DoubleConstant extends RealConstant {
 
   @Override
   public Type getType() {
-    return DoubleType.v();
+    return DoubleType.getInstance();
   }
 
   @Override

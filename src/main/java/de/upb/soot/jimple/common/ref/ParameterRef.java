@@ -37,56 +37,61 @@ import java.util.List;
 /**
  * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter slots on method entry.
  * <br>
- *
+ * <p>
  * For instance, in an instance method, the first statement will often be <code> this := @parameter0; </code>
+ * </p>
  */
 public class ParameterRef implements IdentityRef {
-  int n;
+  int num;
   Type paramType;
 
   /** Constructs a ParameterRef object of the specified type, representing the specified parameter number. */
   public ParameterRef(Type paramType, int number) {
-    this.n = number;
+    this.num = number;
     this.paramType = paramType;
   }
 
+  @Override
   public boolean equivTo(Object o) {
     if (o instanceof ParameterRef) {
-      return n == ((ParameterRef) o).n && paramType.equals(((ParameterRef) o).paramType);
+      return num == ((ParameterRef) o).num && paramType.equals(((ParameterRef) o).paramType);
     }
     return false;
   }
 
+  @Override
   public int equivHashCode() {
-    return n * 101 + paramType.hashCode() * 17;
+    return num * 101 + paramType.hashCode() * 17;
   }
 
   /** Create a new ParameterRef object with the same paramType and number. */
   @Override
   public Object clone() {
-    return new ParameterRef(paramType, n);
+    return new ParameterRef(paramType, num);
   }
 
   /** Converts the given ParameterRef into a String i.e. <code>@parameter0: .int</code>. */
   @Override
   public String toString() {
-    return "@parameter" + n + ": " + paramType;
+    return "@parameter" + num + ": " + paramType;
   }
 
+  @Override
   public void toString(StmtPrinter up) {
     up.identityRef(this);
   }
 
   /** Returns the index of this ParameterRef. */
   public int getIndex() {
-    return n;
+    return num;
   }
 
   /** Sets the index of this ParameterRef. */
   public void setIndex(int index) {
-    n = index;
+    num = index;
   }
 
+  @Override
   public final List<ValueBox> getUseBoxes() {
     return Collections.emptyList();
   }
@@ -98,6 +103,7 @@ public class ParameterRef implements IdentityRef {
   }
 
   /** Used with RefSwitch. */
+  @Override
   public void accept(IVisitor sw) {
     ((IRefVisitor) sw).caseParameterRef(this);
   }

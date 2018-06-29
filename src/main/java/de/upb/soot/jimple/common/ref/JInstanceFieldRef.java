@@ -31,7 +31,7 @@ import de.upb.soot.jimple.Value;
 
 public class JInstanceFieldRef extends AbstractInstanceFieldRef {
   public JInstanceFieldRef(Value base, SootFieldRef fieldRef) {
-    super(Jimple.v().newLocalBox(base), fieldRef);
+    super(Jimple.getInstance().newLocalBox(base), fieldRef);
   }
 
   @Override

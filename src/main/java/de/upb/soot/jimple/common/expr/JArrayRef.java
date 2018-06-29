@@ -46,7 +46,7 @@ public class JArrayRef implements ArrayRef {
   protected ValueBox indexBox;
 
   public JArrayRef(Value base, Value index) {
-    this(Jimple.v().newLocalBox(base), Jimple.v().newImmediateBox(index));
+    this(Jimple.getInstance().newLocalBox(base), Jimple.getInstance().newImmediateBox(index));
   }
 
   protected JArrayRef(ValueBox baseBox, ValueBox indexBox) {
@@ -134,10 +134,10 @@ public class JArrayRef implements ArrayRef {
     Value base = baseBox.getValue();
     Type type = base.getType();
 
-    if (type.equals(UnknownType.v())) {
-      return UnknownType.v();
-    } else if (type.equals(NullType.v())) {
-      return NullType.v();
+    if (type.equals(UnknownType.getInstance())) {
+      return UnknownType.getInstance();
+    } else if (type.equals(NullType.getInstance())) {
+      return NullType.getInstance();
     } else {
       // use makeArrayType on non-array type references when they propagate to this point.
       // kludge, most likely not correct.
@@ -153,7 +153,7 @@ public class JArrayRef implements ArrayRef {
       if (arrayType.numDimensions == 1) {
         return arrayType.baseType;
       } else {
-        return ArrayType.v(arrayType.baseType, arrayType.numDimensions - 1);
+        return ArrayType.getInstance(arrayType.baseType, arrayType.numDimensions - 1);
       }
     }
   }

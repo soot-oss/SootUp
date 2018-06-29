@@ -42,7 +42,7 @@ public class JimpleLocal implements Local {
   public JimpleLocal(String name, Type type) {
     setName(name);
     setType(type);
-    List<Local> numberer = Scene.v().getLocalNumberer();
+    List<Local> numberer = Scene.getInstance().getLocalNumberer();
     if (numberer != null) {
       numberer.add(this);
     }

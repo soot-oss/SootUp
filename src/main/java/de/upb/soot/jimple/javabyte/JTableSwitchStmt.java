@@ -45,7 +45,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   private static StmtBox[] getTargetBoxesArray(List<? extends Stmt> targets) {
     StmtBox[] targetBoxes = new StmtBox[targets.size()];
     for (int i = 0; i < targetBoxes.length; i++) {
-      targetBoxes[i] = Jimple.v().newStmtBox(targets.get(i));
+      targetBoxes[i] = Jimple.getInstance().newStmtBox(targets.get(i));
     }
     return targetBoxes;
   }
@@ -56,12 +56,13 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   }
 
   public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends Stmt> targets, Stmt defaultTarget) {
-    this(Jimple.v().newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets),
-        Jimple.v().newStmtBox(defaultTarget));
+    this(Jimple.getInstance().newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets),
+        Jimple.getInstance().newStmtBox(defaultTarget));
   }
 
   public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends StmtBox> targets, StmtBox defaultTarget) {
-    this(Jimple.v().newImmediateBox(key), lowIndex, highIndex, targets.toArray(new StmtBox[targets.size()]), defaultTarget);
+    this(Jimple.getInstance().newImmediateBox(key), lowIndex, highIndex, targets.toArray(new StmtBox[targets.size()]),
+        defaultTarget);
   }
 
   protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, StmtBox[] targetBoxes, StmtBox defaultTargetBox) {

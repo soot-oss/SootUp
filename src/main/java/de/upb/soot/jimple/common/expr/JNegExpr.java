@@ -30,7 +30,7 @@ import de.upb.soot.jimple.Value;
 
 public class JNegExpr extends AbstractNegExpr {
   public JNegExpr(Value op) {
-    super(Jimple.v().newImmediateBox(op));
+    super(Jimple.getInstance().newImmediateBox(op));
   }
 
   @Override

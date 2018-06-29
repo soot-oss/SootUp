@@ -34,7 +34,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JReturnStmt extends AbstractOpStmt {
   public JReturnStmt(Value returnValue) {
-    this(Jimple.v().newImmediateBox(returnValue));
+    this(Jimple.getInstance().newImmediateBox(returnValue));
   }
 
   protected JReturnStmt(ValueBox returnValueBox) {

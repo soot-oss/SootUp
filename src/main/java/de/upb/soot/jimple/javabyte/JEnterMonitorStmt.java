@@ -35,7 +35,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JEnterMonitorStmt extends AbstractOpStmt {
   public JEnterMonitorStmt(Value op) {
-    this(Jimple.v().newImmediateBox(op));
+    this(Jimple.getInstance().newImmediateBox(op));
   }
 
   protected JEnterMonitorStmt(ValueBox opBox) {

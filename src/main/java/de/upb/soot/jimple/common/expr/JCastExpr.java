@@ -31,7 +31,7 @@ import de.upb.soot.jimple.common.type.Type;
 
 public class JCastExpr extends AbstractCastExpr {
   public JCastExpr(Value op, Type type) {
-    super(Jimple.v().newImmediateBox(op), type);
+    super(Jimple.getInstance().newImmediateBox(op), type);
   }
 
   @Override

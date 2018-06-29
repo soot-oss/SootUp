@@ -25,6 +25,7 @@
 /*
  *  The original class name was UnitBox in soot, renamed by Linghui Luo, 22.06.2018
  */
+
 package de.upb.soot.jimple;
 
 import de.upb.soot.StmtPrinter;
@@ -49,6 +50,7 @@ public interface StmtBox extends Serializable {
    * <p>
    * Returns false if the StmtBox is holding a Stmt that indicates the end of a CFG block and may require specialised
    * processing for SSA.
+   * </p>
    **/
   public boolean isBranchTarget();
 

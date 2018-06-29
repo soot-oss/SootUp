@@ -2,7 +2,7 @@ package de.upb.soot;
 
 public class Options {
 
-  public static Options v() {
+  public static Options getInstance() {
     // TODO Auto-generated method stub
     return null;
   }

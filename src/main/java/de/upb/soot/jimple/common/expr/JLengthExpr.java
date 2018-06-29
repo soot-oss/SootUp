@@ -30,7 +30,7 @@ import de.upb.soot.jimple.Value;
 
 public class JLengthExpr extends AbstractLengthExpr {
   public JLengthExpr(Value op) {
-    super(Jimple.v().newImmediateBox(op));
+    super(Jimple.getInstance().newImmediateBox(op));
   }
 
   @Override

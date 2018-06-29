@@ -41,7 +41,7 @@ public class MethodHandle extends Constant {
     this.tag = tag;
   }
 
-  public static MethodHandle v(SootMethodRef ref, int tag) {
+  public static MethodHandle getInstance(SootMethodRef ref, int tag) {
     return new MethodHandle(ref, tag);
   }
 
@@ -52,7 +52,7 @@ public class MethodHandle extends Constant {
 
   @Override
   public Type getType() {
-    return RefType.v("java.lang.invoke.MethodHandle");
+    return RefType.getInstance("java.lang.invoke.MethodHandle");
   }
 
   public SootMethodRef getMethodRef() {

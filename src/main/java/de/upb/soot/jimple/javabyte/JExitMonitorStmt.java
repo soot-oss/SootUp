@@ -42,7 +42,7 @@ import java.util.List;
 
 public class JExitMonitorStmt extends AbstractOpStmt {
   public JExitMonitorStmt(Value op) {
-    this(Jimple.v().newImmediateBox(op));
+    this(Jimple.getInstance().newImmediateBox(op));
   }
 
   protected JExitMonitorStmt(ValueBox opBox) {
