@@ -34,6 +34,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JNewMultiArrayExpr extends AbstractNewMultiArrayExpr {
+  /**
+   * Initiates a JNewMultiArrayExpr.
+   * 
+   * @param type
+   *          the type of the array
+   * @param sizes
+   *          the sizes
+   * 
+   */
   public JNewMultiArrayExpr(ArrayType type, List<? extends Value> sizes) {
     super(type, new ValueBox[sizes.size()]);
 

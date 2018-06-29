@@ -40,6 +40,12 @@ public class StaticFieldRef implements FieldRef {
 
   protected SootFieldRef fieldRef;
 
+  /**
+   * Initiates a StaticFieldRef with given static field reference.
+   * 
+   * @param fieldRef
+   *          the given static field reference
+   */
   public StaticFieldRef(SootFieldRef fieldRef) {
     if (!fieldRef.isStatic()) {
       throw new RuntimeException("wrong static-ness");
@@ -57,6 +63,7 @@ public class StaticFieldRef implements FieldRef {
     return fieldRef.getSignature();
   }
 
+  @Override
   public void toString(StmtPrinter up) {
     up.fieldRef(fieldRef);
   }
@@ -76,10 +83,12 @@ public class StaticFieldRef implements FieldRef {
     return fieldRef.resolve();
   }
 
+  @Override
   public List<ValueBox> getUseBoxes() {
     return Collections.emptyList();
   }
 
+  @Override
   public Type getType() {
     return fieldRef.type();
   }

@@ -1,20 +1,6 @@
-/* Soot - a J*va Optimization Framework
- * Copyright (C) 1999 Patrick Lam
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+/*
+ * @author Linghui Luo
+ * @version 1.0
  */
 
 /*
@@ -42,18 +28,45 @@ import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.List;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class JAssignStmt.
+ */
 public class JAssignStmt extends AbstractDefinitionStmt {
+
+  /**
+   * The Class LinkedVariableBox.
+   */
   private static class LinkedVariableBox extends VariableBox {
+
+    /** The other box. */
     ValueBox otherBox = null;
 
+    /**
+     * Instantiates a new linked variable box.
+     *
+     * @param v
+     *          the v
+     */
     private LinkedVariableBox(Value v) {
       super(v);
     }
 
+    /**
+     * Sets the other box.
+     *
+     * @param otherBox
+     *          the new other box
+     */
     public void setOtherBox(ValueBox otherBox) {
       this.otherBox = otherBox;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.upb.soot.jimple.VariableBox#canContainValue(de.upb.soot.jimple.Value)
+     */
     @Override
     public boolean canContainValue(Value v) {
       if (super.canContainValue(v)) {
@@ -68,17 +81,39 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     }
   }
 
+  /**
+   * The Class LinkedRValueBox.
+   */
   private static class LinkedRValueBox extends RValueBox {
+
+    /** The other box. */
     ValueBox otherBox = null;
 
+    /**
+     * Instantiates a new linked R value box.
+     *
+     * @param v
+     *          the v
+     */
     private LinkedRValueBox(Value v) {
       super(v);
     }
 
+    /**
+     * Sets the other box.
+     *
+     * @param otherBox
+     *          the new other box
+     */
     public void setOtherBox(ValueBox otherBox) {
       this.otherBox = otherBox;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see de.upb.soot.jimple.RValueBox#canContainValue(de.upb.soot.jimple.Value)
+     */
     @Override
     public boolean canContainValue(Value v) {
       if (super.canContainValue(v)) {
@@ -93,6 +128,14 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     }
   }
 
+  /**
+   * Instantiates a new JAssignStmt.
+   *
+   * @param variable
+   *          the variable on the left side of the assign statement.
+   * @param rvalue
+   *          the value on the right side of the assign statement.
+   */
   public JAssignStmt(Value variable, Value rvalue) {
     this(new LinkedVariableBox(variable), new LinkedRValueBox(rvalue));
 
@@ -106,15 +149,33 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   }
 
+  /**
+   * Instantiates a new JAssignStmt.
+   *
+   * @param variableBox
+   *          the variable box on the left side of the assign statement.
+   * @param rvalueBox
+   *          the rvalue box on the right side of the assign statement.
+   */
   protected JAssignStmt(ValueBox variableBox, ValueBox rvalueBox) {
     super(variableBox, rvalueBox);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#containsInvokeExpr()
+   */
   @Override
   public boolean containsInvokeExpr() {
     return getRightOp() instanceof AbstractInvokeExpr;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getInvokeExpr()
+   */
   @Override
   public AbstractInvokeExpr getInvokeExpr() {
     if (!containsInvokeExpr()) {
@@ -124,6 +185,11 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     return (AbstractInvokeExpr) rightBox.getValue();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getInvokeExprBox()
+   */
   @Override
   public ValueBox getInvokeExprBox() {
     if (!containsInvokeExpr()) {
@@ -133,12 +199,22 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     return rightBox;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#containsArrayRef()
+   */
   /* added by Feng */
   @Override
   public boolean containsArrayRef() {
     return ((getLeftOp() instanceof ArrayRef) || (getRightOp() instanceof ArrayRef));
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getArrayRef()
+   */
   @Override
   public ArrayRef getArrayRef() {
     if (!containsArrayRef()) {
@@ -152,6 +228,11 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getArrayRefBox()
+   */
   @Override
   public ValueBox getArrayRefBox() {
     if (!containsArrayRef()) {
@@ -165,11 +246,21 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#containsFieldRef()
+   */
   @Override
   public boolean containsFieldRef() {
     return ((getLeftOp() instanceof FieldRef) || (getRightOp() instanceof FieldRef));
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getFieldRef()
+   */
   @Override
   public FieldRef getFieldRef() {
     if (!containsFieldRef()) {
@@ -183,6 +274,11 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getFieldRefBox()
+   */
   @Override
   public ValueBox getFieldRefBox() {
     if (!containsFieldRef()) {
@@ -196,6 +292,11 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     }
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getUnitBoxes()
+   */
   @Override
   public List<StmtBox> getUnitBoxes() {
     // handle possible PhiExpr's
@@ -207,11 +308,21 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     return super.getUnitBoxes();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
   @Override
   public String toString() {
     return leftBox.getValue().toString() + " = " + rightBox.getValue().toString();
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.Stmt#toString(de.upb.soot.StmtPrinter)
+   */
   @Override
   public void toString(StmtPrinter up) {
     leftBox.toString(up);
@@ -219,19 +330,41 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     rightBox.toString(up);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#clone()
+   */
   @Override
   public Object clone() {
     return new JAssignStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()));
   }
 
+  /**
+   * Sets the left op.
+   *
+   * @param variable
+   *          the new left op
+   */
   public void setLeftOp(Value variable) {
     getLeftOpBox().setValue(variable);
   }
 
+  /**
+   * Sets the right op.
+   *
+   * @param rvalue
+   *          the new right op
+   */
   public void setRightOp(Value rvalue) {
     getRightOpBox().setValue(rvalue);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#accept(de.upb.soot.jimple.visitor.IVisitor)
+   */
   @Override
   public void accept(IVisitor sw) {
     ((IStmtVisitor) sw).caseAssignStmt(this);

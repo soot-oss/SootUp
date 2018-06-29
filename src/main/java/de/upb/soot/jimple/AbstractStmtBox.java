@@ -33,7 +33,7 @@ import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.common.stmt.Stmt;
 
 public abstract class AbstractStmtBox implements StmtBox {
-  protected Stmt unit;
+  protected Stmt stmt;
 
   public abstract boolean canContainUnit(Stmt u);
 
@@ -42,33 +42,34 @@ public abstract class AbstractStmtBox implements StmtBox {
     return true;
   }
 
-  public void setUnit(Stmt unit) {
-    if (!canContainUnit(unit)) {
+  @Override
+  public void setStmt(Stmt stmt) {
+    if (!canContainUnit(stmt)) {
       throw new RuntimeException("attempting to put invalid unit in UnitBox");
     }
 
     // Remove this from set of back pointers.
-    if (this.unit != null) {
-      this.unit.removeBoxPointingToThis(this);
+    if (this.stmt != null) {
+      this.stmt.removeBoxPointingToThis(this);
     }
 
     // Perform link
-    this.unit = unit;
+    this.stmt = stmt;
 
     // Add this to back pointers
-    if (this.unit != null) {
-      this.unit.addBoxPointingToThis(this);
+    if (this.stmt != null) {
+      this.stmt.addBoxPointingToThis(this);
     }
   }
 
-  public Stmt getUnit() {
-    return unit;
+  public Stmt getStmt() {
+    return stmt;
   }
 
   @Override
   public void toString(StmtPrinter up) {
     up.startUnitBox(this);
-    up.unitRef(unit, isBranchTarget());
+    up.unitRef(stmt, isBranchTarget());
     up.endUnitBox(this);
   }
 }

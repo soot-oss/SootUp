@@ -5,6 +5,7 @@ import de.upb.soot.jimple.common.type.Type;
 import java.util.List;
 
 /**
+ * Soot's counterpart of the source language's method concept.
  * 
  * @author Linghui Luo
  *
