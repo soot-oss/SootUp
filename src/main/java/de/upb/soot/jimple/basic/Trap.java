@@ -1,4 +1,4 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.basic;
 
 /**
  * A trap is an exception catcher.

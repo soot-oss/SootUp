@@ -23,7 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.basic;
 
 /**
  * An alternate equivalence relation between objects. The standard interpretation will be structural equality. We also demand

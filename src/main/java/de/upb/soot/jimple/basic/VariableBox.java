@@ -23,8 +23,9 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.basic;
 
+import de.upb.soot.jimple.AbstractValueBox;
 import de.upb.soot.jimple.common.ref.ConcreteRef;
 
 public class VariableBox extends AbstractValueBox {
@@ -32,6 +33,7 @@ public class VariableBox extends AbstractValueBox {
     setValue(value);
   }
 
+  @Override
   public boolean canContainValue(Value value) {
     return value instanceof Local || value instanceof ConcreteRef;
   }

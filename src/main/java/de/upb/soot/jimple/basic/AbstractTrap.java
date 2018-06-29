@@ -1,4 +1,4 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.basic;
 
 import de.upb.soot.Scene;
 import de.upb.soot.core.SootClass;

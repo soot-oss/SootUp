@@ -23,14 +23,16 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.basic;
 
-public class JimpleLocalBox extends AbstractValueBox {
-  public JimpleLocalBox(Value value) {
+import de.upb.soot.jimple.AbstractValueBox;
+
+public class LocalBox extends AbstractValueBox {
+  public LocalBox(Value value) {
     setValue(value);
   }
 
   public boolean canContainValue(Value value) {
-    return value instanceof JimpleLocal;
+    return value instanceof Local;
   }
 }

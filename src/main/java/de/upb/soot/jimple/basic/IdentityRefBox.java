@@ -23,8 +23,9 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.basic;
 
+import de.upb.soot.jimple.AbstractValueBox;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 
 public class IdentityRefBox extends AbstractValueBox {

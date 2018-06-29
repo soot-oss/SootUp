@@ -20,7 +20,7 @@
  *  The original class name was UnitBoxOwner in soot, renamed by Linghui Luo, 22.06.2018
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.basic;
 
 import java.util.List;
 

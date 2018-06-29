@@ -23,7 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.basic;
 
 import de.upb.soot.Scene;
 import de.upb.soot.StmtPrinter;
@@ -34,12 +34,12 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import java.util.Collections;
 import java.util.List;
 
-public class JimpleLocal implements Local {
+public class Local implements Value, Numberable, Immediate {
   protected String name;
   Type type;
 
   /** Constructs a JimpleLocal of the given name and type. */
-  public JimpleLocal(String name, Type type) {
+  public Local(String name, Type type) {
     setName(name);
     setType(type);
     List<Local> numberer = Scene.getInstance().getLocalNumberer();
@@ -70,19 +70,17 @@ public class JimpleLocal implements Local {
   @Override
   public Object clone() {
     // do not intern the name again
-    JimpleLocal local = new JimpleLocal(null, type);
+    Local local = new Local(null, type);
     local.name = name;
     return local;
   }
 
   /** Returns the name of this object. */
-  @Override
   public String getName() {
     return name;
   }
 
   /** Sets the name of this object as given. */
-  @Override
   public void setName(String name) {
     this.name = (name == null) ? null : name.intern();
   }
@@ -94,7 +92,6 @@ public class JimpleLocal implements Local {
   }
 
   /** Sets the type of this local. */
-  @Override
   public void setType(Type t) {
     this.type = t;
   }
