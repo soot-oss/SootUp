@@ -24,6 +24,10 @@
 
 package de.upb.soot.jimple;
 
+import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
 import de.upb.soot.jimple.common.expr.JAndExpr;
@@ -608,7 +612,7 @@ public class Jimple {
    * Constructs a Local with the given name and type.
    */
   public Local newLocal(String name, Type t) {
-    return new JimpleLocal(name, t);
+    return new Local(name, t);
   }
 
   /**

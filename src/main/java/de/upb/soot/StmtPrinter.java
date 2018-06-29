@@ -1,8 +1,8 @@
 package de.upb.soot;
 
-import de.upb.soot.jimple.Local;
-import de.upb.soot.jimple.StmtBox;
-import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.ref.SootFieldRef;
@@ -40,7 +40,7 @@ public interface StmtPrinter {
 
   public void newline();
 
-  public void local(Local l);
+  public void local(Local jimpleLocal);
 
   public void type(Type t);
 

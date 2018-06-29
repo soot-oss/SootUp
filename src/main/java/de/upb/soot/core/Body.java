@@ -1,7 +1,5 @@
 
-package de.upb.soot.jimple;
-
-import de.upb.soot.core.SootMethod;
+package de.upb.soot.core;
 
 /**
  * Class that models the body (code attribute) of a method.

@@ -25,6 +25,9 @@
 
 package de.upb.soot.jimple;
 
+import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
+
 /**
  * Provides static helper methods to indicate if parenthesization is required.
  * <p>

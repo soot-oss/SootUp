@@ -26,9 +26,9 @@
 package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.StmtPrinter;
-import de.upb.soot.jimple.Immediate;
-import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.basic.Immediate;
+import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
 
 import java.util.Collections;
 import java.util.List;

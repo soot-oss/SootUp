@@ -26,7 +26,7 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.StmtPrinter;
-import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.ref.CaughtExceptionRef;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;

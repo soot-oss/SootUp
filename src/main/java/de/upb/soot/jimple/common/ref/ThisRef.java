@@ -26,7 +26,7 @@
 package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.StmtPrinter;
-import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IRefVisitor;

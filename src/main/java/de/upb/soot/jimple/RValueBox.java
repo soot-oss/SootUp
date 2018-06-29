@@ -25,6 +25,8 @@
 
 package de.upb.soot.jimple;
 
+import de.upb.soot.jimple.basic.Immediate;
+import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.expr.Expr;
 import de.upb.soot.jimple.common.ref.ConcreteRef;
 

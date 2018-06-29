@@ -30,6 +30,7 @@
 package de.upb.soot.jimple;
 
 import de.upb.soot.StmtPrinter;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.common.stmt.Stmt;
 
 public abstract class AbstractStmtBox implements StmtBox {

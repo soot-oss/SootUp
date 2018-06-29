@@ -12,14 +12,14 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.StmtPrinter;
-import de.upb.soot.jimple.Immediate;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.RValueBox;
-import de.upb.soot.jimple.StmtBox;
-import de.upb.soot.jimple.StmtBoxOwner;
-import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.ValueBox;
-import de.upb.soot.jimple.VariableBox;
+import de.upb.soot.jimple.basic.Immediate;
+import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.StmtBoxOwner;
+import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.jimple.basic.VariableBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.ref.FieldRef;

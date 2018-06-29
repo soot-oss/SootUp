@@ -26,10 +26,10 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.jimple.ImmediateBox;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.Local;
-import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.basic.ImmediateBox;
+import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.ref.SootMethodRef;
 
 import java.util.ArrayList;

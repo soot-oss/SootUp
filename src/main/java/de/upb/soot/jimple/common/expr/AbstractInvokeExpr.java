@@ -27,8 +27,8 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.ref.SootMethodRef;
 import de.upb.soot.jimple.common.type.Type;
 

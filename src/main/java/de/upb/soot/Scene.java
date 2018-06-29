@@ -1,7 +1,7 @@
 package de.upb.soot;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.jimple.Local;
+import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.type.Type;
 
 import java.util.List;

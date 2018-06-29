@@ -25,7 +25,7 @@
 
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.Local;
+import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.expr.AbstractCastExpr;
 import de.upb.soot.jimple.common.expr.AbstractInstanceOfExpr;
 import de.upb.soot.jimple.common.expr.AbstractInterfaceInvokeExpr;

@@ -25,9 +25,9 @@
 
 package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.jimple.Local;
-import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
 

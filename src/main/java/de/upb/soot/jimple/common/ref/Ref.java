@@ -25,7 +25,7 @@
 
 package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.basic.Value;
 
 public interface Ref extends Value {
 }

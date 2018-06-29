@@ -25,7 +25,7 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
 import de.upb.soot.jimple.common.type.CharType;

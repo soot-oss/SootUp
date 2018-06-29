@@ -25,9 +25,9 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.StmtBox;
-import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -25,8 +25,8 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.StmtBox;
-import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.ref.FieldRef;

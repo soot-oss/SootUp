@@ -28,8 +28,8 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.Value;
-import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.ref.SootMethodRef;
 
 import java.util.ArrayList;

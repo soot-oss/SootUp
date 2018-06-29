@@ -27,7 +27,7 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.ValueBox;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;

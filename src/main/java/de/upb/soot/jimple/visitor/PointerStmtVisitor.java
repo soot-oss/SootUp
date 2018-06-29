@@ -19,8 +19,8 @@
 
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.Local;
-import de.upb.soot.jimple.Value;
+import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.expr.Expr;
