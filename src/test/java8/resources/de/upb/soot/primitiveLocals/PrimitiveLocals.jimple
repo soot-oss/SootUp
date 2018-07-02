@@ -15,8 +15,13 @@ public class PrimitiveLocals extends java.lang.Object
     public void primitive_int()
     {
         PrimitiveLocals r0;
+        java.io.PrintStream $r1;
 
         r0 := @this: PrimitiveLocals;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(512);
 
         return;
     }
@@ -24,8 +29,13 @@ public class PrimitiveLocals extends java.lang.Object
     public void primitive_byte()
     {
         PrimitiveLocals r0;
+        java.io.PrintStream $r1;
 
         r0 := @this: PrimitiveLocals;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(0);
 
         return;
     }
@@ -33,8 +43,13 @@ public class PrimitiveLocals extends java.lang.Object
     public void primitive_char()
     {
         PrimitiveLocals r0;
+        java.io.PrintStream $r1;
 
         r0 := @this: PrimitiveLocals;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(char)>(97);
 
         return;
     }
@@ -42,8 +57,13 @@ public class PrimitiveLocals extends java.lang.Object
     public void primitive_short()
     {
         PrimitiveLocals r0;
+        java.io.PrintStream $r1;
 
         r0 := @this: PrimitiveLocals;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(10);
 
         return;
     }
@@ -51,8 +71,13 @@ public class PrimitiveLocals extends java.lang.Object
     public void primitive_float()
     {
         PrimitiveLocals r0;
+        java.io.PrintStream $r1;
 
         r0 := @this: PrimitiveLocals;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(float)>(3.14F);
 
         return;
     }
@@ -60,8 +85,13 @@ public class PrimitiveLocals extends java.lang.Object
     public void primitive_long()
     {
         PrimitiveLocals r0;
+        java.io.PrintStream $r1;
 
         r0 := @this: PrimitiveLocals;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(long)>(123456789L);
 
         return;
     }
@@ -69,8 +99,13 @@ public class PrimitiveLocals extends java.lang.Object
     public void primitive_double()
     {
         PrimitiveLocals r0;
+        java.io.PrintStream $r1;
 
         r0 := @this: PrimitiveLocals;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(double)>(1.96969654);
 
         return;
     }

@@ -21,13 +21,13 @@ public class NestedControlStatements extends java.lang.Object
         return;
     }
 
-    public void greater(int, int, int)
+    public void nested_switch_while(int, int, int)
     {
         NestedControlStatements r0;
-        java.lang.StringBuilder $r1, $r3, $r4, $r5, $r6, $r8, $r10, $r11, $r12, $r13, $r15, $r17, $r18, $r19, $r20, $r27, $r29, $r30, $r31, $r32, $r34, $r36, $r37, $r38, $r39, $r43, $r45, $r46, $r47, $r48;
-        java.io.PrintStream $r2, $r9, $r16, $r22, $r23, $r24, $r25, $r26, $r28, $r35, $r41, $r42, $r44;
-        java.lang.String $r7, $r14, $r21, $r33, $r40, $r49;
-        int i0, i1, i2, i3, i4, i5, i6;
+        int i0, i1, i2;
+        java.lang.StringBuilder $r1, $r3, $r4, $r5, $r6, $r8, $r10, $r11, $r12, $r13;
+        java.io.PrintStream $r2, $r9;
+        java.lang.String $r7, $r14;
 
         r0 := @this: NestedControlStatements;
 
@@ -37,40 +37,27 @@ public class NestedControlStatements extends java.lang.Object
 
         i2 := @parameter2: int;
 
-        if i0 >= i1 goto label01;
+     label1:
+        if i0 >= i1 goto label4;
 
-        $r44 = <java.lang.System: java.io.PrintStream out>;
+        lookupswitch(i0)
+        {
+            case 10: goto label2;
+            default: goto label3;
+        };
 
-        $r43 = new java.lang.StringBuilder;
-
-        specialinvoke $r43.<java.lang.StringBuilder: void <init>()>();
-
-        $r45 = virtualinvoke $r43.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("IF: ");
-
-        $r46 = virtualinvoke $r45.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
-
-        $r47 = virtualinvoke $r46.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is smaller than ");
-
-        $r48 = virtualinvoke $r47.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
-
-        $r49 = virtualinvoke $r48.<java.lang.StringBuilder: java.lang.String toString()>();
-
-        virtualinvoke $r44.<java.io.PrintStream: void println(java.lang.String)>($r49);
-
-        goto label02;
-
-     label01:
+     label2:
         $r2 = <java.lang.System: java.io.PrintStream out>;
 
         $r1 = new java.lang.StringBuilder;
 
         specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
 
-        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("ELSE: ");
+        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH CASE: ");
 
         $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
 
-        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is greater than ");
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is smaller than ");
 
         $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
 
@@ -78,21 +65,14 @@ public class NestedControlStatements extends java.lang.Object
 
         virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r7);
 
-     label02:
-        lookupswitch(i0)
-        {
-            case 10: goto label03;
-            default: goto label04;
-        };
-
-     label03:
+     label3:
         $r9 = <java.lang.System: java.io.PrintStream out>;
 
         $r8 = new java.lang.StringBuilder;
 
         specialinvoke $r8.<java.lang.StringBuilder: void <init>()>();
 
-        $r10 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH CASE: ");
+        $r10 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH DEFAULT: ");
 
         $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
 
@@ -104,188 +84,298 @@ public class NestedControlStatements extends java.lang.Object
 
         virtualinvoke $r9.<java.io.PrintStream: void println(java.lang.String)>($r14);
 
-     label04:
-        $r16 = <java.lang.System: java.io.PrintStream out>;
+        goto label1;
 
-        $r15 = new java.lang.StringBuilder;
+     label4:
+        return;
+    }
 
-        specialinvoke $r15.<java.lang.StringBuilder: void <init>()>();
+    public void nested_if_while(int, int, int)
+    {
+        NestedControlStatements r0;
+        int i0, i1, i2;
+        java.io.PrintStream $r1, $r2;
 
-        $r17 = virtualinvoke $r15.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH DEFAULT: ");
+        r0 := @this: NestedControlStatements;
 
-        $r18 = virtualinvoke $r17.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+        i0 := @parameter0: int;
 
-        $r19 = virtualinvoke $r18.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is smaller than ");
+        i2 := @parameter1: int;
 
-        $r20 = virtualinvoke $r19.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+        i1 := @parameter2: int;
 
-        $r21 = virtualinvoke $r20.<java.lang.StringBuilder: java.lang.String toString()>();
+     label1:
+        if i0 >= i2 goto label4;
 
-        virtualinvoke $r16.<java.io.PrintStream: void println(java.lang.String)>($r21);
+        if i1 <= i2 goto label2;
 
-     label05:
-        if i0 >= i1 goto label10;
+        $r2 = <java.lang.System: java.io.PrintStream out>;
 
-        $r26 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("c is greater than b");
 
-        virtualinvoke $r26.<java.io.PrintStream: void println(java.lang.String)>("a is smaller than b");
+        goto label3;
 
-        lookupswitch(i0)
-        {
-            case 10: goto label06;
-            default: goto label07;
-        };
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
 
-     label06:
-        $r28 = <java.lang.System: java.io.PrintStream out>;
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("b is greater than c");
 
-        $r27 = new java.lang.StringBuilder;
+     label3:
+        i2 = i2 + 1;
 
-        specialinvoke $r27.<java.lang.StringBuilder: void <init>()>();
+        goto label1;
 
-        $r29 = virtualinvoke $r27.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH CASE: ");
+     label4:
+        return;
+    }
 
-        $r30 = virtualinvoke $r29.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+    public void nested_for_while(int, int, int)
+    {
+        NestedControlStatements r0;
+        int i0, i1, i2, i3;
+        java.io.PrintStream $r1;
 
-        $r31 = virtualinvoke $r30.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is smaller than ");
+        r0 := @this: NestedControlStatements;
 
-        $r32 = virtualinvoke $r31.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+        i0 := @parameter0: int;
 
-        $r33 = virtualinvoke $r32.<java.lang.StringBuilder: java.lang.String toString()>();
+        i1 := @parameter1: int;
 
-        virtualinvoke $r28.<java.io.PrintStream: void println(java.lang.String)>($r33);
+        i2 := @parameter2: int;
 
-     label07:
-        $r35 = <java.lang.System: java.io.PrintStream out>;
+     label1:
+        if i0 >= i1 goto label4;
 
-        $r34 = new java.lang.StringBuilder;
-
-        specialinvoke $r34.<java.lang.StringBuilder: void <init>()>();
-
-        $r36 = virtualinvoke $r34.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH DEFAULT: ");
-
-        $r37 = virtualinvoke $r36.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
-
-        $r38 = virtualinvoke $r37.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is smaller than ");
-
-        $r39 = virtualinvoke $r38.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
-
-        $r40 = virtualinvoke $r39.<java.lang.StringBuilder: java.lang.String toString()>();
-
-        virtualinvoke $r35.<java.io.PrintStream: void println(java.lang.String)>($r40);
-
-        if i1 != i0 goto label08;
-
-        $r42 = <java.lang.System: java.io.PrintStream out>;
-
-        virtualinvoke $r42.<java.io.PrintStream: void println(java.lang.String)>("b = a");
-
-        goto label09;
-
-     label08:
-        $r41 = <java.lang.System: java.io.PrintStream out>;
-
-        virtualinvoke $r41.<java.io.PrintStream: void println(java.lang.String)>(" a and b are not equal");
-
-     label09:
-        i0 = i0 + 1;
-
-        goto label05;
-
-     label10:
         i3 = 0;
 
-     label11:
-        if i3 >= i0 goto label12;
+     label2:
+        if i3 > i0 goto label3;
 
-        i1 = i1 + 1;
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("for in while");
 
         i3 = i3 + 1;
 
-        goto label11;
+        goto label2;
 
-     label12:
-        i4 = 0;
+     label3:
+        goto label1;
 
-     label13:
-        if i4 >= i0 goto label19;
+     label4:
+        return;
+    }
 
-        if i1 > i0 goto label14;
+    public void nested_if_for(int, int, int)
+    {
+        NestedControlStatements r0;
+        int i0, i1, i2, i3;
+        java.io.PrintStream $r1, $r2;
 
-        if i2 <= i1 goto label15;
+        r0 := @this: NestedControlStatements;
 
-     label14:
-        i0 = i0 + 1;
+        i1 := @parameter0: int;
 
-        goto label18;
+        i0 := @parameter1: int;
 
-     label15:
-        if i0 == i1 goto label16;
+        i2 := @parameter2: int;
 
-        $r25 = <java.lang.System: java.io.PrintStream out>;
+        i3 = 0;
 
-        virtualinvoke $r25.<java.io.PrintStream: void println(java.lang.String)>("Not equal");
+     label1:
+        if i3 >= i1 goto label7;
 
-        goto label18;
+        if i0 > i1 goto label2;
 
-     label16:
-        if i0 != i1 goto label17;
+        if i2 <= i0 goto label3;
 
-        $r24 = <java.lang.System: java.io.PrintStream out>;
+     label2:
+        i1 = i1 + 1;
 
-        virtualinvoke $r24.<java.io.PrintStream: void println(java.lang.String)>("Equal");
+        goto label6;
 
-        goto label18;
+     label3:
+        if i1 == i0 goto label4;
 
-     label17:
-        if i1 <= i0 goto label18;
+        $r2 = <java.lang.System: java.io.PrintStream out>;
 
-        if i2 <= i1 goto label18;
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("Not equal");
+
+        goto label6;
+
+     label4:
+        if i1 != i0 goto label5;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Equal");
+
+        goto label6;
+
+     label5:
+        if i0 <= i1 goto label6;
+
+        if i2 <= i0 goto label6;
 
         i2 = i2 + -1;
 
-     label18:
+     label6:
+        i3 = i3 + 1;
+
+        goto label1;
+
+     label7:
+        return;
+    }
+
+    public void nested_while_for(int, int, int)
+    {
+        NestedControlStatements r0;
+        int i0, i1, i2, i3;
+        java.io.PrintStream $r1;
+
+        r0 := @this: NestedControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        i3 = 0;
+
+     label1:
+        if i3 >= i0 goto label4;
+
+     label2:
+        if i0 >= i1 goto label3;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("a is smaller than b");
+
+        goto label2;
+
+     label3:
+        i3 = i3 + 1;
+
+        goto label1;
+
+     label4:
+        return;
+    }
+
+    public void nested_switch_for(int, int, int)
+    {
+        NestedControlStatements r0;
+        int i0, i1, i2, i3;
+        java.lang.StringBuilder $r1, $r3, $r4, $r5, $r6, $r8, $r10, $r11, $r12, $r13;
+        java.io.PrintStream $r2, $r9;
+        java.lang.String $r7, $r14;
+
+        r0 := @this: NestedControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        i3 = 0;
+
+     label1:
+        if i3 >= i0 goto label4;
+
+        lookupswitch(i0)
+        {
+            case 10: goto label2;
+            default: goto label3;
+        };
+
+     label2:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = new java.lang.StringBuilder;
+
+        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH CASE: ");
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is smaller than ");
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r7);
+
+     label3:
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        $r8 = new java.lang.StringBuilder;
+
+        specialinvoke $r8.<java.lang.StringBuilder: void <init>()>();
+
+        $r10 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("SWITCH DEFAULT: ");
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r12 = virtualinvoke $r11.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is smaller than ");
+
+        $r13 = virtualinvoke $r12.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r14 = virtualinvoke $r13.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(java.lang.String)>($r14);
+
+        i3 = i3 + 1;
+
+        goto label1;
+
+     label4:
+        return;
+    }
+
+    public void nested_for_for(int, int, int)
+    {
+        NestedControlStatements r0;
+        int i0, i1, i2, i3, i4;
+        java.io.PrintStream $r1;
+
+        r0 := @this: NestedControlStatements;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 := @parameter2: int;
+
+        i3 = 0;
+
+     label1:
+        if i3 >= i0 goto label4;
+
+        i4 = 0;
+
+     label2:
+        if i4 > i3 goto label3;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("for in for");
+
         i4 = i4 + 1;
 
-        goto label13;
+        goto label2;
 
-     label19:
-        i5 = 0;
+     label3:
+        i3 = i3 + 1;
 
-     label20:
-        if i5 >= i0 goto label25;
+        goto label1;
 
-        i6 = 0;
-
-     label21:
-        if i6 > i5 goto label24;
-
-        if i6 >= 4 goto label23;
-
-        if i6 != 2 goto label22;
-
-        $r23 = <java.lang.System: java.io.PrintStream out>;
-
-        virtualinvoke $r23.<java.io.PrintStream: void println(java.lang.String)>("J is 2");
-
-        goto label23;
-
-     label22:
-        $r22 = <java.lang.System: java.io.PrintStream out>;
-
-        virtualinvoke $r22.<java.io.PrintStream: void println(java.lang.String)>("J is not 2");
-
-     label23:
-        i6 = i6 + 1;
-
-        goto label21;
-
-     label24:
-        i5 = i5 + 1;
-
-        goto label20;
-
-     label25:
+     label4:
         return;
     }
 }

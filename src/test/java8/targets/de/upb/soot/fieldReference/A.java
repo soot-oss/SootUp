@@ -1,6 +1,6 @@
-package de.upb.soot.FieldReference;
+package de.upb.soot.fieldReference;
 
 class A {
-    int i = 15;
-    String j = "greater";
+  int i = 15;
+  String j = "greater";
 }

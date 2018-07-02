@@ -1,6 +1,6 @@
-package de.upb.soot.Interfaces;
+package de.upb.soot.interfaces;
 
 interface A2 {
-    // method signature
-    void printA2();
+  // method signature
+  void printA2();
 }

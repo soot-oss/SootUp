@@ -15,13 +15,20 @@ public class Operators extends java.lang.Object
     public void addition(int, int)
     {
         Operators r0;
-        int i0, i1;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
 
         i1 := @parameter1: int;
+
+        i2 = i0 + i1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -29,13 +36,20 @@ public class Operators extends java.lang.Object
     public void subtraction(int, int)
     {
         Operators r0;
-        int i0, i1;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
 
         i1 := @parameter1: int;
+
+        i2 = i1 - i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -43,13 +57,20 @@ public class Operators extends java.lang.Object
     public void multiplication(int, int)
     {
         Operators r0;
-        int i0, i1;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
 
         i1 := @parameter1: int;
+
+        i2 = i1 * i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -58,6 +79,7 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
@@ -67,6 +89,10 @@ public class Operators extends java.lang.Object
 
         i2 = i1 / i0;
 
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
         return;
     }
 
@@ -74,6 +100,7 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
@@ -83,6 +110,10 @@ public class Operators extends java.lang.Object
 
         i2 = i1 % i0;
 
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
         return;
     }
 
@@ -90,12 +121,17 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i2 := @parameter0: int;
 
         i0 := @parameter1: int;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -104,12 +140,17 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i2 := @parameter0: int;
 
         i0 := @parameter1: int;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -118,10 +159,15 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i0);
 
         return;
     }
@@ -129,11 +175,18 @@ public class Operators extends java.lang.Object
     public void add_assignment_operator(int)
     {
         Operators r0;
-        int i0;
+        int i0, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
+
+        i2 = 0 + i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -153,11 +206,18 @@ public class Operators extends java.lang.Object
     public void multiply_assignment_operator(int)
     {
         Operators r0;
-        int i0;
+        int i0, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
+
+        i2 = 0 * i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -166,12 +226,17 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
 
         i2 = 0 / i0;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -180,6 +245,7 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
@@ -187,17 +253,28 @@ public class Operators extends java.lang.Object
 
         i2 = 0 % i0;
 
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
+
         return;
     }
 
     public void left_shift_assignment_operator(int)
     {
         Operators r0;
-        int i0;
+        int i0, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
+
+        i2 = 0 << 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -206,10 +283,18 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0;
+        java.io.PrintStream $r1;
+        byte b2;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
+
+        b2 = 0 >> 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -218,10 +303,18 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0;
+        java.io.PrintStream $r1;
+        byte b2;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
+
+        b2 = 0 & 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -230,10 +323,18 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0;
+        java.io.PrintStream $r1;
+        byte b2;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
+
+        b2 = 0 ^ 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -242,10 +343,18 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0;
+        java.io.PrintStream $r1;
+        byte b2;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
+
+        b2 = 0 | 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(b2);
 
         return;
     }
@@ -254,6 +363,8 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
 
         r0 := @this: Operators;
 
@@ -263,9 +374,18 @@ public class Operators extends java.lang.Object
 
         if i0 != i1 goto label1;
 
-        goto label1;
+        $z1 = 1;
+
+        goto label2;
 
      label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
         return;
     }
 
@@ -273,6 +393,8 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
 
         r0 := @this: Operators;
 
@@ -282,9 +404,18 @@ public class Operators extends java.lang.Object
 
         if i0 == i1 goto label1;
 
-        goto label1;
+        $z1 = 1;
+
+        goto label2;
 
      label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
         return;
     }
 
@@ -292,6 +423,8 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
 
         r0 := @this: Operators;
 
@@ -301,9 +434,18 @@ public class Operators extends java.lang.Object
 
         if i0 <= i1 goto label1;
 
-        goto label1;
+        $z1 = 1;
+
+        goto label2;
 
      label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
         return;
     }
 
@@ -311,6 +453,8 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
 
         r0 := @this: Operators;
 
@@ -320,9 +464,18 @@ public class Operators extends java.lang.Object
 
         if i0 >= i1 goto label1;
 
-        goto label1;
+        $z1 = 1;
+
+        goto label2;
 
      label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
         return;
     }
 
@@ -330,6 +483,8 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
 
         r0 := @this: Operators;
 
@@ -339,9 +494,18 @@ public class Operators extends java.lang.Object
 
         if i0 < i1 goto label1;
 
-        goto label1;
+        $z1 = 1;
+
+        goto label2;
 
      label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
         return;
     }
 
@@ -349,6 +513,8 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
 
         r0 := @this: Operators;
 
@@ -358,9 +524,18 @@ public class Operators extends java.lang.Object
 
         if i0 > i1 goto label1;
 
-        goto label1;
+        $z1 = 1;
+
+        goto label2;
 
      label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
         return;
     }
 
@@ -368,6 +543,8 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
 
         r0 := @this: Operators;
 
@@ -380,9 +557,18 @@ public class Operators extends java.lang.Object
         if i0 <= i1 goto label2;
 
      label1:
-        goto label2;
+        $z1 = 1;
+
+        goto label3;
 
      label2:
+        $z1 = 0;
+
+     label3:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
         return;
     }
 
@@ -390,6 +576,8 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i1;
+        boolean $z1;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
@@ -401,9 +589,18 @@ public class Operators extends java.lang.Object
 
         if i0 <= i1 goto label1;
 
-        goto label1;
+        $z1 = 1;
+
+        goto label2;
 
      label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
         return;
     }
 
@@ -411,6 +608,8 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0, i1;
+        java.io.PrintStream $r1;
+        boolean $z1;
 
         r0 := @this: Operators;
 
@@ -420,22 +619,38 @@ public class Operators extends java.lang.Object
 
         if i0 == i1 goto label1;
 
-        goto label1;
+        $z1 = 1;
+
+        goto label2;
 
      label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
         return;
     }
 
     public void bitwise_AND(int, int)
     {
         Operators r0;
-        int i0, i1;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
 
         i1 := @parameter1: int;
+
+        i2 = i0 & i1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -443,13 +658,20 @@ public class Operators extends java.lang.Object
     public void bitwise_OR(int, int)
     {
         Operators r0;
-        int i0, i1;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
 
         i1 := @parameter1: int;
+
+        i2 = i0 | i1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -457,13 +679,20 @@ public class Operators extends java.lang.Object
     public void bitwise_XOR(int, int)
     {
         Operators r0;
-        int i0, i1;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
 
         i1 := @parameter1: int;
+
+        i2 = i0 ^ i1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -471,13 +700,20 @@ public class Operators extends java.lang.Object
     public void bitwise_compliment(int, int)
     {
         Operators r0;
-        int i0, i1;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
 
         i1 := @parameter1: int;
+
+        i2 = i0 ^ -1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -485,13 +721,20 @@ public class Operators extends java.lang.Object
     public void bitwise_left_shift(int, int)
     {
         Operators r0;
-        int i0, i1;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
 
         i1 := @parameter1: int;
+
+        i2 = i0 << 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -499,13 +742,20 @@ public class Operators extends java.lang.Object
     public void bitwise_right_shift(int, int)
     {
         Operators r0;
-        int i0, i1;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
 
         i1 := @parameter1: int;
+
+        i2 = i0 >> 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -513,13 +763,20 @@ public class Operators extends java.lang.Object
     public void bitwise_right_shift_zerofill(int, int)
     {
         Operators r0;
-        int i0, i1;
+        int i0, i1, i2;
+        java.io.PrintStream $r1;
 
         r0 := @this: Operators;
 
         i0 := @parameter0: int;
 
         i1 := @parameter1: int;
+
+        i2 = i0 >>> 2;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i2);
 
         return;
     }
@@ -528,6 +785,8 @@ public class Operators extends java.lang.Object
     {
         Operators r0;
         int i0;
+        java.io.PrintStream $r1;
+        byte $b3;
 
         r0 := @this: Operators;
 
@@ -540,17 +799,34 @@ public class Operators extends java.lang.Object
      label1:
         if i0 != 0 goto label2;
 
-        goto label2;
+        $b3 = 50;
+
+        goto label3;
 
      label2:
+        $b3 = 70;
+
+     label3:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>($b3);
+
         return;
     }
 
     public void instanceof_operator()
     {
         Operators r0;
+        boolean z0;
+        java.io.PrintStream $r2;
 
         r0 := @this: Operators;
+
+        z0 = "Java" instanceof java.lang.String;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(boolean)>(z0);
 
         return;
     }

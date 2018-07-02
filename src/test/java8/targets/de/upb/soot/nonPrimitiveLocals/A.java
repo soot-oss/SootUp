@@ -1,7 +1,7 @@
-package de.upb.soot.NonPrimitiveLocals;
+package de.upb.soot.nonPrimitiveLocals;
 
 class A {
-    public void foo() {
-        System.out.println("Something");
-    }
+  public void foo() {
+    System.out.println("Something");
+  }
 }

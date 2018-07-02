@@ -1,11 +1,11 @@
-package de.upb.soot.LambdaExpressions;
+package de.upb.soot.lambdaExpressions;
 
 public class LambdaExpressions {
-    public static void main(String args[]) {
-        A a1 = (str) -> "Hello " + str + "!";
-        A a2 = (str) -> "Hello " + str + "!";
+  public static void main(String args[]) {
+    A a1 = (str) -> "Hello " + str + "!";
+    A a2 = (str) -> "Hello " + str + "!";
 
-        System.out.println(a1.methodA("WORLD"));
-        System.out.println(a2.methodA("world"));
-    }
+    System.out.println(a1.methodA("WORLD"));
+    System.out.println(a2.methodA("world"));
+  }
 }

@@ -1,10 +1,11 @@
-package de.upb.soot.Interfaces;
+package de.upb.soot.interfaces;
 
 public class Interfaces {
   public void single_interface() {
     B b1 = new B();
     b1.printA1();
   }
+
   public void multiple_interface() {
     C c1 = new C();
     c1.printA1();

@@ -1,4 +1,4 @@
-package de.upb.soot.Interfaces;
+package de.upb.soot.interfaces;
 
 // implementing single interface
 class B implements A1 {

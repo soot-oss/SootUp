@@ -1,9 +1,9 @@
-package de.upb.soot.Hierarchy;
+package de.upb.soot.hierarchy;
 
 public class Hierarchy extends A {
-    public static void hierarchy(String [] args) {
-        Hierarchy h = new Hierarchy();
-        h.methodB();
-        System.out.println(h.methodA());
-    }
+  public static void hierarchy(String[] args) {
+    Hierarchy h = new Hierarchy();
+    h.methodB();
+    System.out.println(h.methodA());
+  }
 }

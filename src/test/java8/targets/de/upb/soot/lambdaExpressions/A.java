@@ -1,5 +1,5 @@
-package de.upb.soot.LambdaExpressions;
+package de.upb.soot.lambdaExpressions;
 
 interface A {
-    String methodA(String str);
+  String methodA(String str);
 }

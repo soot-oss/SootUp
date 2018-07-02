@@ -1,7 +1,7 @@
-package de.upb.soot.Hierarchy;
+package de.upb.soot.hierarchy;
 
 class C {
-    public int methodC() {
-        return 77;
-    }
+  public int methodC() {
+    return 77;
+  }
 }
