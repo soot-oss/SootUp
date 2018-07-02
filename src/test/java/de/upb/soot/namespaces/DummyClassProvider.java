@@ -1,5 +1,6 @@
 package de.upb.soot.namespaces;
 
+import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
@@ -18,8 +19,13 @@ class DummyClassProvider implements IClassProvider {
   @Override
   public Optional<ClassSource> getClass(INamespace ns, Path sourcePath, ClassSignature classSignature) {
 
-    return Optional.of(new ClassSource(ns, classSignature) {
+    return Optional.of(new ClassSource(ns, classSignature, this) {
     });
+  }
+
+  @Override
+  public SootClass getSootClass(ClassSource classSource) {
+    return null;
   }
 
   @Override

@@ -2,6 +2,7 @@ package de.upb.soot.namespaces.classprovider;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.ClassSignature;
 
@@ -12,6 +13,7 @@ import de.upb.soot.signatures.ClassSignature;
  **/
 public abstract class ClassSource {
   private final INamespace srcNamespace;
+  private final IClassProvider classProvider;
   protected ClassSignature classSignature;
 
   /**
@@ -22,14 +24,20 @@ public abstract class ClassSource {
    * @param classSignature
    *          The {@link ClassSignature} of the to-be-resolved {@link de.upb.soot.core.SootClass}
    */
-  public ClassSource(INamespace srcNamespace, ClassSignature classSignature) {
+  public ClassSource(INamespace srcNamespace, ClassSignature classSignature, IClassProvider classProvider) {
     checkNotNull(srcNamespace);
 
     this.srcNamespace = srcNamespace;
     this.classSignature = classSignature;
+    this.classProvider = classProvider;
   }
 
   public ClassSignature getClassSignature() {
     return classSignature;
   }
+
+  public SootClass getSootClass() {
+    return classProvider.getSootClass(this);
+  }
+
 }

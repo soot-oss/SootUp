@@ -25,12 +25,12 @@ public abstract class AbstractNamespace implements INamespace {
 
   @Override
   public Collection<SootClass> getClasses(SignatureFactory factory) {
-    return getClassSources(factory).stream().map(cs -> new SootClass(cs)).collect(Collectors.toList());
+    return getClassSources(factory).stream().map(cs -> cs.getSootClass()).collect(Collectors.toList());
   }
 
   @Override
   public Optional<SootClass> getClass(ClassSignature classSignature) {
-    return getClassSource(classSignature).map(cs -> new SootClass(cs));
+    return getClassSource(classSignature).map(cs -> cs.getSootClass());
   }
 
   protected abstract Collection<ClassSource> getClassSources(SignatureFactory factory);
