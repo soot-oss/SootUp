@@ -79,11 +79,6 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
     final Path module = theFileSystem.getPath("modules", modulePackageSignature.moduleSignature.moduleName);
     Path foundClass = module.resolve(filepath);
 
-    // this does not improve the performance
-    // String filename = classSignature.getFullyQualifiedName().replace('.', '/') + "." +
-    // classProvider.getHandledFileType().getExtension();
-    // Path foundClass = theFileSystem.getPath("modules",modulePackageSignature.moduleSignature.moduleName,filename);
-
     if (Files.isRegularFile(foundClass)) {
       return classProvider.getClass(this, foundClass, classSignature);
 
@@ -118,6 +113,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   /**
    * Discover and return all modules contained in the jrt filesystem.
+   * 
    * @return Collection of found module names.
    */
   public Collection<String> discoverModules() {
