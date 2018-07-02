@@ -34,7 +34,7 @@ public interface IClassProvider {
 
 
   /**
-   * Resolves the ClassSource to a Soot Class
+   * Resolve the given ClassSource to a SootClass.
    * @param classSource to resource
    * @return the resolved SootClass
    */

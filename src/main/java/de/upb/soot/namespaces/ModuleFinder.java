@@ -131,7 +131,7 @@ class ModuleFinder {
             if (Files.exists(mi)) {
               buildModuleForExplodedModule(entry);
             }
-          } else if (attrs.isRegularFile() && PathUtils.hasExtension(path, FileType.JAR, FileType.ZIP)) {
+          } else if (PathUtils.isArchive(entry)) {
             buildModuleForJar(entry);
           }
 
@@ -176,7 +176,8 @@ class ModuleFinder {
 
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
-      Path mi = archiveRoot.resolve(ModuleSignatureFactory.MODULE_INFO_CLASS.toPath(classProvider.getHandledFileType(),zipFileSystem));
+      Path mi = archiveRoot
+          .resolve(ModuleSignatureFactory.MODULE_INFO_CLASS.toPath(classProvider.getHandledFileType(), zipFileSystem));
       if (Files.exists(mi)) {
 
         // we have a modular jar

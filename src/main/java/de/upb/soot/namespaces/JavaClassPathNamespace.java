@@ -55,8 +55,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     }
 
     try {
-      cpEntries = explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp)))
-          .collect(Collectors.toList());
+      cpEntries = explode(classPath).flatMap(cp -> Utils.optionalToStream(nsForPath(cp))).collect(Collectors.toList());
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
     }
@@ -129,8 +128,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   private Optional<AbstractNamespace> nsForPath(Path path) {
-    if (Files.exists(path)
-        && (java.nio.file.Files.isDirectory(path) || PathUtils.hasExtension(path, FileType.JAR, FileType.ZIP))) {
+    if (Files.exists(path) && (java.nio.file.Files.isDirectory(path) || PathUtils.isArchive(path))) {
       return Optional.of(PathBasedNamespace.createForClassContainer(classProvider, path));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
