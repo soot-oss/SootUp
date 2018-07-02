@@ -1,0 +1,48 @@
+public class Interfaces extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        Interfaces r0;
+
+        r0 := @this: Interfaces;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void single_interface()
+    {
+        Interfaces r0;
+        B $r2;
+
+        r0 := @this: Interfaces;
+
+        $r2 = new B;
+
+        specialinvoke $r2.<B: void <init>()>();
+
+        virtualinvoke $r2.<B: void printA1()>();
+
+        return;
+    }
+
+    public void multiple_interface()
+    {
+        Interfaces r0;
+        C $r2;
+
+        r0 := @this: Interfaces;
+
+        $r2 = new C;
+
+        specialinvoke $r2.<C: void <init>()>();
+
+        virtualinvoke $r2.<C: void printA1()>();
+
+        virtualinvoke $r2.<C: void printA2()>();
+
+        return;
+    }
+}

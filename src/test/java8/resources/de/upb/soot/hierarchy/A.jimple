@@ -1,0 +1,32 @@
+class A extends B
+{
+
+    void <init>()
+    {
+        A r0;
+
+        r0 := @this: A;
+
+        specialinvoke r0.<B: void <init>()>();
+
+        return;
+    }
+
+    public java.lang.String methodA()
+    {
+        A r0;
+
+        r0 := @this: A;
+
+        return "Return from methodA of class A";
+    }
+
+    public int method_intA()
+    {
+        A r0;
+
+        r0 := @this: A;
+
+        return 7;
+    }
+}

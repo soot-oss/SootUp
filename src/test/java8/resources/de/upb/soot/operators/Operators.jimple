@@ -1,0 +1,557 @@
+public class Operators extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        Operators r0;
+
+        r0 := @this: Operators;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void addition(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        return;
+    }
+
+    public void subtraction(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        return;
+    }
+
+    public void multiplication(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        return;
+    }
+
+    public void division(int, int)
+    {
+        Operators r0;
+        int i0, i1, i2;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i1 / i0;
+
+        return;
+    }
+
+    public void modulus(int, int)
+    {
+        Operators r0;
+        int i0, i1, i2;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        i2 = i1 % i0;
+
+        return;
+    }
+
+    public void increment(int, int)
+    {
+        Operators r0;
+        int i0, i2;
+
+        r0 := @this: Operators;
+
+        i2 := @parameter0: int;
+
+        i0 := @parameter1: int;
+
+        return;
+    }
+
+    public void decrement(int, int)
+    {
+        Operators r0;
+        int i0, i2;
+
+        r0 := @this: Operators;
+
+        i2 := @parameter0: int;
+
+        i0 := @parameter1: int;
+
+        return;
+    }
+
+    public void simple_assignment_operators(int)
+    {
+        Operators r0;
+        int i0;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        return;
+    }
+
+    public void add_assignment_operator(int)
+    {
+        Operators r0;
+        int i0;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        return;
+    }
+
+    public void subtract_assignment_operator(int)
+    {
+        Operators r0;
+        int i0;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        return;
+    }
+
+    public void multiply_assignment_operator(int)
+    {
+        Operators r0;
+        int i0;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        return;
+    }
+
+    public void divide_assignment_operator(int)
+    {
+        Operators r0;
+        int i0, i2;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i2 = 0 / i0;
+
+        return;
+    }
+
+    public void modulus_asssignment_operator(int)
+    {
+        Operators r0;
+        int i0, i2;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i2 = 0 % i0;
+
+        return;
+    }
+
+    public void left_shift_assignment_operator(int)
+    {
+        Operators r0;
+        int i0;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        return;
+    }
+
+    public void right_shift_assignment_operator(int)
+    {
+        Operators r0;
+        int i0;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        return;
+    }
+
+    public void bitwise_and(int)
+    {
+        Operators r0;
+        int i0;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        return;
+    }
+
+    public void bitwise_xor(int)
+    {
+        Operators r0;
+        int i0;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        return;
+    }
+
+    public void bitwise_inc_or_assignment_operator(int)
+    {
+        Operators r0;
+        int i0;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        return;
+    }
+
+    public void relational_equal_to(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 != i1 goto label1;
+
+        goto label1;
+
+     label1:
+        return;
+    }
+
+    public void relational_not_equal_to(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 == i1 goto label1;
+
+        goto label1;
+
+     label1:
+        return;
+    }
+
+    public void relational_greater_than(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 <= i1 goto label1;
+
+        goto label1;
+
+     label1:
+        return;
+    }
+
+    public void relational_less_than(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 >= i1 goto label1;
+
+        goto label1;
+
+     label1:
+        return;
+    }
+
+    public void relational_greater_than_equalto(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 < i1 goto label1;
+
+        goto label1;
+
+     label1:
+        return;
+    }
+
+    public void relational_less_than_equalto(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 > i1 goto label1;
+
+        goto label1;
+
+     label1:
+        return;
+    }
+
+    public void logical_OR(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 == i1 goto label1;
+
+        if i0 <= i1 goto label2;
+
+     label1:
+        goto label2;
+
+     label2:
+        return;
+    }
+
+    public void logical_AND(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 != i1 goto label1;
+
+        if i0 <= i1 goto label1;
+
+        goto label1;
+
+     label1:
+        return;
+    }
+
+    public void logical_NOT(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 == i1 goto label1;
+
+        goto label1;
+
+     label1:
+        return;
+    }
+
+    public void bitwise_AND(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        return;
+    }
+
+    public void bitwise_OR(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        return;
+    }
+
+    public void bitwise_XOR(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        return;
+    }
+
+    public void bitwise_compliment(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        return;
+    }
+
+    public void bitwise_left_shift(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        return;
+    }
+
+    public void bitwise_right_shift(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        return;
+    }
+
+    public void bitwise_right_shift_zerofill(int, int)
+    {
+        Operators r0;
+        int i0, i1;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        return;
+    }
+
+    public void conditional_operator(int)
+    {
+        Operators r0;
+        int i0;
+
+        r0 := @this: Operators;
+
+        i0 := @parameter0: int;
+
+        if i0 != 10 goto label1;
+
+        goto label1;
+
+     label1:
+        if i0 != 0 goto label2;
+
+        goto label2;
+
+     label2:
+        return;
+    }
+
+    public void instanceof_operator()
+    {
+        Operators r0;
+
+        r0 := @this: Operators;
+
+        return;
+    }
+}

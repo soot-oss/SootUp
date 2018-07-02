@@ -1,0 +1,40 @@
+public class NonPrimitiveLocals extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        NonPrimitiveLocals r0;
+
+        r0 := @this: NonPrimitiveLocals;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void non_primitive_locals(java.lang.String[])
+    {
+        NonPrimitiveLocals r0;
+        java.lang.String[] r1;
+        int[] r2;
+        A $r4;
+
+        r0 := @this: NonPrimitiveLocals;
+
+        r1 := @parameter0: java.lang.String[];
+
+        r2 = newarray (int)[10];
+
+        $r4 = new A;
+
+        specialinvoke $r4.<A: void <init>()>();
+
+        virtualinvoke $r4.<A: void foo()>();
+
+        r2[1] = 10;
+
+        r2[7] = 70;
+
+        return;
+    }
+}

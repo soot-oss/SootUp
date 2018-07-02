@@ -1,0 +1,30 @@
+abstract class A extends java.lang.Object
+{
+
+    void <init>()
+    {
+        A r0;
+
+        r0 := @this: A;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    abstract void print();
+
+    public void methodA()
+    {
+        A r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: A;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("method of Class A");
+
+        return;
+    }
+}

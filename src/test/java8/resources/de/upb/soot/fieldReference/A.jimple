@@ -1,0 +1,20 @@
+class A extends java.lang.Object
+{
+    int i;
+    java.lang.String j;
+
+    void <init>()
+    {
+        A r0;
+
+        r0 := @this: A;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<A: int i> = 15;
+
+        r0.<A: java.lang.String j> = "greater";
+
+        return;
+    }
+}

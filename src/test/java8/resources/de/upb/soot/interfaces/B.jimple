@@ -1,0 +1,28 @@
+class B extends java.lang.Object implements A1
+{
+
+    void <init>()
+    {
+        B r0;
+
+        r0 := @this: B;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void printA1()
+    {
+        B r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: B;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Interface A1");
+
+        return;
+    }
+}

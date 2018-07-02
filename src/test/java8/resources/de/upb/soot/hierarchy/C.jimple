@@ -1,0 +1,23 @@
+class C extends java.lang.Object
+{
+
+    void <init>()
+    {
+        C r0;
+
+        r0 := @this: C;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public int methodC()
+    {
+        C r0;
+
+        r0 := @this: C;
+
+        return 77;
+    }
+}

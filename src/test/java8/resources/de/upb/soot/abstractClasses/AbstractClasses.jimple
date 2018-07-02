@@ -1,0 +1,34 @@
+public abstract class AbstractClasses extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        AbstractClasses r0;
+
+        r0 := @this: AbstractClasses;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void abstract_classes(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        B $r2;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r2 = new B;
+
+        specialinvoke $r2.<B: void <init>()>();
+
+        virtualinvoke $r2.<B: void methodB()>();
+
+        virtualinvoke $r2.<B: void methodA()>();
+
+        virtualinvoke $r2.<B: void print()>();
+
+        return;
+    }
+}

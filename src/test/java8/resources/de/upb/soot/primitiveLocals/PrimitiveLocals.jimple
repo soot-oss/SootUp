@@ -1,0 +1,77 @@
+public class PrimitiveLocals extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        PrimitiveLocals r0;
+
+        r0 := @this: PrimitiveLocals;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void primitive_int()
+    {
+        PrimitiveLocals r0;
+
+        r0 := @this: PrimitiveLocals;
+
+        return;
+    }
+
+    public void primitive_byte()
+    {
+        PrimitiveLocals r0;
+
+        r0 := @this: PrimitiveLocals;
+
+        return;
+    }
+
+    public void primitive_char()
+    {
+        PrimitiveLocals r0;
+
+        r0 := @this: PrimitiveLocals;
+
+        return;
+    }
+
+    public void primitive_short()
+    {
+        PrimitiveLocals r0;
+
+        r0 := @this: PrimitiveLocals;
+
+        return;
+    }
+
+    public void primitive_float()
+    {
+        PrimitiveLocals r0;
+
+        r0 := @this: PrimitiveLocals;
+
+        return;
+    }
+
+    public void primitive_long()
+    {
+        PrimitiveLocals r0;
+
+        r0 := @this: PrimitiveLocals;
+
+        return;
+    }
+
+    public void primitive_double()
+    {
+        PrimitiveLocals r0;
+
+        r0 := @this: PrimitiveLocals;
+
+        return;
+    }
+}

@@ -1,0 +1,5 @@
+interface  A2 extends java.lang.Object
+{
+
+    public abstract void printA2();
+}
