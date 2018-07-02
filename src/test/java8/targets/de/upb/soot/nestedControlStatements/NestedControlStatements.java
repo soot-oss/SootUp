@@ -58,7 +58,7 @@ public class NestedControlStatements {
   }
 
   public void nested_while_for(int a, int b, int c) {
-    // Nested: if in for
+    // Nested: while in for
     for (int i = 0; i < a; i++) {
       while (a < b) {
         System.out.println("a is smaller than b");
