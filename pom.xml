@@ -28,7 +28,9 @@
         <junit.version>4.12</junit.version>
         <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
         <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
-        <java-target-version>8</java-target-version>
+        <test.target-version>8</test.target-version>
+        <test.sourceDir>${project.basedir}/src/test/java${test.target-version}/java</test.sourceDir>
+        <test.outDir>${project.build.directory}/test-classes-java${test.target-version}</test.outDir>
     </properties>
     <build>
         <plugins>
@@ -122,6 +124,8 @@
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>${surefireArgLine}</argLine>
+                    <testSourceDirectory>${test.sourceDir}</testSourceDirectory>
+                    <testClassesDirectory>${test.outDir}</testClassesDirectory>
                 </configuration>
             </plugin>
             <!-- Test setup -->
@@ -130,17 +134,17 @@
                 <version>${maven-resources-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>add test resources for Java version ${java-target-version}</id>
+                        <id>add test resources for Java version ${test.target-version}</id>
                         <phase>generate-test-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/test-classes-java${java-target-version}
+                            <outputDirectory>${test.outDir}
                             </outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>src/test/java${java-target-version}/resources</directory>
+                                    <directory>src/test/java${test.target-version}/resources</directory>
                                 </resource>
                             </resources>
                         </configuration>
@@ -157,34 +161,34 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>Compile Java version ${java-target-version} test targets</id>
+                        <id>Compile Java version ${test.target-version} test targets</id>
                         <phase>test-compile</phase>
                         <goals>
                             <goal>testCompile</goal>
                         </goals>
                         <configuration>
-                            <compileSourceRoots>${project.basedir}/src/test/java${java-target-version}/targets
+                            <compileSourceRoots>${project.basedir}/src/test/java${test.target-version}/targets
                             </compileSourceRoots>
                             <testIncludes>
                                 <testInclude>**/*.java</testInclude>
                             </testIncludes>
-                            <outputDirectory>${project.build.directory}/test-target-classes-java${java-target-version}
+                            <outputDirectory>${project.build.directory}/test-target-classes-java${test.target-version}
                             </outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>Compile Java version ${java-target-version} tests</id>
+                        <id>Compile Java version ${test.target-version} tests</id>
                         <phase>test-compile</phase>
                         <goals>
                             <goal>testCompile</goal>
                         </goals>
                         <configuration>
-                            <compileSourceRoots>${project.basedir}/src/test/java${java-target-version}/java
+                            <compileSourceRoots>${test.sourceDir}
                             </compileSourceRoots>
                             <testIncludes>
                                 <testInclude>**/*.java</testInclude>
                             </testIncludes>
-                            <outputDirectory>${project.build.directory}/test-classes-java${java-target-version}
+                            <outputDirectory>${test.outDir}
                             </outputDirectory>
                         </configuration>
                     </execution>
