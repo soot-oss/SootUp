@@ -36,6 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JInterfaceInvokeExpr extends AbstractInterfaceInvokeExpr {
+  /**
+   * .
+   */
   public JInterfaceInvokeExpr(Value base, SootMethodRef methodRef, List<? extends Value> args) {
     super(Jimple.getInstance().newLocalBox(base), methodRef, new ValueBox[args.size()]);
 

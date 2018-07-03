@@ -99,6 +99,9 @@ public abstract class AbstractInstanceFieldRef implements FieldRef {
     return fieldRef.resolve();
   }
 
+  /**
+   * Returns a list useBoxes of type ValueBox.
+   */
   public final List<ValueBox> getUseBoxes() {
     List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 

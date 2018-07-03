@@ -128,7 +128,7 @@ public abstract class AbstractNewMultiArrayExpr implements Expr {
   }
 
   /**
-   * Returns a list of values of sizeBoxes
+   * Returns a list of values of sizeBoxes.
    */
   public List<Value> getSizes() {
     List<Value> toReturn = new ArrayList<Value>();

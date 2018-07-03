@@ -176,6 +176,9 @@ public class Jimple {
   public static final String TRUE = "true";
   public static final String FALSE = "false";
 
+  /**
+   * Returns a list of collections.
+   */
   public static List<String> jimpleKeywordList() {
     List<String> l = new LinkedList<String>();
     Collections.addAll(l, NEWARRAY, NEWMULTIARRAY, NOP, RET, SPECIALINVOKE, STATICINVOKE, TABLESWITCH, VIRTUALINVOKE,

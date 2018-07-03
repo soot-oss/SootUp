@@ -47,6 +47,9 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   protected ValueBox[] bsmArgBoxes;
   protected int tag;
 
+  /**
+   * .
+   */
   public JDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs, SootMethodRef methodRef,
       int tag, List<? extends Value> methodArgs) {
     super(methodRef, new ValueBox[methodArgs.size()]);
@@ -68,6 +71,9 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     }
   }
 
+  /**
+   * .
+   */
   public JDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs, SootMethodRef methodRef,
       List<? extends Value> methodArgs) {
     /*
@@ -229,6 +235,9 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     return bsmRef;
   }
 
+  /**
+   * Returns a list containing elements of type ValueBox.
+   */
   public List<Value> getBootstrapArgs() {
     List<Value> l = new ArrayList<Value>();
     for (ValueBox element : bsmArgBoxes) {

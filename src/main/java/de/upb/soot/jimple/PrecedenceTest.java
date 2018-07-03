@@ -59,6 +59,9 @@ import de.upb.soot.jimple.basic.ValueBox;
  * </p>
  */
 public class PrecedenceTest {
+  /**
+   * .
+   */
   public static boolean needsBrackets(ValueBox subExprBox, Value expr) {
     Value sub = subExprBox.getValue();
     if (!(sub instanceof Precedence)) {
@@ -69,6 +72,9 @@ public class PrecedenceTest {
     return subP.getPrecedence() < exprP.getPrecedence();
   }
 
+  /**
+   * .
+   */
   public static boolean needsBracketsRight(ValueBox subExprBox, Value expr) {
     Value sub = subExprBox.getValue();
     if (!(sub instanceof Precedence)) {

@@ -48,7 +48,6 @@ public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
 
   /**
    * Returns true if object o is an instance of AbstractStaticInvokeExpr else returns false.
-   * @param o
    */
   public boolean equivTo(Object o) {
     if (o instanceof AbstractStaticInvokeExpr) {
@@ -110,7 +109,6 @@ public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
 
   /**
    * Converts a parameter of type StmtPrinter to a string literal.
-   * @param up
    */
   public void toString(StmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);

@@ -37,6 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JVirtualInvokeExpr extends AbstractVirtualInvokeExpr {
+  /**
+   * .
+   */
   public JVirtualInvokeExpr(Value base, SootMethodRef methodRef, List<? extends Value> args) {
     super(Jimple.getInstance().newLocalBox(base), methodRef, new ValueBox[args.size()]);
 

@@ -101,6 +101,9 @@ public class ClassConstant extends Constant {
     return value.startsWith("L") && value.endsWith(";");
   }
 
+  /**
+   * Returns numDimensions.
+   */
   public Type toSootType() {
     int numDimensions = 0;
     String tmp = value;

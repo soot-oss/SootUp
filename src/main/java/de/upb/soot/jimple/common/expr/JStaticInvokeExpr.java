@@ -35,6 +35,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JStaticInvokeExpr extends AbstractStaticInvokeExpr {
+  /**
+   * .
+   */
   public JStaticInvokeExpr(SootMethodRef methodRef, List<? extends Value> args) {
     super(methodRef, new ValueBox[args.size()]);
 

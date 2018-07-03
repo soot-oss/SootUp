@@ -1,7 +1,7 @@
 package de.upb.soot.jimple;
 
 /**
- * 
+ * .
  * @author Linghui Luo
  *
  */

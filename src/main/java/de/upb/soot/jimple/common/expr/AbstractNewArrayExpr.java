@@ -127,7 +127,7 @@ public abstract class AbstractNewArrayExpr implements Expr {
   }
 
   /**
-   * Returns an instance of ArrayType()
+   * Returns an instance of ArrayType().
    */
   public Type getType() {
     if (baseType instanceof ArrayType) {

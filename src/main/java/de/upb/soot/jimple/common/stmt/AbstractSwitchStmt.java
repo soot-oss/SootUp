@@ -106,6 +106,9 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     targetBoxes[index].setStmt(target);
   }
 
+  /**
+   * Returns a list targets of type Stmt.
+   */
   public final List<Stmt> getTargets() {
     List<Stmt> targets = new ArrayList<Stmt>();
 
@@ -116,12 +119,18 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return targets;
   }
 
+  /**
+   * Sets targets.
+   */
   public final void setTargets(List<? extends Stmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
       targetBoxes[i].setStmt(targets.get(i));
     }
   }
 
+  /**
+   * Sets targets.
+   */
   public final void setTargets(Stmt[] targets) {
     for (int i = 0; i < targets.length; i++) {
       targetBoxes[i].setStmt(targets[i]);

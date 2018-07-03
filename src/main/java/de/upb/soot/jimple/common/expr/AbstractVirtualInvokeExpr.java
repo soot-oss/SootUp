@@ -43,7 +43,6 @@ public abstract class AbstractVirtualInvokeExpr extends AbstractInstanceInvokeEx
 
   /**
    * Returns a value of sizeBox, if o is an instance of AbstractNewArrayExpr, else returns false.
-   * @param o
    */
   public boolean equivTo(Object o) {
     if (o instanceof AbstractVirtualInvokeExpr) {
@@ -99,6 +98,9 @@ public abstract class AbstractVirtualInvokeExpr extends AbstractInstanceInvokeEx
     return buffer.toString();
   }
 
+  /**
+   * Converts a parameter of type StmtPrinter to a string literal.
+   */
   public void toString(StmtPrinter up) {
     up.literal(Jimple.VIRTUALINVOKE);
     up.literal(" ");
