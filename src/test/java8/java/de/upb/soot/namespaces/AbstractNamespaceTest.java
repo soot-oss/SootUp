@@ -19,6 +19,8 @@ import org.mockito.internal.matchers.LessOrEqual;
 public abstract class AbstractNamespaceTest {
 
   protected static final int CLASSES_IN_JAR = 25;
+  protected static final String TARGET_CLASSES_DIR = "target/classes";
+  protected static final String TARGET_TEST_CLASSES_DIR = "target/test-classes-java8";
   private SignatureFactory signatureFactory;
   private IClassProvider classProvider;
 
