@@ -47,6 +47,10 @@ public class ClassConstant extends Constant {
     this.value = s;
   }
 
+  /**
+   * Returns an instance of ClassConstant.
+   * @param value
+   */
   public static ClassConstant getInstance(String value) {
     if (value.contains(".")) {
       throw new RuntimeException("ClassConstants must use class names separated by '/', not '.'!");

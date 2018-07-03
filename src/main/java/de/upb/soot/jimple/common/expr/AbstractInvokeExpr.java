@@ -65,6 +65,9 @@ public abstract class AbstractInvokeExpr implements Expr {
     return argBoxes[index].getValue();
   }
 
+  /**
+   * Returns a list of arguments, consisting of values contained in the box.
+   */
   public List<Value> getArgs() {
     List<Value> l = new ArrayList<>();
     if (argBoxes != null) {

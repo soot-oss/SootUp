@@ -41,6 +41,10 @@ public abstract class AbstractVirtualInvokeExpr extends AbstractInstanceInvokeEx
     }
   }
 
+  /**
+   * Returns a value of sizeBox, if o is an instance of AbstractNewArrayExpr, else returns false.
+   * @param o
+   */
   public boolean equivTo(Object o) {
     if (o instanceof AbstractVirtualInvokeExpr) {
       AbstractVirtualInvokeExpr ie = (AbstractVirtualInvokeExpr) o;

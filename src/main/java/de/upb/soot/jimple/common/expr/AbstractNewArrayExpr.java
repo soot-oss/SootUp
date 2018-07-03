@@ -47,6 +47,10 @@ public abstract class AbstractNewArrayExpr implements Expr {
     this.sizeBox = sizeBox;
   }
 
+  /**
+   * Returns a value of sizeBox if o is an instance of AbstractNewArrayExpr, else returns false.
+   * @param o
+   */
   public boolean equivTo(Object o) {
     if (o instanceof AbstractNewArrayExpr) {
       AbstractNewArrayExpr ae = (AbstractNewArrayExpr) o;
@@ -73,6 +77,10 @@ public abstract class AbstractNewArrayExpr implements Expr {
     return buffer.toString();
   }
 
+  /**
+   * Converts a parameter of type StmtPrinter to a string literal.
+   * @param up
+   */
   public void toString(StmtPrinter up) {
     up.literal(Jimple.NEWARRAY);
     up.literal(" ");
@@ -108,6 +116,9 @@ public abstract class AbstractNewArrayExpr implements Expr {
     sizeBox.setValue(size);
   }
 
+  /**
+   * Returns a list of type ValueBox, contains a list of values of sizeBox.
+   */
   public final List<ValueBox> getUseBoxes() {
     List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
@@ -117,6 +128,9 @@ public abstract class AbstractNewArrayExpr implements Expr {
     return useBoxes;
   }
 
+  /**
+   * Returns an instance of ArrayType()
+   */
   public Type getType() {
     if (baseType instanceof ArrayType) {
       return ArrayType.getInstance(((ArrayType) baseType).baseType, ((ArrayType) baseType).numDimensions + 1);

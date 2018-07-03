@@ -141,6 +141,11 @@ public class LongConstant extends ArithmeticConstant {
     return IntConstant.getInstance((this.value >= ((LongConstant) c).value) ? 1 : 0);
   }
 
+  /**
+   *
+   * @param c
+   * @return
+   */
   public IntConstant cmp(LongConstant c) {
     if (this.value > c.value) {
       return IntConstant.getInstance(1);
