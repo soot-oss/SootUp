@@ -171,5 +171,10 @@
             <version>${powermock-api-mockito.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-debug-all</artifactId>
+            <version>6.0_BETA</version>
+        </dependency>
     </dependencies>
 </project>
