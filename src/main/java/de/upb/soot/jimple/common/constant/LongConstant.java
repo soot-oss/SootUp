@@ -142,9 +142,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   /**
-   *
-   * @param c
-   * @return
+   * Compares the value of LongConstant
    */
   public IntConstant cmp(LongConstant c) {
     if (this.value > c.value) {

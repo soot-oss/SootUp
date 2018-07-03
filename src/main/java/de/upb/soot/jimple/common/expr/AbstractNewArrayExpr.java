@@ -49,7 +49,6 @@ public abstract class AbstractNewArrayExpr implements Expr {
 
   /**
    * Returns a value of sizeBox if o is an instance of AbstractNewArrayExpr, else returns false.
-   * @param o
    */
   public boolean equivTo(Object o) {
     if (o instanceof AbstractNewArrayExpr) {
@@ -79,7 +78,6 @@ public abstract class AbstractNewArrayExpr implements Expr {
 
   /**
    * Converts a parameter of type StmtPrinter to a string literal.
-   * @param up
    */
   public void toString(StmtPrinter up) {
     up.literal(Jimple.NEWARRAY);

@@ -49,7 +49,6 @@ public class ClassConstant extends Constant {
 
   /**
    * Returns an instance of ClassConstant.
-   * @param value
    */
   public static ClassConstant getInstance(String value) {
     if (value.contains(".")) {
