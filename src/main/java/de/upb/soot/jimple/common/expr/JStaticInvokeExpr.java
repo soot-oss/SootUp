@@ -36,7 +36,7 @@ import java.util.List;
 
 public class JStaticInvokeExpr extends AbstractStaticInvokeExpr {
   /**
-   * .
+   * Stores the values of new ImmediateBox to the argBoxes array.
    */
   public JStaticInvokeExpr(SootMethodRef methodRef, List<? extends Value> args) {
     super(methodRef, new ValueBox[args.size()]);

@@ -60,7 +60,7 @@ import de.upb.soot.jimple.basic.ValueBox;
  */
 public class PrecedenceTest {
   /**
-   * .
+   * Returns the precedence of value contained in sobExprBox if it is less than the precedence of expr.
    */
   public static boolean needsBrackets(ValueBox subExprBox, Value expr) {
     Value sub = subExprBox.getValue();
@@ -73,7 +73,7 @@ public class PrecedenceTest {
   }
 
   /**
-   * .
+   * Returns the precedence of value contained in sobExprBox if it is less than or equal to the precedence of expr.
    */
   public static boolean needsBracketsRight(ValueBox subExprBox, Value expr) {
     Value sub = subExprBox.getValue();

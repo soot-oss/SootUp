@@ -48,7 +48,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   protected int tag;
 
   /**
-   * .
+   * Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox.
    */
   public JDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs, SootMethodRef methodRef,
       int tag, List<? extends Value> methodArgs) {
@@ -72,7 +72,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   /**
-   * .
+   * Makes a parameterized call to JDynamicInvokeExpr method.
    */
   public JDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs, SootMethodRef methodRef,
       List<? extends Value> methodArgs) {

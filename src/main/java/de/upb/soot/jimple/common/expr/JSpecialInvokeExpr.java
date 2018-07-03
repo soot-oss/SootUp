@@ -37,7 +37,7 @@ import java.util.List;
 
 public class JSpecialInvokeExpr extends AbstractSpecialInvokeExpr {
   /**
-   * .
+   * Stores the values of new ImmediateBox to the argBoxes array.
    */
   public JSpecialInvokeExpr(Local base, SootMethodRef methodRef, List<? extends Value> args) {
     super(Jimple.getInstance().newLocalBox(base), methodRef, new ImmediateBox[args.size()]);

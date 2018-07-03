@@ -37,7 +37,7 @@ import java.util.List;
 
 public class JInterfaceInvokeExpr extends AbstractInterfaceInvokeExpr {
   /**
-   * .
+   * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array argBoxes.
    */
   public JInterfaceInvokeExpr(Value base, SootMethodRef methodRef, List<? extends Value> args) {
     super(Jimple.getInstance().newLocalBox(base), methodRef, new ValueBox[args.size()]);

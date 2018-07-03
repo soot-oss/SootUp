@@ -38,7 +38,7 @@ import java.util.List;
 
 public class JVirtualInvokeExpr extends AbstractVirtualInvokeExpr {
   /**
-   * .
+   * Stores the values of new ImmediateBox to the argBoxes array.
    */
   public JVirtualInvokeExpr(Value base, SootMethodRef methodRef, List<? extends Value> args) {
     super(Jimple.getInstance().newLocalBox(base), methodRef, new ValueBox[args.size()]);
