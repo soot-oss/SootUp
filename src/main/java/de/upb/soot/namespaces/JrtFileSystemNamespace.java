@@ -1,7 +1,5 @@
 package de.upb.soot.namespaces;
 
-import com.google.common.base.Preconditions;
-
 import de.upb.soot.Utils;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
@@ -9,6 +7,8 @@ import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModulePackageSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
+
+import com.google.common.base.Preconditions;
 
 import java.io.IOException;
 import java.net.URI;
@@ -57,7 +57,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
           // check each module folder for the class
           Path foundfile = entry.resolve(filepath);
           if (Files.isRegularFile(foundfile)) {
-            return classProvider.getClass(this, foundfile, classSignature);
+            return Optional.of(new ClassSource(this, foundfile, classSignature));
 
           }
         }
@@ -80,7 +80,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
     Path foundClass = module.resolve(filepath);
 
     if (Files.isRegularFile(foundClass)) {
-      return classProvider.getClass(this, foundClass, classSignature);
+      return Optional.of(new ClassSource(this, foundClass, classSignature));
 
     } else {
       return Optional.empty();
@@ -102,8 +102,8 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
       return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
-          .flatMap(p -> Utils.optionalToStream(
-              classProvider.getClass(this, p, this.fromPath(p.subpath(2, p.getNameCount()), p.subpath(1, 2), factory))))
+          .flatMap(p -> Utils.optionalToStream(Optional
+              .of(new ClassSource(this, p, this.fromPath(p.subpath(2, p.getNameCount()), p.subpath(1, 2), factory)))))
           .collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
