@@ -4,7 +4,12 @@ import java.util.Collection;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
+
+import categories.Java9Test;
+
+@Category(Java9Test.class)
 
 public class ModuleFinderTest extends AbstractNamespaceTest {
 
