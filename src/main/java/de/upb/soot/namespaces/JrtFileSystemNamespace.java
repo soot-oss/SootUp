@@ -57,7 +57,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
           // check each module folder for the class
           Path foundfile = entry.resolve(filepath);
           if (Files.isRegularFile(foundfile)) {
-            return Optional.of(new ClassSource(this, foundfile, classSignature));
+            return Optional.of(classProvider.createClassSource(this, foundfile, classSignature));
 
           }
         }
@@ -80,7 +80,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
     Path foundClass = module.resolve(filepath);
 
     if (Files.isRegularFile(foundClass)) {
-      return Optional.of(new ClassSource(this, foundClass, classSignature));
+      return Optional.of(classProvider.createClassSource(this, foundClass, classSignature));
 
     } else {
       return Optional.empty();
@@ -102,8 +102,8 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
       return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
-          .flatMap(p -> Utils.optionalToStream(Optional
-              .of(new ClassSource(this, p, this.fromPath(p.subpath(2, p.getNameCount()), p.subpath(1, 2), factory)))))
+          .flatMap(p -> Utils.optionalToStream(Optional.of(classProvider.createClassSource(this, p,
+              this.fromPath(p.subpath(2, p.getNameCount()), p.subpath(1, 2), factory)))))
           .collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);

@@ -53,7 +53,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
       return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
-          .flatMap(p -> Utils.optionalToStream(Optional.of(new ClassSource(this, p, factory.fromPath(p)))))
+          .flatMap(p -> Utils.optionalToStream(Optional.of(classProvider.createClassSource(this, p, factory.fromPath(p)))))
           .collect(Collectors.toList());
 
     } catch (IOException e) {
@@ -68,7 +68,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
       return Optional.empty();
     }
 
-    return Optional.of(new ClassSource(this, pathToClass, signature));
+    return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
   }
 
   private static final class DirectoryBasedNamespace extends PathBasedNamespace {

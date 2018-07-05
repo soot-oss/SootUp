@@ -13,7 +13,7 @@ import java.nio.file.Path;
  *
  * @author Manuel Benz created on 22.05.18
  **/
-public class ClassSource {
+public abstract class ClassSource {
   private final INamespace srcNamespace;
   private final ClassSignature classSignature;
   private final Path sourcePath;
@@ -32,7 +32,7 @@ public class ClassSource {
    *          the signature that has been used to resolve this class
    * @return A not yet resolved {@link ClassSource}, backed up by the given file
    */
-  public ClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature) {
+  protected ClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature) {
     checkNotNull(srcNamespace);
 
     this.srcNamespace = srcNamespace;
