@@ -1,13 +1,13 @@
-public class Hierarchy extends A
+public class de.upb.soot.hierarchy.Hierarchy extends de.upb.soot.hierarchy.A
 {
 
     public void <init>()
     {
-        Hierarchy r0;
+        de.upb.soot.hierarchy.Hierarchy r0;
 
-        r0 := @this: Hierarchy;
+        r0 := @this: de.upb.soot.hierarchy.Hierarchy;
 
-        specialinvoke r0.<A: void <init>()>();
+        specialinvoke r0.<de.upb.soot.hierarchy.A: void <init>()>();
 
         return;
     }
@@ -15,70 +15,71 @@ public class Hierarchy extends A
     public static void hierarchy(java.lang.String[])
     {
         java.lang.String[] r0;
-        Hierarchy $r2;
-        java.io.PrintStream $r3;
-        java.lang.String $r4;
+        de.upb.soot.hierarchy.Hierarchy $r2;
+        java.io.PrintStream $r4;
+        java.lang.String $r5;
 
         r0 := @parameter0: java.lang.String[];
 
-        $r2 = new Hierarchy;
+        $r2 = new de.upb.soot.hierarchy.Hierarchy;
 
-        specialinvoke $r2.<Hierarchy: void <init>()>();
+        specialinvoke $r2.<de.upb.soot.hierarchy.Hierarchy: void <init>()>();
 
-        virtualinvoke $r2.<Hierarchy: void methodB()>();
+        virtualinvoke $r2.<de.upb.soot.hierarchy.Hierarchy: java.lang.String methodB()>();
 
-        $r3 = <java.lang.System: java.io.PrintStream out>;
+        $r4 = <java.lang.System: java.io.PrintStream out>;
 
-        $r4 = virtualinvoke $r2.<Hierarchy: java.lang.String methodA()>();
+        $r5 = virtualinvoke $r2.<de.upb.soot.hierarchy.Hierarchy: java.lang.String methodA()>();
 
-        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r4);
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r5);
 
         return;
     }
 
     public volatile int method_intA()
     {
-        Hierarchy r0;
+        de.upb.soot.hierarchy.Hierarchy r0;
         int $i0;
 
-        r0 := @this: Hierarchy;
+        r0 := @this: de.upb.soot.hierarchy.Hierarchy;
 
-        $i0 = specialinvoke r0.<A: int method_intA()>();
+        $i0 = specialinvoke r0.<de.upb.soot.hierarchy.A: int method_intA()>();
 
         return $i0;
     }
 
     public volatile java.lang.String methodA()
     {
-        Hierarchy r0;
+        de.upb.soot.hierarchy.Hierarchy r0;
         java.lang.String $r1;
 
-        r0 := @this: Hierarchy;
+        r0 := @this: de.upb.soot.hierarchy.Hierarchy;
 
-        $r1 = specialinvoke r0.<A: java.lang.String methodA()>();
+        $r1 = specialinvoke r0.<de.upb.soot.hierarchy.A: java.lang.String methodA()>();
 
         return $r1;
     }
 
-    public volatile void methodB()
+    public volatile java.lang.String methodB()
     {
-        Hierarchy r0;
+        de.upb.soot.hierarchy.Hierarchy r0;
+        java.lang.String $r1;
 
-        r0 := @this: Hierarchy;
+        r0 := @this: de.upb.soot.hierarchy.Hierarchy;
 
-        specialinvoke r0.<A: void methodB()>();
+        $r1 = specialinvoke r0.<de.upb.soot.hierarchy.A: java.lang.String methodB()>();
 
-        return;
+        return $r1;
     }
 
     public volatile int methodC()
     {
-        Hierarchy r0;
+        de.upb.soot.hierarchy.Hierarchy r0;
         int $i0;
 
-        r0 := @this: Hierarchy;
+        r0 := @this: de.upb.soot.hierarchy.Hierarchy;
 
-        $i0 = specialinvoke r0.<A: int methodC()>();
+        $i0 = specialinvoke r0.<de.upb.soot.hierarchy.A: int methodC()>();
 
         return $i0;
     }

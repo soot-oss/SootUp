@@ -1,11 +1,11 @@
-class C extends java.lang.Object
+class de.upb.soot.hierarchy.C extends java.lang.Object
 {
 
     void <init>()
     {
-        C r0;
+        de.upb.soot.hierarchy.C r0;
 
-        r0 := @this: C;
+        r0 := @this: de.upb.soot.hierarchy.C;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
@@ -14,9 +14,9 @@ class C extends java.lang.Object
 
     public int methodC()
     {
-        C r0;
+        de.upb.soot.hierarchy.C r0;
 
-        r0 := @this: C;
+        r0 := @this: de.upb.soot.hierarchy.C;
 
         return 77;
     }

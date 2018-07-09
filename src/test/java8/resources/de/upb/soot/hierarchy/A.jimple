@@ -1,31 +1,31 @@
-class A extends B
+class de.upb.soot.hierarchy.A extends de.upb.soot.hierarchy.B
 {
 
     void <init>()
     {
-        A r0;
+        de.upb.soot.hierarchy.A r0;
 
-        r0 := @this: A;
+        r0 := @this: de.upb.soot.hierarchy.A;
 
-        specialinvoke r0.<B: void <init>()>();
+        specialinvoke r0.<de.upb.soot.hierarchy.B: void <init>()>();
 
         return;
     }
 
     public java.lang.String methodA()
     {
-        A r0;
+        de.upb.soot.hierarchy.A r0;
 
-        r0 := @this: A;
+        r0 := @this: de.upb.soot.hierarchy.A;
 
         return "Return from methodA of class A";
     }
 
     public int method_intA()
     {
-        A r0;
+        de.upb.soot.hierarchy.A r0;
 
-        r0 := @this: A;
+        r0 := @this: de.upb.soot.hierarchy.A;
 
         return 7;
     }
