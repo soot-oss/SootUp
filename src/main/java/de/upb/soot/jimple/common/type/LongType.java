@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.G;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -35,8 +34,13 @@ import de.upb.soot.jimple.visitor.IVisitor;
 @SuppressWarnings("serial")
 public class LongType extends PrimType {
 
+  private static LongType instance;
+
   public static LongType getInstance() {
-    return G.getInstance().soot_LongType();
+    if (instance == null) {
+      instance = new LongType();
+    }
+    return instance;
   }
 
   @Override

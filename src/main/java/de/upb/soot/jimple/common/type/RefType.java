@@ -67,7 +67,7 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
    * Create a RefType for a class.
    * 
    * @param className
-   *          The name of the class used to parametrize the created RefType.
+   *          The name of the class used to parameterize the created RefType.
    * @return a RefType for the given class name.
    */
   public static RefType getInstance(String className) {

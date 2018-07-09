@@ -26,15 +26,6 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
     return toString();
   }
 
-  /**
-   * Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to .jimple format Replaced
-   * by toQuotedString; only here for backwards compatibility.
-   */
-  @Deprecated
-  public String getEscapedName() {
-    return toQuotedString();
-  }
-
   /** Converts the int-like types (short, byte, boolean and char) to IntType. */
   public static Type toMachineType(Type t) {
     if (t.equals(ShortType.getInstance()) || t.equals(ByteType.getInstance()) || t.equals(BooleanType.getInstance())
@@ -47,7 +38,7 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /** Returns the least common superclass of this type and other. */
   public Type merge(Type other, Scene cm) {
-    // method overriden in subclasses UnknownType and RefType
+    // method overridden in subclasses UnknownType and RefType
     throw new RuntimeException("illegal type merge: " + this + " and " + other);
   }
 

@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.G;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -35,8 +34,13 @@ import de.upb.soot.jimple.visitor.IVisitor;
 @SuppressWarnings("serial")
 public class CharType extends PrimType {
 
+  private static CharType instance;
+
   public static CharType getInstance() {
-    return G.getInstance().soot_CharType();
+    if (instance == null) {
+      instance = new CharType();
+    }
+    return instance;
   }
 
   @Override

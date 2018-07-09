@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.G;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -35,8 +34,13 @@ import de.upb.soot.jimple.visitor.IVisitor;
 @SuppressWarnings("serial")
 public class ByteType extends PrimType {
 
+  private static ByteType instance;
+
   public static ByteType getInstance() {
-    return G.getInstance().soot_ByteType();
+    if (instance == null) {
+      instance = new ByteType();
+    }
+    return instance;
   }
 
   @Override
@@ -53,7 +57,6 @@ public class ByteType extends PrimType {
   public String toString() {
     return "byte";
   }
-
 
   @Override
   public RefType boxedType() {
