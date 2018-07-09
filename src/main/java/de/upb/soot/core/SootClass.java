@@ -1,5 +1,6 @@
 package de.upb.soot.core;
 
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 
 /**
@@ -30,6 +31,16 @@ public class SootClass {
   }
 
   public String getName() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public SootClass getSuperclassUnsafe() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public Type getType() {
     // TODO Auto-generated method stub
     return null;
   }

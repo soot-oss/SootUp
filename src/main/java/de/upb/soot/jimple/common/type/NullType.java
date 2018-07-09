@@ -2,7 +2,7 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class NullType extends Type {
+public class NullType extends RefLikeType {
 
   @Override
   public void accept(IVisitor sw) {
@@ -17,6 +17,12 @@ public class NullType extends Type {
 
   @Override
   public String toString() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Type getArrayElementType() {
     // TODO Auto-generated method stub
     return null;
   }

@@ -25,44 +25,51 @@
 
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.G;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-
 /**
- * Soot representation of the Java built-in type 'boolean'. Implemented as a singleton.
+ * A class that models Java's sub types. AnySubTypes are parameterized by a super type called base.
  */
 @SuppressWarnings("serial")
-public class BooleanType extends PrimType {
+public class AnySubType extends RefLikeType {
+  private RefType base;
 
-  public static BooleanType getInstance() {
-    return G.getInstance().soot_BooleanType();
+  private AnySubType(RefType base) {
+    this.base = base;
   }
 
-  @Override
-  public boolean equals(Object t) {
-    return this == t;
-  }
-
-  @Override
-  public int hashCode() {
-    return 0x1C4585DA;
+  public static AnySubType getInstance(RefType base) {
+    if (base.getAnySubType() == null) {
+      synchronized (base) {
+        if (base.getAnySubType() == null) {
+          base.setAnySubType(new AnySubType(base));
+        }
+      }
+    }
+    return base.getAnySubType();
   }
 
   @Override
   public String toString() {
-    return "boolean";
+    return "Any_subtype_of_" + base;
   }
 
   @Override
-  public RefType boxedType() {
-    return RefType.getInstance("java.lang.Boolean");
+  public Type getArrayElementType() {
+    throw new RuntimeException("Attempt to get array base type of a non-array");
+  }
+
+  public RefType getBase() {
+    return base;
+  }
+
+  public void setBase(RefType base) {
+    this.base = base;
   }
 
   @Override
   public void accept(IVisitor v) {
-    ((ITypeVisitor) v).caseBooleanType(this);
+    ((ITypeVisitor) v).caseAnySubType(this);
   }
-
 }

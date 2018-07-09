@@ -17,28 +17,26 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/*
- * Modified by the Sable Research Group and others 1997-1999.  
- * See the 'credits' file distributed with Soot for the complete list of
- * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- */
-
 
 package de.upb.soot.jimple.common.type;
 
-/**
- * Abstract class for Soot classes that that model primitive types, i.e., all types except void, null, reference types, and
- * array types.
- * 
+/** Abstract class for Soot classes that model subtypes of java.lang.Object
+ * (ie. object references and arrays)
  * @author Ondrej Lhotak
  */
+
 @SuppressWarnings("serial")
-public abstract class PrimType extends Type {
-
-  public abstract RefType boxedType();
-
-  @Override
-  public boolean isAllowedInFinalCode() {
-    return true;
-  }
+public abstract class RefLikeType extends Type
+{
+    /**
+     * If I have a variable x of declared type t, what is a good        
+     * declared type for the expression ((Object[]) x)[i]? The          
+     * getArrayElementType() method in RefLikeType was introduced even  
+     * later to answer this question for all classes implementing       
+     * RefLikeType. If t is an array, then the answer is the same as    
+     * getElementType(). But t could also be Object, Serializable, or   
+     * Cloneable, which can all hold any array, so then the answer is   
+     * Object.                                                          
+     */
+    public abstract Type getArrayElementType();
 }

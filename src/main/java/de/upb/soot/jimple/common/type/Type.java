@@ -3,7 +3,6 @@ package de.upb.soot.jimple.common.type;
 import de.upb.soot.Scene;
 import de.upb.soot.jimple.basic.Numberable;
 import de.upb.soot.jimple.visitor.IAcceptor;
-import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.io.Serializable;
 
@@ -12,6 +11,7 @@ import java.io.Serializable;
  * 
  *
  */
+@SuppressWarnings("serial")
 public abstract class Type implements IAcceptor, Serializable, Numberable {
   public Type() {
     Scene.getInstance().getTypeNumberer().add(this);
@@ -21,9 +21,7 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
   @Override
   public abstract String toString();
 
-  /**
-   * Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to .jimple format
-   */
+  /** Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to .jimple format */
   public String toQuotedString() {
     return toString();
   }
@@ -51,11 +49,6 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
   public Type merge(Type other, Scene cm) {
     // method overriden in subclasses UnknownType and RefType
     throw new RuntimeException("illegal type merge: " + this + " and " + other);
-  }
-
-  /** Method required for use of Switchable. */
-  @Override
-  public void accept(IVisitor sw) {
   }
 
   public void setArrayType(ArrayType at) {
