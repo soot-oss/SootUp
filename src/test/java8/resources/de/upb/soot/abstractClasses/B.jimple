@@ -1,23 +1,23 @@
-class B extends A
+class de.upb.soot.abstractClasses.B extends de.upb.soot.abstractClasses.A
 {
 
     void <init>()
     {
-        B r0;
+        de.upb.soot.abstractClasses.B r0;
 
-        r0 := @this: B;
+        r0 := @this: de.upb.soot.abstractClasses.B;
 
-        specialinvoke r0.<A: void <init>()>();
+        specialinvoke r0.<de.upb.soot.abstractClasses.A: void <init>()>();
 
         return;
     }
 
     public void print()
     {
-        B r0;
+        de.upb.soot.abstractClasses.B r0;
         java.io.PrintStream $r1;
 
-        r0 := @this: B;
+        r0 := @this: de.upb.soot.abstractClasses.B;
 
         $r1 = <java.lang.System: java.io.PrintStream out>;
 
@@ -28,10 +28,10 @@ class B extends A
 
     public void methodB()
     {
-        B r0;
+        de.upb.soot.abstractClasses.B r0;
         java.io.PrintStream $r1;
 
-        r0 := @this: B;
+        r0 := @this: de.upb.soot.abstractClasses.B;
 
         $r1 = <java.lang.System: java.io.PrintStream out>;
 

@@ -12,70 +12,49 @@ public class de.upb.soot.staticInvoke.StaticInvoke extends de.upb.soot.staticInv
         return;
     }
 
-    public static void main(java.lang.String[]) throws java.lang.NoSuchMethodException
-    {
-        java.lang.String[] r0;
-        de.upb.soot.staticInvoke.StaticInvoke $r2;
-
-        r0 := @parameter0: java.lang.String[];
-
-        $r2 = new de.upb.soot.staticInvoke.StaticInvoke;
-
-        specialinvoke $r2.<de.upb.soot.staticInvoke.StaticInvoke: void <init>()>();
-
-        staticinvoke <de.upb.soot.staticInvoke.StaticInvoke: void static_invoke()>();
-
-        staticinvoke <de.upb.soot.staticInvoke.StaticInvoke: void static_invoke_reflection()>();
-
-        return;
-    }
-
-    public static void static_invoke() throws java.lang.NoSuchMethodException
+    public static void staticInvoke() throws java.lang.NoSuchMethodException
     {
         staticinvoke <de.upb.soot.staticInvoke.A: int methodA()>();
 
         return;
     }
 
-    public static void static_invoke_reflection() throws java.lang.NoSuchMethodException
+    public static void staticInvokeReflection() throws java.lang.NoSuchMethodException
     {
-        java.lang.reflect.Method r1;
-        de.upb.soot.staticInvoke.A $r2;
-        java.lang.Class $r3;
-        java.lang.Class[] $r4;
-        java.lang.Object[] $r5;
-        java.lang.reflect.InvocationTargetException $r7;
-        java.lang.IllegalAccessException $r8;
+        java.lang.reflect.Method r0;
+        java.lang.Class $r1, $r2;
+        java.lang.Class[] $r3;
+        java.lang.Object[] $r4;
+        java.lang.reflect.InvocationTargetException $r6;
+        java.lang.IllegalAccessException $r7;
 
-        $r2 = new de.upb.soot.staticInvoke.A;
+        $r1 = class "Lde/upb/soot/staticInvoke/A;";
 
-        specialinvoke $r2.<de.upb.soot.staticInvoke.A: void <init>()>();
+        $r2 = virtualinvoke $r1.<java.lang.Object: java.lang.Class getClass()>();
 
-        $r3 = virtualinvoke $r2.<java.lang.Object: java.lang.Class getClass()>();
+        $r3 = newarray (java.lang.Class)[0];
 
-        $r4 = newarray (java.lang.Class)[0];
-
-        r1 = virtualinvoke $r3.<java.lang.Class: java.lang.reflect.Method getMethod(java.lang.String,java.lang.Class[])>("methodA", $r4);
+        r0 = virtualinvoke $r2.<java.lang.Class: java.lang.reflect.Method getMethod(java.lang.String,java.lang.Class[])>("methodA", $r3);
 
      label1:
-        $r5 = newarray (java.lang.Object)[0];
+        $r4 = newarray (java.lang.Object)[0];
 
-        virtualinvoke r1.<java.lang.reflect.Method: java.lang.Object invoke(java.lang.Object,java.lang.Object[])>($r2, $r5);
+        virtualinvoke r0.<java.lang.reflect.Method: java.lang.Object invoke(java.lang.Object,java.lang.Object[])>(r0, $r4);
 
      label2:
         goto label5;
 
      label3:
-        $r8 := @caughtexception;
+        $r7 := @caughtexception;
 
-        virtualinvoke $r8.<java.lang.IllegalAccessException: void printStackTrace()>();
+        virtualinvoke $r7.<java.lang.IllegalAccessException: void printStackTrace()>();
 
         goto label5;
 
      label4:
-        $r7 := @caughtexception;
+        $r6 := @caughtexception;
 
-        virtualinvoke $r7.<java.lang.reflect.InvocationTargetException: void printStackTrace()>();
+        virtualinvoke $r6.<java.lang.reflect.InvocationTargetException: void printStackTrace()>();
 
      label5:
         return;

@@ -1,11 +1,11 @@
-public class C extends java.lang.Object implements A1, A2
+public class de.upb.soot.interfaces.C extends java.lang.Object implements de.upb.soot.interfaces.A1, de.upb.soot.interfaces.A2
 {
 
     public void <init>()
     {
-        C r0;
+        de.upb.soot.interfaces.C r0;
 
-        r0 := @this: C;
+        r0 := @this: de.upb.soot.interfaces.C;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
@@ -14,10 +14,10 @@ public class C extends java.lang.Object implements A1, A2
 
     public void printA1()
     {
-        C r0;
+        de.upb.soot.interfaces.C r0;
         java.io.PrintStream $r1;
 
-        r0 := @this: C;
+        r0 := @this: de.upb.soot.interfaces.C;
 
         $r1 = <java.lang.System: java.io.PrintStream out>;
 
@@ -28,10 +28,10 @@ public class C extends java.lang.Object implements A1, A2
 
     public void printA2()
     {
-        C r0;
+        de.upb.soot.interfaces.C r0;
         java.io.PrintStream $r1;
 
-        r0 := @this: C;
+        r0 := @this: de.upb.soot.interfaces.C;
 
         $r1 = <java.lang.System: java.io.PrintStream out>;
 

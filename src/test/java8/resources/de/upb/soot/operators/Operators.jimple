@@ -1,11 +1,11 @@
-public class Operators extends java.lang.Object
+public class de.upb.soot.operators.Operators extends java.lang.Object
 {
 
     public void <init>()
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
@@ -14,11 +14,11 @@ public class Operators extends java.lang.Object
 
     public void addition(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -35,11 +35,11 @@ public class Operators extends java.lang.Object
 
     public void subtraction(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -56,11 +56,11 @@ public class Operators extends java.lang.Object
 
     public void multiplication(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -77,11 +77,11 @@ public class Operators extends java.lang.Object
 
     public void division(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -98,11 +98,11 @@ public class Operators extends java.lang.Object
 
     public void modulus(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -119,11 +119,11 @@ public class Operators extends java.lang.Object
 
     public void increment(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i2 := @parameter0: int;
 
@@ -138,11 +138,11 @@ public class Operators extends java.lang.Object
 
     public void decrement(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i2 := @parameter0: int;
 
@@ -155,13 +155,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void simple_assignment_operators(int)
+    public void simpleAssignmentOperator(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -172,13 +172,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void add_assignment_operator(int)
+    public void addAssignmentOperator(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -191,25 +191,25 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void subtract_assignment_operator(int)
+    public void subtractAssignmentOperator(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
         return;
     }
 
-    public void multiply_assignment_operator(int)
+    public void multiplyAssignmentOperator(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -222,13 +222,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void divide_assignment_operator(int)
+    public void divideAssignmentOperator(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -241,13 +241,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void modulus_asssignment_operator(int)
+    public void modulusAssignmentOperator(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -260,13 +260,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void left_shift_assignment_operator(int)
+    public void leftShiftAssignmentOperator(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -279,14 +279,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void right_shift_assignment_operator(int)
+    public void rightShiftAssignmentOperator(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0;
         java.io.PrintStream $r1;
         byte b2;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -299,14 +299,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void bitwise_and(int)
+    public void bitwiseAND(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0;
         java.io.PrintStream $r1;
         byte b2;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -319,14 +319,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void bitwise_xor(int)
+    public void bitwiseXOR(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0;
         java.io.PrintStream $r1;
         byte b2;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -339,14 +339,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void bitwise_inc_or_assignment_operator(int)
+    public void bitwiseIncORAssignmentOperator(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0;
         java.io.PrintStream $r1;
         byte b2;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -359,14 +359,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void relational_equal_to(int, int)
+    public void relationalEqualTo(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1;
         java.io.PrintStream $r1;
         boolean $z1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -389,14 +389,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void relational_not_equal_to(int, int)
+    public void relationalNotEqualTo(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1;
         java.io.PrintStream $r1;
         boolean $z1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -419,14 +419,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void relational_greater_than(int, int)
+    public void relationalGreaterThan(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1;
         java.io.PrintStream $r1;
         boolean $z1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -449,14 +449,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void relational_less_than(int, int)
+    public void relationalLessThan(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1;
         java.io.PrintStream $r1;
         boolean $z1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -479,14 +479,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void relational_greater_than_equalto(int, int)
+    public void relationalGreaterThanEqualTo(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1;
         java.io.PrintStream $r1;
         boolean $z1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -509,14 +509,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void relational_less_than_equalto(int, int)
+    public void relationalLessThanEqualTo(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1;
         java.io.PrintStream $r1;
         boolean $z1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -539,14 +539,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void logical_OR(int, int)
+    public void logicalOR(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1;
         java.io.PrintStream $r1;
         boolean $z1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -572,14 +572,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void logical_AND(int, int)
+    public void logicalAND(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1;
         boolean $z1;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -604,14 +604,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void logical_NOT(int, int)
+    public void logicalNOT(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1;
         java.io.PrintStream $r1;
         boolean $z1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -634,13 +634,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void bitwise_AND(int, int)
+    public void bitwiseAND(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -655,13 +655,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void bitwise_OR(int, int)
+    public void bitwiseOR(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -676,13 +676,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void bitwise_XOR(int, int)
+    public void bitwiseXOR(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -697,13 +697,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void bitwise_compliment(int, int)
+    public void bitwiseCompliment(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -718,13 +718,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void bitwise_left_shift(int, int)
+    public void bitwiseLeftShift(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -739,13 +739,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void bitwise_right_shift(int, int)
+    public void bitwiseRightShift(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -760,13 +760,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void bitwise_right_shift_zerofill(int, int)
+    public void bitwiseRightShiftZerofill(int, int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0, i1, i2;
         java.io.PrintStream $r1;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -781,14 +781,14 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void conditional_operator(int)
+    public void conditionalOperator(int)
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         int i0;
         java.io.PrintStream $r1;
         byte $b3;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         i0 := @parameter0: int;
 
@@ -814,13 +814,13 @@ public class Operators extends java.lang.Object
         return;
     }
 
-    public void instanceof_operator()
+    public void instanceofOperator()
     {
-        Operators r0;
+        de.upb.soot.operators.Operators r0;
         boolean z0;
         java.io.PrintStream $r2;
 
-        r0 := @this: Operators;
+        r0 := @this: de.upb.soot.operators.Operators;
 
         z0 = "Java" instanceof java.lang.String;
 

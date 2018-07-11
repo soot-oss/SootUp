@@ -1,4 +1,4 @@
-interface  A1 extends java.lang.Object
+interface  de.upb.soot.interfaces.A1 extends java.lang.Object
 {
 
     public abstract void printA1();

@@ -1,13 +1,13 @@
-class A extends java.lang.Object
+class de.upb.soot.staticFields.A extends java.lang.Object
 {
     public static int a;
     public static java.lang.String b;
 
     void <init>()
     {
-        A r0;
+        de.upb.soot.staticFields.A r0;
 
-        r0 := @this: A;
+        r0 := @this: de.upb.soot.staticFields.A;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
@@ -27,9 +27,9 @@ class A extends java.lang.Object
 
     static void <clinit>()
     {
-        <A: int a> = 10;
+        <de.upb.soot.staticFields.A: int a> = 10;
 
-        <A: java.lang.String b> = " is a number.";
+        <de.upb.soot.staticFields.A: java.lang.String b> = " is a number.";
 
         return;
     }

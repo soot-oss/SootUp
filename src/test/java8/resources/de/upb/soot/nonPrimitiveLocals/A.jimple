@@ -1,11 +1,11 @@
-class A extends java.lang.Object
+class de.upb.soot.nonPrimitiveLocals.A extends java.lang.Object
 {
 
     void <init>()
     {
-        A r0;
+        de.upb.soot.nonPrimitiveLocals.A r0;
 
-        r0 := @this: A;
+        r0 := @this: de.upb.soot.nonPrimitiveLocals.A;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
@@ -14,10 +14,10 @@ class A extends java.lang.Object
 
     public void foo()
     {
-        A r0;
+        de.upb.soot.nonPrimitiveLocals.A r0;
         java.io.PrintStream $r1;
 
-        r0 := @this: A;
+        r0 := @this: de.upb.soot.nonPrimitiveLocals.A;
 
         $r1 = <java.lang.System: java.io.PrintStream out>;
 

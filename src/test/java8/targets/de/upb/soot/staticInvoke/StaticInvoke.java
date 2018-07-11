@@ -3,21 +3,16 @@ package de.upb.soot.staticInvoke;
 import java.lang.reflect.*;
 
 public class StaticInvoke extends A {
-    public static void main(String [] args) throws NoSuchMethodException {
-        StaticInvoke s = new StaticInvoke();
-        s.static_invoke();
-        s.static_invoke_reflection();
-    }
-    public static void static_invoke() throws NoSuchMethodException {
+
+    public static void staticInvoke() throws NoSuchMethodException {
         // Invoking static method
         A.methodA();
     }
-    public static void static_invoke_reflection() throws NoSuchMethodException {
-        A a = new A();
+    public static void staticInvokeReflection() throws NoSuchMethodException {
         // Invoking static method using reflection
-        Method method = a.getClass().getMethod("methodA");
+        Method method = A.class.getClass().getMethod("methodA");
         try {
-            method.invoke(a);
+            method.invoke(method);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {

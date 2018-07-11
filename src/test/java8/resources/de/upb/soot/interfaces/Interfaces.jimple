@@ -1,47 +1,51 @@
-public class Interfaces extends java.lang.Object
+public class de.upb.soot.interfaces.Interfaces extends java.lang.Object
 {
 
     public void <init>()
     {
-        Interfaces r0;
+        de.upb.soot.interfaces.Interfaces r0;
 
-        r0 := @this: Interfaces;
+        r0 := @this: de.upb.soot.interfaces.Interfaces;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
         return;
     }
 
-    public void single_interface()
+    public void singleInterface()
     {
-        Interfaces r0;
-        B $r2;
+        de.upb.soot.interfaces.Interfaces r0;
+        de.upb.soot.interfaces.C $r2;
 
-        r0 := @this: Interfaces;
+        r0 := @this: de.upb.soot.interfaces.Interfaces;
 
-        $r2 = new B;
+        $r2 = new de.upb.soot.interfaces.C;
 
-        specialinvoke $r2.<B: void <init>()>();
+        specialinvoke $r2.<de.upb.soot.interfaces.C: void <init>()>();
 
-        virtualinvoke $r2.<B: void printA1()>();
+        interfaceinvoke $r2.<de.upb.soot.interfaces.A1: void printA1()>();
 
         return;
     }
 
-    public void multiple_interface()
+    public void multipleInterface()
     {
-        Interfaces r0;
-        C $r2;
+        de.upb.soot.interfaces.Interfaces r0;
+        de.upb.soot.interfaces.C $r3, $r4;
 
-        r0 := @this: Interfaces;
+        r0 := @this: de.upb.soot.interfaces.Interfaces;
 
-        $r2 = new C;
+        $r3 = new de.upb.soot.interfaces.C;
 
-        specialinvoke $r2.<C: void <init>()>();
+        specialinvoke $r3.<de.upb.soot.interfaces.C: void <init>()>();
 
-        virtualinvoke $r2.<C: void printA1()>();
+        $r4 = new de.upb.soot.interfaces.C;
 
-        virtualinvoke $r2.<C: void printA2()>();
+        specialinvoke $r4.<de.upb.soot.interfaces.C: void <init>()>();
+
+        interfaceinvoke $r3.<de.upb.soot.interfaces.A1: void printA1()>();
+
+        interfaceinvoke $r4.<de.upb.soot.interfaces.A2: void printA2()>();
 
         return;
     }

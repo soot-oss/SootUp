@@ -1,39 +1,39 @@
 package de.upb.soot.primitiveLocals;
 
 public class PrimitiveLocals {
-  public void primitive_int() {
+  public void primitiveInt() {
     int a = 512;
     System.out.println(a);
     a++;
   }
 
-  public void primitive_byte() {
+  public void primitiveByte() {
     byte b = 0;
     System.out.println(b);
     b++;
   }
 
-  public void primitive_char() {
+  public void primitiveChar() {
     char c = 'a';
     System.out.println(c);
     c = 'b';
     System.out.println(c);
   }
 
-  public void primitive_short() {
+  public void primitiveShort() {
     short d = 10;
     System.out.println(d);
     d++;
   }
 
-  public void primitive_float() {
+  public void primitiveFloat() {
     float e = 3.14f;
     System.out.println(e);
     e = 7.77f;
     System.out.println(e);
   }
 
-  public void primitive_long() {
+  public void primitiveLong() {
     long f = 123456789;
     System.out.println(f);
     f = 123456777;
@@ -41,7 +41,7 @@ public class PrimitiveLocals {
 
   }
 
-  public void primitive_double() {
+  public void primitiveDouble() {
     double g = 1.96969654d;
     System.out.println(g);
     g = 1.787777777;

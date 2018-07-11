@@ -1,86 +1,88 @@
-public class LambdaExpressions extends java.lang.Object
+abstract class de.upb.soot.lambdaExpressions.LambdaExpressions extends java.lang.Object
 {
 
-    public void <init>()
+    void <init>()
     {
-        LambdaExpressions r0;
+        de.upb.soot.lambdaExpressions.LambdaExpressions r0;
 
-        r0 := @this: LambdaExpressions;
+        r0 := @this: de.upb.soot.lambdaExpressions.LambdaExpressions;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
         return;
     }
 
-    public void lambda_expressions()
+    public static void main(java.lang.String[])
     {
-        LambdaExpressions r0;
-        A r1, r2;
+        java.lang.String[] r0;
+        de.upb.soot.lambdaExpressions.A r1, r2;
         java.io.PrintStream $r3, $r5;
         java.lang.String $r4, $r6;
 
-        r0 := @this: LambdaExpressions;
+        r0 := @parameter0: java.lang.String[];
 
-        r1 = dynamicinvoke "methodA" <A ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(class "(Ljava/lang/String;)Ljava/lang/String;", handle: <LambdaExpressions: java.lang.String lambda$lambda_expressions$0(java.lang.String)>, class "(Ljava/lang/String;)Ljava/lang/String;");
+        r1 = dynamicinvoke "methodA" <de.upb.soot.lambdaExpressions.A ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(class "(I)Ljava/lang/String;", handle: <de.upb.soot.lambdaExpressions.LambdaExpressions: java.lang.String lambda$main$0(int)>, class "(I)Ljava/lang/String;");
 
-        r2 = dynamicinvoke "methodA" <A ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(class "(Ljava/lang/String;)Ljava/lang/String;", handle: <LambdaExpressions: java.lang.String lambda$lambda_expressions$1(java.lang.String)>, class "(Ljava/lang/String;)Ljava/lang/String;");
+        r2 = dynamicinvoke "methodA" <de.upb.soot.lambdaExpressions.A ()>() <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(class "(I)Ljava/lang/String;", handle: <de.upb.soot.lambdaExpressions.LambdaExpressions: java.lang.String lambda$main$1(int)>, class "(I)Ljava/lang/String;");
 
         $r3 = <java.lang.System: java.io.PrintStream out>;
 
-        $r4 = interfaceinvoke r1.<A: java.lang.String methodA(java.lang.String)>("WORLD");
+        $r4 = interfaceinvoke r1.<de.upb.soot.lambdaExpressions.A: java.lang.String methodA(int)>(7);
 
         virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r4);
 
         $r5 = <java.lang.System: java.io.PrintStream out>;
 
-        $r6 = interfaceinvoke r2.<A: java.lang.String methodA(java.lang.String)>("world");
+        $r6 = interfaceinvoke r2.<de.upb.soot.lambdaExpressions.A: java.lang.String methodA(int)>(9);
 
         virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>($r6);
 
         return;
     }
 
-    private static java.lang.String lambda$lambda_expressions$1(java.lang.String)
+    private static java.lang.String lambda$main$1(int)
     {
-        java.lang.String r0, $r5;
-        java.lang.StringBuilder $r1, $r2, $r3, $r4;
+        int i0;
+        java.lang.StringBuilder $r0, $r1, $r2, $r3;
+        java.lang.String $r4;
 
-        r0 := @parameter0: java.lang.String;
+        i0 := @parameter0: int;
 
-        $r1 = new java.lang.StringBuilder;
+        $r0 = new java.lang.StringBuilder;
 
-        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+        specialinvoke $r0.<java.lang.StringBuilder: void <init>()>();
 
-        $r2 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Hello ");
+        $r1 = virtualinvoke $r0.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Hello ");
 
-        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r0);
+        $r2 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
 
-        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("!");
+        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("!");
 
-        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.String toString()>();
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.String toString()>();
 
-        return $r5;
+        return $r4;
     }
 
-    private static java.lang.String lambda$lambda_expressions$0(java.lang.String)
+    private static java.lang.String lambda$main$0(int)
     {
-        java.lang.String r0, $r5;
-        java.lang.StringBuilder $r1, $r2, $r3, $r4;
+        int i0;
+        java.lang.StringBuilder $r0, $r1, $r2, $r3;
+        java.lang.String $r4;
 
-        r0 := @parameter0: java.lang.String;
+        i0 := @parameter0: int;
 
-        $r1 = new java.lang.StringBuilder;
+        $r0 = new java.lang.StringBuilder;
 
-        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+        specialinvoke $r0.<java.lang.StringBuilder: void <init>()>();
 
-        $r2 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Hello ");
+        $r1 = virtualinvoke $r0.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Hello ");
 
-        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r0);
+        $r2 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
 
-        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("!");
+        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("!");
 
-        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.String toString()>();
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.String toString()>();
 
-        return $r5;
+        return $r4;
     }
 }

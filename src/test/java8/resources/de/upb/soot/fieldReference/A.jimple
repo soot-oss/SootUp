@@ -1,19 +1,19 @@
-class A extends java.lang.Object
+class de.upb.soot.fieldReference.A extends java.lang.Object
 {
     int i;
     java.lang.String j;
 
     void <init>()
     {
-        A r0;
+        de.upb.soot.fieldReference.A r0;
 
-        r0 := @this: A;
+        r0 := @this: de.upb.soot.fieldReference.A;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
-        r0.<A: int i> = 15;
+        r0.<de.upb.soot.fieldReference.A: int i> = 15;
 
-        r0.<A: java.lang.String j> = "greater";
+        r0.<de.upb.soot.fieldReference.A: java.lang.String j> = "greater";
 
         return;
     }

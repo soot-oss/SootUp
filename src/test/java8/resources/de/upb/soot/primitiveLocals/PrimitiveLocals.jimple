@@ -12,7 +12,7 @@ public class de.upb.soot.primitiveLocals.PrimitiveLocals extends java.lang.Objec
         return;
     }
 
-    public void primitive_int()
+    public void primitiveInt()
     {
         de.upb.soot.primitiveLocals.PrimitiveLocals r0;
         java.io.PrintStream $r1;
@@ -26,7 +26,7 @@ public class de.upb.soot.primitiveLocals.PrimitiveLocals extends java.lang.Objec
         return;
     }
 
-    public void primitive_byte()
+    public void primitiveByte()
     {
         de.upb.soot.primitiveLocals.PrimitiveLocals r0;
         java.io.PrintStream $r1;
@@ -46,7 +46,7 @@ public class de.upb.soot.primitiveLocals.PrimitiveLocals extends java.lang.Objec
         return;
     }
 
-    public void primitive_char()
+    public void primitiveChar()
     {
         de.upb.soot.primitiveLocals.PrimitiveLocals r0;
         java.io.PrintStream $r1, $r2;
@@ -64,7 +64,7 @@ public class de.upb.soot.primitiveLocals.PrimitiveLocals extends java.lang.Objec
         return;
     }
 
-    public void primitive_short()
+    public void primitiveShort()
     {
         de.upb.soot.primitiveLocals.PrimitiveLocals r0;
         java.io.PrintStream $r1;
@@ -84,7 +84,7 @@ public class de.upb.soot.primitiveLocals.PrimitiveLocals extends java.lang.Objec
         return;
     }
 
-    public void primitive_float()
+    public void primitiveFloat()
     {
         de.upb.soot.primitiveLocals.PrimitiveLocals r0;
         java.io.PrintStream $r1, $r2;
@@ -102,7 +102,7 @@ public class de.upb.soot.primitiveLocals.PrimitiveLocals extends java.lang.Objec
         return;
     }
 
-    public void primitive_long()
+    public void primitiveLong()
     {
         de.upb.soot.primitiveLocals.PrimitiveLocals r0;
         java.io.PrintStream $r1, $r2;
@@ -120,7 +120,7 @@ public class de.upb.soot.primitiveLocals.PrimitiveLocals extends java.lang.Objec
         return;
     }
 
-    public void primitive_double()
+    public void primitiveDouble()
     {
         de.upb.soot.primitiveLocals.PrimitiveLocals r0;
         java.io.PrintStream $r1, $r2;

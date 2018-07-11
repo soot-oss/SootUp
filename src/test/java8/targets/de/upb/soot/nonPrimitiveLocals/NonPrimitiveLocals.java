@@ -1,7 +1,7 @@
 package de.upb.soot.nonPrimitiveLocals;
 
-public class NonPrimitiveLocals {
-  public void non_primitive_locals(String[] args) {
+public class NonPrimitiveLocals extends A {
+  public void nonPrimitiveLocalsTarget() {
     int a[] = new int[10];
     A a1 = new A();
     a1.foo();

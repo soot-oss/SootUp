@@ -1,33 +1,30 @@
-public abstract class AbstractClasses extends java.lang.Object
+public abstract class de.upb.soot.abstractClasses.AbstractClasses extends java.lang.Object
 {
 
     public void <init>()
     {
-        AbstractClasses r0;
+        de.upb.soot.abstractClasses.AbstractClasses r0;
 
-        r0 := @this: AbstractClasses;
+        r0 := @this: de.upb.soot.abstractClasses.AbstractClasses;
 
         specialinvoke r0.<java.lang.Object: void <init>()>();
 
         return;
     }
 
-    public static void abstract_classes(java.lang.String[])
+    public static void abstractClasses()
     {
-        java.lang.String[] r0;
-        B $r2;
+        de.upb.soot.abstractClasses.B $r1;
 
-        r0 := @parameter0: java.lang.String[];
+        $r1 = new de.upb.soot.abstractClasses.B;
 
-        $r2 = new B;
+        specialinvoke $r1.<de.upb.soot.abstractClasses.B: void <init>()>();
 
-        specialinvoke $r2.<B: void <init>()>();
+        virtualinvoke $r1.<de.upb.soot.abstractClasses.B: void methodB()>();
 
-        virtualinvoke $r2.<B: void methodB()>();
+        virtualinvoke $r1.<de.upb.soot.abstractClasses.B: void methodA()>();
 
-        virtualinvoke $r2.<B: void methodA()>();
-
-        virtualinvoke $r2.<B: void print()>();
+        virtualinvoke $r1.<de.upb.soot.abstractClasses.B: void print()>();
 
         return;
     }
