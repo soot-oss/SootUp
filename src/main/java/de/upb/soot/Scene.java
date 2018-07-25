@@ -31,16 +31,6 @@ public class Scene {
     return null;
   }
 
-  public RefType getRefTypeUnsafe(String className) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  public RefType getOrAddRefType(RefType rt) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
   public RefType getObjectType() {
     // TODO Auto-generated method stub
     return null;

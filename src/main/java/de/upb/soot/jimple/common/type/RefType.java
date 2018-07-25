@@ -22,32 +22,61 @@
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
-
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.G;
 import de.upb.soot.Scene;
 import de.upb.soot.SootResolver;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.ArrayDeque;
-
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A class that models Java's reference types. RefTypes are parameterized by a class name. Two RefType are equal iff they are
  * Parameterized by the same class name as a String.
+ * 
+ * Modified by @author Linghui Luo on 25.07.2018
  */
 @SuppressWarnings("serial")
 public class RefType extends RefLikeType implements Comparable<RefType> {
-  
+
   /** the class name that parameterizes this RefType */
   private String className;
   private volatile SootClass sootClass;
   private AnySubType anySubType;
+  /**
+   * a static map to store the RefType of each class according to its name. RefType of each class should just have one
+   * instance.
+   */
+  private static Map<String, RefType> nameToClass = new HashMap<String, RefType>();
 
-  public static RefType getInstance() {
-    return G.getInstance().soot_RefType();
+  /**
+   * Create a RefType for a class.
+   * 
+   * @param className
+   *          The name of the class used to parameterize the created RefType.
+   * @return a RefType for the given class name.
+   */
+  public static RefType getInstance(String className) {
+    RefType rt = nameToClass.get(className);
+    if (rt == null) {
+      rt = new RefType(className);
+      nameToClass.put(className, rt);
+    }
+    return rt;
+  }
+
+  /**
+   * Create a RefType for a class.
+   * 
+   * @param c
+   *          A SootClass for which to create a RefType.
+   * @return a RefType for the given SootClass..
+   */
+  public static RefType getInstance(SootClass c) {
+    return getInstance(c.getName());
   }
 
   private RefType(String className) {
@@ -63,22 +92,6 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
     this.className = className;
   }
 
-  /**
-   * Create a RefType for a class.
-   * 
-   * @param className
-   *          The name of the class used to parameterize the created RefType.
-   * @return a RefType for the given class name.
-   */
-  public static RefType getInstance(String className) {
-    RefType rt = Scene.getInstance().getRefTypeUnsafe(className);
-    if (rt == null) {
-      rt = new RefType(className);
-      return Scene.getInstance().getOrAddRefType(rt);
-    }
-    return rt;
-  }
-
   public String getClassName() {
     return className;
   }
@@ -86,17 +99,6 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
   @Override
   public int compareTo(RefType t) {
     return this.toString().compareTo(t.toString());
-  }
-
-  /**
-   * Create a RefType for a class.
-   * 
-   * @param c
-   *          A SootClass for which to create a RefType.
-   * @return a RefType for the given SootClass..
-   */
-  public static RefType getInstance(SootClass c) {
-    return getInstance(c.getName());
   }
 
   /**
