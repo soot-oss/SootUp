@@ -37,6 +37,11 @@ public class UnknownType extends Type {
 
   private static UnknownType instance;
 
+  /**
+   * Get the UnknownType instance.
+   * 
+   * @return the UnknownType instance.
+   */
   public static UnknownType getInstance() {
     if (instance == null) {
       instance = new UnknownType();

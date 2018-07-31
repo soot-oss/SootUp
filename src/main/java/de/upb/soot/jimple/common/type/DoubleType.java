@@ -36,9 +36,14 @@ public class DoubleType extends PrimType {
 
   private static DoubleType instance;
 
+  /**
+   * Get the DoubleType instance.
+   * 
+   * @return the DoubleType instance.
+   */
   public static DoubleType getInstance() {
     if (instance == null) {
-      instance=new DoubleType();
+      instance = new DoubleType();
     }
     return instance;
   }

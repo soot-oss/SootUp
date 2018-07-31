@@ -34,7 +34,12 @@ public class VoidType extends Type {
 
   private static VoidType instance;
 
-  public static VoidType v() {
+  /**
+   * Get the VoidType instance.
+   * 
+   * @return the VoidType instance.
+   */
+  public static VoidType getInstance() {
     if (instance == null) {
       instance = new VoidType();
     }

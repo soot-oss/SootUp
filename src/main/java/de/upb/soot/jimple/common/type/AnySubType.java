@@ -39,6 +39,13 @@ public class AnySubType extends RefLikeType {
     this.base = base;
   }
 
+  /**
+   * Creates an AnySubType instance parameterized by a given super type.
+   * 
+   * @param base
+   *          the super type
+   * @return the AnySubType instance
+   */
   public static AnySubType getInstance(RefType base) {
     if (base.getAnySubType() == null) {
       synchronized (base) {

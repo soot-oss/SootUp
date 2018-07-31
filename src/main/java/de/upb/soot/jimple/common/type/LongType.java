@@ -36,6 +36,11 @@ public class LongType extends PrimType {
 
   private static LongType instance;
 
+  /**
+   * Get the LongType instance.
+   * 
+   * @return the LongType instance.
+   */
   public static LongType getInstance() {
     if (instance == null) {
       instance = new LongType();

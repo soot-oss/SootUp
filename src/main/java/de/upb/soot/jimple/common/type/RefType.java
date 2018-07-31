@@ -22,6 +22,7 @@
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
+
 package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.Scene;
@@ -35,13 +36,12 @@ import java.util.ArrayDeque;
 /**
  * A class that models Java's reference types. RefTypes are parameterized by a class name. Two RefType are equal iff they are
  * Parameterized by the same class name as a String.
- * 
  * Modified by @author Linghui Luo on 25.07.2018
  */
 @SuppressWarnings("serial")
 public class RefType extends RefLikeType implements Comparable<RefType> {
 
-  /** the class name that parameterizes this RefType */
+  /** the class name that parameterizes this RefType. */
   private String className;
   private volatile SootClass sootClass;
   private AnySubType anySubType;

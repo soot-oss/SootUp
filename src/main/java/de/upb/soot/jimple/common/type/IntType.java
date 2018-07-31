@@ -36,6 +36,11 @@ public class IntType extends PrimType {
 
   private static IntType instance;
 
+  /**
+   * Get the IntType instance.
+   * 
+   * @return the IntType instance.
+   */
   public static IntType getInstance() {
     if (instance == null) {
       instance = new IntType();

@@ -36,8 +36,8 @@ public class Scene {
     return null;
   }
 
-  public String quotedNameOf(String s)
-  { // TODO Auto-generated method stub
+  public String quotedNameOf(String s) {
+    // TODO Auto-generated method stub
     return null;
   }
 

@@ -36,6 +36,11 @@ public class NullType extends RefLikeType {
 
   private static NullType instance;
 
+  /**
+   * Get the NullType instance.
+   * 
+   * @return the NullType instance.
+   */
   public static NullType getInstance() {
     if (instance == null) {
       instance = new NullType();

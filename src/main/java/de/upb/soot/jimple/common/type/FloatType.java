@@ -36,6 +36,11 @@ public class FloatType extends PrimType {
 
   private static FloatType instance;
 
+  /**
+   * Get the FloatType instance.
+   * 
+   * @return the FloatType instance.
+   */
   public static FloatType getInstance() {
     if (instance == null) {
       instance = new FloatType();

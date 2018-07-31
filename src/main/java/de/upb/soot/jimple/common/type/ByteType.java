@@ -36,6 +36,11 @@ public class ByteType extends PrimType {
 
   private static ByteType instance;
 
+  /**
+   * Get the ByteType instance.
+   * 
+   * @return the ByteType instance.
+   */
   public static ByteType getInstance() {
     if (instance == null) {
       instance = new ByteType();

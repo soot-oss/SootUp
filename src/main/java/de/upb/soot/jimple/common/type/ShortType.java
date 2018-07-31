@@ -36,6 +36,11 @@ public class ShortType extends PrimType {
 
   private static ShortType instance;
 
+  /**
+   * Get the ShortType instance.
+   * 
+   * @return the ShortType instance.
+   */
   public static ShortType getInstance() {
     if (instance == null) {
       instance = new ShortType();
