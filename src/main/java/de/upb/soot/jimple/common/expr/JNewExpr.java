@@ -36,14 +36,22 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("serial")
-public abstract class AbstractNewExpr implements Expr {
-  RefType type;
+public class JNewExpr implements Expr {
+  private RefType type;
+
+  public JNewExpr(RefType type) {
+    this.type = type;
+  }
+
+  @Override
+  public Object clone() {
+    return new JNewExpr(type);
+  }
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof AbstractNewExpr) {
-      AbstractNewExpr ae = (AbstractNewExpr) o;
+    if (o instanceof JNewExpr) {
+      JNewExpr ae = (JNewExpr) o;
       return type.equals(ae.type);
     }
     return false;
@@ -54,9 +62,6 @@ public abstract class AbstractNewExpr implements Expr {
   public int equivHashCode() {
     return type.hashCode();
   }
-
-  @Override
-  public abstract Object clone();
 
   @Override
   public String toString() {
@@ -92,4 +97,5 @@ public abstract class AbstractNewExpr implements Expr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNewExpr(this);
   }
+
 }

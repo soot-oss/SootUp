@@ -26,9 +26,10 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.StmtPrinter;
-import de.upb.soot.jimple.PrecedenceTest;
+import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
@@ -36,24 +37,31 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("serial")
-public abstract class AbstractCastExpr implements Expr {
-  final ValueBox opBox;
-  Type type;
+public class JInstanceOfExpr implements Expr {
+  private final ValueBox opBox;
+  private Type checkType;
+
+  public JInstanceOfExpr(Value op, Type checkType) {
+    this.opBox = Jimple.getInstance().newImmediateBox(op);
+    this.checkType = checkType;
+  }
 
   @Override
-  public abstract Object clone();
+  public Object clone() {
+    return new JInstanceOfExpr(Jimple.cloneIfNecessary(getOp()), checkType);
+  }
 
-  protected AbstractCastExpr(ValueBox opBox, Type type) {
-    this.opBox = opBox;
-    this.type = type;
+  @Override
+  public void toString(StmtPrinter up) {
+    // TODO Auto-generated method stub
+
   }
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof AbstractCastExpr) {
-      AbstractCastExpr ace = (AbstractCastExpr) o;
-      return opBox.getValue().equivTo(ace.opBox.getValue()) && type.equals(ace.type);
+    if (o instanceof JInstanceOfExpr) {
+      JInstanceOfExpr aie = (JInstanceOfExpr) o;
+      return opBox.getValue().equivTo(aie.opBox.getValue()) && checkType.equals(aie.checkType);
     }
     return false;
   }
@@ -61,26 +69,13 @@ public abstract class AbstractCastExpr implements Expr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return opBox.getValue().equivHashCode() * 101 + type.hashCode() + 17;
+    return opBox.getValue().equivHashCode() * 101 + checkType.hashCode() * 17;
   }
+
 
   @Override
   public String toString() {
-    return "(" + type.toString() + ") " + opBox.getValue().toString();
-  }
-
-  @Override
-  public void toString(StmtPrinter up) {
-    up.literal("(");
-    up.type(type);
-    up.literal(") ");
-    if (PrecedenceTest.needsBrackets(opBox, this)) {
-      up.literal("(");
-    }
-    opBox.toString(up);
-    if (PrecedenceTest.needsBrackets(opBox, this)) {
-      up.literal(")");
-    }
+    return opBox.getValue().toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
   }
 
   public Value getOp() {
@@ -105,22 +100,22 @@ public abstract class AbstractCastExpr implements Expr {
     return list;
   }
 
-  public Type getCastType() {
-    return type;
-  }
-
-  public void setCastType(Type castType) {
-    this.type = castType;
-  }
-
   @Override
   public Type getType() {
-    return type;
+    return BooleanType.getInstance();
+  }
+
+  public Type getCheckType() {
+    return checkType;
+  }
+
+  public void setCheckType(Type checkType) {
+    this.checkType = checkType;
   }
 
   @Override
   public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseCastExpr(this);
+    ((IExprVisitor) sw).caseInstanceOfExpr(this);
   }
 
 }

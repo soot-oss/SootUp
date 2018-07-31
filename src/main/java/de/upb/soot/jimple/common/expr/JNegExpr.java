@@ -28,7 +28,6 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
 import de.upb.soot.jimple.common.type.CharType;
@@ -42,17 +41,21 @@ import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-@SuppressWarnings("serial")
-public abstract class AbstractNegExpr extends AbstractUnopExpr {
-  protected AbstractNegExpr(ValueBox opBox) {
-    super(opBox);
+public class JNegExpr extends AbstractUnopExpr {
+  public JNegExpr(Value op) {
+    super(Jimple.getInstance().newImmediateBox(op));
+  }
+
+  @Override
+  public Object clone() {
+    return new JNegExpr(Jimple.cloneIfNecessary(getOp()));
   }
 
   /** Compares the specified object with this one for structural equality. */
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof AbstractNegExpr) {
-      return opBox.getValue().equivTo(((AbstractNegExpr) o).opBox.getValue());
+    if (o instanceof JNegExpr) {
+      return opBox.getValue().equivTo(((JNegExpr) o).opBox.getValue());
     }
     return false;
   }
@@ -62,9 +65,6 @@ public abstract class AbstractNegExpr extends AbstractUnopExpr {
   public int equivHashCode() {
     return opBox.getValue().equivHashCode();
   }
-
-  @Override
-  public abstract Object clone();
 
   @Override
   public String toString() {

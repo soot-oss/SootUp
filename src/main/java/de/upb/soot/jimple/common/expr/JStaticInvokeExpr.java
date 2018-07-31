@@ -34,16 +34,35 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("serial")
-public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
-  AbstractStaticInvokeExpr(SootMethod method, List<Value> args) {
-    this(method, new ValueBox[args.size()]);
+public class JStaticInvokeExpr extends AbstractInvokeExpr {
+  /**
+   * Stores the values of new ImmediateBox to the argBoxes array.
+   */
+  public JStaticInvokeExpr(SootMethod method, List<? extends Value> args) {
+    super(method, new ValueBox[args.size()]);
+    if (!method.isStatic()) {
+      throw new RuntimeException("wrong static-ness");
+    }
+    this.method = method;
 
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.getInstance().newImmediateBox(args.get(i));
     }
+
+  }
+
+  @Override
+  public Object clone() {
+    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+
+    for (int i = 0; i < getArgCount(); i++) {
+      clonedArgs.add(i, getArg(i));
+    }
+
+    return new JStaticInvokeExpr(method, clonedArgs);
   }
 
   /**
@@ -51,8 +70,8 @@ public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
    */
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof AbstractStaticInvokeExpr) {
-      AbstractStaticInvokeExpr ie = (AbstractStaticInvokeExpr) o;
+    if (o instanceof JStaticInvokeExpr) {
+      JStaticInvokeExpr ie = (JStaticInvokeExpr) o;
       if (!(getMethod().equals(ie.getMethod())
           && (argBoxes == null ? 0 : argBoxes.length) == (ie.argBoxes == null ? 0 : ie.argBoxes.length))) {
         return false;
@@ -75,17 +94,6 @@ public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
   @Override
   public int equivHashCode() {
     return getMethod().equivHashCode();
-  }
-
-  @Override
-  public abstract Object clone();
-
-  protected AbstractStaticInvokeExpr(SootMethod method, ValueBox[] argBoxes) {
-    super(method, argBoxes);
-    if (!method.isStatic()) {
-      throw new RuntimeException("wrong static-ness");
-    }
-    this.method = method;
   }
 
   @Override
@@ -136,5 +144,4 @@ public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseStaticInvokeExpr(this);
   }
-
 }

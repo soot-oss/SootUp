@@ -38,23 +38,42 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("serial")
-public abstract class AbstractNewMultiArrayExpr implements Expr {
-  ArrayType baseType;
+public class JNewMultiArrayExpr implements Expr {
+  private ArrayType baseType;
   protected final ValueBox[] sizeBoxes;
 
-  @Override
-  public abstract Object clone();
-
-  protected AbstractNewMultiArrayExpr(ArrayType type, ValueBox[] sizeBoxes) {
+  /**
+   * Initiates a JNewMultiArrayExpr.
+   * 
+   * @param type
+   *          the type of the array
+   * @param sizes
+   *          the sizes
+   * 
+   */
+  public JNewMultiArrayExpr(ArrayType type, List<? extends Value> sizes) {
     this.baseType = type;
-    this.sizeBoxes = sizeBoxes;
+    this.sizeBoxes = new ValueBox[sizes.size()];
+    for (int i = 0; i < sizes.size(); i++) {
+      sizeBoxes[i] = Jimple.getInstance().newImmediateBox(sizes.get(i));
+    }
+  }
+
+  @Override
+  public Object clone() {
+    List<Value> clonedSizes = new ArrayList<Value>(getSizeCount());
+
+    for (int i = 0; i < getSizeCount(); i++) {
+      clonedSizes.add(i, Jimple.cloneIfNecessary(getSize(i)));
+    }
+
+    return new JNewMultiArrayExpr(baseType, clonedSizes);
   }
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof AbstractNewMultiArrayExpr) {
-      AbstractNewMultiArrayExpr ae = (AbstractNewMultiArrayExpr) o;
+    if (o instanceof JNewMultiArrayExpr) {
+      JNewMultiArrayExpr ae = (JNewMultiArrayExpr) o;
       if (!baseType.equals(ae.baseType) || sizeBoxes.length != ae.sizeBoxes.length) {
         return false;
       }
@@ -165,5 +184,4 @@ public abstract class AbstractNewMultiArrayExpr implements Expr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNewMultiArrayExpr(this);
   }
-
 }

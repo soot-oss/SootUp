@@ -37,34 +37,37 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("serial")
-public abstract class AbstractNewArrayExpr implements Expr {
-  Type baseType;
-  final ValueBox sizeBox;
+public class JNewArrayExpr implements Expr {
+  private Type baseType;
+  private final ValueBox sizeBox;
 
-  protected AbstractNewArrayExpr(Type type, ValueBox sizeBox) {
+  public JNewArrayExpr(Type type, Value size) {
     this.baseType = type;
-    this.sizeBox = sizeBox;
+    this.sizeBox = Jimple.getInstance().newImmediateBox(size);
+  }
+
+  @Override
+  public Object clone() {
+    return new JNewArrayExpr(getBaseType(), Jimple.cloneIfNecessary(getSize()));
   }
 
   /**
    * Returns a value of sizeBox if o is an instance of AbstractNewArrayExpr, else returns false.
    */
+  @Override
   public boolean equivTo(Object o) {
-    if (o instanceof AbstractNewArrayExpr) {
-      AbstractNewArrayExpr ae = (AbstractNewArrayExpr) o;
+    if (o instanceof JNewArrayExpr) {
+      JNewArrayExpr ae = (JNewArrayExpr) o;
       return sizeBox.getValue().equivTo(ae.sizeBox.getValue()) && baseType.equals(ae.baseType);
     }
     return false;
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
   public int equivHashCode() {
     return sizeBox.getValue().equivHashCode() * 101 + baseType.hashCode() * 17;
   }
-
-  @Override
-  public abstract Object clone();
 
   @Override
   public String toString() {
@@ -79,6 +82,7 @@ public abstract class AbstractNewArrayExpr implements Expr {
   /**
    * Converts a parameter of type StmtPrinter to a string literal.
    */
+  @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.NEWARRAY);
     up.literal(" ");
@@ -117,6 +121,7 @@ public abstract class AbstractNewArrayExpr implements Expr {
   /**
    * Returns a list of type ValueBox, contains a list of values of sizeBox.
    */
+  @Override
   public final List<ValueBox> getUseBoxes() {
     List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
@@ -129,6 +134,7 @@ public abstract class AbstractNewArrayExpr implements Expr {
   /**
    * Returns an instance of ArrayType().
    */
+  @Override
   public Type getType() {
     if (baseType instanceof ArrayType) {
       return ArrayType.getInstance(((ArrayType) baseType).baseType, ((ArrayType) baseType).numDimensions + 1);
@@ -141,5 +147,4 @@ public abstract class AbstractNewArrayExpr implements Expr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNewArrayExpr(this);
   }
-
 }
