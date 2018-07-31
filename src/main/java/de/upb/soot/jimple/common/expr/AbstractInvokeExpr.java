@@ -29,7 +29,6 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
 import de.upb.soot.jimple.common.type.Type;
 
 import java.util.ArrayList;
@@ -38,24 +37,20 @@ import java.util.List;
 
 @SuppressWarnings("serial")
 public abstract class AbstractInvokeExpr implements Expr {
-  protected SootMethodRef methodRef;
+  protected SootMethod method;
   protected final ValueBox[] argBoxes;
 
-  protected AbstractInvokeExpr(SootMethodRef methodRef, ValueBox[] argBoxes) {
-    this.methodRef = methodRef;
+  protected AbstractInvokeExpr(SootMethod method, ValueBox[] argBoxes) {
+    this.method = method;
     this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
   }
 
-  public void setMethodRef(SootMethodRef methodRef) {
-    this.methodRef = methodRef;
-  }
-
-  public SootMethodRef getMethodRef() {
-    return methodRef;
+  public void setMethodRef(SootMethod method) {
+    this.method = method;
   }
 
   public SootMethod getMethod() {
-    return methodRef.resolve();
+    return method.resolve();
   }
 
   @Override
@@ -92,7 +87,7 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   @Override
   public Type getType() {
-    return methodRef.returnType();
+    return method.returnType();
   }
 
   @Override

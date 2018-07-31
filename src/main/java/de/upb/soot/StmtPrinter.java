@@ -1,12 +1,12 @@
 package de.upb.soot;
 
+import de.upb.soot.core.SootField;
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
-import de.upb.soot.jimple.common.ref.SootFieldRef;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.common.type.Type;
 
@@ -44,11 +44,11 @@ public interface StmtPrinter {
 
   public void type(Type t);
 
-  public void methodRef(SootMethodRef m);
+  public void method(SootMethod m);
 
   public void constant(Constant c);
 
-  public void fieldRef(SootFieldRef f);
+  public void field(SootField f);
 
   public void unitRef(Stmt u, boolean branchTarget);
 

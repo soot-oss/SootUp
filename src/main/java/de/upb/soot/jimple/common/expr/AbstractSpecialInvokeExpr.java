@@ -27,15 +27,15 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.StmtPrinter;
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
 public abstract class AbstractSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
-  protected AbstractSpecialInvokeExpr(ValueBox baseBox, SootMethodRef methodRef, ValueBox[] argBoxes) {
+  protected AbstractSpecialInvokeExpr(ValueBox baseBox, SootMethod methodRef, ValueBox[] argBoxes) {
     super(methodRef, baseBox, argBoxes);
     if (methodRef.isStatic()) {
       throw new RuntimeException("wrong static-ness");
@@ -45,6 +45,7 @@ public abstract class AbstractSpecialInvokeExpr extends AbstractInstanceInvokeEx
   /**
    * Returns true if o is an instance of AbstractSpecialInvokeExpr, else returns false.
    */
+  @Override
   public boolean equivTo(Object o) {
     if (o instanceof AbstractSpecialInvokeExpr) {
       AbstractSpecialInvokeExpr ie = (AbstractSpecialInvokeExpr) o;
@@ -67,6 +68,7 @@ public abstract class AbstractSpecialInvokeExpr extends AbstractInstanceInvokeEx
   /**
    * Returns a hash code for this object, consistent with structural equality.
    */
+  @Override
   public int equivHashCode() {
     return baseBox.getValue().equivHashCode() * 101 + getMethod().equivHashCode() * 17;
   }
@@ -78,7 +80,7 @@ public abstract class AbstractSpecialInvokeExpr extends AbstractInstanceInvokeEx
   public String toString() {
     StringBuffer buffer = new StringBuffer();
 
-    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + methodRef.getSignature() + "(");
+    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + method.getSignature() + "(");
 
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
@@ -98,12 +100,13 @@ public abstract class AbstractSpecialInvokeExpr extends AbstractInstanceInvokeEx
   /**
    * Converts a parameter of type StmtPrinter to a string literal.
    */
+  @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.SPECIALINVOKE);
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.methodRef(methodRef);
+    up.method(method);
     up.literal("(");
 
     if (argBoxes != null) {
@@ -119,6 +122,7 @@ public abstract class AbstractSpecialInvokeExpr extends AbstractInstanceInvokeEx
     up.literal(")");
   }
 
+  @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseSpecialInvokeExpr(this);
   }

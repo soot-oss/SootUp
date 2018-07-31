@@ -23,31 +23,30 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.constant.Constant;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 public class MethodHandle extends Constant {
-  public final SootMethodRef methodRef;
+  public final SootMethod method;
   public int tag;
 
-  private MethodHandle(SootMethodRef ref, int tag) {
-    this.methodRef = ref;
+  private MethodHandle(SootMethod ref, int tag) {
+    this.method = ref;
     this.tag = tag;
   }
 
-  public static MethodHandle getInstance(SootMethodRef ref, int tag) {
+  public static MethodHandle getInstance(SootMethod ref, int tag) {
     return new MethodHandle(ref, tag);
   }
 
   @Override
   public String toString() {
-    return "handle: " + methodRef;
+    return "handle: " + method;
   }
 
   @Override
@@ -55,10 +54,11 @@ public class MethodHandle extends Constant {
     return RefType.getInstance("java.lang.invoke.MethodHandle");
   }
 
-  public SootMethodRef getMethodRef() {
-    return methodRef;
+  public SootMethod getMethodRef() {
+    return method;
   }
 
+  @Override
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseMethodHandle(this);
   }
@@ -67,7 +67,7 @@ public class MethodHandle extends Constant {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((methodRef == null) ? 0 : methodRef.hashCode());
+    result = prime * result + ((method == null) ? 0 : method.hashCode());
     return result;
   }
 
@@ -83,11 +83,11 @@ public class MethodHandle extends Constant {
       return false;
     }
     MethodHandle other = (MethodHandle) obj;
-    if (methodRef == null) {
-      if (other.methodRef != null) {
+    if (method == null) {
+      if (other.method != null) {
         return false;
       }
-    } else if (!methodRef.equals(other.methodRef)) {
+    } else if (!method.equals(other.method)) {
       return false;
     }
     return true;

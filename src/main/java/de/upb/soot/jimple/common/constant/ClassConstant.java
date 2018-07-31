@@ -40,6 +40,7 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+@SuppressWarnings("serial")
 public class ClassConstant extends Constant {
   public final String value;
 
@@ -164,6 +165,7 @@ public class ClassConstant extends Constant {
     return RefType.getInstance("java.lang.Class");
   }
 
+  @Override
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseClassConstant(this);
   }

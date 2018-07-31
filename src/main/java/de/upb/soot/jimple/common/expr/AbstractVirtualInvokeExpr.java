@@ -27,16 +27,16 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.StmtPrinter;
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 public abstract class AbstractVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
-  protected AbstractVirtualInvokeExpr(ValueBox baseBox, SootMethodRef methodRef, ValueBox[] argBoxes) {
-    super(methodRef, baseBox, argBoxes);
-    if (methodRef.isStatic()) {
+  protected AbstractVirtualInvokeExpr(ValueBox baseBox, SootMethod method, ValueBox[] argBoxes) {
+    super(method, baseBox, argBoxes);
+    if (method.isStatic()) {
       throw new RuntimeException("wrong static-ness");
     }
   }
@@ -44,6 +44,7 @@ public abstract class AbstractVirtualInvokeExpr extends AbstractInstanceInvokeEx
   /**
    * Returns a value of sizeBox, if o is an instance of AbstractNewArrayExpr, else returns false.
    */
+  @Override
   public boolean equivTo(Object o) {
     if (o instanceof AbstractVirtualInvokeExpr) {
       AbstractVirtualInvokeExpr ie = (AbstractVirtualInvokeExpr) o;
@@ -66,6 +67,7 @@ public abstract class AbstractVirtualInvokeExpr extends AbstractInstanceInvokeEx
   /**
    * Returns a hash code for this object, consistent with structural equality.
    */
+  @Override
   public int equivHashCode() {
     return baseBox.getValue().equivHashCode() * 101 + getMethod().equivHashCode() * 17;
   }
@@ -73,6 +75,7 @@ public abstract class AbstractVirtualInvokeExpr extends AbstractInstanceInvokeEx
   @Override
   public abstract Object clone();
 
+  @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseVirtualInvokeExpr(this);
   }
@@ -81,7 +84,7 @@ public abstract class AbstractVirtualInvokeExpr extends AbstractInstanceInvokeEx
   public String toString() {
     StringBuffer buffer = new StringBuffer();
 
-    buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + methodRef.getSignature() + "(");
+    buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + method.getSignature() + "(");
 
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
@@ -101,12 +104,13 @@ public abstract class AbstractVirtualInvokeExpr extends AbstractInstanceInvokeEx
   /**
    * Converts a parameter of type StmtPrinter to a string literal.
    */
+  @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.VIRTUALINVOKE);
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.methodRef(methodRef);
+    up.method(method);
     up.literal("(");
 
     if (argBoxes != null) {

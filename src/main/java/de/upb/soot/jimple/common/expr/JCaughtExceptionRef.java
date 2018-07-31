@@ -30,7 +30,6 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.ref.CaughtExceptionRef;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.Collections;
@@ -61,6 +60,7 @@ public class JCaughtExceptionRef implements CaughtExceptionRef {
     return "@caughtexception";
   }
 
+  @Override
   public void toString(StmtPrinter up) {
     up.identityRef(this);
   }
@@ -77,6 +77,6 @@ public class JCaughtExceptionRef implements CaughtExceptionRef {
 
   @Override
   public void accept(IVisitor sw) {
-    ((IRefVisitor) sw).caseCaughtExceptionRef(this);
+    // TODO
   }
 }

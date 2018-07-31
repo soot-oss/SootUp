@@ -24,6 +24,8 @@
 
 package de.upb.soot.jimple;
 
+import de.upb.soot.core.SootField;
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Value;
@@ -64,9 +66,6 @@ import de.upb.soot.jimple.common.expr.JXorExpr;
 import de.upb.soot.jimple.common.ref.CaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.ParameterRef;
-import de.upb.soot.jimple.common.ref.SootFieldRef;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
-import de.upb.soot.jimple.common.ref.StaticFieldRef;
 import de.upb.soot.jimple.common.ref.ThisRef;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
@@ -383,103 +382,103 @@ public class Jimple {
   /**
    * Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk.
    */
-  public JStaticInvokeExpr newStaticInvokeExpr(SootMethodRef method, List<? extends Value> args) {
+  public JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, List<? extends Value> args) {
     return new JStaticInvokeExpr(method, args);
   }
 
-  public JStaticInvokeExpr newStaticInvokeExpr(SootMethodRef method, Value... args) {
+  public JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, Value... args) {
     return newStaticInvokeExpr(method, Arrays.asList(args));
   }
 
-  public JStaticInvokeExpr newStaticInvokeExpr(SootMethodRef method, Value arg) {
+  public JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, Value arg) {
     return newStaticInvokeExpr(method, Collections.singletonList(arg));
   }
 
-  public JStaticInvokeExpr newStaticInvokeExpr(SootMethodRef method) {
+  public JStaticInvokeExpr newStaticInvokeExpr(SootMethod method) {
     return newStaticInvokeExpr(method, Collections.<Value>emptyList());
   }
 
   /**
-   * Constructs a NewSpecialInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
+   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethodRef method, List<? extends Value> args) {
+  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
     return new JSpecialInvokeExpr(base, method, args);
   }
 
   /**
-   * Constructs a NewSpecialInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
+   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethodRef method, Value... args) {
+  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, Value... args) {
     return newSpecialInvokeExpr(base, method, Arrays.asList(args));
   }
 
-  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethodRef method, Value arg) {
+  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, Value arg) {
     return newSpecialInvokeExpr(base, method, Collections.<Value>singletonList(arg));
   }
 
-  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethodRef method) {
+  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method) {
     return newSpecialInvokeExpr(base, method, Collections.<Value>emptyList());
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List bootstrapArgs, SootMethodRef methodRef, List
-   * args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod methodRef, List args)
+   * grammar chunk.
    */
-  public JDynamicInvokeExpr newDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      SootMethodRef methodRef, List<? extends Value> args) {
+  public JDynamicInvokeExpr newDynamicInvokeExpr(SootMethod bootstrapMethodRef, List<? extends Value> bootstrapArgs,
+      SootMethod methodRef, List<? extends Value> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List bootstrapArgs, SootMethodRef methodRef, List
-   * args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod methodRef, List args)
+   * grammar chunk.
    */
-  public JDynamicInvokeExpr newDynamicInvokeExpr(SootMethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      SootMethodRef methodRef, int tag, List<? extends Value> args) {
+  public JDynamicInvokeExpr newDynamicInvokeExpr(SootMethod bootstrapMethodRef, List<? extends Value> bootstrapArgs,
+      SootMethod methodRef, int tag, List<? extends Value> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
 
   /**
-   * Constructs a NewVirtualInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
+   * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethodRef method, List<? extends Value> args) {
+  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
     return new JVirtualInvokeExpr(base, method, args);
   }
 
   /**
-   * Constructs a NewVirtualInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
+   * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethodRef method, Value... args) {
+  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, Value... args) {
     return newVirtualInvokeExpr(base, method, Arrays.asList(args));
   }
 
-  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethodRef method, Value arg) {
+  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, Value arg) {
     return newVirtualInvokeExpr(base, method, Collections.<Value>singletonList(arg));
   }
 
-  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethodRef method) {
+  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method) {
     return newVirtualInvokeExpr(base, method, Collections.<Value>emptyList());
   }
 
   /**
-   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
+   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethodRef method, List<? extends Value> args) {
+  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
     return new JInterfaceInvokeExpr(base, method, args);
   }
 
   /**
-   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethodRef method, List of Immediate) grammar chunk.
+   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethodRef method, Value... args) {
+  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, Value... args) {
     return newInterfaceInvokeExpr(base, method, Arrays.asList(args));
   }
 
-  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethodRef method, Value arg) {
+  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, Value arg) {
     return newInterfaceInvokeExpr(base, method, Collections.<Value>singletonList(arg));
   }
 
-  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethodRef method) {
+  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method) {
     return newInterfaceInvokeExpr(base, method, Collections.<Value>emptyList());
   }
 
@@ -621,8 +620,8 @@ public class Jimple {
   /**
    * Constructs a StaticFieldRef(SootFieldRef) grammar chunk.
    */
-  public StaticFieldRef newStaticFieldRef(SootFieldRef f) {
-    return new StaticFieldRef(f);
+  public SootField newStaticField(SootField f) {
+    return new SootField(f);
   }
 
   /**
@@ -642,7 +641,7 @@ public class Jimple {
   /**
    * Constructs a InstanceFieldRef(Local, SootFieldRef) grammar chunk.
    */
-  public JInstanceFieldRef newInstanceFieldRef(Value base, SootFieldRef f) {
+  public JInstanceFieldRef newInstanceFieldRef(Value base, SootField f) {
     return new JInstanceFieldRef(base, f);
   }
 

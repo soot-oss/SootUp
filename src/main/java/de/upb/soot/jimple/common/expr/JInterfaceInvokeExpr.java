@@ -27,10 +27,10 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,16 +39,16 @@ public class JInterfaceInvokeExpr extends AbstractInterfaceInvokeExpr {
   /**
    * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array argBoxes.
    */
-  public JInterfaceInvokeExpr(Value base, SootMethodRef methodRef, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), methodRef, new ValueBox[args.size()]);
+  public JInterfaceInvokeExpr(Value base, SootMethod method, List<? extends Value> args) {
+    super(Jimple.getInstance().newLocalBox(base), method, new ValueBox[args.size()]);
 
     // Check that the method's class is resolved enough
     // CheckLevel returns without doing anything because we can be not 'done' resolving
-    methodRef.declaringClass().checkLevelIgnoreResolving(SootClass.HIERARCHY);
+    method.declaringClass().checkLevelIgnoreResolving(SootClass.HIERARCHY);
     // now check if the class is valid
-    if (!methodRef.declaringClass().isInterface() && !methodRef.declaringClass().isPhantom()) {
+    if (!method.declaringClass().isInterface() && !method.declaringClass().isPhantom()) {
       throw new RuntimeException("Trying to create interface invoke expression for non-interface type: "
-          + methodRef.declaringClass() + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
+          + method.declaringClass() + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
     }
 
     for (int i = 0; i < args.size(); i++) {
@@ -64,7 +64,7 @@ public class JInterfaceInvokeExpr extends AbstractInterfaceInvokeExpr {
       argList.add(i, Jimple.cloneIfNecessary(getArg(i)));
     }
 
-    return new JInterfaceInvokeExpr(Jimple.cloneIfNecessary(getBase()), methodRef, argList);
+    return new JInterfaceInvokeExpr(Jimple.cloneIfNecessary(getBase()), method, argList);
   }
 
 }

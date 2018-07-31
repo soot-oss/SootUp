@@ -25,12 +25,12 @@
 
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.MethodHandle;
 import de.upb.soot.jimple.common.constant.ClassConstant;
 import de.upb.soot.jimple.common.constant.DoubleConstant;
 import de.upb.soot.jimple.common.constant.FloatConstant;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.constant.LongConstant;
+import de.upb.soot.jimple.common.constant.MethodHandle;
 import de.upb.soot.jimple.common.constant.NullConstant;
 import de.upb.soot.jimple.common.constant.StringConstant;
 

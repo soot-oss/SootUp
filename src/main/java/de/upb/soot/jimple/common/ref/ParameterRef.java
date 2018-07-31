@@ -28,7 +28,6 @@ package de.upb.soot.jimple.common.ref;
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.Collections;
@@ -105,6 +104,6 @@ public class ParameterRef implements IdentityRef {
   /** Used with RefSwitch. */
   @Override
   public void accept(IVisitor sw) {
-    ((IRefVisitor) sw).caseParameterRef(this);
+    // TODO
   }
 }

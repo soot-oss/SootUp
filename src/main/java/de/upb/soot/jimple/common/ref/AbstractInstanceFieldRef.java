@@ -32,7 +32,6 @@ import de.upb.soot.jimple.PrecedenceTest;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.ArrayList;
@@ -40,15 +39,15 @@ import java.util.List;
 
 @SuppressWarnings("serial")
 public abstract class AbstractInstanceFieldRef implements FieldRef {
-  protected SootFieldRef fieldRef;
+  protected SootField field;
   final ValueBox baseBox;
 
-  protected AbstractInstanceFieldRef(ValueBox baseBox, SootFieldRef fieldRef) {
-    if (fieldRef.isStatic()) {
+  protected AbstractInstanceFieldRef(ValueBox baseBox, SootField fieldRef) {
+    if (field.isStatic()) {
       throw new RuntimeException("wrong static-ness");
     }
     this.baseBox = baseBox;
-    this.fieldRef = fieldRef;
+    this.field = fieldRef;
   }
 
   @Override
@@ -56,7 +55,7 @@ public abstract class AbstractInstanceFieldRef implements FieldRef {
 
   @Override
   public String toString() {
-    return baseBox.getValue().toString() + "." + fieldRef.getSignature();
+    return baseBox.getValue().toString() + "." + field.getSignature();
   }
 
   @Override
@@ -69,7 +68,7 @@ public abstract class AbstractInstanceFieldRef implements FieldRef {
       up.literal(")");
     }
     up.literal(".");
-    up.fieldRef(fieldRef);
+    up.field(field);
   }
 
   public Value getBase() {
@@ -85,23 +84,24 @@ public abstract class AbstractInstanceFieldRef implements FieldRef {
   }
 
   @Override
-  public SootFieldRef getFieldRef() {
-    return fieldRef;
+  public SootField getFieldRef() {
+    return field;
   }
 
   @Override
-  public void setFieldRef(SootFieldRef fieldRef) {
-    this.fieldRef = fieldRef;
+  public void setFieldRef(SootField fieldRef) {
+    this.field = fieldRef;
   }
 
   @Override
   public SootField getField() {
-    return fieldRef.resolve();
+    return field.resolve();
   }
 
   /**
    * Returns a list useBoxes of type ValueBox.
    */
+  @Override
   public final List<ValueBox> getUseBoxes() {
     List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
@@ -113,12 +113,12 @@ public abstract class AbstractInstanceFieldRef implements FieldRef {
 
   @Override
   public Type getType() {
-    return fieldRef.type();
+    return field.type();
   }
 
   @Override
   public void accept(IVisitor sw) {
-    ((IRefVisitor) sw).caseInstanceFieldRef(this);
+    // TODO
   }
 
   @Override

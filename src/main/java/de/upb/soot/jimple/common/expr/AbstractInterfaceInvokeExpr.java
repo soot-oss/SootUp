@@ -27,9 +27,9 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.StmtPrinter;
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
 import de.upb.soot.jimple.common.type.DoubleType;
 import de.upb.soot.jimple.common.type.LongType;
 import de.upb.soot.jimple.common.type.Type;
@@ -39,9 +39,9 @@ import de.upb.soot.jimple.visitor.IVisitor;
 
 @SuppressWarnings("serial")
 public abstract class AbstractInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
-  protected AbstractInterfaceInvokeExpr(ValueBox baseBox, SootMethodRef methodRef, ValueBox[] argBoxes) {
-    super(methodRef, baseBox, argBoxes);
-    if (methodRef.isStatic()) {
+  protected AbstractInterfaceInvokeExpr(ValueBox baseBox, SootMethod method, ValueBox[] argBoxes) {
+    super(method, baseBox, argBoxes);
+    if (method.isStatic()) {
       throw new RuntimeException("wrong static-ness");
     }
   }
@@ -81,7 +81,7 @@ public abstract class AbstractInterfaceInvokeExpr extends AbstractInstanceInvoke
   public String toString() {
     StringBuffer buffer = new StringBuffer();
 
-    buffer.append(Jimple.INTERFACEINVOKE + " " + baseBox.getValue().toString() + "." + methodRef.getSignature() + "(");
+    buffer.append(Jimple.INTERFACEINVOKE + " " + baseBox.getValue().toString() + "." + method.getSignature() + "(");
 
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
@@ -104,7 +104,7 @@ public abstract class AbstractInterfaceInvokeExpr extends AbstractInstanceInvoke
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.methodRef(methodRef);
+    up.method(method);
     up.literal("(");
 
     if (argBoxes != null) {
@@ -135,7 +135,7 @@ public abstract class AbstractInterfaceInvokeExpr extends AbstractInstanceInvoke
     }
   }
 
-  private static int argCountOf(SootMethodRef m) {
+  private static int argCountOf(SootMethod m) {
     int argCount = 0;
     for (Type t : m.parameterTypes()) {
       argCount += sizeOfType(t);

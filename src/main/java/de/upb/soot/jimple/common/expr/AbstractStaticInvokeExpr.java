@@ -27,10 +27,10 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.StmtPrinter;
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -38,8 +38,8 @@ import java.util.List;
 
 @SuppressWarnings("serial")
 public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
-  AbstractStaticInvokeExpr(SootMethodRef methodRef, List<Value> args) {
-    this(methodRef, new ValueBox[args.size()]);
+  AbstractStaticInvokeExpr(SootMethod method, List<Value> args) {
+    this(method, new ValueBox[args.size()]);
 
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.getInstance().newImmediateBox(args.get(i));
@@ -49,6 +49,7 @@ public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
   /**
    * Returns true if object o is an instance of AbstractStaticInvokeExpr else returns false.
    */
+  @Override
   public boolean equivTo(Object o) {
     if (o instanceof AbstractStaticInvokeExpr) {
       AbstractStaticInvokeExpr ie = (AbstractStaticInvokeExpr) o;
@@ -71,6 +72,7 @@ public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
   /**
    * Returns a hash code for this object, consistent with structural equality.
    */
+  @Override
   public int equivHashCode() {
     return getMethod().equivHashCode();
   }
@@ -78,19 +80,19 @@ public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
   @Override
   public abstract Object clone();
 
-  protected AbstractStaticInvokeExpr(SootMethodRef methodRef, ValueBox[] argBoxes) {
-    super(methodRef, argBoxes);
-    if (!methodRef.isStatic()) {
+  protected AbstractStaticInvokeExpr(SootMethod method, ValueBox[] argBoxes) {
+    super(method, argBoxes);
+    if (!method.isStatic()) {
       throw new RuntimeException("wrong static-ness");
     }
-    this.methodRef = methodRef;
+    this.method = method;
   }
 
   @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
 
-    buffer.append(Jimple.STATICINVOKE + " " + methodRef.getSignature() + "(");
+    buffer.append(Jimple.STATICINVOKE + " " + method.getSignature() + "(");
 
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
@@ -110,10 +112,11 @@ public abstract class AbstractStaticInvokeExpr extends AbstractInvokeExpr {
   /**
    * Converts a parameter of type StmtPrinter to a string literal.
    */
+  @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);
     up.literal(" ");
-    up.methodRef(methodRef);
+    up.method(method);
     up.literal("(");
 
     if (argBoxes != null) {

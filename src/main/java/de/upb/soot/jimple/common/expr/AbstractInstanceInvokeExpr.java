@@ -25,9 +25,9 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,8 +37,8 @@ import java.util.List;
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   protected final ValueBox baseBox;
 
-  protected AbstractInstanceInvokeExpr(SootMethodRef methodRef, ValueBox baseBox, ValueBox[] argBoxes) {
-    super(methodRef, argBoxes);
+  protected AbstractInstanceInvokeExpr(SootMethod method, ValueBox baseBox, ValueBox[] argBoxes) {
+    super(method, argBoxes);
     this.baseBox = baseBox;
   }
 

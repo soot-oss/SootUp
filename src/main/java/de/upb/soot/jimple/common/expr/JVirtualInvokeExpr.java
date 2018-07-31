@@ -28,10 +28,10 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.Options;
 import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,15 +40,15 @@ public class JVirtualInvokeExpr extends AbstractVirtualInvokeExpr {
   /**
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
-  public JVirtualInvokeExpr(Value base, SootMethodRef methodRef, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), methodRef, new ValueBox[args.size()]);
+  public JVirtualInvokeExpr(Value base, SootMethod method, List<? extends Value> args) {
+    super(Jimple.getInstance().newLocalBox(base), method, new ValueBox[args.size()]);
 
     if (!Options.getInstance().ignore_resolution_errors()) {
       // Check that the method's class is resolved enough
-      methodRef.declaringClass().checkLevelIgnoreResolving(SootClass.HIERARCHY);
+      method.declaringClass().checkLevelIgnoreResolving(SootClass.HIERARCHY);
       // now check if the class is valid
-      if (methodRef.declaringClass().isInterface()) {
-        SootClass sc = methodRef.declaringClass();
+      if (method.declaringClass().isInterface()) {
+        SootClass sc = method.declaringClass();
       }
     }
 
@@ -65,7 +65,7 @@ public class JVirtualInvokeExpr extends AbstractVirtualInvokeExpr {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JVirtualInvokeExpr(getBase(), methodRef, clonedArgs);
+    return new JVirtualInvokeExpr(getBase(), method, clonedArgs);
   }
 
 }

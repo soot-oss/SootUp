@@ -35,7 +35,6 @@ import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.NullType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
-import de.upb.soot.jimple.visitor.IRefVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.ArrayList;
@@ -160,7 +159,7 @@ public class JArrayRef implements ArrayRef {
 
   @Override
   public void accept(IVisitor sw) {
-    ((IRefVisitor) sw).caseArrayRef(this);
+    // TODO
   }
 
 }

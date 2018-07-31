@@ -26,11 +26,11 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.ImmediateBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +39,8 @@ public class JSpecialInvokeExpr extends AbstractSpecialInvokeExpr {
   /**
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
-  public JSpecialInvokeExpr(Local base, SootMethodRef methodRef, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), methodRef, new ImmediateBox[args.size()]);
+  public JSpecialInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
+    super(Jimple.getInstance().newLocalBox(base), method, new ImmediateBox[args.size()]);
 
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.getInstance().newImmediateBox(args.get(i));
@@ -55,6 +55,6 @@ public class JSpecialInvokeExpr extends AbstractSpecialInvokeExpr {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JSpecialInvokeExpr((Local) getBase(), methodRef, clonedArgs);
+    return new JSpecialInvokeExpr((Local) getBase(), method, clonedArgs);
   }
 }

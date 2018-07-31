@@ -26,12 +26,11 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.Scene;
 import de.upb.soot.SootResolver;
+import de.upb.soot.View;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A class that models Java's reference types. RefTypes are parameterized by a class name. Two RefType are equal iff they are
@@ -46,34 +45,30 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
   private String className;
   private volatile SootClass sootClass;
   private AnySubType anySubType;
-  /**
-   * a static map to store the RefType of each class according to its name. RefType of each class should just have one
-   * instance.
-   */
-  private static Map<String, RefType> nameToClass = new HashMap<String, RefType>();
+  private static View view;
 
   /**
-   * Create a RefType for a class.
+   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in {@link View}.
    * 
    * @param className
    *          The name of the class used to parameterize the created RefType.
    * @return a RefType for the given class name.
    */
   public static RefType getInstance(String className) {
-    RefType rt = nameToClass.get(className);
+    RefType rt = view.getRefType(className);
     if (rt == null) {
       rt = new RefType(className);
-      nameToClass.put(className, rt);
+      view.addRefType(className, rt);
     }
     return rt;
   }
 
   /**
-   * Create a RefType for a class.
+   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in {@link View}.
    * 
    * @param c
    *          A SootClass for which to create a RefType.
-   * @return a RefType for the given SootClass..
+   * @return a RefType for the given SootClass.
    */
   public static RefType getInstance(SootClass c) {
     return getInstance(c.getName());
@@ -265,6 +260,16 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
   public void accept(IVisitor sw) {
     // TODO Auto-generated method stub
 
+  }
+
+  /**
+   * Set the current view. RefType needs access to view, since all RefTypes are stored in {@link View}.
+   * 
+   * @param view
+   *          the current view
+   */
+  public static void setView(View view) {
+    RefType.view = view;
   }
 
 }

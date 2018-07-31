@@ -22,4 +22,39 @@ public class SootMethod {
     return null;
   }
 
+  public SootMethod resolve() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public Type returnType() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public String getSignature() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public Object name() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public List<Type> parameterTypes() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public boolean isStatic() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public SootClass declaringClass() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 }

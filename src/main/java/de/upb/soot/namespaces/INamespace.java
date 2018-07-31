@@ -13,6 +13,7 @@ import java.util.Optional;
  * @author Manuel Benz created on 22.05.18
  */
 public interface INamespace {
+
   /**
    * Searches the namespace and sub-namespaces for all contained classes.
    * 

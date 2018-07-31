@@ -26,16 +26,17 @@
 
 package de.upb.soot.jimple.common.ref;
 
+import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 
 public class JInstanceFieldRef extends AbstractInstanceFieldRef {
-  public JInstanceFieldRef(Value base, SootFieldRef fieldRef) {
-    super(Jimple.getInstance().newLocalBox(base), fieldRef);
+  public JInstanceFieldRef(Value base, SootField field) {
+    super(Jimple.getInstance().newLocalBox(base), field);
   }
 
   @Override
   public Object clone() {
-    return new JInstanceFieldRef(Jimple.cloneIfNecessary(getBase()), fieldRef);
+    return new JInstanceFieldRef(Jimple.cloneIfNecessary(getBase()), field);
   }
 }
