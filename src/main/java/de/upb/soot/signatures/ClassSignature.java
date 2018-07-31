@@ -2,9 +2,7 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
-
 import de.upb.soot.namespaces.FileType;
-
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
