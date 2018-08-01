@@ -121,7 +121,9 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   /**
    * Sets the setStmt box for targetBoxes array.
-   * @param targets A list of type Stmt.
+   * 
+   * @param targets
+   *          A list of type Stmt.
    */
   public final void setTargets(List<? extends Stmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
@@ -131,7 +133,9 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   /**
    * Sets the setStmt box for targetBoxes array.
-   * @param targets An array of type Stmt.
+   * 
+   * @param targets
+   *          An array of type Stmt.
    */
   public final void setTargets(Stmt[] targets) {
     for (int i = 0; i < targets.length; i++) {

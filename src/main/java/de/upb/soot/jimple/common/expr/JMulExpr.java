@@ -31,7 +31,7 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JMulExpr extends AbstractJimpleFloatBinopExpr {
+public class JMulExpr extends AbstractFloatBinopExpr {
   public JMulExpr(Value op1, Value op2) {
     super(op1, op2);
   }

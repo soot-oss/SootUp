@@ -25,7 +25,9 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
 import de.upb.soot.jimple.common.type.CharType;
@@ -39,6 +41,16 @@ import de.upb.soot.jimple.common.type.UnknownType;
 
 @SuppressWarnings("serial")
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
+
+  AbstractFloatBinopExpr(Value op1, Value op2) {
+    this(Jimple.getInstance().newArgBox(op1), Jimple.getInstance().newArgBox(op2));
+  }
+
+  protected AbstractFloatBinopExpr(ValueBox op1Box, ValueBox op2Box) {
+    this.op1Box = op1Box;
+    this.op2Box = op2Box;
+  }
+
   @Override
   public Type getType() {
     Value op1 = op1Box.getValue();
