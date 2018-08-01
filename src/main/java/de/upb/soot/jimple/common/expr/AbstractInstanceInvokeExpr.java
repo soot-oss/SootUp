@@ -25,9 +25,17 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.jimple.common.type.DoubleType;
+import de.upb.soot.jimple.common.type.LongType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.common.type.VoidType;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,9 +45,12 @@ import java.util.List;
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   protected final ValueBox baseBox;
 
-  protected AbstractInstanceInvokeExpr(SootMethod method, ValueBox baseBox, ValueBox[] argBoxes) {
+  protected AbstractInstanceInvokeExpr(ValueBox baseBox, SootMethod method, ValueBox[] argBoxes) {
     super(method, argBoxes);
     this.baseBox = baseBox;
+    if (method.isStatic()) {
+      throw new RuntimeException("wrong static-ness");
+    }
   }
 
   public Value getBase() {
@@ -68,4 +79,111 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
     return list;
   }
+
+  @Override
+  public String toString() {
+    StringBuffer buffer = new StringBuffer();
+
+    // TODO: determine whether to use: Jimple.VIRTUALINVOKE | Jimple.INTERFACEINVOKE | Jimple.SPECIALINVOKE - if still
+    // needed?
+    buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + method.getSignature() + "(");
+
+    if (argBoxes != null) {
+      for (int i = 0; i < argBoxes.length; i++) {
+        if (i != 0) {
+          buffer.append(", ");
+        }
+
+        buffer.append(argBoxes[i].getValue().toString());
+      }
+    }
+
+    buffer.append(")");
+
+    return buffer.toString();
+  }
+
+  /**
+   * Converts a parameter of type StmtPrinter to a string literal.
+   */
+  @Override
+  public void toString(StmtPrinter up) {
+
+    // TODO: determine (if still needed) whether: Jimple.INTERFACEINVOKE | Jimple.SPECIALINVOKE | Jimple.VIRTUALINVOKE
+    up.literal(Jimple.INTERFACEINVOKE);
+
+    up.literal(" ");
+    baseBox.toString(up);
+    up.literal(".");
+    up.method(method);
+    up.literal("(");
+
+    if (argBoxes != null) {
+      final int len = argBoxes.length;
+      for (int i = 0; i < len; i++) {
+        if (i != 0) {
+          up.literal(", ");
+        }
+        argBoxes[i].toString(up);
+      }
+    }
+    up.literal(")");
+  }
+
+  @Override
+  public abstract Object clone();
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseInstanceInvokeExpr(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+
+    if (o instanceof AbstractInstanceInvokeExpr) {
+      AbstractInstanceInvokeExpr ie = (AbstractInstanceInvokeExpr) o;
+      if (!(baseBox.getValue().equivTo(ie.baseBox.getValue()) && getMethod().equals(ie.getMethod())
+          && (argBoxes == null ? 0 : argBoxes.length) == (ie.argBoxes == null ? 0 : ie.argBoxes.length))) {
+        return false;
+      }
+      if (argBoxes != null) {
+        for (int i = 0; i < argBoxes.length; i++) {
+          if (!(argBoxes[i]).getValue().equivTo(ie.argBoxes[i].getValue())) {
+            return false;
+          }
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Returns a hash code for this object, consistent with structural equality.
+   */
+  @Override
+  public int equivHashCode() {
+    return baseBox.getValue().equivHashCode() * 101 + getMethod().equivHashCode() * 17;
+  }
+
+  private static int sizeOfType(Type t) {
+    if (t instanceof DoubleType || t instanceof LongType) {
+      return 2;
+    } else if (t instanceof VoidType) {
+      return 0;
+    } else {
+      return 1;
+    }
+  }
+
+  private static int argCountOf(SootMethod m) {
+    int argCount = 0;
+    for (Type t : m.parameterTypes()) {
+      argCount += sizeOfType(t);
+    }
+
+    return argCount;
+  }
+
 }

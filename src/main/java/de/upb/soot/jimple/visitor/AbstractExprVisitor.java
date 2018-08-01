@@ -25,9 +25,7 @@
 
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.common.expr.AbstractInterfaceInvokeExpr;
-import de.upb.soot.jimple.common.expr.AbstractSpecialInvokeExpr;
-import de.upb.soot.jimple.common.expr.AbstractVirtualInvokeExpr;
+import de.upb.soot.jimple.common.expr.AbstractInstanceInvokeExpr;
 import de.upb.soot.jimple.common.expr.JAddExpr;
 import de.upb.soot.jimple.common.expr.JAndExpr;
 import de.upb.soot.jimple.common.expr.JCastExpr;
@@ -162,22 +160,12 @@ public abstract class AbstractExprVisitor implements IExprVisitor {
   }
 
   @Override
-  public void caseInterfaceInvokeExpr(AbstractInterfaceInvokeExpr v) {
-    defaultCase(v);
-  }
-
-  @Override
-  public void caseSpecialInvokeExpr(AbstractSpecialInvokeExpr v) {
-    defaultCase(v);
-  }
-
-  @Override
   public void caseStaticInvokeExpr(JStaticInvokeExpr v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseVirtualInvokeExpr(AbstractVirtualInvokeExpr v) {
+  public void caseInstanceInvokeExpr(AbstractInstanceInvokeExpr v) {
     defaultCase(v);
   }
 

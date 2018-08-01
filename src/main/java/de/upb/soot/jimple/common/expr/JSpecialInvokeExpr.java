@@ -35,7 +35,7 @@ import de.upb.soot.jimple.basic.Value;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JSpecialInvokeExpr extends AbstractSpecialInvokeExpr {
+public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   /**
    * Stores the values of new ImmediateBox to the argBoxes array.
    */

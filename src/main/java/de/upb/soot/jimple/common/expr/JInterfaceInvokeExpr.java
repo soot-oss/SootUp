@@ -35,7 +35,7 @@ import de.upb.soot.jimple.basic.ValueBox;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JInterfaceInvokeExpr extends AbstractInterfaceInvokeExpr {
+public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   /**
    * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array argBoxes.
    */

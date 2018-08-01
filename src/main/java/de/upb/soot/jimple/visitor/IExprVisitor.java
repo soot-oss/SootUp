@@ -25,9 +25,7 @@
 
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.common.expr.AbstractInterfaceInvokeExpr;
-import de.upb.soot.jimple.common.expr.AbstractSpecialInvokeExpr;
-import de.upb.soot.jimple.common.expr.AbstractVirtualInvokeExpr;
+import de.upb.soot.jimple.common.expr.AbstractInstanceInvokeExpr;
 import de.upb.soot.jimple.common.expr.JAddExpr;
 import de.upb.soot.jimple.common.expr.JAndExpr;
 import de.upb.soot.jimple.common.expr.JCastExpr;
@@ -99,13 +97,9 @@ public interface IExprVisitor extends IVisitor {
 
   public abstract void caseXorExpr(JXorExpr v);
 
-  public abstract void caseInterfaceInvokeExpr(AbstractInterfaceInvokeExpr v);
-
-  public abstract void caseSpecialInvokeExpr(AbstractSpecialInvokeExpr v);
+  public abstract void caseInstanceInvokeExpr(AbstractInstanceInvokeExpr v);
 
   public abstract void caseStaticInvokeExpr(JStaticInvokeExpr v);
-
-  public abstract void caseVirtualInvokeExpr(AbstractVirtualInvokeExpr v);
 
   public abstract void caseDynamicInvokeExpr(JDynamicInvokeExpr v);
 
