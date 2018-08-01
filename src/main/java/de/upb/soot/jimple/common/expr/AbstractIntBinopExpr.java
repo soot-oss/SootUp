@@ -30,6 +30,7 @@ import de.upb.soot.jimple.common.type.Type;
 
 @SuppressWarnings("serial")
 public abstract class AbstractIntBinopExpr extends AbstractBinopExpr {
+  @Override
   public Type getType() {
     return IntType.getInstance();
   }

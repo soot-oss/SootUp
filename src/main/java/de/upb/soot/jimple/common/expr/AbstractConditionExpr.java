@@ -1,5 +1,5 @@
 package de.upb.soot.jimple.common.expr;
 
-public abstract class AbstractConditionExpr extends AbstractBinopExpr {
+public abstract class AbstractConditionExpr extends AbstractIntBinopExpr {
 
 }
