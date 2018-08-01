@@ -2,7 +2,6 @@ package de.upb.soot.jimple;
 
 /**
  * The Precedence class contains a getPrecedence() method.
- * 
  * @author Linghui Luo
  *
  */

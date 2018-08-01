@@ -35,7 +35,8 @@ import java.util.ArrayDeque;
 
 /**
  * A class that models Java's reference types. RefTypes are parameterized by a class name. Two RefType are equal iff they are
- * Parameterized by the same class name as a String. Modified by @author Linghui Luo on 25.07.2018
+ * Parameterized by the same class name as a String.
+ * Modified by @author Linghui Luo on 25.07.2018
  */
 @SuppressWarnings("serial")
 public class RefType extends RefLikeType implements Comparable<RefType> {

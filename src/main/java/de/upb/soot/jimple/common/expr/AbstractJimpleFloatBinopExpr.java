@@ -25,35 +25,18 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.basic.ValueBox;
 
-public class JMulExpr extends AbstractJimpleFloatBinopExpr {
-  public JMulExpr(Value op1, Value op2) {
-    super(op1, op2);
+@SuppressWarnings("serial")
+public abstract class AbstractJimpleFloatBinopExpr extends AbstractFloatBinopExpr {
+  AbstractJimpleFloatBinopExpr(Value op1, Value op2) {
+    this(Jimple.getInstance().newArgBox(op1), Jimple.getInstance().newArgBox(op2));
   }
 
-  @Override
-  public final String getSymbol() {
-    return " * ";
-  }
-
-  @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseMulExpr(this);
-  }
-
-  @Override
-  public Object clone() {
-    return new JMulExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
-  }
-
-  @Override
-  public void toString(StmtPrinter up) {
-    // TODO Auto-generated method stub
-
+  protected AbstractJimpleFloatBinopExpr(ValueBox op1Box, ValueBox op2Box) {
+    this.op1Box = op1Box;
+    this.op2Box = op2Box;
   }
 }

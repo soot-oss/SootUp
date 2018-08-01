@@ -31,7 +31,7 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JRemExpr extends AbstractFloatBinopExpr {
+public class JRemExpr extends AbstractJimpleFloatBinopExpr {
   public JRemExpr(Value op1, Value op2) {
     super(op1, op2);
   }

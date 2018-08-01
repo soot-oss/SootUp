@@ -23,6 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
+
 package de.upb.soot.jimple.common.type;
 
 /**
