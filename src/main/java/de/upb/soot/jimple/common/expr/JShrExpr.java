@@ -35,7 +35,7 @@ import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JShrExpr extends AbstractJimpleIntLongBinopExpr {
+public class JShrExpr extends AbstractIntLongBinopExpr {
   public JShrExpr(Value op1, Value op2) {
     super(op1, op2);
   }

@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
@@ -37,6 +38,11 @@ import de.upb.soot.jimple.common.type.UnknownType;
 
 @SuppressWarnings("serial")
 public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
+
+  protected AbstractIntLongBinopExpr(Value op1, Value op2) {
+    this.op1Box = Jimple.getInstance().newArgBox(op1);
+    this.op2Box = Jimple.getInstance().newArgBox(op2);
+  }
 
   public static boolean isIntLikeType(Type t) {
     return t.equals(IntType.getInstance()) || t.equals(ByteType.getInstance()) || t.equals(ShortType.getInstance())
