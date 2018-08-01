@@ -23,7 +23,7 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.javabyte;
+package de.upb.soot.jimple.javabyte.stmt;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;

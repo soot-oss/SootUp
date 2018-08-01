@@ -34,12 +34,12 @@ import de.upb.soot.jimple.common.stmt.JNopStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.soot.jimple.common.stmt.JThrowStmt;
-import de.upb.soot.jimple.javabyte.JBreakpointStmt;
-import de.upb.soot.jimple.javabyte.JEnterMonitorStmt;
-import de.upb.soot.jimple.javabyte.JExitMonitorStmt;
-import de.upb.soot.jimple.javabyte.JLookupSwitchStmt;
-import de.upb.soot.jimple.javabyte.JRetStmt;
-import de.upb.soot.jimple.javabyte.JTableSwitchStmt;
+import de.upb.soot.jimple.javabytecode.stmt.JBreakpointStmt;
+import de.upb.soot.jimple.javabytecode.stmt.JEnterMonitorStmt;
+import de.upb.soot.jimple.javabytecode.stmt.JExitMonitorStmt;
+import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
+import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
+import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 
 public interface IStmtVisitor extends IVisitor {
   public abstract void caseBreakpointStmt(JBreakpointStmt stmt);

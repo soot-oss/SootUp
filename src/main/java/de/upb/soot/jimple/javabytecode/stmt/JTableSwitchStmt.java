@@ -23,28 +23,23 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.javabyte;
+package de.upb.soot.jimple.javabyte.stmt;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-public class JLookupSwitchStmt extends AbstractSwitchStmt {
-  /**
-   * List of lookup values from the corresponding bytecode instruction, represented as IntConstants.
-   */
-  List<IntConstant> lookupValues;
+public class JTableSwitchStmt extends AbstractSwitchStmt {
+  int lowIndex;
+  int highIndex;
 
   // This method is necessary to deal with constructor-must-be-first-ism.
   private static StmtBox[] getTargetBoxesArray(List<? extends Stmt> targets) {
@@ -57,33 +52,29 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public Object clone() {
-    int lookupValueCount = lookupValues.size();
-    List<IntConstant> clonedLookupValues = new ArrayList<IntConstant>(lookupValueCount);
-
-    for (int i = 0; i < lookupValueCount; i++) {
-      clonedLookupValues.add(i, IntConstant.getInstance(getLookupValue(i)));
-    }
-
-    return new JLookupSwitchStmt(getKey(), clonedLookupValues, getTargets(), getDefaultTarget());
+    return new JTableSwitchStmt(Jimple.cloneIfNecessary(getKey()), lowIndex, highIndex, getTargets(), getDefaultTarget());
   }
 
-  /** Constructs a new JLookupSwitchStmt. lookupValues should be a list of IntConst s. */
-  public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends Stmt> targets, Stmt defaultTarget) {
-    this(Jimple.getInstance().newImmediateBox(key), lookupValues, getTargetBoxesArray(targets),
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends Stmt> targets, Stmt defaultTarget) {
+    this(Jimple.getInstance().newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets),
         Jimple.getInstance().newStmtBox(defaultTarget));
   }
 
-  /** Constructs a new JLookupSwitchStmt. lookupValues should be a list of IntConst s. */
-  public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends StmtBox> targets,
-      StmtBox defaultTarget) {
-    this(Jimple.getInstance().newImmediateBox(key), lookupValues, targets.toArray(new StmtBox[targets.size()]),
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends StmtBox> targets, StmtBox defaultTarget) {
+    this(Jimple.getInstance().newImmediateBox(key), lowIndex, highIndex, targets.toArray(new StmtBox[targets.size()]),
         defaultTarget);
   }
 
-  protected JLookupSwitchStmt(ValueBox keyBox, List<IntConstant> lookupValues, StmtBox[] targetBoxes,
-      StmtBox defaultTargetBox) {
+  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, StmtBox[] targetBoxes, StmtBox defaultTargetBox) {
     super(keyBox, defaultTargetBox, targetBoxes);
-    setLookupValues(lookupValues);
+
+    if (lowIndex > highIndex) {
+      throw new RuntimeException(
+          "Error creating tableswitch: lowIndex(" + lowIndex + ") can't be greater than highIndex(" + highIndex + ").");
+    }
+
+    this.lowIndex = lowIndex;
+    this.highIndex = highIndex;
   }
 
   @Override
@@ -91,17 +82,22 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     StringBuffer buffer = new StringBuffer();
     String endOfLine = " ";
 
-    buffer.append(Jimple.LOOKUPSWITCH + "(" + keyBox.getValue().toString() + ")" + endOfLine);
+    buffer.append(Jimple.TABLESWITCH + "(" + keyBox.getValue().toString() + ")" + endOfLine);
 
     buffer.append("{" + endOfLine);
 
-    for (int i = 0; i < lookupValues.size(); i++) {
-      Stmt target = getTarget(i);
-      buffer.append("    " + Jimple.CASE + " " + lookupValues.get(i) + ": " + Jimple.GOTO + " "
-          + (target == this ? "self" : target) + ";" + endOfLine);
+    // In this for-loop, we cannot use "<=" since 'i' would wrap around.
+    // The case for "i == highIndex" is handled separately after the loop.
+    for (int i = lowIndex; i < highIndex; i++) {
+      Stmt target = getTarget(i - lowIndex);
+      buffer.append(
+          "    " + Jimple.CASE + " " + i + ": " + Jimple.GOTO + " " + (target == this ? "self" : target) + ";" + endOfLine);
     }
+    Stmt target = getTarget(highIndex - lowIndex);
+    buffer.append("    " + Jimple.CASE + " " + highIndex + ": " + Jimple.GOTO + " " + (target == this ? "self" : target)
+        + ";" + endOfLine);
 
-    Stmt target = getDefaultTarget();
+    target = getDefaultTarget();
     buffer.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " " + (target == this ? "self" : target) + ";" + endOfLine);
 
     buffer.append("}");
@@ -111,25 +107,19 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public void toString(StmtPrinter up) {
-    up.literal(Jimple.LOOKUPSWITCH);
+    up.literal(Jimple.TABLESWITCH);
     up.literal("(");
     keyBox.toString(up);
     up.literal(")");
     up.newline();
     up.literal("{");
     up.newline();
-    for (int i = 0; i < lookupValues.size(); i++) {
-      up.literal("    ");
-      up.literal(Jimple.CASE);
-      up.literal(" ");
-      up.constant(lookupValues.get(i));
-      up.literal(": ");
-      up.literal(Jimple.GOTO);
-      up.literal(" ");
-      targetBoxes[i].toString(up);
-      up.literal(";");
-      up.newline();
+    // In this for-loop, we cannot use "<=" since 'i' would wrap around.
+    // The case for "i == highIndex" is handled separately after the loop.
+    for (int i = lowIndex; i < highIndex; i++) {
+      printCaseTarget(up, i);
     }
+    printCaseTarget(up, highIndex);
 
     up.literal("    ");
     up.literal(Jimple.DEFAULT);
@@ -142,25 +132,38 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     up.literal("}");
   }
 
-  public void setLookupValues(List<IntConstant> lookupValues) {
-    this.lookupValues = new ArrayList<IntConstant>(lookupValues);
+  private void printCaseTarget(StmtPrinter up, int targetIndex) {
+    up.literal("    ");
+    up.literal(Jimple.CASE);
+    up.literal(" ");
+    up.literal(Integer.toString(targetIndex));
+    up.literal(": ");
+    up.literal(Jimple.GOTO);
+    up.literal(" ");
+    targetBoxes[targetIndex - lowIndex].toString(up);
+    up.literal(";");
+    up.newline();
   }
 
-  public void setLookupValue(int index, int value) {
-    lookupValues.set(index, IntConstant.getInstance(value));
+  public void setLowIndex(int lowIndex) {
+    this.lowIndex = lowIndex;
   }
 
-  public int getLookupValue(int index) {
-    return lookupValues.get(index).value;
+  public void setHighIndex(int highIndex) {
+    this.highIndex = highIndex;
   }
 
-  public List<IntConstant> getLookupValues() {
-    return Collections.unmodifiableList(lookupValues);
+  public int getLowIndex() {
+    return lowIndex;
+  }
+
+  public int getHighIndex() {
+    return highIndex;
   }
 
   @Override
   public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseLookupSwitchStmt(this);
+    ((IStmtVisitor) sw).caseTableSwitchStmt(this);
   }
 
 }

@@ -23,74 +23,46 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.javabyte;
+package de.upb.soot.jimple.javabyte.stmt;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.stmt.AbstractStmt;
+import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class JRetStmt extends AbstractStmt {
-  final ValueBox stmtAddressBox;
-  // List useBoxes;
-
-  public JRetStmt(Value stmtAddress) {
-    this(Jimple.getInstance().newLocalBox(stmtAddress));
+public class JEnterMonitorStmt extends AbstractOpStmt {
+  public JEnterMonitorStmt(Value op) {
+    this(Jimple.getInstance().newImmediateBox(op));
   }
 
-  protected JRetStmt(ValueBox stmtAddressBox) {
-    this.stmtAddressBox = stmtAddressBox;
-
+  protected JEnterMonitorStmt(ValueBox opBox) {
+    super(opBox);
   }
 
   @Override
   public Object clone() {
-    return new JRetStmt(Jimple.cloneIfNecessary(getStmtAddress()));
+    return new JEnterMonitorStmt(Jimple.cloneIfNecessary(getOp()));
   }
 
   @Override
   public String toString() {
-    return Jimple.RET + " " + stmtAddressBox.getValue().toString();
+    return Jimple.ENTERMONITOR + " " + opBox.getValue().toString();
   }
 
   @Override
   public void toString(StmtPrinter up) {
-    up.literal(Jimple.RET);
+    up.literal(Jimple.ENTERMONITOR);
     up.literal(" ");
-    stmtAddressBox.toString(up);
-  }
-
-  public Value getStmtAddress() {
-    return stmtAddressBox.getValue();
-  }
-
-  public ValueBox getStmtAddressBox() {
-    return stmtAddressBox;
-  }
-
-  public void setStmtAddress(Value stmtAddress) {
-    stmtAddressBox.setValue(stmtAddress);
-  }
-
-  @Override
-  public List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
-
-    useBoxes.addAll(stmtAddressBox.getValue().getUseBoxes());
-    useBoxes.add(stmtAddressBox);
-
-    return useBoxes;
+    opBox.toString(up);
   }
 
   @Override
   public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseRetStmt(this);
+    ((IStmtVisitor) sw).caseEnterMonitorStmt(this);
+
   }
 
   @Override
