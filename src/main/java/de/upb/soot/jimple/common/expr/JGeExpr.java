@@ -31,7 +31,7 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JGeExpr extends AbstractJimpleIntBinopExpr {
+public class JGeExpr extends AbstractConditionExpr {
   public JGeExpr(Value op1, Value op2) {
     super(op1, op2);
   }
