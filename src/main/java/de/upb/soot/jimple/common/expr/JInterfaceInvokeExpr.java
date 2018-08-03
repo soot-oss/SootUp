@@ -40,7 +40,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
    * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array argBoxes.
    */
   public JInterfaceInvokeExpr(Value base, SootMethod method, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), method, new ValueBox[args.size()]);
+    super(Jimple.getInstance().newLocalBox(base), method, new ValueBox[args.size()], Jimple.INTERFACEINVOKE);
 
     // Check that the method's class is resolved enough
     // CheckLevel returns without doing anything because we can be not 'done' resolving

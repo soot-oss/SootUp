@@ -41,8 +41,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
   public JVirtualInvokeExpr(Value base, SootMethod method, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), method, new ValueBox[args.size()]);
-
+    super(Jimple.getInstance().newLocalBox(base), method, new ValueBox[args.size()], Jimple.VIRTUALINVOKE);
     if (!Options.getInstance().ignore_resolution_errors()) {
       // Check that the method's class is resolved enough
       method.declaringClass().checkLevelIgnoreResolving(SootClass.HIERARCHY);

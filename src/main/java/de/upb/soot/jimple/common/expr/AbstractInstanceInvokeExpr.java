@@ -44,10 +44,12 @@ import java.util.List;
 @SuppressWarnings("serial")
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   protected final ValueBox baseBox;
+  protected final String type;
 
-  protected AbstractInstanceInvokeExpr(ValueBox baseBox, SootMethod method, ValueBox[] argBoxes) {
+  protected AbstractInstanceInvokeExpr(ValueBox baseBox, SootMethod method, ValueBox[] argBoxes, String type) {
     super(method, argBoxes);
     this.baseBox = baseBox;
+    this.type = type;
     if (method.isStatic()) {
       throw new RuntimeException("wrong static-ness");
     }
@@ -83,10 +85,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
-
-    // TODO: determine whether to use: Jimple.VIRTUALINVOKE | Jimple.INTERFACEINVOKE | Jimple.SPECIALINVOKE - if still
-    // needed?
-    buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + method.getSignature() + "(");
+    buffer.append(this.type + " " + baseBox.getValue().toString() + "." + method.getSignature() + "(");
 
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
@@ -109,8 +108,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void toString(StmtPrinter up) {
 
-    // TODO: determine (if still needed) whether: Jimple.INTERFACEINVOKE | Jimple.SPECIALINVOKE | Jimple.VIRTUALINVOKE
-    up.literal(Jimple.INTERFACEINVOKE);
+    up.literal(this.type);
 
     up.literal(" ");
     baseBox.toString(up);

@@ -40,7 +40,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
   public JSpecialInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), method, new ImmediateBox[args.size()]);
+    super(Jimple.getInstance().newLocalBox(base), method, new ImmediateBox[args.size()], Jimple.SPECIALINVOKE);
 
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.getInstance().newImmediateBox(args.get(i));
