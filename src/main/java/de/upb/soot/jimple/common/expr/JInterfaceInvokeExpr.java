@@ -26,6 +26,7 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
@@ -40,7 +41,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
    * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array argBoxes.
    */
   public JInterfaceInvokeExpr(Value base, SootMethod method, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), method, new ValueBox[args.size()], Jimple.INTERFACEINVOKE);
+    super(Jimple.getInstance().newLocalBox(base), method, new ValueBox[args.size()]);
 
     // Check that the method's class is resolved enough
     // CheckLevel returns without doing anything because we can be not 'done' resolving
@@ -65,6 +66,52 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     }
 
     return new JInterfaceInvokeExpr(Jimple.cloneIfNecessary(getBase()), method, argList);
+  }
+
+  @Override
+  public String toString() {
+    StringBuffer buffer = new StringBuffer();
+    buffer.append(Jimple.INTERFACEINVOKE + " " + baseBox.getValue().toString() + "." + method.getSignature() + "(");
+
+    if (argBoxes != null) {
+      for (int i = 0; i < argBoxes.length; i++) {
+        if (i != 0) {
+          buffer.append(", ");
+        }
+
+        buffer.append(argBoxes[i].getValue().toString());
+      }
+    }
+
+    buffer.append(")");
+
+    return buffer.toString();
+  }
+
+  /**
+   * Converts a parameter of type StmtPrinter to a string literal.
+   */
+  @Override
+  public void toString(StmtPrinter up) {
+
+    up.literal(Jimple.INTERFACEINVOKE);
+
+    up.literal(" ");
+    baseBox.toString(up);
+    up.literal(".");
+    up.method(method);
+    up.literal("(");
+
+    if (argBoxes != null) {
+      final int len = argBoxes.length;
+      for (int i = 0; i < len; i++) {
+        if (i != 0) {
+          up.literal(", ");
+        }
+        argBoxes[i].toString(up);
+      }
+    }
+    up.literal(")");
   }
 
 }

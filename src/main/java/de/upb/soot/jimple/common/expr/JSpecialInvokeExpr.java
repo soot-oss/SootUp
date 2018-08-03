@@ -26,6 +26,7 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.ImmediateBox;
@@ -40,7 +41,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
   public JSpecialInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), method, new ImmediateBox[args.size()], Jimple.SPECIALINVOKE);
+    super(Jimple.getInstance().newLocalBox(base), method, new ImmediateBox[args.size()]);
 
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.getInstance().newImmediateBox(args.get(i));
@@ -57,4 +58,51 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
     return new JSpecialInvokeExpr((Local) getBase(), method, clonedArgs);
   }
+
+
+  @Override
+  public String toString() {
+    StringBuffer buffer = new StringBuffer();
+    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + method.getSignature() + "(");
+
+    if (argBoxes != null) {
+      for (int i = 0; i < argBoxes.length; i++) {
+        if (i != 0) {
+          buffer.append(", ");
+        }
+
+        buffer.append(argBoxes[i].getValue().toString());
+      }
+    }
+
+    buffer.append(")");
+
+    return buffer.toString();
+  }
+
+  /**
+   * Converts a parameter of type StmtPrinter to a string literal.
+   */
+  @Override
+  public void toString(StmtPrinter up) {
+
+    up.literal(Jimple.SPECIALINVOKE);
+    up.literal(" ");
+    baseBox.toString(up);
+    up.literal(".");
+    up.method(method);
+    up.literal("(");
+
+    if (argBoxes != null) {
+      final int len = argBoxes.length;
+      for (int i = 0; i < len; i++) {
+        if (i != 0) {
+          up.literal(", ");
+        }
+        argBoxes[i].toString(up);
+      }
+    }
+    up.literal(")");
+  }
+
 }

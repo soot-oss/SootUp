@@ -44,12 +44,10 @@ import java.util.List;
 @SuppressWarnings("serial")
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   protected final ValueBox baseBox;
-  protected final String type;
 
-  protected AbstractInstanceInvokeExpr(ValueBox baseBox, SootMethod method, ValueBox[] argBoxes, String type) {
+  protected AbstractInstanceInvokeExpr(ValueBox baseBox, SootMethod method, ValueBox[] argBoxes) {
     super(method, argBoxes);
     this.baseBox = baseBox;
-    this.type = type;
     if (method.isStatic()) {
       throw new RuntimeException("wrong static-ness");
     }
@@ -80,52 +78,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     list.add(baseBox);
 
     return list;
-  }
-
-  @Override
-  public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append(this.type + " " + baseBox.getValue().toString() + "." + method.getSignature() + "(");
-
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          buffer.append(", ");
-        }
-
-        buffer.append(argBoxes[i].getValue().toString());
-      }
-    }
-
-    buffer.append(")");
-
-    return buffer.toString();
-  }
-
-  /**
-   * Converts a parameter of type StmtPrinter to a string literal.
-   */
-  @Override
-  public void toString(StmtPrinter up) {
-
-    up.literal(this.type);
-
-    up.literal(" ");
-    baseBox.toString(up);
-    up.literal(".");
-    up.method(method);
-    up.literal("(");
-
-    if (argBoxes != null) {
-      final int len = argBoxes.length;
-      for (int i = 0; i < len; i++) {
-        if (i != 0) {
-          up.literal(", ");
-        }
-        argBoxes[i].toString(up);
-      }
-    }
-    up.literal(")");
   }
 
   @Override
