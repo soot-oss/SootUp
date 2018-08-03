@@ -17,8 +17,6 @@ import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.common.type.VoidType;
 
-
-
 public interface ITypeVisitor {
 
   void caseBooleanType(BooleanType t);

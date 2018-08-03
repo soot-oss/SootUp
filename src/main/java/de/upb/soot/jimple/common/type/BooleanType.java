@@ -28,7 +28,6 @@ package de.upb.soot.jimple.common.type;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-
 /**
  * Soot representation of the Java built-in type 'boolean'. Implemented as a singleton.
  */

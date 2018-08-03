@@ -52,6 +52,11 @@ public class JInstanceOfExpr implements Expr {
   }
 
   @Override
+  public String toString() {
+    return opBox.getValue().toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
+  }
+
+  @Override
   public void toString(StmtPrinter up) {
     // TODO Auto-generated method stub
 
@@ -70,12 +75,6 @@ public class JInstanceOfExpr implements Expr {
   @Override
   public int equivHashCode() {
     return opBox.getValue().equivHashCode() * 101 + checkType.hashCode() * 17;
-  }
-
-
-  @Override
-  public String toString() {
-    return opBox.getValue().toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
   }
 
   public Value getOp() {
