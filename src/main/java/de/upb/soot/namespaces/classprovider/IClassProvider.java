@@ -24,8 +24,7 @@ public interface IClassProvider {
    */
   // SootClass getSootClass(ClassSource classSource);
 
-  ClassSource createClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature,
-      IClassProvider classProvider);
+  ClassSource createClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature);
 
   /**
    * Returns the file type that is handled by this provider, e.g. class, jimple, java

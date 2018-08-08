@@ -52,6 +52,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
   protected Collection<ClassSource> walkDirectory(Path dirPath, SignatureFactory factory) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
+
       return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
           .flatMap(p -> Utils.optionalToStream(Optional.of(classProvider.createClassSource(this, p, factory.fromPath(p)))))
           .collect(Collectors.toList());

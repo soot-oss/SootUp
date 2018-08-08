@@ -33,14 +33,12 @@ public class ClassSource {
    *          the signature that has been used to resolve this class
    * @return A not yet resolved {@link ClassSource}, backed up by the given file
    */
-  public ClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature, IClassProvider classProvider) {
+  public ClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature) {
     checkNotNull(srcNamespace);
 
     this.srcNamespace = srcNamespace;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;
-    this.classProvider = classProvider;
-
   }
 
   public ClassSignature getClassSignature() {

@@ -1,6 +1,7 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.core.SootClass;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -29,4 +30,6 @@ public interface INamespace {
    * @return An optional containing the found class or empty if the class does not reside in this namespace
    */
   Optional<SootClass> getClass(ClassSignature classSignature);
+
+  Optional<ClassSource> getClassSource(ClassSignature signature);
 }

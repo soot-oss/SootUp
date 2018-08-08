@@ -39,5 +39,5 @@ public abstract class AbstractNamespace implements INamespace {
 
   protected abstract Collection<ClassSource> getClassSources(SignatureFactory factory);
 
-  protected abstract Optional<ClassSource> getClassSource(ClassSignature classSignature);
+  public abstract Optional<ClassSource> getClassSource(ClassSignature classSignature);
 }
