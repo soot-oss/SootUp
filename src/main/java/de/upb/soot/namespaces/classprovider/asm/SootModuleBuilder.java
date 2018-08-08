@@ -1,4 +1,4 @@
-package de.upb.soot.asm;
+package de.upb.soot.namespaces.classprovider.asm;
 
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ModuleVisitor;
@@ -8,7 +8,6 @@ public class SootModuleBuilder extends ClassVisitor {
 
   public SootModuleBuilder() {
     super(Opcodes.ASM6);
-
   }
 
   @Override

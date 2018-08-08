@@ -12,8 +12,9 @@ import java.nio.file.Path;
  *
  * @author Manuel Benz created on 22.05.18
  */
-public interface IClassProvider<T extends ClassSource> {
+public interface IClassProvider {
 
+  // FIXME: that should be done by aka??
   /**
    * Resolve the given ClassSource to a SootClass.
    * 
@@ -21,9 +22,10 @@ public interface IClassProvider<T extends ClassSource> {
    *          to resource
    * @return the resolved SootClass
    */
-  SootClass getSootClass(T classSource);
+  // SootClass getSootClass(ClassSource classSource);
 
-  T createClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature);
+  ClassSource createClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature,
+      IClassProvider classProvider);
 
   /**
    * Returns the file type that is handled by this provider, e.g. class, jimple, java
@@ -31,4 +33,7 @@ public interface IClassProvider<T extends ClassSource> {
    * @return
    */
   FileType getHandledFileType();
+
+  SootClass resolve(ClassSource classSource);
+
 }

@@ -176,5 +176,14 @@
             <artifactId>asm-debug-all</artifactId>
             <version>6.0_BETA</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_2.12</artifactId>
+            <version>2.5.14</version>
+        </dependency>
+
+
     </dependencies>
 </project>
