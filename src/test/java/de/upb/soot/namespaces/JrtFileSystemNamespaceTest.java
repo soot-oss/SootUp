@@ -36,7 +36,7 @@ public class JrtFileSystemNamespaceTest extends AbstractNamespaceTest {
   @Test
   public void getClassSourcesClasspath() {
     JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
-    ns.getClasses(getSignatureFactory());
+    ns.getClassSources(getSignatureFactory());
 
   }
 
