@@ -1,5 +1,5 @@
 /* Soot - a J*va Optimization Framework
- * Copyright (C) 1999 Patrick Lam
+ * Copyright (C) 1997-1999 Raja Vallee-Rai
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,11 +23,10 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple.common.expr;
+package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.CaughtExceptionRef;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
@@ -35,29 +34,29 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import java.util.Collections;
 import java.util.List;
 
-public class JCaughtExceptionRef implements CaughtExceptionRef {
-  public JCaughtExceptionRef() {
+public class JThisRef implements IdentityRef {
+  RefType thisType;
+
+  public JThisRef(RefType thisType) {
+    this.thisType = thisType;
   }
 
   @Override
-  public boolean equivTo(Object c) {
-    return c instanceof CaughtExceptionRef;
+  public boolean equivTo(Object o) {
+    if (o instanceof JThisRef) {
+      return thisType.equals(((JThisRef) o).thisType);
+    }
+    return false;
   }
 
-  /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return 1729;
-  }
-
-  @Override
-  public Object clone() {
-    return new JCaughtExceptionRef();
+    return thisType.hashCode();
   }
 
   @Override
   public String toString() {
-    return "@caughtexception";
+    return "@this: " + thisType;
   }
 
   @Override
@@ -72,11 +71,17 @@ public class JCaughtExceptionRef implements CaughtExceptionRef {
 
   @Override
   public Type getType() {
-    return RefType.getInstance("java.lang.Throwable");
+    return thisType;
   }
 
   @Override
   public void accept(IVisitor sw) {
     // TODO
   }
+
+  @Override
+  public Object clone() {
+    return new JThisRef(thisType);
+  }
+
 }

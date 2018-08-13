@@ -27,36 +27,52 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.Collections;
 import java.util.List;
 
-public class ThisRef implements IdentityRef {
-  RefType thisType;
+/**
+ * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter slots on method entry.
+ * <br>
+ * <p>
+ * For instance, in an instance method, the first statement will often be <code> this := @parameter0; </code>
+ * </p>
+ */
+public class JParameterRef implements IdentityRef {
+  int num;
+  Type paramType;
 
-  public ThisRef(RefType thisType) {
-    this.thisType = thisType;
+  /** Constructs a ParameterRef object of the specified type, representing the specified parameter number. */
+  public JParameterRef(Type paramType, int number) {
+    this.num = number;
+    this.paramType = paramType;
   }
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof ThisRef) {
-      return thisType.equals(((ThisRef) o).thisType);
+    if (o instanceof JParameterRef) {
+      return num == ((JParameterRef) o).num && paramType.equals(((JParameterRef) o).paramType);
     }
     return false;
   }
 
   @Override
   public int equivHashCode() {
-    return thisType.hashCode();
+    return num * 101 + paramType.hashCode() * 17;
   }
 
+  /** Create a new ParameterRef object with the same paramType and number. */
+  @Override
+  public Object clone() {
+    return new JParameterRef(paramType, num);
+  }
+
+  /** Converts the given ParameterRef into a String i.e. <code>@parameter0: .int</code>. */
   @Override
   public String toString() {
-    return "@this: " + thisType;
+    return "@parameter" + num + ": " + paramType;
   }
 
   @Override
@@ -64,24 +80,30 @@ public class ThisRef implements IdentityRef {
     up.identityRef(this);
   }
 
+  /** Returns the index of this ParameterRef. */
+  public int getIndex() {
+    return num;
+  }
+
+  /** Sets the index of this ParameterRef. */
+  public void setIndex(int index) {
+    num = index;
+  }
+
   @Override
   public final List<ValueBox> getUseBoxes() {
     return Collections.emptyList();
   }
 
+  /** Returns the type of this ParameterRef. */
   @Override
   public Type getType() {
-    return thisType;
+    return paramType;
   }
 
+  /** Used with RefSwitch. */
   @Override
   public void accept(IVisitor sw) {
     // TODO
   }
-
-  @Override
-  public Object clone() {
-    return new ThisRef(thisType);
-  }
-
 }

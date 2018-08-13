@@ -65,8 +65,8 @@ import de.upb.soot.jimple.common.expr.JVirtualInvokeExpr;
 import de.upb.soot.jimple.common.expr.JXorExpr;
 import de.upb.soot.jimple.common.ref.CaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
-import de.upb.soot.jimple.common.ref.ParameterRef;
-import de.upb.soot.jimple.common.ref.ThisRef;
+import de.upb.soot.jimple.common.ref.JParameterRef;
+import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
@@ -627,15 +627,15 @@ public class Jimple {
   /**
    * Constructs a ThisRef(RefType) grammar chunk.
    */
-  public ThisRef newThisRef(RefType t) {
-    return new ThisRef(t);
+  public JThisRef newThisRef(RefType t) {
+    return new JThisRef(t);
   }
 
   /**
    * Constructs a ParameterRef(SootMethod, int) grammar chunk.
    */
-  public ParameterRef newParameterRef(Type paramType, int number) {
-    return new ParameterRef(paramType, number);
+  public JParameterRef newParameterRef(Type paramType, int number) {
+    return new JParameterRef(paramType, number);
   }
 
   /**

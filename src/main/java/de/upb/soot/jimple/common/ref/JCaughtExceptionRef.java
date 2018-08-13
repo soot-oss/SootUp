@@ -1,5 +1,5 @@
 /* Soot - a J*va Optimization Framework
- * Copyright (C) 1997-1999 Raja Vallee-Rai
+ * Copyright (C) 1999 Patrick Lam
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,52 +27,36 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.Collections;
 import java.util.List;
 
-/**
- * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter slots on method entry.
- * <br>
- * <p>
- * For instance, in an instance method, the first statement will often be <code> this := @parameter0; </code>
- * </p>
- */
-public class ParameterRef implements IdentityRef {
-  int num;
-  Type paramType;
-
-  /** Constructs a ParameterRef object of the specified type, representing the specified parameter number. */
-  public ParameterRef(Type paramType, int number) {
-    this.num = number;
-    this.paramType = paramType;
+public class JCaughtExceptionRef implements CaughtExceptionRef {
+  public JCaughtExceptionRef() {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    if (o instanceof ParameterRef) {
-      return num == ((ParameterRef) o).num && paramType.equals(((ParameterRef) o).paramType);
-    }
-    return false;
+  public boolean equivTo(Object c) {
+    return c instanceof CaughtExceptionRef;
   }
 
+  /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return num * 101 + paramType.hashCode() * 17;
+    return 1729;
   }
 
-  /** Create a new ParameterRef object with the same paramType and number. */
   @Override
   public Object clone() {
-    return new ParameterRef(paramType, num);
+    return new JCaughtExceptionRef();
   }
 
-  /** Converts the given ParameterRef into a String i.e. <code>@parameter0: .int</code>. */
   @Override
   public String toString() {
-    return "@parameter" + num + ": " + paramType;
+    return "@caughtexception";
   }
 
   @Override
@@ -80,28 +64,16 @@ public class ParameterRef implements IdentityRef {
     up.identityRef(this);
   }
 
-  /** Returns the index of this ParameterRef. */
-  public int getIndex() {
-    return num;
-  }
-
-  /** Sets the index of this ParameterRef. */
-  public void setIndex(int index) {
-    num = index;
-  }
-
   @Override
   public final List<ValueBox> getUseBoxes() {
     return Collections.emptyList();
   }
 
-  /** Returns the type of this ParameterRef. */
   @Override
   public Type getType() {
-    return paramType;
+    return RefType.getInstance("java.lang.Throwable");
   }
 
-  /** Used with RefSwitch. */
   @Override
   public void accept(IVisitor sw) {
     // TODO

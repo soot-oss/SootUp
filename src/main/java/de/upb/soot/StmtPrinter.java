@@ -59,4 +59,6 @@ public interface StmtPrinter {
   public AttributesUnitPrinter getPositionTagger();
 
   public StringBuffer output();
+
+  public void fieldRef(SootField field);
 }
