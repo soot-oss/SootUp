@@ -31,8 +31,8 @@ import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
@@ -95,7 +95,7 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public ArrayRef getArrayRef() {
+  public JArrayRef getArrayRef() {
     // TODO Auto-generated method stub
     return null;
   }

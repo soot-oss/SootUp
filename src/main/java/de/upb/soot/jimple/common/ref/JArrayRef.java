@@ -29,7 +29,6 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.NullType;
 import de.upb.soot.jimple.common.type.Type;
@@ -39,7 +38,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JArrayRef implements ArrayRef {
+public class JArrayRef implements ConcreteRef {
   protected ValueBox baseBox;
   protected ValueBox indexBox;
 
@@ -59,8 +58,8 @@ public class JArrayRef implements ArrayRef {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof ArrayRef) {
-      return (getBase().equivTo(((ArrayRef) o).getBase()) && getIndex().equivTo(((ArrayRef) o).getIndex()));
+    if (o instanceof JArrayRef) {
+      return (getBase().equivTo(((JArrayRef) o).getBase()) && getIndex().equivTo(((JArrayRef) o).getIndex()));
     }
     return false;
   }
@@ -84,32 +83,26 @@ public class JArrayRef implements ArrayRef {
     up.literal("]");
   }
 
-  @Override
   public Value getBase() {
     return baseBox.getValue();
   }
 
-  @Override
   public void setBase(Local base) {
     baseBox.setValue(base);
   }
 
-  @Override
   public ValueBox getBaseBox() {
     return baseBox;
   }
 
-  @Override
   public Value getIndex() {
     return indexBox.getValue();
   }
 
-  @Override
   public void setIndex(Value index) {
     indexBox.setValue(index);
   }
 
-  @Override
   public ValueBox getIndexBox() {
     return indexBox;
   }

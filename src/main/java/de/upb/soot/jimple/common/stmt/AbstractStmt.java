@@ -28,8 +28,8 @@ package de.upb.soot.jimple.common.stmt;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.ArrayList;
@@ -168,7 +168,7 @@ public abstract class AbstractStmt implements Stmt {
   }
 
   @Override
-  public ArrayRef getArrayRef() {
+  public JArrayRef getArrayRef() {
     throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
   }
 

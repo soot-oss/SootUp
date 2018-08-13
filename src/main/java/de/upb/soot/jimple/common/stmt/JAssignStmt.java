@@ -21,8 +21,8 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.basic.VariableBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -207,7 +207,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   /* added by Feng */
   @Override
   public boolean containsArrayRef() {
-    return ((getLeftOp() instanceof ArrayRef) || (getRightOp() instanceof ArrayRef));
+    return ((getLeftOp() instanceof JArrayRef) || (getRightOp() instanceof JArrayRef));
   }
 
   /*
@@ -216,15 +216,15 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getArrayRef()
    */
   @Override
-  public ArrayRef getArrayRef() {
+  public JArrayRef getArrayRef() {
     if (!containsArrayRef()) {
       throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
     }
 
-    if (leftBox.getValue() instanceof ArrayRef) {
-      return (ArrayRef) leftBox.getValue();
+    if (leftBox.getValue() instanceof JArrayRef) {
+      return (JArrayRef) leftBox.getValue();
     } else {
-      return (ArrayRef) rightBox.getValue();
+      return (JArrayRef) rightBox.getValue();
     }
   }
 
@@ -239,7 +239,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getArrayRefBox() called with no ArrayRef present!");
     }
 
-    if (leftBox.getValue() instanceof ArrayRef) {
+    if (leftBox.getValue() instanceof JArrayRef) {
       return leftBox;
     } else {
       return rightBox;

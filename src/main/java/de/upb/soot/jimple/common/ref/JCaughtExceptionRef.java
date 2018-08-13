@@ -34,13 +34,13 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import java.util.Collections;
 import java.util.List;
 
-public class JCaughtExceptionRef implements CaughtExceptionRef {
+public class JCaughtExceptionRef implements IdentityRef {
   public JCaughtExceptionRef() {
   }
 
   @Override
   public boolean equivTo(Object c) {
-    return c instanceof CaughtExceptionRef;
+    return c instanceof JCaughtExceptionRef;
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */

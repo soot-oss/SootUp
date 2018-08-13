@@ -34,7 +34,6 @@ import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
 import de.upb.soot.jimple.common.expr.JAndExpr;
 import de.upb.soot.jimple.common.expr.JCastExpr;
-import de.upb.soot.jimple.common.expr.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.expr.JCmpExpr;
 import de.upb.soot.jimple.common.expr.JCmpgExpr;
 import de.upb.soot.jimple.common.expr.JCmplExpr;
@@ -63,7 +62,7 @@ import de.upb.soot.jimple.common.expr.JSubExpr;
 import de.upb.soot.jimple.common.expr.JUshrExpr;
 import de.upb.soot.jimple.common.expr.JVirtualInvokeExpr;
 import de.upb.soot.jimple.common.expr.JXorExpr;
-import de.upb.soot.jimple.common.ref.CaughtExceptionRef;
+import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
@@ -648,7 +647,7 @@ public class Jimple {
   /**
    * Constructs a CaughtExceptionRef() grammar chunk.
    */
-  public CaughtExceptionRef newCaughtExceptionRef() {
+  public JCaughtExceptionRef newCaughtExceptionRef() {
     return new JCaughtExceptionRef();
   }
 

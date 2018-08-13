@@ -4,8 +4,8 @@ import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IAcceptor;
 
 import java.io.Serializable;
@@ -74,7 +74,7 @@ public interface Stmt extends IAcceptor, Serializable {
 
   public boolean containsArrayRef();
 
-  public ArrayRef getArrayRef();
+  public JArrayRef getArrayRef();
 
   public ValueBox getArrayRefBox();
 
