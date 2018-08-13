@@ -28,6 +28,7 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootField;
+import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.PrecedenceTest;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -37,21 +38,24 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("serial")
-public abstract class AbstractInstanceFieldRef implements FieldRef {
-  protected SootField field;
-  final ValueBox baseBox;
+public class JInstanceFieldRef implements FieldRef {
+  public JInstanceFieldRef(Value base, SootField field) {
+    ValueBox baseBox = Jimple.getInstance().newLocalBox(base);
 
-  protected AbstractInstanceFieldRef(ValueBox baseBox, SootField fieldRef) {
     if (field.isStatic()) {
       throw new RuntimeException("wrong static-ness");
     }
     this.baseBox = baseBox;
-    this.field = fieldRef;
+    this.field = field;
   }
 
   @Override
-  public abstract Object clone();
+  public Object clone() {
+    return new JInstanceFieldRef(Jimple.cloneIfNecessary(getBase()), field);
+  }
+
+  protected SootField field;
+  final ValueBox baseBox;
 
   @Override
   public String toString() {
@@ -123,8 +127,8 @@ public abstract class AbstractInstanceFieldRef implements FieldRef {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof AbstractInstanceFieldRef) {
-      AbstractInstanceFieldRef fr = (AbstractInstanceFieldRef) o;
+    if (o instanceof JInstanceFieldRef) {
+      JInstanceFieldRef fr = (JInstanceFieldRef) o;
       return fr.getField().equals(getField()) && fr.baseBox.getValue().equivTo(baseBox.getValue());
     }
     return false;
@@ -135,5 +139,4 @@ public abstract class AbstractInstanceFieldRef implements FieldRef {
   public int equivHashCode() {
     return getField().equivHashCode() * 101 + baseBox.getValue().equivHashCode() + 17;
   }
-
 }
