@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.core.SootModule;
+import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ModuleSignatureFactory;
@@ -157,7 +157,7 @@ class ModuleFinder {
     if (moduleInfoClass.isPresent()) {
       ClassSource moduleInfoSource = moduleInfoClass.get();
       // get the module name
-      String moduleName = new SootModule(moduleInfoSource).getName();
+      String moduleName = new SootModuleInfo(moduleInfoSource, name, access, version).getName();
 
       this.moduleNamespace.put(moduleName, namespace);
 
@@ -187,7 +187,7 @@ class ModuleFinder {
         if (moduleInfoClass.isPresent()) {
           ClassSource moduleInfoSource = moduleInfoClass.get();
           // get the module name
-          String moduleName = new SootModule(moduleInfoSource).getName();
+          String moduleName = new SootModuleInfo(moduleInfoSource, name, access, version).getName();
 
           this.moduleNamespace.put(moduleName, namespace);
 

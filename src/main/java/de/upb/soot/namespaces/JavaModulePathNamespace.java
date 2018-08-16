@@ -2,7 +2,7 @@ package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
 
-import de.upb.soot.core.SootModule;
+import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
@@ -58,12 +58,12 @@ public class JavaModulePathNamespace extends AbstractNamespace {
    * @param module
    *          name of the module
    *
-   * @return the found SootModule
+   * @return the found SootModuleInfo
    */
-  public Optional<SootModule> getSootModule(String module) {
+  public Optional<SootModuleInfo> getSootModule(String module) {
     ClassSignature moduleSignature = ModuleSignatureFactory.MODULE_INFO_CLASS;
     AbstractNamespace ns = moduleFinder.discoverModule(module);
-    return ns.getClassSource(moduleSignature).map(cs -> new SootModule(cs));
+    return ns.getClassSource(moduleSignature).map(cs -> new SootModuleInfo(cs, name, access, version));
   }
 
   // TODO: Do we want class sources for all entries, or all classes under a certian module?

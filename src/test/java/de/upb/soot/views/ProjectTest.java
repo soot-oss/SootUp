@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.*;
 
-public class ViewTest {
+public class ProjectTest {
 
     @Before
     public void setUp() throws Exception {
@@ -26,8 +26,8 @@ public class ViewTest {
     public void getSootClass() {
         SignatureFactory factory = new DefaultSignatureFactory(){};
         ClassSignature classSignature = factory.getClassSignature("java.lang.System");
-        View view = new View();
-        Optional<SootClass> sootClass = view.getClass(classSignature);
+        Project project = new Project();
+        Optional<SootClass> sootClass = project.getClass(classSignature);
         assertTrue(sootClass.isPresent());
 
 

@@ -76,4 +76,6 @@ public class ClassSignature extends TypeSignature {
   public Path toPath(FileType fileType, FileSystem fs) {
     return fs.getPath(getFullyQualifiedName().replace('.', '/') + "." + fileType.getExtension());
   }
+
+  public boolean isModuleInfo() { return className.equals("module-info"); }
 }
