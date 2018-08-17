@@ -52,19 +52,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
 
   }
 
-  /**
-   * Returns the module descriptor found for the queried module.
-   * 
-   * @param module
-   *          name of the module
-   *
-   * @return the found SootModuleInfo
-   */
-  public Optional<SootModuleInfo> getSootModule(String module) {
-    ClassSignature moduleSignature = ModuleSignatureFactory.MODULE_INFO_CLASS;
-    AbstractNamespace ns = moduleFinder.discoverModule(module);
-    return ns.getClassSource(moduleSignature).map(cs -> new SootModuleInfo(cs, name, access, version));
-  }
+
 
   // TODO: Do we want class sources for all entries, or all classes under a certian module?
   @Override
