@@ -121,6 +121,17 @@
                     <argLine>${surefireArgLine}</argLine>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <version>2.10.3</version>
+                <configuration>
+                    <fixTags>author</fixTags>
+                    <force>true</force>
+                    <fixFieldComment>false</fixFieldComment>
+                    <fixMethodComment>false</fixMethodComment>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <dependencies>
