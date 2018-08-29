@@ -26,6 +26,8 @@
         <junit.version>4.12</junit.version>
         <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
         <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
+        <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
+        <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
     </properties>
     <build>
         <plugins>
@@ -131,6 +133,33 @@
                     <fixFieldComment>false</fixFieldComment>
                     <fixMethodComment>false</fixMethodComment>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>1.16</version>
+                <configuration>
+                    <failOnMissingHeader>${licence-check.failOnMissingHeader}</failOnMissingHeader>
+                    <failOnNotUptodateHeader>${licence-check.failOnMissingHeader}</failOnNotUptodateHeader>
+                    <inceptionYear>1997</inceptionYear>
+                    <addJavaLicenseAfterPackage>true</addJavaLicenseAfterPackage>
+                    <licenseName>lgpl_v2_1</licenseName>
+                    <organizationName>Secure Software Engineering Department, University of Paderborn</organizationName>
+                    <roots>
+                        <root>src/main/java</root>
+                        <root>src/test/java</root>
+                        <root>src/test/java8</root>
+                    </roots>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>license-check</id>
+                        <goals>
+                            <goal>check-file-header</goal>
+                        </goals>
+                        <phase>verify</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
