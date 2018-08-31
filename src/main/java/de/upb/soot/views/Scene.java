@@ -18,7 +18,7 @@ import scala.concurrent.duration.Duration;
 
 import java.util.Optional;
 
-public class Project {
+public class Scene {
     private ActorSystem system;
 
     public Optional<SootClass> getClass(ClassSignature signature) {

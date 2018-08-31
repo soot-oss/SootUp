@@ -8,7 +8,7 @@ import akka.actor.AbstractLoggingActor;
 import akka.actor.Props;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
-import de.upb.soot.views.Project;
+import de.upb.soot.views.Scene;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ModuleVisitor;
@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
 
 public class ModuleBuilderActor extends AbstractLoggingActor {
 
-  private final Project project;
+  private final Scene project;
   private final ClassSource classSource;
   private SootModuleInfo module;
 
-  public ModuleBuilderActor(Project project, ClassSource classSource) {
+  public ModuleBuilderActor(Scene project, ClassSource classSource) {
     this.project = project;
     this.classSource = classSource;
   }

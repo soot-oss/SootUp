@@ -16,7 +16,6 @@ public class ClassBuilderActor extends AbstractLoggingActor {
   @Override
   public Receive createReceive() {
     return receiveBuilder().matchAny(this::resolve).build();
-
   }
 
   private void resolve(Object o) {
@@ -31,9 +30,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     // for each method
     // TODO: make a actor
 
-
-
-      //?? for all dependencies??
+    // ?? for all dependencies??
   }
 
   public static Props props(ClassSource classSource) {

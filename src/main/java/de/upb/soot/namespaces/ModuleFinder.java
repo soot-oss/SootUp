@@ -158,6 +158,8 @@ class ModuleFinder {
       // get the module name
       // FIXME: how we can get the name of the module,
       // We have to query the view, and thus the actor?
+      // can we derive it from the jar file or the folder name
+      // imho: we cannot be 100% sure, when deriving the name
       String moduleName = null;
       // = new SootModuleInfo(moduleInfoSource, name, access, version).getName();
 
