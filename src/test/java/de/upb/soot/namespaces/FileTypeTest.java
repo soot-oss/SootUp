@@ -41,7 +41,7 @@ public class FileTypeTest {
 
     @Test
     public void testFileTypeZip() throws URISyntaxException {
-        URL url = getClass().getResource("google-java-format.zip");
+        URL url = getClass().getResource("demo.zip");
         Path path = Paths.get(url.toURI());
         assertTrue(FileType.isFileType(path, FileType.ZIP));
     }
