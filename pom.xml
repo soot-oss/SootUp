@@ -141,7 +141,7 @@
                 <configuration>
                     <failOnMissingHeader>${licence-check.failOnMissingHeader}</failOnMissingHeader>
                     <failOnNotUptodateHeader>${licence-check.failOnMissingHeader}</failOnNotUptodateHeader>
-                    <inceptionYear>1997</inceptionYear>
+                    <inceptionYear>2018</inceptionYear>
                     <addJavaLicenseAfterPackage>true</addJavaLicenseAfterPackage>
                     <licenseName>lgpl_v2_1</licenseName>
                     <organizationName>Secure Software Engineering Department, University of Paderborn</organizationName>

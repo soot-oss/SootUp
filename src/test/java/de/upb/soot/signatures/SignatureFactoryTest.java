@@ -4,7 +4,7 @@ package de.upb.soot.signatures;
  * #%L
  * Soot
  * %%
- * Copyright (C) 1997 - 2018 Secure Software Engineering Department, University of Paderborn
+ * Copyright (C) 2018 Secure Software Engineering Department, University of Paderborn
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
