@@ -1,0 +1,20 @@
+class de.upb.soot.concrete.fieldReference.A extends java.lang.Object
+{
+    int i;
+    public java.lang.String j;
+
+    void <init>()
+    {
+        de.upb.soot.concrete.fieldReference.A r0;
+
+        r0 := @this: de.upb.soot.concrete.fieldReference.A;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<de.upb.soot.concrete.fieldReference.A: int i> = 15;
+
+        r0.<de.upb.soot.concrete.fieldReference.A: java.lang.String j> = "greater";
+
+        return;
+    }
+}

@@ -1,5 +1,0 @@
-interface  de.upb.soot.lambdaExpressions.A extends java.lang.Object
-{
-
-    public abstract java.lang.String methodA(int);
-}
