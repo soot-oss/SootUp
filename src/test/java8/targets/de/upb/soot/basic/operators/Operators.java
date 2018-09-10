@@ -227,7 +227,6 @@ public class Operators {
     System.out.println(result);
   }
 
-  // TODO: difference "rem"(ainder?) and "%"
   // TODO: cmp, cmpg, cmpl
 
 }

@@ -25,8 +25,8 @@ public class de.upb.soot.basic.invoke.ReflectionInvoke extends de.upb.soot.basic
         java.lang.Class $r1, $r2;
         java.lang.Class[] $r3;
         java.lang.Object[] $r4;
-        java.lang.IllegalAccessException $r6;
-        java.lang.reflect.InvocationTargetException $r7;
+        java.lang.reflect.InvocationTargetException $r6;
+        java.lang.IllegalAccessException $r7;
 
         $r1 = class "Lde/upb/soot/basic/invoke/A;";
 
@@ -45,16 +45,16 @@ public class de.upb.soot.basic.invoke.ReflectionInvoke extends de.upb.soot.basic
         goto label5;
 
      label3:
-        $r6 := @caughtexception;
+        $r7 := @caughtexception;
 
-        virtualinvoke $r6.<java.lang.IllegalAccessException: void printStackTrace()>();
+        virtualinvoke $r7.<java.lang.IllegalAccessException: void printStackTrace()>();
 
         goto label5;
 
      label4:
-        $r7 := @caughtexception;
+        $r6 := @caughtexception;
 
-        virtualinvoke $r7.<java.lang.reflect.InvocationTargetException: void printStackTrace()>();
+        virtualinvoke $r6.<java.lang.reflect.InvocationTargetException: void printStackTrace()>();
 
      label5:
         return;
