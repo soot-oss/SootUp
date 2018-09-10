@@ -227,6 +227,68 @@ public class Operators {
     System.out.println(result);
   }
 
-  // TODO: cmp, cmpg, cmpl
+  public void cmpOperatorNotEqual(long a, long b) {
+    boolean result = a != b;
+    System.out.println(result);
+
+  }
+
+  public void cmpOperatorEqual(long a, long b) {
+    boolean result = a == b;
+    System.out.println(result);
+
+  }
+
+  public void cmpOperatorLower(long a, long b) {
+    boolean result = a < b;
+    System.out.println(result);
+
+  }
+
+  public void cmpOperatorLowerEqual(long a, long b) {
+    boolean result = a <= b;
+    System.out.println(result);
+
+  }
+
+  public void cmpOperatorGreater(long a, long b) {
+    boolean result = a > b;
+    System.out.println(result);
+  }
+
+  public void cmpOperatorGreaterEqual(long a, long b) {
+    boolean result = a >= b;
+    System.out.println(result);
+  }
+
+  public void cmplOperatorNotEqual(float a, float b) {
+    boolean result = a != b;
+    System.out.println(result);
+  }
+
+  public void cmplOperatorEqual(float a, float b) {
+    boolean result = a == b;
+    System.out.println(result);
+  }
+
+  public void cmpgOperatorLower(float a, float b) {
+    boolean result = a < b;
+    System.out.println(result);
+  }
+
+  public void cmpgOperatorLowerEqual(float a, float b) {
+    boolean result = a <= b;
+    System.out.println(result);
+  }
+
+  public void cmplOperatorGreater(float a, float b) {
+    boolean result = a > b;
+    System.out.println(result);
+  }
+
+  public void cmplOperatorGreaterEqual(float a, float b) {
+    boolean result = a >= b;
+    System.out.println(result);
+  }
 
 }

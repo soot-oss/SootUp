@@ -833,4 +833,400 @@ public class de.upb.soot.basic.operators.Operators extends java.lang.Object
 
         return;
     }
+
+    public void cmpOperatorNotEqual(long, long)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 == 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorEqual(long, long)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 != 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorLower(long, long)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 >= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorLowerEqual(long, long)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 > 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorGreater(long, long)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 <= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpOperatorGreaterEqual(long, long)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        long l0, l1;
+        byte $b2;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 < 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmplOperatorNotEqual(float, float)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 == 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmplOperatorEqual(float, float)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 != 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpgOperatorLower(float, float)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpg f1;
+
+        if $b0 >= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmpgOperatorLowerEqual(float, float)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpg f1;
+
+        if $b0 > 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmplOperatorGreater(float, float)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 <= 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+
+    public void cmplOperatorGreaterEqual(float, float)
+    {
+        de.upb.soot.basic.operators.Operators r0;
+        float f0, f1;
+        byte $b0;
+        java.io.PrintStream $r1;
+        boolean $z1;
+
+        r0 := @this: de.upb.soot.basic.operators.Operators;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 < 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
 }

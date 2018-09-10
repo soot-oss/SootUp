@@ -2,11 +2,11 @@ package de.upb.soot.basic.expr;
 
 public class NewMultiArray {
 
-    void sth(){
+  void sth() {
 
-        int [] [] i = new int[42][10];
-        System.out.println(i.length);
+    int[][] i = new int[42][10];
+    System.out.println(i.length);
 
-    }
+  }
 
 }

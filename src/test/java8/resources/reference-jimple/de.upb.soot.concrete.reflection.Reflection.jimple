@@ -18,8 +18,8 @@ public class de.upb.soot.concrete.reflection.Reflection extends java.lang.Object
         java.lang.Class[] $r1;
         java.lang.Class $r2;
         java.lang.Object[] $r3;
-        java.lang.reflect.InvocationTargetException $r5;
-        java.lang.IllegalAccessException $r6;
+        java.lang.IllegalAccessException $r5;
+        java.lang.reflect.InvocationTargetException $r6;
 
         $r2 = class "Lde/upb/soot/concrete/reflection/A;";
 
@@ -36,16 +36,16 @@ public class de.upb.soot.concrete.reflection.Reflection extends java.lang.Object
         goto label5;
 
      label3:
-        $r6 := @caughtexception;
+        $r5 := @caughtexception;
 
-        virtualinvoke $r6.<java.lang.IllegalAccessException: void printStackTrace()>();
+        virtualinvoke $r5.<java.lang.IllegalAccessException: void printStackTrace()>();
 
         goto label5;
 
      label4:
-        $r5 := @caughtexception;
+        $r6 := @caughtexception;
 
-        virtualinvoke $r5.<java.lang.reflect.InvocationTargetException: void printStackTrace()>();
+        virtualinvoke $r6.<java.lang.reflect.InvocationTargetException: void printStackTrace()>();
 
      label5:
         return;

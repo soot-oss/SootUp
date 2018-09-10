@@ -39,7 +39,6 @@ public class ControlStatements {
     }
   }
 
-
   public void tableSwitch(int a) {
     // should generate a tableswitch
     switch (a) {
@@ -74,18 +73,15 @@ public class ControlStatements {
     }
   }
 
+  public void gotoStmt() {
 
-  public void gotoStmt(){
-
-    label1:
-      while (true) {
-        if (false) {
-          continue label1;
-        }
+    label1: while (true) {
+      if (false) {
+        continue label1;
       }
+    }
 
   }
-
 
   public void throwSth() throws Exception {
 
@@ -93,17 +89,15 @@ public class ControlStatements {
 
   }
 
-
-  public void throwAndCatch(){
+  public void throwAndCatch() {
 
     try {
       throw new Exception("Banana");
-    }catch( Exception e){
+    } catch (Exception e) {
       System.out.println("Exception catched");
     }
 
   }
-
 
   public void simpleWhile(int a, int b) {
     // Simple while
@@ -111,7 +105,6 @@ public class ControlStatements {
       System.out.println("a is smaller than b");
     }
   }
-
 
   public void simpleDoWhile(int a, int b) {
     // Simple do while
@@ -128,17 +121,14 @@ public class ControlStatements {
     }
   }
 
-
-  public void monitor(){
+  public void monitor() {
 
     StringBuffer sb = new StringBuffer();
-    synchronized( sb ) {
-      sb.append( "monitored" );
+    synchronized (sb) {
+      sb.append("monitored");
     }
-    sb.append( "unmonitored" );
-    System.out.println( sb.toString() );
+    sb.append("unmonitored");
+    System.out.println(sb.toString());
   }
-
-
 
 }

@@ -2,11 +2,11 @@ package de.upb.soot.basic.expr;
 
 public class Length {
 
-    void sth(){
+  void sth() {
 
-        int [] i = new int[42];
-        System.out.println(i.length);
+    int[] i = new int[42];
+    System.out.println(i.length);
 
-    }
+  }
 
 }
