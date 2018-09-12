@@ -11,9 +11,9 @@ import de.upb.soot.namespaces.classprovider.ClassSource;
 
 public class SootClass {
 
-
-    public final int level;
   static public class Resolve {
+    public final int level;
+
     public Resolve(int level) {
       this.level = level;
     }
@@ -23,6 +23,7 @@ public class SootClass {
 
   public static final String HIERARCHY = null;
   public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = null;
+
   public SootClass(ClassSource cs) {
     this.cs = cs;
   }
@@ -47,10 +48,12 @@ public class SootClass {
     return false;
 
   }
+
   public String getName() {
     // TODO Auto-generated method stub
-  }
     return null;
+  }
+
   public SootClass getSuperclassUnsafe() {
 
     // TODO Auto-generated method stub
