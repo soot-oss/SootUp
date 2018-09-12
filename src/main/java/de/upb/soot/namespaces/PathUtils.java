@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
  */
 public class PathUtils {
 
-
   /**
    * Matches the given {@link Path} with the file extensions of the given {@link FileType}s.
    * 

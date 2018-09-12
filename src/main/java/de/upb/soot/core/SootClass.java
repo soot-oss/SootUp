@@ -1,5 +1,6 @@
 package de.upb.soot.core;
 
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 
 /**
@@ -20,6 +21,9 @@ public class SootClass {
 
   private ClassSource cs;
 
+  public static final String HIERARCHY = null;
+  public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = null;
+
   public SootClass(ClassSource cs) {
     this.cs = cs;
   }
@@ -27,5 +31,37 @@ public class SootClass {
   public void resolve() {
     // aktor stuff
     cs.resolve();
+  }
+
+  public void checkLevelIgnoreResolving(String hierarchy2) {
+
+    // TODO Auto-generated method stub
+  }
+
+  public boolean isInterface() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  public boolean isPhantom() {
+    // TODO Auto-generated method stub
+    return false;
+
+  }
+
+  public String getName() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public SootClass getSuperclassUnsafe() {
+
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public Type getType() {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

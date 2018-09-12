@@ -25,7 +25,7 @@
 
 // Incomplete class
 
-package soot;
+package de.upb.soot.core;
 
 /**
  * A class that provides static methods and constants to represent and work with with Java modifiers (ie public, final,...) Represents Java modifiers

@@ -144,5 +144,10 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-# allow jar in testresources
 !src/test/resources/**/*.jar
+# allow jar in testresources
+\.checkstyle
+
+\.project
+
+\.classpath
