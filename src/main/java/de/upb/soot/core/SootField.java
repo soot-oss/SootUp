@@ -14,6 +14,10 @@ public class SootField {
     // TODO Auto-generated constructor stub
   }
 
+  public SootField(String name, Type type, int modifiers) {
+
+  }
+
   public int equivHashCode() {
     // TODO Auto-generated method stub
     return 0;

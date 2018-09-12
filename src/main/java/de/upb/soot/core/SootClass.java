@@ -64,4 +64,15 @@ public class SootClass {
     // TODO Auto-generated method stub
     return null;
   }
+
+  public void addField(SootField sootField) {
+    // TODO Auto-generated method stub
+
+  }
+
+  public void addMethod(SootMethod sootMethod) {
+    // TODO Auto-generated method stub
+
+  }
+
 }
