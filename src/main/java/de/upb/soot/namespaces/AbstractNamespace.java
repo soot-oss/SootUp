@@ -1,13 +1,12 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Basic implementation of {@link INamespace}, encapsulating common behavior. Also used to keep the {@link INamespace}
@@ -22,17 +21,19 @@ public abstract class AbstractNamespace implements INamespace {
     this.classProvider = classProvider;
   }
 
-  @Override
-  public Collection<SootClass> getClasses() {
-    return getClassSources().stream().map(cs -> new SootClass(cs)).collect(Collectors.toList());
-  }
+  /*
+   * @Override public Collection<SootClass> getClasses(SignatureFactory factory) {
+   * 
+   * // FIXME: here we must take the classSources and invoke akka... return getClassSources(factory).stream().map(cs ->
+   * classProvider.getSootClass(cs)).collect(Collectors.toList()); }
+   * 
+   * @Override public Optional<SootClass> getClass(ClassSignature classSignature) { // FIXME: here we must take the
+   * classSources and invoke akka...
+   * 
+   * return getClassSource(classSignature).map(cs -> classProvider.getSootClass(cs)); }
+   */
 
-  @Override
-  public Optional<SootClass> getClass(ClassSignature classSignature) {
-    return getClassSource(classSignature).map(cs -> new SootClass(cs));
-  }
+  protected abstract Collection<ClassSource> getClassSources(SignatureFactory factory);
 
-  protected abstract Collection<ClassSource> getClassSources();
-
-  protected abstract Optional<ClassSource> getClassSource(ClassSignature classSignature);
+  public abstract Optional<ClassSource> getClassSource(ClassSignature classSignature);
 }

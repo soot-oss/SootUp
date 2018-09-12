@@ -16,7 +16,7 @@ public class ModuleSignature {
   public final String moduleName;
 
   /**
-   * Construct Module Signature of a Java 9 module. Instances should only be created a {@link SignatureFactory}
+   * Construct Module Signature of a Java 9 module. Instances should only be created a {@link DefaultSignatureFactory}
    *
    * @param moduleName
    *          module's name

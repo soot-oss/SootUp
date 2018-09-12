@@ -1,7 +1,9 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.core.SootClass;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -13,20 +15,21 @@ import java.util.Optional;
  * @author Manuel Benz created on 22.05.18
  */
 public interface INamespace {
-
-  /**
+  /** FIXME: a namespace should only return class sources
    * Searches the namespace and sub-namespaces for all contained classes.
    * 
    * @return A collection of not-yet-resolved {@link SootClass}es
-   */
-  Collection<SootClass> getClasses();
+   *//*
+  Collection<SootClass> getClasses(SignatureFactory factory);
 
-  /**
+  *//**
    * Searches the namespace and all sub-namespaces for a {@link SootClass} matching the given {@link ClassSignature}.
    *
    * @param classSignature
    *          The {@link ClassSignature} denoting the searched {@link SootClass}
    * @return An optional containing the found class or empty if the class does not reside in this namespace
-   */
-  Optional<SootClass> getClass(ClassSignature classSignature);
+   *//*
+  Optional<SootClass> getClass(ClassSignature classSignature);*/
+
+  Optional<ClassSource> getClassSource(ClassSignature signature);
 }

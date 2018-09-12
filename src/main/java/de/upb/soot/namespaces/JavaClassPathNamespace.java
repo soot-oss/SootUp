@@ -6,6 +6,7 @@ import de.upb.soot.Utils;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,7 +37,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   private static final Logger logger = LoggerFactory.getLogger(JavaClassPathNamespace.class);
   private static final String WILDCARD_CHAR = "*";
 
-  private Collection<AbstractNamespace> cpEntries;
+  protected Collection<AbstractNamespace> cpEntries;
 
   /**
    * Creates a {@link JavaClassPathNamespace} which locates classes based on the provided {@link IClassProvider}.
@@ -65,10 +67,17 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     logger.trace("{} class path entries registered", cpEntries.size());
   }
 
-  private Stream<Path> explode(String classPath) {
+  /**
+   * Explode the class or modulepath entries, separated by {@link File#pathSeparator}.
+   *
+   * @param paths
+   *          entries as one string
+   * @return path entries
+   */
+  public static Stream<Path> explode(String paths) {
     // the classpath is split at every path separator which is not escaped
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
-    final Stream<Path> exploded = Stream.of(classPath.split(regex)).flatMap(this::handleWildCards);
+    final Stream<Path> exploded = Stream.of(paths.split(regex)).flatMap(JavaClassPathNamespace::handleWildCards);
     // we need to filter out duplicates of the same files to not generate duplicate namespaces
     return exploded.map(cp -> cp.normalize()).distinct();
   }
@@ -81,12 +90,12 @@ public class JavaClassPathNamespace extends AbstractNamespace {
    *          A class path entry
    * @return A stream of class path entries with wildcards exploded
    */
-  private Stream<Path> handleWildCards(String entry) {
+  private static Stream<Path> handleWildCards(String entry) {
     if (entry.endsWith(WILDCARD_CHAR)) {
       Path baseDir = Paths.get(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
       try {
         return Utils.iteratorToStream(Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
-      } catch (NotDirectoryException e) {
+      } catch (PatternSyntaxException | NotDirectoryException e) {
         throw new InvalidClassPathException("Malformed wildcard entry", e);
       } catch (IOException e) {
         throw new InvalidClassPathException("Couldn't access entries denoted by wildcard", e);
@@ -97,12 +106,12 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Collection<ClassSource> getClassSources() {
+  public Collection<ClassSource> getClassSources(SignatureFactory factory) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
     Set<ClassSource> found = new HashSet<>();
     for (AbstractNamespace ns : cpEntries) {
-      found.addAll(ns.getClassSources());
+      found.addAll(ns.getClassSources(factory));
     }
     return found;
   }
@@ -119,8 +128,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   private Optional<AbstractNamespace> nsForPath(Path path) {
-    if (Files.exists(path)
-        && (java.nio.file.Files.isDirectory(path) || PathUtils.hasExtension(path, FileType.JAR, FileType.ZIP))) {
+    if (Files.exists(path) && (java.nio.file.Files.isDirectory(path) || PathUtils.isArchive(path))) {
       return Optional.of(PathBasedNamespace.createForClassContainer(classProvider, path));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);

@@ -8,16 +8,33 @@ import de.upb.soot.namespaces.classprovider.ClassSource;
  *
  * @author Manuel Benz created on 06.06.18
  */
-public class SootClass {
-  public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = null;
-  public static final String HIERARCHY = null;
 
+public class SootClass {
+
+
+    public final int level;
+  static public class Resolve {
+    public Resolve(int level) {
+      this.level = level;
+    }
+  }
+
+  private ClassSource cs;
+
+  public static final String HIERARCHY = null;
+  public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = null;
   public SootClass(ClassSource cs) {
+    this.cs = cs;
+  }
+
+  public void resolve() {
+    // aktor stuff
+    cs.resolve();
   }
 
   public void checkLevelIgnoreResolving(String hierarchy2) {
-    // TODO Auto-generated method stub
 
+    // TODO Auto-generated method stub
   }
 
   public boolean isInterface() {
@@ -28,14 +45,14 @@ public class SootClass {
   public boolean isPhantom() {
     // TODO Auto-generated method stub
     return false;
-  }
 
+  }
   public String getName() {
     // TODO Auto-generated method stub
-    return null;
   }
-
+    return null;
   public SootClass getSuperclassUnsafe() {
+
     // TODO Auto-generated method stub
     return null;
   }
@@ -44,5 +61,4 @@ public class SootClass {
     // TODO Auto-generated method stub
     return null;
   }
-
 }
