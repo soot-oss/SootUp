@@ -16,12 +16,12 @@ public class Body {
   }
 
   public SootMethod getMethod() {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated constructor stub
     return null;
   }
 
   public void setMethod(SootMethod sootMethod) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated constructor stub
 
   }
 
@@ -29,5 +29,4 @@ public class Body {
     // TODO Auto-generated method stub
 
   }
-
 }

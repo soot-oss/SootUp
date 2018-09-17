@@ -59,7 +59,6 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
     return new JSpecialInvokeExpr((Local) getBase(), method, clonedArgs);
   }
 
-
   @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
