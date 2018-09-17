@@ -215,6 +215,7 @@ public class SootField /* implements ClassMember, SparkField, Numberable, Paddle
     return modifiers;
   }
 
+  @Override
   public String toString() {
     return getSignature();
   }
