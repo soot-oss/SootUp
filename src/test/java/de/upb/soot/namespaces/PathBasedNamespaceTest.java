@@ -20,13 +20,13 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
   public void failsOnFile() {
     // TODO adapt to new testing folder structure
     PathBasedNamespace.createForClassContainer(getClassProvider(),
-        Paths.get(TARGET_TEST_CLASSES_DIR + "/de/upb/soot/namespaces/PathBasedNamespaceTest.class"));
+        Paths.get("target/test-classes/de/upb/soot/namespaces/PathBasedNamespaceTest.class"));
   }
 
   @Test
   public void classNotFound() {
     // TODO adapt to new testing folder structure
-    Path baseDir = Paths.get(TARGET_TEST_CLASSES_DIR);
+    Path baseDir = Paths.get("target/test-classes/");
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(getClassProvider(), baseDir);
     final ClassSignature sig = getSignatureFactory().getClassSignature("NotExisting", "de.upb.soot.namespaces");
     final Optional<ClassSource> classSource = pathBasedNamespace.getClassSource(sig);
@@ -36,7 +36,7 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
   @Test
   public void testFolder() {
     // TODO adapt to new testing folder structure
-    Path baseDir = Paths.get(TARGET_CLASSES_DIR);
+    Path baseDir = Paths.get("target/classes/");
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(getClassProvider(), baseDir);
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
@@ -45,7 +45,7 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
   @Test
   public void testJar() {
     // TODO adapt to new testing folder structure
-    Path jar = Paths.get(TARGET_TEST_CLASSES_DIR + "/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
+    Path jar = Paths.get("target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(getClassProvider(), jar);
     final ClassSignature sig = getSignatureFactory().getClassSignature("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
