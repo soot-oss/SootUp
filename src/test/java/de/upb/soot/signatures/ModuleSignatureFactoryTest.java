@@ -5,6 +5,11 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import categories.Java9Test;
+
+@Category(Java9Test.class)
 
 public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
 

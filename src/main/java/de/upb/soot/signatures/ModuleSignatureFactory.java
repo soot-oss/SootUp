@@ -10,11 +10,13 @@ import java.util.Map;
  *
  * @author Andreas Dann
  */
-public class ModuleSignatureFactory extends SignatureFactory {
+public class ModuleSignatureFactory extends DefaultSignatureFactory {
+
+  public static final ClassSignature MODULE_INFO_CLASS = new ClassSignature("module-info", PackageSignature.DEFAULT_PACKAGE);
 
   protected final Map<String, ModuleSignature> modules = new HashMap<>();
 
-  protected ModuleSignatureFactory() {
+  public ModuleSignatureFactory() {
     /*
      * Represents the unnamed module in Java's module system. Every type that is not defined in any known module but loaded
      * from the classpath is associated with this unnamed module, so as to ensure that every type is associated with a
@@ -103,4 +105,5 @@ public class ModuleSignatureFactory extends SignatureFactory {
     PackageSignature packageSignature = getPackageSignature(packageName, moduleName);
     return new ClassSignature(className, packageSignature);
   }
+
 }

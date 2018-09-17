@@ -5,10 +5,14 @@ import de.upb.soot.signatures.ClassSignature;
 import java.io.File;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import categories.Java8Test;
 
 /**
  * @author Manuel Benz created on 07.06.18
  */
+@Category(Java8Test.class)
 public class JavaClassPathNamespaceTest extends AbstractNamespaceTest {
 
   @Test(expected = JavaClassPathNamespace.InvalidClassPathException.class)
