@@ -129,29 +129,6 @@
 					<argLine>${surefireArgLine}</argLine>
 				</configuration>
 			</plugin>
-			<!-- Test setup -->
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven-resources-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>add test resources for Java version ${test.target-version}</id>
-                        <phase>generate-test-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${test.outDir}
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/test/java${test.target-version}/resources</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
 		</plugins>
 	</build>
 	<dependencies>
