@@ -1,6 +1,8 @@
 package de.upb.soot.frontends.java;
 
 import com.ibm.wala.cast.ir.ssa.AstIRFactory;
+import com.ibm.wala.cast.ir.ssa.AstIRFactory.AstIR;
+import com.ibm.wala.cast.java.analysis.typeInference.AstJavaTypeInference;
 import com.ibm.wala.cast.java.ipa.callgraph.JavaSourceAnalysisScope;
 import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
 import com.ibm.wala.cast.java.translator.jdt.ecj.ECJClassLoaderFactory;
@@ -70,13 +72,25 @@ public class WalaIRtoJimple {
         JavaClass clss = (JavaClass) klass;
         for (IMethod method : clss.getAllMethods()) {
           if (method instanceof AstMethod) {
+            AstIR ir = (AstIR) cache.getIR(method);
+            AstJavaTypeInference typeInf = new AstJavaTypeInference(ir, true);
+            typeInf.solve();
             // print instructions of each methods
             StringBuffer sb = new StringBuffer();
+            System.out.println(method.getSignature());
             sb.append(method.getSignature() + "{\n");
             AbstractCFG<?, ?> cfg = ((AstMethod) method).cfg();
             SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
             SymbolTable symbolTable = new SymbolTable(method.getNumberOfParameters());
             for (SSAInstruction inst : insts) {
+              int index = inst.iindex;
+              SSAInstruction irInst = ir.getInstructions()[index];
+              if (irInst != null) {// get type
+                for (int i = 0; i < irInst.getNumberOfUses(); i++) {
+                  System.out.println(typeInf.getType(irInst.getUse(i)));
+                }
+              }
+              System.out.println();
               sb.append("\t" + inst.toString(symbolTable) + "\n");
               sb.append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t");
               sb.append(inst.getClass().getName() + "\n");

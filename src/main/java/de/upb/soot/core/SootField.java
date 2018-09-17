@@ -62,10 +62,6 @@ public class SootField /* implements ClassMember, SparkField, Numberable, Paddle
     this(name, type, 0);
   }
 
-  public SootField(String name, Type type, int modifiers) {
-
-  }
-
   public int equivHashCode() {
     return type.hashCode() * 101 + modifiers * 17 + name.hashCode();
   }
@@ -219,6 +215,7 @@ public class SootField /* implements ClassMember, SparkField, Numberable, Paddle
     return modifiers;
   }
 
+  @Override
   public String toString() {
     return getSignature();
   }
