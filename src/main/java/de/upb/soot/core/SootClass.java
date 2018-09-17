@@ -71,6 +71,26 @@ import org.slf4j.LoggerFactory;
  */
 
 public class SootClass implements Numberable {
+
+  static public class Resolve {
+    public final int level;
+
+    public Resolve(int level) {
+      this.level = level;
+    }
+  }
+
+  private ClassSource cs;
+
+  public SootClass(ClassSource cs) {
+    this.cs = cs;
+  }
+
+  public void resolve() {
+    // aktor stuff
+    cs.resolve();
+  }
+
   private static final Logger logger = LoggerFactory.getLogger(SootClass.class);
   protected String name, shortName, fixedShortName, packageName, fixedPackageName;
   protected int modifiers;
@@ -1303,11 +1323,6 @@ public class SootClass implements Numberable {
       }
       validator.validate(this, exceptionList);
     }
-  }
-
-  public SootClass(ClassSource cs) {
-    // TODO Auto-generated method stub
-
   }
 
   public void checkLevelIgnoreResolving(String hierarchy2) {

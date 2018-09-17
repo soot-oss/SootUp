@@ -29,7 +29,6 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.util.NumberedString;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -54,7 +53,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
    */
-  protected Type[] parameterTypes;
+  private List<Type> parameterTypes;
 
   /** The return type of this object. */
   protected Type returnType;
@@ -107,10 +106,9 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
   public SootMethod(String name, List<Type> parameterTypes, Type returnType, int modifiers,
       List<SootClass> thrownExceptions) {
     this.name = name;
-
-    if (parameterTypes != null && !parameterTypes.isEmpty()) {
-      this.parameterTypes = parameterTypes.toArray(new Type[parameterTypes.size()]);
-    }
+    this.parameterTypes = new ArrayList<Type>();
+    this.parameterTypes.addAll(parameterTypes);
+    this.parameterTypes = Collections.unmodifiableList(this.parameterTypes);
 
     this.returnType = returnType;
     this.modifiers = modifiers;
@@ -119,7 +117,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
       exceptions = new ArrayList<SootClass>();
       this.exceptions.addAll(thrownExceptions);
     }
-    subsignature = Scene.getInstance().getSubSigNumberer().findOrAdd(getSubSignature());
+
   }
 
   /**
@@ -253,19 +251,19 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
 
   /** Returns the number of parameters taken by this method. */
   public int getParameterCount() {
-    return parameterTypes == null ? 0 : parameterTypes.length;
+    return parameterTypes == null ? 0 : parameterTypes.size();
   }
 
   /** Gets the type of the <i>n</i>th parameter of this method. */
   public Type getParameterType(int n) {
-    return parameterTypes[n];
+    return parameterTypes.get(n);
   }
 
   /**
    * Returns a read-only list of the parameter types of this method.
    */
   public List<Type> getParameterTypes() {
-    return parameterTypes == null ? Collections.<Type>emptyList() : Arrays.asList(parameterTypes);
+    return parameterTypes == null ? Collections.<Type>emptyList() : parameterTypes;
   }
 
   /**
@@ -277,7 +275,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
     if (wasDeclared) {
       oldDeclaringClass.removeMethod(this);
     }
-    this.parameterTypes = l.toArray(new Type[l.size()]);
+    this.parameterTypes = l;
     subSig = null;
     sig = null;
     subsignature = Scene.getInstance().getSubSigNumberer().findOrAdd(getSubSignature());
@@ -337,14 +335,10 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
   /**
    * Sets the active body for this method.
    */
-  public synchronized void setActiveBody(Body body) {
-    if ((declaringClass != null) && declaringClass.isPhantomClass()) {
+  public void setActiveBody(Body body) {
+    if ((declaringClass != null) && declaringClass.isPhantom()) {
       throw new RuntimeException("cannot set active body for phantom class! " + this);
     }
-
-    // If someone sets a body for a phantom method, this method then is no
-    // longer phantom
-    setPhantom(false);
 
     if (!isConcrete()) {
       throw new RuntimeException("cannot set body for non-concrete method! " + this);
@@ -354,7 +348,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
       body.setMethod(this);
     }
 
-    this.activeBody = body;
+    activeBody = body;
   }
 
   /**
