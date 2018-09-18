@@ -80,6 +80,7 @@ public class Body implements Serializable {
       super(local, identityValue);
     }
 
+    @Override
     public Unit clone() {
       return null;
     }
@@ -87,6 +88,7 @@ public class Body implements Serializable {
     public void addAllTagsOf(Unit original) {
     }
 
+    @Override
     public List<StmtBox> getUnitBoxes() {
       return null;
     }
@@ -174,6 +176,7 @@ public class Body implements Serializable {
 
     }
 
+    @Override
     public boolean remove(Object u) {
       return false;
     }
@@ -187,6 +190,7 @@ public class Body implements Serializable {
     public void addFirst(Unit u) {
     }
 
+    @Override
     public boolean addAll(Collection<? extends Unit> c) {
       return false;
     }
@@ -205,6 +209,7 @@ public class Body implements Serializable {
     public void clear() {
     }
 
+    @Override
     public void addLast(Unit copy) {
     }
 
@@ -246,6 +251,7 @@ public class Body implements Serializable {
       return null;
     }
 
+    @Override
     public Iterator<Unit> iterator() {
       return null;
     }
@@ -260,30 +266,37 @@ public class Body implements Serializable {
       return null;
     }
 
+    @Override
     public boolean add(Unit unit) {
       return false;
     }
 
+    @Override
     public Iterator<Unit> iterator(Unit u) {
       return null;
     }
 
+    @Override
     public Iterator<Unit> iterator(Unit head, Unit tail) {
       return null;
     }
 
+    @Override
     public int size() {
       return 0;
     }
 
+    @Override
     public boolean isEmpty() {
       return false;
     }
 
+    @Override
     public boolean contains(Object o) {
       return false;
     }
 
+    @Override
     public long getModificationCount() {
       return 0;
     }
@@ -343,7 +356,7 @@ public class Body implements Serializable {
    * Creates a Body associated to the given method. Used by subclasses during initialization. Creation of a Body is triggered
    * by e.g. Jimple.getInstance().newBody(options).
    */
-  protected Body(SootMethod m) {
+  public Body(SootMethod m) {
     this.method = m;
   }
 
@@ -386,7 +399,7 @@ public class Body implements Serializable {
     {
       // Clone units in body's statement list
       for (Unit original : b.getUnits()) {
-        Unit copy = (Unit) original.clone();
+        Unit copy = original.clone();
 
         copy.addAllTagsOf(original);
 
@@ -544,7 +557,7 @@ public class Body implements Serializable {
   public Local getParameterLocal(int i) {
     for (Unit s : getUnits()) {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
-        JIdentityStmt is = (JIdentityStmt) s;
+        JIdentityStmt is = s;
         JParameterRef pr = (JParameterRef) is.getRightOp();
         if (pr.getIndex() == i) {
           return (Local) is.getLeftOp();
@@ -570,7 +583,7 @@ public class Body implements Serializable {
     // Parameters are zero-indexed, so the keeping of the index is safe
     for (Unit u : getUnits()) {
       if (u instanceof JIdentityStmt) {
-        JIdentityStmt is = ((JIdentityStmt) u);
+        JIdentityStmt is = (u);
         if (is.getRightOp() instanceof JParameterRef) {
           JParameterRef pr = (JParameterRef) is.getRightOp();
           retVal.add(pr.getIndex(), (Local) is.getLeftOp());
