@@ -22,9 +22,6 @@ package de.upb.soot.util;
  * #L%
  */
 
-import de.upb.soot.util.ArrayNumberer;
-import de.upb.soot.util.NumberedString;
-
 import java.util.HashMap;
 import java.util.Map;
 
