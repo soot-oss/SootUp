@@ -71,10 +71,13 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("serial")
 public class Body implements Serializable {
 
-
-
   // TODO: remove legacy inner class dummy stubs
-  class Unit extends JIdentityStmt {
+
+  /*
+   * ugly hack that changes the semantics of the instanceof checks, but didnt know how to circumvent the discontinued Unit
+   * class
+   */
+  public class Unit extends JIdentityStmt {
 
     public Unit(Value local, Value identityValue) {
       super(local, identityValue);
@@ -310,9 +313,6 @@ public class Body implements Serializable {
 
   /* End of legacy dummy classes */
 
-
-
-
   private static final Logger logger = LoggerFactory.getLogger(Body.class);
   /** The method associated with this Body. */
   protected transient SootMethod method = null;
@@ -324,13 +324,13 @@ public class Body implements Serializable {
   protected Chain<Trap> trapChain = new HashChain<Trap>();
 
   /** The chain of units for this Body. */
-  protected UnitPatchingChain unitChain = new UnitPatchingChain(new HashChain<Unit>());
+  protected Body.UnitPatchingChain unitChain = new UnitPatchingChain(new HashChain<Unit>());
 
   private static BodyValidator[] validators;
 
   /** Creates a deep copy of this Body. */
   @Override
-  public Body clone() {
+  public Object clone() {
 
     // TODO: needs implementation (abstract removed)
     return null;
@@ -625,7 +625,7 @@ public class Body implements Serializable {
    *         see PatchingChain
    * @see Unit
    */
-  public UnitPatchingChain getUnits() {
+  public Body.UnitPatchingChain getUnits() {
     return unitChain;
   }
 

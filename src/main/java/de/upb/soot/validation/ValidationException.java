@@ -26,4 +26,14 @@ public class ValidationException extends RuntimeException {
     // TODO: auto generated stub
 
   }
+
+  public ValidationException(Local l, String s, String s1) {
+    // TODO: auto generated stub
+
+  }
+
+  public ValidationException(SootMethod method, String s, String s1) {
+    // TODO: auto generated stub
+
+  }
 }

@@ -26,24 +26,32 @@ import de.upb.soot.core.Body;
 
 import java.util.List;
 
-public enum CheckVoidLocalesValidator implements BodyValidator {
+/**
+ * A basic validator that checks whether the length of the invoke statement's argument list matches the length of the target
+ * methods's parameter type list.
+ *
+ * @author Steven Arzt
+ */
+public enum InvokeArgumentValidator implements BodyValidator {
   INSTANCE;
 
-  public static CheckVoidLocalesValidator getInstance() {
+  public static InvokeArgumentValidator getInstance() {
     return INSTANCE;
   }
 
   @Override
-  public void validate(Body body, List<ValidationException> exception) {
+  public void validate(Body body, List<ValidationException> exceptions) {
     // TODO: check copied code from old soot
     /*
-     * for (Local l : body.getLocals()) { if (l.getType() instanceof VoidType) { exception.add(new ValidationException(l,
-     * "Local " + l + " in " + body.getMethod() + " defined with void type")); } }
+     * for (Unit u : body.getUnits()) { Stmt s = (Stmt) u; if (s.containsInvokeExpr()) { InvokeExpr iinvExpr =
+     * s.getInvokeExpr(); SootMethod callee = iinvExpr.getMethod(); if (callee != null && iinvExpr.getArgCount() !=
+     * callee.getParameterCount()) { exceptions.add(new ValidationException(s, "Invalid number of arguments")); } } }
      */
   }
 
   @Override
   public boolean isBasicValidator() {
-    return false;
+    return true;
   }
+
 }
