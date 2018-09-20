@@ -13,7 +13,7 @@ public class FileTypeTest {
 
     @Test
     public void testFileTypeJar() throws URISyntaxException {
-        URL url = getClass().getResource("Soot-4.0-SNAPSHOT.jar");
+        URL url = getClass().getResource("demo.jar");
         Path path = Paths.get(url.toURI());
         assertTrue(FileType.isFileType(path, FileType.JAR));
     }
@@ -40,6 +40,20 @@ public class FileTypeTest {
     }
 
     @Test
+    public void testFileTypeApkAsJar() throws URISyntaxException {
+        URL url = getClass().getResource("demo.apk");
+        Path path = Paths.get(url.toURI());
+        assertFalse(FileType.isFileType(path, FileType.JAR));
+    }
+
+    @Test
+    public void testFileTypeApkWithoutDex() throws URISyntaxException {
+        URL url = getClass().getResource("NoClassesDex.apk");
+        Path path = Paths.get(url.toURI());
+        assertFalse(FileType.isFileType(path, FileType.APK));
+    }
+
+    @Test
     public void testFileTypeZip() throws URISyntaxException {
         URL url = getClass().getResource("demo.zip");
         Path path = Paths.get(url.toURI());
@@ -51,5 +65,12 @@ public class FileTypeTest {
         URL url = getClass().getResource("PrimitiveLocals.jimple");
         Path path = Paths.get(url.toURI());
         assertTrue(FileType.isFileType(path, FileType.JIMPLE));
+    }
+
+    @Test
+    public void testFileTypeJimpleAsJava() throws URISyntaxException {
+        URL url = getClass().getResource("PrimitiveLocals.jimple");
+        Path path = Paths.get(url.toURI());
+        assertFalse(FileType.isFileType(path, FileType.JAVA));
     }
 }

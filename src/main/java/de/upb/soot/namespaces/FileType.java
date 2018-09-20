@@ -6,6 +6,7 @@ import org.apache.commons.io.filefilter.MagicNumberFileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
@@ -30,28 +31,33 @@ public enum FileType {
         File file = path.toFile();
         MagicNumberFileFilter fileFilter = new MagicNumberFileFilter(fileType.magic_bytes);
 
-        if (isArchive(path, fileType)) {
-            if (hasClassesDex(file)) {
-                return fileType == APK;
-            } else
+        // If magic number matches
+        if (fileFilter.accept(file)) {
+            if (isArchive(path)) {
+                if (hasClassesDex(file)) {
+                    return fileType == APK;
+                } else if(fileType == APK && !hasClassesDex(file)) {
+                    return false;
+                } else
                 return fileType.extension.equals(FilenameUtils.getExtension(pth));
-        }
-
-        // If magic byte of file matches
-        else if (fileFilter.accept(file)) {
+            }
             return fileType.extension.equals(FilenameUtils.getExtension(pth));
         }
 
+        // Checking extension in case magic number doesn't match
         return fileType.extension.equals(FilenameUtils.getExtension(pth));
     }
 
     // Checks if the file is an archive
-    public static boolean isArchive(Path path, FileType fileType) {
+    public static boolean isArchive(Path path) {
         // Get the extension of file
         String str_path = path.toString().toLowerCase();
         String fileExt = FilenameUtils.getExtension(str_path);
         for (FileType f : ARCHIVE_TYPES) {
-            return f == fileType && fileExt.equals(fileType.extension);
+            if(fileExt.equals(f.toString().toLowerCase()))
+                return true;
+            else
+                continue;
         }
         return false;
     }
