@@ -32,14 +32,18 @@ import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractStmt implements Stmt {
+  private Position position;
+
   /** Returns a deep clone of this object. */
   @Override
-  public abstract Object clone();
+  public abstract AbstractStmt clone();
 
   /**
    * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically updated as the structure
@@ -192,4 +196,12 @@ public abstract class AbstractStmt implements Stmt {
     throw new RuntimeException("getFieldRefBox() called with no FieldRef present!");
   }
 
+  @Override
+  public void setPosition(Position position) {
+    this.position = position;
+  }
+
+  public Position getPosition() {
+    return position;
+  }
 }

@@ -43,7 +43,7 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   }
 
   @Override
-  public Object clone() {
+  public JIdentityStmt clone() {
     return new JIdentityStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()));
   }
 

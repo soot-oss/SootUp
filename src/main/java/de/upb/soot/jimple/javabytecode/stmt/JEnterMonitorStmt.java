@@ -43,7 +43,7 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public Object clone() {
+  public JEnterMonitorStmt clone() {
     return new JEnterMonitorStmt(Jimple.cloneIfNecessary(getOp()));
   }
 

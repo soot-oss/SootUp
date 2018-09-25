@@ -35,7 +35,7 @@ public class JNopStmt extends AbstractStmt {
   }
 
   @Override
-  public Object clone() {
+  public JNopStmt clone() {
     return new JNopStmt();
   }
 

@@ -51,7 +51,7 @@ public class JBreakpointStmt extends AbstractStmt {
   }
 
   @Override
-  public Object clone() {
+  public JBreakpointStmt clone() {
     return new JBreakpointStmt();
   }
 

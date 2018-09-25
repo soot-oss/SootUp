@@ -47,7 +47,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     // CheckLevel returns without doing anything because we can be not 'done' resolving
     method.declaringClass().checkLevelIgnoreResolving(SootClass.HIERARCHY);
     // now check if the class is valid
-    if (!method.declaringClass().isInterface() && !method.declaringClass().isPhantom()) {
+    if (!method.declaringClass().isInterface() && !method.declaringClass().isPhantomClass()) {
       throw new RuntimeException("Trying to create interface invoke expression for non-interface type: "
           + method.declaringClass() + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
     }

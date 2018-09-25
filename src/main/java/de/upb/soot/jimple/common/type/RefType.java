@@ -25,11 +25,11 @@
 
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.Scene;
 import de.upb.soot.SootResolver;
 import de.upb.soot.View;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.views.Scene;
 
 import java.util.ArrayDeque;
 
@@ -155,7 +155,6 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
   }
 
   /** Returns the least common superclass of this type and other. */
-  @Override
   public Type merge(Type other, Scene cm) {
     if (other.equals(UnknownType.getInstance()) || this.equals(other)) {
       return this;

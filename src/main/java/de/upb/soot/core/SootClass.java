@@ -23,14 +23,10 @@ package de.upb.soot.core;
  */
 
 import de.upb.soot.Options;
-import de.upb.soot.Scene;
 import de.upb.soot.jimple.basic.Numberable;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.util.Chain;
-import de.upb.soot.util.EmptyChain;
-import de.upb.soot.util.HashChain;
 import de.upb.soot.util.NumberedString;
 import de.upb.soot.util.SmallNumberedMap;
 import de.upb.soot.validation.ClassFlagsValidator;
@@ -38,10 +34,12 @@ import de.upb.soot.validation.ClassValidator;
 import de.upb.soot.validation.MethodDeclarationValidator;
 import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
+import de.upb.soot.views.Scene;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -94,18 +92,18 @@ public class SootClass implements Numberable {
   private static final Logger logger = LoggerFactory.getLogger(SootClass.class);
   protected String name, shortName, fixedShortName, packageName, fixedPackageName;
   protected int modifiers;
-  protected Chain<SootField> fields;
+  protected LinkedHashSet<SootField> fields;
   protected SmallNumberedMap<SootMethod> subSigToMethods;
   // methodList is just for keeping the methods in a consistent order. It
   // needs to be kept consistent with subSigToMethods.
   protected List<SootMethod> methodList;
-  protected Chain<SootClass> interfaces;
+  protected LinkedHashSet<SootClass> interfaces;
 
   protected boolean isInScene;
   protected SootClass superClass;
   protected SootClass outerClass;
 
-  protected boolean isPhantom;
+  protected ClassType classType;
 
   public final static String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
@@ -242,9 +240,9 @@ public class SootClass implements Numberable {
    */
 
   @SuppressWarnings("unchecked")
-  public Chain<SootField> getFields() {
+  public LinkedHashSet<SootField> getFields() {
     checkLevel(SIGNATURES);
-    return fields == null ? EmptyChain.getInstance() : fields;
+    return fields == null ? new LinkedHashSet<>() : fields;
   }
 
   /*
@@ -266,7 +264,7 @@ public class SootClass implements Numberable {
     }
 
     if (fields == null) {
-      fields = new HashChain<SootField>();
+      fields = new LinkedHashSet<SootField>();
     }
 
     fields.add(f);
@@ -310,7 +308,7 @@ public class SootClass implements Numberable {
     if (fields == null) {
       return null;
     }
-    for (SootField field : fields.getElementsUnsorted()) {
+    for (SootField field : fields) {
       if (field.getName().equals(name) && field.getType().equals(type)) {
         return field;
       }
@@ -341,7 +339,7 @@ public class SootClass implements Numberable {
     }
 
     SootField foundField = null;
-    for (SootField field : fields.getElementsUnsorted()) {
+    for (SootField field : fields) {
       if (field.getName().equals(name)) {
         if (foundField == null) {
           foundField = field;
@@ -372,7 +370,7 @@ public class SootClass implements Numberable {
     if (fields == null) {
       return null;
     }
-    for (SootField field : fields.getElementsUnsorted()) {
+    for (SootField field : fields) {
       if (field.getSubSignature().equals(subsignature)) {
         return field;
       }
@@ -771,7 +769,7 @@ public class SootClass implements Numberable {
     }
 
     if (fields == null) {
-      fields = new HashChain<>();
+      fields = new LinkedHashSet<>();
     }
 
     fields.add(f);
@@ -830,9 +828,9 @@ public class SootClass implements Numberable {
    */
 
   @SuppressWarnings("unchecked")
-  public Chain<SootClass> getInterfaces() {
+  public LinkedHashSet<SootClass> getInterfaces() {
     checkLevel(HIERARCHY);
-    return interfaces == null ? EmptyChain.getInstance() : interfaces;
+    return interfaces == null ? new LinkedHashSet<>() : interfaces;
   }
 
   /**
@@ -863,7 +861,7 @@ public class SootClass implements Numberable {
       throw new RuntimeException("duplicate interface: " + interfaceClass.getName());
     }
     if (interfaces == null) {
-      interfaces = new HashChain<>();
+      interfaces = new LinkedHashSet<>();
     }
     interfaces.add(interfaceClass);
   }
@@ -898,7 +896,7 @@ public class SootClass implements Numberable {
 
   public SootClass getSuperclass() {
     checkLevel(HIERARCHY);
-    if (superClass == null && !isPhantom()) {
+    if (superClass == null && !isPhantomClass()) {
       throw new RuntimeException("no superclass for " + getName());
     } else {
       return superClass;
@@ -1140,49 +1138,30 @@ public class SootClass implements Numberable {
   }
 
   /**
-   * Convenience method returning true if this class is an application class.
+   * Returns true if this class is an application class.
    *
-   * @see Scene#getApplicationClasses()
+   * 
    */
   public boolean isApplicationClass() {
-    return Scene.getInstance().getApplicationClasses().contains(this);
+    return classType.equals(ClassType.Application);
   }
 
   /** Makes this class an application class. */
   public void setApplicationClass() {
-    if (isApplicationClass()) {
-      return;
-    }
-    Chain<SootClass> c = Scene.getInstance().getContainingChain(this);
-    if (c != null) {
-      c.remove(this);
-    }
-    Scene.getInstance().getApplicationClasses().add(this);
-
-    isPhantom = false;
+    this.classType = classType.Application;
   }
 
   /**
-   * Convenience method returning true if this class is a library class.
+   * Returns true if this class is a library class.
    *
-   * @see Scene#getLibraryClasses()
    */
   public boolean isLibraryClass() {
-    return Scene.getInstance().getLibraryClasses().contains(this);
+    return classType.equals(ClassType.Library);
   }
 
   /** Makes this class a library class. */
   public void setLibraryClass() {
-    if (isLibraryClass()) {
-      return;
-    }
-    Chain<SootClass> c = Scene.getInstance().getContainingChain(this);
-    if (c != null) {
-      c.remove(this);
-    }
-    Scene.getInstance().getLibraryClasses().add(this);
-
-    isPhantom = false;
+    this.classType = classType.Library;
   }
 
   /**
@@ -1201,27 +1180,17 @@ public class SootClass implements Numberable {
   }
 
   /**
-   * Convenience method returning true if this class is a phantom class.
+   * Returns true if this class is a phantom class.
    *
-   * @see Scene#getPhantomClasses()
+   * 
    */
   public boolean isPhantomClass() {
-    return Scene.getInstance().getPhantomClasses().contains(this);
+    return classType.equals(ClassType.Phantom);
   }
 
   /** Makes this class a phantom class. */
   public void setPhantomClass() {
-    Chain<SootClass> c = Scene.getInstance().getContainingChain(this);
-    if (c != null) {
-      c.remove(this);
-    }
-    Scene.getInstance().getPhantomClasses().add(this);
-    isPhantom = true;
-  }
-
-  /** Convenience method returning true if this class is phantom. */
-  public boolean isPhantom() {
-    return isPhantom;
+    this.classType = ClassType.Phantom;
   }
 
   /**

@@ -27,6 +27,8 @@ import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.cast.loader.AstClass;
 import com.ibm.wala.cast.loader.AstField;
 import com.ibm.wala.cast.loader.AstMethod;
+import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import com.ibm.wala.cfg.AbstractCFG;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMethod;
@@ -51,12 +53,12 @@ import com.ibm.wala.ssa.SSASwitchInstruction;
 import com.ibm.wala.ssa.SSAThrowInstruction;
 import com.ibm.wala.types.TypeName;
 import com.ibm.wala.types.TypeReference;
+import com.ibm.wala.util.intset.FixedSizeBitVector;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 /**
  * Converter which converts WALA IR in non-SSA form to jimple.
  * 
@@ -105,13 +107,10 @@ public class WalaIRToJimpleConverter {
       paraTypes.add(paraType);
     }
     Type returnType = convertType(walaMethod.getReturnType());
-
     int modifier = 0;
-
     List<SootClass> thrownExceptions = Collections.emptyList();
-
+    // TODO check if all arguments are set up properly.
     SootMethod sootMethod = new SootMethod(name, paraTypes, returnType, modifier, thrownExceptions);
-
     // create and set active body of the SootMethod
     Body body = createBody(sootMethod, walaMethod);
     sootMethod.setActiveBody(body);
@@ -161,25 +160,43 @@ public class WalaIRToJimpleConverter {
   }
 
   private Body createBody(SootMethod sootMethod, AstMethod walaMethod) {
+
     Body body = new Body(sootMethod);
+    // set position for body
+    DebuggingInformation debugInfo = walaMethod.debugInfo();
+    Position bodyPos = debugInfo.getCodeBodyPosition();
+    body.setPosition(bodyPos);
+
     // Look AsmMethodSource.getBody
-    // TODO 1. convert locals
+    // TODO 1. convert locals, see AsmMethodSource.emitLocals();
+    for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
+      TypeReference t = walaMethod.getParameterType(i);
+      Type type = convertType(t);
+
+    }
     // how to get all locals?
     // TODO 2. convert traps
 
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
 
+    // get exceptions which are not caught
+    FixedSizeBitVector blocks = cfg.getExceptionalToExit();
     // convert all wala instructions to jimple statements
     SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
     for (SSAInstruction inst : insts) {
       Stmt stmt = convertInstruction(inst);
+      // set position for each statement
+      Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
+      stmt.setPosition(stmtPos);
       body.addStmt(stmt);
     }
 
     return body;
   }
 
+
   public Stmt convertInstruction(SSAInstruction walaInst) {
+
     // TODO what are the different types of SSAInstructions
     if (walaInst instanceof SSAConditionalBranchInstruction) {
 

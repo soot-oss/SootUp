@@ -24,9 +24,9 @@ package de.upb.soot.core;
  */
 
 import de.upb.soot.Options;
-import de.upb.soot.Scene;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.util.NumberedString;
+import de.upb.soot.views.Scene;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -202,7 +202,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
       if (!Scene.getInstance().allowsPhantomRefs()) {
         throw new RuntimeException("Phantom refs not allowed");
       }
-      if (!Options.getInstance().allow_phantom_elms() && declaringClass != null && !declaringClass.isPhantom()) {
+      if (!Options.getInstance().allow_phantom_elms() && declaringClass != null && !declaringClass.isPhantomClass()) {
         throw new RuntimeException("Declaring class would have to be phantom");
       }
     }
@@ -336,7 +336,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
    * Sets the active body for this method.
    */
   public void setActiveBody(Body body) {
-    if ((declaringClass != null) && declaringClass.isPhantom()) {
+    if ((declaringClass != null) && declaringClass.isPhantomClass()) {
       throw new RuntimeException("cannot set active body for phantom class! " + this);
     }
 

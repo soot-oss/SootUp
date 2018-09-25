@@ -59,7 +59,7 @@ public class JIfStmt extends AbstractStmt {
   }
 
   @Override
-  public Object clone() {
+  public JIfStmt clone() {
     return new JIfStmt(Jimple.cloneIfNecessary(getCondition()), getTarget());
   }
 

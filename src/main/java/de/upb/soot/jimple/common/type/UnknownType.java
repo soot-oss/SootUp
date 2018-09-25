@@ -25,9 +25,9 @@
 
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.Scene;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.views.Scene;
 
 /**
  * Soot representation used for not-yet-typed objects. Implemented as a singleton.

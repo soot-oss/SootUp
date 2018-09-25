@@ -51,7 +51,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   }
 
   @Override
-  public Object clone() {
+  public JTableSwitchStmt clone() {
     return new JTableSwitchStmt(Jimple.cloneIfNecessary(getKey()), lowIndex, highIndex, getTargets(), getDefaultTarget());
   }
 

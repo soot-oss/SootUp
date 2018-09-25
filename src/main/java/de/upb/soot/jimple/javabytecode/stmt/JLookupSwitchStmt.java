@@ -56,7 +56,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   }
 
   @Override
-  public Object clone() {
+  public JLookupSwitchStmt clone() {
     int lookupValueCount = lookupValues.size();
     List<IntConstant> clonedLookupValues = new ArrayList<IntConstant>(lookupValueCount);
 

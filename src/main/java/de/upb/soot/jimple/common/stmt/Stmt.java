@@ -8,8 +8,12 @@ import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IAcceptor;
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+
 import java.io.Serializable;
 import java.util.List;
+
+import scala.Unit;
 
 public interface Stmt extends IAcceptor, Serializable {
 
@@ -41,7 +45,7 @@ public interface Stmt extends IAcceptor, Serializable {
    */
   public List<ValueBox> getUseAndDefBoxes();
 
-  public Object clone();
+  public Stmt clone();
 
   /**
    * Returns true if execution after this statement may continue at the following statement. GotoStmt will return false but
@@ -83,4 +87,6 @@ public interface Stmt extends IAcceptor, Serializable {
   public FieldRef getFieldRef();
 
   public ValueBox getFieldRefBox();
+
+  public void setPosition(Position position);
 }

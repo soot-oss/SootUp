@@ -25,11 +25,11 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.Scene;
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IJimpleValueVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.views.Scene;
 
 import java.util.Collections;
 import java.util.List;

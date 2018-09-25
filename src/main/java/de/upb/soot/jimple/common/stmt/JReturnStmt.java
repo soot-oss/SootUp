@@ -42,7 +42,7 @@ public class JReturnStmt extends AbstractOpStmt {
   }
 
   @Override
-  public Object clone() {
+  public JReturnStmt clone() {
     return new JReturnStmt(Jimple.cloneIfNecessary(getOp()));
   }
 

@@ -50,7 +50,7 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public Object clone() {
+  public JExitMonitorStmt clone() {
     return new JExitMonitorStmt(Jimple.cloneIfNecessary(getOp()));
   }
 

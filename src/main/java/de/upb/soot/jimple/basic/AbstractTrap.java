@@ -1,8 +1,8 @@
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.Scene;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.views.Scene;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

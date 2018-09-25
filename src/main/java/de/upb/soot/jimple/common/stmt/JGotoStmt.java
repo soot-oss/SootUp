@@ -48,7 +48,7 @@ public class JGotoStmt extends AbstractStmt {
   }
 
   @Override
-  public Object clone() {
+  public JGotoStmt clone() {
     return new JGotoStmt(getTarget());
   }
 

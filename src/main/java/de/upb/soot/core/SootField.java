@@ -24,9 +24,9 @@ package de.upb.soot.core;
  */
 
 import de.upb.soot.Options;
-import de.upb.soot.Scene;
 import de.upb.soot.jimple.common.type.RefLikeType;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.views.Scene;
 
 /**
  * Soot's counterpart of the source language's field concept. Soot representation of a Java field. Can be declared to belong
@@ -133,7 +133,7 @@ public class SootField /* implements ClassMember, SparkField, Numberable, Paddle
       if (!Scene.getInstance().allowsPhantomRefs()) {
         throw new RuntimeException("Phantom refs not allowed");
       }
-      if (!Options.getInstance().allow_phantom_elms() && declaringClass != null && !declaringClass.isPhantom()) {
+      if (!Options.getInstance().allow_phantom_elms() && declaringClass != null && !declaringClass.isPhantomClass()) {
         throw new RuntimeException("Declaring class would have to be phantom");
       }
     }
