@@ -1,5 +1,7 @@
 package de.upb.soot.namespaces;
 
+import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ModuleSignatureFactory;
@@ -24,15 +26,15 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Discovers all modules in a given module path. For automatic modules corresponding names are generated. Handles exploded
- * modules, modular jars, and automatic modules as stated in the official documentation:
+ * Discovers all modules in a given module path. For automatic modules names are generated. Supports exploded modules,
+ * modular jars, and automatic modules as defined in the official documentation:
  * 
  * @see <a
  *      href=http://docs.oracle.com/javase/9/docs/api/java/lang/module/ModuleFinder.html#of-java.nio.file.Path...->ModuleFinder</a>
  *
  * @author Andreas Dann on 28.06.18
  */
-class ModuleFinder {
+public class ModuleFinder {
   private IClassProvider classProvider;
   // associate a module name with the namespace, that represents the module
   private Map<String, AbstractNamespace> moduleNamespace = new HashMap<>();
@@ -46,7 +48,6 @@ class ModuleFinder {
     this.classProvider = classProvider;
     this.modulePathEntries = JavaClassPathNamespace.explode(modulePath).collect(Collectors.toList());
     // add the namespace for the jrt virtual file system
-    // FIXME: check if it makes sense to make this static
     jrtFileSystemNamespace = new JrtFileSystemNamespace(classProvider);
 
     // discover all system's modules
@@ -135,7 +136,7 @@ class ModuleFinder {
           }
 
         }
-      } catch (IOException e) {
+      } catch (IOException | ClassResolvingExcepetion e) {
         e.printStackTrace();
       }
 
@@ -143,7 +144,7 @@ class ModuleFinder {
 
   }
 
-  private void buildModuleForExplodedModule(Path dir) {
+  private void buildModuleForExplodedModule(Path dir) throws ClassResolvingExcepetion {
     // create the namespace for this module dir
     PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(this.classProvider, dir);
 
@@ -152,17 +153,11 @@ class ModuleFinder {
       return;
     }
     // get the module's name out of this module-info file
-    Optional<ClassSource> moduleInfoClass = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
-    if (moduleInfoClass.isPresent()) {
-      ClassSource moduleInfoSource = moduleInfoClass.get();
+    Optional<ClassSource> moduleInfoClassSource = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
+    if (moduleInfoClassSource.isPresent()) {
+      ClassSource moduleInfoSource = moduleInfoClassSource.get();
       // get the module name
-      // FIXME: how we can get the name of the module,
-      // We have to query the view, and thus the actor?
-      // can we derive it from the jar file or the folder name
-      // imho: we cannot be 100% sure, when deriving the name
-      String moduleName = null;
-      // = new SootModuleInfo(moduleInfoSource, name, access, version).getName();
-
+      String moduleName = this.getModuleName(moduleInfoSource);
       this.moduleNamespace.put(moduleName, namespace);
 
     }
@@ -191,9 +186,7 @@ class ModuleFinder {
         if (moduleInfoClass.isPresent()) {
           ClassSource moduleInfoSource = moduleInfoClass.get();
           // get the module name
-          // FIXME: how we can get the name of the module,
-          // We have to query the view, and thus the actor?
-          String moduleName = null;
+          String moduleName = getModuleName(moduleInfoSource);
           // = new SootModuleInfo(moduleInfoSource, name, access, version).getName();
 
           this.moduleNamespace.put(moduleName, namespace);
@@ -211,10 +204,20 @@ class ModuleFinder {
 
       }
 
-    } catch (IOException e) {
+    } catch (IOException | ClassResolvingExcepetion e) {
       e.printStackTrace();
     }
 
+  }
+
+  private String getModuleName(ClassSource moduleInfoSource) throws ClassResolvingExcepetion {
+    Optional<SootClass> moduleInfoClass = this.classProvider.resolve(moduleInfoSource);
+    if (!moduleInfoClass.isPresent() || !(moduleInfoClass.get() instanceof SootModuleInfo)) {
+      throw new ClassResolvingExcepetion("Class is named module-info but does not resolve to SootModuleInfo");
+    }
+
+    String moduleName = ((SootModuleInfo) moduleInfoClass.get()).getName();
+    return moduleName;
   }
 
   /**

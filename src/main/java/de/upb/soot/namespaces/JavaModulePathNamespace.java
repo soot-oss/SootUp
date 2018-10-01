@@ -52,9 +52,6 @@ public class JavaModulePathNamespace extends AbstractNamespace {
 
   }
 
-
-
-  // TODO: Do we want class sources for all entries, or all classes under a certian module?
   @Override
   public Collection<ClassSource> getClassSources(SignatureFactory factory) {
     Preconditions.checkArgument(factory instanceof ModuleSignatureFactory, "Factory must be a ModuleSignatureFactory");
@@ -67,7 +64,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
 
       if (!(ns instanceof JrtFileSystemNamespace)) {
         /*
-         * we need a wrapper to create correct singatures for the found classes, all other ignore modules by default, or have
+         * we need a wrapper to create correct signatures for the found classes, all other ignore modules by default, or have
          * no clue about modules.
          */
         signatureFactoryWrapper = new SignatureFactoryWrapper(factory, module);
