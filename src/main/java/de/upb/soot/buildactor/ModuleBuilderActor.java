@@ -15,8 +15,11 @@ import org.objectweb.asm.ModuleVisitor;
 import org.objectweb.asm.Opcodes;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.URI;
+import java.nio.file.*;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -33,10 +36,7 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
 
   @Override
   public Receive createReceive() {
-    return receiveBuilder()
-            .match(ReifyMessage.class, this::reify)
-            .match(ResolveMessage.class, this::resolve)
-            .build();
+    return receiveBuilder().match(ReifyMessage.class, this::reify).match(ResolveMessage.class, this::resolve).build();
 
   }
 
@@ -66,18 +66,31 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
     SootModuleBuilder scb = new SootModuleBuilder(classSource, visitor);
 
     try {
-      ClassReader clsr = new ClassReader(Files.newInputStream(classSource.getSourcePath()));
 
-      clsr.accept(scb, ClassReader.SKIP_FRAMES);
+      URI uri = classSource.getSourcePath().toUri();
+      Map<String, String> env = new HashMap<>();
+      env.put("create", "true");
+      //a zip file system needs to be reopenend
+      //otherwise it crashes
+      //http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
+      //maybe it makes sense to do it in the ClassSource
+      try (FileSystem zipfs = FileSystems.newFileSystem(uri, env)) {
+        Path myFile = Paths.get(uri);
+
+        ClassReader clsr = new ClassReader(Files.newInputStream(myFile));
+
+        clsr.accept(scb, ClassReader.SKIP_FRAMES);
+      }
+
     } catch (IOException e) {
       e.printStackTrace();
     }
 
-    return null;
+    return scb.result;
   }
 
-  public static Props props(ClassSource classSource) {
-    return Props.create(ModuleBuilderActor.class, classSource);
+  public static Props props(Scene scene, ClassSource classSource) {
+    return Props.create(ModuleBuilderActor.class, scene, classSource);
   }
 
   public static class SootModuleBuilder extends ClassVisitor {
@@ -96,7 +109,7 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
     public ModuleVisitor visitModule(String name, int access, String version) {
       result = new SootModuleInfo(source, name, access, version);
 
-     return visitor;
+      return visitor;
     }
   }
 

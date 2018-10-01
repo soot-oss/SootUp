@@ -21,6 +21,8 @@ public class SootModuleInfo extends SootClass {
 
   public SootModuleInfo(ClassSource cs, String name, int access, String version) {
     super(cs);
+    this.name = name;
+    //FIXME: add code
   }
 
   public String getName() {

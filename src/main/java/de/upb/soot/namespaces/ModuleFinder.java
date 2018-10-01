@@ -46,8 +46,11 @@ public class ModuleFinder {
 
   /**
    * Helper Class to discover modules in a given module path.
-   * @param classProvider the class provider for resolving found classes
-   * @param modulePath the module path
+   * 
+   * @param classProvider
+   *          the class provider for resolving found classes
+   * @param modulePath
+   *          the module path
    */
   public ModuleFinder(IClassProvider classProvider, String modulePath) {
     this.classProvider = classProvider;
@@ -64,7 +67,9 @@ public class ModuleFinder {
 
   /**
    * Returns the namespace that manages the module.
-   * @param moduleName the module name
+   * 
+   * @param moduleName
+   *          the module name
    * @return the namespace that resolves classes contained in the module
    */
   public AbstractNamespace discoverModule(String moduleName) {
@@ -182,7 +187,7 @@ public class ModuleFinder {
    */
   private void buildModuleForJar(Path jar) {
     PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(this.classProvider, jar);
-
+    Optional<ClassSource> moduleInfoFile = null;
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
       Path mi = archiveRoot
@@ -191,31 +196,37 @@ public class ModuleFinder {
 
         // we have a modular jar
         // get the module name
-
-        Optional<ClassSource> moduleInfoClass = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
-        if (moduleInfoClass.isPresent()) {
-          ClassSource moduleInfoSource = moduleInfoClass.get();
-          // get the module name
-          String moduleName = getModuleName(moduleInfoSource);
-          // = new SootModuleInfo(moduleInfoSource, name, access, version).getName();
-
-          this.moduleNamespace.put(moduleName, namespace);
-
-        }
-
-      } else {
-        // no module-info treat as automatic module
-        // create module name from the jar file
-        String filename = jar.getFileName().toString();
-
-        // make module base on the filename of the jar
-        String moduleName = createModuleNameForAutomaticModule(filename);
-        this.moduleNamespace.put(moduleName, namespace);
-
+        moduleInfoFile = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
       }
-
-    } catch (IOException | ClassResolvingExcepetion e) {
+    } catch (IOException e) {
       e.printStackTrace();
+    }
+    if (moduleInfoFile.isPresent()) {
+      ClassSource moduleInfoSource = moduleInfoFile.get();
+      // get the module name
+      String moduleName = null;
+      try {
+        moduleName = getModuleName(moduleInfoSource);
+      } catch (ClassResolvingExcepetion classResolvingExcepetion) {
+        classResolvingExcepetion.printStackTrace();
+      }
+      // = new SootModuleInfo(moduleInfoSource, name, access, version).getName();
+
+      this.moduleNamespace.put(moduleName, namespace);
+
+    }
+
+    else
+
+    {
+      // no module-info treat as automatic module
+      // create module name from the jar file
+      String filename = jar.getFileName().toString();
+
+      // make module base on the filename of the jar
+      String moduleName = createModuleNameForAutomaticModule(filename);
+      this.moduleNamespace.put(moduleName, namespace);
+
     }
 
   }

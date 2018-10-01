@@ -56,7 +56,7 @@ public class Scene {
 
   private ActorRef createActor(ClassSource source) {
     if (source.getClassSignature().isModuleInfo()) {
-      return system.actorOf(ModuleBuilderActor.props(source));
+      return system.actorOf(ModuleBuilderActor.props(this,source));
     }
     return system.actorOf(ClassBuilderActor.props(source));
   }
