@@ -24,7 +24,7 @@ public class JrtFileSystemNamespaceTest extends AbstractNamespaceTest {
   }
 
   @Test
-  // todo findout why this test is slow, extremly > 1 sec
+  // FIXME findout why this test is slow > 1 sec
   public void getClassSourceModule() {
     JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
     final ClassSignature sig = new ModuleSignatureFactory() {
