@@ -31,7 +31,8 @@ public class ClassSource {
    *          be handled by this {@link IClassProvider}. Implementations might double check this if wanted.
    * @param classSignature
    *          the signature that has been used to resolve this class
-   * @return A not yet resolved {@link ClassSource}, backed up by the given file
+   *
+   *          A not yet resolved {@link ClassSource}, backed up by the given file
    */
   public ClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature) {
     checkNotNull(srcNamespace);
@@ -52,6 +53,5 @@ public class ClassSource {
   public Path getSourcePath() {
     return sourcePath;
   }
-
 
 }

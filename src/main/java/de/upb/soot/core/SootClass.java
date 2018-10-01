@@ -11,7 +11,7 @@ import de.upb.soot.namespaces.classprovider.ClassSource;
 
 public class SootClass {
 
-  static public class Resolve {
+  public static class Resolve {
     public final int level;
 
     public Resolve(int level) {

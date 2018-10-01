@@ -28,8 +28,9 @@
 package de.upb.soot.core;
 
 /**
- * A class that provides static methods and constants to represent and work with with Java modifiers (ie public, final,...) Represents Java modifiers
- * as int constants that can be packed and combined by bitwise operations and methods to query these.
+ * A class that provides static methods and constants to represent and work with with Java modifiers (ie public, final,...)
+ * Represents Java modifiers as int constants that can be packed and combined by bitwise operations and methods to query
+ * these.
  * 
  */
 public class Modifier {
@@ -53,7 +54,6 @@ public class Modifier {
   public static final int SYNTHETIC = 0x1000;
   public static final int CONSTRUCTOR = 0x10000;
   public static final int DECLARED_SYNCHRONIZED = 0x20000;
-  // add
 
   // modifier for java 9 modules
   public static final int OPEN = 0x0020;

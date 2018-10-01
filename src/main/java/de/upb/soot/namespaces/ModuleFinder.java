@@ -44,6 +44,11 @@ public class ModuleFinder {
 
   private JrtFileSystemNamespace jrtFileSystemNamespace;
 
+  /**
+   * Helper Class to discover modules in a given module path.
+   * @param classProvider the class provider for resolving found classes
+   * @param modulePath the module path
+   */
   public ModuleFinder(IClassProvider classProvider, String modulePath) {
     this.classProvider = classProvider;
     this.modulePathEntries = JavaClassPathNamespace.explode(modulePath).collect(Collectors.toList());
@@ -57,6 +62,11 @@ public class ModuleFinder {
     // the rest of the modules are discovered on demand...
   }
 
+  /**
+   * Returns the namespace that manages the module.
+   * @param moduleName the module name
+   * @return the namespace that resolves classes contained in the module
+   */
   public AbstractNamespace discoverModule(String moduleName) {
     AbstractNamespace namespaceForModule = moduleNamespace.get(moduleName);
     if (namespaceForModule != null) {
