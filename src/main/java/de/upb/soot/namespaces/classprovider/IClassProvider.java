@@ -1,11 +1,13 @@
 package de.upb.soot.namespaces.classprovider;
 
+import de.upb.soot.Options;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.ClassSignature;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * Responsible for creating {@link ClassSource}es based on the handled file type (.class, .jimple, .java, .dex, etc).
@@ -33,6 +35,6 @@ public interface IClassProvider {
    */
   FileType getHandledFileType();
 
-  SootClass resolve(ClassSource classSource);
+  Optional<SootClass> resolve(ClassSource classSource);
 
 }
