@@ -31,17 +31,22 @@ public class Scene {
     Optional<ClassSource> source = pollNamespaces(signature).getClassSource(signature);
     // MB: consider using source.flatMap(#methodRef) here. methodRef can than point to the actual logic for class resolution
     if (source.isPresent()) {
-
-      ActorRef cb = createActor(source.get());
-      Timeout timeout = new Timeout(Duration.create(5, "seconds"));
-      Future<Object> cbFuture = Patterns.ask(cb, new ReifyMessage(), timeout);
-      try {
-        result = Optional.of((SootClass) Await.result(cbFuture, timeout.duration()));
-      } catch (Exception e) {
-        // TODO: Do something meaningful here
-      }
+      result = resolveClass(source.get());
     }
 
+    return result;
+  }
+
+  public Optional<SootClass> resolveClass(ClassSource classSource) {
+    Optional<SootClass> result = Optional.empty();
+    ActorRef cb = createActor(classSource);
+    Timeout timeout = new Timeout(Duration.create(5, "seconds"));
+    Future<Object> cbFuture = Patterns.ask(cb, new ReifyMessage(), timeout);
+    try {
+      result = Optional.of((SootClass) Await.result(cbFuture, timeout.duration()));
+    } catch (Exception e) {
+      // TODO: Do something meaningful here
+    }
     return result;
   }
 
