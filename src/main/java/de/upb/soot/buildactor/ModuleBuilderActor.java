@@ -64,22 +64,30 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
 
   private SootModuleInfo getSootModule(ClassSource classSource, ModuleVisitor visitor) {
     SootModuleBuilder scb = new SootModuleBuilder(classSource, visitor);
+    URI uri = classSource.getSourcePath().toUri();
 
     try {
+      // FIXME: mbenz maybe you have a nice idea here
+      if (classSource.getSourcePath().getFileSystem().isOpen()) {
+        Path sourceFile = Paths.get(uri);
 
-      URI uri = classSource.getSourcePath().toUri();
-      Map<String, String> env = new HashMap<>();
-      env.put("create", "true");
-      //a zip file system needs to be reopenend
-      //otherwise it crashes
-      //http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
-      //maybe it makes sense to do it in the ClassSource
-      try (FileSystem zipfs = FileSystems.newFileSystem(uri, env)) {
-        Path myFile = Paths.get(uri);
-
-        ClassReader clsr = new ClassReader(Files.newInputStream(myFile));
+        ClassReader clsr = new ClassReader(Files.newInputStream(sourceFile));
 
         clsr.accept(scb, ClassReader.SKIP_FRAMES);
+      } else {
+        Map<String, String> env = new HashMap<>();
+        env.put("create", "false");
+        // a zip file system needs to be reopenend
+        // otherwise it crashes
+        // http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
+        // maybe it makes sense to do it in the ClassSource
+        try (FileSystem zipfs = FileSystems.newFileSystem(uri, env)) {
+          Path sourceFile = Paths.get(uri);
+
+          ClassReader clsr = new ClassReader(Files.newInputStream(sourceFile));
+
+          clsr.accept(scb, ClassReader.SKIP_FRAMES);
+        }
       }
 
     } catch (IOException e) {
