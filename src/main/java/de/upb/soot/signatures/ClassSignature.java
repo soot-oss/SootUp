@@ -78,6 +78,6 @@ public class ClassSignature extends TypeSignature {
   }
 
   public boolean isModuleInfo() {
-    return className.equals("module-info");
+    return this.className.equals(ModuleSignatureFactory.MODULE_INFO_CLASS.className);
   }
 }

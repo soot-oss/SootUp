@@ -151,7 +151,7 @@ public class ModuleFinder {
           }
 
         }
-      } catch (IOException | ClassResolvingExcepetion e) {
+      } catch (IOException | ClassResolvingException e) {
         e.printStackTrace();
       }
 
@@ -159,7 +159,7 @@ public class ModuleFinder {
 
   }
 
-  private void buildModuleForExplodedModule(Path dir) throws ClassResolvingExcepetion {
+  private void buildModuleForExplodedModule(Path dir) throws ClassResolvingException {
     // create the namespace for this module dir
     PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(this.classProvider, dir);
 
@@ -207,8 +207,8 @@ public class ModuleFinder {
       String moduleName = null;
       try {
         moduleName = getModuleName(moduleInfoSource);
-      } catch (ClassResolvingExcepetion classResolvingExcepetion) {
-        classResolvingExcepetion.printStackTrace();
+      } catch (ClassResolvingException classResolvingException) {
+        classResolvingException.printStackTrace();
       }
       // = new SootModuleInfo(moduleInfoSource, name, access, version).getName();
 
@@ -231,10 +231,10 @@ public class ModuleFinder {
 
   }
 
-  private String getModuleName(ClassSource moduleInfoSource) throws ClassResolvingExcepetion {
+  private String getModuleName(ClassSource moduleInfoSource) throws ClassResolvingException {
     Optional<SootClass> moduleInfoClass = this.classProvider.resolve(moduleInfoSource);
     if (!moduleInfoClass.isPresent() || !(moduleInfoClass.get() instanceof SootModuleInfo)) {
-      throw new ClassResolvingExcepetion("Class is named module-info but does not resolve to SootModuleInfo");
+      throw new ClassResolvingException("Class is named module-info but does not resolve to SootModuleInfo");
     }
 
     String moduleName = ((SootModuleInfo) moduleInfoClass.get()).getName();
