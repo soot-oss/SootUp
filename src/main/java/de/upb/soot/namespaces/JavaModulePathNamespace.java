@@ -84,6 +84,14 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     // lookup the ns for the class provider from the cache and use him...
     AbstractNamespace ns = moduleFinder.discoverModule(modulename);
 
+    if (ns == null) {
+      try {
+        throw new ClassResolvingException("No Namespace for class " + signature);
+      } catch (ClassResolvingException e) {
+        e.printStackTrace();
+      }
+    }
+
     final Optional<ClassSource> classSource = ns.getClassSource(signature);
     if (classSource.isPresent()) {
       return classSource;

@@ -3,6 +3,7 @@ package de.upb.soot.namespaces;
 import categories.Java8Test;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -10,6 +11,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.views.Scene;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.experimental.categories.Category;
@@ -46,7 +48,8 @@ public abstract class AbstractNamespaceTest {
   }
 
   protected IClassProvider createClassProvider() {
-    return new DummyClassProvider();
+    Scene scene = new Scene();
+    return new AsmJavaClassProvider(scene);
   }
 
   protected void testClassReceival(AbstractNamespace ns, ClassSignature sig, int minClassesFound) {
