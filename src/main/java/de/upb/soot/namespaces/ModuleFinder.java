@@ -201,7 +201,7 @@ public class ModuleFinder {
     } catch (IOException e) {
       e.printStackTrace();
     }
-    if (moduleInfoFile.isPresent()) {
+    if (moduleInfoFile != null && moduleInfoFile.isPresent()) {
       ClassSource moduleInfoSource = moduleInfoFile.get();
       // get the module name
       String moduleName = null;
