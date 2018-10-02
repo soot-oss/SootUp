@@ -2,7 +2,7 @@
 ### Java template
 # Compiled class file
 *.class
-!src/test/resources/*
+!src/test/resources/**/*.class
 
 # Log file
 *.log
