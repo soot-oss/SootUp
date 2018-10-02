@@ -1,19 +1,19 @@
 package de.upb.soot.signatures;
 
+import static org.junit.Assert.*;
+
+import de.upb.soot.namespaces.FileType;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
-import de.upb.soot.namespaces.FileType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import categories.Java8Test;
-
-import static org.junit.Assert.*;
 
 @Category(Java8Test.class)
 
