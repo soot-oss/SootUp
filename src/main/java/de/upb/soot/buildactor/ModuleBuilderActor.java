@@ -67,7 +67,6 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
     URI uri = classSource.getSourcePath().toUri();
 
     try {
-      // FIXME: mbenz maybe you have a nice idea here
       if (classSource.getSourcePath().getFileSystem().isOpen()) {
         Path sourceFile = Paths.get(uri);
 
@@ -75,13 +74,10 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
 
         clsr.accept(scb, ClassReader.SKIP_FRAMES);
       } else {
-        Map<String, String> env = new HashMap<>();
-        env.put("create", "false");
-        // a zip file system needs to be reopenend
+        // a zip file system needs to be re-openend
         // otherwise it crashes
         // http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
-        // maybe it makes sense to do it in the ClassSource
-        try (FileSystem zipfs = FileSystems.newFileSystem(uri, env)) {
+        try (FileSystem zipfs = FileSystems.newFileSystem(uri, null)) {
           Path sourceFile = Paths.get(uri);
 
           ClassReader clsr = new ClassReader(Files.newInputStream(sourceFile));
