@@ -41,17 +41,17 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
   }
 
   private void reify(ReifyMessage m) {
-    log().info("Start reifying for %s.", classSource.getClassSignature().toString());
+    log().info("Start reifying for [{}].", classSource.getClassSignature().toString());
 
     module = getSootModule(classSource, new UnresolvedModuleVisitor());
 
     sender().tell(module, this.getSelf());
 
-    log().info("Completed reifying for %s.", classSource.getClassSignature().toString());
+    log().info("Completed reifying for [{}].", classSource.getClassSignature().toString());
   }
 
   private void resolve(ResolveMessage m) {
-    log().info("Full resolve for %s.", classSource.getClassSignature().toString());
+    log().info("Full resolve for [{}].", classSource.getClassSignature().toString());
     if (module == null)
       throw new IllegalStateException();
 
@@ -59,7 +59,7 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
 
     sender().tell(module, this.getSelf());
 
-    log().info("Completed resolve for %s", classSource.getClassSignature().toString());
+    log().info("Completed resolve for [{}]", classSource.getClassSignature().toString());
   }
 
   private SootModuleInfo getSootModule(ClassSource classSource, ModuleVisitor visitor) {
