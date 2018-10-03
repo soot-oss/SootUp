@@ -16,8 +16,9 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
 
   protected final Map<String, ModuleSignature> modules = new HashMap<>();
 
-  /** FIXME: Check if it is easer (and makes more sense), to make a module signature a decarator for a class signature..., IMHO: easier
-   * Factory to create module signatures.
+  /**
+   * FIXME: Check with mbenz if it is easer (and makes more sense), to make a module signature a decarator for a class
+   * signature..., IMHO: easier Factory to create module signatures.
    */
   public ModuleSignatureFactory() {
     /*
