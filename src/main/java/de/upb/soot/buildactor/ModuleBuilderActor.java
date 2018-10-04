@@ -52,9 +52,8 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
 
   private void resolve(ResolveMessage m) {
     log().info("Full reify for [{}].", classSource.getClassSignature().toString());
-    // imho: we should always reify the class in total
-    // if (module == null)
-    // throw new IllegalStateException();
+    if (module == null)
+      throw new IllegalStateException();
 
     module = getSootModule(classSource, new ResolveModuleVisitor(module));
 

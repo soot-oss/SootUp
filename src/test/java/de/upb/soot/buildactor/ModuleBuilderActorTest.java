@@ -72,7 +72,10 @@ public class ModuleBuilderActorTest {
 
     assertTrue(source.isPresent());
 
-    Optional<SootClass> result = getScene().resolveClass(source.get());
+    Optional<SootClass> result = getScene().reifyClass(source.get());
+    assertTrue(result.isPresent());
+    assertTrue(result.get() instanceof SootModuleInfo);
+    result = getScene().resolveClass(source.get());
 
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
