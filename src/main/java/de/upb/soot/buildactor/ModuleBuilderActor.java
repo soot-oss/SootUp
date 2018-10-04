@@ -136,35 +136,30 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
 
     @Override
     public void visitRequire(String module, int access, String version) {
-      super.visitRequire(module, access, version);
 
       moduleInfo.addRequire(resolve(module), access, version);
     }
 
     @Override
     public void visitExport(String packaze, int access, String... modules) {
-      super.visitExport(packaze, access, modules);
 
       moduleInfo.addExport(packaze, access, resolve(modules));
     }
 
     @Override
     public void visitOpen(String packaze, int access, String... modules) {
-      super.visitOpen(packaze, access, modules);
-
       moduleInfo.addOpen(packaze, access, resolve(modules));
+
     }
 
     @Override
     public void visitUse(String service) {
-      super.visitUse(service);
-
       moduleInfo.addUse(resolveServiceClass(service));
+
     }
 
     @Override
     public void visitProvide(String service, String... providers) {
-      super.visitProvide(service, providers);
 
       moduleInfo.addProvide(service, resolveServiceClass(providers));
     }
