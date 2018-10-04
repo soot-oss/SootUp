@@ -32,7 +32,7 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -47,7 +47,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   List<IntConstant> lookupValues;
 
   // This method is necessary to deal with constructor-must-be-first-ism.
-  private static StmtBox[] getTargetBoxesArray(List<? extends Stmt> targets) {
+  private static StmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
     StmtBox[] targetBoxes = new StmtBox[targets.size()];
     for (int i = 0; i < targetBoxes.length; i++) {
       targetBoxes[i] = Jimple.getInstance().newStmtBox(targets.get(i));
@@ -68,7 +68,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   }
 
   /** Constructs a new JLookupSwitchStmt. lookupValues should be a list of IntConst s. */
-  public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends Stmt> targets, Stmt defaultTarget) {
+  public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends IStmt> targets, IStmt defaultTarget) {
     this(Jimple.getInstance().newImmediateBox(key), lookupValues, getTargetBoxesArray(targets),
         Jimple.getInstance().newStmtBox(defaultTarget));
   }
@@ -96,12 +96,12 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     buffer.append("{" + endOfLine);
 
     for (int i = 0; i < lookupValues.size(); i++) {
-      Stmt target = getTarget(i);
+      IStmt target = getTarget(i);
       buffer.append("    " + Jimple.CASE + " " + lookupValues.get(i) + ": " + Jimple.GOTO + " "
           + (target == this ? "self" : target) + ";" + endOfLine);
     }
 
-    Stmt target = getDefaultTarget();
+    IStmt target = getDefaultTarget();
     buffer.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " " + (target == this ? "self" : target) + ";" + endOfLine);
 
     buffer.append("}");

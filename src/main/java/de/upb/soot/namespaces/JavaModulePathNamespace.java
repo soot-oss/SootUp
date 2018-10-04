@@ -1,10 +1,6 @@
 package de.upb.soot.namespaces;
 
-import com.google.common.base.Preconditions;
-
-import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.ModulePackageSignature;
@@ -12,6 +8,8 @@ import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
+
+import com.google.common.base.Preconditions;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -39,17 +37,13 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   private final ModuleFinder moduleFinder;
 
   /**
-   * Creates a {@link JavaModulePathNamespace} which locates classes based on the provided {@link IClassProvider}.
+   * Creates a {@link JavaModulePathNamespace} which locates classes in the given module path.
    *
-   * @param classProvider
-   *          The {@link IClassProvider} for generating {@link ClassSource}es for the files found on the class path
    * @param modulePath
    *          The class path to search in
    */
-  public JavaModulePathNamespace(IClassProvider classProvider, String modulePath) {
-    super(classProvider);
-    this.moduleFinder = new ModuleFinder(classProvider, modulePath);
-
+  public JavaModulePathNamespace(String modulePath) {
+    this.moduleFinder = new ModuleFinder(modulePath);
   }
 
 

@@ -42,8 +42,7 @@ class ModuleFinder {
 
   private JrtFileSystemNamespace jrtFileSystemNamespace;
 
-  public ModuleFinder(IClassProvider classProvider, String modulePath) {
-    this.classProvider = classProvider;
+  public ModuleFinder(String modulePath) {
     this.modulePathEntries = JavaClassPathNamespace.explode(modulePath).collect(Collectors.toList());
     // add the namespace for the jrt virtual file system
     // FIXME: check if it makes sense to make this static
@@ -145,7 +144,7 @@ class ModuleFinder {
 
   private void buildModuleForExplodedModule(Path dir) {
     // create the namespace for this module dir
-    PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(this.classProvider, dir);
+    PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(dir);
 
     Path moduleInfoFile = dir.resolve(ModuleSignatureFactory.MODULE_INFO_CLASS.toPath(classProvider.getHandledFileType()));
     if (!Files.exists(moduleInfoFile) && !Files.isRegularFile(moduleInfoFile)) {
@@ -176,7 +175,7 @@ class ModuleFinder {
    *          the jar file
    */
   private void buildModuleForJar(Path jar) {
-    PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(this.classProvider, jar);
+    PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(jar);
 
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");

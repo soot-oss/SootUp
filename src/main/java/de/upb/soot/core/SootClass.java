@@ -34,7 +34,6 @@ import de.upb.soot.validation.ClassValidator;
 import de.upb.soot.validation.MethodDeclarationValidator;
 import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
-import de.upb.soot.views.Scene;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,7 +67,7 @@ import org.slf4j.LoggerFactory;
  * @author Manuel Benz created on 06.06.18
  */
 
-public class SootClass implements Numberable {
+public class SootClass extends AbstractViewResident implements Numberable {
 
   static public class Resolve {
     public final int level;
@@ -182,7 +181,7 @@ public class SootClass implements Numberable {
       return;
     }
 
-    if (!Scene.getInstance().doneResolving() || Options.getInstance().ignore_resolving_levels()) {
+    if (!this.getView().doneResolving() || Options.getInstance().ignore_resolving_levels()) {
       return;
     }
     checkLevelIgnoreResolving(level);
@@ -217,13 +216,6 @@ public class SootClass implements Numberable {
 
   public boolean isInScene() {
     return isInScene;
-  }
-
-  /** Tells this class if it is being managed by a Scene. */
-  public void setInScene(boolean isInScene) {
-    this.isInScene = isInScene;
-
-    Scene.getInstance().getClassNumberer().add(this);
   }
 
   /**
@@ -430,7 +422,7 @@ public class SootClass implements Numberable {
    */
   public SootMethod getMethod(String subsignature) {
     checkLevel(SIGNATURES);
-    NumberedString numberedString = Scene.getInstance().getSubSigNumberer().find(subsignature);
+    NumberedString numberedString = this.getView().getSubSigNumberer().find(subsignature);
     if (numberedString == null) {
       throw new RuntimeException("No method " + subsignature + " in class " + getName());
     }
@@ -443,7 +435,7 @@ public class SootClass implements Numberable {
    */
   public SootMethod getMethodUnsafe(String subsignature) {
     checkLevel(SIGNATURES);
-    NumberedString numberedString = Scene.getInstance().getSubSigNumberer().find(subsignature);
+    NumberedString numberedString = this.getView().getSubSigNumberer().find(subsignature);
     return numberedString == null ? null : getMethodUnsafe(numberedString);
   }
 
@@ -453,7 +445,7 @@ public class SootClass implements Numberable {
 
   public boolean declaresMethod(String subsignature) {
     checkLevel(SIGNATURES);
-    NumberedString numberedString = Scene.getInstance().getSubSigNumberer().find(subsignature);
+    NumberedString numberedString = this.getView().getSubSigNumberer().find(subsignature);
     return numberedString == null ? false : declaresMethod(numberedString);
   }
 
@@ -1249,7 +1241,7 @@ public class SootClass implements Numberable {
     } else {
       refType = RefType.getInstance(name);
     }
-    Scene.getInstance().addRefType(refType);
+    this.getView().addRefType(refType);
 
   }
 

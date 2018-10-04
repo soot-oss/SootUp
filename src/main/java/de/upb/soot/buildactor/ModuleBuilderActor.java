@@ -1,18 +1,11 @@
 package de.upb.soot.buildactor;
 
+import de.upb.soot.Project;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.ClassSource;
-
-import akka.actor.AbstractLoggingActor;
-import akka.actor.Props;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
-import de.upb.soot.views.Scene;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ModuleVisitor;
-import org.objectweb.asm.Opcodes;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,13 +13,21 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ModuleVisitor;
+import org.objectweb.asm.Opcodes;
+
+import akka.actor.AbstractLoggingActor;
+import akka.actor.Props;
+
 public class ModuleBuilderActor extends AbstractLoggingActor {
 
-  private final Scene project;
+  private final Project project;
   private final ClassSource classSource;
   private SootModuleInfo module;
 
-  public ModuleBuilderActor(Scene project, ClassSource classSource) {
+  public ModuleBuilderActor(Project project, ClassSource classSource) {
     this.project = project;
     this.classSource = classSource;
   }
@@ -52,8 +53,9 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
 
   private void resolve(ResolveMessage m) {
     log().info("Full resolve for %s.", classSource.getClassSignature().toString());
-    if (module == null)
+    if (module == null) {
       throw new IllegalStateException();
+    }
 
     module = getSootModule(classSource, new ResolveModuleVisitor(module));
 

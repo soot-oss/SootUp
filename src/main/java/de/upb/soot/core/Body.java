@@ -31,7 +31,7 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.util.EscapedWriter;
@@ -110,7 +110,7 @@ public class Body implements Serializable {
   protected LinkedHashSet<Trap> traps = new LinkedHashSet<Trap>();
 
   /** The stmts for this Body. */
-  protected LinkedHashSet<Stmt> stmts = new LinkedHashSet<Stmt>();
+  protected LinkedHashSet<IStmt> stmts = new LinkedHashSet<IStmt>();
 
   private static BodyValidator[] validators;
 
@@ -174,8 +174,8 @@ public class Body implements Serializable {
     HashMap<Object, Object> bindings = new HashMap<Object, Object>();
     {
       // Clone units in body's statement list
-      for (Stmt original : b.getStmts()) {
-        Stmt copy = original.clone();
+      for (IStmt original : b.getStmts()) {
+        IStmt copy = original.clone();
 
         // Add cloned unit to our unitChain.
         stmts.add(copy);
@@ -259,8 +259,8 @@ public class Body implements Serializable {
   }
 
   /** Return unit containing the \@this-assignment **/
-  public Stmt getThisUnit() {
-    for (Stmt u : getStmts()) {
+  public IStmt getThisUnit() {
+    for (IStmt u : getStmts()) {
       if (u instanceof JIdentityStmt && ((JIdentityStmt) u).getRightOp() instanceof JThisRef) {
         return u;
       }
@@ -276,7 +276,7 @@ public class Body implements Serializable {
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. **/
   public Local getParameterLocal(int i) {
-    for (Stmt s : getStmts()) {
+    for (IStmt s : getStmts()) {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
         JIdentityStmt is = (JIdentityStmt) s;
         JParameterRef pr = (JParameterRef) is.getRightOp();
@@ -302,7 +302,7 @@ public class Body implements Serializable {
     final List<Local> retVal = new ArrayList<Local>(numParams);
 
     // Parameters are zero-indexed, so the keeping of the index is safe
-    for (Stmt u : getStmts()) {
+    for (IStmt u : getStmts()) {
       if (u instanceof JIdentityStmt) {
         JIdentityStmt is = (JIdentityStmt) u;
         if (is.getRightOp() instanceof JParameterRef) {
@@ -324,7 +324,7 @@ public class Body implements Serializable {
    */
   public List<Value> getParameterRefs() {
     Value[] res = new Value[getMethod().getParameterCount()];
-    for (Stmt s : getStmts()) {
+    for (IStmt s : getStmts()) {
       if (s instanceof JIdentityStmt) {
         Value rightOp = ((JIdentityStmt) s).getRightOp();
         if (rightOp instanceof JParameterRef) {
@@ -346,7 +346,7 @@ public class Body implements Serializable {
    *         see PatchingChain
    * @see Unit
    */
-  public LinkedHashSet<Stmt> getStmts() {
+  public LinkedHashSet<IStmt> getStmts() {
     return stmts;
   }
 
@@ -371,7 +371,7 @@ public class Body implements Serializable {
     return streamOut.toString();
   }
 
-  public void addStmt(Stmt stmt) {
+  public void addStmt(IStmt stmt) {
     this.stmts.add(stmt);
   }
 
@@ -443,7 +443,7 @@ public class Body implements Serializable {
    */
   public void insertIdentityStmts(SootClass declaringClass) {
     final Jimple jimple = Jimple.getInstance();
-    final LinkedHashSet<Stmt> stmts = getStmts();
+    final LinkedHashSet<IStmt> stmts = getStmts();
     final LinkedHashSet<Local> locals = getLocals();
     Unit lastUnit = null;
 
@@ -454,7 +454,7 @@ public class Body implements Serializable {
             String.format("No declaring class given for method %s", method.getSubSignature()));
       }
       Local l = jimple.newLocal("this", RefType.getInstance(declaringClass));
-      Stmt s = jimple.newIdentityStmt(l, jimple.newThisRef((RefType) l.getType()));
+      IStmt s = jimple.newIdentityStmt(l, jimple.newThisRef((RefType) l.getType()));
 
       locals.add(l);
       /*
@@ -465,7 +465,7 @@ public class Body implements Serializable {
     int i = 0;
     for (Type t : getMethod().getParameterTypes()) {
       Local l = jimple.newLocal("parameter" + i, t);
-      Stmt s = jimple.newIdentityStmt(l, jimple.newParameterRef(l.getType(), i));
+      IStmt s = jimple.newIdentityStmt(l, jimple.newParameterRef(l.getType(), i));
       // TODO: check: Unit problems
       /*
        * localChain.add(l); if (lastUnit == null) { unitChain.addFirst(s); } else { unitChain.insertAfter(s, lastUnit); }
@@ -476,8 +476,8 @@ public class Body implements Serializable {
   }
 
   /** Returns the first non-identity stmt in this body. */
-  public Stmt getFirstNonIdentityStmt() {
-    Iterator<Stmt> it = getStmts().iterator();
+  public IStmt getFirstNonIdentityStmt() {
+    Iterator<IStmt> it = getStmts().iterator();
     Object o = null;
     while (it.hasNext()) {
       if (!((o = it.next()) instanceof JIdentityStmt)) {
@@ -487,7 +487,7 @@ public class Body implements Serializable {
     if (o == null) {
       throw new RuntimeException("no non-id statements!");
     }
-    return (Stmt) o;
+    return (IStmt) o;
   }
 
   public List<ValueBox> getUseBoxes() {

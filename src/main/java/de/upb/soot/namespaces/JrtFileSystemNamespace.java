@@ -35,7 +35,6 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
   protected JrtFileSystemNamespace(IClassProvider classProvider) {
-    super(classProvider);
   }
 
   @Override

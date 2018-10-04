@@ -26,7 +26,6 @@ package de.upb.soot.core;
 import de.upb.soot.Options;
 import de.upb.soot.jimple.common.type.RefLikeType;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.views.Scene;
 
 /**
  * Soot's counterpart of the source language's field concept. Soot representation of a Java field. Can be declared to belong
@@ -36,7 +35,7 @@ import de.upb.soot.views.Scene;
  *
  */
 
-public class SootField /* implements ClassMember, SparkField, Numberable, PaddleField */ {
+public class SootField extends AbstractViewResident/* implements ClassMember, SparkField, Numberable, PaddleField */ {
 
   protected String name;
   protected Type type;
@@ -77,14 +76,14 @@ public class SootField /* implements ClassMember, SparkField, Numberable, Paddle
     return sig;
   }
 
-  public static String getSignature(SootClass cl, String name, Type type) {
+  public String getSignature(SootClass cl, String name, Type type) {
     return getSignature(cl, getSubSignature(name, type));
   }
 
-  public static String getSignature(SootClass cl, String subSignature) {
+  public String getSignature(SootClass cl, String subSignature) {
     StringBuilder buffer = new StringBuilder();
 
-    buffer.append("<").append(Scene.getInstance().quotedNameOf(cl.getName())).append(": ");
+    buffer.append("<").append(this.getView().quotedNameOf(cl.getName())).append(": ");
     buffer.append(subSignature).append(">");
 
     return buffer.toString();
@@ -102,9 +101,9 @@ public class SootField /* implements ClassMember, SparkField, Numberable, Paddle
     return subSig;
   }
 
-  private static String getSubSignature(String name, Type type) {
+  private String getSubSignature(String name, Type type) {
     StringBuilder buffer = new StringBuilder();
-    buffer.append(type.toQuotedString() + " " + Scene.getInstance().quotedNameOf(name));
+    buffer.append(type.toQuotedString() + " " + this.getView().quotedNameOf(name));
     return buffer.toString();
   }
 
@@ -118,7 +117,7 @@ public class SootField /* implements ClassMember, SparkField, Numberable, Paddle
 
   public synchronized void setDeclaringClass(SootClass sc) {
     if (sc != null && type instanceof RefLikeType) {
-      Scene.getInstance().getFieldNumberer().add(this);
+      this.getView().getFieldNumberer().add(this);
     }
     this.declaringClass = sc;
     this.sig = null;
@@ -130,7 +129,7 @@ public class SootField /* implements ClassMember, SparkField, Numberable, Paddle
 
   public void setPhantom(boolean value) {
     if (value) {
-      if (!Scene.getInstance().allowsPhantomRefs()) {
+      if (!this.getView().allowsPhantomRefs()) {
         throw new RuntimeException("Phantom refs not allowed");
       }
       if (!Options.getInstance().allow_phantom_elms() && declaringClass != null && !declaringClass.isPhantomClass()) {
@@ -225,9 +224,9 @@ public class SootField /* implements ClassMember, SparkField, Numberable, Paddle
     qualifiers = qualifiers.trim();
 
     if (qualifiers.isEmpty()) {
-      return Scene.getInstance().quotedNameOf(name);
+      return this.getView().quotedNameOf(name);
     } else {
-      return qualifiers + " " + Scene.getInstance().quotedNameOf(name) + "";
+      return qualifiers + " " + this.getView().quotedNameOf(name) + "";
     }
 
   }

@@ -31,12 +31,12 @@ package de.upb.soot.jimple;
 
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.basic.StmtBox;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 
 public abstract class AbstractStmtBox implements StmtBox {
-  protected Stmt stmt;
+  protected IStmt stmt;
 
-  public abstract boolean canContainUnit(Stmt u);
+  public abstract boolean canContainUnit(IStmt u);
 
   @Override
   public boolean isBranchTarget() {
@@ -44,7 +44,7 @@ public abstract class AbstractStmtBox implements StmtBox {
   }
 
   @Override
-  public void setStmt(Stmt stmt) {
+  public void setStmt(IStmt stmt) {
     if (!canContainUnit(stmt)) {
       throw new RuntimeException("attempting to put invalid unit in UnitBox");
     }
@@ -63,7 +63,7 @@ public abstract class AbstractStmtBox implements StmtBox {
     }
   }
 
-  public Stmt getStmt() {
+  public IStmt getStmt() {
     return stmt;
   }
 

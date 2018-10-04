@@ -1,7 +1,8 @@
-package de.upb.soot.views;
+package de.upb.soot.buildactor;
 
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.util.NotYetImplementedException;
+import de.upb.soot.views.IView;
 
 /**
  * Bridges the process from bytecode representation to Soot IR (Jimple) representation
@@ -17,6 +18,7 @@ public class ViewBuilder {
     }
 
     public IView buildComplete() {
+
         throw new NotYetImplementedException();
     }
 }

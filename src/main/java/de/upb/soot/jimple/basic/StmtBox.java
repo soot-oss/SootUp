@@ -29,19 +29,19 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.StmtPrinter;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 
 import java.io.Serializable;
 
 public interface StmtBox extends Serializable {
   /** Sets this box to contain the given unit. Subject to canContainValue() checks. */
-  public void setStmt(Stmt u);
+  public void setStmt(IStmt u);
 
   /** Returns the unit contained within this box. */
-  public Stmt getStmt();
+  public IStmt getStmt();
 
   /** Returns true if this box can contain the given Stmt. */
-  public boolean canContainStmt(Stmt u);
+  public boolean canContainStmt(IStmt u);
 
   /**
    * Returns true if the StmtBox is holding a Stmt that is the target of a branch (ie a Stmt at the beginning of a CFG

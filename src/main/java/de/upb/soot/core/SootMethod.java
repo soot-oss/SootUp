@@ -26,7 +26,6 @@ package de.upb.soot.core;
 import de.upb.soot.Options;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.util.NumberedString;
-import de.upb.soot.views.Scene;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +42,7 @@ import java.util.StringTokenizer;
  *
  */
 
-public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodContext */ {
+public class SootMethod extends AbstractViewResident/* implements ClassMember, Numberable, MethodOrMethodContext */ {
   public static final String constructorName = "<init>";
   public static final String staticInitializerName = "<clinit>";
   public static boolean DEBUG = false;
@@ -142,7 +141,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
     this.name = name;
     subSig = null;
     sig = null;
-    subsignature = Scene.getInstance().getSubSigNumberer().findOrAdd(getSubSignature());
+    subsignature = this.getView().getSubSigNumberer().findOrAdd(getSubSignature());
     if (wasDeclared) {
       oldDeclaringClass.addMethod(this);
     }
@@ -155,7 +154,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
     // the method is not declared, it should not be trying to resolve it anyways. So I see no
     // problem with having it able to be null.
     if (declClass != null) {
-      Scene.getInstance().getMethodNumberer().add(this);
+      this.getView().getMethodNumberer().add(this);
     }
     // We could call setDeclared here, however, when SootClass adds a method, it checks isDeclared
     // and throws an exception if set. So we currently cannot call setDeclared here.
@@ -199,7 +198,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
   /** Sets the phantom flag on this method. */
   public void setPhantom(boolean value) {
     if (value) {
-      if (!Scene.getInstance().allowsPhantomRefs()) {
+      if (!this.getView().allowsPhantomRefs()) {
         throw new RuntimeException("Phantom refs not allowed");
       }
       if (!Options.getInstance().allow_phantom_elms() && declaringClass != null && !declaringClass.isPhantomClass()) {
@@ -243,7 +242,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
     returnType = t;
     subSig = null;
     sig = null;
-    subsignature = Scene.getInstance().getSubSigNumberer().findOrAdd(getSubSignature());
+    subsignature = this.getView().getSubSigNumberer().findOrAdd(getSubSignature());
     if (wasDeclared) {
       oldDeclaringClass.addMethod(this);
     }
@@ -278,7 +277,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
     this.parameterTypes = l;
     subSig = null;
     sig = null;
-    subsignature = Scene.getInstance().getSubSigNumberer().findOrAdd(getSubSignature());
+    subsignature = this.getView().getSubSigNumberer().findOrAdd(getSubSignature());
     if (wasDeclared) {
       oldDeclaringClass.addMethod(this);
     }
@@ -544,7 +543,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
    */
   public boolean isMain() {
     if (isPublic() && isStatic()) {
-      NumberedString main_sig = Scene.getInstance().getSubSigNumberer().findOrAdd("void main(java.lang.String[])");
+      NumberedString main_sig = this.getView().getSubSigNumberer().findOrAdd("void main(java.lang.String[])");
       if (main_sig.equals(subsignature)) {
         return true;
       }
@@ -610,7 +609,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
     String name = getName();
 
     StringBuffer buffer = new StringBuffer();
-    buffer.append("<" + Scene.getInstance().quotedNameOf(getDeclaringClass().getName()) + ": ");
+    buffer.append("<" + this.getView().quotedNameOf(getDeclaringClass().getName()) + ": ");
     buffer.append(name);
     // TODO: sth: AbstractJasminClass
     // buffer.append(AbstractJasminClass.jasminDescriptorOf(makeRef()));
@@ -633,14 +632,14 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
     return sig;
   }
 
-  public static String getSignature(SootClass cl, String name, List<Type> params, Type returnType) {
+  public String getSignature(SootClass cl, String name, List<Type> params, Type returnType) {
     return getSignature(cl, getSubSignatureImpl(name, params, returnType));
   }
 
-  public static String getSignature(SootClass cl, String subSignature) {
+  public String getSignature(SootClass cl, String subSignature) {
     StringBuilder buffer = new StringBuilder();
     buffer.append("<");
-    buffer.append(Scene.getInstance().quotedNameOf(cl.getName()));
+    buffer.append(this.getView().quotedNameOf(cl.getName()));
     buffer.append(": ");
     buffer.append(subSignature);
     buffer.append(">");
@@ -662,17 +661,17 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
     return subSig;
   }
 
-  public static String getSubSignature(String name, List<Type> params, Type returnType) {
+  public String getSubSignature(String name, List<Type> params, Type returnType) {
     return getSubSignatureImpl(name, params, returnType);
   }
 
-  private static String getSubSignatureImpl(String name, List<Type> params, Type returnType) {
+  private String getSubSignatureImpl(String name, List<Type> params, Type returnType) {
     StringBuilder buffer = new StringBuilder();
 
     buffer.append(returnType.toQuotedString());
 
     buffer.append(" ");
-    buffer.append(Scene.getInstance().quotedNameOf(name));
+    buffer.append(this.getView().quotedNameOf(name));
     buffer.append("(");
 
     if (params != null) {
@@ -726,7 +725,7 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
     // return type + name
 
     buffer.append(this.getReturnType().toQuotedString() + " ");
-    buffer.append(Scene.getInstance().quotedNameOf(this.getName()));
+    buffer.append(this.getView().quotedNameOf(this.getName()));
 
     buffer.append("(");
 
@@ -751,10 +750,10 @@ public class SootMethod /* implements ClassMember, Numberable, MethodOrMethodCon
       Iterator<SootClass> exceptionIt = this.getExceptions().iterator();
 
       if (exceptionIt.hasNext()) {
-        buffer.append(" throws " + Scene.getInstance().quotedNameOf(exceptionIt.next().getName()));
+        buffer.append(" throws " + this.getView().quotedNameOf(exceptionIt.next().getName()));
 
         while (exceptionIt.hasNext()) {
-          buffer.append(", " + Scene.getInstance().quotedNameOf(exceptionIt.next().getName()));
+          buffer.append(", " + this.getView().quotedNameOf(exceptionIt.next().getName()));
         }
       }
     }

@@ -1,8 +1,8 @@
 package de.upb.soot.jimple.basic;
 
+import de.upb.soot.core.AbstractViewResident;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.views.Scene;
+import de.upb.soot.jimple.common.stmt.IStmt;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -41,7 +41,7 @@ import java.util.List;
  * Partial implementation of trap (exception catcher), used within Body classes.
  */
 @SuppressWarnings("serial")
-public class AbstractTrap implements Trap, Serializable {
+public class AbstractTrap extends AbstractViewResident implements Trap, Serializable {
   /** The exception being caught. */
   protected transient SootClass exception;
 
@@ -59,7 +59,7 @@ public class AbstractTrap implements Trap, Serializable {
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
-    exception = Scene.getInstance().getSootClass((String) in.readObject());
+    exception = this.getView().getSootClass((String) in.readObject());
   }
 
   private void writeObject(ObjectOutputStream out) throws IOException {
@@ -76,15 +76,15 @@ public class AbstractTrap implements Trap, Serializable {
     this.unitBoxes = Collections.unmodifiableList(Arrays.asList(beginStmtBox, endStmtBox, handlerStmtBox));
   }
 
-  public Stmt getBeginStmt() {
+  public IStmt getBeginStmt() {
     return beginStmtBox.getStmt();
   }
 
-  public Stmt getEndStmt() {
+  public IStmt getEndStmt() {
     return endStmtBox.getStmt();
   }
 
-  public Stmt getHandlerStmt() {
+  public IStmt getHandlerStmt() {
     return handlerStmtBox.getStmt();
   }
 
@@ -116,15 +116,15 @@ public class AbstractTrap implements Trap, Serializable {
     return exception;
   }
 
-  public void setBeginStmt(Stmt beginStmt) {
+  public void setBeginStmt(IStmt beginStmt) {
     beginStmtBox.setStmt(beginStmt);
   }
 
-  public void setEndStmt(Stmt endStmt) {
+  public void setEndStmt(IStmt endStmt) {
     endStmtBox.setStmt(endStmt);
   }
 
-  public void setHandlerStmt(Stmt handlerStmt) {
+  public void setHandlerStmt(IStmt handlerStmt) {
     handlerStmtBox.setStmt(handlerStmt);
   }
 

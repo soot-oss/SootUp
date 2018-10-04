@@ -4,7 +4,7 @@ import de.upb.soot.core.Body;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
@@ -184,7 +184,7 @@ public class WalaIRToJimpleConverter {
     // convert all wala instructions to jimple statements
     SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
     for (SSAInstruction inst : insts) {
-      Stmt stmt = convertInstruction(inst);
+      IStmt stmt = convertInstruction(inst);
       // set position for each statement
       Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
       stmt.setPosition(stmtPos);
@@ -195,7 +195,7 @@ public class WalaIRToJimpleConverter {
   }
 
 
-  public Stmt convertInstruction(SSAInstruction walaInst) {
+  public IStmt convertInstruction(SSAInstruction walaInst) {
 
     // TODO what are the different types of SSAInstructions
     if (walaInst instanceof SSAConditionalBranchInstruction) {

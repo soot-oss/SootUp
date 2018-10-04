@@ -7,16 +7,16 @@ import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.Type;
 
 /**
  * Interface for different methods of printing out a Unit.
  */
 public interface StmtPrinter {
-  public void startUnit(Stmt u);
+  public void startUnit(IStmt u);
 
-  public void endUnit(Stmt u);
+  public void endUnit(IStmt u);
 
   public void startUnitBox(StmtBox u);
 
@@ -50,7 +50,7 @@ public interface StmtPrinter {
 
   public void field(SootField f);
 
-  public void unitRef(Stmt u, boolean branchTarget);
+  public void unitRef(IStmt u, boolean branchTarget);
 
   public void identityRef(IdentityRef r);
 

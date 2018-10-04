@@ -26,15 +26,15 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.StmtPrinter;
+import de.upb.soot.core.AbstractViewResident;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IJimpleValueVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.views.Scene;
 
 import java.util.Collections;
 import java.util.List;
 
-public class Local implements Value, Numberable, Immediate {
+public class Local extends AbstractViewResident implements Value, Numberable, Immediate {
   protected String name;
   Type type;
 
@@ -42,7 +42,7 @@ public class Local implements Value, Numberable, Immediate {
   public Local(String name, Type type) {
     setName(name);
     setType(type);
-    List<Local> numberer = Scene.getInstance().getLocalNumberer();
+    List<Local> numberer = this.getView().getLocalNumberer();
     if (numberer != null) {
       numberer.add(this);
     }
