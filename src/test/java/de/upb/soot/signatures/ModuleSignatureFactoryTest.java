@@ -19,6 +19,13 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
     assertSame(((ModulePackageSignature) packageSignature1).moduleSignature, ModuleSignature.UNNAMED_MODULE);
   }
 
+  // @Test
+  // public void dispatchTest() {
+  // SignatureFactory signatureFactory = new ModuleSignatureFactory();
+  // ClassSignature classSignature1 = signatureFactory.getClassSignature("module-info","","myMod");
+  // assertTrue(classSignature1 instanceof ClassSignature);
+  // }
+
   @Test
   public void getPackageSignatureNamedModule() {
     ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();

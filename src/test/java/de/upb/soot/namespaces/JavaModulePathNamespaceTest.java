@@ -22,12 +22,12 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
   @Override
   protected SignatureFactory getSignatureFactory() {
-    return new ModuleSignatureFactory();
+    return new ModuleSignatureFactory(){};
   }
 
   @Test
   public void singleDir() {
-    ModuleSignatureFactory factory = new ModuleSignatureFactory();
+    ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace
         = new JavaModulePathNamespace(getClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules");
     final ClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
@@ -37,7 +37,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
   @Test
   public void singleDir2() {
-    ModuleSignatureFactory factory = new ModuleSignatureFactory();
+    ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();;
     final JavaModulePathNamespace javaClassPathNamespace
         = new JavaModulePathNamespace(getClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules");
     final ClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
@@ -48,7 +48,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
   @Test
   public void singleJar() {
-    ModuleSignatureFactory factory = new ModuleSignatureFactory();
+    ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace = new JavaModulePathNamespace(getClassProvider(),
         "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar");
     final ClassSignature sig = factory.getClassSignature("module-info", "", "de.upb.mod");
@@ -59,7 +59,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
   @Test
   public void testSignatureWrapper() throws Exception {
-    ModuleSignatureFactory factory = new ModuleSignatureFactory();
+    ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace = new JavaModulePathNamespace(getClassProvider(),
         "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar");
     Class signatureCLass = Whitebox.getInnerClassType(JavaModulePathNamespace.class, "SignatureFactoryWrapper");
