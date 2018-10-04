@@ -9,7 +9,7 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 
 /**
- * Basic class for storing information that is needed to resolve a {@link de.upb.soot.core.SootClass}.
+ * Basic class for storing information that is needed to reify a {@link de.upb.soot.core.SootClass}.
  *
  * @author Manuel Benz created on 22.05.18
  **/
@@ -30,7 +30,7 @@ public class ClassSource {
    *          Path to the source file of the to-be-created {@link ClassSource}. The given path has to exist and requires to
    *          be handled by this {@link IClassProvider}. Implementations might double check this if wanted.
    * @param classSignature
-   *          the signature that has been used to resolve this class
+   *          the signature that has been used to reify this class
    *
    *          A not yet resolved {@link ClassSource}, backed up by the given file
    */
@@ -44,10 +44,6 @@ public class ClassSource {
 
   public ClassSignature getClassSignature() {
     return classSignature;
-  }
-
-  public void resolve() {
-    classProvider.resolve(this);
   }
 
   public Path getSourcePath() {

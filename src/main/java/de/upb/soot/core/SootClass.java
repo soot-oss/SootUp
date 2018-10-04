@@ -28,11 +28,6 @@ public class SootClass {
     this.cs = cs;
   }
 
-  public void resolve() {
-    // aktor stuff
-    cs.resolve();
-  }
-
   public void checkLevelIgnoreResolving(String hierarchy2) {
 
     // TODO Auto-generated method stub

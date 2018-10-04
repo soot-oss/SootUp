@@ -35,6 +35,6 @@ public interface IClassProvider {
    */
   FileType getHandledFileType();
 
-  Optional<SootClass> resolve(ClassSource classSource);
+  Optional<SootClass> reify(ClassSource classSource);
 
 }

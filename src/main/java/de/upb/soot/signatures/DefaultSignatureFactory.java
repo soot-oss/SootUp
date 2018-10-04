@@ -81,6 +81,8 @@ public class DefaultSignatureFactory implements SignatureFactory {
     return getClassSignature(className, packageName);
   }
 
+
+
   /**
    * Returns a TypeSignature which can be a {@link ClassSignature},{@link PrimitiveTypeSignature}, {@link VoidTypeSignature},
    * or {@link NullTypeSignature}.

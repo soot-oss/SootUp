@@ -31,8 +31,8 @@ public class AsmJavaClassProvider implements IClassProvider {
   }
 
   @Override
-  public Optional<SootClass> resolve(ClassSource classSource) {
-    return scene.resolveClass(classSource);
+  public Optional<SootClass> reify(ClassSource classSource) {
+    return scene.reifyClass(classSource);
   }
 
 }

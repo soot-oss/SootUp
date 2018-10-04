@@ -20,7 +20,7 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
    * FIXME: Check with mbenz if it is easer (and makes more sense), to make a module signature a decarator for a class
    * signature..., IMHO: easier Factory to create module signatures.
    */
-  public ModuleSignatureFactory() {
+  protected ModuleSignatureFactory() {
     /*
      * Represents the unnamed module in Java's module system. Every type that is not defined in any known module but loaded
      * from the classpath is associated with this unnamed module, so as to ensure that every type is associated with a
@@ -89,6 +89,7 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
   public ClassSignature getClassSignature(final String className, final String packageName) {
     return getClassSignature(className, packageName, ModuleSignature.UNNAMED_MODULE.moduleName);
   }
+
 
   /**
    * Always creates a new ClassSignature. In opposite to PackageSignatures and ModuleSignatures, ClassSignatures are not

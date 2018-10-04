@@ -51,15 +51,16 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
   }
 
   private void resolve(ResolveMessage m) {
-    log().info("Full resolve for [{}].", classSource.getClassSignature().toString());
-    if (module == null)
-      throw new IllegalStateException();
+    log().info("Full reify for [{}].", classSource.getClassSignature().toString());
+    // imho: we should always reify the class in total
+    // if (module == null)
+    // throw new IllegalStateException();
 
     module = getSootModule(classSource, new ResolveModuleVisitor(module));
 
     sender().tell(module, this.getSelf());
 
-    log().info("Completed resolve for [{}]", classSource.getClassSignature().toString());
+    log().info("Completed reify for [{}]", classSource.getClassSignature().toString());
   }
 
   private SootModuleInfo getSootModule(ClassSource classSource, ModuleVisitor visitor) {
@@ -77,7 +78,9 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
         // a zip file system needs to be re-openend
         // otherwise it crashes
         // http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
-        try (FileSystem zipfs = FileSystems.newFileSystem(uri, null)) {
+        Map<String, String> env = new HashMap<>();
+        env.put("create", "false");
+        try (FileSystem zipfs = FileSystems.newFileSystem(uri, env)) {
           Path sourceFile = Paths.get(uri);
 
           ClassReader clsr = new ClassReader(Files.newInputStream(sourceFile));
@@ -167,7 +170,9 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
     }
 
     private SootModuleInfo resolve(String module) {
-      ClassSignature moduleSignature = new ModuleSignatureFactory().getClassSignature("module-info", "", module);
+      // TODO: I don't like this cast
+      ClassSignature moduleSignature
+          = ((ModuleSignatureFactory) project.getSignatureFactory()).getClassSignature("module-info", "", module);
       Optional<SootClass> moduleClass = project.getClass(moduleSignature);
 
       // FIXME Ugly ugly cast... *würg*
@@ -179,7 +184,7 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
     }
 
     private SootClass resolveServiceClass(String service) {
-      return project.getClass(new ModuleSignatureFactory().getClassSignature(service)).get();
+      return project.getClass(project.getSignatureFactory().getClassSignature(service)).get();
     }
 
     private Iterable<SootClass> resolveServiceClass(String[] providers) {

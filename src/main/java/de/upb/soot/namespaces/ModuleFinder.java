@@ -232,9 +232,9 @@ public class ModuleFinder {
   }
 
   private String getModuleName(ClassSource moduleInfoSource) throws ClassResolvingException {
-    Optional<SootClass> moduleInfoClass = this.classProvider.resolve(moduleInfoSource);
+    Optional<SootClass> moduleInfoClass = this.classProvider.reify(moduleInfoSource);
     if (!moduleInfoClass.isPresent() || !(moduleInfoClass.get() instanceof SootModuleInfo)) {
-      throw new ClassResolvingException("Class is named module-info but does not resolve to SootModuleInfo");
+      throw new ClassResolvingException("Class is named module-info but does not reify to SootModuleInfo");
     }
 
     String moduleName = ((SootModuleInfo) moduleInfoClass.get()).getName();

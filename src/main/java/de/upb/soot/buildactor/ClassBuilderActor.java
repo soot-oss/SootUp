@@ -19,12 +19,12 @@ public class ClassBuilderActor extends AbstractLoggingActor {
   }
 
   private void resolve(Object o) {
-    log().info("resolve");
+    log().info("reify");
 
     // process field
     // private TypeY x;
 
-    // FieldDefinition(name:=x, visibility:=private, declaredType:=resolve("TypeY"))
+    // FieldDefinition(name:=x, visibility:=private, declaredType:=reify("TypeY"))
 
     // process methods
     // for each method
