@@ -27,7 +27,6 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.views.Scene;
 
 /**
  * Soot representation used for not-yet-typed objects. Implemented as a singleton.
@@ -71,7 +70,7 @@ public class UnknownType extends Type {
 
   /** Returns the least common superclass of this type and other. */
   @Override
-  public Type merge(Type other, Scene cm) {
+  public Type merge(Type other) {
     if (other instanceof RefType) {
       return other;
     }

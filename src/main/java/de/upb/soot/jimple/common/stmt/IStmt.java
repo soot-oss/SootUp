@@ -15,7 +15,8 @@ import java.util.List;
 
 import scala.Unit;
 
-public interface Stmt extends IAcceptor, Serializable {
+public interface IStmt extends IAcceptor, Serializable
+{
 
   /** Returns a list of Boxes containing Values used in this Unit. */
   public List<ValueBox> getUseBoxes();
@@ -45,7 +46,7 @@ public interface Stmt extends IAcceptor, Serializable {
    */
   public List<ValueBox> getUseAndDefBoxes();
 
-  public Stmt clone();
+  public IStmt clone();
 
   /**
    * Returns true if execution after this statement may continue at the following statement. GotoStmt will return false but
@@ -66,7 +67,7 @@ public interface Stmt extends IAcceptor, Serializable {
    * @see soot.shimple.Shimple#redirectToPreds(Chain, Unit)
    * @see soot.shimple.Shimple#redirectPointers(Unit, Unit)
    **/
-  public void redirectJumpsToThisTo(Stmt newLocation);
+  public void redirectJumpsToThisTo(IStmt newLocation);
 
   public void toString(StmtPrinter up);
 

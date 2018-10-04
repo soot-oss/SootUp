@@ -26,10 +26,9 @@
 package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.SootResolver;
-import de.upb.soot.View;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.views.Scene;
+import de.upb.soot.views.View;
 
 import java.util.ArrayDeque;
 
@@ -146,7 +145,7 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
    */
   @Override
   public String toQuotedString() {
-    return Scene.getInstance().quotedNameOf(className);
+    return this.getView().quotedNameOf(className);
   }
 
   @Override
@@ -155,7 +154,7 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
   }
 
   /** Returns the least common superclass of this type and other. */
-  public Type merge(Type other, Scene cm) {
+  public Type merge(Type other) {
     if (other.equals(UnknownType.getInstance()) || this.equals(other)) {
       return this;
     }
@@ -167,9 +166,9 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
     {
       // Return least common superclass
 
-      SootClass thisClass = cm.getSootClass(this.className);
-      SootClass otherClass = cm.getSootClass(((RefType) other).className);
-      SootClass javalangObject = cm.getObjectType().getSootClass();
+      SootClass thisClass = this.getView().getSootClass(this.className);
+      SootClass otherClass = this.getView().getSootClass(((RefType) other).className);
+      SootClass javalangObject = this.getView().getObjectType().getSootClass();
 
       ArrayDeque<SootClass> thisHierarchy = new ArrayDeque<>();
       ArrayDeque<SootClass> otherHierarchy = new ArrayDeque<>();

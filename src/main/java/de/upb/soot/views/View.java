@@ -1,4 +1,4 @@
-package de.upb.soot;
+package de.upb.soot.views;
 
 import de.upb.soot.jimple.common.type.RefType;
 

@@ -1,8 +1,8 @@
 package de.upb.soot.jimple.common.type;
 
+import de.upb.soot.core.AbstractViewResident;
 import de.upb.soot.jimple.basic.Numberable;
 import de.upb.soot.jimple.visitor.IAcceptor;
-import de.upb.soot.views.Scene;
 
 import java.io.Serializable;
 
@@ -12,9 +12,9 @@ import java.io.Serializable;
  *
  */
 @SuppressWarnings("serial")
-public abstract class Type implements IAcceptor, Serializable, Numberable {
+public abstract class Type extends AbstractViewResident implements IAcceptor, Serializable, Numberable {
   public Type() {
-    Scene.getInstance().getTypeNumberer().add(this);
+    this.getView().getTypeNumberer().add(this);
   }
 
   /** Returns a textual representation of this type. */
@@ -37,7 +37,7 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
   }
 
   /** Returns the least common superclass of this type and other. */
-  public Type merge(Type other, Scene cm) {
+  public Type merge(Type other) {
     // method overridden in subclasses UnknownType and RefType
     throw new RuntimeException("illegal type merge: " + this + " and " + other);
   }

@@ -34,7 +34,7 @@ import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -161,7 +161,7 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public void redirectJumpsToThisTo(Stmt newLocation) {
+  public void redirectJumpsToThisTo(IStmt newLocation) {
     // TODO Auto-generated method stub
 
   }

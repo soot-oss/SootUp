@@ -4,7 +4,6 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 
 import de.upb.soot.Utils;
 import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -40,15 +39,12 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   protected Collection<AbstractNamespace> cpEntries;
 
   /**
-   * Creates a {@link JavaClassPathNamespace} which locates classes based on the provided {@link IClassProvider}.
+   * Creates a {@link JavaClassPathNamespace} which locates classes in the given class path.
    * 
-   * @param classProvider
-   *          The {@link IClassProvider} for generating {@link ClassSource}es for the files found on the class path
    * @param classPath
    *          The class path to search in
    */
-  public JavaClassPathNamespace(IClassProvider classProvider, String classPath) {
-    super(classProvider);
+  public JavaClassPathNamespace(String classPath) {
 
     if (isNullOrEmpty(classPath)) {
       throw new InvalidClassPathException("Empty class path given");
@@ -129,7 +125,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
 
   private Optional<AbstractNamespace> nsForPath(Path path) {
     if (Files.exists(path) && (java.nio.file.Files.isDirectory(path) || PathUtils.isArchive(path))) {
-      return Optional.of(PathBasedNamespace.createForClassContainer(classProvider, path));
+      return Optional.of(PathBasedNamespace.createForClassContainer(path));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();

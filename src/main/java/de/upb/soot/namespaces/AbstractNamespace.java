@@ -15,11 +15,7 @@ import java.util.Optional;
  * @author Manuel Benz created on 22.05.18
  */
 public abstract class AbstractNamespace implements INamespace {
-  protected final IClassProvider classProvider;
-
-  public AbstractNamespace(IClassProvider classProvider) {
-    this.classProvider = classProvider;
-  }
+  protected IClassProvider classProvider;
 
   /*
    * @Override public Collection<SootClass> getClasses(SignatureFactory factory) {
@@ -35,5 +31,6 @@ public abstract class AbstractNamespace implements INamespace {
 
   protected abstract Collection<ClassSource> getClassSources(SignatureFactory factory);
 
+  @Override
   public abstract Optional<ClassSource> getClassSource(ClassSignature classSignature);
 }

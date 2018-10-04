@@ -43,7 +43,7 @@ public class JIfStmt extends AbstractStmt {
 
   final List<StmtBox> targetBoxes;
 
-  public JIfStmt(Value condition, Stmt target) {
+  public JIfStmt(Value condition, IStmt target) {
     this(condition, Jimple.getInstance().newStmtBox(target));
   }
 
@@ -65,7 +65,7 @@ public class JIfStmt extends AbstractStmt {
 
   @Override
   public String toString() {
-    Stmt t = getTarget();
+    IStmt t = getTarget();
     String target = "(branch)";
     if (!t.branches()) {
       target = t.toString();
@@ -96,11 +96,11 @@ public class JIfStmt extends AbstractStmt {
     return conditionBox;
   }
 
-  public Stmt getTarget() {
+  public IStmt getTarget() {
     return targetBox.getStmt();
   }
 
-  public void setTarget(Stmt target) {
+  public void setTarget(IStmt target) {
     targetBox.setStmt(target);
   }
 

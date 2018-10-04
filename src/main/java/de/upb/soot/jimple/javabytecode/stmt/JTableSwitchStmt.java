@@ -31,7 +31,7 @@ import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -42,7 +42,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   int highIndex;
 
   // This method is necessary to deal with constructor-must-be-first-ism.
-  private static StmtBox[] getTargetBoxesArray(List<? extends Stmt> targets) {
+  private static StmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
     StmtBox[] targetBoxes = new StmtBox[targets.size()];
     for (int i = 0; i < targetBoxes.length; i++) {
       targetBoxes[i] = Jimple.getInstance().newStmtBox(targets.get(i));
@@ -55,7 +55,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     return new JTableSwitchStmt(Jimple.cloneIfNecessary(getKey()), lowIndex, highIndex, getTargets(), getDefaultTarget());
   }
 
-  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends Stmt> targets, Stmt defaultTarget) {
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets, IStmt defaultTarget) {
     this(Jimple.getInstance().newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets),
         Jimple.getInstance().newStmtBox(defaultTarget));
   }
@@ -89,11 +89,11 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     // In this for-loop, we cannot use "<=" since 'i' would wrap around.
     // The case for "i == highIndex" is handled separately after the loop.
     for (int i = lowIndex; i < highIndex; i++) {
-      Stmt target = getTarget(i - lowIndex);
+      IStmt target = getTarget(i - lowIndex);
       buffer.append(
           "    " + Jimple.CASE + " " + i + ": " + Jimple.GOTO + " " + (target == this ? "self" : target) + ";" + endOfLine);
     }
-    Stmt target = getTarget(highIndex - lowIndex);
+    IStmt target = getTarget(highIndex - lowIndex);
     buffer.append("    " + Jimple.CASE + " " + highIndex + ": " + Jimple.GOTO + " " + (target == this ? "self" : target)
         + ";" + endOfLine);
 

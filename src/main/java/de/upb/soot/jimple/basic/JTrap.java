@@ -27,11 +27,11 @@ package de.upb.soot.jimple.basic;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 
 public class JTrap extends AbstractTrap {
 
-  public JTrap(SootClass exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
+  public JTrap(SootClass exception, IStmt beginStmt, IStmt endStmt, IStmt handlerStmt) {
     super(exception, Jimple.getInstance().newStmtBox(beginStmt), Jimple.getInstance().newStmtBox(endStmt),
         Jimple.getInstance().newStmtBox(handlerStmt));
   }

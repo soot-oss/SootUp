@@ -1,16 +1,19 @@
 package de.upb.soot;
 
+import de.upb.soot.buildactor.ViewBuilder;
+import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.CompositeNamespace;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.JarFileNamespace;
+import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
-import de.upb.soot.views.ViewBuilder;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A Soot user should first define a Project instance to describe the outlines of an analysis run.
@@ -64,4 +67,9 @@ public class Project {
     public IView createView(Scope s) {
         throw new NotYetImplementedException(); // TODO
     }
+
+  public Optional<SootClass> getClass(ClassSignature moduleSignature) {
+    // TODO Auto-generated method stub
+    return null;
+  }
 }
