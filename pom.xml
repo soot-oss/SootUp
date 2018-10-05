@@ -53,6 +53,7 @@
 				<configuration>
 					<propertyExpansion>config_loc=${checkstyle.dir.path}</propertyExpansion>
 					<configLocation>${checkstyle.file.path}</configLocation>
+					<suppressionsLocation>${checkstyle.dir.path}/checkstyle_supressions.xml</suppressionsLocation>
 					<encoding>UTF-8</encoding>
 					<logViolationsToConsole>true</logViolationsToConsole>
 					<failOnViolation>true</failOnViolation>
