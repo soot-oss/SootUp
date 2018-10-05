@@ -1,24 +1,13 @@
 package de.upb.soot.namespaces;
 
-import com.google.common.base.Preconditions;
-
-import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
-import de.upb.soot.signatures.ClassSignature;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.ModulePackageSignature;
-import de.upb.soot.signatures.ModuleSignatureFactory;
-import de.upb.soot.signatures.PackageSignature;
-import de.upb.soot.signatures.SignatureFactory;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.*;
+
+import com.google.common.base.Preconditions;
 
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;

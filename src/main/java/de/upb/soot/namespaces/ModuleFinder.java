@@ -4,10 +4,7 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
-import de.upb.soot.signatures.ClassSignature;
-import de.upb.soot.signatures.ModuleDecaratorClassSignature;
-import de.upb.soot.signatures.ModuleSignature;
-import de.upb.soot.signatures.ModuleSignatureFactory;
+import de.upb.soot.signatures.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -251,8 +248,7 @@ public class ModuleFinder {
     // create proper moduleInfoSignature
     // add the module name, which was unknown before
     // moduleInfoSource.setClassSignature();
-    ModuleSignature moduleSignature
-        = ((ModuleSignatureFactory) classProvider.getScene().getSignatureFactory()).getModuleSignature(moduleName);
+    ModuleSignature moduleSignature = ModuleSignatureFactory.getModuleSignature(moduleName);
     ClassSignature sig = new ModuleDecaratorClassSignature(ModuleSignatureFactory.MODULE_INFO_CLASS, moduleSignature);
     moduleInfoSource.setClassSignature(sig);
   }
