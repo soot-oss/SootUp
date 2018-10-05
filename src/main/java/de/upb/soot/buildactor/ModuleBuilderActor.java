@@ -1,28 +1,33 @@
 package de.upb.soot.buildactor;
 
+import akka.actor.AbstractLoggingActor;
+import akka.actor.Props;
+
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.ClassSource;
-
-import akka.actor.AbstractLoggingActor;
-import akka.actor.Props;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.views.Scene;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.ModuleVisitor;
-import org.objectweb.asm.Opcodes;
 
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.*;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ModuleVisitor;
+import org.objectweb.asm.Opcodes;
 
 public class ModuleBuilderActor extends AbstractLoggingActor {
 
@@ -33,6 +38,10 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
   public ModuleBuilderActor(Scene project, ClassSource classSource) {
     this.project = project;
     this.classSource = classSource;
+  }
+
+  public static Props props(Scene scene, ClassSource classSource) {
+    return Props.create(ModuleBuilderActor.class, scene, classSource);
   }
 
   @Override
@@ -53,8 +62,9 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
 
   private void resolve(ResolveMessage m) {
     log().info("Full reify for [{}].", classSource.getClassSignature().toString());
-    if (module == null)
+    if (module == null) {
       throw new IllegalStateException();
+    }
 
     module = getSootModule(classSource, new ResolveModuleVisitor(module));
 
@@ -100,16 +110,17 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
     return scb.result;
   }
 
-  public static Props props(Scene scene, ClassSource classSource) {
-    return Props.create(ModuleBuilderActor.class, scene, classSource);
-  }
-
   public static class SootModuleBuilder extends ClassVisitor {
 
     private final ModuleVisitor visitor;
     private SootModuleInfo result;
     private ClassSource source;
 
+    /**
+     * The module builder extends the @see org.objectweb.asm.ClassVisitor
+     * @param source the class source from whicht to read the module info
+     * @param visitor the visitor to build the module-info file
+     */
     public SootModuleBuilder(ClassSource source, ModuleVisitor visitor) {
       super(Opcodes.ASM6);
       this.source = source;

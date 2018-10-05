@@ -4,24 +4,25 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
-import de.upb.soot.buildactor.ResolveMessage;
-import de.upb.soot.signatures.SignatureFactory;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 
 import de.upb.soot.buildactor.ClassBuilderActor;
 import de.upb.soot.buildactor.ModuleBuilderActor;
 import de.upb.soot.buildactor.ReifyMessage;
+import de.upb.soot.buildactor.ResolveMessage;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
+
+import scala.concurrent.Await;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
 
 public class Scene {
   private ActorSystem system;
@@ -99,7 +100,7 @@ public class Scene {
     if (this.createdActors.containsKey(source)) {
       return createdActors.get(source);
     }
-    //does not work for some reason
+    // does not work for some reason
     // actorRef = this.createdActors.getOrDefault(source, createActorRef(source));
     // return actorRef;
     return createActorRef(source);

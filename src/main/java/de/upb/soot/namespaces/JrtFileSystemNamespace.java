@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FilenameUtils;
-
 /**
  * Base class for {@link INamespace}s that can be located by a {@link Path} object.
  *

@@ -1,20 +1,21 @@
 package de.upb.soot.namespaces;
 
-import categories.Java9Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
-import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
+
+import java.util.Collections;
+import java.util.Optional;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
 
-import java.lang.reflect.Constructor;
-import java.util.Collections;
-import java.util.Optional;
-
-import static org.junit.Assert.*;
+import categories.Java9Test;
 
 @Category(Java9Test.class)
 

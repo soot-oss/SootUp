@@ -1,9 +1,10 @@
 package de.upb.soot.buildactor;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
-
 import akka.actor.AbstractLoggingActor;
 import akka.actor.Props;
+
+import de.upb.soot.namespaces.classprovider.ClassSource;
+
 
 public class ClassBuilderActor extends AbstractLoggingActor {
 

@@ -3,6 +3,7 @@ package de.upb.soot.namespaces.classprovider;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Objects;
+
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.ClassSignature;
 
@@ -55,17 +56,19 @@ public class ClassSource {
   }
 
   /**
-   * Even if a the signature changes, the classource remains the same, e.g., if it is associated to an automatic module
+   * Even if a the signature changes, the classource remains the same, e.g., if it is associated to an automatic module s
    * 
-   * @param o
-   * @return
+   * @param o the object to compare with
+   * @return both objects are logically equal
    */
   @Override
   public boolean equals(Object o) {
-    if (this == o)
+    if (this == o) {
       return true;
-    if (o == null || getClass() != o.getClass())
+    }
+    if (o == null || getClass() != o.getClass()) {
       return false;
+    }
     ClassSource that = (ClassSource) o;
     return Objects.equal(srcNamespace, that.srcNamespace) && Objects.equal(sourcePath, that.sourcePath);
   }

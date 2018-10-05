@@ -1,11 +1,10 @@
 package de.upb.soot.namespaces.classprovider;
 
-import de.upb.soot.Options;
-import de.upb.soot.views.Scene;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.views.Scene;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -21,8 +20,12 @@ public interface IClassProvider {
   /**
    * Resolve the given ClassSource to a SootClass.
    * 
-   * @param classSource
-   *          to resource
+   * @param srcNamespace
+   *          to source's namespace
+   * @param sourcePath
+   *          the path to the source file
+   * @param classSignature
+   *          its signature
    * @return the resolved SootClass
    */
   // SootClass getSootClass(ClassSource classSource);

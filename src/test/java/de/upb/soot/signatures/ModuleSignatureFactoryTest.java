@@ -1,11 +1,11 @@
 package de.upb.soot.signatures;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import categories.Java9Test;
-
-import static org.junit.Assert.*;
 
 @Category(Java9Test.class)
 

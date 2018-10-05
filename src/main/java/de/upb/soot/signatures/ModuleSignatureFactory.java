@@ -14,7 +14,7 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
 
   public static final ClassSignature MODULE_INFO_CLASS = new ClassSignature("module-info", PackageSignature.DEFAULT_PACKAGE);
 
-  private final static Map<String, ModuleSignature> modules = new HashMap<>();
+  private static final Map<String, ModuleSignature> modules = new HashMap<>();
 
   static {
     /*

@@ -1,22 +1,23 @@
 package de.upb.soot.namespaces;
 
-import categories.Java8Test;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.views.Scene;
 
 import java.util.Collection;
 import java.util.Optional;
 
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.views.Scene;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.experimental.categories.Category;
 import org.mockito.internal.matchers.GreaterOrEqual;
 import org.mockito.internal.matchers.LessOrEqual;
+
+import categories.Java8Test;
 
 /**
  * @author Manuel Benz created on 07.06.18

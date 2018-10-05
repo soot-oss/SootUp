@@ -1,6 +1,5 @@
 package de.upb.soot.namespaces;
 
-import categories.Java8Test;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 
@@ -11,6 +10,8 @@ import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import categories.Java8Test;
 
 /** @author Manuel Benz created on 06.06.18 */
 @Category(Java8Test.class)

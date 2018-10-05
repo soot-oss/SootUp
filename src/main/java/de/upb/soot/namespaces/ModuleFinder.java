@@ -218,11 +218,7 @@ public class ModuleFinder {
 
       this.moduleNamespace.put(moduleName, namespace);
 
-    }
-
-    else
-
-    {
+    } else {
       // no module-info treat as automatic module
       // create module name from the jar file
       String filename = jar.getFileName().toString();

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
-import de.upb.soot.namespaces.JrtFileSystemNamespace;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
@@ -17,16 +16,8 @@ import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.powermock.reflect.Whitebox;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.pattern.Patterns;
-import akka.util.Timeout;
 import categories.Java9Test;
-import scala.concurrent.Await;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
 
 @Category(Java9Test.class)
 
