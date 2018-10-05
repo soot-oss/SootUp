@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.*;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -178,6 +179,9 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
     }
 
     private Iterable<SootModuleInfo> resolve(String[] modules) {
+      if (modules == null) {
+        return Collections.emptyList();
+      }
       return Arrays.stream(modules).map(m -> resolve(m)).collect(Collectors.toList());
     }
 
@@ -186,6 +190,9 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
     }
 
     private Iterable<SootClass> resolveServiceClass(String[] providers) {
+      if (providers == null) {
+        return Collections.emptyList();
+      }
       return Arrays.stream(providers).map(p -> resolveServiceClass(p)).collect(Collectors.toList());
     }
   }
