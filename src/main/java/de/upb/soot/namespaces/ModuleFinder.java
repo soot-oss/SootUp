@@ -4,7 +4,10 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
-import de.upb.soot.signatures.*;
+import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.ModuleDecaratorClassSignature;
+import de.upb.soot.signatures.ModuleSignature;
+import de.upb.soot.signatures.ModuleSignatureFactory;
 
 import java.io.File;
 import java.io.IOException;

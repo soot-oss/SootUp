@@ -1,9 +1,10 @@
 package de.upb.soot.core;
 
 import com.google.common.collect.Sets;
+
 import de.upb.soot.namespaces.classprovider.ClassSource;
 
-import java.util.*;
+import java.util.HashSet;
 
 public class SootModuleInfo extends SootClass {
 
@@ -57,6 +58,18 @@ public class SootModuleInfo extends SootClass {
   private boolean isAutomaticModule;
   private int accessModifier;
 
+  /**
+   * Create a new SootModuleInfo.
+   * 
+   * @param cs
+   *          the ClassSource that was used to create this module-info
+   * @param name
+   *          the module name
+   * @param access
+   *          the module access modifier
+   * @param version
+   *          the module's version
+   */
   public SootModuleInfo(ClassSource cs, String name, int access, String version) {
     super(cs);
     this.name = name;

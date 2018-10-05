@@ -38,6 +38,10 @@ public class SootClass {
     return false;
   }
 
+  /**
+   * Whether the class is phantom.
+   * @return
+   */
   public boolean isPhantom() {
     // TODO Auto-generated method stub
     return false;
@@ -49,6 +53,10 @@ public class SootClass {
     return null;
   }
 
+  /**
+   * Super Class.
+   * @return the superclass
+   */
   public SootClass getSuperclassUnsafe() {
 
     // TODO Auto-generated method stub

@@ -144,19 +144,19 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
     // else use the module system and create fully class signature
     if (factory instanceof ModuleSignatureFactory) {
-      //FIXME: adann clean this up!
+      // FIXME: adann clean this up!
       // String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
       // int index = filename.lastIndexOf('.');
-//      Path parentDir = filename.subpath(0, 2);
-//      Path packageFileName = parentDir.relativize(filename);
-//      // get the package
-//      String packagename = packageFileName.toString().replace('/', '.');
-//      String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
+      // Path parentDir = filename.subpath(0, 2);
+      // Path packageFileName = parentDir.relativize(filename);
+      // // get the package
+      // String packagename = packageFileName.toString().replace('/', '.');
+      // String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
       //
       ClassSignature sig = factory.fromPath(filename);
 
-
-      return ((ModuleSignatureFactory) factory).getClassSignature(sig.className, sig.packageSignature.packageName, moduleDir.toString());
+      return ((ModuleSignatureFactory) factory).getClassSignature(sig.className, sig.packageSignature.packageName,
+          moduleDir.toString());
     }
 
     // if we are using the normal signature factory, than trim the module from the path
