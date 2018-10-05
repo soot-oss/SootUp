@@ -96,8 +96,13 @@ public class Scene {
 
   private ActorRef getOrCreateActor(ClassSource source) {
     ActorRef actorRef = null;
-    actorRef = this.createdActors.getOrDefault(source, createActorRef(source));
-    return actorRef;
+    if (this.createdActors.containsKey(source)) {
+      return createdActors.get(source);
+    }
+    //does not work for some reason
+    // actorRef = this.createdActors.getOrDefault(source, createActorRef(source));
+    // return actorRef;
+    return createActorRef(source);
   }
 
   private ActorRef createActorRef(ClassSource source) {
