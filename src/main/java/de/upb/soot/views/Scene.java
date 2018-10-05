@@ -70,7 +70,7 @@ public class Scene {
 
   public Optional<SootClass> resolveClass(ClassSource classSource) {
     Optional<SootClass> result = Optional.empty();
-    ActorRef cb = createdActors.get(classSource);
+    ActorRef cb = getOrCreateActor(classSource);
     Timeout timeout = new Timeout(Duration.create(5, "seconds"));
     Future<Object> cbFuture = Patterns.ask(cb, new ResolveMessage(), timeout);
     try {
