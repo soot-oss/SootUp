@@ -32,7 +32,7 @@ import scala.concurrent.duration.Duration;
 
 public class ModuleBuilderActorTest {
 
-  private Scene getScene() {
+  private Scene createNewScene() {
     ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory() {
     };
 
@@ -48,34 +48,34 @@ public class ModuleBuilderActorTest {
 
   @Test
   public void refiyMessageModuleInfoTest() throws Exception {
+    Scene scene = createNewScene();
 
     // FIXME: this casting is so ugly
     final ClassSignature sig
-        = ((ModuleSignatureFactory) getScene().getSignatureFactory()).getClassSignature("module-info", "", "fancyMod");
-    Optional<ClassSource> source = getScene().pollNamespaces(sig);
+        = ((ModuleSignatureFactory) scene.getSignatureFactory()).getClassSignature("module-info", "", "de.upb.mod");
+    Optional<ClassSource> source = scene.pollNamespaces(sig);
 
     assertTrue(source.isPresent());
 
-    Optional<SootClass> result = getScene().reifyClass(source.get());
+    Optional<SootClass> result = scene.reifyClass(source.get());
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
   }
 
   @Test
   public void resolveMessageModuleInfoTest() throws Exception {
-
-    IClassProvider classProvider = new AsmJavaClassProvider(getScene());
+    Scene scene = createNewScene();
 
     final ClassSignature sig
-        = ((ModuleSignatureFactory) getScene().getSignatureFactory()).getClassSignature("module-info", "", "fancyMod");
-    Optional<ClassSource> source = getScene().pollNamespaces(sig);
+        = ((ModuleSignatureFactory) scene.getSignatureFactory()).getClassSignature("module-info", "", "de.upb.mod");
+    Optional<ClassSource> source = scene.pollNamespaces(sig);
 
     assertTrue(source.isPresent());
 
-    Optional<SootClass> result = getScene().reifyClass(source.get());
+    Optional<SootClass> result = scene.reifyClass(source.get());
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
-    result = getScene().resolveClass(source.get());
+    result = scene.resolveClass(source.get());
 
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);

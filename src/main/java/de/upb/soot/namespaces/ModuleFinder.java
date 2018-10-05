@@ -4,6 +4,9 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.ModuleDecaratorClassSignature;
+import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 
 import java.io.File;
@@ -26,7 +29,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Discovers all modules in a given module path. For automatic modules names are generated. Supports exploded modules,
+ * Discovers all modules in a given module path. For automatic modules, names are generated. Supports exploded modules,
  * modular jars, and automatic modules as defined in the official documentation:
  * 
  * @see <a
@@ -196,7 +199,9 @@ public class ModuleFinder {
 
         // we have a modular jar
         // get the module name
+        // create proper moduleInfoSignature
         moduleInfoFile = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
+
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -210,7 +215,6 @@ public class ModuleFinder {
       } catch (ClassResolvingException classResolvingException) {
         classResolvingException.printStackTrace();
       }
-      // = new SootModuleInfo(moduleInfoSource, name, access, version).getName();
 
       this.moduleNamespace.put(moduleName, namespace);
 
@@ -238,7 +242,19 @@ public class ModuleFinder {
     }
 
     String moduleName = ((SootModuleInfo) moduleInfoClass.get()).getName();
+    createProperModuleSignature(moduleInfoSource, moduleName);
+
     return moduleName;
+  }
+
+  private void createProperModuleSignature(ClassSource moduleInfoSource, String moduleName) {
+    // create proper moduleInfoSignature
+    // add the module name, which was unknown before
+    // moduleInfoSource.setClassSignature();
+    ModuleSignature moduleSignature
+        = ((ModuleSignatureFactory) classProvider.getScene().getSignatureFactory()).getModuleSignature(moduleName);
+    ClassSignature sig = new ModuleDecaratorClassSignature(ModuleSignatureFactory.MODULE_INFO_CLASS, moduleSignature);
+    moduleInfoSource.setClassSignature(sig);
   }
 
   /**

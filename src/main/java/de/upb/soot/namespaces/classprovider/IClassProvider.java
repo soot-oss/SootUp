@@ -1,6 +1,7 @@
 package de.upb.soot.namespaces.classprovider;
 
 import de.upb.soot.Options;
+import de.upb.soot.views.Scene;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
@@ -36,5 +37,7 @@ public interface IClassProvider {
   FileType getHandledFileType();
 
   Optional<SootClass> reify(ClassSource classSource);
+
+  Scene getScene();
 
 }

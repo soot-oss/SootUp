@@ -15,9 +15,8 @@ import java.nio.file.Path;
  **/
 public class ClassSource {
   private final INamespace srcNamespace;
-  private final ClassSignature classSignature;
   private final Path sourcePath;
-  private IClassProvider classProvider;
+  private ClassSignature classSignature;
 
   /**
    * Creates and a {@link ClassSource} for a specific source file. The file should be passed as {@link Path} and can be
@@ -48,6 +47,10 @@ public class ClassSource {
 
   public Path getSourcePath() {
     return sourcePath;
+  }
+
+  public void setClassSignature(ClassSignature classSignature) {
+    this.classSignature = classSignature;
   }
 
 }

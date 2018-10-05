@@ -36,8 +36,8 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
 
   @Override
   public Receive createReceive() {
-    return receiveBuilder().match(ReifyMessage.class, this::reify).match(ResolveMessage.class, this::resolve).build();
-
+    return receiveBuilder().match(ReifyMessage.class, this::reify).match(ResolveMessage.class, this::resolve)
+        .matchEquals("done", m -> getContext().stop(getSelf())).build();
   }
 
   private void reify(ReifyMessage m) {
@@ -60,9 +60,13 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
     sender().tell(module, this.getSelf());
 
     log().info("Completed reify for [{}]", classSource.getClassSignature().toString());
+
+    // we are done
+    this.getSelf().tell("done", this.getSelf());
   }
 
   private SootModuleInfo getSootModule(ClassSource classSource, ModuleVisitor visitor) {
+
     SootModuleBuilder scb = new SootModuleBuilder(classSource, visitor);
     URI uri = classSource.getSourcePath().toUri();
 

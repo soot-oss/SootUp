@@ -5,7 +5,6 @@ import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 import de.upb.soot.buildactor.ResolveMessage;
-import de.upb.soot.namespaces.JavaModulePathNamespace;
 import de.upb.soot.signatures.SignatureFactory;
 import scala.concurrent.Await;
 import scala.concurrent.Future;
@@ -16,11 +15,11 @@ import de.upb.soot.buildactor.ModuleBuilderActor;
 import de.upb.soot.buildactor.ReifyMessage;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -35,10 +34,19 @@ public class Scene {
 
   private Collection<INamespace> namespaces;
 
+  // How to look up an actor?
+  /**
+   * according to the docs https://doc.akka.io/docs/akka/current/actors.html#identifying-actors-via-actor-selection "It is
+   * always preferable to communicate with other Actors using their ActorRef instead of relying upon ActorSelection"
+   *
+   */
+  private HashMap<ClassSource, ActorRef> createdActors;
+
   public Scene(SignatureFactory signatureFactory) {
     this.system = ActorSystem.create("myActorToRunTests");
     this.signatureFactory = signatureFactory;
     this.namespaces = new HashSet<>();
+    this.createdActors = new HashMap<>();
   }
 
   public Scene() {
@@ -49,7 +57,7 @@ public class Scene {
     Optional<SootClass> result = Optional.empty();
     // TODO: cache
 
-    // TODO: decide for phantom
+    // TODO: decide for phantom ---> That's a good question, and how to create them ...
 
     Optional<ClassSource> source = pollNamespaces(signature);
     // MB: consider using source.flatMap(#methodRef) here. methodRef can than point to the actual logic for class resolution
@@ -62,7 +70,7 @@ public class Scene {
 
   public Optional<SootClass> resolveClass(ClassSource classSource) {
     Optional<SootClass> result = Optional.empty();
-    ActorRef cb = createActor(classSource);
+    ActorRef cb = createdActors.get(classSource);
     Timeout timeout = new Timeout(Duration.create(5, "seconds"));
     Future<Object> cbFuture = Patterns.ask(cb, new ResolveMessage(), timeout);
     try {
@@ -75,7 +83,7 @@ public class Scene {
 
   public Optional<SootClass> reifyClass(ClassSource classSource) {
     Optional<SootClass> result = Optional.empty();
-    ActorRef cb = createActor(classSource);
+    ActorRef cb = getOrCreateActor(classSource);
     Timeout timeout = new Timeout(Duration.create(5, "seconds"));
     Future<Object> cbFuture = Patterns.ask(cb, new ReifyMessage(), timeout);
     try {
@@ -86,11 +94,21 @@ public class Scene {
     return result;
   }
 
-  private ActorRef createActor(ClassSource source) {
+  private ActorRef getOrCreateActor(ClassSource source) {
+    ActorRef actorRef = null;
+    actorRef = this.createdActors.getOrDefault(source, createActorRef(source));
+    return actorRef;
+  }
+
+  private ActorRef createActorRef(ClassSource source) {
+    ActorRef actorRef = null;
     if (source.getClassSignature().isModuleInfo()) {
-      return system.actorOf(ModuleBuilderActor.props(this, source));
+      actorRef = system.actorOf(ModuleBuilderActor.props(this, source));
+    } else {
+      actorRef = system.actorOf(ClassBuilderActor.props(source));
     }
-    return system.actorOf(ClassBuilderActor.props(source));
+    this.createdActors.put(source, actorRef);
+    return actorRef;
   }
 
   public Optional<ClassSource> pollNamespaces(ClassSignature signature) {

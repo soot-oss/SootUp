@@ -35,4 +35,8 @@ public class AsmJavaClassProvider implements IClassProvider {
     return scene.reifyClass(classSource);
   }
 
+  public Scene getScene() {
+    return scene;
+  }
+
 }
