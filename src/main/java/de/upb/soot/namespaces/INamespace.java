@@ -1,7 +1,7 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 
 import java.util.Optional;

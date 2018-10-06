@@ -3,8 +3,7 @@ package de.upb.soot.namespaces;
 import com.google.common.base.Preconditions;
 
 import de.upb.soot.Utils;
-import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModulePackageSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
@@ -32,7 +31,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
-  protected JrtFileSystemNamespace(IClassProvider classProvider) {
+  protected JrtFileSystemNamespace(de.upb.soot.classprovider.ClassProvider classProvider) {
     super(classProvider);
   }
 

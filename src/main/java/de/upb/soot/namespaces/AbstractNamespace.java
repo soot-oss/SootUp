@@ -1,7 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -15,9 +14,9 @@ import java.util.Optional;
  * @author Manuel Benz created on 22.05.18
  */
 public abstract class AbstractNamespace implements INamespace {
-  protected final IClassProvider classProvider;
+  protected final de.upb.soot.classprovider.ClassProvider classProvider;
 
-  public AbstractNamespace(IClassProvider classProvider) {
+  public AbstractNamespace(de.upb.soot.classprovider.ClassProvider classProvider) {
     this.classProvider = classProvider;
   }
 

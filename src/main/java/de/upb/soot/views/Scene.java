@@ -5,13 +5,11 @@ import akka.actor.ActorSystem;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
 
-import de.upb.soot.buildactor.ClassBuilderActor;
-import de.upb.soot.buildactor.ModuleBuilderActor;
 import de.upb.soot.buildactor.ReifyMessage;
 import de.upb.soot.buildactor.ResolveMessage;
+import de.upb.soot.classprovider.ClassSource;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -108,11 +106,7 @@ public class Scene {
 
   private ActorRef createActorRef(ClassSource source) {
     ActorRef actorRef = null;
-    if (source.getClassSignature().isModuleInfo()) {
-      actorRef = system.actorOf(ModuleBuilderActor.props(this, source));
-    } else {
-      actorRef = system.actorOf(ClassBuilderActor.props(source));
-    }
+    actorRef = system.actorOf(de.upb.soot.buildactor.ClassBuilderActor.props(this, source));
     this.createdActors.put(source, actorRef);
     return actorRef;
   }

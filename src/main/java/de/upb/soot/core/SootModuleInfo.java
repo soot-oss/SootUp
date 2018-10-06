@@ -2,7 +2,7 @@ package de.upb.soot.core;
 
 import com.google.common.collect.Sets;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.classprovider.ClassSource;
 
 import java.util.HashSet;
 

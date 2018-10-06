@@ -1,7 +1,7 @@
 package de.upb.soot.core;
 
+import de.upb.soot.classprovider.ClassSource;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.namespaces.classprovider.ClassSource;
 
 /**
  * Soot's counterpart of the source languages class concept.
@@ -17,6 +17,10 @@ public class SootClass {
     public Resolve(int level) {
       this.level = level;
     }
+  }
+
+  public de.upb.soot.classprovider.ClassSource getCs() {
+    return cs;
   }
 
   private ClassSource cs;
@@ -40,6 +44,7 @@ public class SootClass {
 
   /**
    * Whether the class is phantom.
+   * 
    * @return
    */
   public boolean isPhantom() {
@@ -55,6 +60,7 @@ public class SootClass {
 
   /**
    * Super Class.
+   * 
    * @return the superclass
    */
   public SootClass getSuperclassUnsafe() {

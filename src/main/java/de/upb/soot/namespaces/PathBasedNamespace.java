@@ -1,8 +1,8 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.Utils;
-import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.classprovider.ClassSource;
+import de.upb.soot.classprovider.ClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public abstract class PathBasedNamespace extends AbstractNamespace {
   protected final Path path;
 
-  private PathBasedNamespace(IClassProvider classProvider, Path path) {
+  private PathBasedNamespace(de.upb.soot.classprovider.ClassProvider classProvider, Path path) {
     super(classProvider);
     this.path = path;
   }
@@ -33,12 +33,12 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
    * (and possibly network path's in the future).
    * 
    * @param classProvider
-   *          The {@link IClassProvider} for generating {@link ClassSource}es out of the found files on the given path
+   *          The {@link ClassProvider} for generating {@link ClassSource}es out of the found files on the given path
    * @param path
    *          The path to search in
    * @return A {@link PathBasedNamespace} implementation dependent on the given {@link Path}'s {@link FileSystem}
    */
-  public static PathBasedNamespace createForClassContainer(IClassProvider classProvider, Path path) {
+  public static PathBasedNamespace createForClassContainer(de.upb.soot.classprovider.ClassProvider classProvider, Path path) {
     if (Files.isDirectory(path)) {
       return new DirectoryBasedNamespace(classProvider, path);
     } else if (PathUtils.isArchive(path)) {
@@ -74,7 +74,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
 
   private static final class DirectoryBasedNamespace extends PathBasedNamespace {
 
-    private DirectoryBasedNamespace(IClassProvider classProvider, Path path) {
+    private DirectoryBasedNamespace(de.upb.soot.classprovider.ClassProvider classProvider, Path path) {
       super(classProvider, path);
     }
 
@@ -91,7 +91,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
 
   private static final class ArchiveBasedNamespace extends PathBasedNamespace {
 
-    private ArchiveBasedNamespace(IClassProvider classProvider, Path path) {
+    private ArchiveBasedNamespace(de.upb.soot.classprovider.ClassProvider classProvider, Path path) {
       super(classProvider, path);
     }
 
