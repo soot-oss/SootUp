@@ -6,7 +6,7 @@ public class ResolveModuleVisitor extends org.objectweb.asm.ModuleVisitor {
 
   public ResolveModuleVisitor(de.upb.soot.core.SootModuleInfo moduleInfo,
       de.upb.soot.classprovider.ClassProvider classProvider) {
-    super(org.objectweb.asm.Opcodes.ASM6);
+    super(org.objectweb.asm.Opcodes.ASM7);
     this.moduleInfo = moduleInfo;
     this.classProvider = classProvider;
   }
