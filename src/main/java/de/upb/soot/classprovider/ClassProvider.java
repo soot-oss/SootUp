@@ -42,6 +42,8 @@ public abstract class ClassProvider {
 
   public abstract de.upb.soot.core.SootClass resolve(de.upb.soot.core.SootClass sootClass);
 
+  public abstract de.upb.soot.core.SootMethod resolveMethodBody(de.upb.soot.core.SootMethod sootMethod);
+
   public abstract Scene getScene();
 
   final public Iterable<de.upb.soot.core.SootClass> resolveSootClasses(de.upb.soot.signatures.ClassSignature[] sootClasses) {

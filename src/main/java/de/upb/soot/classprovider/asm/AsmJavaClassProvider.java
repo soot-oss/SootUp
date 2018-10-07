@@ -51,6 +51,17 @@ public class AsmJavaClassProvider extends de.upb.soot.classprovider.ClassProvide
     return null;
   }
 
+  @Override
+  public de.upb.soot.core.SootMethod resolveMethodBody(de.upb.soot.core.SootMethod sootMethod) {
+    ClassSource classSource = sootMethod.declaringClass().getCs();
+    if (classSource.getClassSignature().isModuleInfo()) {
+      return null;
+    }
+    // do class stuff here
+    return null;
+
+  }
+
   private de.upb.soot.core.SootModuleInfo getSootModule(ClassSource classSource, org.objectweb.asm.ModuleVisitor visitor) {
 
     de.upb.soot.classprovider.asm.modules.SootModuleBuilder scb

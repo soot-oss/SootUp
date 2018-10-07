@@ -37,6 +37,10 @@ public class SootClass {
     // TODO Auto-generated method stub
   }
 
+  public de.upb.soot.core.SootMethod[] getMethods() {
+    return null;
+  }
+
   public boolean isInterface() {
     // TODO Auto-generated method stub
     return false;
@@ -44,7 +48,7 @@ public class SootClass {
 
   /**
    * Whether the class is phantom.
-   * 
+   *
    * @return
    */
   public boolean isPhantom() {
@@ -60,7 +64,7 @@ public class SootClass {
 
   /**
    * Super Class.
-   * 
+   *
    * @return the superclass
    */
   public SootClass getSuperclassUnsafe() {
