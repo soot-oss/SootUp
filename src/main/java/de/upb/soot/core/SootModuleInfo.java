@@ -107,4 +107,9 @@ public class SootModuleInfo extends SootClass {
   public boolean isAutomaticModule() {
     return isAutomaticModule;
   }
+
+  @Override
+  public Iterable<de.upb.soot.core.SootMethod> getMethods() {
+    return java.util.Collections.emptyList();
+  }
 }

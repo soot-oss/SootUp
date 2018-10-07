@@ -37,7 +37,7 @@ public class SootClass {
     // TODO Auto-generated method stub
   }
 
-  public de.upb.soot.core.SootMethod[] getMethods() {
+  public Iterable<SootMethod> getMethods() {
     return null;
   }
 
