@@ -40,6 +40,7 @@ public class AsmJavaClassProvider extends de.upb.soot.classprovider.ClassProvide
 
   }
 
+  @Override
   public de.upb.soot.core.SootClass resolve(de.upb.soot.core.SootClass sootClass) {
     ClassSource classSource = sootClass.getCs();
     if (classSource.getClassSignature().isModuleInfo()) {

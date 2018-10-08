@@ -2,8 +2,8 @@ package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
 
-import de.upb.soot.classprovider.ClassSource;
 import de.upb.soot.classprovider.ClassProvider;
+import de.upb.soot.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.ModulePackageSignature;

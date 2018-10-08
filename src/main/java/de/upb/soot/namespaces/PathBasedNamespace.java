@@ -1,8 +1,8 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.Utils;
-import de.upb.soot.classprovider.ClassSource;
 import de.upb.soot.classprovider.ClassProvider;
+import de.upb.soot.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -38,7 +38,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
    *          The path to search in
    * @return A {@link PathBasedNamespace} implementation dependent on the given {@link Path}'s {@link FileSystem}
    */
-  public static PathBasedNamespace createForClassContainer(de.upb.soot.classprovider.ClassProvider classProvider, Path path) {
+  public static PathBasedNamespace createForClassContainer(de.upb.soot.classprovider.ClassProvider classProvider,
+      Path path) {
     if (Files.isDirectory(path)) {
       return new DirectoryBasedNamespace(classProvider, path);
     } else if (PathUtils.isArchive(path)) {

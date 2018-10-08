@@ -34,6 +34,20 @@ import java.util.jar.JarFile;
 
 public class WalaIRtoJimple {
 
+  /**
+   * Start for WalaIRtoJimple.
+   * 
+   * @param args
+   *          default args
+   * @throws ClassHierarchyException
+   *           walas hierachy
+   * @throws IllegalArgumentException
+   *           if args are invalid
+   * @throws CallGraphBuilderCancelException
+   *           if callgraph construction fails
+   * @throws IOException
+   *           if input files cannot be read
+   */
   public static void main(String[] args)
       throws ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException, IOException {
     long start = System.currentTimeMillis();

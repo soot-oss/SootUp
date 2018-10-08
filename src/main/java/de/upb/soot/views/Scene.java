@@ -41,6 +41,11 @@ public class Scene {
    */
   private HashMap<ClassSource, ActorRef> createdActors;
 
+  /**
+   * The Scene, which is an entrypoint for a client.
+   * FIXME: maybe create a scene using the builder pattern
+   * @param signatureFactory the factory to use
+   */
   public Scene(SignatureFactory signatureFactory) {
     this.system = ActorSystem.create("myActorToRunTests");
     this.signatureFactory = signatureFactory;
@@ -52,6 +57,12 @@ public class Scene {
     this(null);
   }
 
+
+  /**
+   * Resolve a SootClass from a given ClassSignature.
+   * @param signature the signature of the class to resolve
+   * @return the initial resolved SootClass or an empty optional, if resolving fails
+   */
   public Optional<SootClass> getClass(ClassSignature signature) {
     Optional<SootClass> result = Optional.empty();
     // TODO: cache
@@ -67,6 +78,11 @@ public class Scene {
     return result;
   }
 
+  /**
+   * Fully resolve a SootClass from a ClassSource.
+   * @param classSource to resolve
+   * @return the fully resolved class or an empty Optional, if the resolving fails
+   */
   public Optional<SootClass> resolveClass(ClassSource classSource) {
     Optional<SootClass> result = Optional.empty();
     ActorRef cb = getOrCreateActor(classSource);
@@ -80,6 +96,11 @@ public class Scene {
     return result;
   }
 
+  /**
+   * Initialize a SootClass from a ClassSource.
+   * @param classSource to resolve
+   * @return the initial resolved class or an empty Optional, if the class initialization fails
+   */
   public Optional<SootClass> reifyClass(ClassSource classSource) {
     Optional<SootClass> result = Optional.empty();
     ActorRef cb = getOrCreateActor(classSource);
@@ -111,6 +132,11 @@ public class Scene {
     return actorRef;
   }
 
+  /**
+   * Search in the namespace for a input file with the signature.
+   * @param signature to search for
+   * @return if found the ClassSource, if nothing can be found an empty optional
+   */
   public Optional<ClassSource> pollNamespaces(ClassSignature signature) {
     // TODO: Traverse through namespaces
     // MB this does not make sense in our current impl. you would rather poll the namespaces one after another and if one

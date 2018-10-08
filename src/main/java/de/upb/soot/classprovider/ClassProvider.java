@@ -46,20 +46,34 @@ public abstract class ClassProvider {
 
   public abstract Scene getScene();
 
-  final public Iterable<de.upb.soot.core.SootClass> resolveSootClasses(de.upb.soot.signatures.ClassSignature[] sootClasses) {
+  /**
+   * Resolves an array of classes.
+   * 
+   * @param sootClasses
+   *          signatures of the classes to resolve
+   * @return the resolved classses
+   */
+  public final Iterable<de.upb.soot.core.SootClass> resolveSootClasses(de.upb.soot.signatures.ClassSignature[] sootClasses) {
     if (sootClasses == null) {
       return java.util.Collections.emptyList();
     }
     return java.util.Arrays.stream(sootClasses).map(p -> resolveSootClass(p)).collect(java.util.stream.Collectors.toList());
   }
 
-  final public de.upb.soot.core.SootClass resolveSootClass(de.upb.soot.signatures.ClassSignature signature) {
+  /**
+   * Resolve a SootClass.
+   * 
+   * @param signature
+   *          the signature of the class to resolve
+   * @return the resolved class
+   */
+  public final de.upb.soot.core.SootClass resolveSootClass(de.upb.soot.signatures.ClassSignature signature) {
     java.util.Optional<de.upb.soot.core.SootClass> moduleClass = getScene().getClass(signature);
     return moduleClass.get();
   }
 
-  // currenty, hack for the ModuleFinder, must be ommited...
-  final public java.util.Optional<de.upb.soot.core.SootClass>
+  // FIXME: currenty, hack for the ModuleFinder, must be ommited...
+  public final java.util.Optional<de.upb.soot.core.SootClass>
       reifyScene(de.upb.soot.classprovider.ClassSource moduleInfoSource) {
     return getScene().reifyClass(moduleInfoSource);
   }

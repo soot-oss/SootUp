@@ -4,6 +4,11 @@ public class ResolveModuleVisitor extends org.objectweb.asm.ModuleVisitor {
   private final de.upb.soot.core.SootModuleInfo moduleInfo;
   private final de.upb.soot.classprovider.ClassProvider classProvider;
 
+  /**
+   * A @see org.objectweb.asm.ModuleVisitor to fully resolve a module-info.class file.
+   * @param moduleInfo the @see SootModuleInfo to resolve
+   * @param classProvider used to trigger resolving of dependent module-info
+   */
   public ResolveModuleVisitor(de.upb.soot.core.SootModuleInfo moduleInfo,
       de.upb.soot.classprovider.ClassProvider classProvider) {
     super(org.objectweb.asm.Opcodes.ASM7);
