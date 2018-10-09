@@ -1,6 +1,7 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 
 import java.util.List;
@@ -21,6 +22,12 @@ public class CompositeNamespace implements INamespace {
         this.namespaces = namespaces;
     }
 
+    /**
+     * Provides the first class source instance found in the namespaces represented.
+     *
+     * @param signature The class to be searched.
+     * @return The {@link ClassSource} instance found or created... Or an empty Optional.
+     */
     @Override
     public Optional<ClassSource> getClassSource(ClassSignature signature) {
         List<Optional<ClassSource>> result = namespaces.stream().map(n -> n.getClassSource(signature))
@@ -31,5 +38,15 @@ public class CompositeNamespace implements INamespace {
         }
         if(result.size() == 1) return result.get(0);
         return Optional.empty();
+    }
+
+    /**
+     * Provides the class provider of the first namespace in the composition.
+     *
+     * @return An instance of {@link IClassProvider} to be used.
+     */
+    @Override
+    public IClassProvider getClassProvider() {
+        return namespaces.stream().findFirst().map(n -> n.getClassProvider()).orElse(null);
     }
 }

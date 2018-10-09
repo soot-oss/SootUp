@@ -4,6 +4,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 
 import de.upb.soot.Utils;
 import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -45,7 +46,11 @@ public class JavaClassPathNamespace extends AbstractNamespace {
    *          The class path to search in
    */
   public JavaClassPathNamespace(String classPath) {
+    this(classPath, getDefaultClassProvider());
+  }
 
+  public JavaClassPathNamespace(String classPath, IClassProvider provider) {
+    super(provider);
     if (isNullOrEmpty(classPath)) {
       throw new InvalidClassPathException("Empty class path given");
     }
@@ -62,6 +67,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
 
     logger.trace("{} class path entries registered", cpEntries.size());
   }
+
 
   /**
    * Explode the class or modulepath entries, separated by {@link File#pathSeparator}.

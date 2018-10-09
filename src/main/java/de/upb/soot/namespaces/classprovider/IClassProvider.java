@@ -33,6 +33,11 @@ public interface IClassProvider {
    */
   FileType getHandledFileType();
 
-  SootClass resolve(ClassSource classSource);
+  /**
+   * Create or provide a representation of the actual manifestation of the class.
+   * @return
+   */
+  Object getContent(ClassSource classSource);
+  // TODO: Find a better common supertype for this.
 
 }

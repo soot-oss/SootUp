@@ -83,11 +83,6 @@ public class SootClass extends AbstractViewResident implements Numberable {
     this.cs = cs;
   }
 
-  public void resolve() {
-    // aktor stuff
-    cs.resolve();
-  }
-
   private static final Logger logger = LoggerFactory.getLogger(SootClass.class);
   protected String name, shortName, fixedShortName, packageName, fixedPackageName;
   protected int modifiers;

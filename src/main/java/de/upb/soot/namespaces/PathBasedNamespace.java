@@ -2,6 +2,7 @@ package de.upb.soot.namespaces;
 
 import de.upb.soot.Utils;
 import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -23,6 +24,11 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
   protected final Path path;
 
   private PathBasedNamespace(Path path) {
+    this(path, getDefaultClassProvider());
+  }
+
+  private PathBasedNamespace(Path path, IClassProvider classProvider) {
+    super(classProvider);
     this.path = path;
   }
 

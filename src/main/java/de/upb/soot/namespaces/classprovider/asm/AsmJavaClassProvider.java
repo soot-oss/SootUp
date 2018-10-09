@@ -22,9 +22,13 @@ public class AsmJavaClassProvider implements IClassProvider {
     return FileType.CLASS;
   }
 
+  /**
+   * Provide the ASM representation of the class file.
+   * @param classSource The source to be read.
+   * @return A representation of the class file.
+   */
   @Override
-  public SootClass resolve(ClassSource classSource) {
+  public Object getContent(ClassSource classSource) {
     return null;
   }
-
 }
