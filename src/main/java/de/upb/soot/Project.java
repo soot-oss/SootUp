@@ -4,7 +4,7 @@ import de.upb.soot.buildactor.ViewBuilder;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.CompositeNamespace;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.namespaces.JarFileNamespace;
+import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
@@ -40,7 +40,7 @@ public class Project {
      * @param file
      */
     public Project(File file) {
-        this.namespaces.add(new JarFileNamespace(file));
+        this.namespaces.add(new JavaClassPathNamespace(file.getAbsolutePath()));
     }
 
 

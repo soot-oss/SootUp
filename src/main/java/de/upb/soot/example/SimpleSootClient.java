@@ -4,7 +4,6 @@ import de.upb.soot.Project;
 import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.namespaces.JarFileNamespace;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.views.IView;
@@ -16,37 +15,32 @@ import java.io.File;
  *
  * @author Linghui Luo
  * @author Ben Hermann
- *
  */
 public class SimpleSootClient {
 
-  public static void main(String[] args) {
-    String jarFileName = "test.jar";
-    File jarFile = new File(jarFileName);
-    
-    String javaClassPath = "exmaple//classes//";
-    
-    INamespace np1=new JarFileNamespace(jarFile);
-    INamespace np2=new JavaClassPathNamespace(javaClassPath);
+    public static void main(String[] args) {
+        String javaClassPath = "example/classes/";
 
-    Project p = new Project(np1, np2);
+        INamespace cpBased = new JavaClassPathNamespace(javaClassPath);
 
-    // 1. simple case
-    IView fullView = p.createFullView();
+        Project p = new Project(cpBased);
 
-    ICallGraph cg = fullView.createCallGraph();
-    ITypeHierarchy t = fullView.createTypeHierarchy();
+        // 1. simple case
+        IView fullView = p.createFullView();
 
-    // here goes my own analysis
+        ICallGraph cg = fullView.createCallGraph();
+        ITypeHierarchy t = fullView.createTypeHierarchy();
 
-    // 2. advanced case
-    Scope s = new Scope(np1);
-    IView limitedView = p.createView(s);
+        // here goes my own analysis
 
-    cg = limitedView.createCallGraph();
-    t = limitedView.createTypeHierarchy();
+        // 2. advanced case
+        Scope s = new Scope(cpBased);
+        IView limitedView = p.createView(s);
 
-    // here goes my own analysis
-  }
+        cg = limitedView.createCallGraph();
+        t = limitedView.createTypeHierarchy();
+
+        // here goes my own analysis
+    }
 
 }
