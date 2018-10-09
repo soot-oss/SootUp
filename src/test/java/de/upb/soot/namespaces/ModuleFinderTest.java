@@ -2,7 +2,7 @@ package de.upb.soot.namespaces;
 
 import static org.junit.Assert.assertTrue;
 
-import de.upb.soot.classprovider.asm.AsmJavaClassProvider;
+import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
 import de.upb.soot.views.Scene;
 
 import java.lang.reflect.Field;

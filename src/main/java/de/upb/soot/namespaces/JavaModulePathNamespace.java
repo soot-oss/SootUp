@@ -2,8 +2,8 @@ package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
 
-import de.upb.soot.classprovider.ClassProvider;
-import de.upb.soot.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.ClassProvider;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.ModulePackageSignature;
@@ -45,7 +45,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
    * @param modulePath
    *          The class path to search in
    */
-  public JavaModulePathNamespace(de.upb.soot.classprovider.ClassProvider classProvider, String modulePath) {
+  public JavaModulePathNamespace(de.upb.soot.namespaces.classprovider.ClassProvider classProvider, String modulePath) {
     super(classProvider);
     this.moduleFinder = new ModuleFinder(classProvider, modulePath);
 

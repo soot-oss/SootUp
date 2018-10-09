@@ -1,6 +1,6 @@
 package de.upb.soot.core;
 
-import de.upb.soot.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.jimple.common.type.Type;
 
 /**
@@ -19,7 +19,7 @@ public class SootClass {
     }
   }
 
-  public de.upb.soot.classprovider.ClassSource getCs() {
+  public de.upb.soot.namespaces.classprovider.ClassSource getCs() {
     return cs;
   }
 

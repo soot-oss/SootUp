@@ -3,8 +3,8 @@ package de.upb.soot.buildactor;
 import akka.actor.AbstractLoggingActor;
 import akka.actor.Props;
 
-import de.upb.soot.classprovider.ClassProvider;
-import de.upb.soot.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.ClassProvider;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.views.Scene;
 
@@ -41,7 +41,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
   private void reify(ReifyMessage m) {
     log().info("Start reifying for [{}].", classSource.getClassSignature().toString());
-    de.upb.soot.classprovider.ClassProvider classProvider = getClassProvider(classSource);
+    de.upb.soot.namespaces.classprovider.ClassProvider classProvider = getClassProvider(classSource);
     sootClass = classProvider.reify(classSource);
 
     sender().tell(sootClass, this.getSelf());
@@ -55,7 +55,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
       throw new IllegalStateException();
     }
 
-    de.upb.soot.classprovider.ClassProvider classProvider = getClassProvider(classSource);
+    de.upb.soot.namespaces.classprovider.ClassProvider classProvider = getClassProvider(classSource);
     sootClass = classProvider.resolve(sootClass);
 
     /**
@@ -83,7 +83,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     this.getSelf().tell("done", this.getSelf());
   }
 
-  protected ClassProvider getClassProvider(de.upb.soot.classprovider.ClassSource source) {
+  protected ClassProvider getClassProvider(de.upb.soot.namespaces.classprovider.ClassSource source) {
     // use a service registry or whatever
     return source.getClassProvider();
   }
@@ -106,7 +106,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
     private void resolveMethod(ResolveMethodMessage m) {
       log().info("Start reifying method [{}].", method.getSignature().toString());
-      de.upb.soot.classprovider.ClassProvider classProvider = getClassProvider(method.declaringClass().getCs());
+      de.upb.soot.namespaces.classprovider.ClassProvider classProvider = getClassProvider(method.declaringClass().getCs());
       method = classProvider.resolveMethodBody(method);
 
       sender().tell(method, this.getSelf());

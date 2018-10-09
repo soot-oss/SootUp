@@ -1,6 +1,6 @@
-package de.upb.soot.classprovider.asm;
+package de.upb.soot.namespaces.classprovider.asm;
 
-import de.upb.soot.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
@@ -9,7 +9,7 @@ import de.upb.soot.views.Scene;
 
 import java.nio.file.Path;
 
-public class AsmJavaClassProvider extends de.upb.soot.classprovider.ClassProvider {
+public class AsmJavaClassProvider extends de.upb.soot.namespaces.classprovider.ClassProvider {
 
   // the scene for which the classprovider generates the classes
   private final Scene scene;
@@ -33,7 +33,7 @@ public class AsmJavaClassProvider extends de.upb.soot.classprovider.ClassProvide
 
     // for modules
     if (classSource.getClassSignature().isModuleInfo()) {
-      return getSootModule(classSource, new de.upb.soot.classprovider.asm.modules.UnresolvedModuleVisitor());
+      return getSootModule(classSource, new de.upb.soot.namespaces.classprovider.asm.modules.UnresolvedModuleVisitor());
     }
     // for classes
     return null;
@@ -45,7 +45,7 @@ public class AsmJavaClassProvider extends de.upb.soot.classprovider.ClassProvide
     ClassSource classSource = sootClass.getCs();
     if (classSource.getClassSignature().isModuleInfo()) {
       return getSootModule(classSource,
-          new de.upb.soot.classprovider.asm.modules.ResolveModuleVisitor((de.upb.soot.core.SootModuleInfo) sootClass, this));
+          new de.upb.soot.namespaces.classprovider.asm.modules.ResolveModuleVisitor((de.upb.soot.core.SootModuleInfo) sootClass, this));
 
     }
     // for classes
@@ -65,8 +65,8 @@ public class AsmJavaClassProvider extends de.upb.soot.classprovider.ClassProvide
 
   private de.upb.soot.core.SootModuleInfo getSootModule(ClassSource classSource, org.objectweb.asm.ModuleVisitor visitor) {
 
-    de.upb.soot.classprovider.asm.modules.SootModuleBuilder scb
-        = new de.upb.soot.classprovider.asm.modules.SootModuleBuilder(classSource, visitor);
+    de.upb.soot.namespaces.classprovider.asm.modules.SootModuleBuilder scb
+        = new de.upb.soot.namespaces.classprovider.asm.modules.SootModuleBuilder(classSource, visitor);
     java.net.URI uri = classSource.getSourcePath().toUri();
 
     try {

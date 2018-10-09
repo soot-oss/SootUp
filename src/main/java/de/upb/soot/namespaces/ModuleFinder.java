@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.signatures.ClassSignature;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * @author Andreas Dann on 28.06.18
  */
 public class ModuleFinder {
-  private de.upb.soot.classprovider.ClassProvider classProvider;
+  private de.upb.soot.namespaces.classprovider.ClassProvider classProvider;
   // associate a module name with the namespace, that represents the module
   private Map<String, AbstractNamespace> moduleNamespace = new HashMap<>();
   private int next = 0;
@@ -54,7 +54,7 @@ public class ModuleFinder {
    * @param modulePath
    *          the module path
    */
-  public ModuleFinder(de.upb.soot.classprovider.ClassProvider classProvider, String modulePath) {
+  public ModuleFinder(de.upb.soot.namespaces.classprovider.ClassProvider classProvider, String modulePath) {
     this.classProvider = classProvider;
     this.modulePathEntries = JavaClassPathNamespace.explode(modulePath).collect(Collectors.toList());
     // add the namespace for the jrt virtual file system

@@ -1,7 +1,7 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.classprovider.ClassSource;
-import de.upb.soot.classprovider.asm.AsmJavaClassProvider;
+import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
@@ -26,7 +26,7 @@ public abstract class AbstractNamespaceTest {
 
   protected static final int CLASSES_IN_JAR = 25;
   private SignatureFactory signatureFactory;
-  private de.upb.soot.classprovider.ClassProvider classProvider;
+  private de.upb.soot.namespaces.classprovider.ClassProvider classProvider;
 
   @Before
   public void setUp() {
@@ -38,7 +38,7 @@ public abstract class AbstractNamespaceTest {
     return signatureFactory;
   }
 
-  protected de.upb.soot.classprovider.ClassProvider getClassProvider() {
+  protected de.upb.soot.namespaces.classprovider.ClassProvider getClassProvider() {
     return classProvider;
   }
 
@@ -47,7 +47,7 @@ public abstract class AbstractNamespaceTest {
     };
   }
 
-  protected de.upb.soot.classprovider.ClassProvider createClassProvider() {
+  protected de.upb.soot.namespaces.classprovider.ClassProvider createClassProvider() {
     Scene scene = new Scene();
     return new AsmJavaClassProvider(scene);
   }

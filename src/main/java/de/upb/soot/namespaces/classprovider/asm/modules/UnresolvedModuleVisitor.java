@@ -1,4 +1,4 @@
-package de.upb.soot.classprovider.asm.modules;
+package de.upb.soot.namespaces.classprovider.asm.modules;
 
 public class UnresolvedModuleVisitor extends org.objectweb.asm.ModuleVisitor {
   public UnresolvedModuleVisitor() {

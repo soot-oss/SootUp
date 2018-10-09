@@ -1,4 +1,4 @@
-package de.upb.soot.classprovider;
+package de.upb.soot.namespaces.classprovider;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -37,7 +37,7 @@ public class ClassSource {
    *          A not yet resolved {@link ClassSource}, backed up by the given file
    */
   public ClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature,
-      de.upb.soot.classprovider.ClassProvider classProvider) {
+      de.upb.soot.namespaces.classprovider.ClassProvider classProvider) {
     checkNotNull(srcNamespace);
 
     this.srcNamespace = srcNamespace;
@@ -82,7 +82,7 @@ public class ClassSource {
     return Objects.hashCode(srcNamespace, sourcePath);
   }
 
-  public de.upb.soot.classprovider.ClassProvider getClassProvider() {
+  public de.upb.soot.namespaces.classprovider.ClassProvider getClassProvider() {
     return classProvider;
   }
 }

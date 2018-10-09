@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
-import de.upb.soot.classprovider.ClassSource;
-import de.upb.soot.classprovider.asm.AsmJavaClassProvider;
+import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.views.Scene;
@@ -27,7 +27,7 @@ public class ModuleBuilderActorTest {
     };
 
     Scene scene = new Scene(signatureFactory);
-    de.upb.soot.classprovider.ClassProvider classProvider = new AsmJavaClassProvider(scene);
+    de.upb.soot.namespaces.classprovider.ClassProvider classProvider = new AsmJavaClassProvider(scene);
 
     final JavaModulePathNamespace javaClassPathNamespace
         = new JavaModulePathNamespace(classProvider, "target/test-classes/de/upb/soot/namespaces/modules");

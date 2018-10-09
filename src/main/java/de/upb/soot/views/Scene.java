@@ -7,7 +7,7 @@ import akka.util.Timeout;
 
 import de.upb.soot.buildactor.ReifyMessage;
 import de.upb.soot.buildactor.ResolveMessage;
-import de.upb.soot.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.ClassSignature;

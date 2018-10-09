@@ -1,4 +1,4 @@
-package de.upb.soot.classprovider;
+package de.upb.soot.namespaces.classprovider;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
@@ -74,7 +74,7 @@ public abstract class ClassProvider {
 
   // FIXME: currenty, hack for the ModuleFinder, must be ommited...
   public final java.util.Optional<de.upb.soot.core.SootClass>
-      reifyScene(de.upb.soot.classprovider.ClassSource moduleInfoSource) {
+      reifyScene(de.upb.soot.namespaces.classprovider.ClassSource moduleInfoSource) {
     return getScene().reifyClass(moduleInfoSource);
   }
 }
