@@ -158,7 +158,7 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
       // TODO: This is all highly suspicious. FQCNs should be resolved there through a SignatureFactory.
       SootClass thisClass = null; //this.getView().getSootClass(this.className);
       SootClass otherClass = null; // this.getView().getSootClass(((RefType) other).className);
-      SootClass javalangObject = this.getView().getSootClass(CommonClassSignatures.JavaLangObject);
+      SootClass javalangObject = this.getView().getSootClass(CommonClassSignatures.JavaLangObject).orElseGet(null);
 
       ArrayDeque<SootClass> thisHierarchy = new ArrayDeque<>();
       ArrayDeque<SootClass> otherHierarchy = new ArrayDeque<>();

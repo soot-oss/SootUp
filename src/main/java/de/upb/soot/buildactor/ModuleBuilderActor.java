@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.upb.soot.views.IView;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ModuleVisitor;
@@ -23,12 +24,12 @@ import akka.actor.Props;
 
 public class ModuleBuilderActor extends AbstractLoggingActor {
 
-  private final Project project;
+  private final IView view;
   private final ClassSource classSource;
   private SootModuleInfo module;
 
-  public ModuleBuilderActor(Project project, ClassSource classSource) {
-    this.project = project;
+  public ModuleBuilderActor(IView view, ClassSource classSource) {
+    this.view = view;
     this.classSource = classSource;
   }
 
@@ -153,7 +154,7 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
 
     private SootModuleInfo resolve(String module) {
       ClassSignature moduleSignature = new ModuleSignatureFactory().getClassSignature("module-info", "", module);
-      Optional<SootClass> moduleClass = project.getClass(moduleSignature);
+      Optional<SootClass> moduleClass = view.getSootClass(moduleSignature);
 
       // FIXME Ugly ugly cast... *würg*
       return (SootModuleInfo) moduleClass.get();
@@ -164,7 +165,7 @@ public class ModuleBuilderActor extends AbstractLoggingActor {
     }
 
     private SootClass resolveServiceClass(String service) {
-      return project.getClass(new ModuleSignatureFactory().getClassSignature(service)).get();
+      return view.getSootClass(new ModuleSignatureFactory().getClassSignature(service)).get();
     }
 
     private Iterable<SootClass> resolveServiceClass(String[] providers) {

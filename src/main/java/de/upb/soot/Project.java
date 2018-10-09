@@ -68,8 +68,4 @@ public class Project {
         throw new NotYetImplementedException(); // TODO
     }
 
-  public Optional<SootClass> getClass(ClassSignature moduleSignature) {
-    // TODO Auto-generated method stub
-    return null;
-  }
 }
