@@ -59,7 +59,8 @@ public class AbstractTrap extends AbstractViewResident implements Trap, Serializ
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
-    exception = this.getView().getSootClass((String) in.readObject());
+    //TODO: Use of FQDNs in implementations should be discouraged. They need to be parsed through a SignatureFactory object.
+    exception = null; // this.getView().getSootClass((String) in.readObject());
   }
 
   private void writeObject(ObjectOutputStream out) throws IOException {

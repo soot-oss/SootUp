@@ -9,6 +9,7 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.util.Numberer;
 import de.upb.soot.util.StringNumberer;
@@ -44,7 +45,7 @@ public interface IView {
    * 
    * @return A class with given signature.
    */
-  SootClass getSootClass(String signature);
+  SootClass getSootClass(ClassSignature signature);
 
   /**
    * Provides the call graph using the default algorithm.
