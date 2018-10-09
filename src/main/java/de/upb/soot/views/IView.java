@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 public interface IView {
   /**
    * Returns all classes in the view.
+   * The objects returned here are immutable.
    * 
    * @return A list of classes
    */
@@ -45,7 +46,7 @@ public interface IView {
    * 
    * @return A class with given signature.
    */
-  SootClass getSootClass(ClassSignature signature);
+  Optional<SootClass> getSootClass(ClassSignature signature);
 
   /**
    * Provides the call graph using the default algorithm.
