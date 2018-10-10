@@ -1,26 +1,21 @@
 package de.upb.soot.namespaces.classprovider.asm;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
-import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.ClassSignature;
-import de.upb.soot.views.Scene;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 
 import java.nio.file.Path;
 
-public class AsmJavaClassProvider extends de.upb.soot.namespaces.classprovider.ClassProvider {
+public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovider.IClassProvider {
 
-  // the scene for which the classprovider generates the classes
-  private final Scene scene;
+  public AsmJavaClassProvider() {
 
-  public AsmJavaClassProvider(Scene scene) {
-    this.scene = scene;
   }
 
   @Override
-  public ClassSource createClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature) {
-    return new ClassSource(srcNamespace, sourcePath, classSignature, this);
+  public de.upb.soot.namespaces.classprovider.ClassSource createClassSource(de.upb.soot.namespaces.INamespace srcNamespace,
+      java.nio.file.Path sourcePath, de.upb.soot.signatures.ClassSignature classSignature) {
+    return new de.upb.soot.namespaces.classprovider.ClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   @Override
@@ -30,15 +25,16 @@ public class AsmJavaClassProvider extends de.upb.soot.namespaces.classprovider.C
 
   /**
    * Provide the ASM representation of the class file.
-   * @param classSource The source to be read.
+   *
+   * @param classSource
+   *          The source to be read.
    * @return A representation of the class file.
    */
-   @Override
+  @Override
   public Object getContent(ClassSource classSource) {
-  return null;
+    return null;
   }
-   
-   
+
   @Override
   public SootClass reify(ClassSource classSource) {
 
@@ -55,8 +51,8 @@ public class AsmJavaClassProvider extends de.upb.soot.namespaces.classprovider.C
   public de.upb.soot.core.SootClass resolve(de.upb.soot.core.SootClass sootClass) {
     ClassSource classSource = sootClass.getCs();
     if (classSource.getClassSignature().isModuleInfo()) {
-      return getSootModule(classSource,
-          new de.upb.soot.namespaces.classprovider.asm.modules.ResolveModuleVisitor((de.upb.soot.core.SootModuleInfo) sootClass, this));
+      return getSootModule(classSource, new de.upb.soot.namespaces.classprovider.asm.modules.ResolveModuleVisitor(
+          (de.upb.soot.core.SootModuleInfo) sootClass, this));
 
     }
     // for classes
@@ -111,7 +107,4 @@ public class AsmJavaClassProvider extends de.upb.soot.namespaces.classprovider.C
     return scb.result;
   }
 
-  public Scene getScene() {
-    return scene;
-  }
 }

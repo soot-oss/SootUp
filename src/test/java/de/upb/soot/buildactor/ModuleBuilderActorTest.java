@@ -6,10 +6,7 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
 import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.ClassSignature;
-import de.upb.soot.signatures.ModuleSignatureFactory;
-import de.upb.soot.views.Scene;
 
 import java.util.Optional;
 
@@ -21,51 +18,54 @@ import categories.Java9Test;
 @Category(Java9Test.class)
 
 public class ModuleBuilderActorTest {
+  de.upb.soot.views.StuffAViewNeeds stuffAViewNeeds;
 
-  private Scene createNewScene() {
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory() {
-    };
-
-    Scene scene = new Scene(signatureFactory);
-    de.upb.soot.namespaces.classprovider.ClassProvider classProvider = new AsmJavaClassProvider(scene);
+  private de.upb.soot.views.View createNewScene() {
 
     final JavaModulePathNamespace javaClassPathNamespace
-        = new JavaModulePathNamespace(classProvider, "target/test-classes/de/upb/soot/namespaces/modules");
-    scene.addNameSpace(javaClassPathNamespace);
+        = new JavaModulePathNamespace("target/test-classes/de/upb/soot/namespaces/modules");
 
-    return scene;
+    de.upb.soot.Project project = new de.upb.soot.Project(javaClassPathNamespace);
+
+    de.upb.soot.views.View view = new de.upb.soot.views.View(project);
+
+    stuffAViewNeeds = new de.upb.soot.views.StuffAViewNeeds();
+    stuffAViewNeeds.namespaces = java.util.Collections.singleton(javaClassPathNamespace);
+    view.stuffAViewNeeds = stuffAViewNeeds;
+
+    return view;
   }
 
   @Test
   public void refiyMessageModuleInfoTest() throws Exception {
-    Scene scene = createNewScene();
+    de.upb.soot.views.IView iView = createNewScene();
 
     // FIXME: this casting is so ugly
     final ClassSignature sig
-        = ((ModuleSignatureFactory) scene.getSignatureFactory()).getClassSignature("module-info", "", "de.upb.mod");
-    Optional<ClassSource> source = scene.pollNamespaces(sig);
+        = new de.upb.soot.signatures.ModuleSignatureFactory().getClassSignature("module-info", "", "de.upb.mod");
+    Optional<ClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
 
     assertTrue(source.isPresent());
 
-    Optional<SootClass> result = scene.reifyClass(source.get());
+    Optional<SootClass> result = stuffAViewNeeds.reifyClass(source.get(), iView);
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
   }
 
   @Test
   public void resolveMessageModuleInfoTest() throws Exception {
-    Scene scene = createNewScene();
+    de.upb.soot.views.IView iView = createNewScene();
 
     final ClassSignature sig
-        = ((ModuleSignatureFactory) scene.getSignatureFactory()).getClassSignature("module-info", "", "de.upb.mod");
-    Optional<ClassSource> source = scene.pollNamespaces(sig);
+        = (new de.upb.soot.signatures.ModuleSignatureFactory()).getClassSignature("module-info", "", "de.upb.mod");
+    Optional<ClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
 
     assertTrue(source.isPresent());
 
-    Optional<SootClass> result = scene.reifyClass(source.get());
+    Optional<SootClass> result = stuffAViewNeeds.reifyClass(source.get(), iView);
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
-    result = scene.resolveClass(source.get());
+    result = stuffAViewNeeds.resolveClass(source.get(), iView);
 
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);

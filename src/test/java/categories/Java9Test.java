@@ -1,4 +1,6 @@
 package categories;
 
-public class Java9Test {
-}
+public interface Java9Test
+
+{
+  /* category marker */ }

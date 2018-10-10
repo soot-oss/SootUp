@@ -3,27 +3,27 @@ package de.upb.soot.buildactor;
 import akka.actor.AbstractLoggingActor;
 import akka.actor.Props;
 
-import de.upb.soot.namespaces.classprovider.ClassProvider;
-import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.views.Scene;
+import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.views.IView;
 
 public class ClassBuilderActor extends AbstractLoggingActor {
 
   private final class ResolveMethodMessage {
   }
 
-  private final Scene project;
+  private final IView view;
   private final ClassSource classSource;
   private de.upb.soot.core.SootClass sootClass;
 
-  public ClassBuilderActor(Scene project, ClassSource classSource) {
-    this.project = project;
+  public ClassBuilderActor(IView view, ClassSource classSource) {
+    this.view = view;
     this.classSource = classSource;
   }
 
-  public static Props props(Scene scene, ClassSource classSource) {
-    return Props.create(ClassBuilderActor.class, scene, classSource);
+  public static Props props(IView view, ClassSource classSource) {
+    return Props.create(ClassBuilderActor.class, view, classSource);
   }
 
   public static Props props(de.upb.soot.core.SootClass sootClass, de.upb.soot.core.SootMethod sootMethod) {
@@ -41,7 +41,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
   private void reify(ReifyMessage m) {
     log().info("Start reifying for [{}].", classSource.getClassSignature().toString());
-    de.upb.soot.namespaces.classprovider.ClassProvider classProvider = getClassProvider(classSource);
+    IClassProvider classProvider = classSource.getClassProvider();
     sootClass = classProvider.reify(classSource);
 
     sender().tell(sootClass, this.getSelf());
@@ -55,7 +55,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
       throw new IllegalStateException();
     }
 
-    de.upb.soot.namespaces.classprovider.ClassProvider classProvider = getClassProvider(classSource);
+    IClassProvider classProvider = classSource.getClassProvider();
     sootClass = classProvider.resolve(sootClass);
 
     /**
@@ -83,11 +83,6 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     this.getSelf().tell("done", this.getSelf());
   }
 
-  protected ClassProvider getClassProvider(de.upb.soot.namespaces.classprovider.ClassSource source) {
-    // use a service registry or whatever
-    return source.getClassProvider();
-  }
-
   private class MethodBuilderActor extends akka.actor.AbstractLoggingActor {
 
     private final de.upb.soot.core.SootClass sootClass;
@@ -106,7 +101,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
     private void resolveMethod(ResolveMethodMessage m) {
       log().info("Start reifying method [{}].", method.getSignature().toString());
-      de.upb.soot.namespaces.classprovider.ClassProvider classProvider = getClassProvider(method.declaringClass().getCs());
+      IClassProvider classProvider = method.declaringClass().getCs().getClassProvider();
       method = classProvider.resolveMethodBody(method);
 
       sender().tell(method, this.getSelf());

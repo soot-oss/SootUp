@@ -22,6 +22,8 @@ package de.upb.soot.core;
  * #L%
  */
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+
 import de.upb.soot.Options;
 import de.upb.soot.jimple.basic.Numberable;
 import de.upb.soot.jimple.common.type.RefType;
@@ -34,8 +36,6 @@ import de.upb.soot.validation.ClassValidator;
 import de.upb.soot.validation.MethodDeclarationValidator;
 import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
-
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,6 +71,8 @@ import org.slf4j.LoggerFactory;
 
 public class SootClass extends AbstractViewResident implements Numberable {
 
+  private static final Logger logger = LoggerFactory.getLogger(SootClass.class);
+
   static public class Resolve {
     public final int level;
 
@@ -85,7 +87,9 @@ public class SootClass extends AbstractViewResident implements Numberable {
     this.cs = cs;
   }
 
-  private static final Logger logger = LoggerFactory.getLogger(SootClass.class);
+  public de.upb.soot.namespaces.classprovider.ClassSource getCs() {
+    return cs;
+  }
 
   protected Position position;
   protected String name, shortName, fixedShortName, packageName, fixedPackageName;
@@ -1293,7 +1297,6 @@ public class SootClass extends AbstractViewResident implements Numberable {
   public void setPosition(Position position) {
     this.position = position;
   }
-
 
   public Position getPosition() {
     return this.position;

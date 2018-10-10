@@ -15,7 +15,7 @@ public class SootModuleBuilder extends org.objectweb.asm.ClassVisitor {
    *          the visitor to build the module-info file
    */
   public SootModuleBuilder(de.upb.soot.namespaces.classprovider.ClassSource source, org.objectweb.asm.ModuleVisitor visitor) {
-    super(org.objectweb.asm.Opcodes.ASM7);
+    super(org.objectweb.asm.Opcodes.ASM6);
     this.source = source;
     this.visitor = visitor;
   }

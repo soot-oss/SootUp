@@ -1,17 +1,25 @@
 package de.upb.soot.namespaces.classprovider.asm.modules;
 
+import de.upb.soot.core.SootModuleInfo;
+import de.upb.soot.namespaces.classprovider.IClassProvider;
+
 public class ResolveModuleVisitor extends org.objectweb.asm.ModuleVisitor {
-  private final de.upb.soot.core.SootModuleInfo moduleInfo;
-  private final de.upb.soot.namespaces.classprovider.ClassProvider classProvider;
+  private final SootModuleInfo moduleInfo;
+
+  private final de.upb.soot.signatures.ModuleSignatureFactory moduleSignatureFactory
+      = new de.upb.soot.signatures.ModuleSignatureFactory();
+  private final de.upb.soot.namespaces.classprovider.IClassProvider classProvider;
 
   /**
    * A @see org.objectweb.asm.ModuleVisitor to fully resolve a module-info.class file.
-   * @param moduleInfo the @see SootModuleInfo to resolve
-   * @param classProvider used to trigger resolving of dependent module-info
+   * 
+   * @param moduleInfo
+   *          the @see SootModuleInfo to resolve
+   * @param classProvider
+   *          used to trigger resolving of dependent module-info
    */
-  public ResolveModuleVisitor(de.upb.soot.core.SootModuleInfo moduleInfo,
-      de.upb.soot.namespaces.classprovider.ClassProvider classProvider) {
-    super(org.objectweb.asm.Opcodes.ASM7);
+  public ResolveModuleVisitor(de.upb.soot.core.SootModuleInfo moduleInfo, IClassProvider classProvider) {
+    super(org.objectweb.asm.Opcodes.ASM6);
     this.moduleInfo = moduleInfo;
     this.classProvider = classProvider;
   }
@@ -47,14 +55,10 @@ public class ResolveModuleVisitor extends org.objectweb.asm.ModuleVisitor {
   }
 
   private de.upb.soot.core.SootModuleInfo resolveModule(String module) {
-    // TODO: I don't like this cast
     de.upb.soot.signatures.ClassSignature moduleSignature
-        = ((de.upb.soot.signatures.ModuleSignatureFactory) classProvider.getScene().getSignatureFactory())
-            .getClassSignature("module-info", "", module);
-    java.util.Optional<de.upb.soot.core.SootClass> moduleClass = classProvider.getScene().getClass(moduleSignature);
+        = moduleSignatureFactory.getClassSignature("module-info", "", module);
 
-    // FIXME Ugly ugly cast... *würg*
-    return (de.upb.soot.core.SootModuleInfo) moduleClass.get();
+    return (de.upb.soot.core.SootModuleInfo) classProvider.resolveSootClass(moduleSignature);
   }
 
   private Iterable<de.upb.soot.core.SootModuleInfo> resolveModules(String[] modules) {
@@ -66,7 +70,7 @@ public class ResolveModuleVisitor extends org.objectweb.asm.ModuleVisitor {
 
   private de.upb.soot.core.SootClass resolveService(String service) {
 
-    return classProvider.resolveSootClass(classProvider.getScene().getSignatureFactory().getClassSignature(service));
+    return classProvider.resolveSootClass(moduleSignatureFactory.getClassSignature(service));
   }
 
   private Iterable<de.upb.soot.core.SootClass> resolveServices(String[] providers) {

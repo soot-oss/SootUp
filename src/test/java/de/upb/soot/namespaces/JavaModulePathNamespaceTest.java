@@ -30,7 +30,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
   public void singleDir() {
     ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace
-        = new JavaModulePathNamespace(getClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules");
+        = new JavaModulePathNamespace( "target/test-classes/de/upb/soot/namespaces/modules",getClassProvider());
     final ClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
     Optional<ClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
@@ -40,7 +40,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
   public void singleDir2() {
     ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();;
     final JavaModulePathNamespace javaClassPathNamespace
-        = new JavaModulePathNamespace(getClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules");
+        = new JavaModulePathNamespace("target/test-classes/de/upb/soot/namespaces/modules",getClassProvider());
     final ClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
     // TODO: check for a better minClassFoundNumber
     // also all JDK classes are loaded
@@ -50,8 +50,8 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
   @Test
   public void singleJar() {
     ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
-    final JavaModulePathNamespace javaClassPathNamespace = new JavaModulePathNamespace(getClassProvider(),
-        "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar");
+    final JavaModulePathNamespace javaClassPathNamespace = new JavaModulePathNamespace(
+        "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",getClassProvider());
     final ClassSignature sig = factory.getClassSignature("module-info", "", "de.upb.mod");
     Optional<ClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
@@ -61,8 +61,8 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
   @Test
   public void testSignatureWrapper() throws Exception {
     ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
-    final JavaModulePathNamespace javaClassPathNamespace = new JavaModulePathNamespace(getClassProvider(),
-        "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar");
+    final JavaModulePathNamespace javaClassPathNamespace = new JavaModulePathNamespace(
+        "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",getClassProvider());
     Class signatureCLass = Whitebox.getInnerClassType(JavaModulePathNamespace.class, "SignatureFactoryWrapper");
     // Constructor constructor = Whitebox.getConstructor(signatureCLass, SignatureFactory.class, String.class);
     Object signatureFacotryWrapper = Whitebox.invokeConstructor(signatureCLass,

@@ -3,7 +3,6 @@ package de.upb.soot.namespaces;
 import static org.junit.Assert.assertTrue;
 
 import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
-import de.upb.soot.views.Scene;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -34,16 +33,16 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
   @Test
   public void discoverModule2() {
     ModuleFinder moduleFinder
-            = new ModuleFinder(this.getClassProvider(), "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
-    AbstractNamespace namespace= moduleFinder.discoverModule("Soot");
+        = new ModuleFinder(this.getClassProvider(), "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
+    AbstractNamespace namespace = moduleFinder.discoverModule("Soot");
     assertTrue(namespace instanceof PathBasedNamespace);
   }
 
   @Test
   public void discoverModule3() {
     ModuleFinder moduleFinder
-            = new ModuleFinder(this.getClassProvider(), "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
-    AbstractNamespace namespace= moduleFinder.discoverModule("java.base");
+        = new ModuleFinder(this.getClassProvider(), "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
+    AbstractNamespace namespace = moduleFinder.discoverModule("java.base");
     assertTrue(namespace instanceof JrtFileSystemNamespace);
   }
 
@@ -69,24 +68,21 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
 
   @Test
   public void modularJar() throws Exception {
-    Scene scene = new Scene();
     ModuleFinder moduleFinder
-        = new ModuleFinder(new AsmJavaClassProvider(scene), "target/test-classes/de/upb/soot/namespaces/modules/");
+        = new ModuleFinder(new AsmJavaClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules/");
     Collection<String> discoveredModules = moduleFinder.discoverAllModules();
     assertTrue(discoveredModules.contains("de.upb.mod"));
   }
 
-
   @Test
   public void explodedModule() throws Exception {
-    Scene scene = new Scene();
 
     ModuleFinder moduleFinder
-            = new ModuleFinder(new AsmJavaClassProvider(scene), "target/test-classes/de/upb/soot/namespaces/modules");
+        = new ModuleFinder(new AsmJavaClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules");
     Path p = Paths.get("target/test-classes/de/upb/soot/namespaces/modules/testMod");
     String result = Whitebox.invokeMethod(moduleFinder, "buildModuleForExplodedModule", p);
-    Field field = Whitebox.getField(moduleFinder.getClass(),"moduleNamespace");
-    Map<String, AbstractNamespace>  values = (Map<String, AbstractNamespace>) field.get(moduleFinder);
+    Field field = Whitebox.getField(moduleFinder.getClass(), "moduleNamespace");
+    Map<String, AbstractNamespace> values = (Map<String, AbstractNamespace>) field.get(moduleFinder);
     assertTrue(values.containsKey("fancyMod"));
 
   }

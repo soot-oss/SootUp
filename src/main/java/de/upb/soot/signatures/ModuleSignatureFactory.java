@@ -31,7 +31,7 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
    * FIXME: Check with mbenz if it is easer (and makes more sense), to make a module signature a decorator for a class
    * signature..., IMHO: easier Factory to create module signatures.
    */
-  protected ModuleSignatureFactory() {
+  public ModuleSignatureFactory() {
 
   }
 

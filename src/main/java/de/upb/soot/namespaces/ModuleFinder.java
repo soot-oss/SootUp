@@ -1,8 +1,9 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
+import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModuleDecaratorClassSignature;
 import de.upb.soot.signatures.ModuleSignature;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
  * @author Andreas Dann on 28.06.18
  */
 public class ModuleFinder {
-  private de.upb.soot.namespaces.classprovider.ClassProvider classProvider;
+  private de.upb.soot.namespaces.classprovider.IClassProvider classProvider;
   // associate a module name with the namespace, that represents the module
   private Map<String, AbstractNamespace> moduleNamespace = new HashMap<>();
   private int next = 0;
@@ -54,7 +55,8 @@ public class ModuleFinder {
    * @param modulePath
    *          the module path
    */
-  public ModuleFinder(de.upb.soot.namespaces.classprovider.ClassProvider classProvider, String modulePath) {
+  public ModuleFinder(IClassProvider classProvider, String modulePath) {
+    this.classProvider = classProvider;
     this.modulePathEntries = JavaClassPathNamespace.explode(modulePath).collect(Collectors.toList());
     // add the namespace for the jrt virtual file system
     jrtFileSystemNamespace = new JrtFileSystemNamespace(classProvider);
@@ -230,12 +232,12 @@ public class ModuleFinder {
   }
 
   private String getModuleName(ClassSource moduleInfoSource) throws ClassResolvingException {
-    Optional<SootClass> moduleInfoClass = this.classProvider.reifyScene(moduleInfoSource);
-    if (!moduleInfoClass.isPresent() || !(moduleInfoClass.get() instanceof SootModuleInfo)) {
+    SootClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
+    if (!(moduleInfoClass instanceof SootModuleInfo)) {
       throw new ClassResolvingException("Class is named module-info but does not reify to SootModuleInfo");
     }
 
-    String moduleName = ((SootModuleInfo) moduleInfoClass.get()).getName();
+    String moduleName = ((SootModuleInfo) moduleInfoClass).getName();
     createProperModuleSignature(moduleInfoSource, moduleName);
 
     return moduleName;
