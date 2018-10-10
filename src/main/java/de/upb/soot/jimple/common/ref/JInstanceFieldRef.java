@@ -39,6 +39,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JInstanceFieldRef implements FieldRef {
+
+  /**
+   * Create a reference to a class' instance field.
+   * 
+   * @param base
+   *          the base value of the field
+   * @param field
+   *          the field
+   */
   public JInstanceFieldRef(Value base, SootField field) {
     ValueBox baseBox = Jimple.getInstance().newLocalBox(base);
 

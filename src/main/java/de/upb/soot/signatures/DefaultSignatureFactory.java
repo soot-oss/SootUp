@@ -81,6 +81,8 @@ public class DefaultSignatureFactory implements SignatureFactory {
     return getClassSignature(className, packageName);
   }
 
+
+
   /**
    * Returns a TypeSignature which can be a {@link ClassSignature},{@link PrimitiveTypeSignature}, {@link VoidTypeSignature},
    * or {@link NullTypeSignature}.
@@ -132,7 +134,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
    */
   @Override
   public MethodSignature getMethodSignature(final String methodName, final String fullyQualifiedNameDeclClass,
-                                            final String fqReturnType, final List<String> parameters) {
+      final String fqReturnType, final List<String> parameters) {
     ClassSignature declaringClass = getClassSignature(fullyQualifiedNameDeclClass);
     TypeSignature returnTypeSignature = getTypeSignature(fqReturnType);
     List<TypeSignature> parameterSignatures = new ArrayList<>();
@@ -158,7 +160,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
    */
   @Override
   public MethodSignature getMethodSignature(final String methodName, final ClassSignature declaringClassSignature,
-                                            final String fqReturnType, final List<String> parameters) {
+      final String fqReturnType, final List<String> parameters) {
     TypeSignature returnTypeSignature = getTypeSignature(fqReturnType);
     List<TypeSignature> parameterSignatures = new ArrayList<>();
     for (String fqParameterName : parameters) {
@@ -168,9 +170,6 @@ public class DefaultSignatureFactory implements SignatureFactory {
     return new MethodSignature(methodName, declaringClassSignature, returnTypeSignature, parameterSignatures);
   }
 
-  // TODO: this would not work for java 9 modules: their path is e.g., modules/java.base/java/lang/System
-  // thus, I moved it to the corresponding namespace
-  // currently, I cannot think of a general way for java 9 modules anyway....
   @Override
   public ClassSignature fromPath(final Path file) {
     String fullyQualifiedName = FilenameUtils.removeExtension(file.toString()).replace('/', '.');

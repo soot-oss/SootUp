@@ -10,7 +10,6 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.util.Numberer;
 import de.upb.soot.util.StringNumberer;
@@ -27,6 +26,10 @@ import java.util.stream.Stream;
  * @author Linghui Luo created on 31.07.2018
  */
 public class View extends AbstractView {
+
+  // TODO: dummyField
+  public de.upb.soot.views.StuffAViewNeeds stuffAViewNeeds;
+
   /**
    * a static map to store the RefType of each class according to its name. RefType of each class should just have one
    * instance.
@@ -79,9 +82,8 @@ public class View extends AbstractView {
   }
 
   @Override
-  public Optional<SootClass> getSootClass(ClassSignature signature) {
-    // TODO Auto-generated method stub
-    return null;
+  public java.util.Optional<de.upb.soot.core.SootClass> getSootClass(de.upb.soot.signatures.ClassSignature signature) {
+    return stuffAViewNeeds.getClass(signature, this);
   }
 
   @Override

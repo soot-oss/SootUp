@@ -77,5 +77,7 @@ public class ClassSignature extends TypeSignature {
     return fs.getPath(getFullyQualifiedName().replace('.', '/') + "." + fileType.getExtension());
   }
 
-  public boolean isModuleInfo() { return className.equals("module-info"); }
+  public boolean isModuleInfo() {
+    return this.className.equals(ModuleSignatureFactory.MODULE_INFO_CLASS.className);
+  }
 }

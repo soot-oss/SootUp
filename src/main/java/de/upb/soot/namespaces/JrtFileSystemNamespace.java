@@ -1,5 +1,7 @@
 package de.upb.soot.namespaces;
 
+import com.google.common.base.Preconditions;
+
 import de.upb.soot.Utils;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
@@ -7,8 +9,6 @@ import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModulePackageSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
-
-import com.google.common.base.Preconditions;
 
 import java.io.IOException;
 import java.net.URI;
@@ -22,8 +22,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * Base class for {@link INamespace}s that can be located by a {@link Path} object.
@@ -144,14 +142,19 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
     // else use the module system and create fully class signature
     if (factory instanceof ModuleSignatureFactory) {
+      // FIXME: adann clean this up!
       // String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
       // int index = filename.lastIndexOf('.');
-      Path parentDir = filename.subpath(0, 2);
-      Path packageFileName = parentDir.relativize(filename);
-      // get the package
-      String packagename = packageFileName.toString().replace('/', '.');
-      String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
-      return ((ModuleSignatureFactory) factory).getClassSignature(classname, packagename, moduleDir.toString());
+      // Path parentDir = filename.subpath(0, 2);
+      // Path packageFileName = parentDir.relativize(filename);
+      // // get the package
+      // String packagename = packageFileName.toString().replace('/', '.');
+      // String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
+      //
+      ClassSignature sig = factory.fromPath(filename);
+
+      return ((ModuleSignatureFactory) factory).getClassSignature(sig.className, sig.packageSignature.packageName,
+          moduleDir.toString());
     }
 
     // if we are using the normal signature factory, than trim the module from the path

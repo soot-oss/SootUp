@@ -54,7 +54,6 @@ public class Modifier {
   public static final int SYNTHETIC = 0x1000;
   public static final int CONSTRUCTOR = 0x10000;
   public static final int DECLARED_SYNCHRONIZED = 0x20000;
-  // add
 
   // modifier for java 9 modules
   public static final int OPEN = 0x0020;

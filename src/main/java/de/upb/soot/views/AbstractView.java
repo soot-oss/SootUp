@@ -15,4 +15,7 @@ public abstract class AbstractView implements IView {
   public AbstractView(Project project) {
     this.project = project;
   }
+
+
+
 }

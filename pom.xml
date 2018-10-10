@@ -58,6 +58,7 @@
 				<configuration>
 					<propertyExpansion>config_loc=${checkstyle.dir.path}</propertyExpansion>
 					<configLocation>${checkstyle.file.path}</configLocation>
+					<suppressionsLocation>${checkstyle.dir.path}/checkstyle_supressions.xml</suppressionsLocation>
 					<encoding>UTF-8</encoding>
 					<logViolationsToConsole>true</logViolationsToConsole>
 					<failOnViolation>true</failOnViolation>
@@ -226,11 +227,6 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>${guava.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm-debug-all</artifactId>
-			<version>5.2</version>
 		</dependency>
 		<!-- testing -->
 		<dependency>

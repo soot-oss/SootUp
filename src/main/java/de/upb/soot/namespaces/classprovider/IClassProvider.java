@@ -14,15 +14,8 @@ import java.nio.file.Path;
  */
 public interface IClassProvider {
 
-  // FIXME: that should be done by aka??
-  /**
-   * Resolve the given ClassSource to a SootClass.
-   * 
-   * @param classSource
-   *          to resource
-   * @return the resolved SootClass
-   */
-  // SootClass getSootClass(ClassSource classSource);
+  // TODO: needed to create references to other classes ... or init the resolving process...
+  de.upb.soot.views.IView view = null;
 
   ClassSource createClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature);
 
@@ -35,9 +28,48 @@ public interface IClassProvider {
 
   /**
    * Create or provide a representation of the actual manifestation of the class.
+   * 
    * @return
    */
   Object getContent(ClassSource classSource);
   // TODO: Find a better common supertype for this.
+
+  /**
+   * TODO AD: Methods the ASM classProvider may implement to resolve a class
+   *
+   */
+
+  public abstract SootClass reify(ClassSource classSource);
+
+  public abstract de.upb.soot.core.SootClass resolve(de.upb.soot.core.SootClass sootClass);
+
+  public abstract de.upb.soot.core.SootMethod resolveMethodBody(de.upb.soot.core.SootMethod sootMethod);
+
+  /**
+   * Resolves an array of classes.
+   *
+   * @param sootClasses
+   *          signatures of the classes to resolve
+   * @return the resolved classses
+   */
+  default public Iterable<de.upb.soot.core.SootClass>
+      resolveSootClasses(de.upb.soot.signatures.ClassSignature[] sootClasses) {
+    if (sootClasses == null) {
+      return java.util.Collections.emptyList();
+    }
+    return java.util.Arrays.stream(sootClasses).map(p -> resolveSootClass(p)).collect(java.util.stream.Collectors.toList());
+  }
+
+  /**
+   * Resolve a SootClass.
+   *
+   * @param signature
+   *          the signature of the class to resolve
+   * @return the resolved class
+   */
+  default public de.upb.soot.core.SootClass resolveSootClass(de.upb.soot.signatures.ClassSignature signature) {
+    java.util.Optional<de.upb.soot.core.SootClass> moduleClass = view.getSootClass(signature);
+    return moduleClass.get();
+  }
 
 }
