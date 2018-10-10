@@ -78,6 +78,7 @@ public interface IView {
    */
   Optional<Scope> getScope();
 
+
   boolean doneResolving();
 
   StringNumberer getSubSigNumberer();
@@ -99,4 +100,6 @@ public interface IView {
   Numberer<Type> getTypeNumberer();
 
   RefType getObjectType();
+
+
 }

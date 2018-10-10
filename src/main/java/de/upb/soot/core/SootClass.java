@@ -35,6 +35,8 @@ import de.upb.soot.validation.MethodDeclarationValidator;
 import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -84,6 +86,8 @@ public class SootClass extends AbstractViewResident implements Numberable {
   }
 
   private static final Logger logger = LoggerFactory.getLogger(SootClass.class);
+
+  protected Position position;
   protected String name, shortName, fixedShortName, packageName, fixedPackageName;
   protected int modifiers;
   protected LinkedHashSet<SootField> fields;
@@ -1284,6 +1288,15 @@ public class SootClass extends AbstractViewResident implements Numberable {
   public void checkLevelIgnoreResolving(String hierarchy2) {
     // TODO Auto-generated method stub
 
+  }
+
+  public void setPosition(Position position) {
+    this.position = position;
+  }
+
+
+  public Position getPosition() {
+    return this.position;
   }
 
 }

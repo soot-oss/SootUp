@@ -59,8 +59,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 /**
- * Converter which converts WALA IR in non-SSA form to jimple.
+ * Converter which converts WALA IR to jimple.
  * 
  * @author Linghui Luo created on 17.09.18
  *
@@ -68,7 +69,6 @@ import java.util.List;
 public class WalaIRToJimpleConverter {
 
   public WalaIRToJimpleConverter() {
-
   }
 
   public SootClass convertClass(AstClass walaClass) {
@@ -89,7 +89,9 @@ public class WalaIRToJimpleConverter {
       SootMethod sootMethod = convertMethod((AstMethod) walaMethod);
       sootClass.addMethod(sootMethod);
     }
-
+    // add source position
+    Position position = walaClass.getSourcePosition();
+    sootClass.setPosition(position);
     return sootClass;
   }
 
@@ -111,9 +113,14 @@ public class WalaIRToJimpleConverter {
     List<SootClass> thrownExceptions = Collections.emptyList();
     // TODO check if all arguments are set up properly.
     SootMethod sootMethod = new SootMethod(name, paraTypes, returnType, modifier, thrownExceptions);
+
     // create and set active body of the SootMethod
     Body body = createBody(sootMethod, walaMethod);
     sootMethod.setActiveBody(body);
+
+    // add debug info
+    DebuggingInformation debugInfo = walaMethod.debugInfo();
+    sootMethod.setDebugInfo(debugInfo);
 
     return sootMethod;
   }
@@ -194,7 +201,6 @@ public class WalaIRToJimpleConverter {
     return body;
   }
 
-
   public IStmt convertInstruction(SSAInstruction walaInst) {
 
     // TODO what are the different types of SSAInstructions
@@ -211,20 +217,16 @@ public class WalaIRToJimpleConverter {
     } else if (walaInst instanceof AstJavaInvokeInstruction) {
 
     } else if (walaInst instanceof SSAFieldAccessInstruction) {
-      if(walaInst instanceof SSAGetInstruction)
-      {
-      // field read instruction -> assignStmt
-      }else if(walaInst instanceof SSAPutInstruction)
-      {
-       //field write instruction 
+      if (walaInst instanceof SSAGetInstruction) {
+        // field read instruction -> assignStmt
+      } else if (walaInst instanceof SSAPutInstruction) {
+        // field write instruction
       } else {
-        throw new RuntimeException("Unsupported instruction type: "+walaInst.getClass().toString());
+        throw new RuntimeException("Unsupported instruction type: " + walaInst.getClass().toString());
       }
-    } 
-    else if (walaInst instanceof SSAArrayLengthInstruction) {
+    } else if (walaInst instanceof SSAArrayLengthInstruction) {
 
-    }
-    else if (walaInst instanceof SSAArrayReferenceInstruction) {
+    } else if (walaInst instanceof SSAArrayReferenceInstruction) {
       if (walaInst instanceof SSAArrayLoadInstruction) {
 
       } else if (walaInst instanceof SSAArrayStoreInstruction) {
@@ -232,9 +234,7 @@ public class WalaIRToJimpleConverter {
       } else {
         throw new RuntimeException("Unsupported instruction type: " + walaInst.getClass().toString());
       }
-    }
-    else if (walaInst instanceof SSANewInstruction) {
-
+    } else if (walaInst instanceof SSANewInstruction) {
 
     } else if (walaInst instanceof SSAComparisonInstruction) {
 

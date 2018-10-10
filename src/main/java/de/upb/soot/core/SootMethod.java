@@ -27,6 +27,8 @@ import de.upb.soot.Options;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.util.NumberedString;
 
+import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -43,6 +45,7 @@ import java.util.StringTokenizer;
  */
 
 public class SootMethod extends AbstractViewResident/* implements ClassMember, Numberable, MethodOrMethodContext */ {
+  protected DebuggingInformation debugInfo;
   public static final String constructorName = "<init>";
   public static final String staticInitializerName = "<clinit>";
   public static boolean DEBUG = false;
@@ -818,4 +821,11 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
     return null;
   }
 
+  public void setDebugInfo(DebuggingInformation debugInfo) {
+    this.debugInfo = debugInfo;
+  }
+
+  public DebuggingInformation getDebugInfo() {
+    return this.debugInfo;
+  }
 }
