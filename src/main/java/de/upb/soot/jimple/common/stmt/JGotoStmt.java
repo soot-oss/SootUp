@@ -38,7 +38,7 @@ public class JGotoStmt extends AbstractStmt {
   final StmtBox targetBox;
   final List<StmtBox> targetBoxes;
 
-  public JGotoStmt(Stmt target) {
+  public JGotoStmt(IStmt target) {
     this(Jimple.getInstance().newStmtBox(target));
   }
 
@@ -48,13 +48,13 @@ public class JGotoStmt extends AbstractStmt {
   }
 
   @Override
-  public Object clone() {
+  public JGotoStmt clone() {
     return new JGotoStmt(getTarget());
   }
 
   @Override
   public String toString() {
-    Stmt t = getTarget();
+    IStmt t = getTarget();
     String target = "(branch)";
     if (!t.branches()) {
       target = t.toString();
@@ -69,11 +69,11 @@ public class JGotoStmt extends AbstractStmt {
     targetBox.toString(up);
   }
 
-  public Stmt getTarget() {
+  public IStmt getTarget() {
     return targetBox.getStmt();
   }
 
-  public void setTarget(Stmt target) {
+  public void setTarget(IStmt target) {
     targetBox.setStmt(target);
   }
 

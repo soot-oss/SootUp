@@ -25,13 +25,13 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 
 import java.util.List;
 
 public interface EqualLocals {
-  public boolean isLocalEqualToAt(Local l1, Local l2, Stmt s);
+  public boolean isLocalEqualToAt(Local l1, Local l2, IStmt s);
 
-  public List getCopiesAt(Stmt s);
+  public List getCopiesAt(IStmt s);
 
 }

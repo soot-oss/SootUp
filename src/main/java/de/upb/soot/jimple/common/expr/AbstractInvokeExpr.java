@@ -26,6 +26,7 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.core.AbstractViewResident;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -36,7 +37,7 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("serial")
-public abstract class AbstractInvokeExpr implements Expr {
+public abstract class AbstractInvokeExpr extends AbstractViewResident implements Expr {
   protected SootMethod method;
   protected final ValueBox[] argBoxes;
 

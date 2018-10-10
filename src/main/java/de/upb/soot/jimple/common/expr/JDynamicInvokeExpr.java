@@ -160,10 +160,14 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
     buffer.append(Jimple.DYNAMICINVOKE);
     buffer.append(" \"");
-    buffer.append(method.name()); // quoted method name (can be any UTF8
+    buffer.append(method.getName()); // quoted method name (can be any UTF8
     // string)
     buffer.append("\" <");
-    buffer.append(SootMethod.getSubSignature(""/* no method name here */, method.parameterTypes(), method.returnType()));
+    buffer
+        .append(
+            method.getSubSignature(""/* no method name here */,
+                method.parameterTypes(),
+        method.returnType()));
     buffer.append(">(");
 
     if (argBoxes != null) {
@@ -195,8 +199,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
-    up.literal(" \"" + method.name() + "\" <"
-        + SootMethod.getSubSignature(""/* no method name here */, method.parameterTypes(), method.returnType()) + ">(");
+    up.literal(" \"" + method.getName() + "\" <"
+        + method.getSubSignature(""/* no method name here */, method.parameterTypes(), method.returnType()) + ">(");
 
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {

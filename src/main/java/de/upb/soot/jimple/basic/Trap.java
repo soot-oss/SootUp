@@ -8,4 +8,7 @@ package de.upb.soot.jimple.basic;
  */
 public interface Trap extends StmtBoxOwner {
 
+    /** Performs a shallow clone of this trap. */
+    public Object clone();
+
 }

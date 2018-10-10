@@ -25,11 +25,10 @@
 
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.Scene;
-import de.upb.soot.SootResolver;
-import de.upb.soot.View;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.CommonClassSignatures;
+import de.upb.soot.views.View;
 
 import java.util.ArrayDeque;
 
@@ -73,6 +72,8 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
     return getInstance(c.getName());
   }
 
+
+  // TODO: Please change className to ClassSignature here. No use of Strings to determine classes anymore. The first few lines are a good example why.
   private RefType(String className) {
     if (className.startsWith("[")) {
       throw new RuntimeException("Attempt to create RefType whose name starts with [ --> " + className);
@@ -93,18 +94,6 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
   @Override
   public int compareTo(RefType t) {
     return this.toString().compareTo(t.toString());
-  }
-
-  /**
-   * Get the SootClass object corresponding to this RefType.
-   * 
-   * @return the corresponding SootClass
-   */
-  public SootClass getSootClass() {
-    if (sootClass == null) {
-      sootClass = SootResolver.getInstance().makeClassRef(className);
-    }
-    return sootClass;
   }
 
   public boolean hasSootClass() {
@@ -146,7 +135,7 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
    */
   @Override
   public String toQuotedString() {
-    return Scene.getInstance().quotedNameOf(className);
+    return this.getView().quotedNameOf(className);
   }
 
   @Override
@@ -155,8 +144,7 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
   }
 
   /** Returns the least common superclass of this type and other. */
-  @Override
-  public Type merge(Type other, Scene cm) {
+  public Type merge(Type other) {
     if (other.equals(UnknownType.getInstance()) || this.equals(other)) {
       return this;
     }
@@ -167,10 +155,10 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
 
     {
       // Return least common superclass
-
-      SootClass thisClass = cm.getSootClass(this.className);
-      SootClass otherClass = cm.getSootClass(((RefType) other).className);
-      SootClass javalangObject = cm.getObjectType().getSootClass();
+      // TODO: This is all highly suspicious. FQCNs should be resolved there through a SignatureFactory.
+      SootClass thisClass = null; //this.getView().getSootClass(this.className);
+      SootClass otherClass = null; // this.getView().getSootClass(((RefType) other).className);
+      SootClass javalangObject = this.getView().getSootClass(CommonClassSignatures.JavaLangObject).orElseGet(null);
 
       ArrayDeque<SootClass> thisHierarchy = new ArrayDeque<>();
       ArrayDeque<SootClass> otherHierarchy = new ArrayDeque<>();

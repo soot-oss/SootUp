@@ -126,7 +126,7 @@ public class JInstanceFieldRef implements FieldRef {
 
   @Override
   public Type getType() {
-    return field.type();
+    return field.getType();
   }
 
   @Override

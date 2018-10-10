@@ -1,8 +1,8 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.Utils;
-import de.upb.soot.namespaces.classprovider.ClassProvider;
 import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -23,7 +23,11 @@ import java.util.stream.Collectors;
 public abstract class PathBasedNamespace extends AbstractNamespace {
   protected final Path path;
 
-  private PathBasedNamespace(de.upb.soot.namespaces.classprovider.ClassProvider classProvider, Path path) {
+  private PathBasedNamespace(Path path) {
+    this(path, getDefaultClassProvider());
+  }
+
+  private PathBasedNamespace(Path path, IClassProvider classProvider) {
     super(classProvider);
     this.path = path;
   }
@@ -32,18 +36,15 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
    * Creates a {@link PathBasedNamespace} depending on the given {@link Path}, e.g., differs between directories, archives
    * (and possibly network path's in the future).
    * 
-   * @param classProvider
-   *          The {@link ClassProvider} for generating {@link ClassSource}es out of the found files on the given path
    * @param path
    *          The path to search in
    * @return A {@link PathBasedNamespace} implementation dependent on the given {@link Path}'s {@link FileSystem}
    */
-  public static PathBasedNamespace createForClassContainer(de.upb.soot.namespaces.classprovider.ClassProvider classProvider,
-                                                           Path path) {
+  public static PathBasedNamespace createForClassContainer(Path path) {
     if (Files.isDirectory(path)) {
-      return new DirectoryBasedNamespace(classProvider, path);
+      return new DirectoryBasedNamespace(path);
     } else if (PathUtils.isArchive(path)) {
-      return new ArchiveBasedNamespace(classProvider, path);
+      return new ArchiveBasedNamespace(path);
     } else {
       throw new IllegalArgumentException(
           "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, etc.");
@@ -75,8 +76,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
 
   private static final class DirectoryBasedNamespace extends PathBasedNamespace {
 
-    private DirectoryBasedNamespace(de.upb.soot.namespaces.classprovider.ClassProvider classProvider, Path path) {
-      super(classProvider, path);
+    private DirectoryBasedNamespace(Path path) {
+      super(path);
     }
 
     @Override
@@ -92,8 +93,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
 
   private static final class ArchiveBasedNamespace extends PathBasedNamespace {
 
-    private ArchiveBasedNamespace(de.upb.soot.namespaces.classprovider.ClassProvider classProvider, Path path) {
-      super(classProvider, path);
+    private ArchiveBasedNamespace(Path path) {
+      super(path);
     }
 
     @Override

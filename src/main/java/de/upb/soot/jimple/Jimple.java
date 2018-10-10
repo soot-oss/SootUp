@@ -66,6 +66,7 @@ import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
+import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
@@ -75,7 +76,6 @@ import de.upb.soot.jimple.common.stmt.JNopStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.soot.jimple.common.stmt.JThrowStmt;
-import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.javabytecode.stmt.JBreakpointStmt;
@@ -101,11 +101,16 @@ import java.util.List;
  */
 
 public class Jimple {
-  public Jimple() {
+  private static Jimple instance;
+
+  private Jimple() {
   }
 
   public static Jimple getInstance() {
-    return null;
+    if (instance == null) {
+      instance = new Jimple();
+    }
+    return instance;
   }
 
   public static final String NEWARRAY = "newarray";
@@ -512,7 +517,7 @@ public class Jimple {
   /**
    * Constructs a GotoStmt(Stmt) grammar chunk.
    */
-  public JGotoStmt newGotoStmt(Stmt target) {
+  public JGotoStmt newGotoStmt(IStmt target) {
     return new JGotoStmt(target);
   }
 
@@ -551,7 +556,7 @@ public class Jimple {
   /**
    * Constructs a IfStmt(Condition, Stmt) grammar chunk.
    */
-  public JIfStmt newIfStmt(Value condition, Stmt target) {
+  public JIfStmt newIfStmt(Value condition, IStmt target) {
     return new JIfStmt(condition, target);
   }
 
@@ -586,8 +591,8 @@ public class Jimple {
   /**
    * Constructs a TableSwitchStmt(Immediate, int, int, List of Unit, Stmt) grammar chunk.
    */
-  public JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends Stmt> targets,
-      Stmt defaultTarget) {
+  public JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets,
+      IStmt defaultTarget) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget);
   }
 
@@ -599,8 +604,8 @@ public class Jimple {
   /**
    * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
    */
-  public JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends Stmt> targets,
-      Stmt defaultTarget) {
+  public JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends IStmt> targets,
+      IStmt defaultTarget) {
     return null;
   }
 
@@ -661,7 +666,7 @@ public class Jimple {
     return null;
   }
 
-  public StmtBox newStmtBox(Stmt target) {
+  public StmtBox newStmtBox(IStmt target) {
     // TODO Auto-generated method stub
     return null;
   }

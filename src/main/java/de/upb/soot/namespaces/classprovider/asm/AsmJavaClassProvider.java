@@ -28,6 +28,17 @@ public class AsmJavaClassProvider extends de.upb.soot.namespaces.classprovider.C
     return FileType.CLASS;
   }
 
+  /**
+   * Provide the ASM representation of the class file.
+   * @param classSource The source to be read.
+   * @return A representation of the class file.
+   */
+   @Override
+  public Object getContent(ClassSource classSource) {
+  return null;
+  }
+   
+   
   @Override
   public SootClass reify(ClassSource classSource) {
 
@@ -103,5 +114,4 @@ public class AsmJavaClassProvider extends de.upb.soot.namespaces.classprovider.C
   public Scene getScene() {
     return scene;
   }
-
 }

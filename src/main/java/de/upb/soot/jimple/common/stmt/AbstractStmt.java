@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import de.upb.soot.core.AbstractViewResident;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
@@ -32,14 +33,18 @@ import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractStmt implements Stmt {
+public abstract class AbstractStmt extends AbstractViewResident implements IStmt {
+  private Position position;
+
   /** Returns a deep clone of this object. */
   @Override
-  public abstract Object clone();
+  public abstract AbstractStmt clone();
 
   /**
    * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically updated as the structure
@@ -127,7 +132,7 @@ public abstract class AbstractStmt implements Stmt {
   }
 
   @Override
-  public void redirectJumpsToThisTo(Stmt newLocation) {
+  public void redirectJumpsToThisTo(IStmt newLocation) {
     List<StmtBox> boxesPointing = getBoxesPointingToThis();
 
     StmtBox[] boxes = boxesPointing.toArray(new StmtBox[boxesPointing.size()]);
@@ -192,4 +197,12 @@ public abstract class AbstractStmt implements Stmt {
     throw new RuntimeException("getFieldRefBox() called with no FieldRef present!");
   }
 
+  @Override
+  public void setPosition(Position position) {
+    this.position = position;
+  }
+
+  public Position getPosition() {
+    return position;
+  }
 }

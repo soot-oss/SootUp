@@ -43,7 +43,7 @@ public class JThrowStmt extends AbstractOpStmt {
   }
 
   @Override
-  public Object clone() {
+  public JThrowStmt clone() {
     return new JThrowStmt(Jimple.cloneIfNecessary(getOp()));
   }
 

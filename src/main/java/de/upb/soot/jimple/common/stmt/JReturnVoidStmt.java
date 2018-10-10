@@ -35,7 +35,7 @@ public class JReturnVoidStmt extends AbstractStmt {
   }
 
   @Override
-  public Object clone() {
+  public JReturnVoidStmt clone() {
     return new JReturnVoidStmt();
   }
 

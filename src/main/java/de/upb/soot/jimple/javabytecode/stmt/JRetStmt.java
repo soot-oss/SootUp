@@ -50,7 +50,7 @@ public class JRetStmt extends AbstractStmt {
   }
 
   @Override
-  public Object clone() {
+  public JRetStmt clone() {
     return new JRetStmt(Jimple.cloneIfNecessary(getStmtAddress()));
   }
 
