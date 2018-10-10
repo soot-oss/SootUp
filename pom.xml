@@ -17,8 +17,6 @@
 		<checkstyle.dir.path>${basedir}/codingstyle</checkstyle.dir.path>
 		<checkstyle.file.path>${checkstyle.dir.path}/google_checkstyle.xml</checkstyle.file.path>
 		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
-		<maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
-		<maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
 		<jacoco-maven-plugin.version>0.8.1</jacoco-maven-plugin.version>
 		<jacoco-badge-maven-plugin.version>0.1.3</jacoco-badge-maven-plugin.version>
 		<slf4j.version>1.7.25</slf4j.version>
@@ -29,10 +27,25 @@
 		<junit.version>4.12</junit.version>
 		<powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
 		<powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
-		<test.target-version>8</test.target-version>
-		<test.sourceDir>${project.basedir}/src/test/java${test.target-version}/java</test.sourceDir>
-		<test.outDir>${project.build.directory}/test-classes-java${test.target-version}</test.outDir>
+		<test.sourceDir>${project.basedir}/src/test/java</test.sourceDir>
+		<test.outDir>${project.build.directory}/test-classes-java</test.outDir>
 	</properties>
+
+	<profiles>
+		<profile>
+			<id>Java8</id>
+			<properties>
+				<testcase.groups>categories.Java8Test</testcase.groups>
+			</properties>
+		</profile>
+		<profile>
+			<id>Java9</id>
+			<properties>
+				<testcase.groups>categories.Java9Test</testcase.groups>
+			</properties>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -130,75 +143,9 @@
 				<configuration>
 					<!-- Sets the VM argument line used when unit tests are run. -->
 					<argLine>${surefireArgLine}</argLine>
+					<groups>${testcase.groups}</groups>
 				</configuration>
 			</plugin>
-			<!-- Test setup -->
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>${maven-resources-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>add test resources for Java version ${test.target-version}</id>
-						<phase>generate-test-resources</phase>
-						<goals>
-							<goal>copy-resources</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${test.outDir}
-							</outputDirectory>
-							<resources>
-								<resource>
-									<directory>src/test/java${test.target-version}/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-				<configuration>
-					<source>${maven.compiler.source}</source>
-					<target>${maven.compiler.target}</target>
-				</configuration>
-				<executions>
-					<execution>
-						<id>Compile Java version ${test.target-version} test targets</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
-						<configuration>
-							<compileSourceRoots>${project.basedir}/src/test/java${test.target-version}/targets
-							</compileSourceRoots>
-							<testIncludes>
-								<testInclude>**/*.java</testInclude>
-							</testIncludes>
-							<outputDirectory>${project.build.directory}/test-target-classes-java${test.target-version}
-							</outputDirectory>
-						</configuration>
-					</execution>
-					<execution>
-						<id>Compile Java version ${test.target-version} tests</id>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
-						<configuration>
-							<compileSourceRoots>${test.sourceDir}
-							</compileSourceRoots>
-							<testIncludes>
-								<testInclude>**/*.java</testInclude>
-							</testIncludes>
-							<outputDirectory>${test.outDir}
-							</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- end -->
 		</plugins>
 	</build>
 	<dependencies>
