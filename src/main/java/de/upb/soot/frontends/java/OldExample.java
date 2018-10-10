@@ -34,7 +34,7 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.jar.JarFile;
 
-public class WalaIRtoJimple {
+public class OldExample {
 
   public static void main(String[] args)
       throws ClassHierarchyException, IllegalArgumentException, CallGraphBuilderCancelException, IOException {
