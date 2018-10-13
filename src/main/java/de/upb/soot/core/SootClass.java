@@ -1,5 +1,19 @@
 package de.upb.soot.core;
 
+import de.upb.soot.Options;
+import de.upb.soot.jimple.basic.Numberable;
+import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.util.NumberedString;
+import de.upb.soot.util.SmallNumberedMap;
+import de.upb.soot.validation.ClassFlagsValidator;
+import de.upb.soot.validation.ClassValidator;
+import de.upb.soot.validation.MethodDeclarationValidator;
+import de.upb.soot.validation.OuterClassValidator;
+import de.upb.soot.validation.ValidationException;
+import de.upb.soot.views.IView;
+
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -23,19 +37,6 @@ package de.upb.soot.core;
  */
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-
-import de.upb.soot.Options;
-import de.upb.soot.jimple.basic.Numberable;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.util.NumberedString;
-import de.upb.soot.util.SmallNumberedMap;
-import de.upb.soot.validation.ClassFlagsValidator;
-import de.upb.soot.validation.ClassValidator;
-import de.upb.soot.validation.MethodDeclarationValidator;
-import de.upb.soot.validation.OuterClassValidator;
-import de.upb.soot.validation.ValidationException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,7 +84,8 @@ public class SootClass extends AbstractViewResident implements Numberable {
 
   private ClassSource cs;
 
-  public SootClass(ClassSource cs) {
+  public SootClass(IView view, ClassSource cs) {
+    super(view);
     this.cs = cs;
   }
 
@@ -113,16 +115,14 @@ public class SootClass extends AbstractViewResident implements Numberable {
    * Constructs an empty SootClass with the given name and modifiers.
    */
 
-  public SootClass(String name, int modifiers) {
+  public SootClass(IView view, String name, int modifiers) {
+    super(view);
     if (name.charAt(0) == '[') {
       throw new RuntimeException("Attempt to make a class whose name starts with [");
     }
     setName(name);
     this.modifiers = modifiers;
     initializeRefType(name);
-    if (Options.getInstance().debug_resolver()) {
-      logger.debug("created " + name + " with modifiers " + modifiers);
-    }
     setResolvingLevel(BODIES);
   }
 
@@ -142,8 +142,8 @@ public class SootClass extends AbstractViewResident implements Numberable {
    * Constructs an empty SootClass with the given name and no modifiers.
    */
 
-  public SootClass(String name) {
-    this(name, 0);
+  public SootClass(IView view, String name) {
+    this(view, name, 0);
   }
 
   public final static int DANGLING = 0;
@@ -698,9 +698,6 @@ public class SootClass extends AbstractViewResident implements Numberable {
     return false;
   }
 
-  /*
-   * public void setMethods(Method[] method) { methods = new ArraySet(method); }
-   */
 
   /**
    * Adds the given method to this class.
@@ -710,11 +707,6 @@ public class SootClass extends AbstractViewResident implements Numberable {
     if (m.isDeclared()) {
       throw new RuntimeException("already declared: " + m.getName());
     }
-
-    /*
-     * if(declaresMethod(m.getName(), m.getParameterTypes())) throw new RuntimeException("duplicate signature for: " +
-     * m.getName());
-     */
 
     if (methodList == null) {
       methodList = new ArrayList<>();
@@ -794,7 +786,6 @@ public class SootClass extends AbstractViewResident implements Numberable {
   /**
    * Returns the modifiers of this class.
    */
-
   public int getModifiers() {
     return modifiers;
   }
@@ -802,7 +793,6 @@ public class SootClass extends AbstractViewResident implements Numberable {
   /**
    * Sets the modifiers for this class.
    */
-
   public void setModifiers(int modifiers) {
     this.modifiers = modifiers;
   }

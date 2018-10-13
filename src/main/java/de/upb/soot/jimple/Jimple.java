@@ -84,6 +84,7 @@ import de.upb.soot.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.soot.views.IView;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -622,10 +623,10 @@ public class Jimple {
   }
 
   /**
-   * Constructs a StaticFieldRef(SootFieldRef) grammar chunk.
+   * Constructs a StaticField(SootField) grammar chunk.
    */
-  public SootField newStaticField(SootField f) {
-    return new SootField(f);
+  public SootField newStaticField(IView view, SootField f) {
+    return new SootField(view, f);
   }
 
   /**

@@ -24,8 +24,10 @@ package de.upb.soot.core;
  */
 
 import de.upb.soot.Options;
+import de.upb.soot.jimple.basic.Numberable;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.util.NumberedString;
+import de.upb.soot.views.IView;
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 
@@ -44,7 +46,7 @@ import java.util.StringTokenizer;
  *
  */
 
-public class SootMethod extends AbstractViewResident/* implements ClassMember, Numberable, MethodOrMethodContext */ {
+public class SootMethod extends AbstractViewResident implements ClassMember, Numberable {
   protected DebuggingInformation debugInfo;
   public static final String constructorName = "<init>";
   public static final String staticInitializerName = "<clinit>";
@@ -91,22 +93,23 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
   /**
    * Constructs a SootMethod with the given name, parameter types and return type.
    */
-  public SootMethod(String name, List<Type> parameterTypes, Type returnType) {
-    this(name, parameterTypes, returnType, 0, Collections.<SootClass>emptyList());
+  public SootMethod(IView view, String name, List<Type> parameterTypes, Type returnType) {
+    this(view, name, parameterTypes, returnType, 0, Collections.<SootClass>emptyList());
   }
 
   /**
    * Constructs a SootMethod with the given name, parameter types, return type and modifiers.
    */
-  public SootMethod(String name, List<Type> parameterTypes, Type returnType, int modifiers) {
-    this(name, parameterTypes, returnType, modifiers, Collections.<SootClass>emptyList());
+  public SootMethod(IView view, String name, List<Type> parameterTypes, Type returnType, int modifiers) {
+    this(view, name, parameterTypes, returnType, modifiers, Collections.<SootClass>emptyList());
   }
 
   /**
    * Constructs a SootMethod with the given name, parameter types, return type, and list of thrown exceptions.
    */
-  public SootMethod(String name, List<Type> parameterTypes, Type returnType, int modifiers,
+  public SootMethod(IView view, String name, List<Type> parameterTypes, Type returnType, int modifiers,
       List<SootClass> thrownExceptions) {
+    super(view);
     this.name = name;
     this.parameterTypes = new ArrayList<Type>();
     this.parameterTypes.addAll(parameterTypes);
@@ -119,7 +122,7 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
       exceptions = new ArrayList<SootClass>();
       this.exceptions.addAll(thrownExceptions);
     }
-
+    subsignature = this.getView().getSubSigNumberer().findOrAdd(getSubSignature());
   }
 
   /**
@@ -166,6 +169,7 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
   }
 
   /** Returns the class which declares the current <code>SootMethod</code>. */
+  @Override
   public SootClass getDeclaringClass() {
     if (!isDeclared) {
       throw new RuntimeException("not declared: " + getName());
@@ -181,11 +185,13 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
   /**
    * Returns true when some <code>SootClass</code> object declares this <code>SootMethod</code> object.
    */
+  @Override
   public boolean isDeclared() {
     return isDeclared;
   }
 
   /** Returns true when this <code>SootMethod</code> object is phantom. */
+  @Override
   public boolean isPhantom() {
     return isPhantom;
   }
@@ -199,6 +205,7 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
   }
 
   /** Sets the phantom flag on this method. */
+  @Override
   public void setPhantom(boolean value) {
     if (value) {
       if (!this.getView().allowsPhantomRefs()) {
@@ -217,6 +224,7 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
    * @see de.upb.soot.core.Modifier
    */
 
+  @Override
   public int getModifiers() {
     return modifiers;
   }
@@ -226,6 +234,7 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
    *
    * @see de.upb.soot.core.Modifier
    */
+  @Override
   public void setModifiers(int modifiers) {
     this.modifiers = modifiers;
   }
@@ -487,6 +496,7 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
   /**
    * Convenience method returning true if this method is static.
    */
+  @Override
   public boolean isStatic() {
     return Modifier.isStatic(this.getModifiers());
   }
@@ -494,6 +504,7 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
   /**
    * Convenience method returning true if this method is private.
    */
+  @Override
   public boolean isPrivate() {
     return Modifier.isPrivate(this.getModifiers());
   }
@@ -501,6 +512,7 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
   /**
    * Convenience method returning true if this method is public.
    */
+  @Override
   public boolean isPublic() {
     return Modifier.isPublic(this.getModifiers());
   }
@@ -508,6 +520,7 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
   /**
    * Convenience method returning true if this method is protected.
    */
+  @Override
   public boolean isProtected() {
     return Modifier.isProtected(this.getModifiers());
   }
@@ -764,10 +777,12 @@ public class SootMethod extends AbstractViewResident/* implements ClassMember, N
     return buffer.toString().intern();
   }
 
+  @Override
   public final int getNumber() {
     return number;
   }
 
+  @Override
   public final void setNumber(int number) {
     this.number = number;
   }

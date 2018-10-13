@@ -101,5 +101,10 @@ public interface IView {
 
   RefType getObjectType();
 
+  // TODO. remove references to this method later
+  SootClass getSootClass(String className);
+
+  RefType getRefType(String className);
+
 
 }

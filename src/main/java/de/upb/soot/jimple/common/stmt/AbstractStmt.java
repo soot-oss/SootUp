@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.core.AbstractViewResident;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
@@ -39,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractStmt extends AbstractViewResident implements IStmt {
+public abstract class AbstractStmt implements IStmt {
   private Position position;
 
   /** Returns a deep clone of this object. */

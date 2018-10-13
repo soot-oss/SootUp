@@ -1,8 +1,9 @@
 package de.upb.soot.core;
 
-import com.google.common.collect.Sets;
-
 import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.views.IView;
+
+import com.google.common.collect.Sets;
 
 import java.util.HashSet;
 
@@ -70,13 +71,14 @@ public class SootModuleInfo extends SootClass {
    * @param version
    *          the module's version
    */
-  public SootModuleInfo(ClassSource cs, String name, int access, String version) {
-    super(cs);
+  public SootModuleInfo(IView view, ClassSource cs, String name, int access, String version) {
+    super(view, cs);
     this.name = name;
     this.accessModifier = access;
     // FIXME: add code
   }
 
+  @Override
   public String getName() {
     return name;
   }

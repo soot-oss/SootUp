@@ -12,14 +12,12 @@ public class AbstractViewResident implements IViewResident {
 
   private IView view;
 
+  public AbstractViewResident(IView view) {
+    this.view = view;
+  }
+
   @Override
   public IView getView() {
     return view;
   }
-
-  @Override
-  public void setView(IView view) {
-    this.view = view;
-  }
-
 }

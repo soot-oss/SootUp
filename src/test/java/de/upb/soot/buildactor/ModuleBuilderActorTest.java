@@ -20,14 +20,14 @@ import categories.Java9Test;
 public class ModuleBuilderActorTest {
   de.upb.soot.views.StuffAViewNeeds stuffAViewNeeds;
 
-  private de.upb.soot.views.View createNewScene() {
+  private de.upb.soot.views.JavaView createNewScene() {
 
     final JavaModulePathNamespace javaClassPathNamespace
         = new JavaModulePathNamespace("target/test-classes/de/upb/soot/namespaces/modules");
 
     de.upb.soot.Project project = new de.upb.soot.Project(javaClassPathNamespace);
 
-    de.upb.soot.views.View view = new de.upb.soot.views.View(project);
+    de.upb.soot.views.JavaView view = new de.upb.soot.views.JavaView(project);
 
     stuffAViewNeeds = new de.upb.soot.views.StuffAViewNeeds();
     stuffAViewNeeds.namespaces = java.util.Collections.singleton(javaClassPathNamespace);

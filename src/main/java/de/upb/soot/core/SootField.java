@@ -26,6 +26,7 @@ package de.upb.soot.core;
 import de.upb.soot.Options;
 import de.upb.soot.jimple.common.type.RefLikeType;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.views.IView;
 
 /**
  * Soot's counterpart of the source language's field concept. Soot representation of a Java field. Can be declared to belong
@@ -35,7 +36,7 @@ import de.upb.soot.jimple.common.type.Type;
  *
  */
 
-public class SootField extends AbstractViewResident/* implements ClassMember, SparkField, Numberable, PaddleField */ {
+public class SootField extends AbstractViewResident implements ClassMember {
 
   protected String name;
   protected Type type;
@@ -47,7 +48,8 @@ public class SootField extends AbstractViewResident/* implements ClassMember, Sp
   protected volatile String subSig;
 
   /** Constructs a Soot field with the given name, type and modifiers. */
-  public SootField(String name, Type type, int modifiers) {
+  public SootField(IView view, String name, Type type, int modifiers) {
+    super(view);
     if (name == null || type == null) {
       throw new RuntimeException("A SootField cannot have a null name or type.");
     }
@@ -57,8 +59,8 @@ public class SootField extends AbstractViewResident/* implements ClassMember, Sp
   }
 
   /** Constructs a Soot field with the given name, type and no modifiers. */
-  public SootField(String name, Type type) {
-    this(name, type, 0);
+  public SootField(IView view, String name, Type type) {
+    this(view, name, type, 0);
   }
 
   public int equivHashCode() {
@@ -107,6 +109,7 @@ public class SootField extends AbstractViewResident/* implements ClassMember, Sp
     return buffer.toString();
   }
 
+  @Override
   public SootClass getDeclaringClass() {
     if (!isDeclared) {
       throw new RuntimeException("not declared: " + getName() + " " + getType());
@@ -123,10 +126,12 @@ public class SootField extends AbstractViewResident/* implements ClassMember, Sp
     this.sig = null;
   }
 
+  @Override
   public boolean isPhantom() {
     return isPhantom;
   }
 
+  @Override
   public void setPhantom(boolean value) {
     if (value) {
       if (!this.getView().allowsPhantomRefs()) {
@@ -139,6 +144,7 @@ public class SootField extends AbstractViewResident/* implements ClassMember, Sp
     isPhantom = value;
   }
 
+  @Override
   public boolean isDeclared() {
     return isDeclared;
   }
@@ -174,6 +180,7 @@ public class SootField extends AbstractViewResident/* implements ClassMember, Sp
   /**
    * Convenience method returning true if this field is public.
    */
+  @Override
   public boolean isPublic() {
     return Modifier.isPublic(this.getModifiers());
   }
@@ -181,6 +188,7 @@ public class SootField extends AbstractViewResident/* implements ClassMember, Sp
   /**
    * Convenience method returning true if this field is protected.
    */
+  @Override
   public boolean isProtected() {
     return Modifier.isProtected(this.getModifiers());
   }
@@ -188,6 +196,7 @@ public class SootField extends AbstractViewResident/* implements ClassMember, Sp
   /**
    * Convenience method returning true if this field is private.
    */
+  @Override
   public boolean isPrivate() {
     return Modifier.isPrivate(this.getModifiers());
   }
@@ -195,6 +204,7 @@ public class SootField extends AbstractViewResident/* implements ClassMember, Sp
   /**
    * Convenience method returning true if this field is static.
    */
+  @Override
   public boolean isStatic() {
     return Modifier.isStatic(this.getModifiers());
   }
@@ -206,10 +216,12 @@ public class SootField extends AbstractViewResident/* implements ClassMember, Sp
     return Modifier.isFinal(this.getModifiers());
   }
 
+  @Override
   public void setModifiers(int modifiers) {
     this.modifiers = modifiers;
   }
 
+  @Override
   public int getModifiers() {
     return modifiers;
   }
@@ -245,7 +257,8 @@ public class SootField extends AbstractViewResident/* implements ClassMember, Sp
 
   private int number = 0;
 
-  public SootField(SootField f) {
+  public SootField(IView view, SootField f) {
+    super(view);
     // TODO Auto-generated constructor stub
   }
 

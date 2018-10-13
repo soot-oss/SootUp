@@ -17,11 +17,6 @@ public class Options {
     return false;
   }
 
-  public boolean debug_resolver() {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
   public boolean ignore_resolving_levels() {
     // TODO Auto-generated method stub
     return false;

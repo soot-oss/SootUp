@@ -8,8 +8,8 @@ import java.nio.file.Path;
 
 public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovider.IClassProvider {
 
-  public AsmJavaClassProvider() {
 
+  public AsmJavaClassProvider() {
   }
 
   @Override
@@ -73,7 +73,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
   private de.upb.soot.core.SootModuleInfo getSootModule(ClassSource classSource, org.objectweb.asm.ModuleVisitor visitor) {
 
     de.upb.soot.namespaces.classprovider.asm.modules.SootModuleBuilder scb
-        = new de.upb.soot.namespaces.classprovider.asm.modules.SootModuleBuilder(classSource, visitor);
+        = new de.upb.soot.namespaces.classprovider.asm.modules.SootModuleBuilder(view, classSource, visitor);
     java.net.URI uri = classSource.getSourcePath().toUri();
 
     try {

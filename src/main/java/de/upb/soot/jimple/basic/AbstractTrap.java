@@ -1,6 +1,5 @@
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.core.AbstractViewResident;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.common.stmt.IStmt;
 
@@ -41,7 +40,7 @@ import java.util.List;
  * Partial implementation of trap (exception catcher), used within Body classes.
  */
 @SuppressWarnings("serial")
-public class AbstractTrap extends AbstractViewResident implements Trap, Serializable {
+public class AbstractTrap implements Trap, Serializable {
   /** The exception being caught. */
   protected transient SootClass exception;
 

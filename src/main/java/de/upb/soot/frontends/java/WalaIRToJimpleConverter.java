@@ -22,6 +22,8 @@ import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.views.IView;
+import de.upb.soot.views.JavaView;
 
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.cast.loader.AstClass;
@@ -67,8 +69,10 @@ import java.util.List;
  *
  */
 public class WalaIRToJimpleConverter {
+  private IView view;
 
   public WalaIRToJimpleConverter() {
+    view = new JavaView(null);
   }
 
   public SootClass convertClass(AstClass walaClass) {
@@ -78,7 +82,7 @@ public class WalaIRToJimpleConverter {
     ClassSignature classSignature = new DefaultSignatureFactory() {
     }.getClassSignature(fullyQualifiedClassName);
     ClassSource classSource = new ClassSource(srcNamespace, sourcePath, classSignature);
-    SootClass sootClass = new SootClass(classSource);
+    SootClass sootClass = new SootClass(view, classSource);
     // convert fields
     for (IField walaField : walaClass.getAllFields()) {
       SootField sootField = convertField((AstField) walaField);
@@ -112,7 +116,7 @@ public class WalaIRToJimpleConverter {
     int modifier = 0;
     List<SootClass> thrownExceptions = Collections.emptyList();
     // TODO check if all arguments are set up properly.
-    SootMethod sootMethod = new SootMethod(name, paraTypes, returnType, modifier, thrownExceptions);
+    SootMethod sootMethod = new SootMethod(view, name, paraTypes, returnType, modifier, thrownExceptions);
 
     // create and set active body of the SootMethod
     Body body = createBody(sootMethod, walaMethod);
