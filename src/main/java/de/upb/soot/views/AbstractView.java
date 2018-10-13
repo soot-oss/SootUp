@@ -1,5 +1,6 @@
 package de.upb.soot.views;
 
+import de.upb.soot.Options;
 import de.upb.soot.Project;
 import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
@@ -35,6 +36,7 @@ public abstract class AbstractView implements IView {
   public StuffAViewNeeds stuffAViewNeeds;
 
   protected Project project;
+  protected Options options;
   /**
    * a map to store the RefType of each class according to its name. RefType of each class should just have one instance.
    */
@@ -46,6 +48,7 @@ public abstract class AbstractView implements IView {
 
   public AbstractView(Project project) {
     this.project = project;
+    this.options = new Options();
     setReservedNames();
     this.nameToClass = new HashMap<>();
     this.subSigNumberer = new StringNumberer();
@@ -220,4 +223,8 @@ public abstract class AbstractView implements IView {
    */
   protected abstract void setReservedNames();
 
+  @Override
+  public Options getOptions() {
+    return this.options;
+  }
 }

@@ -1,6 +1,5 @@
 package de.upb.soot.core;
 
-import de.upb.soot.Options;
 import de.upb.soot.jimple.basic.Numberable;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
@@ -184,7 +183,7 @@ public class SootClass extends AbstractViewResident implements Numberable {
       return;
     }
 
-    if (!this.getView().doneResolving() || Options.getInstance().ignore_resolving_levels()) {
+    if (!this.getView().doneResolving() || this.getView().getOptions().ignore_resolving_levels()) {
       return;
     }
     checkLevelIgnoreResolving(level);
@@ -1270,7 +1269,7 @@ public class SootClass extends AbstractViewResident implements Numberable {
    * structure. All found errors are saved into the given list.
    */
   public void validate(List<ValidationException> exceptionList) {
-    final boolean runAllValidators = Options.getInstance().debug() || Options.getInstance().validate();
+    final boolean runAllValidators = this.getView().getOptions().debug() || this.getView().getOptions().validate();
     for (ClassValidator validator : getValidators()) {
       if (!validator.isBasicValidator() && !runAllValidators) {
         continue;

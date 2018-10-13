@@ -26,7 +26,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.Options;
 import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
@@ -43,7 +42,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
    */
   public JVirtualInvokeExpr(Value base, SootMethod method, List<? extends Value> args) {
     super(Jimple.getInstance().newLocalBox(base), method, new ValueBox[args.size()]);
-    if (!Options.getInstance().ignore_resolution_errors()) {
+    if (!method.getView().getOptions().ignore_resolution_errors()) {
       // Check that the method's class is resolved enough
       method.declaringClass().checkLevelIgnoreResolving(SootClass.HIERARCHY);
       // now check if the class is valid

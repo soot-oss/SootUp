@@ -1,29 +1,5 @@
 package de.upb.soot.core;
 
-/*-
- * #%L
- * Soot - a J*va Optimization Framework
- * %%
- * Copyright (C) 1997 - 1999 Raja Vallee-Rai
- * Copyright (C) 2004 Ondrej Lhotak
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/lgpl-2.1.html>.
- * #L%
- */
-
-import de.upb.soot.Options;
 import de.upb.soot.jimple.basic.Numberable;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.util.NumberedString;
@@ -211,7 +187,7 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
       if (!this.getView().allowsPhantomRefs()) {
         throw new RuntimeException("Phantom refs not allowed");
       }
-      if (!Options.getInstance().allow_phantom_elms() && declaringClass != null && !declaringClass.isPhantomClass()) {
+      if (!this.getView().getOptions().allow_phantom_elms() && declaringClass != null && !declaringClass.isPhantomClass()) {
         throw new RuntimeException("Declaring class would have to be phantom");
       }
     }
@@ -402,7 +378,7 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
       setActiveBody(activeBody);
 
       // If configured, we drop the method source to save memory
-      if (Options.getInstance().drop_bodies_after_load()) {
+      if (this.getView().getOptions().drop_bodies_after_load()) {
         ms = null;
       }
       return activeBody;
