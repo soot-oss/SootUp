@@ -11,7 +11,7 @@ public class PositionTag implements Tag {
 
   @Override
   public String getName() {
-    return "position tag";
+    return "PositionTag";
   }
 
   @Override

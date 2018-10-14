@@ -1,7 +1,12 @@
 package de.upb.soot.namespaces;
 
+import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.ModuleDecaratorClassSignature;
+import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 
 import java.io.File;
@@ -24,16 +29,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Discovers all modules in a given module path. For automatic modules corresponding names are generated. Handles exploded
- * modules, modular jars, and automatic modules as stated in the official documentation:
+ * Discovers all modules in a given module path. For automatic modules, names are generated. Supports exploded modules,
+ * modular jars, and automatic modules as defined in the official documentation:
  * 
  * @see <a
  *      href=http://docs.oracle.com/javase/9/docs/api/java/lang/module/ModuleFinder.html#of-java.nio.file.Path...->ModuleFinder</a>
  *
  * @author Andreas Dann on 28.06.18
  */
-class ModuleFinder {
-  private IClassProvider classProvider;
+public class ModuleFinder {
+  private de.upb.soot.namespaces.classprovider.IClassProvider classProvider;
   // associate a module name with the namespace, that represents the module
   private Map<String, AbstractNamespace> moduleNamespace = new HashMap<>();
   private int next = 0;
@@ -42,10 +47,18 @@ class ModuleFinder {
 
   private JrtFileSystemNamespace jrtFileSystemNamespace;
 
-  public ModuleFinder(String modulePath) {
+  /**
+   * Helper Class to discover modules in a given module path.
+   * 
+   * @param classProvider
+   *          the class provider for resolving found classes
+   * @param modulePath
+   *          the module path
+   */
+  public ModuleFinder(IClassProvider classProvider, String modulePath) {
+    this.classProvider = classProvider;
     this.modulePathEntries = JavaClassPathNamespace.explode(modulePath).collect(Collectors.toList());
     // add the namespace for the jrt virtual file system
-    // FIXME: check if it makes sense to make this static
     jrtFileSystemNamespace = new JrtFileSystemNamespace(classProvider);
 
     // discover all system's modules
@@ -55,6 +68,13 @@ class ModuleFinder {
     // the rest of the modules are discovered on demand...
   }
 
+  /**
+   * Returns the namespace that manages the module.
+   * 
+   * @param moduleName
+   *          the module name
+   * @return the namespace that resolves classes contained in the module
+   */
   public AbstractNamespace discoverModule(String moduleName) {
     AbstractNamespace namespaceForModule = moduleNamespace.get(moduleName);
     if (namespaceForModule != null) {
@@ -134,7 +154,7 @@ class ModuleFinder {
           }
 
         }
-      } catch (IOException e) {
+      } catch (IOException | ClassResolvingException e) {
         e.printStackTrace();
       }
 
@@ -142,7 +162,7 @@ class ModuleFinder {
 
   }
 
-  private void buildModuleForExplodedModule(Path dir) {
+  private void buildModuleForExplodedModule(Path dir) throws ClassResolvingException {
     // create the namespace for this module dir
     PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(dir);
 
@@ -151,17 +171,11 @@ class ModuleFinder {
       return;
     }
     // get the module's name out of this module-info file
-    Optional<ClassSource> moduleInfoClass = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
-    if (moduleInfoClass.isPresent()) {
-      ClassSource moduleInfoSource = moduleInfoClass.get();
+    Optional<ClassSource> moduleInfoClassSource = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
+    if (moduleInfoClassSource.isPresent()) {
+      ClassSource moduleInfoSource = moduleInfoClassSource.get();
       // get the module name
-      // FIXME: how we can get the name of the module,
-      // We have to query the view, and thus the actor?
-      // can we derive it from the jar file or the folder name
-      // imho: we cannot be 100% sure, when deriving the name
-      String moduleName = null;
-      // = new SootModuleInfo(moduleInfoSource, name, access, version).getName();
-
+      String moduleName = this.getModuleName(moduleInfoSource);
       this.moduleNamespace.put(moduleName, namespace);
 
     }
@@ -176,7 +190,7 @@ class ModuleFinder {
    */
   private void buildModuleForJar(Path jar) {
     PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(jar);
-
+    Optional<ClassSource> moduleInfoFile = null;
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
       Path mi = archiveRoot
@@ -185,35 +199,57 @@ class ModuleFinder {
 
         // we have a modular jar
         // get the module name
-
-        Optional<ClassSource> moduleInfoClass = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
-        if (moduleInfoClass.isPresent()) {
-          ClassSource moduleInfoSource = moduleInfoClass.get();
-          // get the module name
-          // FIXME: how we can get the name of the module,
-          // We have to query the view, and thus the actor?
-          String moduleName = null;
-          // = new SootModuleInfo(moduleInfoSource, name, access, version).getName();
-
-          this.moduleNamespace.put(moduleName, namespace);
-
-        }
-
-      } else {
-        // no module-info treat as automatic module
-        // create module name from the jar file
-        String filename = jar.getFileName().toString();
-
-        // make module base on the filename of the jar
-        String moduleName = createModuleNameForAutomaticModule(filename);
-        this.moduleNamespace.put(moduleName, namespace);
+        // create proper moduleInfoSignature
+        moduleInfoFile = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
 
       }
-
     } catch (IOException e) {
       e.printStackTrace();
     }
+    if (moduleInfoFile != null && moduleInfoFile.isPresent()) {
+      ClassSource moduleInfoSource = moduleInfoFile.get();
+      // get the module name
+      String moduleName = null;
+      try {
+        moduleName = getModuleName(moduleInfoSource);
+      } catch (ClassResolvingException classResolvingException) {
+        classResolvingException.printStackTrace();
+      }
 
+      this.moduleNamespace.put(moduleName, namespace);
+
+    } else {
+      // no module-info treat as automatic module
+      // create module name from the jar file
+      String filename = jar.getFileName().toString();
+
+      // make module base on the filename of the jar
+      String moduleName = createModuleNameForAutomaticModule(filename);
+      this.moduleNamespace.put(moduleName, namespace);
+
+    }
+
+  }
+
+  private String getModuleName(ClassSource moduleInfoSource) throws ClassResolvingException {
+    SootClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
+    if (!(moduleInfoClass instanceof SootModuleInfo)) {
+      throw new ClassResolvingException("Class is named module-info but does not reify to SootModuleInfo");
+    }
+
+    String moduleName = ((SootModuleInfo) moduleInfoClass).getName();
+    createProperModuleSignature(moduleInfoSource, moduleName);
+
+    return moduleName;
+  }
+
+  private void createProperModuleSignature(ClassSource moduleInfoSource, String moduleName) {
+    // create proper moduleInfoSignature
+    // add the module name, which was unknown before
+    // moduleInfoSource.setClassSignature();
+    ModuleSignature moduleSignature = ModuleSignatureFactory.getModuleSignature(moduleName);
+    ClassSignature sig = new ModuleDecaratorClassSignature(ModuleSignatureFactory.MODULE_INFO_CLASS, moduleSignature);
+    moduleInfoSource.setClassSignature(sig);
   }
 
   /**

@@ -1,5 +1,6 @@
 package de.upb.soot.views;
 
+import de.upb.soot.Options;
 import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
@@ -17,6 +18,7 @@ import de.upb.soot.util.StringNumberer;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 
 /**
  * A view on code.
@@ -101,5 +103,11 @@ public interface IView {
 
   RefType getObjectType();
 
+  // TODO. remove references to this method later
+  SootClass getSootClass(String className);
+
+  RefType getRefType(String className);
+
+  Options getOptions();
 
 }

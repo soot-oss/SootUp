@@ -11,6 +11,4 @@ import de.upb.soot.views.IView;
 public interface IViewResident {
 
   IView getView();
-
-  void setView(IView view);
 }

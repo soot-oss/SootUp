@@ -46,7 +46,6 @@ public class WalaClassLoader {
    */
   private void buildClassHierachy() {
     AnalysisScope scope = new JavaSourceAnalysisScope();
-
     try {
       // add standard libraries to scope
       String[] stdlibs = WalaProperties.getJ2SEJarFiles();

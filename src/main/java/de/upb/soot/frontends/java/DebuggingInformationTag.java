@@ -14,13 +14,16 @@ public class DebuggingInformationTag implements Tag {
 
   @Override
   public String getName() {
-    // TODO Auto-generated method stub
-    return null;
+    return "DebugInfo";
   }
 
   @Override
   public byte[] getValue() throws AttributeValueException {
-    return null;
+    return this.debugInfo.toString().getBytes();
   }
 
+  public DebuggingInformation getDebugInfo() {
+    return this.debugInfo;
+
+  }
 }

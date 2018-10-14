@@ -1,6 +1,5 @@
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.core.AbstractViewResident;
 import de.upb.soot.jimple.basic.Numberable;
 import de.upb.soot.jimple.visitor.IAcceptor;
 
@@ -12,11 +11,7 @@ import java.io.Serializable;
  *
  */
 @SuppressWarnings("serial")
-public abstract class Type extends AbstractViewResident implements IAcceptor, Serializable, Numberable {
-  public Type() {
-    this.getView().getTypeNumberer().add(this);
-  }
-
+public abstract class Type implements IAcceptor, Serializable, Numberable {
   /** Returns a textual representation of this type. */
   @Override
   public abstract String toString();

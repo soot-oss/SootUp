@@ -25,10 +25,12 @@
 
 package de.upb.soot.jimple.common.type;
 
+import de.upb.soot.core.IViewResident;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.CommonClassSignatures;
-import de.upb.soot.views.View;
+import de.upb.soot.views.IView;
+import de.upb.soot.views.JavaView;
 
 import java.util.ArrayDeque;
 
@@ -37,16 +39,16 @@ import java.util.ArrayDeque;
  * Parameterized by the same class name as a String. Modified by @author Linghui Luo on 25.07.2018
  */
 @SuppressWarnings("serial")
-public class RefType extends RefLikeType implements Comparable<RefType> {
+public class RefType extends RefLikeType implements IViewResident, Comparable<RefType> {
 
   /** the class name that parameterizes this RefType. */
   private String className;
   private volatile SootClass sootClass;
   private AnySubType anySubType;
-  private static View view;
+  private static IView view;
 
   /**
-   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in {@link View}.
+   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in {@link JavaView}.
    * 
    * @param className
    *          The name of the class used to parameterize the created RefType.
@@ -55,14 +57,14 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
   public static RefType getInstance(String className) {
     RefType rt = view.getRefType(className);
     if (rt == null) {
-      rt = new RefType(className);
-      view.addRefType(className, rt);
+      rt = new RefType(view, className);
+      view.addRefType(rt);
     }
     return rt;
   }
 
   /**
-   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in {@link View}.
+   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in {@link JavaView}.
    * 
    * @param c
    *          A SootClass for which to create a RefType.
@@ -74,7 +76,8 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
 
 
   // TODO: Please change className to ClassSignature here. No use of Strings to determine classes anymore. The first few lines are a good example why.
-  private RefType(String className) {
+  public RefType(IView view, String className) {
+    RefType.view = view;
     if (className.startsWith("[")) {
       throw new RuntimeException("Attempt to create RefType whose name starts with [ --> " + className);
     }
@@ -85,6 +88,7 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
       throw new RuntimeException("Attempt to create RefType containing a ; --> " + className);
     }
     this.className = className;
+    RefType.view.addRefType(this);
   }
 
   public String getClassName() {
@@ -144,6 +148,7 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
   }
 
   /** Returns the least common superclass of this type and other. */
+  @Override
   public Type merge(Type other) {
     if (other.equals(UnknownType.getInstance()) || this.equals(other)) {
       return this;
@@ -156,8 +161,8 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
     {
       // Return least common superclass
       // TODO: This is all highly suspicious. FQCNs should be resolved there through a SignatureFactory.
-      SootClass thisClass = null; //this.getView().getSootClass(this.className);
-      SootClass otherClass = null; // this.getView().getSootClass(((RefType) other).className);
+      SootClass thisClass = this.getView().getSootClass(this.className);
+      SootClass otherClass = this.getView().getSootClass(((RefType) other).className);
       SootClass javalangObject = this.getView().getSootClass(CommonClassSignatures.JavaLangObject).orElseGet(null);
 
       ArrayDeque<SootClass> thisHierarchy = new ArrayDeque<>();
@@ -250,13 +255,18 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
   }
 
   /**
-   * Set the current view. RefType needs access to view, since all RefTypes are stored in {@link View}.
+   * Set the current view. RefType needs access to view, since all RefTypes are stored in {@link JavaView}.
    * 
    * @param view
    *          the current view
    */
-  public static void setView(View view) {
+  public static void setView(JavaView view) {
     RefType.view = view;
+  }
+
+  @Override
+  public IView getView() {
+    return view;
   }
 
 }

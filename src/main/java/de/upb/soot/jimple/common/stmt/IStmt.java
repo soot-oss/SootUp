@@ -13,8 +13,6 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import java.io.Serializable;
 import java.util.List;
 
-import scala.Unit;
-
 public interface IStmt extends IAcceptor, Serializable
 {
 
@@ -61,11 +59,8 @@ public interface IStmt extends IAcceptor, Serializable
   public boolean branches();
 
   /**
-   * Redirects jumps to this Unit to newLocation. In general, you shouldn't have to use this directly.
-   * 
-   * @see PatchingChain#getNonPatchingChain()
-   * @see soot.shimple.Shimple#redirectToPreds(Chain, Unit)
-   * @see soot.shimple.Shimple#redirectPointers(Unit, Unit)
+   * Redirects jumps to this Stmt to newLocation. In general, you shouldn't have to use this directly.
+   *
    **/
   public void redirectJumpsToThisTo(IStmt newLocation);
 

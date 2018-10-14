@@ -7,9 +7,11 @@ import soot.Local;
 import soot.PatchingChain;
 import soot.SootClass;
 import soot.SootMethod;
+import soot.Trap;
 import soot.Unit;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
+import soot.jimple.Stmt;
 import soot.util.Chain;
 
 /**
@@ -44,24 +46,33 @@ public class JimpleConverter {
 
     JimpleBody ret = Jimple.v().newBody(toMethod);
 
-    Chain<Local> locals = ret.getLocals();
     PatchingChain<Unit> units = ret.getUnits();
+    Chain<Local> locals = ret.getLocals();
+    Chain<Trap> traps = ret.getTraps();
+    // needd to look at the clone method of body.
+
+    for (IStmt fromStmt : body.getStmts()) {
+      // convert stmts
+      Stmt toStmt = null;
+      // TODO.
+      units.add(toStmt);
+    }
 
     for (de.upb.soot.jimple.basic.Local fromLocal : body.getLocals()) {
       // covert locals
       Local toLocal = null;
+      // TODO.
       locals.add(toLocal);
     }
 
-    for (IStmt stmt : body.getStmts()) {
-      // convert stmt
-      Unit toUnit = null;
-
-      units.add(toUnit);
+    for (de.upb.soot.jimple.basic.Trap fromTrap : body.getTraps()) {
+      // convert traps
+      Trap toTrap = null;
+      // TODO.
+      traps.add(toTrap);
     }
 
     return ret;
-
   }
 
 }
