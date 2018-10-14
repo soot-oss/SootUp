@@ -25,16 +25,21 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JReturnStmt extends AbstractOpStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 4601025616184085996L;
+
   public JReturnStmt(Value returnValue) {
-    this(Jimple.getInstance().newImmediateBox(returnValue));
+    this(Jimple.newImmediateBox(returnValue));
   }
 
   protected JReturnStmt(ValueBox returnValueBox) {
@@ -52,7 +57,7 @@ public class JReturnStmt extends AbstractOpStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.RETURN);
     up.literal(" ");
     opBox.toString(up);

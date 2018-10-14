@@ -28,8 +28,8 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.io.Serializable;
 
@@ -54,5 +54,5 @@ public interface StmtBox extends Serializable {
    **/
   public boolean isBranchTarget();
 
-  public void toString(StmtPrinter up);
+  public void toString(IStmtPrinter up);
 }

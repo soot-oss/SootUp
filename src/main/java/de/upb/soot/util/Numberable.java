@@ -17,7 +17,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-package de.upb.soot.jimple.basic;
+package de.upb.soot.util;
 
 /**
  * /** A class that numbers objects, so they can be placed in bitsets.

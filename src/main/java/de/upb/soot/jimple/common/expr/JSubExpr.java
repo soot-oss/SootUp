@@ -25,13 +25,18 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JSubExpr extends AbstractFloatBinopExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -530996592332652298L;
+
   public JSubExpr(Value op1, Value op2) {
     super(op1, op2);
   }
@@ -52,7 +57,7 @@ public class JSubExpr extends AbstractFloatBinopExpr {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     // TODO Auto-generated method stub
 
   }

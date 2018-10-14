@@ -43,7 +43,7 @@ import de.upb.soot.jimple.common.type.UnknownType;
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
 
   AbstractFloatBinopExpr(Value op1, Value op2) {
-    this(Jimple.getInstance().newArgBox(op1), Jimple.getInstance().newArgBox(op2));
+    this(Jimple.newArgBox(op1), Jimple.newArgBox(op2));
   }
 
   protected AbstractFloatBinopExpr(ValueBox op1Box, ValueBox op2Box) {

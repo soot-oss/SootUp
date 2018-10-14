@@ -27,13 +27,16 @@
  *  The original class name was AbstractUnitBox in soot, renamed by Linghui Luo, 22.06.2018
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.basic;
 
-import de.upb.soot.StmtPrinter;
-import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 public abstract class AbstractStmtBox implements StmtBox {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 7292172470036407386L;
   protected IStmt stmt;
 
   public abstract boolean canContainUnit(IStmt u);
@@ -63,14 +66,15 @@ public abstract class AbstractStmtBox implements StmtBox {
     }
   }
 
+  @Override
   public IStmt getStmt() {
     return stmt;
   }
 
   @Override
-  public void toString(StmtPrinter up) {
-    up.startUnitBox(this);
-    up.unitRef(stmt, isBranchTarget());
-    up.endUnitBox(this);
+  public void toString(IStmtPrinter up) {
+    up.startStmtBox(this);
+    up.stmtRef(stmt, isBranchTarget());
+    up.endStmtBox(this);
   }
 }

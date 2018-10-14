@@ -1,7 +1,29 @@
 package de.upb.soot.core;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1997 - 1999 Raja Vallee-Rai
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 
-import de.upb.soot.jimple.basic.Numberable;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.namespaces.classprovider.IMethodSource;
+import de.upb.soot.util.Numberable;
 import de.upb.soot.util.NumberedString;
 import de.upb.soot.views.IView;
 
@@ -18,7 +40,7 @@ import java.util.StringTokenizer;
  * belong to a SootClass. Does not contain the actual code, which belongs to a Body. The getActiveBody() method points to the
  * currently-active body.
  *
- * @author Linghui Luo
+ * Modified by Linghui Luo
  *
  */
 
@@ -61,7 +83,7 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
   protected volatile Body activeBody;
 
   /** Tells this method how to find out where its body lives. */
-  protected volatile MethodSource ms;
+  protected volatile IMethodSource ms;
 
   protected volatile String sig;
   protected volatile String subSig;
@@ -272,12 +294,12 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
   }
 
   /** Returns the MethodSource of the current SootMethod. */
-  public MethodSource getSource() {
+  public IMethodSource getSource() {
     return ms;
   }
 
   /** Sets the MethodSource of the current SootMethod. */
-  public synchronized void setSource(MethodSource ms) {
+  public synchronized void setSource(IMethodSource ms) {
     this.ms = ms;
   }
 
@@ -565,10 +587,9 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
    * @return yes, if this is a class initializer or main function.
    */
   public boolean isEntryMethod() {
-    if (isStatic() && subsignature.equals(VirtualCalls.getInstance().sigClinit)) {
+    if (isStatic() && subsignature.equals(this.getView().getSubSigNumberer().findOrAdd("void <clinit>()"))) {
       return true;
     }
-
     return isMain();
   }
 

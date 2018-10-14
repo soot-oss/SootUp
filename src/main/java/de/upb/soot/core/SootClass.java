@@ -1,9 +1,30 @@
 package de.upb.soot.core;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1997 - 1999 Raja Vallee-Rai
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 
-import de.upb.soot.jimple.basic.Numberable;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.util.Numberable;
 import de.upb.soot.util.NumberedString;
 import de.upb.soot.util.SmallNumberedMap;
 import de.upb.soot.validation.ClassFlagsValidator;
@@ -66,7 +87,8 @@ import org.slf4j.LoggerFactory;
  * Soot's counterpart of the source languages class concept. Soot representation of a Java class. They are usually created by
  * a Scene, but can also be constructed manually through the given constructors.
  *
- * @author Manuel Benz created on 06.06.18
+ * @author Manuel Benz created on 06.06.18.
+ * @author Linghui Luo
  */
 
 public class SootClass extends AbstractViewResident implements Numberable {
@@ -81,14 +103,14 @@ public class SootClass extends AbstractViewResident implements Numberable {
     }
   }
 
-  private ClassSource cs;
+  private AbstractClassSource cs;
 
-  public SootClass(IView view, ClassSource cs) {
+  public SootClass(IView view, AbstractClassSource cs) {
     super(view);
     this.cs = cs;
   }
 
-  public de.upb.soot.namespaces.classprovider.ClassSource getCs() {
+  public de.upb.soot.namespaces.classprovider.AbstractClassSource getCs() {
     return cs;
   }
 
@@ -947,34 +969,6 @@ public class SootClass extends AbstractViewResident implements Numberable {
     return name;
   }
 
-  public String getJavaStyleName() {
-    if (PackageNamer.getInstance().has_FixedNames()) {
-      if (fixedShortName == null) {
-        fixedShortName = PackageNamer.getInstance().get_FixedClassName(name);
-      }
-
-      if (PackageNamer.getInstance().use_ShortName(getJavaPackageName(), fixedShortName) == false) {
-        return getJavaPackageName() + "." + fixedShortName;
-      }
-
-      return fixedShortName;
-    }
-
-    return shortName;
-  }
-
-  public String getShortJavaStyleName() {
-    if (PackageNamer.getInstance().has_FixedNames()) {
-      if (fixedShortName == null) {
-        fixedShortName = PackageNamer.getInstance().get_FixedClassName(name);
-      }
-
-      return fixedShortName;
-    }
-
-    return shortName;
-  }
-
   public String getShortName() {
     return shortName;
   }
@@ -984,18 +978,6 @@ public class SootClass extends AbstractViewResident implements Numberable {
    */
 
   public String getPackageName() {
-    return packageName;
-  }
-
-  public String getJavaPackageName() {
-    if (PackageNamer.getInstance().has_FixedNames()) {
-      if (fixedPackageName == null) {
-        fixedPackageName = PackageNamer.getInstance().get_FixedPackageName(packageName);
-      }
-
-      return fixedPackageName;
-    }
-
     return packageName;
   }
 

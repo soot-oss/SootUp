@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Value;
@@ -37,12 +36,18 @@ import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.List;
 
 public class JExitMonitorStmt extends AbstractOpStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -1179706103954735007L;
+
   public JExitMonitorStmt(Value op) {
-    this(Jimple.getInstance().newImmediateBox(op));
+    this(Jimple.newImmediateBox(op));
   }
 
   protected JExitMonitorStmt(ValueBox opBox) {
@@ -60,7 +65,7 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.EXITMONITOR);
     up.literal(" ");
     opBox.toString(up);
@@ -125,7 +130,7 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public List<StmtBox> getUnitBoxes() {
+  public List<StmtBox> getStmtBoxes() {
     // TODO Auto-generated method stub
     return null;
   }
@@ -149,7 +154,7 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public void clearUnitBoxes() {
+  public void clearStmtBoxes() {
     // TODO Auto-generated method stub
 
   }

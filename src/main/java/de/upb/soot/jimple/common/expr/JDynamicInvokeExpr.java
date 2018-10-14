@@ -26,7 +26,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
@@ -34,14 +33,18 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.objectweb.asm.Opcodes;
 
-@SuppressWarnings("serial")
 public class JDynamicInvokeExpr extends AbstractInvokeExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 8212277443400470834L;
   protected SootMethod bsmRef;
   protected ValueBox[] bsmArgBoxes;
   protected int tag;
@@ -63,10 +66,10 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     this.tag = tag;
 
     for (int i = 0; i < bootstrapArgs.size(); i++) {
-      this.bsmArgBoxes[i] = Jimple.getInstance().newImmediateBox(bootstrapArgs.get(i));
+      this.bsmArgBoxes[i] = Jimple.newImmediateBox(bootstrapArgs.get(i));
     }
     for (int i = 0; i < methodArgs.size(); i++) {
-      this.argBoxes[i] = Jimple.getInstance().newImmediateBox(methodArgs.get(i));
+      this.argBoxes[i] = Jimple.newImmediateBox(methodArgs.get(i));
     }
   }
 
@@ -197,7 +200,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
     up.literal(" \"" + method.getName() + "\" <"
         + method.getSubSignature(""/* no method name here */, method.parameterTypes(), method.returnType()) + ">(");

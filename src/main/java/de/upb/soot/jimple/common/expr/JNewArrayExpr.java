@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -33,17 +32,22 @@ import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JNewArrayExpr implements Expr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 4481534412297120257L;
   private Type baseType;
   private final ValueBox sizeBox;
 
   public JNewArrayExpr(Type type, Value size) {
     this.baseType = type;
-    this.sizeBox = Jimple.getInstance().newImmediateBox(size);
+    this.sizeBox = Jimple.newImmediateBox(size);
   }
 
   @Override
@@ -83,7 +87,7 @@ public class JNewArrayExpr implements Expr {
    * Converts a parameter of type StmtPrinter to a string literal.
    */
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.NEWARRAY);
     up.literal(" ");
     up.literal("(");

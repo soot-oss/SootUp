@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
@@ -35,16 +34,21 @@ import de.upb.soot.jimple.common.type.NullType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JArrayRef implements ConcreteRef {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 7705080573810511044L;
   protected ValueBox baseBox;
   protected ValueBox indexBox;
 
   public JArrayRef(Value base, Value index) {
-    this(Jimple.getInstance().newLocalBox(base), Jimple.getInstance().newImmediateBox(index));
+    this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index));
   }
 
   protected JArrayRef(ValueBox baseBox, ValueBox indexBox) {
@@ -77,7 +81,7 @@ public class JArrayRef implements ConcreteRef {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     baseBox.toString(up);
     up.literal("[");
     indexBox.toString(up);
@@ -109,8 +113,8 @@ public class JArrayRef implements ConcreteRef {
   }
 
   @Override
-  public List getUseBoxes() {
-    List useBoxes = new ArrayList();
+  public List<ValueBox> getUseBoxes() {
+    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
     useBoxes.addAll(baseBox.getValue().getUseBoxes());
     useBoxes.add(baseBox);

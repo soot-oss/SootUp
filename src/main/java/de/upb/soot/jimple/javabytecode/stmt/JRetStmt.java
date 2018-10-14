@@ -25,23 +25,27 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JRetStmt extends AbstractStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -5082469551010642932L;
   final ValueBox stmtAddressBox;
   // List useBoxes;
 
   public JRetStmt(Value stmtAddress) {
-    this(Jimple.getInstance().newLocalBox(stmtAddress));
+    this(Jimple.newLocalBox(stmtAddress));
   }
 
   protected JRetStmt(ValueBox stmtAddressBox) {
@@ -60,7 +64,7 @@ public class JRetStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.RET);
     up.literal(" ");
     stmtAddressBox.toString(up);

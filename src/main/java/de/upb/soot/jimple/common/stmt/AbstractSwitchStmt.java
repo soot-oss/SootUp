@@ -35,6 +35,11 @@ import java.util.List;
 
 public abstract class AbstractSwitchStmt extends AbstractStmt {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -828246813006451813L;
+
   protected final StmtBox defaultTargetBox;
 
   protected final ValueBox keyBox;
@@ -144,7 +149,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   }
 
   @Override
-  public final List<StmtBox> getUnitBoxes() {
+  public final List<StmtBox> getStmtBoxes() {
     return stmtBoxes;
   }
 

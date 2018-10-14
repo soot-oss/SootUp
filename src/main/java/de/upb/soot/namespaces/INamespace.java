@@ -1,12 +1,10 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
-import de.upb.soot.signatures.SignatureFactory;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -25,7 +23,7 @@ public interface INamespace {
    * @param signature The signature of the class to be found.
    * @return The source entry for that class.
    */
-  Optional<ClassSource> getClassSource(ClassSignature signature);
+  Optional<AbstractClassSource> getClassSource(ClassSignature signature);
 
   /**
    * The class provider attached to this namespace.

@@ -4,7 +4,7 @@ import akka.actor.AbstractLoggingActor;
 import akka.actor.Props;
 
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.views.IView;
 
@@ -14,15 +14,15 @@ public class ClassBuilderActor extends AbstractLoggingActor {
   }
 
   private final IView view;
-  private final ClassSource classSource;
+  private final AbstractClassSource classSource;
   private de.upb.soot.core.SootClass sootClass;
 
-  public ClassBuilderActor(IView view, ClassSource classSource) {
+  public ClassBuilderActor(IView view, AbstractClassSource classSource) {
     this.view = view;
     this.classSource = classSource;
   }
 
-  public static Props props(IView view, ClassSource classSource) {
+  public static Props props(IView view, AbstractClassSource classSource) {
     return Props.create(ClassBuilderActor.class, view, classSource);
   }
 

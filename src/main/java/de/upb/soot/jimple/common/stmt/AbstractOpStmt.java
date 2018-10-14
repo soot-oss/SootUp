@@ -33,6 +33,10 @@ import java.util.List;
 
 public abstract class AbstractOpStmt extends AbstractStmt {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -4223456397801143597L;
   protected final ValueBox opBox;
 
   protected AbstractOpStmt(ValueBox opBox) {

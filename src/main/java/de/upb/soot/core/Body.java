@@ -1,7 +1,29 @@
 package de.upb.soot.core;
+/*-
+ * #%L
+ * Soot - a J*va Optimization Framework
+ * %%
+ * Copyright (C) 1997 - 1999 Raja Vallee-Rai
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -12,7 +34,7 @@ import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.util.EscapedWriter;
-import de.upb.soot.util.Printer;
+import de.upb.soot.util.printer.Printer;
 import de.upb.soot.validation.BodyValidator;
 import de.upb.soot.validation.CheckEscapingValidator;
 import de.upb.soot.validation.CheckInitValidator;
@@ -20,6 +42,7 @@ import de.upb.soot.validation.CheckTypesValidator;
 import de.upb.soot.validation.CheckVoidLocalesValidator;
 import de.upb.soot.validation.IdentityStatementsValidator;
 import de.upb.soot.validation.LocalsValidator;
+import de.upb.soot.validation.StmtBoxesValidator;
 import de.upb.soot.validation.TrapsValidator;
 import de.upb.soot.validation.UsesValidator;
 import de.upb.soot.validation.ValidationException;
@@ -42,39 +65,19 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import scala.Unit;
-
 /**
- * Class that models the body (code attribute) of a method.
+ * Class that models the Jimple body (code attribute) of a method.
  * 
- * @author Linghui Luo
+ * Modified by Linghui Luo
  *
  */
-@SuppressWarnings("serial")
 public class Body implements Serializable {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -755840890323977315L;
 
   private Position position;
-
-  // TODO: remove legacy inner class dummy stubs
-  public enum UnitBoxesValidator implements BodyValidator {
-    INSTANCE;
-
-    public static UnitBoxesValidator getInstance() {
-      return INSTANCE;
-    }
-
-    @Override
-    /** Verifies that the UnitBoxes of this Body all point to a Unit contained within this body. */
-    public void validate(Body body, List<ValidationException> exception) {
-    }
-
-    @Override
-    public boolean isBasicValidator() {
-      return true;
-    }
-  }
-
-  /* End of legacy dummy classes */
 
   private static final Logger logger = LoggerFactory.getLogger(Body.class);
   /** The method associated with this Body. */
@@ -99,7 +102,7 @@ public class Body implements Serializable {
   private synchronized static BodyValidator[] getValidators() {
     if (validators == null) {
       validators = new BodyValidator[] { LocalsValidator.getInstance(), TrapsValidator.getInstance(),
-          UnitBoxesValidator.getInstance(), UsesValidator.getInstance(), ValueBoxesValidator.getInstance(),
+          StmtBoxesValidator.getInstance(), UsesValidator.getInstance(), ValueBoxesValidator.getInstance(),
           // CheckInitValidator.getInstance(),
           CheckTypesValidator.getInstance(), CheckVoidLocalesValidator.getInstance(), CheckEscapingValidator.getInstance() };
     }
@@ -215,9 +218,9 @@ public class Body implements Serializable {
     runValidation(TrapsValidator.getInstance());
   }
 
-  /** Verifies that the UnitBoxes of this Body all point to a Unit contained within this body. */
-  public void validateUnitBoxes() {
-    runValidation(UnitBoxesValidator.getInstance());
+  /** Verifies that the StmtBoxes of this Body all point to a Stmt contained within this body. */
+  public void validateStmtBoxes() {
+    runValidation(StmtBoxesValidator.getInstance());
   }
 
   /** Verifies that each use in this Body has a def. */
@@ -236,7 +239,7 @@ public class Body implements Serializable {
   }
 
   /** Return unit containing the \@this-assignment **/
-  public IStmt getThisUnit() {
+  public IStmt getThisStmt() {
     for (IStmt u : getStmts()) {
       if (u instanceof JIdentityStmt && ((JIdentityStmt) u).getRightOp() instanceof JThisRef) {
         return u;
@@ -248,7 +251,7 @@ public class Body implements Serializable {
 
   /** Return LHS of the first identity stmt assigning from \@this. **/
   public Local getThisLocal() {
-    return (Local) (((JIdentityStmt) getThisUnit()).getLeftOp());
+    return (Local) (((JIdentityStmt) getThisStmt()).getLeftOp());
   }
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. **/
@@ -314,14 +317,14 @@ public class Body implements Serializable {
   }
 
   /**
-   * Returns the Chain of Units that make up this body. The units are returned as a PatchingChain. The client can then
+   * Returns the Chain of Stmts that make up this body. The units are returned as a PatchingChain. The client can then
    * manipulate the chain, adding and removing units, and the changes will be reflected in the body. Since a PatchingChain is
    * returned the client need <i>not</i> worry about removing exception boundary units or otherwise corrupting the chain.
    *
    * @return the units in this Body
    *
    *         see PatchingChain
-   * @see Unit
+   * @see Stmt
    */
   public LinkedHashSet<IStmt> getStmts() {
     return stmts;
@@ -339,7 +342,7 @@ public class Body implements Serializable {
     ByteArrayOutputStream streamOut = new ByteArrayOutputStream();
     PrintWriter writerOut = new PrintWriter(new EscapedWriter(new OutputStreamWriter(streamOut)));
     try {
-      Printer.getInstance().printTo(this, writerOut);
+      new Printer().printTo(this, writerOut);
     } catch (RuntimeException e) {
       logger.error(e.getMessage(), e);
     }
@@ -420,10 +423,9 @@ public class Body implements Serializable {
    *          the class, which should be used for this references. Can be null for static methods
    */
   public void insertIdentityStmts(SootClass declaringClass) {
-    final Jimple jimple = Jimple.getInstance();
     final LinkedHashSet<IStmt> stmts = getStmts();
     final LinkedHashSet<Local> locals = getLocals();
-    Unit lastUnit = null;
+    IStmt lastStmt = null;
 
     // add this-ref before everything else
     if (!getMethod().isStatic()) {
@@ -431,23 +433,23 @@ public class Body implements Serializable {
         throw new IllegalArgumentException(
             String.format("No declaring class given for method %s", method.getSubSignature()));
       }
-      Local l = jimple.newLocal("this", RefType.getInstance(declaringClass));
-      IStmt s = jimple.newIdentityStmt(l, jimple.newThisRef((RefType) l.getType()));
+      Local l = Jimple.newLocal("this", RefType.getInstance(declaringClass));
+      IStmt s = Jimple.newIdentityStmt(l, Jimple.newThisRef((RefType) l.getType()));
 
       locals.add(l);
       /*
-       * TODO: check Unit problems unitChain.addFirst(s); lastUnit = s;
+       * TODO: check Stmt problems unitChain.addFirst(s); lastStmt = s;
        */
     }
 
     int i = 0;
     for (Type t : getMethod().getParameterTypes()) {
-      Local l = jimple.newLocal("parameter" + i, t);
-      IStmt s = jimple.newIdentityStmt(l, jimple.newParameterRef(l.getType(), i));
-      // TODO: check: Unit problems
+      Local l = Jimple.newLocal("parameter" + i, t);
+      IStmt s = Jimple.newIdentityStmt(l, Jimple.newParameterRef(l.getType(), i));
+      // TODO: check: Stmt problems
       /*
-       * localChain.add(l); if (lastUnit == null) { unitChain.addFirst(s); } else { unitChain.insertAfter(s, lastUnit); }
-       * lastUnit = s;
+       * localChain.add(l); if (lastStmt == null) { unitChain.addFirst(s); } else { unitChain.insertAfter(s, lastStmt); }
+       * lastStmt = s;
        */
       i++;
     }
@@ -476,5 +478,19 @@ public class Body implements Serializable {
   public List<ValueBox> getDefBoxes() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  public List<StmtBox> getAllStmtBoxes() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  /**
+   * Add local to locals.
+   * 
+   * @param local
+   */
+  public void addLocal(Local local) {
+    this.getLocals().add(local);
   }
 }

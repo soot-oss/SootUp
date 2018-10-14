@@ -25,17 +25,22 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JThrowStmt extends AbstractOpStmt {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -1145801522928664246L;
+
   public JThrowStmt(Value op) {
-    this(Jimple.getInstance().newImmediateBox(op));
+    this(Jimple.newImmediateBox(op));
   }
 
   protected JThrowStmt(ValueBox opBox) {
@@ -53,7 +58,7 @@ public class JThrowStmt extends AbstractOpStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.THROW);
     up.literal(" ");
     opBox.toString(up);

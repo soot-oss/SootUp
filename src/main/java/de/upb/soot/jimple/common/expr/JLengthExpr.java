@@ -25,17 +25,22 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JLengthExpr extends AbstractUnopExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 8028538963970159045L;
+
   public JLengthExpr(Value op) {
-    super(Jimple.getInstance().newImmediateBox(op));
+    super(Jimple.newImmediateBox(op));
   }
 
   @Override
@@ -63,7 +68,7 @@ public class JLengthExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.LENGTHOF);
     up.literal(" ");
     opBox.toString(up);

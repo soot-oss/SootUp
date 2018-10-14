@@ -8,7 +8,7 @@ import de.upb.soot.signatures.ClassSignature;
 import java.nio.file.Path;
 
 /**
- * Responsible for creating {@link ClassSource}es based on the handled file type (.class, .jimple, .java, .dex, etc).
+ * Responsible for creating {@link AbstractClassSource}es based on the handled file type (.class, .jimple, .java, .dex, etc).
  *
  * @author Manuel Benz created on 22.05.18
  */
@@ -17,7 +17,7 @@ public interface IClassProvider {
   // TODO: needed to create references to other classes ... or init the resolving process...
   de.upb.soot.views.IView view = null;
 
-  ClassSource createClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature);
+  AbstractClassSource createClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature);
 
   /**
    * Returns the file type that is handled by this provider, e.g. class, jimple, java
@@ -31,7 +31,7 @@ public interface IClassProvider {
    * 
    * @return
    */
-  Object getContent(ClassSource classSource);
+  Object getContent(AbstractClassSource classSource);
   // TODO: Find a better common supertype for this.
 
   /**
@@ -39,7 +39,7 @@ public interface IClassProvider {
    *
    */
 
-  public abstract SootClass reify(ClassSource classSource);
+  public abstract SootClass reify(AbstractClassSource classSource);
 
   public abstract de.upb.soot.core.SootClass resolve(de.upb.soot.core.SootClass sootClass);
 

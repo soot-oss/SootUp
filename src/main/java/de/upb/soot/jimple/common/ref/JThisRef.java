@@ -25,16 +25,20 @@
 
 package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
 import java.util.List;
 
 public class JThisRef implements IdentityRef {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 5300244196056992260L;
   RefType thisType;
 
   public JThisRef(RefType thisType) {
@@ -60,7 +64,7 @@ public class JThisRef implements IdentityRef {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.identityRef(this);
   }
 

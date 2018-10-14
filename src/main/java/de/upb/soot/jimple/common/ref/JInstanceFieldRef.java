@@ -26,19 +26,23 @@
 
 package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.PrecedenceTest;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JInstanceFieldRef implements FieldRef {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 2900174317359676686L;
 
   /**
    * Create a reference to a class' instance field.
@@ -49,7 +53,7 @@ public class JInstanceFieldRef implements FieldRef {
    *          the field
    */
   public JInstanceFieldRef(Value base, SootField field) {
-    ValueBox baseBox = Jimple.getInstance().newLocalBox(base);
+    ValueBox baseBox = Jimple.newLocalBox(base);
 
     if (field.isStatic()) {
       throw new RuntimeException("wrong static-ness");
@@ -72,14 +76,8 @@ public class JInstanceFieldRef implements FieldRef {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
-    if (PrecedenceTest.needsBrackets(baseBox, this)) {
-      up.literal("(");
-    }
+  public void toString(IStmtPrinter up) {
     baseBox.toString(up);
-    if (PrecedenceTest.needsBrackets(baseBox, this)) {
-      up.literal(")");
-    }
     up.literal(".");
     up.field(field);
   }

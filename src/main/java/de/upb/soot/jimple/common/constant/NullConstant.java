@@ -31,6 +31,10 @@ import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 public class NullConstant extends Constant {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 8286431855238615958L;
   private static NullConstant nullconstant;
 
   public NullConstant() {
@@ -55,6 +59,7 @@ public class NullConstant extends Constant {
     return NullType.getInstance();
   }
 
+  @Override
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseNullConstant(this);
   }

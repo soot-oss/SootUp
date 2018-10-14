@@ -2,7 +2,7 @@ package de.upb.soot.namespaces.classprovider.asm;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 
 import java.nio.file.Path;
 
@@ -13,9 +13,9 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
   }
 
   @Override
-  public de.upb.soot.namespaces.classprovider.ClassSource createClassSource(de.upb.soot.namespaces.INamespace srcNamespace,
+  public de.upb.soot.namespaces.classprovider.AbstractClassSource createClassSource(de.upb.soot.namespaces.INamespace srcNamespace,
       java.nio.file.Path sourcePath, de.upb.soot.signatures.ClassSignature classSignature) {
-    return new de.upb.soot.namespaces.classprovider.ClassSource(srcNamespace, sourcePath, classSignature);
+    return new de.upb.soot.namespaces.classprovider.asm.AsmClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   @Override
@@ -31,12 +31,12 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
    * @return A representation of the class file.
    */
   @Override
-  public Object getContent(ClassSource classSource) {
+  public Object getContent(AbstractClassSource classSource) {
     return null;
   }
 
   @Override
-  public SootClass reify(ClassSource classSource) {
+  public SootClass reify(AbstractClassSource classSource) {
 
     // for modules
     if (classSource.getClassSignature().isModuleInfo()) {
@@ -49,7 +49,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
 
   @Override
   public de.upb.soot.core.SootClass resolve(de.upb.soot.core.SootClass sootClass) {
-    ClassSource classSource = sootClass.getCs();
+    AbstractClassSource classSource = sootClass.getCs();
     if (classSource.getClassSignature().isModuleInfo()) {
       return getSootModule(classSource, new de.upb.soot.namespaces.classprovider.asm.modules.ResolveModuleVisitor(
           (de.upb.soot.core.SootModuleInfo) sootClass, this));
@@ -61,7 +61,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
 
   @Override
   public de.upb.soot.core.SootMethod resolveMethodBody(de.upb.soot.core.SootMethod sootMethod) {
-    ClassSource classSource = sootMethod.declaringClass().getCs();
+    AbstractClassSource classSource = sootMethod.declaringClass().getCs();
     if (classSource.getClassSignature().isModuleInfo()) {
       return null;
     }
@@ -70,7 +70,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
 
   }
 
-  private de.upb.soot.core.SootModuleInfo getSootModule(ClassSource classSource, org.objectweb.asm.ModuleVisitor visitor) {
+  private de.upb.soot.core.SootModuleInfo getSootModule(AbstractClassSource classSource, org.objectweb.asm.ModuleVisitor visitor) {
 
     de.upb.soot.namespaces.classprovider.asm.modules.SootModuleBuilder scb
         = new de.upb.soot.namespaces.classprovider.asm.modules.SootModuleBuilder(view, classSource, visitor);

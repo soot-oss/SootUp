@@ -8,7 +8,7 @@ public class StuffAViewNeeds {
    * always preferable to communicate with other Actors using their ActorRef instead of relying upon ActorSelection"
    *
    */
-  private java.util.HashMap<de.upb.soot.namespaces.classprovider.ClassSource, akka.actor.ActorRef> createdActors
+  private java.util.HashMap<de.upb.soot.namespaces.classprovider.AbstractClassSource, akka.actor.ActorRef> createdActors
       = new java.util.HashMap<>();
 
   public akka.actor.ActorSystem system = akka.actor.ActorSystem.create("myActorToRunTests");
@@ -29,7 +29,7 @@ public class StuffAViewNeeds {
 
     // TODO: decide for phantom ---> That's a good question, and how to create them ...
 
-    java.util.Optional<de.upb.soot.namespaces.classprovider.ClassSource> source = pollNamespaces(signature);
+    java.util.Optional<de.upb.soot.namespaces.classprovider.AbstractClassSource> source = pollNamespaces(signature);
     // MB: consider using source.flatMap(#methodRef) here. methodRef can than point to the actual logic for class resolution
     if (source.isPresent()) {
       result = reifyClass(source.get(), view);
@@ -39,7 +39,7 @@ public class StuffAViewNeeds {
   }
 
   public java.util.Optional<de.upb.soot.core.SootClass>
-      resolveClass(de.upb.soot.namespaces.classprovider.ClassSource classSource, de.upb.soot.views.IView view) {
+      resolveClass(de.upb.soot.namespaces.classprovider.AbstractClassSource classSource, de.upb.soot.views.IView view) {
     java.util.Optional<de.upb.soot.core.SootClass> result = java.util.Optional.empty();
     akka.actor.ActorRef cb = getOrCreateActor(classSource, view);
     akka.util.Timeout timeout = new akka.util.Timeout(scala.concurrent.duration.Duration.create(5, "seconds"));
@@ -62,7 +62,7 @@ public class StuffAViewNeeds {
    * @return the initial resolved class or an empty Optional, if the class initialization fails
    */
   public java.util.Optional<de.upb.soot.core.SootClass>
-      reifyClass(de.upb.soot.namespaces.classprovider.ClassSource classSource, de.upb.soot.views.IView view) {
+      reifyClass(de.upb.soot.namespaces.classprovider.AbstractClassSource classSource, de.upb.soot.views.IView view) {
     java.util.Optional<de.upb.soot.core.SootClass> result = java.util.Optional.empty();
     akka.actor.ActorRef cb = getOrCreateActor(classSource, view);
     akka.util.Timeout timeout = new akka.util.Timeout(scala.concurrent.duration.Duration.create(5, "seconds"));
@@ -77,7 +77,7 @@ public class StuffAViewNeeds {
     return result;
   }
 
-  private akka.actor.ActorRef getOrCreateActor(de.upb.soot.namespaces.classprovider.ClassSource source,
+  private akka.actor.ActorRef getOrCreateActor(de.upb.soot.namespaces.classprovider.AbstractClassSource source,
       de.upb.soot.views.IView view) {
     akka.actor.ActorRef actorRef = null;
     if (this.createdActors.containsKey(source)) {
@@ -89,7 +89,7 @@ public class StuffAViewNeeds {
     return createActorRef(source, view);
   }
 
-  private akka.actor.ActorRef createActorRef(de.upb.soot.namespaces.classprovider.ClassSource source,
+  private akka.actor.ActorRef createActorRef(de.upb.soot.namespaces.classprovider.AbstractClassSource source,
       de.upb.soot.views.IView view) {
     akka.actor.ActorRef actorRef = null;
     actorRef = system.actorOf(de.upb.soot.buildactor.ClassBuilderActor.props(view, source));
@@ -104,9 +104,9 @@ public class StuffAViewNeeds {
    *          to search for
    * @return if found the ClassSource, if nothing can be found an empty optional
    */
-  public java.util.Optional<de.upb.soot.namespaces.classprovider.ClassSource>
+  public java.util.Optional<de.upb.soot.namespaces.classprovider.AbstractClassSource>
       pollNamespaces(de.upb.soot.signatures.ClassSignature signature) {
-    java.util.Optional<de.upb.soot.namespaces.classprovider.ClassSource> result = null;
+    java.util.Optional<de.upb.soot.namespaces.classprovider.AbstractClassSource> result = null;
     for (de.upb.soot.namespaces.INamespace namespace : this.namespaces) {
       result = namespace.getClassSource(signature);
       if (result.isPresent()) {

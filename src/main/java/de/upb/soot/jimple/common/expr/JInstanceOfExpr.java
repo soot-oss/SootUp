@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -33,16 +32,21 @@ import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JInstanceOfExpr implements Expr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -3584505247110961970L;
   private final ValueBox opBox;
   private Type checkType;
 
   public JInstanceOfExpr(Value op, Type checkType) {
-    this.opBox = Jimple.getInstance().newImmediateBox(op);
+    this.opBox = Jimple.newImmediateBox(op);
     this.checkType = checkType;
   }
 
@@ -57,7 +61,7 @@ public class JInstanceOfExpr implements Expr {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     // TODO Auto-generated method stub
 
   }

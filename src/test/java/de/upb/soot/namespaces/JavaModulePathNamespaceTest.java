@@ -3,7 +3,7 @@ package de.upb.soot.namespaces;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
@@ -32,7 +32,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
     final JavaModulePathNamespace javaClassPathNamespace
         = new JavaModulePathNamespace( "target/test-classes/de/upb/soot/namespaces/modules",getClassProvider());
     final ClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
-    Optional<ClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
+    Optional<AbstractClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
   }
 
@@ -53,7 +53,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
     final JavaModulePathNamespace javaClassPathNamespace = new JavaModulePathNamespace(
         "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",getClassProvider());
     final ClassSignature sig = factory.getClassSignature("module-info", "", "de.upb.mod");
-    Optional<ClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
+    Optional<AbstractClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
 
   }

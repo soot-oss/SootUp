@@ -40,8 +40,8 @@ import de.upb.soot.jimple.common.type.UnknownType;
 public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
 
   protected AbstractIntLongBinopExpr(Value op1, Value op2) {
-    this.op1Box = Jimple.getInstance().newArgBox(op1);
-    this.op2Box = Jimple.getInstance().newArgBox(op2);
+    this.op1Box = Jimple.newArgBox(op1);
+    this.op2Box = Jimple.newArgBox(op2);
   }
 
   public static boolean isIntLikeType(Type t) {

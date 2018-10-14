@@ -25,21 +25,25 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
 import java.util.List;
 
 public class JGotoStmt extends AbstractStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -7771670610404109177L;
   final StmtBox targetBox;
   final List<StmtBox> targetBoxes;
 
   public JGotoStmt(IStmt target) {
-    this(Jimple.getInstance().newStmtBox(target));
+    this(Jimple.newStmtBox(target));
   }
 
   public JGotoStmt(StmtBox box) {
@@ -63,7 +67,7 @@ public class JGotoStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.GOTO);
     up.literal(" ");
     targetBox.toString(up);
@@ -82,7 +86,7 @@ public class JGotoStmt extends AbstractStmt {
   }
 
   @Override
-  public List<StmtBox> getUnitBoxes() {
+  public List<StmtBox> getStmtBoxes() {
     return targetBoxes;
   }
 

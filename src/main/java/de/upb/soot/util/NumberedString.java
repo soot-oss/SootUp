@@ -21,21 +21,19 @@ package de.upb.soot.util;
  * #L%
  */
 
-import de.upb.soot.jimple.basic.Numberable;
-
 /**
  * A class that assigns integers to java.lang.Strings.
  *
  * @author Ondrej Lhotak
  */
 
-// TODO: check copied code from old soot (whole class)
 
 public final class NumberedString implements Numberable {
   public NumberedString(String s) {
     this.s = s;
   }
 
+  @Override
   public final String toString() {
     return getString();
   }
@@ -47,10 +45,12 @@ public final class NumberedString implements Numberable {
     return s;
   }
 
+  @Override
   public final void setNumber(int number) {
     this.number = number;
   }
 
+  @Override
   public final int getNumber() {
     return number;
   }

@@ -1,15 +1,19 @@
 package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
 import java.util.List;
 
 public class JStaticFieldRef implements FieldRef {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -8744248848897714882L;
   protected SootField field;
 
   protected JStaticFieldRef(SootField field) {
@@ -30,8 +34,8 @@ public class JStaticFieldRef implements FieldRef {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
-    up.fieldRef(field);
+  public void toString(IStmtPrinter up) {
+    up.field(field);
   }
 
   @Override

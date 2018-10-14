@@ -35,6 +35,10 @@ import de.upb.soot.jimple.visitor.IVisitor;
  */
 public class DoubleConstant extends RealConstant {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -6608501059585159445L;
   public final double value;
 
   private DoubleConstant(double value) {

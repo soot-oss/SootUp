@@ -25,13 +25,17 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.jimple.AbstractValueBox;
-
 public class LocalBox extends AbstractValueBox {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 5628213909207494364L;
+
   public LocalBox(Value value) {
     setValue(value);
   }
 
+  @Override
   public boolean canContainValue(Value value) {
     return value instanceof Local;
   }

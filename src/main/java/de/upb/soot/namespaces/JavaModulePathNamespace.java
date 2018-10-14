@@ -2,7 +2,7 @@ package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.MethodSignature;
@@ -44,7 +44,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
    * Creates a {@link JavaModulePathNamespace} which locates classes in the given module path.
    *
    * @param modulePath
-   *          The class path to search in The {@link IClassProvider} for generating {@link ClassSource}es for the files found
+   *          The class path to search in The {@link IClassProvider} for generating {@link AbstractClassSource}es for the files found
    *          on the class path
    */
   public JavaModulePathNamespace(String modulePath, IClassProvider classProvider) {
@@ -53,10 +53,10 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Collection<ClassSource> getClassSources(SignatureFactory factory) {
+  public Collection<AbstractClassSource> getClassSources(SignatureFactory factory) {
     Preconditions.checkArgument(factory instanceof ModuleSignatureFactory, "Factory must be a ModuleSignatureFactory");
 
-    Set<ClassSource> found = new HashSet<>();
+    Set<AbstractClassSource> found = new HashSet<>();
     Collection<String> availableModules = moduleFinder.discoverAllModules();
     for (String module : availableModules) {
       AbstractNamespace ns = moduleFinder.discoverModule(module);
@@ -78,7 +78,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Optional<ClassSource> getClassSource(ClassSignature signature) {
+  public Optional<AbstractClassSource> getClassSource(ClassSignature signature) {
 
     String modulename = ((ModulePackageSignature) signature.packageSignature).moduleSignature.moduleName;
     // lookup the ns for the class provider from the cache and use him...
@@ -92,7 +92,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
       }
     }
 
-    final Optional<ClassSource> classSource = ns.getClassSource(signature);
+    final Optional<AbstractClassSource> classSource = ns.getClassSource(signature);
     if (classSource.isPresent()) {
       return classSource;
     }

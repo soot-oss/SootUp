@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -33,12 +32,17 @@ import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class JNewMultiArrayExpr implements Expr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -473132292740722571L;
   private ArrayType baseType;
   protected final ValueBox[] sizeBoxes;
 
@@ -55,7 +59,7 @@ public class JNewMultiArrayExpr implements Expr {
     this.baseType = type;
     this.sizeBoxes = new ValueBox[sizes.size()];
     for (int i = 0; i < sizes.size(); i++) {
-      sizeBoxes[i] = Jimple.getInstance().newImmediateBox(sizes.get(i));
+      sizeBoxes[i] = Jimple.newImmediateBox(sizes.get(i));
     }
   }
 
@@ -107,7 +111,7 @@ public class JNewMultiArrayExpr implements Expr {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     Type t = baseType.baseType;
 
     up.literal(Jimple.NEWMULTIARRAY);

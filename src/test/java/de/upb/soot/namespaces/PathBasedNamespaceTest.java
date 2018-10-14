@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.ClassSignature;
 
 import java.nio.file.Path;
@@ -30,7 +30,7 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
     Path baseDir = Paths.get("target/test-classes/");
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(baseDir);
     final ClassSignature sig = getSignatureFactory().getClassSignature("NotExisting", "de.upb.soot.namespaces");
-    final Optional<ClassSource> classSource = pathBasedNamespace.getClassSource(sig);
+    final Optional<AbstractClassSource> classSource = pathBasedNamespace.getClassSource(sig);
     Assert.assertFalse(classSource.isPresent());
   }
 

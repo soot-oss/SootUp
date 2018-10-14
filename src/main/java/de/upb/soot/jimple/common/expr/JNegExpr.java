@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.type.BooleanType;
@@ -40,10 +39,16 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JNegExpr extends AbstractUnopExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -5215362038683846098L;
+
   public JNegExpr(Value op) {
-    super(Jimple.getInstance().newImmediateBox(op));
+    super(Jimple.newImmediateBox(op));
   }
 
   @Override
@@ -72,7 +77,7 @@ public class JNegExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.NEG);
     up.literal(" ");
     opBox.toString(up);

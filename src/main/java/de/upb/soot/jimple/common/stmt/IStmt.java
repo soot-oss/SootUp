@@ -1,12 +1,12 @@
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IAcceptor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 
@@ -16,18 +16,18 @@ import java.util.List;
 public interface IStmt extends IAcceptor, Serializable
 {
 
-  /** Returns a list of Boxes containing Values used in this Unit. */
+  /** Returns a list of Boxes containing Values used in this Stmt. */
   public List<ValueBox> getUseBoxes();
 
-  /** Returns a list of Boxes containing Values defined in this Unit. */
+  /** Returns a list of Boxes containing Values defined in this Stmt. */
   public List<ValueBox> getDefBoxes();
 
   /**
-   * Returns a list of Boxes containing Units defined in this Unit; typically branch targets.
+   * Returns a list of Boxes containing Stmts defined in this Stmt; typically branch targets.
    */
-  public List<StmtBox> getUnitBoxes();
+  public List<StmtBox> getStmtBoxes();
 
-  /** Returns a list of Boxes pointing to this Unit. */
+  /** Returns a list of Boxes pointing to this Stmt. */
   public List<StmtBox> getBoxesPointingToThis();
 
   /** Adds a box to the list returned by getBoxesPointingToThis. */
@@ -36,11 +36,11 @@ public interface IStmt extends IAcceptor, Serializable
   /** Removes a box from the list returned by getBoxesPointingToThis. */
   public void removeBoxPointingToThis(StmtBox b);
 
-  /** Clears any pointers to and from this Unit's UnitBoxes. */
-  public void clearUnitBoxes();
+  /** Clears any pointers to and from this Stmt's StmtBoxes. */
+  public void clearStmtBoxes();
 
   /**
-   * Returns a list of Boxes containing any Value either used or defined in this Unit.
+   * Returns a list of Boxes containing any Value either used or defined in this Stmt.
    */
   public List<ValueBox> getUseAndDefBoxes();
 
@@ -64,7 +64,7 @@ public interface IStmt extends IAcceptor, Serializable
    **/
   public void redirectJumpsToThisTo(IStmt newLocation);
 
-  public void toString(StmtPrinter up);
+  public void toString(IStmtPrinter up);
 
   public boolean containsInvokeExpr();
 

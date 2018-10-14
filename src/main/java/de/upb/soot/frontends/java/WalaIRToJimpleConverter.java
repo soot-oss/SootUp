@@ -19,7 +19,8 @@ import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.views.IView;
@@ -81,7 +82,7 @@ public class WalaIRToJimpleConverter {
     String fullyQualifiedClassName = null;
     ClassSignature classSignature = new DefaultSignatureFactory() {
     }.getClassSignature(fullyQualifiedClassName);
-    ClassSource classSource = new ClassSource(srcNamespace, sourcePath, classSignature);
+    AbstractClassSource classSource = new JavaClassSource(srcNamespace, sourcePath, classSignature);
     SootClass sootClass = new SootClass(view, classSource);
     // convert fields
     for (IField walaField : walaClass.getAllFields()) {

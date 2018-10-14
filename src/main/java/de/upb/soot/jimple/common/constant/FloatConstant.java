@@ -35,6 +35,10 @@ import de.upb.soot.jimple.visitor.IVisitor;
  */
 public class FloatConstant extends RealConstant {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1743530246829003090L;
   public final float value;
 
   private FloatConstant(float value) {

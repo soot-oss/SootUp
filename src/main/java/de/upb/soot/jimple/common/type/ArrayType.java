@@ -25,9 +25,9 @@
 
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 /**
  * A class that models Java's array types. ArrayTypes are parameterized by a Type and and an integer representing the array's
@@ -104,9 +104,9 @@ public class ArrayType extends RefLikeType {
    * Print the signature of this ArrayType with given StmtPrinter.
    * 
    * @param up
-   *          a StmtPrinter object
+   *          a IStmtPrinter object
    */
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.type(baseType);
     for (int i = 0; i < numDimensions; i++) {
       up.literal("[]");

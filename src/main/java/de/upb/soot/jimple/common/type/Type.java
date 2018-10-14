@@ -1,7 +1,7 @@
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.jimple.basic.Numberable;
 import de.upb.soot.jimple.visitor.IAcceptor;
+import de.upb.soot.util.Numberable;
 
 import java.io.Serializable;
 

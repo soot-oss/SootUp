@@ -2,13 +2,13 @@ package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
 
-import de.upb.soot.Utils;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModulePackageSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.util.Utils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,14 +37,14 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Optional<ClassSource> getClassSource(ClassSignature signature) {
+  public Optional<AbstractClassSource> getClassSource(ClassSignature signature) {
     if (signature.packageSignature instanceof ModulePackageSignature) {
       return this.getClassSourceInternalForModule(signature);
     }
     return this.getClassSourceInternalForClassPath(signature);
   }
 
-  private Optional<ClassSource> getClassSourceInternalForClassPath(ClassSignature classSignature) {
+  private Optional<AbstractClassSource> getClassSourceInternalForClassPath(ClassSignature classSignature) {
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path moduleRoot = theFileSystem.getPath("modules");
@@ -68,7 +68,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   }
 
-  private Optional<ClassSource> getClassSourceInternalForModule(ClassSignature classSignature) {
+  private Optional<AbstractClassSource> getClassSourceInternalForModule(ClassSignature classSignature) {
     Preconditions.checkArgument(classSignature.packageSignature instanceof ModulePackageSignature);
 
     ModulePackageSignature modulePackageSignature = (ModulePackageSignature) classSignature.packageSignature;
@@ -88,14 +88,14 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   // get the factory, which I should use the create the correspond class signatures
   @Override
-  protected Collection<ClassSource> getClassSources(SignatureFactory factory) {
+  protected Collection<AbstractClassSource> getClassSources(SignatureFactory factory) {
 
     final Path archiveRoot = theFileSystem.getPath("modules");
     return walkDirectory(archiveRoot, factory);
 
   }
 
-  protected Collection<ClassSource> walkDirectory(Path dirPath, SignatureFactory factory) {
+  protected Collection<AbstractClassSource> walkDirectory(Path dirPath, SignatureFactory factory) {
 
     final FileType handledFileType = classProvider.getHandledFileType();
     try {

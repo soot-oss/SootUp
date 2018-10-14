@@ -1,6 +1,11 @@
 package de.upb.soot;
 
-//TODO need to remove
+/**
+ * Class for different soot options.
+ * 
+ * @author Linghui Luo
+ *
+ */
 public class Options {
 
   public boolean ignore_resolution_errors() {

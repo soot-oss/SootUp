@@ -2,11 +2,11 @@ package de.upb.soot.namespaces;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
-import de.upb.soot.Utils;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -108,10 +108,10 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Collection<ClassSource> getClassSources(SignatureFactory factory) {
+  public Collection<AbstractClassSource> getClassSources(SignatureFactory factory) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
-    Set<ClassSource> found = new HashSet<>();
+    Set<AbstractClassSource> found = new HashSet<>();
     for (AbstractNamespace ns : cpEntries) {
       found.addAll(ns.getClassSources(factory));
     }
@@ -119,9 +119,9 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Optional<ClassSource> getClassSource(ClassSignature signature) {
+  public Optional<AbstractClassSource> getClassSource(ClassSignature signature) {
     for (AbstractNamespace ns : cpEntries) {
-      final Optional<ClassSource> classSource = ns.getClassSource(signature);
+      final Optional<AbstractClassSource> classSource = ns.getClassSource(signature);
       if (classSource.isPresent()) {
         return classSource;
       }
@@ -138,7 +138,12 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     }
   }
 
-  static final class InvalidClassPathException extends IllegalArgumentException {
+  protected static final class InvalidClassPathException extends IllegalArgumentException {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -5130658516046902470L;
+
     public InvalidClassPathException(String s) {
       super(s);
     }

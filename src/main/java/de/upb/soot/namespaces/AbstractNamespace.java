@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.ClassSignature;
@@ -58,8 +58,8 @@ public abstract class AbstractNamespace implements INamespace {
     return new AsmJavaClassProvider();
   }
 
-  protected abstract Collection<ClassSource> getClassSources(SignatureFactory factory);
+  protected abstract Collection<AbstractClassSource> getClassSources(SignatureFactory factory);
 
   @Override
-  public abstract Optional<ClassSource> getClassSource(ClassSignature classSignature);
+  public abstract Optional<AbstractClassSource> getClassSource(ClassSignature classSignature);
 }

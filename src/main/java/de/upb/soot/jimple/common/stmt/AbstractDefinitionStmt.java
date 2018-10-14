@@ -32,8 +32,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("serial")
 public abstract class AbstractDefinitionStmt extends AbstractStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -1424435720199285210L;
   public final ValueBox leftBox;
   public final ValueBox rightBox;
 

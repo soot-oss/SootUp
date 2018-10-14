@@ -31,8 +31,11 @@ import de.upb.soot.jimple.basic.ValueBox;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("serial")
 public abstract class AbstractBinopExpr implements Expr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -4967924464687577438L;
   protected ValueBox op1Box;
   protected ValueBox op2Box;
 

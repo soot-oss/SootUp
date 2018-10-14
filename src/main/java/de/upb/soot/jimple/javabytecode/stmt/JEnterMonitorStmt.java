@@ -25,17 +25,22 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JEnterMonitorStmt extends AbstractOpStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -8580317170617446624L;
+
   public JEnterMonitorStmt(Value op) {
-    this(Jimple.getInstance().newImmediateBox(op));
+    this(Jimple.newImmediateBox(op));
   }
 
   protected JEnterMonitorStmt(ValueBox opBox) {
@@ -53,7 +58,7 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.ENTERMONITOR);
     up.literal(" ");
     opBox.toString(up);

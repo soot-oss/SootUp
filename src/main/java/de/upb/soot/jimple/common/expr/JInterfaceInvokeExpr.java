@@ -26,22 +26,27 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   /**
+   * 
+   */
+  private static final long serialVersionUID = 7458533916011927970L;
+
+  /**
    * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array argBoxes.
    */
   public JInterfaceInvokeExpr(Value base, SootMethod method, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), method, new ValueBox[args.size()]);
+    super(Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
 
     // Check that the method's class is resolved enough
     // CheckLevel returns without doing anything because we can be not 'done' resolving
@@ -53,7 +58,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     }
 
     for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.getInstance().newImmediateBox(args.get(i));
+      this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
   }
 
@@ -92,7 +97,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
    * Converts a parameter of type StmtPrinter to a string literal.
    */
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
 
     up.literal(Jimple.INTERFACEINVOKE);
 

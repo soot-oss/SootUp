@@ -26,18 +26,23 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JStaticInvokeExpr extends AbstractInvokeExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -8705816067828505717L;
+
   /**
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
@@ -49,7 +54,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     this.method = method;
 
     for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.getInstance().newImmediateBox(args.get(i));
+      this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
 
   }
@@ -121,7 +126,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
    * Converts a parameter of type StmtPrinter to a string literal.
    */
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);
     up.literal(" ");
     up.method(method);

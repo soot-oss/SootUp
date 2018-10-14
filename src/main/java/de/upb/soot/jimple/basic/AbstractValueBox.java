@@ -23,11 +23,9 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.basic;
 
-import de.upb.soot.StmtPrinter;
-import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 /**
  * Reference implementation for ValueBox; just add a canContainValue method.
@@ -54,7 +52,7 @@ public abstract class AbstractValueBox implements ValueBox {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.startValueBox(this);
     value.toString(up);
     up.endValueBox(this);

@@ -39,8 +39,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("serial")
+
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 5554270441921308784L;
   protected final ValueBox baseBox;
 
   protected AbstractInstanceInvokeExpr(ValueBox baseBox, SootMethod method, ValueBox[] argBoxes) {
@@ -123,15 +127,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     } else {
       return 1;
     }
-  }
-
-  private static int argCountOf(SootMethod m) {
-    int argCount = 0;
-    for (Type t : m.parameterTypes()) {
-      argCount += sizeOfType(t);
-    }
-
-    return argCount;
   }
 
 }

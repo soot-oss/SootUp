@@ -2,7 +2,7 @@ package de.upb.soot.namespaces;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.ModuleDecaratorClassSignature;
@@ -171,9 +171,9 @@ public class ModuleFinder {
       return;
     }
     // get the module's name out of this module-info file
-    Optional<ClassSource> moduleInfoClassSource = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
+    Optional<AbstractClassSource> moduleInfoClassSource = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
     if (moduleInfoClassSource.isPresent()) {
-      ClassSource moduleInfoSource = moduleInfoClassSource.get();
+      AbstractClassSource moduleInfoSource = moduleInfoClassSource.get();
       // get the module name
       String moduleName = this.getModuleName(moduleInfoSource);
       this.moduleNamespace.put(moduleName, namespace);
@@ -190,7 +190,7 @@ public class ModuleFinder {
    */
   private void buildModuleForJar(Path jar) {
     PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(jar);
-    Optional<ClassSource> moduleInfoFile = null;
+    Optional<AbstractClassSource> moduleInfoFile = null;
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
       Path mi = archiveRoot
@@ -207,7 +207,7 @@ public class ModuleFinder {
       e.printStackTrace();
     }
     if (moduleInfoFile != null && moduleInfoFile.isPresent()) {
-      ClassSource moduleInfoSource = moduleInfoFile.get();
+      AbstractClassSource moduleInfoSource = moduleInfoFile.get();
       // get the module name
       String moduleName = null;
       try {
@@ -231,7 +231,7 @@ public class ModuleFinder {
 
   }
 
-  private String getModuleName(ClassSource moduleInfoSource) throws ClassResolvingException {
+  private String getModuleName(AbstractClassSource moduleInfoSource) throws ClassResolvingException {
     SootClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
     if (!(moduleInfoClass instanceof SootModuleInfo)) {
       throw new ClassResolvingException("Class is named module-info but does not reify to SootModuleInfo");
@@ -243,7 +243,7 @@ public class ModuleFinder {
     return moduleName;
   }
 
-  private void createProperModuleSignature(ClassSource moduleInfoSource, String moduleName) {
+  private void createProperModuleSignature(AbstractClassSource moduleInfoSource, String moduleName) {
     // create proper moduleInfoSignature
     // add the module name, which was unknown before
     // moduleInfoSource.setClassSignature();

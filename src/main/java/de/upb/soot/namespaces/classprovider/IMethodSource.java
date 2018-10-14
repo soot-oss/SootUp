@@ -1,4 +1,7 @@
-package de.upb.soot.core;
+package de.upb.soot.namespaces.classprovider;
+
+import de.upb.soot.core.Body;
+import de.upb.soot.core.SootMethod;
 
 /*-
  * #%L
@@ -23,9 +26,8 @@ package de.upb.soot.core;
  */
 
 /** A class which knows how to produce Body's for SootMethods. */
-// TODO: check its copied from old soot
 
-public interface MethodSource {
+public interface IMethodSource {
   /** Returns a filled-out body for the given SootMethod. */
   public Body getBody(SootMethod m, String phaseName);
 }

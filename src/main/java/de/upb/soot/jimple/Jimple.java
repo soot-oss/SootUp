@@ -24,6 +24,7 @@
 
 package de.upb.soot.jimple;
 
+import de.upb.soot.core.Body;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Local;
@@ -91,6 +92,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+
 /**
  * The Jimple class contains all the constructors for the components of the Jimple grammar for the Jimple body. <br>
  * <br>
@@ -102,18 +104,6 @@ import java.util.List;
  */
 
 public class Jimple {
-  private static Jimple instance;
-
-  private Jimple() {
-  }
-
-  public static Jimple getInstance() {
-    if (instance == null) {
-      instance = new Jimple();
-    }
-    return instance;
-  }
-
   public static final String NEWARRAY = "newarray";
   public static final String NEWMULTIARRAY = "newmultiarray";
   public static final String NOP = "nop";
@@ -145,7 +135,7 @@ public class Jimple {
   public static final String CLASS = "class";
   public static final String FINAL = "final";
   public static final String NATIVE = "native";
-  public static final String PUBLIC = "public";
+  public static final String PUBLIC = "public static";
   public static final String PROTECTED = "protected";
   public static final String PRIVATE = "private";
   public static final String STATIC = "static";
@@ -205,223 +195,216 @@ public class Jimple {
   /**
    * Constructs a XorExpr(Immediate, Immediate) grammar chunk.
    */
-  public JXorExpr newXorExpr(Value op1, Value op2) {
+  public static JXorExpr newXorExpr(Value op1, Value op2) {
     return new JXorExpr(op1, op2);
   }
 
   /**
    * Constructs a UshrExpr(Immediate, Immediate) grammar chunk.
    */
-  public JUshrExpr newUshrExpr(Value op1, Value op2) {
+  public static JUshrExpr newUshrExpr(Value op1, Value op2) {
     return new JUshrExpr(op1, op2);
   }
 
   /**
    * Constructs a SubExpr(Immediate, Immediate) grammar chunk.
    */
-  public JSubExpr newSubExpr(Value op1, Value op2) {
+  public static JSubExpr newSubExpr(Value op1, Value op2) {
     return new JSubExpr(op1, op2);
   }
 
   /**
    * Constructs a ShrExpr(Immediate, Immediate) grammar chunk.
    */
-  public JShrExpr newShrExpr(Value op1, Value op2) {
+  public static JShrExpr newShrExpr(Value op1, Value op2) {
     return new JShrExpr(op1, op2);
   }
 
   /**
    * Constructs a ShlExpr(Immediate, Immediate) grammar chunk.
    */
-  public JShlExpr newShlExpr(Value op1, Value op2) {
+  public static JShlExpr newShlExpr(Value op1, Value op2) {
     return new JShlExpr(op1, op2);
   }
 
   /**
    * Constructs a RemExpr(Immediate, Immediate) grammar chunk.
    */
-  public JRemExpr newRemExpr(Value op1, Value op2) {
+  public static JRemExpr newRemExpr(Value op1, Value op2) {
     return new JRemExpr(op1, op2);
   }
 
   /**
    * Constructs a OrExpr(Immediate, Immediate) grammar chunk.
    */
-  public JOrExpr newOrExpr(Value op1, Value op2) {
+  public static JOrExpr newOrExpr(Value op1, Value op2) {
     return new JOrExpr(op1, op2);
   }
 
   /**
    * Constructs a NeExpr(Immediate, Immediate) grammar chunk.
    */
-  public JNeExpr newNeExpr(Value op1, Value op2) {
+  public static JNeExpr newNeExpr(Value op1, Value op2) {
     return new JNeExpr(op1, op2);
   }
 
   /**
    * Constructs a MulExpr(Immediate, Immediate) grammar chunk.
    */
-  public JMulExpr newMulExpr(Value op1, Value op2) {
+  public static JMulExpr newMulExpr(Value op1, Value op2) {
     return new JMulExpr(op1, op2);
   }
 
   /**
    * Constructs a LeExpr(Immediate, Immediate) grammar chunk.
    */
-  public JLeExpr newLeExpr(Value op1, Value op2) {
+  public static JLeExpr newLeExpr(Value op1, Value op2) {
     return new JLeExpr(op1, op2);
   }
 
   /**
    * Constructs a GeExpr(Immediate, Immediate) grammar chunk.
    */
-  public JGeExpr newGeExpr(Value op1, Value op2) {
+  public static JGeExpr newGeExpr(Value op1, Value op2) {
     return new JGeExpr(op1, op2);
   }
 
   /**
    * Constructs a EqExpr(Immediate, Immediate) grammar chunk.
    */
-  public JEqExpr newEqExpr(Value op1, Value op2) {
+  public static JEqExpr newEqExpr(Value op1, Value op2) {
     return new JEqExpr(op1, op2);
   }
 
   /**
    * Constructs a DivExpr(Immediate, Immediate) grammar chunk.
    */
-  public JDivExpr newDivExpr(Value op1, Value op2) {
+  public static JDivExpr newDivExpr(Value op1, Value op2) {
     return new JDivExpr(op1, op2);
   }
 
   /**
    * Constructs a CmplExpr(Immediate, Immediate) grammar chunk.
    */
-  public JCmplExpr newCmplExpr(Value op1, Value op2) {
+  public static JCmplExpr newCmplExpr(Value op1, Value op2) {
     return new JCmplExpr(op1, op2);
   }
 
   /**
    * Constructs a CmpgExpr(Immediate, Immediate) grammar chunk.
    */
-  public JCmpgExpr newCmpgExpr(Value op1, Value op2) {
+  public static JCmpgExpr newCmpgExpr(Value op1, Value op2) {
     return new JCmpgExpr(op1, op2);
   }
 
   /**
    * Constructs a CmpExpr(Immediate, Immediate) grammar chunk.
    */
-  public JCmpExpr newCmpExpr(Value op1, Value op2) {
+  public static JCmpExpr newCmpExpr(Value op1, Value op2) {
     return new JCmpExpr(op1, op2);
   }
 
   /**
    * Constructs a GtExpr(Immediate, Immediate) grammar chunk.
    */
-  public JGtExpr newGtExpr(Value op1, Value op2) {
+  public static JGtExpr newGtExpr(Value op1, Value op2) {
     return new JGtExpr(op1, op2);
   }
 
   /**
    * Constructs a LtExpr(Immediate, Immediate) grammar chunk.
    */
-  public JLtExpr newLtExpr(Value op1, Value op2) {
+  public static JLtExpr newLtExpr(Value op1, Value op2) {
     return new JLtExpr(op1, op2);
   }
 
   /**
    * Constructs a AddExpr(Immediate, Immediate) grammar chunk.
    */
-  public JAddExpr newAddExpr(Value op1, Value op2) {
+  public static JAddExpr newAddExpr(Value op1, Value op2) {
     return new JAddExpr(op1, op2);
   }
 
   /**
    * Constructs a AndExpr(Immediate, Immediate) grammar chunk.
    */
-  public JAndExpr newAndExpr(Value op1, Value op2) {
+  public static JAndExpr newAndExpr(Value op1, Value op2) {
     return new JAndExpr(op1, op2);
   }
 
   /**
    * Constructs a NegExpr(Immediate, Immediate) grammar chunk.
    */
-  public JNegExpr newNegExpr(Value op) {
+  public static JNegExpr newNegExpr(Value op) {
     return new JNegExpr(op);
   }
 
   /**
    * Constructs a LengthExpr(Immediate) grammar chunk.
    */
-  public JLengthExpr newLengthExpr(Value op) {
+  public static JLengthExpr newLengthExpr(Value op) {
     return new JLengthExpr(op);
   }
 
   /**
    * Constructs a CastExpr(Immediate, Type) grammar chunk.
    */
-  public JCastExpr newCastExpr(Value op1, Type t) {
+  public static JCastExpr newCastExpr(Value op1, Type t) {
     return new JCastExpr(op1, t);
   }
 
   /**
    * Constructs a InstanceOfExpr(Immediate, Type) grammar chunk.
    */
-  public JInstanceOfExpr newInstanceOfExpr(Value op1, Type t) {
+  public static JInstanceOfExpr newInstanceOfExpr(Value op1, Type t) {
     return new JInstanceOfExpr(op1, t);
-  }
-
-  /**
-   * Constructs a NewExpr(RefType) grammar chunk.
-   */
-  public JNewExpr newNewExpr(RefType type) {
-    return new JNewExpr(type);
   }
 
   /**
    * Constructs a NewArrayExpr(Type, Immediate) grammar chunk.
    */
-  public JNewArrayExpr newNewArrayExpr(Type type, Value size) {
+  public static JNewArrayExpr newNewArrayExpr(Type type, Value size) {
     return new JNewArrayExpr(type, size);
   }
 
   /**
    * Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk.
    */
-  public JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, List<? extends Value> args) {
+  public static JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, List<? extends Value> args) {
     return new JStaticInvokeExpr(method, args);
   }
 
-  public JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, Value... args) {
+  public static JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, Value... args) {
     return newStaticInvokeExpr(method, Arrays.asList(args));
   }
 
-  public JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, Value arg) {
+  public static JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, Value arg) {
     return newStaticInvokeExpr(method, Collections.singletonList(arg));
   }
 
-  public JStaticInvokeExpr newStaticInvokeExpr(SootMethod method) {
+  public static JStaticInvokeExpr newStaticInvokeExpr(SootMethod method) {
     return newStaticInvokeExpr(method, Collections.<Value>emptyList());
   }
 
   /**
    * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
     return new JSpecialInvokeExpr(base, method, args);
   }
 
   /**
    * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, Value... args) {
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, Value... args) {
     return newSpecialInvokeExpr(base, method, Arrays.asList(args));
   }
 
-  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, Value arg) {
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, Value arg) {
     return newSpecialInvokeExpr(base, method, Collections.<Value>singletonList(arg));
   }
 
-  public JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method) {
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method) {
     return newSpecialInvokeExpr(base, method, Collections.<Value>emptyList());
   }
 
@@ -429,7 +412,7 @@ public class Jimple {
    * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod methodRef, List args)
    * grammar chunk.
    */
-  public JDynamicInvokeExpr newDynamicInvokeExpr(SootMethod bootstrapMethodRef, List<? extends Value> bootstrapArgs,
+  public static JDynamicInvokeExpr newDynamicInvokeExpr(SootMethod bootstrapMethodRef, List<? extends Value> bootstrapArgs,
       SootMethod methodRef, List<? extends Value> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
   }
@@ -438,7 +421,7 @@ public class Jimple {
    * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod methodRef, List args)
    * grammar chunk.
    */
-  public JDynamicInvokeExpr newDynamicInvokeExpr(SootMethod bootstrapMethodRef, List<? extends Value> bootstrapArgs,
+  public static JDynamicInvokeExpr newDynamicInvokeExpr(SootMethod bootstrapMethodRef, List<? extends Value> bootstrapArgs,
       SootMethod methodRef, int tag, List<? extends Value> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
@@ -446,158 +429,158 @@ public class Jimple {
   /**
    * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
     return new JVirtualInvokeExpr(base, method, args);
   }
 
   /**
    * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, Value... args) {
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, Value... args) {
     return newVirtualInvokeExpr(base, method, Arrays.asList(args));
   }
 
-  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, Value arg) {
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, Value arg) {
     return newVirtualInvokeExpr(base, method, Collections.<Value>singletonList(arg));
   }
 
-  public JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method) {
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method) {
     return newVirtualInvokeExpr(base, method, Collections.<Value>emptyList());
   }
 
   /**
    * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
     return new JInterfaceInvokeExpr(base, method, args);
   }
 
   /**
    * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, Value... args) {
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, Value... args) {
     return newInterfaceInvokeExpr(base, method, Arrays.asList(args));
   }
 
-  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, Value arg) {
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, Value arg) {
     return newInterfaceInvokeExpr(base, method, Collections.<Value>singletonList(arg));
   }
 
-  public JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method) {
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method) {
     return newInterfaceInvokeExpr(base, method, Collections.<Value>emptyList());
   }
 
   /**
    * Constructs a ThrowStmt(Immediate) grammar chunk.
    */
-  public JThrowStmt newThrowStmt(Value op) {
+  public static JThrowStmt newThrowStmt(Value op) {
     return new JThrowStmt(op);
   }
 
   /**
    * Constructs a ExitMonitorStmt(Immediate) grammar chunk.
    */
-  public JExitMonitorStmt newExitMonitorStmt(Value op) {
+  public static JExitMonitorStmt newExitMonitorStmt(Value op) {
     return new JExitMonitorStmt(op);
   }
 
   /**
    * Constructs a EnterMonitorStmt(Immediate) grammar chunk.
    */
-  public JEnterMonitorStmt newEnterMonitorStmt(Value op) {
+  public static JEnterMonitorStmt newEnterMonitorStmt(Value op) {
     return new JEnterMonitorStmt(op);
   }
 
   /**
    * Constructs a BreakpointStmt() grammar chunk.
    */
-  public JBreakpointStmt newBreakpointStmt() {
+  public static JBreakpointStmt newBreakpointStmt() {
     return new JBreakpointStmt();
   }
 
   /**
    * Constructs a GotoStmt(Stmt) grammar chunk.
    */
-  public JGotoStmt newGotoStmt(IStmt target) {
+  public static JGotoStmt newGotoStmt(IStmt target) {
     return new JGotoStmt(target);
   }
 
-  public JGotoStmt newGotoStmt(StmtBox stmtBox) {
+  public static JGotoStmt newGotoStmt(StmtBox stmtBox) {
     return new JGotoStmt(stmtBox);
   }
 
   /**
    * Constructs a NopStmt() grammar chunk.
    */
-  public JNopStmt newNopStmt() {
+  public static JNopStmt newNopStmt() {
     return new JNopStmt();
   }
 
   /**
    * Constructs a ReturnVoidStmt() grammar chunk.
    */
-  public JReturnVoidStmt newReturnVoidStmt() {
+  public static JReturnVoidStmt newReturnVoidStmt() {
     return new JReturnVoidStmt();
   }
 
   /**
    * Constructs a ReturnStmt(Immediate) grammar chunk.
    */
-  public JReturnStmt newReturnStmt(Value op) {
+  public static JReturnStmt newReturnStmt(Value op) {
     return new JReturnStmt(op);
   }
 
   /**
    * Constructs a RetStmt(Local) grammar chunk.
    */
-  public JRetStmt newRetStmt(Value stmtAddress) {
+  public static JRetStmt newRetStmt(Value stmtAddress) {
     return new JRetStmt(stmtAddress);
   }
 
   /**
    * Constructs a IfStmt(Condition, Stmt) grammar chunk.
    */
-  public JIfStmt newIfStmt(Value condition, IStmt target) {
+  public static JIfStmt newIfStmt(Value condition, IStmt target) {
     return new JIfStmt(condition, target);
   }
 
   /**
    * Constructs a IfStmt(Condition, UnitBox) grammar chunk.
    */
-  public JIfStmt newIfStmt(Value condition, StmtBox target) {
+  public static JIfStmt newIfStmt(Value condition, StmtBox target) {
     return new JIfStmt(condition, target);
   }
 
   /**
    * Constructs a IdentityStmt(Local, IdentityRef) grammar chunk.
    */
-  public JIdentityStmt newIdentityStmt(Value local, Value identityRef) {
+  public static JIdentityStmt newIdentityStmt(Value local, Value identityRef) {
     return new JIdentityStmt(local, identityRef);
   }
 
   /**
    * Constructs a AssignStmt(Variable, RValue) grammar chunk.
    */
-  public JAssignStmt newAssignStmt(Value variable, Value rvalue) {
+  public static JAssignStmt newAssignStmt(Value variable, Value rvalue) {
     return new JAssignStmt(variable, rvalue);
   }
 
   /**
    * Constructs a InvokeStmt(InvokeExpr) grammar chunk.
    */
-  public JInvokeStmt newInvokeStmt(Value op) {
+  public static JInvokeStmt newInvokeStmt(Value op) {
     return new JInvokeStmt(op);
   }
 
   /**
    * Constructs a TableSwitchStmt(Immediate, int, int, List of Unit, Stmt) grammar chunk.
    */
-  public JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets,
+  public static JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets,
       IStmt defaultTarget) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget);
   }
 
-  public JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends StmtBox> targets,
+  public static JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends StmtBox> targets,
       StmtBox defaultTarget) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget);
   }
@@ -605,12 +588,14 @@ public class Jimple {
   /**
    * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
    */
-  public JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends IStmt> targets,
+  public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
+      List<? extends IStmt> targets,
       IStmt defaultTarget) {
     return null;
   }
 
-  public JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends StmtBox> targets,
+  public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
+      List<? extends StmtBox> targets,
       StmtBox defaultTarget) {
     return null;
   }
@@ -618,78 +603,90 @@ public class Jimple {
   /**
    * Constructs a Local with the given name and type.
    */
-  public Local newLocal(String name, Type t) {
+  public static Local newLocal(String name, Type t) {
     return new Local(name, t);
   }
 
   /**
    * Constructs a StaticField(SootField) grammar chunk.
    */
-  public SootField newStaticField(IView view, SootField f) {
+  public static SootField newStaticField(IView view, SootField f) {
     return new SootField(view, f);
   }
 
   /**
    * Constructs a ThisRef(RefType) grammar chunk.
    */
-  public JThisRef newThisRef(RefType t) {
+  public static JThisRef newThisRef(RefType t) {
     return new JThisRef(t);
   }
 
   /**
    * Constructs a ParameterRef(SootMethod, int) grammar chunk.
    */
-  public JParameterRef newParameterRef(Type paramType, int number) {
+  public static JParameterRef newParameterRef(Type paramType, int number) {
     return new JParameterRef(paramType, number);
   }
 
   /**
    * Constructs a InstanceFieldRef(Local, SootFieldRef) grammar chunk.
    */
-  public JInstanceFieldRef newInstanceFieldRef(Value base, SootField f) {
+  public static JInstanceFieldRef newInstanceFieldRef(Value base, SootField f) {
     return new JInstanceFieldRef(base, f);
   }
 
   /**
    * Constructs a CaughtExceptionRef() grammar chunk.
    */
-  public JCaughtExceptionRef newCaughtExceptionRef() {
+  public static JCaughtExceptionRef newCaughtExceptionRef() {
     return new JCaughtExceptionRef();
   }
 
-  public ValueBox newArgBox(Value op1) {
+  public static ValueBox newArgBox(Value op1) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public ValueBox newImmediateBox(Value value) {
+  public static ValueBox newImmediateBox(Value value) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public StmtBox newStmtBox(IStmt target) {
+  public static StmtBox newStmtBox(IStmt target) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public ValueBox newLocalBox(Value local) {
+  public static ValueBox newLocalBox(Value local) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public ValueBox newIdentityRefBox(Value identityValue) {
+  public static ValueBox newIdentityRefBox(Value identityValue) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public ValueBox newConditionExprBox(Value condition) {
+  public static ValueBox newConditionExprBox(Value condition) {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public ValueBox newInvokeExprBox(Value c) {
+  public static ValueBox newInvokeExprBox(Value c) {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  /** Returns an empty body associated with method method. */
+  public static Body newBody(SootMethod method) {
+    return new Body(method);
+  }
+
+  /**
+   * Constructs a NewExpr(RefType) grammar chunk.
+   */
+  public static Value newNewExpr(RefType type) {
+    return new JNewExpr(type);
   }
 
 }

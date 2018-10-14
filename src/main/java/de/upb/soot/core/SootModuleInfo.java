@@ -1,6 +1,6 @@
 package de.upb.soot.core;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.views.IView;
 
 import com.google.common.collect.Sets;
@@ -71,7 +71,7 @@ public class SootModuleInfo extends SootClass {
    * @param version
    *          the module's version
    */
-  public SootModuleInfo(IView view, ClassSource cs, String name, int access, String version) {
+  public SootModuleInfo(IView view, AbstractClassSource cs, String name, int access, String version) {
     super(view, cs);
     this.name = name;
     this.accessModifier = access;

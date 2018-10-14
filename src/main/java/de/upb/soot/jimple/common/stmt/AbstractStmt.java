@@ -39,6 +39,10 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractStmt implements IStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 8029583017798662173L;
   private Position position;
 
   /** Returns a deep clone of this object. */
@@ -68,7 +72,7 @@ public abstract class AbstractStmt implements IStmt {
    * dynamically updated as the structure changes.
    */
   @Override
-  public List<StmtBox> getUnitBoxes() {
+  public List<StmtBox> getStmtBoxes() {
     return Collections.emptyList();
   }
 
@@ -100,8 +104,8 @@ public abstract class AbstractStmt implements IStmt {
   }
 
   @Override
-  public void clearUnitBoxes() {
-    for (StmtBox ub : getUnitBoxes()) {
+  public void clearStmtBoxes() {
+    for (StmtBox ub : getStmtBoxes()) {
       ub.setStmt(null);
     }
   }

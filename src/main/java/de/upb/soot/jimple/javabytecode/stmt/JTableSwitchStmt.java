@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Value;
@@ -34,10 +33,15 @@ import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.List;
 
 public class JTableSwitchStmt extends AbstractSwitchStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -4716844468557152732L;
   int lowIndex;
   int highIndex;
 
@@ -45,7 +49,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   private static StmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
     StmtBox[] targetBoxes = new StmtBox[targets.size()];
     for (int i = 0; i < targetBoxes.length; i++) {
-      targetBoxes[i] = Jimple.getInstance().newStmtBox(targets.get(i));
+      targetBoxes[i] = Jimple.newStmtBox(targets.get(i));
     }
     return targetBoxes;
   }
@@ -56,12 +60,11 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   }
 
   public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets, IStmt defaultTarget) {
-    this(Jimple.getInstance().newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets),
-        Jimple.getInstance().newStmtBox(defaultTarget));
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets), Jimple.newStmtBox(defaultTarget));
   }
 
   public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends StmtBox> targets, StmtBox defaultTarget) {
-    this(Jimple.getInstance().newImmediateBox(key), lowIndex, highIndex, targets.toArray(new StmtBox[targets.size()]),
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new StmtBox[targets.size()]),
         defaultTarget);
   }
 
@@ -106,7 +109,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.TABLESWITCH);
     up.literal("(");
     keyBox.toString(up);
@@ -132,7 +135,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     up.literal("}");
   }
 
-  private void printCaseTarget(StmtPrinter up, int targetIndex) {
+  private void printCaseTarget(IStmtPrinter up, int targetIndex) {
     up.literal("    ");
     up.literal(Jimple.CASE);
     up.literal(" ");

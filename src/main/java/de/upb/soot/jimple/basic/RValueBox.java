@@ -23,18 +23,22 @@
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.basic;
 
-import de.upb.soot.jimple.basic.Immediate;
-import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.expr.Expr;
 import de.upb.soot.jimple.common.ref.ConcreteRef;
 
 public class RValueBox extends AbstractValueBox {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1137427420610950327L;
+
   public RValueBox(Value value) {
     setValue(value);
   }
 
+  @Override
   public boolean canContainValue(Value value) {
     return value instanceof Immediate || value instanceof ConcreteRef || value instanceof Expr;
   }

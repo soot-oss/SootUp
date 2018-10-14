@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.ClassSignature;
 
 import java.util.Optional;
@@ -43,7 +43,7 @@ public class ModuleBuilderActorTest {
     // FIXME: this casting is so ugly
     final ClassSignature sig
         = new de.upb.soot.signatures.ModuleSignatureFactory().getClassSignature("module-info", "", "de.upb.mod");
-    Optional<ClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
+    Optional<AbstractClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
 
     assertTrue(source.isPresent());
 
@@ -58,7 +58,7 @@ public class ModuleBuilderActorTest {
 
     final ClassSignature sig
         = (new de.upb.soot.signatures.ModuleSignatureFactory()).getClassSignature("module-info", "", "de.upb.mod");
-    Optional<ClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
+    Optional<AbstractClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
 
     assertTrue(source.isPresent());
 

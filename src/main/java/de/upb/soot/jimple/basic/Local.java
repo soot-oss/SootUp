@@ -25,15 +25,26 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IJimpleValueVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.Numberable;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Local variable in {@link de.upb.soot.core.Body}. Use {@link de.upb.soot.jimple.basic.LocalGenerator}
+ * 
+ * @author Linghui Luo
+ *
+ */
 public class Local implements Value, Numberable, Immediate {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 4469815713329368282L;
   protected String name;
   Type type;
 
@@ -97,7 +108,7 @@ public class Local implements Value, Numberable, Immediate {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.local(this);
   }
 
