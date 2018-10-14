@@ -1,6 +1,6 @@
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.FieldRef;
@@ -25,16 +25,16 @@ public interface IStmt extends IAcceptor, Serializable
   /**
    * Returns a list of Boxes containing Stmts defined in this Stmt; typically branch targets.
    */
-  public List<StmtBox> getStmtBoxes();
+  public List<IStmtBox> getStmtBoxes();
 
   /** Returns a list of Boxes pointing to this Stmt. */
-  public List<StmtBox> getBoxesPointingToThis();
+  public List<IStmtBox> getBoxesPointingToThis();
 
   /** Adds a box to the list returned by getBoxesPointingToThis. */
-  public void addBoxPointingToThis(StmtBox b);
+  public void addBoxPointingToThis(IStmtBox b);
 
   /** Removes a box from the list returned by getBoxesPointingToThis. */
-  public void removeBoxPointingToThis(StmtBox b);
+  public void removeBoxPointingToThis(IStmtBox b);
 
   /** Clears any pointers to and from this Stmt's StmtBoxes. */
   public void clearStmtBoxes();

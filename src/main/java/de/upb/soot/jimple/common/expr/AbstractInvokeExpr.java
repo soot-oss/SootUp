@@ -35,8 +35,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("serial")
 public abstract class AbstractInvokeExpr implements Expr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1796920588315752175L;
   protected SootMethod method;
   protected final ValueBox[] argBoxes;
 
@@ -50,7 +53,7 @@ public abstract class AbstractInvokeExpr implements Expr {
   }
 
   public SootMethod getMethod() {
-    return method.resolve();
+    return method;
   }
 
   @Override

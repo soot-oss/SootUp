@@ -64,9 +64,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /*
  * Incomplete and inefficient implementation.
  *
@@ -92,8 +89,6 @@ import org.slf4j.LoggerFactory;
  */
 
 public class SootClass extends AbstractViewResident implements Numberable {
-
-  private static final Logger logger = LoggerFactory.getLogger(SootClass.class);
 
   static public class Resolve {
     public final int level;
@@ -832,8 +827,6 @@ public class SootClass extends AbstractViewResident implements Numberable {
   /**
    * Returns a backed Chain of the interfaces that are directly implemented by this class. (see getInterfaceCount())
    */
-
-  @SuppressWarnings("unchecked")
   public LinkedHashSet<SootClass> getInterfaces() {
     checkLevel(HIERARCHY);
     return interfaces == null ? new LinkedHashSet<>() : interfaces;
@@ -1114,7 +1107,7 @@ public class SootClass extends AbstractViewResident implements Numberable {
 
   /** Makes this class an application class. */
   public void setApplicationClass() {
-    this.classType = classType.Application;
+    this.classType = ClassType.Application;
   }
 
   /**
@@ -1127,7 +1120,7 @@ public class SootClass extends AbstractViewResident implements Numberable {
 
   /** Makes this class a library class. */
   public void setLibraryClass() {
-    this.classType = classType.Library;
+    this.classType = ClassType.Library;
   }
 
   /**
@@ -1258,11 +1251,6 @@ public class SootClass extends AbstractViewResident implements Numberable {
       }
       validator.validate(this, exceptionList);
     }
-  }
-
-  public void checkLevelIgnoreResolving(String hierarchy2) {
-    // TODO Auto-generated method stub
-
   }
 
   public void setPosition(Position position) {

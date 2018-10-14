@@ -26,7 +26,7 @@
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
@@ -130,25 +130,25 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public List<StmtBox> getStmtBoxes() {
+  public List<IStmtBox> getStmtBoxes() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public List<StmtBox> getBoxesPointingToThis() {
+  public List<IStmtBox> getBoxesPointingToThis() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public void addBoxPointingToThis(StmtBox b) {
+  public void addBoxPointingToThis(IStmtBox b) {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void removeBoxPointingToThis(StmtBox b) {
+  public void removeBoxPointingToThis(IStmtBox b) {
     // TODO Auto-generated method stub
 
   }

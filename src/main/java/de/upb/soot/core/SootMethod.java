@@ -45,10 +45,9 @@ import java.util.StringTokenizer;
  */
 
 public class SootMethod extends AbstractViewResident implements ClassMember, Numberable {
-  protected DebuggingInformation debugInfo;
-  public static final String constructorName = "<init>";
-  public static final String staticInitializerName = "<clinit>";
-  public static boolean DEBUG = false;
+  private DebuggingInformation debugInfo;
+  private static final String constructorName = "<init>";
+  private static final String staticInitializerName = "<clinit>";
   /** Name of the current method. */
   protected String name;
 
@@ -306,7 +305,6 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
   /**
    * Retrieves the active body for this method.
    */
-  @SuppressWarnings("deprecation")
   public Body getActiveBody() {
     // Retrieve the active body so thread changes do not affect the
     // synchronization between if the body exists and the returned body.
@@ -430,10 +428,6 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
    * Adds the given exception to the list of exceptions thrown by this method.
    */
   public void addException(SootClass e) {
-    if (DEBUG) {
-      System.out.println("Adding exception " + e);
-    }
-
     if (exceptions == null) {
       exceptions = new ArrayList<SootClass>();
     } else if (exceptions.contains(e)) {
@@ -447,10 +441,6 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
    * Removes the given exception from the list of exceptions thrown by this method.
    */
   public void removeException(SootClass e) {
-    if (DEBUG) {
-      System.out.println("Removing exception " + e);
-    }
-
     if (exceptions == null) {
       throw new RuntimeException("does not throw exception " + e.getName());
     }
@@ -608,8 +598,6 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
     StringBuffer buffer = new StringBuffer();
     for (Iterator<Type> typeIt = getParameterTypes().iterator(); typeIt.hasNext();) {
       final Type type = typeIt.next();
-      // TODO: sth: AbstractJasminClass
-      // buffer.append(AbstractJasminClass.jasminDescriptorOf(type));
     }
     return buffer.toString().intern();
   }
@@ -712,8 +700,6 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
     return getSignature();
   }
 
-  // TODO: confirm: removing: public String getDavaDeclaration() {}
-
   /**
    * Returns the declaration of this method, as used at the top of textual body representations (before the {}'s containing
    * the code for representation.)
@@ -755,7 +741,6 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
       }
 
     }
-
     buffer.append(")");
 
     // Print exceptions
@@ -790,47 +775,24 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
     return this;
   }
 
-  // TODO: confirm removal --> Context interface is empty
-  /*
-   * public Context context() { return null; }
-   */
-
   public int getJavaSourceStartLineNumber() {
-
-    // TODO: inheritance from AbstractHost removed so it doesnt work anymore
-    return -1;
-
-    /*
-     * super.getJavaSourceStartLineNumber(); // search statements for first line number if (line == -1 && hasActiveBody()) {
-     * PatchingChain<Unit> unit = getActiveBody().getUnits(); for (Unit u : unit) { int l = u.getJavaSourceStartLineNumber();
-     * if (l > -1) { // store l-1, as method header is usually one line before // 1st statement line = l - 1; break; } } }
-     * return line; }
-     */
-  }
-
-  public SootMethod resolve() {
-    // TODO Auto-generated method stub
-    return null;
+    return debugInfo.getCodeBodyPosition().getFirstLine();
   }
 
   public Type returnType() {
-    // TODO Auto-generated method stub
-    return null;
+    return this.returnType;
   }
 
-  public Object name() {
-    // TODO Auto-generated method stub
-    return null;
+  public String name() {
+    return this.name;
   }
 
   public List<Type> parameterTypes() {
-    // TODO Auto-generated method stub
-    return null;
+    return this.parameterTypes;
   }
 
   public SootClass declaringClass() {
-    // TODO Auto-generated method stub
-    return null;
+    return this.declaringClass;
   }
 
   public void setDebugInfo(DebuggingInformation debugInfo) {

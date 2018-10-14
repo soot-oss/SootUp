@@ -30,9 +30,12 @@ import de.upb.soot.util.printer.IStmtPrinter;
 /**
  * Reference implementation for ValueBox; just add a canContainValue method.
  */
-@SuppressWarnings("serial")
 public abstract class AbstractValueBox implements ValueBox {
-  Value value;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -796126298513013484L;
+  private Value value;
 
   @Override
   public void setValue(Value value) {

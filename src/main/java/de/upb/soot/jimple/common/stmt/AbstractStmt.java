@@ -25,7 +25,7 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.FieldRef;
@@ -72,16 +72,16 @@ public abstract class AbstractStmt implements IStmt {
    * dynamically updated as the structure changes.
    */
   @Override
-  public List<StmtBox> getStmtBoxes() {
+  public List<IStmtBox> getStmtBoxes() {
     return Collections.emptyList();
   }
 
   /** List of UnitBoxes pointing to this Unit. */
-  List<StmtBox> boxesPointingToThis = null;
+  List<IStmtBox> boxesPointingToThis = null;
 
   /** Returns a list of Boxes pointing to this Unit. */
   @Override
-  public List<StmtBox> getBoxesPointingToThis() {
+  public List<IStmtBox> getBoxesPointingToThis() {
     if (boxesPointingToThis == null) {
       return Collections.emptyList();
     }
@@ -89,15 +89,15 @@ public abstract class AbstractStmt implements IStmt {
   }
 
   @Override
-  public void addBoxPointingToThis(StmtBox b) {
+  public void addBoxPointingToThis(IStmtBox b) {
     if (boxesPointingToThis == null) {
-      boxesPointingToThis = new ArrayList<StmtBox>();
+      boxesPointingToThis = new ArrayList<IStmtBox>();
     }
     boxesPointingToThis.add(b);
   }
 
   @Override
-  public void removeBoxPointingToThis(StmtBox b) {
+  public void removeBoxPointingToThis(IStmtBox b) {
     if (boxesPointingToThis != null) {
       boxesPointingToThis.remove(b);
     }
@@ -105,7 +105,7 @@ public abstract class AbstractStmt implements IStmt {
 
   @Override
   public void clearStmtBoxes() {
-    for (StmtBox ub : getStmtBoxes()) {
+    for (IStmtBox ub : getStmtBoxes()) {
       ub.setStmt(null);
     }
   }
@@ -136,13 +136,13 @@ public abstract class AbstractStmt implements IStmt {
 
   @Override
   public void redirectJumpsToThisTo(IStmt newLocation) {
-    List<StmtBox> boxesPointing = getBoxesPointingToThis();
+    List<IStmtBox> boxesPointing = getBoxesPointingToThis();
 
-    StmtBox[] boxes = boxesPointing.toArray(new StmtBox[boxesPointing.size()]);
+    IStmtBox[] boxes = boxesPointing.toArray(new IStmtBox[boxesPointing.size()]);
     // important to change this to an array to have a static copy
 
-    for (StmtBox element : boxes) {
-      StmtBox box = element;
+    for (IStmtBox element : boxes) {
+      IStmtBox box = element;
 
       if (box.getStmt() != this) {
         throw new RuntimeException("Something weird's happening");

@@ -26,7 +26,7 @@
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
@@ -46,8 +46,8 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   int highIndex;
 
   // This method is necessary to deal with constructor-must-be-first-ism.
-  private static StmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
-    StmtBox[] targetBoxes = new StmtBox[targets.size()];
+  private static IStmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
+    IStmtBox[] targetBoxes = new IStmtBox[targets.size()];
     for (int i = 0; i < targetBoxes.length; i++) {
       targetBoxes[i] = Jimple.newStmtBox(targets.get(i));
     }
@@ -63,12 +63,12 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     this(Jimple.newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets), Jimple.newStmtBox(defaultTarget));
   }
 
-  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends StmtBox> targets, StmtBox defaultTarget) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new StmtBox[targets.size()]),
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets, IStmtBox defaultTarget) {
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[targets.size()]),
         defaultTarget);
   }
 
-  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, StmtBox[] targetBoxes, StmtBox defaultTargetBox) {
+  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, IStmtBox[] targetBoxes, IStmtBox defaultTargetBox) {
     super(keyBox, defaultTargetBox, targetBoxes);
 
     if (lowIndex > highIndex) {

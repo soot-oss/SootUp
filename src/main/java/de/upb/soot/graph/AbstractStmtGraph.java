@@ -2,7 +2,7 @@ package de.upb.soot.graph;
 
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.common.stmt.IStmt;
 
 import java.util.ArrayList;
@@ -87,7 +87,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
       }
 
       if (currentIStmt.branches()) {
-        for (StmtBox targetBox : currentIStmt.getStmtBoxes()) {
+        for (IStmtBox targetBox : currentIStmt.getStmtBoxes()) {
           IStmt target = targetBox.getStmt();
           // Arbitrary bytecode can branch to the same
           // target it falls through to, so we screen for duplicates:

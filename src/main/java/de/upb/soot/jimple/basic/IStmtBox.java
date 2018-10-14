@@ -33,16 +33,12 @@ import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.io.Serializable;
 
-public interface StmtBox extends Serializable {
+public interface IStmtBox extends Serializable {
   /** Sets this box to contain the given unit. Subject to canContainValue() checks. */
   public void setStmt(IStmt u);
 
   /** Returns the unit contained within this box. */
   public IStmt getStmt();
-
-  /** Returns true if this box can contain the given Stmt. */
-  public boolean canContainStmt(IStmt u);
-
   /**
    * Returns true if the StmtBox is holding a Stmt that is the target of a branch (ie a Stmt at the beginning of a CFG
    * block). This is the default case.

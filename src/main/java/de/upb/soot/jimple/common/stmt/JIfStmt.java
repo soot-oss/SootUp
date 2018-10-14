@@ -26,7 +26,7 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
@@ -43,19 +43,19 @@ public class JIfStmt extends AbstractStmt {
    */
   private static final long serialVersionUID = -5625186075843518011L;
   final ValueBox conditionBox;
-  final StmtBox targetBox;
+  final IStmtBox targetBox;
 
-  final List<StmtBox> targetBoxes;
+  final List<IStmtBox> targetBoxes;
 
   public JIfStmt(Value condition, IStmt target) {
     this(condition, Jimple.newStmtBox(target));
   }
 
-  public JIfStmt(Value condition, StmtBox target) {
+  public JIfStmt(Value condition, IStmtBox target) {
     this(Jimple.newConditionExprBox(condition), target);
   }
 
-  protected JIfStmt(ValueBox conditionBox, StmtBox targetBox) {
+  protected JIfStmt(ValueBox conditionBox, IStmtBox targetBox) {
     this.conditionBox = conditionBox;
     this.targetBox = targetBox;
 
@@ -108,7 +108,7 @@ public class JIfStmt extends AbstractStmt {
     targetBox.setStmt(target);
   }
 
-  public StmtBox getTargetBox() {
+  public IStmtBox getTargetBox() {
     return targetBox;
   }
 
@@ -123,7 +123,7 @@ public class JIfStmt extends AbstractStmt {
   }
 
   @Override
-  public final List<StmtBox> getStmtBoxes() {
+  public final List<IStmtBox> getStmtBoxes() {
     return targetBoxes;
   }
 

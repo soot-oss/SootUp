@@ -14,7 +14,7 @@ package de.upb.soot.jimple.common.stmt;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Immediate;
 import de.upb.soot.jimple.basic.RValueBox;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.StmtBoxOwner;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -306,7 +306,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getUnitBoxes()
    */
   @Override
-  public List<StmtBox> getStmtBoxes() {
+  public List<IStmtBox> getStmtBoxes() {
     // handle possible PhiExpr's
     Value rvalue = rightBox.getValue();
     if (rvalue instanceof StmtBoxOwner) {

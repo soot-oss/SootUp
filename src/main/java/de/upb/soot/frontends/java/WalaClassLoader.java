@@ -54,17 +54,19 @@ public class WalaClassLoader {
       }
       // add the source directory
       scope.addToScope(JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(sourceDirPath)));
-      FileOfClasses classes;
-      classes = new FileOfClasses(new FileInputStream(new File(exclusionFilePath)));
-      scope.setExclusions(classes);
+      if (exclusionFilePath != null && !exclusionFilePath.isEmpty()) {
+        FileOfClasses classes;
+        classes = new FileOfClasses(new FileInputStream(new File(exclusionFilePath)));
+        scope.setExclusions(classes);
+      }
       // build the class hierarchy
       this.classHierarchy = ClassHierarchyFactory.make(scope, new ECJClassLoaderFactory(scope.getExclusions()));
+      Warnings.clear();
     } catch (ClassHierarchyException e) {
       e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     }
-    Warnings.clear();
   }
 
   /**

@@ -25,7 +25,7 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 
@@ -40,21 +40,21 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
    */
   private static final long serialVersionUID = -828246813006451813L;
 
-  protected final StmtBox defaultTargetBox;
+  protected final IStmtBox defaultTargetBox;
 
   protected final ValueBox keyBox;
 
-  protected final List<StmtBox> stmtBoxes;
+  protected final List<IStmtBox> stmtBoxes;
 
-  protected final StmtBox[] targetBoxes;
+  protected final IStmtBox[] targetBoxes;
 
-  protected AbstractSwitchStmt(ValueBox keyBox, StmtBox defaultTargetBox, StmtBox... targetBoxes) {
+  protected AbstractSwitchStmt(ValueBox keyBox, IStmtBox defaultTargetBox, IStmtBox... targetBoxes) {
     this.keyBox = keyBox;
     this.defaultTargetBox = defaultTargetBox;
     this.targetBoxes = targetBoxes;
 
     // Build up stmtBoxes
-    List<StmtBox> list = new ArrayList<StmtBox>();
+    List<IStmtBox> list = new ArrayList<IStmtBox>();
     stmtBoxes = Collections.unmodifiableList(list);
 
     Collections.addAll(list, targetBoxes);
@@ -69,7 +69,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     defaultTargetBox.setStmt(defaultTarget);
   }
 
-  public final StmtBox getDefaultTargetBox() {
+  public final IStmtBox getDefaultTargetBox() {
     return defaultTargetBox;
   }
 
@@ -103,7 +103,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return targetBoxes[index].getStmt();
   }
 
-  public final StmtBox getTargetBox(int index) {
+  public final IStmtBox getTargetBox(int index) {
     return targetBoxes[index];
   }
 
@@ -117,7 +117,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   public final List<IStmt> getTargets() {
     List<IStmt> targets = new ArrayList<IStmt>();
 
-    for (StmtBox element : targetBoxes) {
+    for (IStmtBox element : targetBoxes) {
       targets.add(element.getStmt());
     }
 
@@ -149,7 +149,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   }
 
   @Override
-  public final List<StmtBox> getStmtBoxes() {
+  public final List<IStmtBox> getStmtBoxes() {
     return stmtBoxes;
   }
 

@@ -50,7 +50,7 @@ public class JStaticFieldRef implements FieldRef {
 
   @Override
   public SootField getField() {
-    return field.resolve();
+    return field;
   }
 
   @Override

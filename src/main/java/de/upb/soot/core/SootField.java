@@ -44,6 +44,7 @@ public class SootField extends AbstractViewResident implements ClassMember {
   protected volatile String sig;
   protected volatile String subSig;
 
+
   /** Constructs a Soot field with the given name, type and modifiers. */
   public SootField(IView view, String name, Type type, int modifiers) {
     super(view);
@@ -53,6 +54,11 @@ public class SootField extends AbstractViewResident implements ClassMember {
     this.name = name;
     this.type = type;
     this.modifiers = modifiers;
+  }
+
+  public SootField(IView view, SootField field)
+  {
+    this(view, field.name, field.type, field.modifiers);
   }
 
   /** Constructs a Soot field with the given name, type and no modifiers. */
@@ -243,25 +249,4 @@ public class SootField extends AbstractViewResident implements ClassMember {
   public String getDeclaration() {
     return getOriginalStyleDeclaration();
   }
-
-  public final int getNumber() {
-    return number;
-  }
-
-  public final void setNumber(int number) {
-    this.number = number;
-  }
-
-  private int number = 0;
-
-  public SootField(IView view, SootField f) {
-    super(view);
-    // TODO Auto-generated constructor stub
-  }
-
-  public SootField resolve() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
 }

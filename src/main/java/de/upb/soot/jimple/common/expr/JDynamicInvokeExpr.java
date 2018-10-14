@@ -45,7 +45,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
    * 
    */
   private static final long serialVersionUID = 8212277443400470834L;
-  protected SootMethod bsmRef;
+  protected SootMethod bsm;
   protected ValueBox[] bsmArgBoxes;
   protected int tag;
 
@@ -61,7 +61,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
           "Receiver type of JDynamicInvokeExpr must be " + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + "!");
     }
 
-    this.bsmRef = bootstrapMethodRef;
+    this.bsm = bootstrapMethodRef;
     this.bsmArgBoxes = new ValueBox[bootstrapArgs.size()];
     this.tag = tag;
 
@@ -104,7 +104,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JDynamicInvokeExpr(bsmRef, clonedBsmArgs, method, tag, clonedArgs);
+    return new JDynamicInvokeExpr(bsm, clonedBsmArgs, method, tag, clonedArgs);
   }
 
   @Override
@@ -137,7 +137,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       if (!method.equals(ie.method)) {
         return false;
       }
-      if (!bsmRef.equals(ie.bsmRef)) {
+      if (!bsm.equals(ie.bsm)) {
         return false;
       }
       return true;
@@ -146,7 +146,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   public SootMethod getBootstrapMethod() {
-    return bsmRef.resolve();
+    return bsm;
   }
 
   /**
@@ -185,7 +185,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
     buffer.append(") ");
 
-    buffer.append(bsmRef.getSignature());
+    buffer.append(bsm.getSignature());
     buffer.append("(");
     for (int i = 0; i < bsmArgBoxes.length; i++) {
       if (i != 0) {
@@ -216,7 +216,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     }
 
     up.literal(") ");
-    up.method(bsmRef);
+    up.method(bsm);
     up.literal("(");
 
     for (int i = 0; i < bsmArgBoxes.length; i++) {
@@ -236,7 +236,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   public SootMethod getBootstrapMethodRef() {
-    return bsmRef;
+    return bsm;
   }
 
   /**

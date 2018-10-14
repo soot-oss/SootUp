@@ -23,7 +23,7 @@ package de.upb.soot.core;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -480,9 +480,34 @@ public class Body implements Serializable {
     return null;
   }
 
-  public List<StmtBox> getAllStmtBoxes() {
-    // TODO Auto-generated method stub
-    return null;
+  /**
+   * Returns the result of iterating through all Stmts in this body and querying them for their StmtBoxes. All StmtBoxes thus
+   * found are returned. Branching Stmts and statements which use PhiExpr will have StmtBoxes; a StmtBox contains a Stmt that
+   * is either a target of a branch or is being used as a pointer to the end of a CFG block.
+   *
+   * <p>
+   * This method is typically used for pointer patching, e.g. when the unit chain is cloned.
+   *
+   * @return A list of all the StmtBoxes held by this body's units.
+   **/
+  public List<IStmtBox> getAllStmtBoxes() {
+    ArrayList<IStmtBox> stmtBoxList = new ArrayList<IStmtBox>();
+    {
+      Iterator<IStmt> it = stmts.iterator();
+      while (it.hasNext()) {
+        IStmt item = it.next();
+        stmtBoxList.addAll(item.getStmtBoxes());
+      }
+    }
+
+    {
+      Iterator<Trap> it = traps.iterator();
+      while (it.hasNext()) {
+        Trap item = it.next();
+        stmtBoxList.addAll(item.getStmtBoxes());
+      }
+    }
+    return stmtBoxList;
   }
 
   /**

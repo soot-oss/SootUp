@@ -25,7 +25,7 @@ import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
@@ -55,12 +55,12 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   }
 
   @Override
-  public void startStmtBox(StmtBox ub) {
+  public void startStmtBox(IStmtBox ub) {
     handleIndent();
   }
 
   @Override
-  public void endStmtBox(StmtBox ub) {
+  public void endStmtBox(IStmtBox ub) {
   }
 
   @Override

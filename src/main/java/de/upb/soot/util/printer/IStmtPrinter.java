@@ -24,7 +24,7 @@ package de.upb.soot.util.printer;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
@@ -40,9 +40,9 @@ public interface IStmtPrinter {
 
   public void endStmt(IStmt u);
 
-  public void startStmtBox(StmtBox u);
+  public void startStmtBox(IStmtBox u);
 
-  public void endStmtBox(StmtBox u);
+  public void endStmtBox(IStmtBox u);
 
   public void startValueBox(ValueBox u);
 

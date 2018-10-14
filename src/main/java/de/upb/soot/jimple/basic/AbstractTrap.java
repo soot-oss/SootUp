@@ -45,16 +45,16 @@ public class AbstractTrap implements Trap, Serializable {
   protected transient SootClass exception;
 
   /** The first unit being trapped. */
-  protected StmtBox beginStmtBox;
+  protected IStmtBox beginStmtBox;
 
   /** The unit just before the last unit being trapped. */
-  protected StmtBox endStmtBox;
+  protected IStmtBox endStmtBox;
 
   /** The unit to which execution flows after the caught exception is triggered. */
-  protected StmtBox handlerStmtBox;
+  protected IStmtBox handlerStmtBox;
 
   /** The list of unitBoxes referred to in this Trap (begin, end and handler. */
-  protected List<StmtBox> unitBoxes;
+  protected List<IStmtBox> unitBoxes;
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
@@ -68,7 +68,7 @@ public class AbstractTrap implements Trap, Serializable {
   }
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
-  protected AbstractTrap(SootClass exception, StmtBox beginStmtBox, StmtBox endStmtBox, StmtBox handlerStmtBox) {
+  protected AbstractTrap(SootClass exception, IStmtBox beginStmtBox, IStmtBox endStmtBox, IStmtBox handlerStmtBox) {
     this.exception = exception;
     this.beginStmtBox = beginStmtBox;
     this.endStmtBox = endStmtBox;
@@ -88,26 +88,26 @@ public class AbstractTrap implements Trap, Serializable {
     return handlerStmtBox.getStmt();
   }
 
-  public StmtBox getHandlerStmtBox() {
+  public IStmtBox getHandlerStmtBox() {
     return handlerStmtBox;
   }
 
-  public StmtBox getBeginStmtBox() {
+  public IStmtBox getBeginStmtBox() {
     return beginStmtBox;
   }
 
-  public StmtBox getEndStmtBox() {
+  public IStmtBox getEndStmtBox() {
     return endStmtBox;
   }
 
   @Override
-  public List<StmtBox> getStmtBoxes() {
+  public List<IStmtBox> getStmtBoxes() {
     return unitBoxes;
   }
 
   @Override
   public void clearStmtBoxes() {
-    for (StmtBox box : getStmtBoxes()) {
+    for (IStmtBox box : getStmtBoxes()) {
       box.setStmt(null);
     }
   }

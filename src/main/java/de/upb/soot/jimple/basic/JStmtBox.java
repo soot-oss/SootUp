@@ -32,14 +32,16 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.util.printer.IStmtPrinter;
 
-public abstract class AbstractStmtBox implements StmtBox {
+public class JStmtBox implements IStmtBox {
   /**
    * 
    */
   private static final long serialVersionUID = 7292172470036407386L;
   protected IStmt stmt;
 
-  public abstract boolean canContainUnit(IStmt u);
+  public JStmtBox(IStmt stmt) {
+    this.stmt = stmt;
+  }
 
   @Override
   public boolean isBranchTarget() {
@@ -48,10 +50,6 @@ public abstract class AbstractStmtBox implements StmtBox {
 
   @Override
   public void setStmt(IStmt stmt) {
-    if (!canContainUnit(stmt)) {
-      throw new RuntimeException("attempting to put invalid unit in UnitBox");
-    }
-
     // Remove this from set of back pointers.
     if (this.stmt != null) {
       this.stmt.removeBoxPointingToThis(this);

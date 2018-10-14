@@ -27,8 +27,14 @@ package de.upb.soot.jimple;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.basic.ConditionExprBox;
+import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.IdentityRefBox;
+import de.upb.soot.jimple.basic.ImmediateBox;
+import de.upb.soot.jimple.basic.InvokeExprBox;
+import de.upb.soot.jimple.basic.JStmtBox;
 import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.LocalBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.IntConstant;
@@ -91,6 +97,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
 
 
 /**
@@ -505,7 +512,7 @@ public class Jimple {
     return new JGotoStmt(target);
   }
 
-  public static JGotoStmt newGotoStmt(StmtBox stmtBox) {
+  public static JGotoStmt newGotoStmt(IStmtBox stmtBox) {
     return new JGotoStmt(stmtBox);
   }
 
@@ -547,7 +554,7 @@ public class Jimple {
   /**
    * Constructs a IfStmt(Condition, UnitBox) grammar chunk.
    */
-  public static JIfStmt newIfStmt(Value condition, StmtBox target) {
+  public static JIfStmt newIfStmt(Value condition, IStmtBox target) {
     return new JIfStmt(condition, target);
   }
 
@@ -580,8 +587,8 @@ public class Jimple {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget);
   }
 
-  public static JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends StmtBox> targets,
-      StmtBox defaultTarget) {
+  public static JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets,
+      IStmtBox defaultTarget) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget);
   }
 
@@ -595,8 +602,8 @@ public class Jimple {
   }
 
   public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
-      List<? extends StmtBox> targets,
-      StmtBox defaultTarget) {
+      List<? extends IStmtBox> targets,
+      IStmtBox defaultTarget) {
     return null;
   }
 
@@ -642,39 +649,32 @@ public class Jimple {
     return new JCaughtExceptionRef();
   }
 
-  public static ValueBox newArgBox(Value op1) {
-    // TODO Auto-generated method stub
-    return null;
+  public static ValueBox newArgBox(Value value) {
+    return new ImmediateBox(value);
   }
 
   public static ValueBox newImmediateBox(Value value) {
-    // TODO Auto-generated method stub
-    return null;
+    return new ImmediateBox(value);
   }
 
-  public static StmtBox newStmtBox(IStmt target) {
-    // TODO Auto-generated method stub
-    return null;
+  public static IStmtBox newStmtBox(IStmt stmt) {
+    return new JStmtBox(stmt);
   }
 
   public static ValueBox newLocalBox(Value local) {
-    // TODO Auto-generated method stub
-    return null;
+    return new LocalBox(local);
   }
 
-  public static ValueBox newIdentityRefBox(Value identityValue) {
-    // TODO Auto-generated method stub
-    return null;
+  public static ValueBox newIdentityRefBox(Value value) {
+    return new IdentityRefBox(value);
   }
 
   public static ValueBox newConditionExprBox(Value condition) {
-    // TODO Auto-generated method stub
-    return null;
+    return new ConditionExprBox(condition);
   }
 
-  public static ValueBox newInvokeExprBox(Value c) {
-    // TODO Auto-generated method stub
-    return null;
+  public static ValueBox newInvokeExprBox(Value value) {
+    return new InvokeExprBox(value);
   }
 
   /** Returns an empty body associated with method method. */
