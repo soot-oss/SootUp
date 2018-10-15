@@ -9,6 +9,11 @@ import java.util.HashSet;
 
 public class SootModuleInfo extends SootClass {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -6856798288630958622L;
+
   private class ModuleReference {
 
     private SootModuleInfo moduleInfo;

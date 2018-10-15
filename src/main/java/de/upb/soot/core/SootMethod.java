@@ -29,6 +29,7 @@ import de.upb.soot.views.IView;
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -44,7 +45,11 @@ import java.util.StringTokenizer;
  *
  */
 
-public class SootMethod extends AbstractViewResident implements ClassMember, Numberable {
+public class SootMethod extends AbstractViewResident implements ClassMember, Numberable,Serializable {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -7438746401781827520L;
   private DebuggingInformation debugInfo;
   private static final String constructorName = "<init>";
   private static final String staticInitializerName = "<clinit>";

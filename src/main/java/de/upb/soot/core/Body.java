@@ -22,8 +22,8 @@ package de.upb.soot.core;
  */
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -361,13 +361,6 @@ public class Body implements Serializable {
 
   public Position getPosition() {
     return this.position;
-  }
-
-  private Local getLocal(int idx) {
-    Local local = null;
-    // TODO
-
-    return local;
   }
 
   /** Clones the current body, making deep copies of the contents. */

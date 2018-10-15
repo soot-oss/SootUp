@@ -58,6 +58,7 @@ import de.upb.soot.views.IView;
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -88,7 +89,12 @@ import java.util.List;
  * @author Linghui Luo
  */
 
-public class SootClass extends AbstractViewResident implements Numberable {
+public class SootClass extends AbstractViewResident implements Numberable, Serializable {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -4145583783298080555L;
 
   static public class Resolve {
     public final int level;
@@ -249,8 +255,6 @@ public class SootClass extends AbstractViewResident implements Numberable {
   /**
    * Returns a backed Chain of fields.
    */
-
-  @SuppressWarnings("unchecked")
   public LinkedHashSet<SootField> getFields() {
     checkLevel(SIGNATURES);
     return fields == null ? new LinkedHashSet<>() : fields;

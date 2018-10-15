@@ -25,6 +25,8 @@ import de.upb.soot.jimple.common.type.RefLikeType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.views.IView;
 
+import java.io.Serializable;
+
 /**
  * Soot's counterpart of the source language's field concept. Soot representation of a Java field. Can be declared to belong
  * to a SootClass.
@@ -33,8 +35,12 @@ import de.upb.soot.views.IView;
  *
  */
 
-public class SootField extends AbstractViewResident implements ClassMember {
+public class SootField extends AbstractViewResident implements ClassMember, Serializable {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -5101396409117866687L;
   protected String name;
   protected Type type;
   protected int modifiers;
