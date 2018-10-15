@@ -33,7 +33,7 @@ package de.upb.soot.core;
  * these.
  *
  */
-enum Modifier {
+public enum Modifier {
   ABSTRACT(0x0400),
   FINAL(0x0010),
   INTERFACE(0x0200),
