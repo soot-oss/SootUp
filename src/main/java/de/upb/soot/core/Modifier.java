@@ -31,7 +31,7 @@ import java.util.EnumSet;
 
 /**
  * An Enum that provides static methods and constants to represent and work with with Java modifiers (ie public, final,...)
- * Represents Java modifiers as int constants that can be packed and combined by bitwise operations and methods to query
+ * Represents Java modifiers that can be packed and combined via EnumSet and methods to query
  * these.
  *
  */
