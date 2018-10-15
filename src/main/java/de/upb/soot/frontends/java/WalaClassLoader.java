@@ -78,7 +78,7 @@ public class WalaClassLoader {
     if (classHierarchy == null) {
       buildClassHierachy();
     }
-    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter();
+    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourceDirPath);
     Iterator<IClass> it = classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).iterateAllClasses();
     if (sootClasses == null) {
       sootClasses = new ArrayList<>();

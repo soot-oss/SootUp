@@ -106,11 +106,15 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
 
   private AbstractClassSource cs;
 
-  public SootClass(IView view, AbstractClassSource cs) {
-    super(view);
+  public SootClass(IView view, AbstractClassSource cs, int modifiers) {
+    this(view, cs.getClassSignature().getFullyQualifiedName(), modifiers);
     this.cs = cs;
   }
 
+  public SootClass(IView view, AbstractClassSource cs) {
+    this(view, cs.getClassSignature().getFullyQualifiedName());
+    this.cs = cs;
+  }
   public de.upb.soot.namespaces.classprovider.AbstractClassSource getCs() {
     return cs;
   }
@@ -156,6 +160,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    *          The name of the new class
    */
   protected void initializeRefType(String name) {
+    RefType.setView(this.getView());
     refType = RefType.getInstance(name);
     refType.setSootClass(this);
   }
@@ -718,7 +723,6 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
     return false;
   }
 
-
   /**
    * Adds the given method to this class.
    */
@@ -813,7 +817,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
   /**
    * Sets the modifiers for this class.
    */
-  public void setModifiers(int modifiers) {
+  public void setModifier(Modifier modifier) {
     this.modifiers = modifiers;
   }
 

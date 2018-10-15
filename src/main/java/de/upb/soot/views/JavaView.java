@@ -86,5 +86,4 @@ public class JavaView extends AbstractView {
     this.reservedNames.add("dynamicinvoke");
     this.reservedNames.add("strictfp");
   }
-
 }

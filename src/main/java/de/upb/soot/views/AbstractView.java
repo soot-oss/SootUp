@@ -14,9 +14,9 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.util.ArrayNumberer;
-import de.upb.soot.util.Numberer;
 import de.upb.soot.util.StringNumberer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +44,8 @@ public abstract class AbstractView implements IView {
   protected StringNumberer subSigNumberer;
   protected ArrayNumberer<SootMethod> methodNumber;
   protected Set<String> reservedNames;
+  protected List<SootClass> classes;
+  protected ArrayNumberer<SootField> fieldNumberer;
 
 
   public AbstractView(Project project) {
@@ -53,6 +55,8 @@ public abstract class AbstractView implements IView {
     this.nameToClass = new HashMap<>();
     this.subSigNumberer = new StringNumberer();
     this.methodNumber = new ArrayNumberer<>();
+    this.classes = new ArrayList<>();
+    this.fieldNumberer = new ArrayNumberer<>();
   }
 
   @Override
@@ -94,9 +98,8 @@ public abstract class AbstractView implements IView {
   }
 
   @Override
-  public List<SootClass> getClasses() {
-    // TODO Auto-generated method stub
-    return null;
+  public List<SootClass> getSootClasses() {
+    return classes;
   }
 
   @Override
@@ -107,7 +110,14 @@ public abstract class AbstractView implements IView {
 
   @Override
   public Optional<SootClass> getSootClass(ClassSignature signature) {
-    return null;
+    Optional<SootClass> opt = Optional.empty();
+    for (SootClass c : classes) {
+      if (c.getName().equals(signature.getFullyQualifiedName())) {
+        opt = Optional.ofNullable(c);
+        break;
+      }
+    }
+    return opt;
   }
 
   @Override
@@ -178,19 +188,13 @@ public abstract class AbstractView implements IView {
   }
 
   @Override
-  public Numberer<SootField> getFieldNumberer() {
-    // TODO Auto-generated method stub
-    return null;
+  public ArrayNumberer<SootField> getFieldNumberer() {
+    return this.fieldNumberer;
   }
 
-  @Override
-  public boolean allowsPhantomRefs() {
-    // TODO Auto-generated method stub
-    return false;
-  }
 
   @Override
-  public Numberer<SootMethod> getMethodNumberer() {
+  public ArrayNumberer<SootMethod> getMethodNumberer() {
     return this.methodNumber;
   }
 
@@ -201,7 +205,7 @@ public abstract class AbstractView implements IView {
   }
 
   @Override
-  public Numberer<Type> getTypeNumberer() {
+  public ArrayNumberer<Type> getTypeNumberer() {
     // TODO Auto-generated method stub
     return null;
   }
@@ -226,5 +230,16 @@ public abstract class AbstractView implements IView {
   @Override
   public Options getOptions() {
     return this.options;
+  }
+
+  @Override
+  public void addSootClass(SootClass klass) {
+    this.classes.add(klass);
+    addRefType(klass.getName(), klass.getType());
+  }
+
+  @Override
+  public boolean allowsPhantomRefs() {
+    return options.allow_phantom_elms();
   }
 }

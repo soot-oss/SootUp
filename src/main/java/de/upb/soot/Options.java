@@ -15,12 +15,12 @@ public class Options {
 
   public boolean ignore_resolving_levels() {
     // TODO Auto-generated method stub
-    return false;
+    return true;
   }
 
   public boolean allow_phantom_elms() {
     // TODO Auto-generated method stub
-    return false;
+    return true;
   }
 
   public boolean drop_bodies_after_load() {

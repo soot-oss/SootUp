@@ -12,7 +12,7 @@ import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
-import de.upb.soot.util.Numberer;
+import de.upb.soot.util.ArrayNumberer;
 import de.upb.soot.util.StringNumberer;
 
 import java.util.List;
@@ -34,7 +34,7 @@ public interface IView {
    * 
    * @return A list of classes
    */
-  List<SootClass> getClasses();
+  List<SootClass> getSootClasses();
 
   /**
    * Returns a stream of classes in the view.
@@ -81,6 +81,13 @@ public interface IView {
   Optional<Scope> getScope();
 
 
+  /**
+   * Add a SootClass object to this view.
+   */
+  void addSootClass(SootClass klass);
+
+  ArrayNumberer<SootField> getFieldNumberer();
+
   boolean doneResolving();
 
   StringNumberer getSubSigNumberer();
@@ -91,15 +98,15 @@ public interface IView {
 
   String quotedNameOf(String name);
 
-  Numberer<SootField> getFieldNumberer();
+
 
   boolean allowsPhantomRefs();
 
-  Numberer<SootMethod> getMethodNumberer();
+  ArrayNumberer<SootMethod> getMethodNumberer();
 
   List<Local> getLocalNumberer();
 
-  Numberer<Type> getTypeNumberer();
+  ArrayNumberer<Type> getTypeNumberer();
 
   RefType getObjectType();
 
@@ -109,5 +116,6 @@ public interface IView {
   RefType getRefType(String className);
 
   Options getOptions();
+
 
 }

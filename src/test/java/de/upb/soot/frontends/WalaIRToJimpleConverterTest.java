@@ -13,7 +13,7 @@ import categories.Java8Test;
 public class WalaIRToJimpleConverterTest {
   @Test
   public void testConvertClassName() {
-    WalaIRToJimpleConverter converter = new WalaIRToJimpleConverter();
+    WalaIRToJimpleConverter converter = new WalaIRToJimpleConverter("");
     String name = converter.convertClassName("Ljava/lang/String");
     assertEquals("java.lang.String", name);
   }

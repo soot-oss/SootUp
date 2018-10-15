@@ -34,6 +34,8 @@ import de.upb.soot.views.JavaView;
 
 import java.util.ArrayDeque;
 
+import javax.swing.text.View;
+
 /**
  * A class that models Java's reference types. RefTypes are parameterized by a class name. Two RefType are equal iff they are
  * Parameterized by the same class name as a String. Modified by @author Linghui Luo on 25.07.2018
@@ -55,6 +57,10 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
    * @return a RefType for the given class name.
    */
   public static RefType getInstance(String className) {
+    if(view ==null)
+    {
+      throw new NullPointerException("View is not set for RefType");
+    }
     RefType rt = view.getRefType(className);
     if (rt == null) {
       rt = new RefType(view, className);
@@ -76,6 +82,12 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
 
   // TODO: Please change className to ClassSignature here. No use of Strings to determine classes anymore. The first few lines are a good example why.
+  /**
+   * Create a RefType instance for the given view.
+   * 
+   * @param view
+   * @param className
+   */
   public RefType(IView view, String className) {
     RefType.view = view;
     if (className.startsWith("[")) {
@@ -255,12 +267,12 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
   }
 
   /**
-   * Set the current view. RefType needs access to view, since all RefTypes are stored in {@link JavaView}.
+   * Set the current view. RefType needs access to view, since all RefTypes are stored in {@link IView}.
    * 
    * @param view
    *          the current view
    */
-  public static void setView(JavaView view) {
+  public static void setView(IView view) {
     RefType.view = view;
   }
 

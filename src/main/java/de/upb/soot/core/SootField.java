@@ -23,6 +23,7 @@ package de.upb.soot.core;
 
 import de.upb.soot.jimple.common.type.RefLikeType;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.util.Numberable;
 import de.upb.soot.views.IView;
 
 import java.io.Serializable;
@@ -35,7 +36,7 @@ import java.io.Serializable;
  *
  */
 
-public class SootField extends AbstractViewResident implements ClassMember, Serializable {
+public class SootField extends AbstractViewResident implements ClassMember, Numberable, Serializable {
 
   /**
    * 
@@ -255,4 +256,16 @@ public class SootField extends AbstractViewResident implements ClassMember, Seri
   public String getDeclaration() {
     return getOriginalStyleDeclaration();
   }
+
+  protected int number = 0;
+  @Override
+  public void setNumber(int number) {
+    this.number = number;
+  }
+
+  @Override
+  public int getNumber() {
+    return this.number;
+  }
+
 }
