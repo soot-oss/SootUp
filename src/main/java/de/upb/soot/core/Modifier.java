@@ -28,109 +28,112 @@
 package de.upb.soot.core;
 
 /**
- * A class that provides static methods and constants to represent and work with with Java modifiers (ie public, final,...)
+ * An Enum that provides static methods and constants to represent and work with with Java modifiers (ie public, final,...)
  * Represents Java modifiers as int constants that can be packed and combined by bitwise operations and methods to query
  * these.
  *
  */
-public class Modifier {
-  public static final int ABSTRACT = 0x0400;
-  public static final int FINAL = 0x0010;
-  public static final int INTERFACE = 0x0200;
-  public static final int NATIVE = 0x0100;
-  public static final int PRIVATE = 0x0002;
-  public static final int PROTECTED = 0x0004;
-  public static final int PUBLIC = 0x0001;
-  public static final int STATIC = 0x0008;
-  public static final int SYNCHRONIZED = 0x0020;
-  public static final int TRANSIENT = 0x0080; /* VARARGS for methods */
-  public static final int VOLATILE = 0x0040; /* BRIDGE for methods */
-  public static final int STRICTFP = 0x0800;
-  public static final int ANNOTATION = 0x2000;
-  public static final int ENUM = 0x4000;
-  public static final int MODULE = 0x8000;
+enum Modifier {
+  ABSTRACT(0x0400),
+  FINAL(0x0010),
+  INTERFACE(0x0200),
+  NATIVE(0x0100),
+  PRIVATE(0x0002),
+  PROTECTED(0x0004),
+  PUBLIC(0x0001),
+  STATIC(0x0008),
+  SYNCHRONIZED(0x0020),
+  TRANSIENT(0x0080), /* VARARGS for methods */
+  VOLATILE(0x0040), /* BRIDGE for methods */
+  STRICTFP(0x0800),
+  ANNOTATION(0x2000),
+  ENUM(0x4000),
+  MODULE(0x8000),
 
   // dex specifific modifiers
-  public static final int SYNTHETIC = 0x1000;
-  public static final int CONSTRUCTOR = 0x10000;
-  public static final int DECLARED_SYNCHRONIZED = 0x20000;
+  SYNTHETIC(0x1000),
+  CONSTRUCTOR(0x10000),
+  DECLARED_SYNCHRONIZED(0x20000),
 
   // modifier for java 9 modules
-  public static final int OPEN = 0x0020;
-  public static final int REQUIRES_TRANSITIVE = 0x0020;
-  public static final int REQUIRES_STATIC = 0x0040;
-  public static final int REQUIRES_SYNTHETIC = 0x1000;
-  public static final int REQUIRES_MANDATED = 0x8000;
+  OPEN(0x0020),
+  REQUIRES_TRANSITIVE(0x0020),
+  REQUIRES_STATIC(0x0040),
+  REQUIRES_SYNTHETIC(0x1000),
+  REQUIRES_MANDATED(0x8000);
 
-  private Modifier() {
+  private final int value;
+
+  Modifier(int i) {
+    this.value = i;
   }
 
   public static boolean isAbstract(int m) {
-    return (m & ABSTRACT) != 0;
+    return (m & ABSTRACT.value) != 0;
   }
 
   public static boolean isFinal(int m) {
-    return (m & FINAL) != 0;
+    return (m & FINAL.value) != 0;
   }
 
   public static boolean isInterface(int m) {
-    return (m & INTERFACE) != 0;
+    return (m & INTERFACE.value) != 0;
   }
 
   public static boolean isNative(int m) {
-    return (m & NATIVE) != 0;
+    return (m & NATIVE.value) != 0;
   }
 
   public static boolean isPrivate(int m) {
-    return (m & PRIVATE) != 0;
+    return (m & PRIVATE.value) != 0;
   }
 
   public static boolean isProtected(int m) {
-    return (m & PROTECTED) != 0;
+    return (m & PROTECTED.value) != 0;
   }
 
   public static boolean isPublic(int m) {
-    return (m & PUBLIC) != 0;
+    return (m & PUBLIC.value) != 0;
   }
 
   public static boolean isStatic(int m) {
-    return (m & STATIC) != 0;
+    return (m & STATIC.value) != 0;
   }
 
   public static boolean isSynchronized(int m) {
-    return (m & SYNCHRONIZED) != 0;
+    return (m & SYNCHRONIZED.value) != 0;
   }
 
   public static boolean isTransient(int m) {
-    return (m & TRANSIENT) != 0;
+    return (m & TRANSIENT.value) != 0;
   }
 
   public static boolean isVolatile(int m) {
-    return (m & VOLATILE) != 0;
+    return (m & VOLATILE.value) != 0;
   }
 
   public static boolean isStrictFP(int m) {
-    return (m & STRICTFP) != 0;
+    return (m & STRICTFP.value) != 0;
   }
 
   public static boolean isAnnotation(int m) {
-    return (m & ANNOTATION) != 0;
+    return (m & ANNOTATION.value) != 0;
   }
 
   public static boolean isEnum(int m) {
-    return (m & ENUM) != 0;
+    return (m & ENUM.value) != 0;
   }
 
   public static boolean isSynthetic(int m) {
-    return (m & SYNTHETIC) != 0;
+    return (m & SYNTHETIC.value) != 0;
   }
 
   public static boolean isConstructor(int m) {
-    return (m & CONSTRUCTOR) != 0;
+    return (m & CONSTRUCTOR.value) != 0;
   }
 
   public static boolean isDeclaredSynchronized(int m) {
-    return (m & DECLARED_SYNCHRONIZED) != 0;
+    return (m & DECLARED_SYNCHRONIZED.value) != 0;
   }
 
   /**
