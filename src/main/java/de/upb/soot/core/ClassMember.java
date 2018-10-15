@@ -21,6 +21,8 @@
  */
 package de.upb.soot.core;
 
+import java.util.EnumSet;
+
 /**
  * Provides methods common to Soot objects belonging to classes, namely SootField and SootMethod.
  */
@@ -50,9 +52,9 @@ public interface ClassMember {
   public boolean isStatic();
 
   /** Sets modifiers of this class member. */
-  public void setModifiers(int modifiers);
+  public void setModifiers( EnumSet<Modifier> modifiers);
 
   /** Returns modifiers of this class member. */
-  public int getModifiers();
+  public EnumSet<Modifier> getModifiers();
 
 }

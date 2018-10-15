@@ -13,6 +13,7 @@ import de.upb.soot.views.JavaView;
 
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.EnumSet;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -28,7 +29,7 @@ public class SootMethodTest {
     view.addRefType(new RefType(view, "java.lang.String"));
     RefType type = RefType.getInstance("java.lang.String");
     SootMethod dummyMainMethod = new SootMethod(view, "main", Arrays.asList(new Type[] { type }), VoidType.getInstance(),
-        Modifier.PUBLIC | Modifier.STATIC);
+            EnumSet.of(Modifier.PUBLIC, Modifier.STATIC) );
 
     SootClass mainClass = new SootClass(view, "MainClass");
     mainClass.addMethod(dummyMainMethod);

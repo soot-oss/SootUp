@@ -34,33 +34,12 @@ import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.views.IView;
 
-/*-
- * #%L
- * Soot - a J*va Optimization Framework
- * %%
- * Copyright (C) 1997 - 1999 Raja Vallee-Rai
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/lgpl-2.1.html>.
- * #L%
- */
-
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -106,7 +85,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
 
   private AbstractClassSource cs;
 
-  public SootClass(IView view, AbstractClassSource cs, int modifiers) {
+  public SootClass(IView view, AbstractClassSource cs, EnumSet<Modifier> modifiers) {
     this(view, cs.getClassSignature().getFullyQualifiedName(), modifiers);
     this.cs = cs;
   }
@@ -121,7 +100,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
 
   protected Position position;
   protected String name, shortName, fixedShortName, packageName, fixedPackageName;
-  protected int modifiers;
+  protected EnumSet<Modifier> modifiers;
   protected LinkedHashSet<SootField> fields;
   protected SmallNumberedMap<SootMethod> subSigToMethods;
   // methodList is just for keeping the methods in a consistent order. It
@@ -141,7 +120,8 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Constructs an empty SootClass with the given name and modifiers.
    */
 
-  public SootClass(IView view, String name, int modifiers) {
+  // TODO: modifiers is deprecated, name should be ClassSignature
+  public SootClass(IView view, String name, EnumSet<Modifier> modifiers) {
     super(view);
     if (name.charAt(0) == '[') {
       throw new RuntimeException("Attempt to make a class whose name starts with [");
@@ -170,7 +150,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public SootClass(IView view, String name) {
-    this(view, name, 0);
+    this(view, name, EnumSet.noneOf(Modifier.class) );
   }
 
   public final static int DANGLING = 0;
@@ -810,7 +790,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
   /**
    * Returns the modifiers of this class.
    */
-  public int getModifiers() {
+  public EnumSet<Modifier> getModifiers() {
     return modifiers;
   }
 

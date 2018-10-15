@@ -32,6 +32,7 @@ import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -75,7 +76,7 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
   /**
    * Modifiers associated with this SootMethod (e.g. private, protected, etc.)
    */
-  protected int modifiers;
+  protected EnumSet<Modifier> modifiers;
 
   /** Is this method a phantom method? */
   protected boolean isPhantom = false;
@@ -96,20 +97,20 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
    * Constructs a SootMethod with the given name, parameter types and return type.
    */
   public SootMethod(IView view, String name, List<Type> parameterTypes, Type returnType) {
-    this(view, name, parameterTypes, returnType, 0, Collections.<SootClass>emptyList());
+    this(view, name, parameterTypes, returnType, EnumSet.noneOf(Modifier.class), Collections.<SootClass>emptyList());
   }
 
   /**
    * Constructs a SootMethod with the given name, parameter types, return type and modifiers.
    */
-  public SootMethod(IView view, String name, List<Type> parameterTypes, Type returnType, int modifiers) {
+  public SootMethod(IView view, String name, List<Type> parameterTypes, Type returnType, EnumSet<Modifier> modifiers) {
     this(view, name, parameterTypes, returnType, modifiers, Collections.<SootClass>emptyList());
   }
 
   /**
    * Constructs a SootMethod with the given name, parameter types, return type, and list of thrown exceptions.
    */
-  public SootMethod(IView view, String name, List<Type> parameterTypes, Type returnType, int modifiers,
+  public SootMethod(IView view, String name, List<Type> parameterTypes, Type returnType, EnumSet<Modifier> modifiers,
       List<SootClass> thrownExceptions) {
     super(view);
     this.name = name;
@@ -130,8 +131,9 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
   /**
    * Returns a hash code for this method consistent with structural equality.
    */
+  // TODO: check whether modifiers.hashcode (former: "modifiers" representing the set) does what its meant for
   public int equivHashCode() {
-    return returnType.hashCode() * 101 + modifiers * 17 + name.hashCode();
+    return returnType.hashCode() * 101 + modifiers.hashCode() * 17 + name.hashCode();
   }
 
   /** Returns the name of this method. */
@@ -225,10 +227,9 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
    *
    * @see de.upb.soot.core.Modifier
    */
-
   @Override
-  public int getModifiers() {
-    return modifiers;
+  public EnumSet<Modifier> getModifiers() {
+      return modifiers;
   }
 
   /**
@@ -237,7 +238,7 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
    * @see de.upb.soot.core.Modifier
    */
   @Override
-  public void setModifiers(int modifiers) {
+  public void setModifiers( EnumSet<Modifier> modifiers) {
     this.modifiers = modifiers;
   }
 

@@ -27,6 +27,7 @@ import de.upb.soot.util.Numberable;
 import de.upb.soot.views.IView;
 
 import java.io.Serializable;
+import java.util.EnumSet;
 
 /**
  * Soot's counterpart of the source language's field concept. Soot representation of a Java field. Can be declared to belong
@@ -44,7 +45,7 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
   private static final long serialVersionUID = -5101396409117866687L;
   protected String name;
   protected Type type;
-  protected int modifiers;
+  protected EnumSet<Modifier> modifiers;
   protected boolean isDeclared = false;
   protected SootClass declaringClass;
   protected boolean isPhantom = false;
@@ -53,7 +54,7 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
 
 
   /** Constructs a Soot field with the given name, type and modifiers. */
-  public SootField(IView view, String name, Type type, int modifiers) {
+  public SootField(IView view, String name, Type type, EnumSet<Modifier> modifiers) {
     super(view);
     if (name == null || type == null) {
       throw new RuntimeException("A SootField cannot have a null name or type.");
@@ -70,11 +71,12 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
 
   /** Constructs a Soot field with the given name, type and no modifiers. */
   public SootField(IView view, String name, Type type) {
-    this(view, name, type, 0);
+    this(view, name, type, EnumSet.noneOf(Modifier.class) );
   }
 
   public int equivHashCode() {
-    return type.hashCode() * 101 + modifiers * 17 + name.hashCode();
+    // TODO: check whether modifiers.hashcode() (former: "modifiers" - representing the set) does what its meant for
+    return type.hashCode() * 101 + modifiers.hashCode() * 17 + name.hashCode();
   }
 
   public String getSignature() {
@@ -227,12 +229,12 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
   }
 
   @Override
-  public void setModifiers(int modifiers) {
+  public void setModifiers(EnumSet<Modifier> modifiers) {
     this.modifiers = modifiers;
   }
 
   @Override
-  public int getModifiers() {
+  public EnumSet<Modifier> getModifiers() {
     return modifiers;
   }
 
