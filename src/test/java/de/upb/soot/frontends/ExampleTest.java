@@ -14,7 +14,7 @@ public class ExampleTest {
   public void test()
   {
     String srcDir
-        = "src/test/resources/java-target/";
+        = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     String[] args = { srcDir, exclusionFilePath };
     Example.main(args);
