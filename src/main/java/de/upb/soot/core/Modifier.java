@@ -36,40 +36,33 @@ import java.util.EnumSet;
  *
  */
 public enum Modifier {
-    // TODO bitset initializer are obsolete
-  ABSTRACT(0x0400),
-  FINAL(0x0010),
-  INTERFACE(0x0200),
-  NATIVE(0x0100),
-  PRIVATE(0x0002),
-  PROTECTED(0x0004),
-  PUBLIC(0x0001),
-  STATIC(0x0008),
-  SYNCHRONIZED(0x0020),
-  TRANSIENT(0x0080), /* VARARGS for methods */
-  VOLATILE(0x0040), /* BRIDGE for methods */
-  STRICTFP(0x0800),
-  ANNOTATION(0x2000),
-  ENUM(0x4000),
-  MODULE(0x8000),
+  ABSTRACT,
+  FINAL,
+  INTERFACE,
+  NATIVE,
+  PRIVATE,
+  PROTECTED,
+  PUBLIC,
+  STATIC,
+  SYNCHRONIZED,
+  TRANSIENT, /* VARARGS for methods */
+  VOLATILE, /* BRIDGE for methods */
+  STRICTFP,
+  ANNOTATION,
+  ENUM,
+  MODULE,
 
   // dex specifific modifiers
-  SYNTHETIC(0x1000),
-  CONSTRUCTOR(0x10000),
-  DECLARED_SYNCHRONIZED(0x20000),
+  SYNTHETIC,
+  CONSTRUCTOR,
+  DECLARED_SYNCHRONIZED,
 
   // modifier for java 9 modules
-  OPEN(0x0020),
-  REQUIRES_TRANSITIVE(0x0020),
-  REQUIRES_STATIC(0x0040),
-  REQUIRES_SYNTHETIC(0x1000),
-  REQUIRES_MANDATED(0x8000);
-
-  private final int value;
-
-  Modifier(int i) {
-    this.value = i;
-  }
+  OPEN,
+  REQUIRES_TRANSITIVE,
+  REQUIRES_STATIC,
+  REQUIRES_SYNTHETIC,
+  REQUIRES_MANDATED;
 
   public static boolean isAbstract(EnumSet<Modifier> m) {
     return m.contains(ABSTRACT);
