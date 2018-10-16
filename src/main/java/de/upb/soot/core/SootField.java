@@ -23,11 +23,8 @@ package de.upb.soot.core;
 
 import de.upb.soot.jimple.common.type.RefLikeType;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.util.Numberable;
 import de.upb.soot.views.IView;
 
-import java.io.Serializable;
-import java.util.Arrays;
 import java.util.EnumSet;
 
 /**
@@ -38,7 +35,7 @@ import java.util.EnumSet;
  *
  */
 
-public class SootField extends AbstractViewResident implements ClassMember, Numberable, Serializable {
+public class SootField extends ClassMember {
 
   /**
    * 
@@ -46,7 +43,6 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
   private static final long serialVersionUID = -5101396409117866687L;
   protected String name;
   protected Type type;
-  protected EnumSet<Modifier> modifiers;
   protected boolean isDeclared = false;
   protected SootClass declaringClass;
   protected boolean isPhantom = false;
@@ -225,20 +221,6 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
    */
   public boolean isFinal() {
     return Modifier.isFinal(this.getModifiers());
-  }
-
-  @Override
-  public void setModifiers(Modifier... modifiers) {
-    setModifiers(EnumSet.copyOf(Arrays.asList(modifiers)));
-  }
-
-  public void setModifiers(EnumSet<Modifier> modifiers) {
-    this.modifiers = modifiers;
-  }
-
-  @Override
-  public EnumSet<Modifier> getModifiers() {
-    return modifiers;
   }
 
   @Override

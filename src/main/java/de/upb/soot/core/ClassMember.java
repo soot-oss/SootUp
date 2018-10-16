@@ -1,3 +1,4 @@
+package de.upb.soot.core;
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -19,42 +20,78 @@
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-package de.upb.soot.core;
 
+import de.upb.soot.util.Numberable;
+import de.upb.soot.views.IView;
+
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 /**
  * Provides methods common to Soot objects belonging to classes, namely SootField and SootMethod.
  */
-public interface ClassMember {
+public abstract class ClassMember extends AbstractViewResident implements Numberable, Serializable {
+
+  /**
+   * Modifiers associated with this SootMethod (e.g. private, protected, etc.).
+   */
+  EnumSet<Modifier> modifiers;
+
+  /** Constructor. */
+  ClassMember(IView view) {
+    super(view);
+  }
+
   /** Returns the SootClass declaring this one. */
-  public SootClass getDeclaringClass();
+  public abstract SootClass getDeclaringClass();
 
   /** Returns true when some SootClass object declares this object. */
-  public boolean isDeclared();
+  public abstract boolean isDeclared();
 
   /** Returns true when this object is from a phantom class. */
-  public boolean isPhantom();
+  public abstract boolean isPhantom();
 
-  /** Sets the phantom flag */
-  public void setPhantom(boolean value);
+  /** Sets the phantom flag. */
+  public abstract void setPhantom(boolean value);
 
   /** Convenience method returning true if this class member is protected. */
-  public boolean isProtected();
+  public abstract boolean isProtected();
 
   /** Convenience method returning true if this class member is private. */
-  public boolean isPrivate();
+  public abstract boolean isPrivate();
 
   /** Convenience method returning true if this class member is public. */
-  public boolean isPublic();
+  public abstract boolean isPublic();
 
   /** Convenience method returning true if this class member is static. */
-  public boolean isStatic();
+  public abstract boolean isStatic();
 
-  /** Sets modifiers of this class member. */
-  public void setModifiers(Modifier... modifier);
+  /**
+   * Gets the modifiers of this class member.
+   *
+   * @see de.upb.soot.core.Modifier
+   */
+  public EnumSet<Modifier> getModifiers() {
+    return modifiers;
+  }
 
-  /** Returns modifiers of this class member. */
-  public EnumSet<Modifier> getModifiers();
+  /**
+   * Sets the modifiers of this class member.
+   *
+   * @see de.upb.soot.core.Modifier
+   */
+  public void setModifiers(Modifier... modifiers) {
+    setModifiers(EnumSet.copyOf(Arrays.asList(modifiers)));
+  }
+
+  /**
+   * Sets the modifiers of this class member.
+   *
+   * @see de.upb.soot.core.Modifier
+   */
+  public void setModifiers(EnumSet<Modifier> modifiers) {
+    this.modifiers = modifiers;
+  }
 
 }
