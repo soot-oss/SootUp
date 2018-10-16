@@ -227,10 +227,9 @@ public class WalaIRToJimpleConverter {
       }
     } else if (type.isReferenceType()) {
       if (type.isArrayType()) {
-        TypeReference t = type.getArrayElementType();
+        TypeReference t = type.getInnermostElementType();
         Type baseType = convertType(t);
         int dim = type.getDimensionality();
-        // TODO: FIX THIS
         return ArrayType.getInstance(baseType, dim);
       } else if (type.isClassType()) {
         if (type.equals(TypeReference.Null)) {
@@ -298,13 +297,12 @@ public class WalaIRToJimpleConverter {
 
         for (SSAInstruction inst : insts) {
           if (inst != null) {
-          IStmt stmt = convertInstruction(inst);
-          // set position for each statement
-          Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
-          stmt.setPosition(stmtPos);
+            IStmt stmt = convertInstruction(inst);
+            // set position for each statement
+            Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
+            stmt.setPosition(stmtPos);
             body.addStmt(stmt);
-          }
-          else {
+          } else {
             // TODO by converting foo.bar.hello.world.CopyOfLoopsAndLabels, insts contains null element.
           }
         }
@@ -376,7 +374,7 @@ public class WalaIRToJimpleConverter {
     if (className.startsWith("L")) {
       className = className.substring(1);
       String[] subNames = className.split("/");
-      if (className.contains("(")) {
+      if (className.contains("<") || className.contains("(")) {
         sb.append(subNames[0] + "$");
         String last = subNames[subNames.length - 1];
         if (last.contains("$")) {

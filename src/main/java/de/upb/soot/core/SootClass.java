@@ -77,6 +77,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * 
    */
   private static final long serialVersionUID = -4145583783298080555L;
+  private volatile ResolvingLevel resolvingLevel = ResolvingLevel.DANGLING;
 
   private AbstractClassSource classSource;
   private ClassSignature classSignature;
@@ -185,8 +186,6 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
     refType.setSootClass(this);
   }
 
-
-  private volatile ResolvingLevel resolvingLevel = ResolvingLevel.DANGLING;
 
   /**
    * Checks if the class has at lease the resolving level specified. This check does nothing is the class resolution process
