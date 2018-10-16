@@ -21,16 +21,17 @@ package de.upb.soot.core;
  * #L%
  */
 
+import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.IMethodSource;
 import de.upb.soot.util.Numberable;
 import de.upb.soot.util.NumberedString;
 import de.upb.soot.views.IView;
 
-import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -46,7 +47,7 @@ import java.util.StringTokenizer;
  *
  */
 
-public class SootMethod extends AbstractViewResident implements ClassMember, Numberable,Serializable {
+public class SootMethod extends AbstractViewResident implements ClassMember, Numberable, Serializable {
   /**
    * 
    */
@@ -229,7 +230,7 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
    */
   @Override
   public EnumSet<Modifier> getModifiers() {
-      return modifiers;
+    return modifiers;
   }
 
   /**
@@ -238,7 +239,15 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
    * @see de.upb.soot.core.Modifier
    */
   @Override
-  public void setModifiers( EnumSet<Modifier> modifiers) {
+  public void setModifiers(Modifier... modifiers) {
+    EnumSet<Modifier> modifierEnumSet = EnumSet.noneOf(Modifier.class);
+    if (modifiers.length > 0) {
+      modifierEnumSet.addAll(Arrays.asList(modifiers));
+    }
+    setModifiers(modifierEnumSet);
+  }
+
+  public void setModifiers(EnumSet<Modifier> modifiers) {
     this.modifiers = modifiers;
   }
 

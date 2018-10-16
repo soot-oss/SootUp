@@ -52,7 +52,7 @@ public interface ClassMember {
   public boolean isStatic();
 
   /** Sets modifiers of this class member. */
-  public void setModifiers( EnumSet<Modifier> modifiers);
+  public void setModifiers(Modifier... modifier);
 
   /** Returns modifiers of this class member. */
   public EnumSet<Modifier> getModifiers();

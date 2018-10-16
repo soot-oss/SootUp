@@ -27,6 +27,7 @@ import de.upb.soot.util.Numberable;
 import de.upb.soot.views.IView;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.EnumSet;
 
 /**
@@ -52,7 +53,6 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
   protected volatile String sig;
   protected volatile String subSig;
 
-
   /** Constructs a Soot field with the given name, type and modifiers. */
   public SootField(IView view, String name, Type type, EnumSet<Modifier> modifiers) {
     super(view);
@@ -64,14 +64,13 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
     this.modifiers = modifiers;
   }
 
-  public SootField(IView view, SootField field)
-  {
+  public SootField(IView view, SootField field) {
     this(view, field.name, field.type, field.modifiers);
   }
 
   /** Constructs a Soot field with the given name, type and no modifiers. */
   public SootField(IView view, String name, Type type) {
-    this(view, name, type, EnumSet.noneOf(Modifier.class) );
+    this(view, name, type, EnumSet.noneOf(Modifier.class));
   }
 
   public int equivHashCode() {
@@ -229,6 +228,14 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
   }
 
   @Override
+  public void setModifiers(Modifier... modifiers) {
+    EnumSet<Modifier> modifierEnumSet = EnumSet.noneOf(Modifier.class);
+    if (modifiers.length > 0) {
+      modifierEnumSet.addAll(Arrays.asList(modifiers));
+    }
+    setModifiers(modifierEnumSet);
+  }
+
   public void setModifiers(EnumSet<Modifier> modifiers) {
     this.modifiers = modifiers;
   }
@@ -260,6 +267,7 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
   }
 
   protected int number = 0;
+
   @Override
   public void setNumber(int number) {
     this.number = number;

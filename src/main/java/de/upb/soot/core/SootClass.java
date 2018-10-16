@@ -21,6 +21,8 @@ package de.upb.soot.core;
  * #L%
  */
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
@@ -34,8 +36,6 @@ import de.upb.soot.validation.MethodDeclarationValidator;
 import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.views.IView;
-
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -94,8 +94,6 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
   protected boolean isInScene;
   protected SootClass superClass;
   protected SootClass outerClass;
-
-
 
   public final static String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
@@ -184,7 +182,6 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
     refType = RefType.getInstance(name);
     refType.setSootClass(this);
   }
-
 
   private volatile ResolvingLevel resolvingLevel = ResolvingLevel.DANGLING;
 
@@ -811,7 +808,15 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
   /**
    * Sets the modifiers for this class.
    */
-  public void setModifier(Modifier modifier) {
+  public void setModifiers(Modifier... modifiers) {
+    EnumSet<Modifier> modifierEnumSet = EnumSet.noneOf(Modifier.class);
+    if (modifiers.length > 0) {
+      modifierEnumSet.addAll(Arrays.asList(modifiers));
+    }
+    setModifiers(modifierEnumSet);
+  }
+
+  public void setModifiers(EnumSet<Modifier> modifiers) {
     this.modifiers = modifiers;
   }
 
