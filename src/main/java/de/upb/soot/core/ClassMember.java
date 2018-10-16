@@ -21,6 +21,7 @@ package de.upb.soot.core;
  * #L%
  */
 
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.util.Numberable;
 import de.upb.soot.views.IView;
 
@@ -33,9 +34,39 @@ import java.util.EnumSet;
  */
 public abstract class ClassMember extends AbstractViewResident implements Numberable, Serializable {
 
+  public abstract String getSubSignature();
+
+  public abstract String getSignature(SootClass cl, String subSignature);
+
   /**
-   * Modifiers associated with this SootMethod (e.g. private, protected, etc.).
+   * Returns the Soot signature of this method. Used to refer to methods unambiguously.
    */
+  public String getSignature() {
+    if (sig == null) {
+      synchronized (this) {
+        if (sig == null) {
+          sig = getSignature(getDeclaringClass(), getSubSignature());
+        }
+      }
+    }
+    return sig;
+  }
+
+  /** True when some <code>SootClass</code> object declares this class member. */
+  protected boolean isDeclared = false;
+  /** Holds the <code>SootClass</code> which declares this class member. */
+  protected SootClass declaringClass;
+  /** Whether this class member is phantom. */
+  protected boolean isPhantom = false;
+  /** The return type of this class member. */
+  protected Type type;
+  /** The name of this class member. */
+  protected String name;
+  /** The Signature of this class member. */
+  protected volatile String sig;
+  /** The SubSignature of this class member. */
+  protected volatile String subSig;
+  /** Modifiers associated with this class member (e.g. private, protected, etc.). */
   EnumSet<Modifier> modifiers;
 
   /** Constructor. */
@@ -43,29 +74,64 @@ public abstract class ClassMember extends AbstractViewResident implements Number
     super(view);
   }
 
-  /** Returns the SootClass declaring this one. */
-  public abstract SootClass getDeclaringClass();
+  /** Returns the name of this method. */
+  public String getName() {
+    return name;
+  }
 
-  /** Returns true when some SootClass object declares this object. */
-  public abstract boolean isDeclared();
+  /** Returns the SootClass declaring this one. */
+  public SootClass getDeclaringClass() {
+    if (!isDeclared) {
+      throw new RuntimeException("not declared: " + getName() + " " + this.type);
+    }
+
+    return declaringClass;
+  }
 
   /** Returns true when this object is from a phantom class. */
-  public abstract boolean isPhantom();
+  public boolean isPhantom() {
+    return isPhantom;
+  }
 
   /** Sets the phantom flag. */
-  public abstract void setPhantom(boolean value);
+  public void setPhantom(boolean value) {
+    if (value) {
+      if (!this.getView().allowsPhantomRefs()) {
+        throw new RuntimeException("Phantom refs not allowed");
+      }
+      if (!this.getView().getOptions().allow_phantom_elms() && declaringClass != null && !declaringClass.isPhantomClass()) {
+        throw new RuntimeException("Declaring class would have to be phantom");
+      }
+    }
+    isPhantom = value;
+  }
 
   /** Convenience method returning true if this class member is protected. */
-  public abstract boolean isProtected();
+  public boolean isProtected() {
+    return Modifier.isProtected(this.getModifiers());
+  }
 
   /** Convenience method returning true if this class member is private. */
-  public abstract boolean isPrivate();
+  public boolean isPrivate() {
+    return Modifier.isPrivate(this.getModifiers());
+  }
 
   /** Convenience method returning true if this class member is public. */
-  public abstract boolean isPublic();
+  public boolean isPublic() {
+    return Modifier.isPublic(this.getModifiers());
+  }
 
   /** Convenience method returning true if this class member is static. */
-  public abstract boolean isStatic();
+  public boolean isStatic() {
+    return Modifier.isStatic(this.getModifiers());
+  }
+
+  /**
+   * Convenience method returning true if this field is final.
+   */
+  public boolean isFinal() {
+    return Modifier.isFinal(this.getModifiers());
+  }
 
   /**
    * Gets the modifiers of this class member.
@@ -81,8 +147,8 @@ public abstract class ClassMember extends AbstractViewResident implements Number
    *
    * @see de.upb.soot.core.Modifier
    */
-  public void setModifiers(Modifier... modifiers) {
-    setModifiers(EnumSet.copyOf(Arrays.asList(modifiers)));
+  public void setModifiers(EnumSet<Modifier> modifiers) {
+    this.modifiers = modifiers;
   }
 
   /**
@@ -90,8 +156,42 @@ public abstract class ClassMember extends AbstractViewResident implements Number
    *
    * @see de.upb.soot.core.Modifier
    */
-  public void setModifiers(EnumSet<Modifier> modifiers) {
-    this.modifiers = modifiers;
+  public void setModifiers(Modifier... modifiers) {
+    setModifiers(EnumSet.copyOf(Arrays.asList(modifiers)));
+  }
+
+  /** Returns true when some SootClass object declares this object. */
+  public boolean isDeclared() {
+    return isDeclared;
+  }
+
+  public void setDeclared(boolean isDeclared) {
+    this.isDeclared = isDeclared;
+  }
+
+  /**
+   * Returns a hash code for this method consistent with structural equality.
+   */
+  // TODO: check whether modifiers.hashcode() does what its meant for; former: "modifiers"/int bit flags representing the set
+  public int equivHashCode() {
+    return type.hashCode() * 101 + modifiers.hashCode() * 17 + name.hashCode();
+  }
+
+  /** Returns the signature of this method. */
+  public String toString() {
+    return getSignature();
+  }
+
+  protected int number = 0;
+
+  @Override
+  public void setNumber(int number) {
+    this.number = number;
+  }
+
+  @Override
+  public int getNumber() {
+    return this.number;
   }
 
 }

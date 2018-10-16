@@ -27,27 +27,15 @@ import de.upb.soot.views.IView;
 
 import java.util.EnumSet;
 
-/**
- * Soot's counterpart of the source language's field concept. Soot representation of a Java field. Can be declared to belong
- * to a SootClass.
- *
- * Modified by Linghui Luo
- *
- */
-
 public class SootField extends ClassMember {
 
   /**
-   * 
-   */
+   * Soot's counterpart of the source language's field concept. Soot representation of a Java field. Can be declared to belong
+   * to a SootClass.
+   *
+   * Modified by Linghui Luo
+   **/
   private static final long serialVersionUID = -5101396409117866687L;
-  protected String name;
-  protected Type type;
-  protected boolean isDeclared = false;
-  protected SootClass declaringClass;
-  protected boolean isPhantom = false;
-  protected volatile String sig;
-  protected volatile String subSig;
 
   /** Constructs a Soot field with the given name, type and modifiers. */
   public SootField(IView view, String name, Type type, EnumSet<Modifier> modifiers) {
@@ -67,11 +55,6 @@ public class SootField extends ClassMember {
   /** Constructs a Soot field with the given name, type and no modifiers. */
   public SootField(IView view, String name, Type type) {
     this(view, name, type, EnumSet.noneOf(Modifier.class));
-  }
-
-  public int equivHashCode() {
-    // TODO: check whether modifiers.hashcode() (former: "modifiers" - representing the set) does what its meant for
-    return type.hashCode() * 101 + modifiers.hashCode() * 17 + name.hashCode();
   }
 
   public String getSignature() {
@@ -116,52 +99,12 @@ public class SootField extends ClassMember {
     return buffer.toString();
   }
 
-  @Override
-  public SootClass getDeclaringClass() {
-    if (!isDeclared) {
-      throw new RuntimeException("not declared: " + getName() + " " + getType());
-    }
-
-    return declaringClass;
-  }
-
   public synchronized void setDeclaringClass(SootClass sc) {
     if (sc != null && type instanceof RefLikeType) {
       this.getView().getFieldNumberer().add(this);
     }
     this.declaringClass = sc;
     this.sig = null;
-  }
-
-  @Override
-  public boolean isPhantom() {
-    return isPhantom;
-  }
-
-  @Override
-  public void setPhantom(boolean value) {
-    if (value) {
-      if (!this.getView().allowsPhantomRefs()) {
-        throw new RuntimeException("Phantom refs not allowed");
-      }
-      if (!this.getView().getOptions().allow_phantom_elms() && declaringClass != null && !declaringClass.isPhantomClass()) {
-        throw new RuntimeException("Declaring class would have to be phantom");
-      }
-    }
-    isPhantom = value;
-  }
-
-  @Override
-  public boolean isDeclared() {
-    return isDeclared;
-  }
-
-  public void setDeclared(boolean isDeclared) {
-    this.isDeclared = isDeclared;
-  }
-
-  public String getName() {
-    return name;
   }
 
   public synchronized void setName(String name) {
@@ -184,50 +127,6 @@ public class SootField extends ClassMember {
     }
   }
 
-  /**
-   * Convenience method returning true if this field is public.
-   */
-  @Override
-  public boolean isPublic() {
-    return Modifier.isPublic(this.getModifiers());
-  }
-
-  /**
-   * Convenience method returning true if this field is protected.
-   */
-  @Override
-  public boolean isProtected() {
-    return Modifier.isProtected(this.getModifiers());
-  }
-
-  /**
-   * Convenience method returning true if this field is private.
-   */
-  @Override
-  public boolean isPrivate() {
-    return Modifier.isPrivate(this.getModifiers());
-  }
-
-  /**
-   * Convenience method returning true if this field is static.
-   */
-  @Override
-  public boolean isStatic() {
-    return Modifier.isStatic(this.getModifiers());
-  }
-
-  /**
-   * Convenience method returning true if this field is final.
-   */
-  public boolean isFinal() {
-    return Modifier.isFinal(this.getModifiers());
-  }
-
-  @Override
-  public String toString() {
-    return getSignature();
-  }
-
   private String getOriginalStyleDeclaration() {
     String qualifiers = Modifier.toString(modifiers) + " " + type.toQuotedString();
     qualifiers = qualifiers.trim();
@@ -242,18 +141,6 @@ public class SootField extends ClassMember {
 
   public String getDeclaration() {
     return getOriginalStyleDeclaration();
-  }
-
-  protected int number = 0;
-
-  @Override
-  public void setNumber(int number) {
-    this.number = number;
-  }
-
-  @Override
-  public int getNumber() {
-    return this.number;
   }
 
 }
