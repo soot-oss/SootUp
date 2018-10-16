@@ -165,6 +165,8 @@ public class WalaIRToJimpleConverter {
         Type paraType = convertType(walaMethod.getParameterType(i));
         paraTypes.add(paraType);
       }
+    } else {
+      // TODO. symbol table can be null.
     }
     Type returnType = convertType(walaMethod.getReturnType());
     EnumSet<Modifier> modifier = convertModifiers(walaMethod);
@@ -172,7 +174,6 @@ public class WalaIRToJimpleConverter {
     List<SootClass> thrownExceptions = new ArrayList<>();
     try {
       for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
-        System.out.println(exception.getName());
         String exceptionName = convertClassName(exception.getName().toString());
         if (!view.getSootClass(new DefaultSignatureFactory() {
         }.getClassSignature(exceptionName)).isPresent()) {
