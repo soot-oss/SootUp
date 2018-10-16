@@ -98,8 +98,8 @@ public class WalaIRToJimpleConverter {
    * @return A SootClass converted from walaClass
    */
   public SootClass convertClass(AstClass walaClass) {
-    String fullyQualifiedClassName = convertClassName(walaClass.getName().toString());
-    System.out.println("CLASS:" + fullyQualifiedClassName);
+    String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
+    System.out.println(fullyQualifiedClassName);
     ClassSignature classSignature = new DefaultSignatureFactory() {
     }.getClassSignature(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
@@ -174,7 +174,7 @@ public class WalaIRToJimpleConverter {
     List<SootClass> thrownExceptions = new ArrayList<>();
     try {
       for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
-        String exceptionName = convertClassName(exception.getName().toString());
+        String exceptionName = convertClassNameFromWala(exception.getName().toString());
         if (!view.getSootClass(new DefaultSignatureFactory() {
         }.getClassSignature(exceptionName)).isPresent()) {
           // create exception class if it doesn't exist yet in the view.
@@ -235,7 +235,7 @@ public class WalaIRToJimpleConverter {
         if (type.equals(TypeReference.Null)) {
           return NullType.getInstance();
         } else {
-          String className = convertClassName(type.getName().toString());
+          String className = convertClassNameFromWala(type.getName().toString());
           return new RefType(view, className);
         }
       }
@@ -369,26 +369,34 @@ public class WalaIRToJimpleConverter {
    *          in wala-format
    * @return className in soot.format
    */
-  public String convertClassName(String className) {
+  public static String convertClassNameFromWala(String className) {
     StringBuilder sb = new StringBuilder();
     if (className.startsWith("L")) {
       className = className.substring(1);
       String[] subNames = className.split("/");
-      if (className.contains("<") || className.contains("(")) {
-        sb.append(subNames[0] + "$");
-        String last = subNames[subNames.length - 1];
-        if (last.contains("$")) {
-          String[] numberedName = last.split("\\$");
-          sb.append(numberedName[numberedName.length - 1]);
-        } else {
-          sb.append(last);
+      boolean isSpecial = false;
+      for (int i = 0; i < subNames.length; i++) {
+        String subName = subNames[i];
+        if (subName.contains("(") || subName.contains("<")) {
+          // handle anonymous or inner classes 
+          isSpecial = true;
+          break;
         }
-      } else {
-        for (int i = 0; i < subNames.length; i++) {
-          sb.append(subNames[i]);
-          if (i != subNames.length - 1) {
-            sb.append(".");
+        if (i != 0) {
+          sb.append(".");
+        }
+        sb.append(subName);
+      }
+      if (isSpecial) {
+        String lastSubName = subNames[subNames.length - 1];
+        String[] temp = lastSubName.split(">");
+        if (temp.length > 0) {
+          String name = temp[temp.length - 1];
+          if (!name.contains("$"))
+          {
+            sb.append("$");
           }
+          sb.append(name);
         }
       }
     } else {
@@ -396,4 +404,5 @@ public class WalaIRToJimpleConverter {
     }
     return sb.toString();
   }
+
 }
