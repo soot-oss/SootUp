@@ -7,6 +7,7 @@ import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.VoidType;
+import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.util.printer.Printer;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
@@ -31,7 +32,7 @@ public class SootMethodTest {
     SootMethod dummyMainMethod = new SootMethod(view, "main", Arrays.asList(new Type[] { type }), VoidType.getInstance(),
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC) );
 
-    SootClass mainClass = new SootClass(view, "MainClass");
+    SootClass mainClass = new SootClass(view, new DefaultSignatureFactory().getClassSignature("MainClass") );
     mainClass.addMethod(dummyMainMethod);
     mainClass.setApplicationClass();
 

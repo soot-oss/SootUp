@@ -437,7 +437,7 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
     if (exceptions == null) {
       exceptions = new ArrayList<SootClass>();
     } else if (exceptions.contains(e)) {
-      throw new RuntimeException("already throws exception " + e.getName());
+      throw new RuntimeException("already throws exception " + e.getClassSignature().toString());
     }
 
     exceptions.add(e);
@@ -448,11 +448,11 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
    */
   public void removeException(SootClass e) {
     if (exceptions == null) {
-      throw new RuntimeException("does not throw exception " + e.getName());
+      throw new RuntimeException("does not throw exception " + e.getClassSignature().toString());
     }
 
     if (!exceptions.contains(e)) {
-      throw new RuntimeException("does not throw exception " + e.getName());
+      throw new RuntimeException("does not throw exception " + e.getClassSignature().toString());
     }
 
     exceptions.remove(e);
@@ -616,7 +616,7 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
     String name = getName();
 
     StringBuffer buffer = new StringBuffer();
-    buffer.append("<" + this.getView().quotedNameOf(getDeclaringClass().getName()) + ": ");
+    buffer.append("<" + this.getView().quotedNameOf(getDeclaringClass().getClassSignature().toString()) + ": ");
     buffer.append(name);
     // TODO: sth: AbstractJasminClass
     // buffer.append(AbstractJasminClass.jasminDescriptorOf(makeRef()));
@@ -646,7 +646,7 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
   public String getSignature(SootClass cl, String subSignature) {
     StringBuilder buffer = new StringBuilder();
     buffer.append("<");
-    buffer.append(this.getView().quotedNameOf(cl.getName()));
+    buffer.append(this.getView().quotedNameOf(cl.getClassSignature().toString()));
     buffer.append(": ");
     buffer.append(subSignature);
     buffer.append(">");
@@ -754,10 +754,10 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
       Iterator<SootClass> exceptionIt = this.getExceptions().iterator();
 
       if (exceptionIt.hasNext()) {
-        buffer.append(" throws " + this.getView().quotedNameOf(exceptionIt.next().getName()));
+        buffer.append(" throws " + this.getView().quotedNameOf(exceptionIt.next().getClassSignature().toString()));
 
         while (exceptionIt.hasNext()) {
-          buffer.append(", " + this.getView().quotedNameOf(exceptionIt.next().getName()));
+          buffer.append(", " + this.getView().quotedNameOf(exceptionIt.next().getClassSignature().toString()));
         }
       }
     }

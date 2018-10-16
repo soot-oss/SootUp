@@ -97,7 +97,7 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
   public String getSignature(SootClass cl, String subSignature) {
     StringBuilder buffer = new StringBuilder();
 
-    buffer.append("<").append(this.getView().quotedNameOf(cl.getName())).append(": ");
+    buffer.append("<").append(this.getView().quotedNameOf(cl.getClassSignature().toString())).append(": ");
     buffer.append(subSignature).append(">");
 
     return buffer.toString();

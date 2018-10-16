@@ -21,7 +21,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
   /** Caches the created signatures for packages. */
   protected final Map<String, PackageSignature> packages = new HashMap<>();
 
-  protected DefaultSignatureFactory() {
+  public DefaultSignatureFactory() {
     /** Represents the default package. */
     packages.put(PackageSignature.DEFAULT_PACKAGE.packageName, PackageSignature.DEFAULT_PACKAGE);
   }

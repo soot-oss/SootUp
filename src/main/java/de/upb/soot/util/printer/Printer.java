@@ -110,13 +110,13 @@ public class Printer {
         classPrefix = classPrefix.trim();
       }
 
-      out.print(classPrefix + " " + cl.getView().quotedNameOf(cl.getName()) + "");
+      out.print(classPrefix + " " + cl.getView().quotedNameOf(cl.getClassSignature().toString()) + "");
     }
 
     // Print extension
     {
       if (cl.hasSuperclass()) {
-        out.print(" extends " + cl.getView().quotedNameOf(cl.getSuperclass().getName()) + "");
+        out.print(" extends " + cl.getView().quotedNameOf(cl.getSuperclass().getClassSignature().toString()) + "");
       }
     }
 
@@ -127,11 +127,11 @@ public class Printer {
       if (interfaceIt.hasNext()) {
         out.print(" implements ");
 
-        out.print("" + cl.getView().quotedNameOf(interfaceIt.next().getName()) + "");
+        out.print("" + cl.getView().quotedNameOf(interfaceIt.next().getClassSignature().toString()) + "");
 
         while (interfaceIt.hasNext()) {
           out.print(",");
-          out.print(" " + cl.getView().quotedNameOf(interfaceIt.next().getName()) + "");
+          out.print(" " + cl.getView().quotedNameOf(interfaceIt.next().getClassSignature().toString()) + "");
         }
       }
     }
@@ -161,50 +161,53 @@ public class Printer {
     }
 
     // Print methods
-    {
-      Iterator<SootMethod> methodIt = cl.methodIterator();
+    printMethod(cl, out);
 
-      if (methodIt.hasNext()) {
-        if (cl.getMethodCount() != 0) {
-          out.println();
-          incJimpleLnNum();
+    out.println("}");
+    incJimpleLnNum();
+  }
+
+  private void printMethod(SootClass cl, PrintWriter out) {
+    Iterator<SootMethod> methodIt = cl.methodIterator();
+
+    if (methodIt.hasNext()) {
+      if (cl.getMethodCount() != 0) {
+        out.println();
+        incJimpleLnNum();
+      }
+
+      while (methodIt.hasNext()) {
+        SootMethod method = methodIt.next();
+
+        if (method.isPhantom()) {
+          continue;
         }
 
-        while (methodIt.hasNext()) {
-          SootMethod method = methodIt.next();
-
-          if (method.isPhantom()) {
-            continue;
-          }
-
-          if (!Modifier.isAbstract(method.getModifiers()) && !Modifier.isNative(method.getModifiers())) {
+        if (!Modifier.isAbstract(method.getModifiers()) && !Modifier.isNative(method.getModifiers())) {
+          if (!method.hasActiveBody()) {
+            method.retrieveActiveBody(); // force loading the body
             if (!method.hasActiveBody()) {
-              method.retrieveActiveBody(); // force loading the body
-              if (!method.hasActiveBody()) {
-                throw new RuntimeException("method " + method.getName() + " has no active body!");
-              }
+              throw new RuntimeException("method " + method.getName() + " has no active body!");
             }
-            printTo(method.getActiveBody(), out);
+          }
+          printTo(method.getActiveBody(), out);
 
-            if (methodIt.hasNext()) {
-              out.println();
-              incJimpleLnNum();
-            }
-          } else {
-            out.print("    ");
-            out.print(method.getDeclaration());
-            out.println(";");
+          if (methodIt.hasNext()) {
+            out.println();
             incJimpleLnNum();
-            if (methodIt.hasNext()) {
-              out.println();
-              incJimpleLnNum();
-            }
+          }
+        } else {
+          out.print("    ");
+          out.print(method.getDeclaration());
+          out.println(";");
+          incJimpleLnNum();
+          if (methodIt.hasNext()) {
+            out.println();
+            incJimpleLnNum();
           }
         }
       }
     }
-    out.println("}");
-    incJimpleLnNum();
   }
 
   /**
@@ -309,7 +312,7 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        out.println("        catch " + body.getMethod().getView().quotedNameOf(trap.getException().getName()) + " from "
+        out.println("        catch " + body.getMethod().getView().quotedNameOf(trap.getException().getClassSignature().toString()) + " from "
             + up.labels().get(trap.getBeginStmt()) + " to " + up.labels().get(trap.getEndStmt()) + " with "
             + up.labels().get(trap.getHandlerStmt()) + ";");
 
