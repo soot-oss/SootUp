@@ -108,7 +108,7 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   @Override
-  public final void toString(IStmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     op1Box.toString(up);
     up.literal(getSymbol());
     op2Box.toString(up);
