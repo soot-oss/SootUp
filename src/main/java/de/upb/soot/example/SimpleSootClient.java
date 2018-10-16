@@ -5,6 +5,7 @@ import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
+import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.views.IView;
 
@@ -20,10 +21,13 @@ public class SimpleSootClient {
 
     public static void main(String[] args) {
         String javaClassPath = "example/classes/";
+        String javaSourcePath = "example/src";
 
         INamespace cpBased = new JavaClassPathNamespace(javaClassPath);
 
-        Project p = new Project(cpBased);
+        INamespace walaSource = new JavaSourcePathNamespace(javaSourcePath);
+
+        Project p = new Project(walaSource);
 
         // 1. simple case
         IView fullView = p.createFullView();

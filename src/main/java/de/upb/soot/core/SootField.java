@@ -23,10 +23,8 @@ package de.upb.soot.core;
 
 import de.upb.soot.jimple.common.type.RefLikeType;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.util.Numberable;
 import de.upb.soot.views.IView;
 
-import java.io.Serializable;
 import java.util.EnumSet;
 
 /**
@@ -37,7 +35,7 @@ import java.util.EnumSet;
  *
  */
 
-public class SootField extends AbstractViewResident implements ClassMember, Numberable, Serializable {
+public class SootField extends ClassMember {
 
   /**
    * 
@@ -45,13 +43,11 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
   private static final long serialVersionUID = -5101396409117866687L;
   protected String name;
   protected Type type;
-  protected EnumSet<Modifier> modifiers;
   protected boolean isDeclared = false;
   protected SootClass declaringClass;
   protected boolean isPhantom = false;
   protected volatile String sig;
   protected volatile String subSig;
-
 
   /** Constructs a Soot field with the given name, type and modifiers. */
   public SootField(IView view, String name, Type type, EnumSet<Modifier> modifiers) {
@@ -64,14 +60,13 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
     this.modifiers = modifiers;
   }
 
-  public SootField(IView view, SootField field)
-  {
+  public SootField(IView view, SootField field) {
     this(view, field.name, field.type, field.modifiers);
   }
 
   /** Constructs a Soot field with the given name, type and no modifiers. */
   public SootField(IView view, String name, Type type) {
-    this(view, name, type, EnumSet.noneOf(Modifier.class) );
+    this(view, name, type, EnumSet.noneOf(Modifier.class));
   }
 
   public int equivHashCode() {
@@ -229,16 +224,6 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
   }
 
   @Override
-  public void setModifiers(EnumSet<Modifier> modifiers) {
-    this.modifiers = modifiers;
-  }
-
-  @Override
-  public EnumSet<Modifier> getModifiers() {
-    return modifiers;
-  }
-
-  @Override
   public String toString() {
     return getSignature();
   }
@@ -260,6 +245,7 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
   }
 
   protected int number = 0;
+
   @Override
   public void setNumber(int number) {
     this.number = number;

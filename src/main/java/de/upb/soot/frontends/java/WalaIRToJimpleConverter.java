@@ -77,19 +77,18 @@ import java.util.Optional;
 
 /**
  * Converter which converts WALA IR to jimple.
- * 
- * @author Linghui Luo created on 17.09.18
  *
+ * @author Linghui Luo created on 17.09.18
  */
 public class WalaIRToJimpleConverter {
-  private IView view;
-  private INamespace srcNamespace;
+    private IView view;
+    private INamespace srcNamespace;
 
-  public WalaIRToJimpleConverter(String sourceDirPath) {
-    WalaJavaClassProvider classProvider = new WalaJavaClassProvider();
-    srcNamespace = new JavaSourcePathNamespace(sourceDirPath, classProvider);
-    view = new JavaView(null);
-  }
+    public WalaIRToJimpleConverter(String sourceDirPath) {
+        WalaJavaClassProvider classProvider = new WalaJavaClassProvider();
+        srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
+        view = new JavaView(null);
+    }
 
   /**
    * Convert a wala {@link AstClass} to {@link SootClass}.
@@ -115,61 +114,88 @@ public class WalaIRToJimpleConverter {
         if (sootClass.getFieldUnsafe(sootField.getName(), sootField.getType()) == null) {
           sootClass.addField(sootField);
         }
-      } else {
-        // TODO: sometimes also get com.ibm.wala.classLoader.FieldImpl
-      }
+        // convert methods
+        for (IMethod walaMethod : walaClass.getAllMethods()) {
+            if (walaMethod instanceof AstMethod) {
+                convertMethod(sootClass, (AstMethod) walaMethod);
+            } else {
+                // TODO: sometimes also get com.ibm.wala.classLoader.ShrikeCTMethod
+            }
+        }
+        // add source position
+        Position position = walaClass.getSourcePosition();
+        sootClass.setPosition(position);
+        return sootClass;
     }
-    // convert methods
-    for (IMethod walaMethod : walaClass.getAllMethods()) {
-      if (walaMethod instanceof AstMethod) {
-        convertMethod(sootClass, (AstMethod) walaMethod);
-      } else {
-        // TODO: sometimes also get com.ibm.wala.classLoader.ShrikeCTMethod
-      }
-    }
-    // add source position
-    Position position = walaClass.getSourcePosition();
-    sootClass.setPosition(position);
-    return sootClass;
-  }
 
-  /**
-   * Convert a wala {@link AstField} to {@link SootField}.
-   * 
-   * @param walaField
-   * @return A SootField object converted from walaField.
-   */
-  public SootField convertField(AstField walaField) {
-    Type type = convertType(walaField.getFieldTypeReference());
-    walaField.isFinal();
-    String name = walaField.getName().toString();
-    EnumSet<Modifier> modifiers = convertModifiers(walaField);
-    SootField sootField = new SootField(view, name, type, modifiers);
-    return sootField;
-  }
-
-  /**
-   * Convert a wala {@link AstMethod} to {@link SootMethod} and add it into the given sootClass.
-   *
-   * @param sootClass
-   *          the SootClass which should contain the converted SootMethod
-   * @param walaMethod
-   *          the walMethod to be converted
-   */
-  public SootMethod convertMethod(SootClass sootClass, AstMethod walaMethod) {
-    // create SootMethond instance
-    String name = walaMethod.getName().toString();
-    List<Type> paraTypes = new ArrayList<>();
-    if (walaMethod.symbolTable() != null) {
-      for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
-        Type paraType = convertType(walaMethod.getParameterType(i));
-        paraTypes.add(paraType);
-      }
-    } else {
-      // TODO. symbol table can be null.
+    /**
+     * Convert a wala {@link AstField} to {@link SootField}.
+     *
+     * @param walaField
+     * @return A SootField object converted from walaField.
+     */
+    public SootField convertField(AstField walaField) {
+        Type type = convertType(walaField.getFieldTypeReference());
+        walaField.isFinal();
+        String name = walaField.getName().toString();
+        EnumSet<Modifier> modifiers = convertModifiers(walaField);
+        SootField sootField = new SootField(view, name, type, modifiers);
+        return sootField;
     }
-    Type returnType = convertType(walaMethod.getReturnType());
-    EnumSet<Modifier> modifier = convertModifiers(walaMethod);
+
+    /**
+     * Convert a wala {@link AstMethod} to {@link SootMethod} and add it into the given sootClass.
+     *
+     * @param sootClass  the SootClass which should contain the converted SootMethod
+     * @param walaMethod the walMethod to be converted
+     */
+    public SootMethod convertMethod(SootClass sootClass, AstMethod walaMethod) {
+        // create SootMethond instance
+        String name = walaMethod.getName().toString();
+        List<Type> paraTypes = new ArrayList<>();
+        if (walaMethod.symbolTable() != null) {
+            for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
+                Type paraType = convertType(walaMethod.getParameterType(i));
+                paraTypes.add(paraType);
+            }
+        } else {
+            // TODO. symbol table can be null.
+        }
+        Type returnType = convertType(walaMethod.getReturnType());
+        EnumSet<Modifier> modifier = convertModifiers(walaMethod);
+
+        List<SootClass> thrownExceptions = new ArrayList<>();
+        try {
+            for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
+                String exceptionName = convertClassName(exception.getName().toString());
+                if (!view.getSootClass(new DefaultSignatureFactory() {
+                }.getClassSignature(exceptionName)).isPresent()) {
+                    // create exception class if it doesn't exist yet in the view.
+                    SootClass exceptionClass = new SootClass(view, new DefaultSignatureFactory().getClassSignature(exceptionName));
+                    view.addSootClass(exceptionClass);
+                    thrownExceptions.add(exceptionClass);
+                }
+            }
+        } catch (UnsupportedOperationException e) {
+            e.printStackTrace();
+        } catch (InvalidClassFileException e) {
+            e.printStackTrace();
+        }
+        SootMethod sootMethod = new SootMethod(view, name, paraTypes, returnType, modifier, thrownExceptions);
+        sootClass.addMethod(sootMethod);
+        // create and set active body of the SootMethod
+        Optional<Body> body = createBody(sootMethod, walaMethod);
+        if (body.isPresent()) {
+            sootMethod.setPhantom(false);
+            sootMethod.setActiveBody(body.get());
+        } else {
+            sootMethod.setPhantom(true);
+        }
+        // add debug info
+        DebuggingInformation debugInfo = walaMethod.debugInfo();
+        sootMethod.setDebugInfo(debugInfo);
+        return sootMethod;
+    }
 
     List<SootClass> thrownExceptions = new ArrayList<>();
     try {
@@ -182,27 +208,14 @@ public class WalaIRToJimpleConverter {
           view.addSootClass(exceptionClass);
           thrownExceptions.add(exceptionClass);
         }
-      }
-    } catch (UnsupportedOperationException e) {
-      e.printStackTrace();
-    } catch (InvalidClassFileException e) {
-      e.printStackTrace();
+        throw new RuntimeException("Unsupported tpye: " + type);
     }
-    SootMethod sootMethod = new SootMethod(view, name, paraTypes, returnType, modifier, thrownExceptions);
-    sootClass.addMethod(sootMethod);
-    // create and set active body of the SootMethod
-    Optional<Body> body = createBody(sootMethod, walaMethod);
-    if (body.isPresent()) {
-      sootMethod.setPhantom(false);
-      sootMethod.setActiveBody(body.get());
-    } else {
-      sootMethod.setPhantom(true);
+
+    public EnumSet<Modifier> convertModifiers(AstField field) {
+        EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
+        // TODO
+        return modifiers;
     }
-    // add debug info
-    DebuggingInformation debugInfo = walaMethod.debugInfo();
-    sootMethod.setDebugInfo(debugInfo);
-    return sootMethod;
-  }
 
   public Type convertType(TypeReference type) {
     if (type.isPrimitiveType()) {
@@ -240,127 +253,113 @@ public class WalaIRToJimpleConverter {
         }
       }
     }
-    throw new RuntimeException("Unsupported tpye: " + type);
-  }
 
-  public EnumSet<Modifier> convertModifiers(AstField field) {
-    EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
-    // TODO
-    return modifiers;
-  }
-
-  public EnumSet<Modifier> convertModifiers(AstMethod method) {
-    EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
-    // TODO
-    return modifiers;
-  }
-
-  public EnumSet<Modifier> converModifiers(AstClass klass) {
-    EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
-    // TODO
-    return modifiers;
-  }
-
-  private Optional<Body> createBody(SootMethod sootMethod, AstMethod walaMethod) {
-    AbstractCFG<?, ?> cfg = walaMethod.cfg();
-    if (cfg != null) {
-      // convert all wala instructions to jimple statements
-      SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
-      if (insts.length > 0) {
-        Body body = new Body(sootMethod);
-        // set position for body
-        DebuggingInformation debugInfo = walaMethod.debugInfo();
-        Position bodyPos = debugInfo.getCodeBodyPosition();
-        body.setPosition(bodyPos);
-
-        /* Look AsmMethodSource.getBody, see AsmMethodSource.emitLocals(); */
-
-        LocalGenerator localGenerator = new LocalGenerator(body);
-        if (!sootMethod.isStatic()) {
-          RefType thisType = sootMethod.getDeclaringClass().getType();
-          Local thisLocal = localGenerator.generateLocal(sootMethod.getDeclaringClass().getType());
-          body.addLocal(thisLocal);
-          body.addStmt(Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType)));
-        }
-
-        for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
-          TypeReference t = walaMethod.getParameterType(i);
-          Type type = convertType(t);
-          Local paraLocal = localGenerator.generateLocal(type);
-          body.addLocal(paraLocal);
-          body.addStmt(Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, i)));
-        }
-
-        // TODO 2. convert traps
-        // get exceptions which are not caught
-        FixedSizeBitVector blocks = cfg.getExceptionalToExit();
-
-        for (SSAInstruction inst : insts) {
-          if (inst != null) {
-            IStmt stmt = convertInstruction(inst);
-            // set position for each statement
-            Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
-            stmt.setPosition(stmtPos);
-            body.addStmt(stmt);
-          } else {
-            // TODO by converting foo.bar.hello.world.CopyOfLoopsAndLabels, insts contains null element.
-          }
-        }
-        return Optional.of(body);
-      }
+    public EnumSet<Modifier> converModifiers(AstClass klass) {
+        EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
+        // TODO
+        return modifiers;
     }
-    return Optional.empty();
-  }
 
-  public IStmt convertInstruction(SSAInstruction walaInst) {
+    private Optional<Body> createBody(SootMethod sootMethod, AstMethod walaMethod) {
+        AbstractCFG<?, ?> cfg = walaMethod.cfg();
+        if (cfg != null) {
+            // convert all wala instructions to jimple statements
+            SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
+            if (insts.length > 0) {
+                Body body = new Body(sootMethod);
+                // set position for body
+                DebuggingInformation debugInfo = walaMethod.debugInfo();
+                Position bodyPos = debugInfo.getCodeBodyPosition();
+                body.setPosition(bodyPos);
 
-    // TODO what are the different types of SSAInstructions
-    if (walaInst instanceof SSAConditionalBranchInstruction) {
+                /* Look AsmMethodSource.getBody, see AsmMethodSource.emitLocals(); */
 
-    } else if (walaInst instanceof SSAGotoInstruction) {
+                LocalGenerator localGenerator = new LocalGenerator(body);
+                if (!sootMethod.isStatic()) {
+                    RefType thisType = sootMethod.getDeclaringClass().getType();
+                    Local thisLocal = localGenerator.generateLocal(sootMethod.getDeclaringClass().getType());
+                    body.addLocal(thisLocal);
+                    body.addStmt(Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType)));
+                }
 
-    } else if (walaInst instanceof SSAReturnInstruction) {
+                for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
+                    TypeReference t = walaMethod.getParameterType(i);
+                    Type type = convertType(t);
+                    Local paraLocal = localGenerator.generateLocal(type);
+                    body.addLocal(paraLocal);
+                    body.addStmt(Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, i)));
+                }
 
-    } else if (walaInst instanceof SSAThrowInstruction) {
+                // TODO 2. convert traps
+                // get exceptions which are not caught
+                FixedSizeBitVector blocks = cfg.getExceptionalToExit();
 
-    } else if (walaInst instanceof SSASwitchInstruction) {
-
-    } else if (walaInst instanceof AstJavaInvokeInstruction) {
-
-    } else if (walaInst instanceof SSAFieldAccessInstruction) {
-      if (walaInst instanceof SSAGetInstruction) {
-        // field read instruction -> assignStmt
-      } else if (walaInst instanceof SSAPutInstruction) {
-        // field write instruction
-      } else {
-        throw new RuntimeException("Unsupported instruction type: " + walaInst.getClass().toString());
-      }
-    } else if (walaInst instanceof SSAArrayLengthInstruction) {
-
-    } else if (walaInst instanceof SSAArrayReferenceInstruction) {
-      if (walaInst instanceof SSAArrayLoadInstruction) {
-
-      } else if (walaInst instanceof SSAArrayStoreInstruction) {
-
-      } else {
-        throw new RuntimeException("Unsupported instruction type: " + walaInst.getClass().toString());
-      }
-    } else if (walaInst instanceof SSANewInstruction) {
-
-    } else if (walaInst instanceof SSAComparisonInstruction) {
-
-    } else if (walaInst instanceof SSAConversionInstruction) {
-
-    } else if (walaInst instanceof SSAInstanceofInstruction) {
-
-    } else if (walaInst instanceof SSABinaryOpInstruction) {
-
+                for (SSAInstruction inst : insts) {
+                    if (inst != null) {
+                        IStmt stmt = convertInstruction(inst);
+                        // set position for each statement
+                        Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
+                        stmt.setPosition(stmtPos);
+                        body.addStmt(stmt);
+                    } else {
+                        // TODO by converting foo.bar.hello.world.CopyOfLoopsAndLabels, insts contains null element.
+                    }
+                }
+                return Optional.of(body);
+            }
+        }
+        return Optional.empty();
     }
-    if (walaInst instanceof SSALoadMetadataInstruction) {
 
+    public IStmt convertInstruction(SSAInstruction walaInst) {
+
+        // TODO what are the different types of SSAInstructions
+        if (walaInst instanceof SSAConditionalBranchInstruction) {
+
+        } else if (walaInst instanceof SSAGotoInstruction) {
+
+        } else if (walaInst instanceof SSAReturnInstruction) {
+
+        } else if (walaInst instanceof SSAThrowInstruction) {
+
+        } else if (walaInst instanceof SSASwitchInstruction) {
+
+        } else if (walaInst instanceof AstJavaInvokeInstruction) {
+
+        } else if (walaInst instanceof SSAFieldAccessInstruction) {
+            if (walaInst instanceof SSAGetInstruction) {
+                // field read instruction -> assignStmt
+            } else if (walaInst instanceof SSAPutInstruction) {
+                // field write instruction
+            } else {
+                throw new RuntimeException("Unsupported instruction type: " + walaInst.getClass().toString());
+            }
+        } else if (walaInst instanceof SSAArrayLengthInstruction) {
+
+        } else if (walaInst instanceof SSAArrayReferenceInstruction) {
+            if (walaInst instanceof SSAArrayLoadInstruction) {
+
+            } else if (walaInst instanceof SSAArrayStoreInstruction) {
+
+            } else {
+                throw new RuntimeException("Unsupported instruction type: " + walaInst.getClass().toString());
+            }
+        } else if (walaInst instanceof SSANewInstruction) {
+
+        } else if (walaInst instanceof SSAComparisonInstruction) {
+
+        } else if (walaInst instanceof SSAConversionInstruction) {
+
+        } else if (walaInst instanceof SSAInstanceofInstruction) {
+
+        } else if (walaInst instanceof SSABinaryOpInstruction) {
+
+        }
+        if (walaInst instanceof SSALoadMetadataInstruction) {
+
+        }
+        return Jimple.newNopStmt();
     }
-    return Jimple.newNopStmt();
-  }
 
   /**
    * Convert className in wala-format to soot format, e.g., wala-format: Ljava/lang/String -> soot-format: java.lang.String.
