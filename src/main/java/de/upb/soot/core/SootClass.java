@@ -808,11 +808,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Sets the modifiers for this class.
    */
   public void setModifiers(Modifier... modifiers) {
-    EnumSet<Modifier> modifierEnumSet = EnumSet.noneOf(Modifier.class);
-    if (modifiers.length > 0) {
-      modifierEnumSet.addAll(Arrays.asList(modifiers));
-    }
-    setModifiers(modifierEnumSet);
+    setModifiers(EnumSet.copyOf(Arrays.asList(modifiers)));
   }
 
   public void setModifiers(EnumSet<Modifier> modifiers) {

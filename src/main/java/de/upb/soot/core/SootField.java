@@ -229,11 +229,7 @@ public class SootField extends AbstractViewResident implements ClassMember, Numb
 
   @Override
   public void setModifiers(Modifier... modifiers) {
-    EnumSet<Modifier> modifierEnumSet = EnumSet.noneOf(Modifier.class);
-    if (modifiers.length > 0) {
-      modifierEnumSet.addAll(Arrays.asList(modifiers));
-    }
-    setModifiers(modifierEnumSet);
+    setModifiers(EnumSet.copyOf(Arrays.asList(modifiers)));
   }
 
   public void setModifiers(EnumSet<Modifier> modifiers) {
