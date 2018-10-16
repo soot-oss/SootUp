@@ -2,6 +2,7 @@ package de.upb.soot.namespaces.classprovider;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import de.upb.soot.core.SourceContent;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.ClassSignature;
 
@@ -61,7 +62,7 @@ public abstract class AbstractClassSource {
    * 
    * @return
    */
-  public Object getContent() {
+  public SourceContent getContent() {
     // TODO: Find a better common supertype for this.
     return srcNamespace.getClassProvider().getContent(this);
   }

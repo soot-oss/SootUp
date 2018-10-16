@@ -1,8 +1,10 @@
 package de.upb.soot.namespaces.classprovider.asm;
 
 import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.util.NotYetImplementedException;
 
 import java.nio.file.Path;
 
@@ -31,8 +33,8 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
    * @return A representation of the class file.
    */
   @Override
-  public Object getContent(AbstractClassSource classSource) {
-    return null;
+  public SourceContent getContent(AbstractClassSource classSource) {
+    throw new NotYetImplementedException();
   }
 
   @Override
