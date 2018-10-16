@@ -981,22 +981,6 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
     return Modifier.isPublic(this.getModifiers());
   }
 
-  /** Returns true if some method in this class has an active Baf body. */
-  public boolean containsBafBody() {
-    Iterator<SootMethod> methodIt = methodIterator();
-
-    while (methodIt.hasNext()) {
-      SootMethod m = methodIt.next();
-
-      // TODO: sth; soot.baf.BafBody does not exist
-      if (m.hasActiveBody() /* && m.getActiveBody() instanceof soot.baf.BafBody */) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   private RefType refType;
 
   // made public for obfuscator..
