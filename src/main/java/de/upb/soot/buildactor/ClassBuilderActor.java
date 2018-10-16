@@ -101,7 +101,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
     private void resolveMethod(ResolveMethodMessage m) {
       log().info("Start reifying method [{}].", method.getSignature().toString());
-      IClassProvider classProvider = method.declaringClass().getCs().getClassProvider();
+      IClassProvider classProvider = method.declaringClass().getClassSource().getClassProvider();
       method = classProvider.resolveMethodBody(method);
 
       sender().tell(method, this.getSelf());

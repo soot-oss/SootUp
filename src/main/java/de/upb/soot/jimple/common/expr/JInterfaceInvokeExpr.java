@@ -26,7 +26,7 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.core.SootClass.Level;
+import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
@@ -50,7 +50,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
     // Check that the method's class is resolved enough
     // CheckLevel returns without doing anything because we can be not 'done' resolving
-    method.declaringClass().checkLevelIgnoreResolving(Level.HIERARCHY);
+    method.declaringClass().checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
     // now check if the class is valid
     if (!method.declaringClass().isInterface() && !method.declaringClass().isPhantomClass()) {
       throw new RuntimeException("Trying to create interface invoke expression for non-interface type: "

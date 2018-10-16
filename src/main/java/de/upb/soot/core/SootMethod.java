@@ -330,7 +330,7 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
       }
 
       if (declaringClass != null) {
-        declaringClass.checkLevel(SootClass.Level.BODIES);
+        declaringClass.checkLevel(ResolvingLevel.BODIES);
       }
       if ((declaringClass != null && declaringClass.isPhantomClass()) || isPhantom()) {
         throw new RuntimeException("cannot get active body for phantom method: " + getSignature());
@@ -389,7 +389,7 @@ public class SootMethod extends AbstractViewResident implements ClassMember, Num
       }
 
       if (declaringClass != null) {
-        declaringClass.checkLevel(SootClass.Level.BODIES);
+        declaringClass.checkLevel(ResolvingLevel.BODIES);
       }
       if ((declaringClass != null && declaringClass.isPhantomClass()) || isPhantom()) {
         throw new RuntimeException("cannot get resident body for phantom method : " + this);

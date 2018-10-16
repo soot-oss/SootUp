@@ -64,10 +64,10 @@ public enum Modifier {
   REQUIRES_SYNTHETIC(0x1000), 
   REQUIRES_MANDATED(0x8000);
 
-  private final int value;
+  private final int bytecode;
 
   Modifier(int i) {
-    this.value = i;
+    this.bytecode = i;
   }
 
   public static boolean isAbstract(EnumSet<Modifier> m) {
@@ -203,7 +203,11 @@ public enum Modifier {
     return (buffer.toString()).trim();
   }
 
-  public int getValue() {
-    return this.value;
+  /**
+   * 
+   * @return the bytecode of this Modifier.
+   */
+  public int getBytecode() {
+    return this.bytecode;
   }
 }

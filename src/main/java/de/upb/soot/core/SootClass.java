@@ -39,6 +39,7 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -77,33 +78,11 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
   private static final long serialVersionUID = -4145583783298080555L;
 
-  // TODO: migrate to Level Enum, purpose?
-  static public class Resolve {
-    public final int level;
-
-    public Resolve(int level) {
-      this.level = level;
-    }
-  }
-
-  private AbstractClassSource cs;
-  private ClassSignature signature;
-
-  public SootClass(IView view, AbstractClassSource cs, EnumSet<Modifier> modifiers) {
-    this(view, cs.getClassSignature(), modifiers);
-    this.cs = cs;
-  }
-
-  public SootClass(IView view, AbstractClassSource cs) {
-    this(view, cs.getClassSignature());
-    this.cs = cs;
-  }
-  public de.upb.soot.namespaces.classprovider.AbstractClassSource getCs() {
-    return cs;
-  }
+  private AbstractClassSource classSource;
+  private ClassSignature classSignature;
+  private ClassType classType;
 
   protected Position position;
-  protected ClassSignature classSignature;
   protected EnumSet<Modifier> modifiers;
   protected LinkedHashSet<SootField> fields;
   protected SmallNumberedMap<SootMethod> subSigToMethods;
@@ -116,20 +95,81 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
   protected SootClass superClass;
   protected SootClass outerClass;
 
-  protected ClassType classType;
+
 
   public final static String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   /**
-   * Constructs an empty SootClass with the given name and modifiers.
+   * Constructs an empty SootClass in the given view with the given class source and modifiers.
+   * 
+   * @param view
+   * @param source
+   * @param modifiers
    */
+  public SootClass(IView view, AbstractClassSource source, Modifier... modifiers) {
+    this(view, source.getClassSignature(), modifiers);
+    this.classSource = source;
+  }
 
-  public SootClass(IView view, ClassSignature cs, EnumSet<Modifier> modifiers) {
-    super(view);
+  /**
+   * Constructs an empty SootClass in the given view with the given class source and modifiers.
+   * 
+   * @param view
+   * @param source
+   * @param modifiers
+   */
+  public SootClass(IView view, AbstractClassSource source, EnumSet<Modifier> modifiers) {
+    this(view, source.getClassSignature(), modifiers);
+    this.classSource = source;
+  }
+
+  /**
+   * Constructs an empty SootClass in the given view with the given class source and no modifiers.
+   * 
+   * @param view
+   * @param source
+   */
+  public SootClass(IView view, AbstractClassSource source) {
+    this(view, source.getClassSignature());
+    this.classSource = source;
+  }
+
+  /**
+   * Constructs an empty SootClass in the given view with the given signature and modifiers.
+   * 
+   * @param view
+   * @param signature
+   * @param modifiers
+   */
+  public SootClass(IView view, ClassSignature signature, Modifier... modifiers) {
+    this(view, signature);
+    this.modifiers = EnumSet.copyOf(Arrays.asList(modifiers));
+  }
+
+  /**
+   * Constructs an empty SootClass in the given view with the given signature and modifiers.
+   * 
+   * @param view
+   * @param signature
+   * @param modifiers
+   */
+  public SootClass(IView view, ClassSignature signature, EnumSet<Modifier> modifiers) {
+    this(view, signature);
     this.modifiers = modifiers;
-    this.signature = cs;
-    initializeRefType(cs.getFullyQualifiedName());
-    setResolvingLevel(Level.BODIES);
+  }
+
+  /**
+   * Constructs an empty SootClass in the given view with the given signature and no modifiers.
+   * 
+   * @param view
+   * @param signature
+   */
+  public SootClass(IView view, ClassSignature signature) {
+    super(view);
+    this.classSignature = signature;
+    this.modifiers = EnumSet.noneOf(Modifier.class);
+    initializeRefType(signature.getFullyQualifiedName());
+    setResolvingLevel(ResolvingLevel.BODIES);
   }
 
   /**
@@ -145,18 +185,8 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
     refType.setSootClass(this);
   }
 
-  /**
-   * Constructs an empty SootClass with the given name and no modifiers.
-   */
 
-  public SootClass(IView view, ClassSignature cs ) {
-    this(view, cs, EnumSet.noneOf(Modifier.class) );
-  }
-
-  public enum Level {
-    DANGLING, HIERARCHY, SIGNATURES, BODIES;
-  }
-  private volatile Level resolvingLevel = Level.DANGLING;
+  private volatile ResolvingLevel resolvingLevel = ResolvingLevel.DANGLING;
 
   /**
    * Checks if the class has at lease the resolving level specified. This check does nothing is the class resolution process
@@ -167,10 +197,10 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * @throws java.lang.RuntimeException
    *           if the resolution is at an insufficient level
    */
-  public void checkLevel( Level level) {
+  public void checkLevel(ResolvingLevel level) {
     // Fast check: e.g. FastHierarchy.canStoreClass calls this method quite
     // often
-    Level currentLevel = resolvingLevel();
+    ResolvingLevel currentLevel = resolvingLevel();
     if (currentLevel.ordinal() >= level.ordinal()) {
       return;
     }
@@ -189,8 +219,8 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * @throws java.lang.RuntimeException
    *           if the resolution is at an insufficient level
    */
-  public void checkLevelIgnoreResolving(Level level) {
-    Level currentLevel = resolvingLevel();
+  public void checkLevelIgnoreResolving(ResolvingLevel level) {
+    ResolvingLevel currentLevel = resolvingLevel();
     if (currentLevel.ordinal() < level.ordinal()) {
       String hint = "\nIf you are extending Soot, try to add the following call before calling soot.Main.main(..):\n"
           + "Scene.getInstance().addBasicClass(" + classSignature + "," + level + ");\n"
@@ -200,11 +230,11 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
     }
   }
 
-  public Level resolvingLevel() {
+  public ResolvingLevel resolvingLevel() {
     return resolvingLevel;
   }
 
-  public void setResolvingLevel(Level newLevel) {
+  public void setResolvingLevel(ResolvingLevel newLevel) {
     resolvingLevel = newLevel;
   }
 
@@ -217,7 +247,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public int getFieldCount() {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     return fields == null ? 0 : fields.size();
   }
 
@@ -225,7 +255,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Returns a backed Chain of fields.
    */
   public LinkedHashSet<SootField> getFields() {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     return fields == null ? new LinkedHashSet<>() : fields;
   }
 
@@ -238,7 +268,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public void addField(SootField f) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (f.isDeclared()) {
       throw new RuntimeException("already declared: " + f.getName());
     }
@@ -261,7 +291,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public void removeField(SootField f) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (!f.isDeclared() || f.getDeclaringClass() != this) {
       throw new RuntimeException("did not declare: " + f.getName());
     }
@@ -288,7 +318,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Returns the field of this class with the given name and type. If the field cannot be found, null is returned.
    */
   public SootField getFieldUnsafe(String name, Type type) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (fields == null) {
       return null;
     }
@@ -317,7 +347,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * given name. Returns null if no field with the given name exists.
    */
   public SootField getFieldByNameUnsafe(String name) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (fields == null) {
       return null;
     }
@@ -350,7 +380,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Returns the field of this class with the given subsignature. If such a field does not exist, null is returned.
    */
   public SootField getFieldUnsafe(String subsignature) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (fields == null) {
       return null;
     }
@@ -366,7 +396,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Does this class declare a field with the given subsignature?
    */
   public boolean declaresField(String subsignature) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     return getFieldUnsafe(subsignature) != null;
   }
 
@@ -388,7 +418,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * null is returned.
    */
   public SootMethod getMethodUnsafe(NumberedString subsignature) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (subSigToMethods == null) {
       return null;
     }
@@ -400,7 +430,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Does this class declare a method with the given subsignature?
    */
   public boolean declaresMethod(NumberedString subsignature) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (subSigToMethods == null) {
       return false;
     }
@@ -413,7 +443,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * exception is thrown.
    */
   public SootMethod getMethod(String subsignature) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     NumberedString numberedString = this.getView().getSubSigNumberer().find(subsignature);
     if (numberedString == null) {
       throw new RuntimeException("No method " + subsignature + " in class " + classSignature);
@@ -426,7 +456,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * null is returned.
    */
   public SootMethod getMethodUnsafe(String subsignature) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     NumberedString numberedString = this.getView().getSubSigNumberer().find(subsignature);
     return numberedString == null ? null : getMethodUnsafe(numberedString);
   }
@@ -436,7 +466,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public boolean declaresMethod(String subsignature) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     NumberedString numberedString = this.getView().getSubSigNumberer().find(subsignature);
     return numberedString == null ? false : declaresMethod(numberedString);
   }
@@ -446,7 +476,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public boolean declaresFieldByName(String name) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (fields == null) {
       return false;
     }
@@ -463,7 +493,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Does this class declare a field with the given name and type.
    */
   public boolean declaresField(String name, Type type) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (fields == null) {
       return false;
     }
@@ -481,7 +511,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public int getMethodCount() {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (subSigToMethods == null) {
       return 0;
     }
@@ -493,7 +523,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public Iterator<SootMethod> methodIterator() {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (methodList == null) {
       return Collections.emptyIterator();
     }
@@ -524,7 +554,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
   }
 
   public List<SootMethod> getMethods() {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (methodList == null) {
       return Collections.emptyList();
     }
@@ -550,7 +580,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * null is returned.
    */
   public SootMethod getMethodUnsafe(String name, List<Type> parameterTypes, Type returnType) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (methodList == null) {
       return null;
     }
@@ -570,7 +600,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public SootMethod getMethod(String name, List<Type> parameterTypes) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     SootMethod foundMethod = null;
 
     if (methodList == null) {
@@ -598,7 +628,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * than one method with the given name. If no method with the given is found, null is returned.
    */
   public SootMethod getMethodByNameUnsafe(String name) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     SootMethod foundMethod = null;
 
     if (methodList == null) {
@@ -634,7 +664,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public boolean declaresMethod(String name, List<Type> parameterTypes) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (methodList == null) {
       return false;
     }
@@ -653,7 +683,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public boolean declaresMethod(String name, List<Type> parameterTypes, Type returnType) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (methodList == null) {
       return false;
     }
@@ -673,7 +703,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public boolean declaresMethodByName(String name) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (methodList == null) {
       return false;
     }
@@ -691,7 +721,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Adds the given method to this class.
    */
   public void addMethod(SootMethod m) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (m.isDeclared()) {
       throw new RuntimeException("already declared: " + m.getName());
     }
@@ -712,7 +742,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
   }
 
   public synchronized SootMethod getOrAddMethod(SootMethod m) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (m.isDeclared()) {
       throw new RuntimeException("already declared: " + m.getName());
     }
@@ -734,7 +764,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
   }
 
   public synchronized SootField getOrAddField(SootField f) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (f.isDeclared()) {
       throw new RuntimeException("already declared: " + f.getName());
     }
@@ -757,7 +787,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Removes the given method from this class.
    */
   public void removeMethod(SootMethod m) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     if (!m.isDeclared() || m.getDeclaringClass() != this) {
       throw new RuntimeException("incorrect declarer for remove: " + m.getName());
     }
@@ -792,7 +822,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public int getInterfaceCount() {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     return interfaces == null ? 0 : interfaces.size();
   }
 
@@ -800,7 +830,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Returns a backed Chain of the interfaces that are directly implemented by this class. (see getInterfaceCount())
    */
   public LinkedHashSet<SootClass> getInterfaces() {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     return interfaces == null ? new LinkedHashSet<>() : interfaces;
   }
 
@@ -808,8 +838,8 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * Does this class directly implement the given interface? (see getInterfaceCount())
    */
 
-  public boolean implementsInterface(ClassSignature classSignature){
-    checkLevel(Level.HIERARCHY);
+  public boolean implementsInterface(ClassSignature classSignature) {
+    checkLevel(ResolvingLevel.HIERARCHY);
     if (interfaces == null) {
       return false;
     }
@@ -827,7 +857,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public void addInterface(SootClass interfaceClass) {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     if (implementsInterface(interfaceClass.getClassSignature())) {
       throw new RuntimeException("duplicate interface: " + interfaceClass.getClassSignature());
     }
@@ -842,9 +872,9 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public void removeInterface(SootClass interfaceClass) {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     if (!implementsInterface(interfaceClass.getClassSignature())) {
-      throw new RuntimeException("no such interface: " + interfaceClass.getClassSignature() );
+      throw new RuntimeException("no such interface: " + interfaceClass.getClassSignature());
     }
 
     interfaces.remove(interfaceClass);
@@ -856,7 +886,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public boolean hasSuperclass() {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     return superClass != null;
   }
 
@@ -866,7 +896,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public SootClass getSuperclass() {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     if (superClass == null && !isPhantomClass()) {
       throw new RuntimeException("no superclass for " + classSignature);
     } else {
@@ -882,7 +912,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public SootClass getSuperclassUnsafe() {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     return superClass;
   }
 
@@ -891,17 +921,17 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public void setSuperclass(SootClass c) {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     superClass = c;
   }
 
   public boolean hasOuterClass() {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     return outerClass != null;
   }
 
   public SootClass getOuterClass() {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     if (outerClass == null) {
       throw new RuntimeException("no outer class");
     } else {
@@ -913,12 +943,12 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    * This method returns the outer class, or null if no outer class has been specified for this class.
    */
   public SootClass getOuterClassUnsafe() {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     return outerClass;
   }
 
   public void setOuterClass(SootClass c) {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     outerClass = c;
   }
 
@@ -931,29 +961,29 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    */
 
   public ClassSignature getClassSignature() {
-      return classSignature;
+    return classSignature;
   }
 
   public void setClassSignature(ClassSignature newClassSignature) {
-      this.rename(newClassSignature);
-     this.classSignature = newClassSignature;
+    this.rename(newClassSignature);
+    this.classSignature = newClassSignature;
   }
 
   /** Convenience method; returns true if this class is an interface. */
   public boolean isInterface() {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     return Modifier.isInterface(this.getModifiers());
   }
 
   /** Convenience method; returns true if this class is an enumeration. */
   public boolean isEnum() {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     return Modifier.isEnum(this.getModifiers());
   }
 
   /** Convenience method; returns true if this class is synchronized. */
   public boolean isSynchronized() {
-    checkLevel(Level.HIERARCHY);
+    checkLevel(ResolvingLevel.HIERARCHY);
     return Modifier.isSynchronized(this.getModifiers());
   }
 
@@ -991,7 +1021,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
 
   /* Renames private fields and methods with numeric names. */
   public void renameFieldsAndMethods(boolean privateOnly) {
-    checkLevel(Level.SIGNATURES);
+    checkLevel(ResolvingLevel.SIGNATURES);
     // Rename fields. Ignore collisions for now.
     {
       Iterator<SootField> fieldIt = this.getFields().iterator();
@@ -1058,10 +1088,11 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
    *
    * @author xiao
    */
-  private static final Pattern libraryClassPattern = Pattern.compile("^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");
+  private static final Pattern libraryClassPattern
+      = Pattern.compile("^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");
 
   public boolean isJavaLibraryClass() {
-      return libraryClassPattern.matcher(classSignature.className).find();
+    return libraryClassPattern.matcher(classSignature.className).find();
   }
 
   /**
@@ -1187,8 +1218,12 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
     return this.position;
   }
 
+  public AbstractClassSource getClassSource() {
+    return classSource;
+  }
+
   public String getName() {
-    return this.signature.getFullyQualifiedName();
+    return this.classSignature.getFullyQualifiedName();
   }
 
 }
