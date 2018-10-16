@@ -56,10 +56,4 @@ public class JCmplExpr extends AbstractIntBinopExpr {
     return new JCmplExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
 
-  @Override
-  public void toString(IStmtPrinter up) {
-    // TODO Auto-generated method stub
-
-  }
-
 }

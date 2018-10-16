@@ -79,10 +79,4 @@ public class JShrExpr extends AbstractIntLongBinopExpr {
     return new JShrExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
 
-  @Override
-  public void toString(IStmtPrinter up) {
-    // TODO Auto-generated method stub
-
-  }
-
 }

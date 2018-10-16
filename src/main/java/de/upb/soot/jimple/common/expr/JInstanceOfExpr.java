@@ -62,8 +62,11 @@ public class JInstanceOfExpr implements Expr {
 
   @Override
   public void toString(IStmtPrinter up) {
-    // TODO Auto-generated method stub
-
+    opBox.toString(up);
+    up.literal(" ");
+    up.literal(Jimple.INSTANCEOF);
+    up.literal(" ");
+    up.literal(checkType.toString());
   }
 
   @Override
