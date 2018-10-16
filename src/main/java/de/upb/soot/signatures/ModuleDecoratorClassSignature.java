@@ -2,7 +2,7 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 
-public class ModuleDecaratorClassSignature extends ClassSignature {
+public class ModuleDecoratorClassSignature extends ClassSignature {
 
   private static final ModuleSignatureFactory factory = new ModuleSignatureFactory();
 
@@ -14,7 +14,7 @@ public class ModuleDecaratorClassSignature extends ClassSignature {
    * @param classSignature the singature to decorate
    * @param moduleSignature the module signature to add
    */
-  public ModuleDecaratorClassSignature(ClassSignature classSignature, ModuleSignature moduleSignature) {
+  public ModuleDecoratorClassSignature(ClassSignature classSignature, ModuleSignature moduleSignature) {
     super(classSignature.className, classSignature.packageSignature);
     this.wrappedSignature = classSignature;
     // FIXME: use factory
@@ -36,9 +36,9 @@ public class ModuleDecaratorClassSignature extends ClassSignature {
     if (!super.equals(o)) {
       return false;
     }
-    ModuleDecaratorClassSignature that = (ModuleDecaratorClassSignature) o;
+    ModuleDecoratorClassSignature that = (ModuleDecoratorClassSignature) o;
     boolean moduleEqual = Objects.equal(moduleSignature, that.moduleSignature);
-    return moduleEqual && ((ModuleDecaratorClassSignature) o).wrappedSignature.equals(that.wrappedSignature);
+    return moduleEqual && ((ModuleDecoratorClassSignature) o).wrappedSignature.equals(that.wrappedSignature);
   }
 
   @Override
