@@ -5,6 +5,7 @@
 package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.Body;
+import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
@@ -70,6 +71,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -141,7 +143,7 @@ public class WalaIRToJimpleConverter {
     Type type = convertType(walaField.getFieldTypeReference());
     walaField.isFinal();
     String name = walaField.getName().toString();
-    int modifiers = convertModifiers(walaField);
+    EnumSet<Modifier> modifiers = convertModifiers(walaField);
     SootField sootField = new SootField(view, name, type, modifiers);
     return sootField;
   }
@@ -165,16 +167,17 @@ public class WalaIRToJimpleConverter {
       }
     }
     Type returnType = convertType(walaMethod.getReturnType());
-    int modifier = convertModifiers(walaMethod);
+    EnumSet<Modifier> modifier = convertModifiers(walaMethod);
 
     List<SootClass> thrownExceptions = new ArrayList<>();
     try {
       for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
+        System.out.println(exception.getName());
         String exceptionName = convertClassName(exception.getName().toString());
         if (!view.getSootClass(new DefaultSignatureFactory() {
         }.getClassSignature(exceptionName)).isPresent()) {
           // create exception class if it doesn't exist yet in the view.
-          SootClass exceptionClass = new SootClass(view, exceptionName);
+          SootClass exceptionClass = new SootClass(view, new DefaultSignatureFactory().getClassSignature(exceptionName));
           view.addSootClass(exceptionClass);
           thrownExceptions.add(exceptionClass);
         }
@@ -240,20 +243,20 @@ public class WalaIRToJimpleConverter {
     throw new RuntimeException("Unsupported tpye: " + type);
   }
 
-  public int convertModifiers(AstField field) {
-    int modifiers = 0;
+  public EnumSet<Modifier> convertModifiers(AstField field) {
+    EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
     // TODO
     return modifiers;
   }
 
-  public int convertModifiers(AstMethod method) {
-    int modifiers = 0;
+  public EnumSet<Modifier> convertModifiers(AstMethod method) {
+    EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
     // TODO
     return modifiers;
   }
 
-  public int converModifiers(AstClass klass) {
-    int modifiers = 0;
+  public EnumSet<Modifier> converModifiers(AstClass klass) {
+    EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
     // TODO
     return modifiers;
   }

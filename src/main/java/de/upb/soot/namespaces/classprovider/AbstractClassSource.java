@@ -98,4 +98,5 @@ public abstract class AbstractClassSource {
     return Objects.hashCode(srcNamespace, sourcePath);
   }
 
+
 }

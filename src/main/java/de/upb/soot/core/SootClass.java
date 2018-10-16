@@ -87,6 +87,7 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
   }
 
   private AbstractClassSource cs;
+  private ClassSignature signature;
 
   public SootClass(IView view, AbstractClassSource cs, EnumSet<Modifier> modifiers) {
     this(view, cs.getClassSignature(), modifiers);
@@ -126,7 +127,8 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
   public SootClass(IView view, ClassSignature cs, EnumSet<Modifier> modifiers) {
     super(view);
     this.modifiers = modifiers;
-    initializeRefType(cs.className);
+    this.signature = cs;
+    initializeRefType(cs.getFullyQualifiedName());
     setResolvingLevel(Level.BODIES);
   }
 
@@ -151,7 +153,9 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
     this(view, cs, EnumSet.noneOf(Modifier.class) );
   }
 
-  enum Level{ DANGLING, HIERARCHY, SIGNATURES, BODIES; }
+  public enum Level {
+    DANGLING, HIERARCHY, SIGNATURES, BODIES;
+  }
   private volatile Level resolvingLevel = Level.DANGLING;
 
   /**
@@ -1181,6 +1185,10 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
 
   public Position getPosition() {
     return this.position;
+  }
+
+  public String getName() {
+    return this.signature.getFullyQualifiedName();
   }
 
 }
