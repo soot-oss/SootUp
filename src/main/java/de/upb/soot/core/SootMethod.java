@@ -52,27 +52,11 @@ public class SootMethod extends ClassMember {
   private DebuggingInformation debugInfo;
   private static final String constructorName = "<init>";
   private static final String staticInitializerName = "<clinit>";
-  /** Name of the current method. */
-  protected String name;
 
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
    */
   private List<Type> parameterTypes;
-
-  /** The return type of this object. */
-  protected Type returnType;
-
-  /**
-   * True when some <code>SootClass</code> object declares this <code>SootMethod</code> object.
-   */
-  protected boolean isDeclared;
-
-  /** Holds the class which declares this <code>SootClass</code> method. */
-  protected SootClass declaringClass;
-
-  /** Is this method a phantom method? */
-  protected boolean isPhantom = false;
 
   /** Declared exceptions thrown by this method. Created upon demand. */
   protected List<SootClass> exceptions = null;
@@ -82,9 +66,6 @@ public class SootMethod extends ClassMember {
 
   /** Tells this method how to find out where its body lives. */
   protected volatile IMethodSource ms;
-
-  protected volatile String sig;
-  protected volatile String subSig;
 
   /**
    * Constructs a SootMethod with the given name, parameter types and return type.
@@ -111,7 +92,7 @@ public class SootMethod extends ClassMember {
     this.parameterTypes.addAll(parameterTypes);
     this.parameterTypes = Collections.unmodifiableList(this.parameterTypes);
 
-    this.returnType = returnType;
+    this.type = returnType;
     this.modifiers = modifiers;
 
     if (exceptions == null && !thrownExceptions.isEmpty()) {
@@ -121,18 +102,7 @@ public class SootMethod extends ClassMember {
     subsignature = this.getView().getSubSigNumberer().findOrAdd(getSubSignature());
   }
 
-  /**
-   * Returns a hash code for this method consistent with structural equality.
-   */
-  // TODO: check whether modifiers.hashcode (former: "modifiers" representing the set) does what its meant for
-  public int equivHashCode() {
-    return returnType.hashCode() * 101 + modifiers.hashCode() * 17 + name.hashCode();
-  }
 
-  /** Returns the name of this method. */
-  public String getName() {
-    return name;
-  }
 
   /** Sets the name of this method. */
   public synchronized void setName(String name) {
@@ -165,69 +135,26 @@ public class SootMethod extends ClassMember {
     sig = null;
   }
 
-  /** Returns the class which declares the current <code>SootMethod</code>. */
-  @Override
-  public SootClass getDeclaringClass() {
-    if (!isDeclared) {
-      throw new RuntimeException("not declared: " + getName());
-    }
-
-    return declaringClass;
-  }
-
-  public void setDeclared(boolean isDeclared) {
-    this.isDeclared = isDeclared;
-  }
-
-  /**
-   * Returns true when some <code>SootClass</code> object declares this <code>SootMethod</code> object.
-   */
-  @Override
-  public boolean isDeclared() {
-    return isDeclared;
-  }
-
-  /** Returns true when this <code>SootMethod</code> object is phantom. */
-  @Override
-  public boolean isPhantom() {
-    return isPhantom;
-  }
-
   /**
    * Returns true if this method is not phantom, abstract or native, i.e. this method can have a body.
    */
-
   public boolean isConcrete() {
     return !isPhantom() && !isAbstract() && !isNative();
   }
 
-  /** Sets the phantom flag on this method. */
-  @Override
-  public void setPhantom(boolean value) {
-    if (value) {
-      if (!this.getView().allowsPhantomRefs()) {
-        throw new RuntimeException("Phantom refs not allowed");
-      }
-      if (!this.getView().getOptions().allow_phantom_elms() && declaringClass != null && !declaringClass.isPhantomClass()) {
-        throw new RuntimeException("Declaring class would have to be phantom");
-      }
-    }
-    isPhantom = value;
-  }
-
   /** Returns the return type of this method. */
   public Type getReturnType() {
-    return returnType;
+    return type;
   }
 
   /** Sets the return type of this method. */
-  public synchronized void setReturnType(Type t) {
+  public synchronized void setType(Type t) {
     boolean wasDeclared = isDeclared;
     SootClass oldDeclaringClass = declaringClass;
     if (wasDeclared) {
       oldDeclaringClass.removeMethod(this);
     }
-    returnType = t;
+    type = t;
     subSig = null;
     sig = null;
     subsignature = this.getView().getSubSigNumberer().findOrAdd(getSubSignature());
@@ -461,49 +388,10 @@ public class SootMethod extends ClassMember {
   }
 
   /**
-   * Convenience method returning true if this method is static.
-   */
-  @Override
-  public boolean isStatic() {
-    return Modifier.isStatic(this.getModifiers());
-  }
-
-  /**
-   * Convenience method returning true if this method is private.
-   */
-  @Override
-  public boolean isPrivate() {
-    return Modifier.isPrivate(this.getModifiers());
-  }
-
-  /**
-   * Convenience method returning true if this method is public.
-   */
-  @Override
-  public boolean isPublic() {
-    return Modifier.isPublic(this.getModifiers());
-  }
-
-  /**
-   * Convenience method returning true if this method is protected.
-   */
-  @Override
-  public boolean isProtected() {
-    return Modifier.isProtected(this.getModifiers());
-  }
-
-  /**
    * Convenience method returning true if this method is abstract.
    */
   public boolean isAbstract() {
     return Modifier.isAbstract(this.getModifiers());
-  }
-
-  /**
-   * Convenience method returning true if this method is final.
-   */
-  public boolean isFinal() {
-    return Modifier.isFinal(this.getModifiers());
   }
 
   /**
@@ -598,20 +486,6 @@ public class SootMethod extends ClassMember {
     return buffer.toString().intern();
   }
 
-  /**
-   * Returns the Soot signature of this method. Used to refer to methods unambiguously.
-   */
-  public String getSignature() {
-    if (sig == null) {
-      synchronized (this) {
-        if (sig == null) {
-          sig = getSignature(getDeclaringClass(), getSubSignature());
-        }
-      }
-    }
-    return sig;
-  }
-
   public String getSignature(SootClass cl, String name, List<Type> params, Type returnType) {
     return getSignature(cl, getSubSignatureImpl(name, params, returnType));
   }
@@ -673,12 +547,6 @@ public class SootMethod extends ClassMember {
     return subsignature;
   }
 
-  /** Returns the signature of this method. */
-  @Override
-  public String toString() {
-    return getSignature();
-  }
-
   /**
    * Returns the declaration of this method, as used at the top of textual body representations (before the {}'s containing
    * the code for representation.)
@@ -738,18 +606,6 @@ public class SootMethod extends ClassMember {
     return buffer.toString().intern();
   }
 
-  @Override
-  public final int getNumber() {
-    return number;
-  }
-
-  @Override
-  public final void setNumber(int number) {
-    this.number = number;
-  }
-
-  protected int number = 0;
-
   public SootMethod method() {
     return this;
   }
@@ -759,7 +615,7 @@ public class SootMethod extends ClassMember {
   }
 
   public Type returnType() {
-    return this.returnType;
+    return this.type;
   }
 
   public String name() {
