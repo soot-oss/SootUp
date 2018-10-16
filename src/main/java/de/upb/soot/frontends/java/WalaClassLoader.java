@@ -105,7 +105,7 @@ public class WalaClassLoader {
       buildClassHierachy();
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourceDirPath);
-    String className = WalaIRToJimpleConverter.convertClassNameFromWala(signature.getFullyQualifiedName());
+    String className = walaToSoot.convertClassNameFromWala(signature.getFullyQualifiedName());
 
     JavaClass walaClass
         = (JavaClass) classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).lookupClass(TypeName.findOrCreate(className));

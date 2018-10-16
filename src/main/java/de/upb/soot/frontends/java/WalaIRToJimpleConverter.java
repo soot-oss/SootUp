@@ -72,6 +72,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,11 +85,14 @@ import java.util.Optional;
 public class WalaIRToJimpleConverter {
   private IView view;
   private INamespace srcNamespace;
+  private HashMap<String, Integer> clsWithInnerCls;
+  private HashMap<String, String> walaToSootNameTable;
 
   public WalaIRToJimpleConverter(String sourceDirPath) {
-    WalaJavaClassProvider classProvider = new WalaJavaClassProvider();
     srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
     view = new JavaView(null);
+    clsWithInnerCls = new HashMap<>();
+    walaToSootNameTable = new HashMap<>();
   }
 
   /**
@@ -99,7 +103,6 @@ public class WalaIRToJimpleConverter {
    */
   public SootClass convertClass(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-    System.out.println(fullyQualifiedClassName);
     ClassSignature classSignature = new DefaultSignatureFactory() {
     }.getClassSignature(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
@@ -245,7 +248,7 @@ public class WalaIRToJimpleConverter {
 
   public EnumSet<Modifier> convertModifiers(AstField field) {
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
-    // TODO
+
     return modifiers;
   }
 
@@ -369,7 +372,11 @@ public class WalaIRToJimpleConverter {
    *          in wala-format
    * @return className in soot.format
    */
-  public static String convertClassNameFromWala(String className) {
+  public String convertClassNameFromWala(String className) {
+    String cl = className.intern();
+    if (walaToSootNameTable.containsKey(cl)) {
+      return walaToSootNameTable.get(cl);
+    }
     StringBuilder sb = new StringBuilder();
     if (className.startsWith("L")) {
       className = className.substring(1);
@@ -393,7 +400,14 @@ public class WalaIRToJimpleConverter {
         if (temp.length > 0) {
           String name = temp[temp.length - 1];
           if (!name.contains("$")) {
-            sb.append("$");
+            // This is aN inner class
+            String outClass = sb.toString();
+            int count = 1;
+            if (this.clsWithInnerCls.containsKey(outClass)) {
+              count = this.clsWithInnerCls.get(outClass.toString()) + 1;
+            }
+            this.clsWithInnerCls.put(outClass, count);
+            sb.append(count + "$");
           }
           sb.append(name);
         }
@@ -401,7 +415,9 @@ public class WalaIRToJimpleConverter {
     } else {
       throw new RuntimeException("Can not convert WALA class name: " + className);
     }
-    return sb.toString();
+    String ret = sb.toString();
+    walaToSootNameTable.put(cl, ret);
+    return ret;
   }
 
 }
