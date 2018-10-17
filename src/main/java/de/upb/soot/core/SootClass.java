@@ -96,7 +96,22 @@ public class SootClass extends AbstractViewResident implements Numberable, Seria
   protected SootClass superClass;
   protected SootClass outerClass;
 
+  // FIXME: make final
+  private de.upb.soot.namespaces.classprovider.ISourceContent sourceContent;
+
   public final static String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
+
+  public SootClass(de.upb.soot.views.IView view, de.upb.soot.namespaces.classprovider.AbstractClassSource classSource,
+      de.upb.soot.namespaces.classprovider.ISourceContent content) {
+    super(view);
+    this.classSource = classSource;
+    this.sourceContent = content;
+    this.classSignature = classSource.getClassSignature();
+  }
+
+  public void resolve(de.upb.soot.core.ResolvingLevel resolvingLevel){
+      sourceContent.resolve(resolvingLevel, getView());
+  }
 
   /**
    * Constructs an empty SootClass in the given view with the given class source and modifiers.

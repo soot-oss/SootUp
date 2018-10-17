@@ -1,22 +1,20 @@
 package de.upb.soot.namespaces.classprovider.asm;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.util.NotYetImplementedException;
 
 import java.nio.file.Path;
 
 public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovider.IClassProvider {
 
-
   public AsmJavaClassProvider() {
   }
 
   @Override
-  public de.upb.soot.namespaces.classprovider.AbstractClassSource createClassSource(de.upb.soot.namespaces.INamespace srcNamespace,
-      java.nio.file.Path sourcePath, de.upb.soot.signatures.ClassSignature classSignature) {
+  public de.upb.soot.namespaces.classprovider.AbstractClassSource createClassSource(
+      de.upb.soot.namespaces.INamespace srcNamespace, java.nio.file.Path sourcePath,
+      de.upb.soot.signatures.ClassSignature classSignature) {
     return new de.upb.soot.namespaces.classprovider.asm.AsmClassSource(srcNamespace, sourcePath, classSignature);
   }
 
@@ -33,8 +31,39 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
    * @return A representation of the class file.
    */
   @Override
-  public SourceContent getContent(AbstractClassSource classSource) {
-    throw new NotYetImplementedException();
+  public de.upb.soot.namespaces.classprovider.ISourceContent getContent(AbstractClassSource classSource) {
+    AsmClassSourceContent asmClassSourceContent = new AsmClassSourceContent();
+    java.net.URI uri = classSource.getSourcePath().toUri();
+
+    try {
+      if (classSource.getSourcePath().getFileSystem().isOpen()) {
+        Path sourceFile = java.nio.file.Paths.get(uri);
+
+        org.objectweb.asm.ClassReader clsr
+            = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
+
+        clsr.accept(asmClassSourceContent, org.objectweb.asm.ClassReader.SKIP_FRAMES);
+      } else {
+        // a zip file system needs to be re-openend
+        // otherwise it crashes
+        // http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
+        java.util.Map<String, String> env = new java.util.HashMap<>();
+        env.put("create", "false");
+        try (java.nio.file.FileSystem zipfs = java.nio.file.FileSystems.newFileSystem(uri, env)) {
+          Path sourceFile = java.nio.file.Paths.get(uri);
+
+          org.objectweb.asm.ClassReader clsr
+              = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
+
+          clsr.accept(asmClassSourceContent, org.objectweb.asm.ClassReader.SKIP_FRAMES);
+        }
+      }
+
+    } catch (java.io.IOException e) {
+      e.printStackTrace();
+    }
+
+    return asmClassSourceContent;
   }
 
   @Override
@@ -72,7 +101,8 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
 
   }
 
-  private de.upb.soot.core.SootModuleInfo getSootModule(AbstractClassSource classSource, org.objectweb.asm.ModuleVisitor visitor) {
+  private de.upb.soot.core.SootModuleInfo getSootModule(AbstractClassSource classSource,
+      org.objectweb.asm.ModuleVisitor visitor) {
 
     de.upb.soot.namespaces.classprovider.asm.modules.SootModuleBuilder scb
         = new de.upb.soot.namespaces.classprovider.asm.modules.SootModuleBuilder(view, classSource, visitor);
