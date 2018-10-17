@@ -3,6 +3,7 @@ package de.upb.soot;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.PackageSignature;
+import de.upb.soot.util.NotYetImplementedException;
 
 /**
  * Definition of a scope
@@ -37,5 +38,9 @@ public class Scope {
    */
   public Scope(ClassSignature... classSignatures) {
     // TODO Auto-generated constructor stub
+  }
+
+  public Scope withStartingSignature(ClassSignature classSignature) {
+    throw new NotYetImplementedException();
   }
 }

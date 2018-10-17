@@ -1,6 +1,7 @@
 package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.SootClass;
+import de.upb.soot.signatures.ClassSignature;
 
 import com.ibm.wala.cast.java.ipa.callgraph.JavaSourceAnalysisScope;
 import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
@@ -13,6 +14,7 @@ import com.ibm.wala.ipa.cha.ClassHierarchyFactory;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.properties.WalaProperties;
 import com.ibm.wala.types.ClassLoaderReference;
+import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 
@@ -22,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.jar.JarFile;
 
 /**
@@ -91,4 +94,25 @@ public class WalaClassLoader {
     return sootClasses;
   }
 
+  /**
+   * Return a soot class with the given signature converted from a WALA class.
+   * 
+   * @param signature
+   * @return
+   */
+  public Optional<SootClass> getSootClass(ClassSignature signature) {
+    if (classHierarchy == null) {
+      buildClassHierachy();
+    }
+    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourceDirPath);
+    String className = walaToSoot.convertClassNameFromWala(signature.getFullyQualifiedName());
+
+    JavaClass walaClass
+        = (JavaClass) classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).lookupClass(TypeName.findOrCreate(className));
+    if (walaClass == null) {
+      return Optional.empty();
+    }
+    SootClass sootClass = walaToSoot.convertClass(walaClass);
+    return Optional.ofNullable(sootClass);
+  }
 }

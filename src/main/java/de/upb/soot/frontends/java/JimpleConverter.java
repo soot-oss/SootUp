@@ -25,7 +25,6 @@ public class JimpleConverter {
   public soot.SootClass convertSootClass(de.upb.soot.core.SootClass fromClass) {
     soot.SootClass toClass = new SootClass(fromClass.getName());
     // TODO. conversion
-
     // add source position into tag
     toClass.addTag(new PositionTag(fromClass.getPosition()));
     return toClass;
@@ -49,7 +48,7 @@ public class JimpleConverter {
     PatchingChain<Unit> units = ret.getUnits();
     Chain<Local> locals = ret.getLocals();
     Chain<Trap> traps = ret.getTraps();
-    // needd to look at the clone method of body.
+    // need to look at the clone method of body.
 
     for (IStmt fromStmt : body.getStmts()) {
       // convert stmts

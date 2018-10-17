@@ -10,6 +10,7 @@ import java.util.Optional;
 /**
  * Public interface to a namespace. Namespaces are sources for {@link SootClass}es, e.g. Java Classpath, Android APK, JAR
  * file, etc.
+ * The strategy to traverse something.
  *
  * @author Manuel Benz created on 22.05.18
  * @author Ben Hermann

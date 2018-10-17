@@ -23,7 +23,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
   }
 
   public static Props props(IView view, AbstractClassSource classSource) {
-    return Props.create(ClassBuilderActor.class, view, classSource);
+     return Props.create(ClassBuilderActor.class, view, classSource);
   }
 
   public static Props props(de.upb.soot.core.SootClass sootClass, de.upb.soot.core.SootMethod sootMethod) {
@@ -101,7 +101,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
     private void resolveMethod(ResolveMethodMessage m) {
       log().info("Start reifying method [{}].", method.getSignature().toString());
-      IClassProvider classProvider = method.declaringClass().getCs().getClassProvider();
+      IClassProvider classProvider = method.declaringClass().getClassSource().getClassProvider();
       method = classProvider.resolveMethodBody(method);
 
       sender().tell(method, this.getSelf());

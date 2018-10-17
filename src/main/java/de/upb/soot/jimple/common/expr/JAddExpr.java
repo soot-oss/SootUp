@@ -31,7 +31,8 @@ import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
-public class JAddExpr extends AbstractFloatBinopExpr {
+public class
+JAddExpr extends AbstractFloatBinopExpr {
   /**
    * 
    */
@@ -56,9 +57,5 @@ public class JAddExpr extends AbstractFloatBinopExpr {
     return new JAddExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
 
-  @Override
-  public void toString(IStmtPrinter up) {
-    // TODO Auto-generated method stub
 
-  }
 }

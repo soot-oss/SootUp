@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -86,11 +87,14 @@ import de.upb.soot.views.JavaView;
 public class WalaIRToJimpleConverter {
   private IView view;
   private INamespace srcNamespace;
+  private HashMap<String, Integer> clsWithInnerCls;
+  private HashMap<String, String> walaToSootNameTable;
 
   public WalaIRToJimpleConverter(String sourceDirPath) {
-    WalaJavaClassProvider classProvider = new WalaJavaClassProvider();
-    srcNamespace = new JavaSourcePathNamespace(sourceDirPath, classProvider);
+    srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
     view = new JavaView(null);
+    clsWithInnerCls = new HashMap<>();
+    walaToSootNameTable = new HashMap<>();
   }
 
   /**
@@ -100,8 +104,7 @@ public class WalaIRToJimpleConverter {
    * @return A SootClass converted from walaClass
    */
   public SootClass convertClass(AstClass walaClass) {
-    String fullyQualifiedClassName = convertClassName(walaClass.getName().toString());
-    System.out.println("CLASS:" + fullyQualifiedClassName);
+    String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     ClassSignature classSignature = new DefaultSignatureFactory() {
     }.getClassSignature(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
@@ -168,8 +171,7 @@ public class WalaIRToJimpleConverter {
     List<SootClass> thrownExceptions = new ArrayList<>();
     try {
       for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
-        System.out.println(exception.getName());
-        String exceptionName = convertClassName(exception.getName().toString());
+        String exceptionName = convertClassNameFromWala(exception.getName().toString());
         if (!view.getSootClass(new DefaultSignatureFactory() {
         }.getClassSignature(exceptionName)).isPresent()) {
           // create exception class if it doesn't exist yet in the view.
@@ -222,16 +224,15 @@ public class WalaIRToJimpleConverter {
       }
     } else if (type.isReferenceType()) {
       if (type.isArrayType()) {
-        TypeReference t = type.getArrayElementType();
+        TypeReference t = type.getInnermostElementType();
         Type baseType = convertType(t);
         int dim = type.getDimensionality();
-        // TODO: FIX THIS
         return ArrayType.getInstance(baseType, dim);
       } else if (type.isClassType()) {
         if (type.equals(TypeReference.Null)) {
           return NullType.getInstance();
         } else {
-          String className = convertClassName(type.getName().toString());
+          String className = convertClassNameFromWala(type.getName().toString());
           return new RefType(view, className);
         }
       }
@@ -241,7 +242,7 @@ public class WalaIRToJimpleConverter {
 
   public EnumSet<Modifier> convertModifiers(AstField field) {
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
-    // TODO
+
     return modifiers;
   }
 
@@ -361,31 +362,52 @@ public class WalaIRToJimpleConverter {
    *          in wala-format
    * @return className in soot.format
    */
-  public String convertClassName(String className) {
+  public String convertClassNameFromWala(String className) {
+    String cl = className.intern();
+    if (walaToSootNameTable.containsKey(cl)) {
+      return walaToSootNameTable.get(cl);
+    }
     StringBuilder sb = new StringBuilder();
     if (className.startsWith("L")) {
       className = className.substring(1);
       String[] subNames = className.split("/");
-      if (className.contains("(")) {
-        sb.append(subNames[0] + "$");
-        String last = subNames[subNames.length - 1];
-        if (last.contains("$")) {
-          String[] numberedName = last.split("\\$");
-          sb.append(numberedName[numberedName.length - 1]);
-        } else {
-          sb.append(last);
+      boolean isSpecial = false;
+      for (int i = 0; i < subNames.length; i++) {
+        String subName = subNames[i];
+        if (subName.contains("(") || subName.contains("<")) {
+          // handle anonymous or inner classes
+          isSpecial = true;
+          break;
         }
-      } else {
-        for (int i = 0; i < subNames.length; i++) {
-          sb.append(subNames[i]);
-          if (i != subNames.length - 1) {
-            sb.append(".");
+        if (i != 0) {
+          sb.append(".");
+        }
+        sb.append(subName);
+      }
+      if (isSpecial) {
+        String lastSubName = subNames[subNames.length - 1];
+        String[] temp = lastSubName.split(">");
+        if (temp.length > 0) {
+          String name = temp[temp.length - 1];
+          if (!name.contains("$")) {
+            // This is aN inner class
+            String outClass = sb.toString();
+            int count = 1;
+            if (this.clsWithInnerCls.containsKey(outClass)) {
+              count = this.clsWithInnerCls.get(outClass.toString()) + 1;
+            }
+            this.clsWithInnerCls.put(outClass, count);
+            sb.append(count + "$");
           }
+          sb.append(name);
         }
       }
     } else {
       throw new RuntimeException("Can not convert WALA class name: " + className);
     }
-    return sb.toString();
+    String ret = sb.toString();
+    walaToSootNameTable.put(cl, ret);
+    return ret;
   }
+
 }

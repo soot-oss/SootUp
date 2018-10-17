@@ -56,9 +56,4 @@ public class JOrExpr extends AbstractIntLongBinopExpr {
     return new JOrExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
 
-  @Override
-  public void toString(IStmtPrinter up) {
-    // TODO Auto-generated method stub
-
-  }
 }

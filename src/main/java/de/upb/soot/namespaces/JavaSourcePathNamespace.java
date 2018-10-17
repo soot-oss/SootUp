@@ -22,10 +22,9 @@ public class JavaSourcePathNamespace extends AbstractNamespace {
    * 
    * @param sourcePath
    *          the source code path to search in
-   * @param classProvider
    */
-  public JavaSourcePathNamespace(String sourcePath, IClassProvider classProvider) {
-    super(classProvider);
+  public JavaSourcePathNamespace(String sourcePath) {
+    super(null);
     this.sourcePath = sourcePath;
   }
 
