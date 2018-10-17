@@ -4,36 +4,14 @@
  */
 package de.upb.soot.frontends.java;
 
-import de.upb.soot.core.Body;
-import de.upb.soot.core.Modifier;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.basic.LocalGenerator;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.ArrayType;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.NullType;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.VoidType;
-import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
-import de.upb.soot.signatures.ClassSignature;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.views.IView;
-import de.upb.soot.views.JavaView;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.cast.loader.AstClass;
@@ -65,15 +43,39 @@ import com.ibm.wala.ssa.SSAReturnInstruction;
 import com.ibm.wala.ssa.SSASwitchInstruction;
 import com.ibm.wala.ssa.SSAThrowInstruction;
 import com.ibm.wala.types.TypeReference;
+import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
+import de.upb.soot.core.Body;
+import de.upb.soot.core.Modifier;
+import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootField;
+import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.LocalGenerator;
+import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.type.ArrayType;
+import de.upb.soot.jimple.common.type.BooleanType;
+import de.upb.soot.jimple.common.type.ByteType;
+import de.upb.soot.jimple.common.type.CharType;
+import de.upb.soot.jimple.common.type.DoubleType;
+import de.upb.soot.jimple.common.type.FloatType;
+import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.LongType;
+import de.upb.soot.jimple.common.type.NullType;
+import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.ShortType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.common.type.VoidType;
+import de.upb.soot.namespaces.INamespace;
+import de.upb.soot.namespaces.JavaSourcePathNamespace;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
+import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.views.IView;
+import de.upb.soot.views.JavaView;
 
 /**
  * Converter which converts WALA IR to jimple.
@@ -109,23 +111,19 @@ public class WalaIRToJimpleConverter {
     view.addSootClass(sootClass);
     sootClass.setApplicationClass();
     // convert fields
-    for (IField walaField : walaClass.getAllFields()) {
-      if (walaField instanceof AstField) {
-        SootField sootField = convertField((AstField) walaField);
-        if (sootClass.getFieldUnsafe(sootField.getName(), sootField.getType()) == null) {
-          sootClass.addField(sootField);
+    Set<IField> fields = HashSetFactory.make(walaClass.getDeclaredInstanceFields());
+    fields.addAll(walaClass.getDeclaredStaticFields());
+    for (IField walaField : fields) {
+    	SootField sootField = convertField((AstField) walaField);
+    	if (sootClass.getFieldUnsafe(sootField.getName(), sootField.getType()) == null) {
+    	sootClass.addField(sootField);
         }
-      } else {
-        // TODO: sometimes also get com.ibm.wala.classLoader.FieldImpl
-      }
     }
     // convert methods
-    for (IMethod walaMethod : walaClass.getAllMethods()) {
-      if (walaMethod instanceof AstMethod) {
-        convertMethod(sootClass, (AstMethod) walaMethod);
-      } else {
-        // TODO: sometimes also get com.ibm.wala.classLoader.ShrikeCTMethod
-      }
+    for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
+    	if (! walaMethod.isAbstract()) {
+    		convertMethod(sootClass, (AstMethod) walaMethod);
+    	}
     }
     // add source position
     Position position = walaClass.getSourcePosition();
@@ -160,11 +158,9 @@ public class WalaIRToJimpleConverter {
     // create SootMethond instance
     String name = walaMethod.getName().toString();
     List<Type> paraTypes = new ArrayList<>();
-    if (walaMethod.symbolTable() != null) {
-      for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
-        Type paraType = convertType(walaMethod.getParameterType(i));
+    for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
+    	Type paraType = convertType(walaMethod.getParameterType(i));
         paraTypes.add(paraType);
-      }
     }
     Type returnType = convertType(walaMethod.getReturnType());
     EnumSet<Modifier> modifier = convertModifiers(walaMethod);
@@ -296,16 +292,11 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
 
         for (SSAInstruction inst : insts) {
-          if (inst != null) {
           IStmt stmt = convertInstruction(inst);
           // set position for each statement
           Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
           stmt.setPosition(stmtPos);
-            body.addStmt(stmt);
-          }
-          else {
-            // TODO by converting foo.bar.hello.world.CopyOfLoopsAndLabels, insts contains null element.
-          }
+          body.addStmt(stmt);
         }
         return Optional.of(body);
       }
