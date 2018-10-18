@@ -23,7 +23,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
   }
 
   public static Props props(IView view, AbstractClassSource classSource) {
-     return Props.create(ClassBuilderActor.class, view, classSource);
+    return Props.create(ClassBuilderActor.class, view, classSource);
   }
 
   public static Props props(de.upb.soot.core.SootClass sootClass, de.upb.soot.core.SootMethod sootMethod) {
@@ -41,8 +41,18 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
   private void reify(ReifyMessage m) {
     log().info("Start reifying for [{}].", classSource.getClassSignature().toString());
+    // FIXME: new content
     IClassProvider classProvider = classSource.getClassProvider();
-    sootClass = classProvider.reify(classSource);
+    de.upb.soot.namespaces.classprovider.ISourceContent content = classProvider.getContent(classSource);
+
+    // FIXME --- if module info ... dispatch
+    // actually I don't want if, but dispatch based on type .. but hard for constructor calls...
+
+
+    // FIXME: somewhere a soot class needs to be created ....
+    sootClass = new de.upb.soot.core.SootClass(view, classSource, content);
+
+    sootClass.resolve(de.upb.soot.core.ResolvingLevel.SIGNATURES);
 
     sender().tell(sootClass, this.getSelf());
 
@@ -54,18 +64,6 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     if (sootClass == null) {
       throw new IllegalStateException();
     }
-
-    IClassProvider classProvider = classSource.getClassProvider();
-    sootClass = classProvider.resolve(sootClass);
-
-    /**
-     * TODO: add logic here, to create actors for Methods, and fields ....
-     */
-    // process methods
-    // for each method
-    // TODO: make a actor, e.g., maybe different levels, reify = init, resolve=Signature, fullRes = body?
-
-    // ?? for all dependencies??
 
     for (SootMethod method : sootClass.getMethods()) {
       //
@@ -88,7 +86,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     private final de.upb.soot.core.SootClass sootClass;
     private de.upb.soot.core.SootMethod method;
 
-    public MethodBuilderActor(de.upb.soot.core.SootClass sootClass, de.upb.soot.core.SootMethod method2) {
+    public MethodBuilderActor(de.upb.soot.core.SootClass sootClass, de.upb.soot.core.SootMethod method) {
       this.sootClass = sootClass;
       this.method = method;
     }
@@ -101,8 +99,8 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
     private void resolveMethod(ResolveMethodMessage m) {
       log().info("Start reifying method [{}].", method.getSignature().toString());
-      IClassProvider classProvider = method.declaringClass().getClassSource().getClassProvider();
-      method = classProvider.resolveMethodBody(method);
+
+      method.retrieveActiveBody();
 
       sender().tell(method, this.getSelf());
 

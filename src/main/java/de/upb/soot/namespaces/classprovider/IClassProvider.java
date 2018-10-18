@@ -1,7 +1,6 @@
 package de.upb.soot.namespaces.classprovider;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.ClassSignature;
@@ -32,7 +31,7 @@ public interface IClassProvider {
    * 
    * @return
    */
-  SourceContent getContent(AbstractClassSource classSource);
+  de.upb.soot.namespaces.classprovider.ISourceContent getContent(AbstractClassSource classSource);
 
   /**
    * TODO AD: Methods the ASM classProvider may implement to resolve a class

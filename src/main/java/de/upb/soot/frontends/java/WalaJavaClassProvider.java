@@ -2,7 +2,6 @@ package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.core.SourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
@@ -26,7 +25,7 @@ public class WalaJavaClassProvider implements IClassProvider {
   }
 
   @Override
-  public SourceContent getContent(AbstractClassSource classSource) {
+  public de.upb.soot.namespaces.classprovider.ISourceContent getContent(AbstractClassSource classSource) {
     // TODO Auto-generated method stub
     return null;
   }
