@@ -4,7 +4,8 @@ import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.views.IView;
 
 /**
- * Abstract class represents a class/module lives in {@link IView}.
+ * Abstract class represents a class/module lives in {@link IView}. It may have different implementations, since we want to
+ * support multiple languages.
  * 
  * @author Linghui Luo
  *

@@ -124,7 +124,7 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   public void resolve(de.upb.soot.core.ResolvingLevel resolvingLevel) {
-    sourceContent.resolve(resolvingLevel, getView());
+    sourceContent.resolve(resolvingLevel, getView(), this);
   }
 
 

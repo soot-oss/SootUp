@@ -1,5 +1,6 @@
 package de.upb.soot.namespaces.classprovider;
 
+import de.upb.soot.core.SootClass;
 import de.upb.soot.views.IView;
 
 /**
@@ -10,5 +11,5 @@ import de.upb.soot.views.IView;
  * @author Ben Hermann
  */
 public interface ISourceContent {
-  public de.upb.soot.core.SootClass resolve(de.upb.soot.core.ResolvingLevel level, IView view);
+  public void resolve(de.upb.soot.core.ResolvingLevel level, IView view, SootClass sootClass);
 }

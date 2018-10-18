@@ -12,6 +12,7 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.util.ArrayNumberer;
 import de.upb.soot.util.StringNumberer;
@@ -19,7 +20,6 @@ import de.upb.soot.util.StringNumberer;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-
 
 /**
  * A view on code.
@@ -30,8 +30,7 @@ import java.util.stream.Stream;
  */
 public interface IView {
   /**
-   * Returns all classes in the view.
-   * The objects returned here are immutable.
+   * Returns all classes in the view. The objects returned here are immutable.
    * 
    * @return A list of classes
    */
@@ -84,6 +83,9 @@ public interface IView {
 
   ArrayNumberer<SootField> getFieldNumberer();
 
+  // as discussed getThe SignatureFactor
+  SignatureFactory getSignatureFacotry();
+
   boolean doneResolving();
 
   StringNumberer getSubSigNumberer();
@@ -93,8 +95,6 @@ public interface IView {
   List<SootField> getClassNumberer();
 
   String quotedNameOf(String name);
-
-
 
   boolean allowsPhantomRefs();
 
@@ -107,11 +107,12 @@ public interface IView {
   RefType getObjectType();
 
   // TODO. remove references to this method later
-  SootClass getSootClass(String className);
+  Optional<SootClass> getSootClass(ClassSignature superSignature);
 
   RefType getRefType(String className);
 
   Options getOptions();
 
+  SootClass getSootClass(String className);
 
 }

@@ -49,7 +49,6 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     // FIXME --- if module info ... dispatch
     // actually I don't want if, but dispatch based on type .. but hard for constructor calls...
 
-
     // FIXME: somewhere a soot class needs to be created ....
     sootClass = new SootClass(view, classSource, content, null, null, null, null, null, null);
     sootClass.resolve(de.upb.soot.core.ResolvingLevel.SIGNATURES);

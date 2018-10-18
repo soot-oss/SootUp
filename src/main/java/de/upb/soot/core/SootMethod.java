@@ -411,6 +411,7 @@ public class SootMethod extends ClassMember {
   }
 
   protected NumberedString subsignature;
+  private IMethodSource methodSource;
 
   public NumberedString getNumberedSubSignature() {
     return subsignature;
@@ -501,5 +502,9 @@ public class SootMethod extends ClassMember {
 
   public DebuggingInformation getDebugInfo() {
     return this.debugInfo;
+  }
+
+  public void setSource(IMethodSource methodSource) {
+    this.methodSource = methodSource;
   }
 }
