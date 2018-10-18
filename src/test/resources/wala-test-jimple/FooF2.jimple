@@ -1,0 +1,42 @@
+class FooF2 extends java.lang.Object
+{
+
+    void <init>()
+    {
+        FooF2 r0;
+
+        r0 := @this: FooF2;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void bar() throws BadLanguageExceptionF2
+    {
+        FooF2 r0;
+        BadLanguageExceptionF2 $r1;
+
+        r0 := @this: FooF2;
+
+        $r1 = new BadLanguageExceptionF2;
+
+        specialinvoke $r1.<BadLanguageExceptionF2: void <init>()>();
+
+        throw $r1;
+    }
+
+    public void bletch() throws java.io.IOException
+    {
+        FooF2 r0;
+        java.io.IOException $r1;
+
+        r0 := @this: FooF2;
+
+        $r1 = new java.io.IOException;
+
+        specialinvoke $r1.<java.io.IOException: void <init>(java.lang.String)>("Burp!");
+
+        throw $r1;
+    }
+}

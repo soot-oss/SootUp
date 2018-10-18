@@ -1,0 +1,106 @@
+public final enum class javaonepointfive.EnumSwitch$Palo extends java.lang.Enum
+{
+    public static final enum javaonepointfive.EnumSwitch$Palo OROS;
+    public static final enum javaonepointfive.EnumSwitch$Palo COPAS;
+    public static final enum javaonepointfive.EnumSwitch$Palo ESPADAS;
+    public static final enum javaonepointfive.EnumSwitch$Palo BASTOS;
+    private static final javaonepointfive.EnumSwitch$Palo[] $VALUES;
+
+    public static javaonepointfive.EnumSwitch$Palo[] values()
+    {
+        javaonepointfive.EnumSwitch$Palo[] $r0, $r2;
+        java.lang.Object $r1;
+
+        $r0 = <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo[] $VALUES>;
+
+        $r1 = virtualinvoke $r0.<java.lang.Object: java.lang.Object clone()>();
+
+        $r2 = (javaonepointfive.EnumSwitch$Palo[]) $r1;
+
+        return $r2;
+    }
+
+    public static javaonepointfive.EnumSwitch$Palo valueOf(java.lang.String)
+    {
+        java.lang.String r0;
+        java.lang.Enum $r1;
+        javaonepointfive.EnumSwitch$Palo $r2;
+
+        r0 := @parameter0: java.lang.String;
+
+        $r1 = staticinvoke <java.lang.Enum: java.lang.Enum valueOf(java.lang.Class,java.lang.String)>(class "Ljavaonepointfive/EnumSwitch$Palo;", r0);
+
+        $r2 = (javaonepointfive.EnumSwitch$Palo) $r1;
+
+        return $r2;
+    }
+
+    private void <init>(java.lang.String, int)
+    {
+        javaonepointfive.EnumSwitch$Palo r0;
+        java.lang.String r1;
+        int i0;
+
+        r0 := @this: javaonepointfive.EnumSwitch$Palo;
+
+        r1 := @parameter0: java.lang.String;
+
+        i0 := @parameter1: int;
+
+        specialinvoke r0.<java.lang.Enum: void <init>(java.lang.String,int)>(r1, i0);
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        javaonepointfive.EnumSwitch$Palo $r0, $r1, $r2, $r3, $r5, $r6, $r7, $r8;
+        javaonepointfive.EnumSwitch$Palo[] $r4;
+
+        $r0 = new javaonepointfive.EnumSwitch$Palo;
+
+        specialinvoke $r0.<javaonepointfive.EnumSwitch$Palo: void <init>(java.lang.String,int)>("OROS", 0);
+
+        <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo OROS> = $r0;
+
+        $r1 = new javaonepointfive.EnumSwitch$Palo;
+
+        specialinvoke $r1.<javaonepointfive.EnumSwitch$Palo: void <init>(java.lang.String,int)>("COPAS", 1);
+
+        <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo COPAS> = $r1;
+
+        $r2 = new javaonepointfive.EnumSwitch$Palo;
+
+        specialinvoke $r2.<javaonepointfive.EnumSwitch$Palo: void <init>(java.lang.String,int)>("ESPADAS", 2);
+
+        <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo ESPADAS> = $r2;
+
+        $r3 = new javaonepointfive.EnumSwitch$Palo;
+
+        specialinvoke $r3.<javaonepointfive.EnumSwitch$Palo: void <init>(java.lang.String,int)>("BASTOS", 3);
+
+        <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo BASTOS> = $r3;
+
+        $r4 = newarray (javaonepointfive.EnumSwitch$Palo)[4];
+
+        $r5 = <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo OROS>;
+
+        $r4[0] = $r5;
+
+        $r6 = <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo COPAS>;
+
+        $r4[1] = $r6;
+
+        $r7 = <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo ESPADAS>;
+
+        $r4[2] = $r7;
+
+        $r8 = <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo BASTOS>;
+
+        $r4[3] = $r8;
+
+        <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo[] $VALUES> = $r4;
+
+        return;
+    }
+}

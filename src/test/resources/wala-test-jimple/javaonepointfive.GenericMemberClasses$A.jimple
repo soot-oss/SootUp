@@ -1,0 +1,70 @@
+public class javaonepointfive.GenericMemberClasses$A extends java.lang.Object implements java.util.Iterator
+{
+    java.lang.Object x;
+    private int localChangeID;
+    final javaonepointfive.GenericMemberClasses this$0;
+
+    protected void <init>(javaonepointfive.GenericMemberClasses)
+    {
+        javaonepointfive.GenericMemberClasses$A r0;
+        javaonepointfive.GenericMemberClasses r1;
+
+        r0 := @this: javaonepointfive.GenericMemberClasses$A;
+
+        r1 := @parameter0: javaonepointfive.GenericMemberClasses;
+
+        r0.<javaonepointfive.GenericMemberClasses$A: javaonepointfive.GenericMemberClasses this$0> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<javaonepointfive.GenericMemberClasses$A: java.lang.Object x> = null;
+
+        return;
+    }
+
+    public boolean hasNext()
+    {
+        javaonepointfive.GenericMemberClasses$A r0;
+        int $i0;
+        boolean $z0;
+
+        r0 := @this: javaonepointfive.GenericMemberClasses$A;
+
+        $i0 = r0.<javaonepointfive.GenericMemberClasses$A: int localChangeID>;
+
+        if $i0 != 5 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        return $z0;
+    }
+
+    public java.lang.Object next()
+    {
+        javaonepointfive.GenericMemberClasses$A r0;
+        java.lang.Object $r1;
+
+        r0 := @this: javaonepointfive.GenericMemberClasses$A;
+
+        r0.<javaonepointfive.GenericMemberClasses$A: int localChangeID> = 5;
+
+        $r1 = r0.<javaonepointfive.GenericMemberClasses$A: java.lang.Object x>;
+
+        return $r1;
+    }
+
+    public void remove()
+    {
+        javaonepointfive.GenericMemberClasses$A r0;
+
+        r0 := @this: javaonepointfive.GenericMemberClasses$A;
+
+        return;
+    }
+}

@@ -1,0 +1,89 @@
+class javaonepointfive.EnumSwitch$1 extends java.lang.Object
+{
+    static final int[] $SwitchMap$javaonepointfive$EnumSwitch$Palo;
+
+    static void <clinit>()
+    {
+        javaonepointfive.EnumSwitch$Palo[] $r0;
+        int $i0, $i1, $i2, $i3, $i4;
+        int[] $r1, $r3, $r5, $r7, $r9;
+        javaonepointfive.EnumSwitch$Palo $r2, $r4, $r6, $r8;
+        java.lang.NoSuchFieldError $r10, $r11, $r12, $r13;
+
+        $r0 = staticinvoke <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo[] values()>();
+
+        $i0 = lengthof $r0;
+
+        $r1 = newarray (int)[$i0];
+
+        <javaonepointfive.EnumSwitch$1: int[] $SwitchMap$javaonepointfive$EnumSwitch$Palo> = $r1;
+
+     label01:
+        $r3 = <javaonepointfive.EnumSwitch$1: int[] $SwitchMap$javaonepointfive$EnumSwitch$Palo>;
+
+        $r2 = <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo OROS>;
+
+        $i1 = virtualinvoke $r2.<javaonepointfive.EnumSwitch$Palo: int ordinal()>();
+
+        $r3[$i1] = 1;
+
+     label02:
+        goto label04;
+
+     label03:
+        $r11 := @caughtexception;
+
+     label04:
+        $r5 = <javaonepointfive.EnumSwitch$1: int[] $SwitchMap$javaonepointfive$EnumSwitch$Palo>;
+
+        $r4 = <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo COPAS>;
+
+        $i2 = virtualinvoke $r4.<javaonepointfive.EnumSwitch$Palo: int ordinal()>();
+
+        $r5[$i2] = 2;
+
+     label05:
+        goto label07;
+
+     label06:
+        $r13 := @caughtexception;
+
+     label07:
+        $r7 = <javaonepointfive.EnumSwitch$1: int[] $SwitchMap$javaonepointfive$EnumSwitch$Palo>;
+
+        $r6 = <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo ESPADAS>;
+
+        $i3 = virtualinvoke $r6.<javaonepointfive.EnumSwitch$Palo: int ordinal()>();
+
+        $r7[$i3] = 3;
+
+     label08:
+        goto label10;
+
+     label09:
+        $r12 := @caughtexception;
+
+     label10:
+        $r9 = <javaonepointfive.EnumSwitch$1: int[] $SwitchMap$javaonepointfive$EnumSwitch$Palo>;
+
+        $r8 = <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo BASTOS>;
+
+        $i4 = virtualinvoke $r8.<javaonepointfive.EnumSwitch$Palo: int ordinal()>();
+
+        $r9[$i4] = 4;
+
+     label11:
+        goto label13;
+
+     label12:
+        $r10 := @caughtexception;
+
+     label13:
+        return;
+
+        catch java.lang.NoSuchFieldError from label01 to label02 with label03;
+        catch java.lang.NoSuchFieldError from label04 to label05 with label06;
+        catch java.lang.NoSuchFieldError from label07 to label08 with label09;
+        catch java.lang.NoSuchFieldError from label10 to label11 with label12;
+    }
+}

@@ -1,0 +1,80 @@
+final class IntWrapper extends PrimitiveWrapper
+{
+    private int val;
+
+    public void <init>(int)
+    {
+        IntWrapper r0;
+        int i0;
+
+        r0 := @this: IntWrapper;
+
+        i0 := @parameter0: int;
+
+        specialinvoke r0.<PrimitiveWrapper: void <init>()>();
+
+        r0.<IntWrapper: int val> = i0;
+
+        return;
+    }
+
+    public int intValue()
+    {
+        IntWrapper r0;
+        int $i0;
+
+        r0 := @this: IntWrapper;
+
+        $i0 = r0.<IntWrapper: int val>;
+
+        return $i0;
+    }
+
+    public void setIntValue(int)
+    {
+        IntWrapper r0;
+        int i0;
+
+        r0 := @this: IntWrapper;
+
+        i0 := @parameter0: int;
+
+        r0.<IntWrapper: int val> = i0;
+
+        return;
+    }
+
+    public boolean equals(java.lang.Object)
+    {
+        IntWrapper r0, $r2;
+        java.lang.Object r1;
+        boolean $z0, $z1;
+        int $i0, $i1;
+
+        r0 := @this: IntWrapper;
+
+        r1 := @parameter0: java.lang.Object;
+
+        $z0 = r1 instanceof IntWrapper;
+
+        if $z0 == 0 goto label1;
+
+        $r2 = (IntWrapper) r1;
+
+        $i1 = $r2.<IntWrapper: int val>;
+
+        $i0 = r0.<IntWrapper: int val>;
+
+        if $i1 != $i0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        return $z1;
+    }
+}

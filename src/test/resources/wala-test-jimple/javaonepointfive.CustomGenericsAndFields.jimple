@@ -1,0 +1,195 @@
+public class javaonepointfive.CustomGenericsAndFields extends java.lang.Object
+{
+    static javaonepointfive.ConcreteGeneric2 cg2;
+
+    public void <init>()
+    {
+        javaonepointfive.CustomGenericsAndFields r0;
+
+        r0 := @this: javaonepointfive.CustomGenericsAndFields;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static javaonepointfive.ConcreteGeneric2 cg2WithSideEffects()
+    {
+        java.io.PrintStream $r0;
+        javaonepointfive.ConcreteGeneric2 $r1;
+
+        $r0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("look at me! I\'m a side effect!");
+
+        $r1 = <javaonepointfive.CustomGenericsAndFields: javaonepointfive.ConcreteGeneric2 cg2>;
+
+        return $r1;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.CustomGenericsAndFields $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.CustomGenericsAndFields;
+
+        specialinvoke $r1.<javaonepointfive.CustomGenericsAndFields: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.CustomGenericsAndFields: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.CustomGenericsAndFields r0;
+        java.lang.String r3, r4, r6, r7, r8, $r14, $r17, $r31, $r35, $r45, r54;
+        java.lang.Object $r10, $r13, $r19, $r23, $r26, $r30, $r34, $r42;
+        java.io.PrintStream $r12, $r24, $r27, $r36, $r48;
+        java.lang.StringBuilder $r15, $r16, $r43, $r44, $r46, $r47, r50, r52, r53;
+        javaonepointfive.ConcreteGeneric2 $r18, $r20, $r22, $r25, $r29, $r33, $r37, $r38, $r41;
+        javaonepointfive.IGeneric $r28, $r32;
+        javaonepointfive.ConcreteGeneric r49;
+        javaonepointfive.MyGeneric r51;
+
+        r0 := @this: javaonepointfive.CustomGenericsAndFields;
+
+        r49 = new javaonepointfive.ConcreteGeneric;
+
+        specialinvoke r49.<javaonepointfive.ConcreteGeneric: void <init>()>();
+
+        $r10 = interfaceinvoke r49.<javaonepointfive.IGeneric: java.lang.Object bar(java.lang.Object,java.lang.Object)>("hello", "world");
+
+        r3 = (java.lang.String) $r10;
+
+        $r12 = <java.lang.System: java.io.PrintStream out>;
+
+        r50 = new java.lang.StringBuilder;
+
+        specialinvoke r50.<java.lang.StringBuilder: void <init>()>();
+
+        $r13 = virtualinvoke r49.<javaonepointfive.ConcreteGeneric: java.lang.Object foo()>();
+
+        $r14 = (java.lang.String) $r13;
+
+        $r15 = virtualinvoke r50.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r14);
+
+        $r16 = virtualinvoke $r15.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r3);
+
+        $r17 = virtualinvoke $r16.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r12.<java.io.PrintStream: void println(java.lang.String)>($r17);
+
+        $r18 = <javaonepointfive.CustomGenericsAndFields: javaonepointfive.ConcreteGeneric2 cg2>;
+
+        $r19 = virtualinvoke $r18.<javaonepointfive.ConcreteGeneric2: java.lang.Object bar(java.lang.Object,java.lang.Object)>("a", "b");
+
+        r4 = (java.lang.String) $r19;
+
+        $r20 = <javaonepointfive.CustomGenericsAndFields: javaonepointfive.ConcreteGeneric2 cg2>;
+
+        virtualinvoke $r20.<javaonepointfive.ConcreteGeneric2: void setFoo(java.lang.Object)>("real one");
+
+        r51 = new javaonepointfive.MyGeneric;
+
+        $r22 = <javaonepointfive.CustomGenericsAndFields: javaonepointfive.ConcreteGeneric2 cg2>;
+
+        specialinvoke r51.<javaonepointfive.MyGeneric: void <init>(java.lang.Object,javaonepointfive.IGeneric)>("useless", $r22);
+
+        $r23 = virtualinvoke r51.<javaonepointfive.MyGeneric: java.lang.Object doFoo()>();
+
+        r6 = (java.lang.String) $r23;
+
+        $r24 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r24.<java.io.PrintStream: void println(java.lang.String)>(r6);
+
+        $r25 = <javaonepointfive.CustomGenericsAndFields: javaonepointfive.ConcreteGeneric2 cg2>;
+
+        $r26 = $r25.<javaonepointfive.ConcreteGeneric2: java.lang.Object x>;
+
+        r7 = (java.lang.String) $r26;
+
+        $r27 = <java.lang.System: java.io.PrintStream out>;
+
+        $r28 = virtualinvoke r51.<javaonepointfive.MyGeneric: javaonepointfive.IGeneric getB()>();
+
+        $r29 = (javaonepointfive.ConcreteGeneric2) $r28;
+
+        $r30 = $r29.<javaonepointfive.ConcreteGeneric2: java.lang.Object y>;
+
+        $r31 = (java.lang.String) $r30;
+
+        virtualinvoke $r27.<java.io.PrintStream: void println(java.lang.String)>($r31);
+
+        $r36 = <java.lang.System: java.io.PrintStream out>;
+
+        $r32 = r51.<javaonepointfive.MyGeneric: javaonepointfive.IGeneric b>;
+
+        $r33 = (javaonepointfive.ConcreteGeneric2) $r32;
+
+        $r34 = $r33.<javaonepointfive.ConcreteGeneric2: java.lang.Object y>;
+
+        $r35 = (java.lang.String) $r34;
+
+        virtualinvoke $r36.<java.io.PrintStream: void println(java.lang.String)>($r35);
+
+        $r37 = <javaonepointfive.CustomGenericsAndFields: javaonepointfive.ConcreteGeneric2 cg2>;
+
+        $r37.<javaonepointfive.ConcreteGeneric2: java.lang.Object x> = null;
+
+        $r38 = <javaonepointfive.CustomGenericsAndFields: javaonepointfive.ConcreteGeneric2 cg2>;
+
+        $r38.<javaonepointfive.ConcreteGeneric2: java.lang.Object x> = "hello";
+
+        r52 = new java.lang.StringBuilder;
+
+        specialinvoke r52.<java.lang.StringBuilder: void <init>()>();
+
+        r53 = new java.lang.StringBuilder;
+
+        specialinvoke r53.<java.lang.StringBuilder: void <init>()>();
+
+        $r41 = staticinvoke <javaonepointfive.CustomGenericsAndFields: javaonepointfive.ConcreteGeneric2 cg2WithSideEffects()>();
+
+        $r42 = $r41.<javaonepointfive.ConcreteGeneric2: java.lang.Object y>;
+
+        r54 = (java.lang.String) $r42;
+
+        $r43 = virtualinvoke r53.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r54);
+
+        $r44 = virtualinvoke $r43.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("hey");
+
+        $r45 = virtualinvoke $r44.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        $r41.<javaonepointfive.ConcreteGeneric2: java.lang.Object y> = $r45;
+
+        $r46 = virtualinvoke r52.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r45);
+
+        $r47 = virtualinvoke $r46.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("ya");
+
+        r8 = virtualinvoke $r47.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        $r48 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r48.<java.io.PrintStream: void println(java.lang.String)>(r8);
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        javaonepointfive.ConcreteGeneric2 $r0;
+
+        $r0 = new javaonepointfive.ConcreteGeneric2;
+
+        specialinvoke $r0.<javaonepointfive.ConcreteGeneric2: void <init>()>();
+
+        <javaonepointfive.CustomGenericsAndFields: javaonepointfive.ConcreteGeneric2 cg2> = $r0;
+
+        return;
+    }
+}

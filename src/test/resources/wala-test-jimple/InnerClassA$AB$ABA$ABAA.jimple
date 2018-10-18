@@ -1,0 +1,56 @@
+class InnerClassA$AB$ABA$ABAA extends java.lang.Object
+{
+    final InnerClassA$AB$ABA this$2;
+
+    void <init>(InnerClassA$AB$ABA)
+    {
+        InnerClassA$AB$ABA$ABAA r0;
+        InnerClassA$AB$ABA r1;
+
+        r0 := @this: InnerClassA$AB$ABA$ABAA;
+
+        r1 := @parameter0: InnerClassA$AB$ABA;
+
+        r0.<InnerClassA$AB$ABA$ABAA: InnerClassA$AB$ABA this$2> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    int getABA_X()
+    {
+        InnerClassA$AB$ABA$ABAA r0;
+        InnerClassA$AB$ABA $r1;
+        int $i0;
+
+        r0 := @this: InnerClassA$AB$ABA$ABAA;
+
+        $r1 = r0.<InnerClassA$AB$ABA$ABAA: InnerClassA$AB$ABA this$2>;
+
+        $i0 = $r1.<InnerClassA$AB$ABA: int aba_x>;
+
+        return $i0;
+    }
+
+    int getA_X()
+    {
+        InnerClassA$AB$ABA$ABAA r0;
+        InnerClassA$AB$ABA $r1;
+        InnerClassA$AB $r2;
+        InnerClassA $r3;
+        int $i0;
+
+        r0 := @this: InnerClassA$AB$ABA$ABAA;
+
+        $r1 = r0.<InnerClassA$AB$ABA$ABAA: InnerClassA$AB$ABA this$2>;
+
+        $r2 = $r1.<InnerClassA$AB$ABA: InnerClassA$AB this$1>;
+
+        $r3 = $r2.<InnerClassA$AB: InnerClassA this$0>;
+
+        $i0 = $r3.<InnerClassA: int a_x>;
+
+        return $i0;
+    }
+}

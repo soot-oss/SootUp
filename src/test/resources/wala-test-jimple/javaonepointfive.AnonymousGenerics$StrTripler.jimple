@@ -1,0 +1,91 @@
+class javaonepointfive.AnonymousGenerics$StrTripler extends java.lang.Object implements javaonepointfive.AnonymousGenerics$Ops
+{
+
+    void <init>()
+    {
+        javaonepointfive.AnonymousGenerics$StrTripler r0;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics$StrTripler;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public java.lang.String unary(java.lang.String)
+    {
+        javaonepointfive.AnonymousGenerics$StrTripler r0;
+        java.lang.String r1, $r6;
+        java.lang.StringBuilder $r2, $r3, $r4, $r5;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics$StrTripler;
+
+        r1 := @parameter0: java.lang.String;
+
+        $r2 = new java.lang.StringBuilder;
+
+        specialinvoke $r2.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        return $r6;
+    }
+
+    public java.lang.String nullary()
+    {
+        javaonepointfive.AnonymousGenerics$StrTripler r0;
+        java.lang.StringBuilder $r2, $r3, $r4, $r5;
+        java.lang.String $r6;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics$StrTripler;
+
+        $r2 = new java.lang.StringBuilder;
+
+        specialinvoke $r2.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("talk about it ");
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("talk about it ");
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("talk about it ");
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        return $r6;
+    }
+
+    public volatile java.lang.Object unary(java.lang.Object)
+    {
+        javaonepointfive.AnonymousGenerics$StrTripler r0;
+        java.lang.Object r1;
+        java.lang.String $r2, $r3;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics$StrTripler;
+
+        r1 := @parameter0: java.lang.Object;
+
+        $r2 = (java.lang.String) r1;
+
+        $r3 = virtualinvoke r0.<javaonepointfive.AnonymousGenerics$StrTripler: java.lang.String unary(java.lang.String)>($r2);
+
+        return $r3;
+    }
+
+    public volatile java.lang.Object nullary()
+    {
+        javaonepointfive.AnonymousGenerics$StrTripler r0;
+        java.lang.String $r1;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics$StrTripler;
+
+        $r1 = virtualinvoke r0.<javaonepointfive.AnonymousGenerics$StrTripler: java.lang.String nullary()>();
+
+        return $r1;
+    }
+}

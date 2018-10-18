@@ -1,0 +1,5 @@
+interface  JLex.SparseBitSet$BinOp extends java.lang.Object
+{
+
+    public abstract long op(long, long);
+}

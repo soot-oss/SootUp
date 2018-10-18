@@ -1,0 +1,35 @@
+class alreadywalaunittests.InnerClassAA$AB$ABA$ABAB extends java.lang.Object
+{
+    final alreadywalaunittests.InnerClassAA$AB$ABA this$2;
+
+    void <init>(alreadywalaunittests.InnerClassAA$AB$ABA)
+    {
+        alreadywalaunittests.InnerClassAA$AB$ABA$ABAB r0;
+        alreadywalaunittests.InnerClassAA$AB$ABA r1;
+
+        r0 := @this: alreadywalaunittests.InnerClassAA$AB$ABA$ABAB;
+
+        r1 := @parameter0: alreadywalaunittests.InnerClassAA$AB$ABA;
+
+        r0.<alreadywalaunittests.InnerClassAA$AB$ABA$ABAB: alreadywalaunittests.InnerClassAA$AB$ABA this$2> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    int getABA_X()
+    {
+        alreadywalaunittests.InnerClassAA$AB$ABA$ABAB r0;
+        alreadywalaunittests.InnerClassAA$AB$ABA $r1;
+        int $i0;
+
+        r0 := @this: alreadywalaunittests.InnerClassAA$AB$ABA$ABAB;
+
+        $r1 = r0.<alreadywalaunittests.InnerClassAA$AB$ABA$ABAB: alreadywalaunittests.InnerClassAA$AB$ABA this$2>;
+
+        $i0 = $r1.<alreadywalaunittests.InnerClassAA$AB$ABA: int aba_x>;
+
+        return $i0;
+    }
+}

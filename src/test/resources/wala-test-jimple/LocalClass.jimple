@@ -1,0 +1,83 @@
+public class LocalClass extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        LocalClass r0;
+
+        r0 := @this: LocalClass;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        java.lang.Integer r1;
+        LocalClass$1Foo $r3;
+        java.io.PrintStream $r4, $r5;
+        int $i0, $i1;
+        LocalClass $r6;
+
+        r0 := @parameter0: java.lang.String[];
+
+        r1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(6);
+
+        $r3 = new LocalClass$1Foo;
+
+        specialinvoke $r3.<LocalClass$1Foo: void <init>(int,java.lang.Integer)>(3, r1);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $i0 = virtualinvoke $r3.<LocalClass$1Foo: int getValue()>();
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i0);
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $i1 = virtualinvoke $r3.<LocalClass$1Foo: int getValueBase()>();
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i1);
+
+        $r6 = new LocalClass;
+
+        specialinvoke $r6.<LocalClass: void <init>()>();
+
+        virtualinvoke $r6.<LocalClass: void method()>();
+
+        return;
+    }
+
+    public void method()
+    {
+        LocalClass r0;
+        java.lang.Integer r1;
+        LocalClass$2Foo $r3;
+        java.io.PrintStream $r4, $r5;
+        int $i0, $i1;
+
+        r0 := @this: LocalClass;
+
+        r1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(6);
+
+        $r3 = new LocalClass$2Foo;
+
+        specialinvoke $r3.<LocalClass$2Foo: void <init>(LocalClass,int,java.lang.Integer)>(r0, 3, r1);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $i0 = virtualinvoke $r3.<LocalClass$2Foo: int getValue()>();
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i0);
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $i1 = virtualinvoke $r3.<LocalClass$2Foo: int getValueBase()>();
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i1);
+
+        return;
+    }
+}

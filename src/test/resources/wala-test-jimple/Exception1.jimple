@@ -1,0 +1,66 @@
+public class Exception1 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        Exception1 r0;
+
+        r0 := @this: Exception1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        Exception1 $r2;
+        FooEx1 $r3;
+        FooEx2 $r4;
+        BadLanguageExceptionEx1 $r5;
+        java.lang.Throwable $r6;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r2 = new Exception1;
+
+        specialinvoke $r2.<Exception1: void <init>()>();
+
+     label1:
+        $r3 = new FooEx1;
+
+        specialinvoke $r3.<FooEx1: void <init>()>();
+
+        virtualinvoke $r3.<FooEx1: void bar()>();
+
+     label2:
+        goto label4;
+
+     label3:
+        $r5 := @caughtexception;
+
+        virtualinvoke $r5.<BadLanguageExceptionEx1: void printStackTrace()>();
+
+     label4:
+        $r4 = new FooEx2;
+
+        specialinvoke $r4.<FooEx2: void <init>()>();
+
+        virtualinvoke $r4.<FooEx2: void bar()>();
+
+     label5:
+        goto label7;
+
+     label6:
+        $r6 := @caughtexception;
+
+        virtualinvoke $r6.<java.lang.Throwable: void printStackTrace()>();
+
+     label7:
+        return;
+
+        catch BadLanguageExceptionEx1 from label1 to label2 with label3;
+        catch java.lang.Throwable from label4 to label5 with label6;
+    }
+}

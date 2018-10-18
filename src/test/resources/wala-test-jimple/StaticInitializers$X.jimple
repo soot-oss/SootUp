@@ -1,0 +1,50 @@
+class StaticInitializers$X extends java.lang.Object
+{
+    int x;
+    int y;
+
+    void <init>()
+    {
+        StaticInitializers$X r0;
+
+        r0 := @this: StaticInitializers$X;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    int sum()
+    {
+        StaticInitializers$X r0;
+        int $i0, $i1, $i2;
+
+        r0 := @this: StaticInitializers$X;
+
+        $i1 = r0.<StaticInitializers$X: int x>;
+
+        $i0 = r0.<StaticInitializers$X: int y>;
+
+        $i2 = $i1 + $i0;
+
+        return $i2;
+    }
+
+    int diff()
+    {
+        StaticInitializers$X r0;
+        int $i0, $i1, $i2, $i3;
+
+        r0 := @this: StaticInitializers$X;
+
+        $i2 = r0.<StaticInitializers$X: int x>;
+
+        $i0 = r0.<StaticInitializers$X: int y>;
+
+        $i1 = neg $i0;
+
+        $i3 = $i2 + $i1;
+
+        return $i3;
+    }
+}

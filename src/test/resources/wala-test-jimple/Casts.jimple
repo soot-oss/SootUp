@@ -1,0 +1,82 @@
+public class Casts extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        Casts r0;
+
+        r0 := @this: Casts;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        Casts $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new Casts;
+
+        specialinvoke $r1.<Casts: void <init>()>();
+
+        specialinvoke $r1.<Casts: void test(java.lang.String[])>(r0);
+
+        return;
+    }
+
+    private void test(java.lang.String[])
+    {
+        Casts r0;
+        java.lang.String[] r1;
+        long l0, $l6, $l7;
+        int i1;
+        short s2;
+        float f0, $f3, $f4;
+        java.lang.String $r2, $r3, $r4, $r5, $r6;
+        double $d4, $d5, $d6;
+
+        r0 := @this: Casts;
+
+        r1 := @parameter0: java.lang.String[];
+
+        $r2 = r1[0];
+
+        l0 = staticinvoke <java.lang.Long: long parseLong(java.lang.String)>($r2);
+
+        $r3 = r1[1];
+
+        i1 = staticinvoke <java.lang.Integer: int parseInt(java.lang.String)>($r3);
+
+        $r4 = r1[2];
+
+        s2 = staticinvoke <java.lang.Short: short parseShort(java.lang.String)>($r4);
+
+        $r5 = r1[3];
+
+        f0 = staticinvoke <java.lang.Float: float parseFloat(java.lang.String)>($r5);
+
+        $r6 = r1[4];
+
+        staticinvoke <java.lang.Double: double parseDouble(java.lang.String)>($r6);
+
+        $d4 = (double) f0;
+
+        $d5 = (double) l0;
+
+        $d6 = (double) i1;
+
+        $f3 = (float) i1;
+
+        $f4 = (float) s2;
+
+        $l6 = (long) i1;
+
+        $l7 = (long) s2;
+
+        return;
+    }
+}

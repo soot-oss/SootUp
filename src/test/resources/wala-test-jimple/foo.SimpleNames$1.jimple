@@ -1,0 +1,42 @@
+class foo.SimpleNames$1 extends java.lang.Object
+{
+    final foo.SimpleNames this$0;
+
+    void <init>(foo.SimpleNames)
+    {
+        foo.SimpleNames$1 r0;
+        foo.SimpleNames r1;
+
+        r0 := @this: foo.SimpleNames$1;
+
+        r1 := @parameter0: foo.SimpleNames;
+
+        r0.<foo.SimpleNames$1: foo.SimpleNames this$0> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public int hashCode()
+    {
+        foo.SimpleNames$1 r0;
+        foo.SimpleNames $r1, $r2;
+
+        r0 := @this: foo.SimpleNames$1;
+
+        $r1 = r0.<foo.SimpleNames$1: foo.SimpleNames this$0>;
+
+        $r1.<foo.SimpleNames: int f> = 5;
+
+        <foo.SimpleNames: int s> = 6;
+
+        $r2 = r0.<foo.SimpleNames$1: foo.SimpleNames this$0>;
+
+        $r2.<foo.SimpleNames: int f> = 5;
+
+        <foo.SimpleNames: int s> = 6;
+
+        return 5;
+    }
+}

@@ -1,0 +1,54 @@
+class foo.bar.hello.world.SuperEnclosing2 extends java.lang.Object
+{
+    private int seVar;
+
+    void <init>()
+    {
+        foo.bar.hello.world.SuperEnclosing2 r0;
+
+        r0 := @this: foo.bar.hello.world.SuperEnclosing2;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<foo.bar.hello.world.SuperEnclosing2: int seVar> = 6;
+
+        return;
+    }
+
+    public void setSEVar()
+    {
+        foo.bar.hello.world.SuperEnclosing2 r0;
+
+        r0 := @this: foo.bar.hello.world.SuperEnclosing2;
+
+        r0.<foo.bar.hello.world.SuperEnclosing2: int seVar> = 1001;
+
+        return;
+    }
+
+    static int access$000(foo.bar.hello.world.SuperEnclosing2)
+    {
+        foo.bar.hello.world.SuperEnclosing2 r0;
+        int $i0;
+
+        r0 := @parameter0: foo.bar.hello.world.SuperEnclosing2;
+
+        $i0 = r0.<foo.bar.hello.world.SuperEnclosing2: int seVar>;
+
+        return $i0;
+    }
+
+    static int access$002(foo.bar.hello.world.SuperEnclosing2, int)
+    {
+        foo.bar.hello.world.SuperEnclosing2 r0;
+        int i0;
+
+        r0 := @parameter0: foo.bar.hello.world.SuperEnclosing2;
+
+        i0 := @parameter1: int;
+
+        r0.<foo.bar.hello.world.SuperEnclosing2: int seVar> = i0;
+
+        return i0;
+    }
+}

@@ -1,0 +1,174 @@
+public class foo.bar.hello.world.ArraysAndSuch extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        foo.bar.hello.world.ArraysAndSuch r0;
+
+        r0 := @this: foo.bar.hello.world.ArraysAndSuch;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+
+        r0 := @parameter0: java.lang.String[];
+
+        staticinvoke <foo.bar.hello.world.ArraysAndSuch: void main()>();
+
+        return;
+    }
+
+    public static void main()
+    {
+        boolean[] r1;
+        java.lang.String[] r2, r3, r4, $r9, $r10;
+        java.lang.Object[] $r5, $r6, $r7, $r12, $r13, $r14, $r15, $r16;
+        java.lang.String[][] $r8;
+        java.lang.Object[][] $r11;
+        java.io.PrintStream $r17;
+        boolean $z0;
+        java.lang.Class[] $r19;
+        int $i0, $i5;
+        long $l1;
+        java.lang.InterruptedException $r20;
+        java.lang.Class r23;
+        float[] r25;
+        int[][][][] r26;
+        int[] $r27;
+        java.lang.NullPointerException r28;
+
+        $r5 = newarray (java.lang.Object)[3];
+
+        $r5[0] = null;
+
+        $r5[1] = null;
+
+        $r5[2] = null;
+
+        $r6 = newarray (java.lang.Object)[1];
+
+        $r6[0] = null;
+
+        $r7 = newarray (java.lang.Object)[1];
+
+        $r7[0] = null;
+
+        $r8 = newarray (java.lang.String[])[2];
+
+        $r9 = newarray (java.lang.String)[2];
+
+        $r9[0] = null;
+
+        $r9[1] = null;
+
+        $r8[0] = $r9;
+
+        $r10 = newarray (java.lang.String)[1];
+
+        $r10[0] = null;
+
+        $r8[1] = $r10;
+
+        $r11 = newarray (java.lang.Object[])[4];
+
+        $r12 = newarray (java.lang.Object)[2];
+
+        $r12[0] = null;
+
+        $r12[1] = null;
+
+        $r11[0] = $r12;
+
+        $r13 = newarray (java.lang.Object)[1];
+
+        $r13[0] = null;
+
+        $r11[1] = $r13;
+
+        $r14 = newarray (java.lang.Object)[1];
+
+        $r14[0] = $r6;
+
+        $r11[2] = $r14;
+
+        $r15 = newarray (java.lang.Object)[3];
+
+        $r15[0] = null;
+
+        $r15[1] = $r8;
+
+        $r15[2] = null;
+
+        $r11[3] = $r15;
+
+        $r17 = <java.lang.System: java.io.PrintStream out>;
+
+        $r16 = $r11[1];
+
+        virtualinvoke $r17.<java.io.PrintStream: void println(java.lang.Object)>($r16);
+
+        $r11[1] = null;
+
+        virtualinvoke $r11.<java.lang.Object: java.lang.Object clone()>();
+
+        $z0 = virtualinvoke $r11.<java.lang.Object: boolean equals(java.lang.Object)>($r6);
+
+        if $z0 == 0 goto label3;
+
+        r23 = virtualinvoke $r11.<java.lang.Object: java.lang.Class getClass()>();
+
+        virtualinvoke $r11.<java.lang.Object: void notify()>();
+
+        virtualinvoke $r11.<java.lang.Object: java.lang.String toString()>();
+
+     label1:
+        virtualinvoke r23.<java.lang.Class: java.lang.Class[] getClasses()>();
+
+        $r19 = virtualinvoke r23.<java.lang.Class: java.lang.Class[] getClasses()>();
+
+        $i0 = lengthof $r19;
+
+        $l1 = (long) $i0;
+
+        r28 = new java.lang.NullPointerException;
+
+        specialinvoke r28.<java.lang.NullPointerException: void <init>(java.lang.String)>("This statement would have triggered an Exception: $stack33 = virtualinvoke l0.<java.lang.Object: int hashCode()>()");
+
+        throw r28;
+
+     label2:
+        $r20 := @caughtexception;
+
+        virtualinvoke $r20.<java.lang.InterruptedException: void printStackTrace()>();
+
+     label3:
+        r25 = newarray (float)[9];
+
+        $i5 = lengthof r25;
+
+        r26 = newmultiarray (int)[2][$i5][1][2];
+
+        $r27 = newarray (int)[2];
+
+        $r27[0] = 5;
+
+        $r27[1] = 7;
+
+        r1 = newarray (boolean)[0];
+
+        r2 = newarray (java.lang.String)[0];
+
+        r3 = newarray (java.lang.String)[0];
+
+        r4 = newarray (java.lang.String)[3];
+
+        return;
+
+        catch java.lang.InterruptedException from label1 to label2 with label2;
+    }
+}

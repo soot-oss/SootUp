@@ -1,0 +1,27 @@
+class alreadywalaunittests.Sub$SubInner extends java.lang.Object
+{
+    final alreadywalaunittests.Sub this$0;
+
+    public void <init>(alreadywalaunittests.Sub)
+    {
+        alreadywalaunittests.Sub$SubInner r0;
+        alreadywalaunittests.Sub r1;
+        alreadywalaunittests.InnerClassSuperA$SuperOuter $r3;
+
+        r0 := @this: alreadywalaunittests.Sub$SubInner;
+
+        r1 := @parameter0: alreadywalaunittests.Sub;
+
+        r0.<alreadywalaunittests.Sub$SubInner: alreadywalaunittests.Sub this$0> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r3 = new alreadywalaunittests.InnerClassSuperA$SuperOuter;
+
+        specialinvoke $r3.<alreadywalaunittests.InnerClassSuperA$SuperOuter: void <init>(alreadywalaunittests.InnerClassSuperA)>(r1);
+
+        virtualinvoke $r3.<alreadywalaunittests.InnerClassSuperA$SuperOuter: void test()>();
+
+        return;
+    }
+}

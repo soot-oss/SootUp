@@ -1,0 +1,33 @@
+class javaonepointfive.MoreOverriddenGenerics$Super extends java.lang.Object
+{
+    java.lang.Object x;
+    final javaonepointfive.MoreOverriddenGenerics this$0;
+
+    void <init>(javaonepointfive.MoreOverriddenGenerics)
+    {
+        javaonepointfive.MoreOverriddenGenerics$Super r0;
+        javaonepointfive.MoreOverriddenGenerics r1;
+
+        r0 := @this: javaonepointfive.MoreOverriddenGenerics$Super;
+
+        r1 := @parameter0: javaonepointfive.MoreOverriddenGenerics;
+
+        r0.<javaonepointfive.MoreOverriddenGenerics$Super: javaonepointfive.MoreOverriddenGenerics this$0> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public java.lang.Object get()
+    {
+        javaonepointfive.MoreOverriddenGenerics$Super r0;
+        java.lang.Object $r1;
+
+        r0 := @this: javaonepointfive.MoreOverriddenGenerics$Super;
+
+        $r1 = r0.<javaonepointfive.MoreOverriddenGenerics$Super: java.lang.Object x>;
+
+        return $r1;
+    }
+}

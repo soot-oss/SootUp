@@ -1,0 +1,7 @@
+interface  javaonepointfive.AnonymousGenerics$Ops extends java.lang.Object
+{
+
+    public abstract java.lang.Object nullary();
+
+    public abstract java.lang.Object unary(java.lang.Object);
+}

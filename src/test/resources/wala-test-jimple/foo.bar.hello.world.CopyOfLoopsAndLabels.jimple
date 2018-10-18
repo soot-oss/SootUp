@@ -1,0 +1,34 @@
+public class foo.bar.hello.world.CopyOfLoopsAndLabels extends java.lang.Object
+{
+    static int X;
+
+    public void <init>()
+    {
+        foo.bar.hello.world.CopyOfLoopsAndLabels r0;
+
+        r0 := @this: foo.bar.hello.world.CopyOfLoopsAndLabels;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        int i0;
+
+        r0 := @parameter0: java.lang.String[];
+
+        i0 = <foo.bar.hello.world.CopyOfLoopsAndLabels: int X>;
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        <foo.bar.hello.world.CopyOfLoopsAndLabels: int X> = 5;
+
+        return;
+    }
+}

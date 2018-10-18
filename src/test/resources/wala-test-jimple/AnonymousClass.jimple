@@ -1,0 +1,83 @@
+public class AnonymousClass extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        AnonymousClass r0;
+
+        r0 := @this: AnonymousClass;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        java.lang.Integer r1;
+        AnonymousClass$1 $r3;
+        java.io.PrintStream $r4, $r5;
+        int $i0, $i1;
+        AnonymousClass $r6;
+
+        r0 := @parameter0: java.lang.String[];
+
+        r1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(6);
+
+        $r3 = new AnonymousClass$1;
+
+        specialinvoke $r3.<AnonymousClass$1: void <init>(java.lang.Integer)>(r1);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $i0 = interfaceinvoke $r3.<AnonymousClass$Foo: int getValue()>();
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i0);
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $i1 = interfaceinvoke $r3.<AnonymousClass$Foo: int getValueBase()>();
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i1);
+
+        $r6 = new AnonymousClass;
+
+        specialinvoke $r6.<AnonymousClass: void <init>()>();
+
+        virtualinvoke $r6.<AnonymousClass: void method()>();
+
+        return;
+    }
+
+    public void method()
+    {
+        AnonymousClass r0;
+        java.lang.Integer r1;
+        AnonymousClass$2 $r3;
+        java.io.PrintStream $r4, $r5;
+        int $i0, $i1;
+
+        r0 := @this: AnonymousClass;
+
+        r1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(7);
+
+        $r3 = new AnonymousClass$2;
+
+        specialinvoke $r3.<AnonymousClass$2: void <init>(AnonymousClass,int,java.lang.Integer)>(r0, -4, r1);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $i0 = interfaceinvoke $r3.<AnonymousClass$Foo: int getValue()>();
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i0);
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $i1 = interfaceinvoke $r3.<AnonymousClass$Foo: int getValueBase()>();
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i1);
+
+        return;
+    }
+}

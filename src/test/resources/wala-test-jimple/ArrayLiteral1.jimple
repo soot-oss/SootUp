@@ -1,0 +1,63 @@
+public class ArrayLiteral1 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        ArrayLiteral1 r0;
+
+        r0 := @this: ArrayLiteral1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        ArrayLiteral1 $r4;
+        int[] $r5, $r8;
+        java.lang.Object[] $r6;
+        java.lang.Integer $r7;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r4 = new ArrayLiteral1;
+
+        specialinvoke $r4.<ArrayLiteral1: void <init>()>();
+
+        $r5 = newarray (int)[5];
+
+        $r5[0] = 0;
+
+        $r5[1] = 1;
+
+        $r5[2] = 2;
+
+        $r5[3] = 3;
+
+        $r5[4] = 5;
+
+        $r6 = newarray (java.lang.Object)[4];
+
+        $r6[0] = null;
+
+        $r6[1] = "hi";
+
+        $r7 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(55);
+
+        $r6[2] = $r7;
+
+        $r8 = newarray (int)[3];
+
+        $r8[0] = 3;
+
+        $r8[1] = 1;
+
+        $r8[2] = 4;
+
+        $r6[3] = $r8;
+
+        return;
+    }
+}

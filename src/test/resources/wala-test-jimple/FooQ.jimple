@@ -1,0 +1,22 @@
+class FooQ extends java.lang.Object
+{
+    static int value;
+
+    void <init>()
+    {
+        FooQ r0;
+
+        r0 := @this: FooQ;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        <FooQ: int value> = 0;
+
+        return;
+    }
+}

@@ -1,0 +1,46 @@
+final class foo.bar.hello.world.InnerClasses$2 extends foo.bar.hello.world.Outie
+{
+
+    void <init>(java.lang.String)
+    {
+        foo.bar.hello.world.InnerClasses$2 r0;
+        java.lang.String r1;
+
+        r0 := @this: foo.bar.hello.world.InnerClasses$2;
+
+        r1 := @parameter0: java.lang.String;
+
+        specialinvoke r0.<foo.bar.hello.world.Outie: void <init>(java.lang.String)>(r1);
+
+        return;
+    }
+
+    public java.lang.String toString()
+    {
+        foo.bar.hello.world.InnerClasses$2 r0;
+        java.lang.StringBuilder $r1, $r2, $r4, $r5, $r7;
+        java.lang.String $r3, $r6, $r8;
+
+        r0 := @this: foo.bar.hello.world.InnerClasses$2;
+
+        $r1 = new java.lang.StringBuilder;
+
+        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+
+        $r2 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("bogus");
+
+        $r3 = r0.<foo.bar.hello.world.InnerClasses$2: java.lang.String x>;
+
+        $r4 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r3);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("crazy");
+
+        $r6 = <foo.bar.hello.world.InnerClasses: java.lang.String xxxx>;
+
+        $r7 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r6);
+
+        $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        return $r8;
+    }
+}

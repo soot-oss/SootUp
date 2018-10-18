@@ -1,0 +1,17 @@
+final class foo.bar.hello.world.InnerClasses$3 extends foo.bar.hello.world.ABC
+{
+
+    void <init>(java.lang.Object)
+    {
+        foo.bar.hello.world.InnerClasses$3 r0;
+        java.lang.Object r1;
+
+        r0 := @this: foo.bar.hello.world.InnerClasses$3;
+
+        r1 := @parameter0: java.lang.Object;
+
+        specialinvoke r0.<foo.bar.hello.world.ABC: void <init>(java.lang.Object)>(r1);
+
+        return;
+    }
+}

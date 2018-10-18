@@ -1,0 +1,64 @@
+public class SimpleCalls extends java.lang.Object implements ISimpleCalls
+{
+
+    public void <init>()
+    {
+        SimpleCalls r0;
+
+        r0 := @this: SimpleCalls;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void helloWorld()
+    {
+        SimpleCalls r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: SimpleCalls;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("hello world!");
+
+        return;
+    }
+
+    public int anotherCall()
+    {
+        SimpleCalls r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: SimpleCalls;
+
+        virtualinvoke r0.<SimpleCalls: void helloWorld()>();
+
+        virtualinvoke r0.<SimpleCalls: void helloWorld()>();
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("another call");
+
+        return 5;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        SimpleCalls $r3;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r3 = new SimpleCalls;
+
+        specialinvoke $r3.<SimpleCalls: void <init>()>();
+
+        interfaceinvoke $r3.<ISimpleCalls: void helloWorld()>();
+
+        virtualinvoke $r3.<SimpleCalls: int anotherCall()>();
+
+        return;
+    }
+}

@@ -1,0 +1,14 @@
+class p.Foo extends java.lang.Object
+{
+
+    void <init>()
+    {
+        p.Foo r0;
+
+        r0 := @this: p.Foo;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}

@@ -1,0 +1,64 @@
+public class bugfixes.DoWhileInCase extends java.lang.Object
+{
+    static int x;
+
+    public void <init>()
+    {
+        bugfixes.DoWhileInCase r0;
+
+        r0 := @this: bugfixes.DoWhileInCase;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        int $i0, $i1, $i2, $i3;
+        java.io.PrintStream $r1, $r2;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $i0 = <bugfixes.DoWhileInCase: int x>;
+
+        lookupswitch($i0)
+        {
+            case 1: goto label1;
+            default: goto label2;
+        };
+
+     label1:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("Problem");
+
+        $i1 = <bugfixes.DoWhileInCase: int x>;
+
+        $i2 = $i1 + 1;
+
+        <bugfixes.DoWhileInCase: int x> = $i2;
+
+        $i3 = <bugfixes.DoWhileInCase: int x>;
+
+        if $i3 < 3 goto label1;
+
+        goto label3;
+
+     label2:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("Default");
+
+     label3:
+        return;
+    }
+
+    static void <clinit>()
+    {
+        <bugfixes.DoWhileInCase: int x> = 3;
+
+        return;
+    }
+}

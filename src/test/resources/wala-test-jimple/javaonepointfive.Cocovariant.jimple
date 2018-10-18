@@ -1,0 +1,78 @@
+public class javaonepointfive.Cocovariant extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.Cocovariant r0;
+
+        r0 := @this: javaonepointfive.Cocovariant;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.Cocovariant $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.Cocovariant;
+
+        specialinvoke $r1.<javaonepointfive.Cocovariant: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.Cocovariant: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.Cocovariant r0;
+        javaonepointfive.Cocovariant$A $r2;
+        javaonepointfive.Cocovariant$B $r4, $r8;
+        javaonepointfive.Cocovariant$C $r6, $r10, $r12;
+
+        r0 := @this: javaonepointfive.Cocovariant;
+
+        $r2 = new javaonepointfive.Cocovariant$A;
+
+        specialinvoke $r2.<javaonepointfive.Cocovariant$A: void <init>()>();
+
+        virtualinvoke $r2.<javaonepointfive.Cocovariant$A: javaonepointfive.Cocovariant$A foo(java.lang.String)>("");
+
+        $r4 = new javaonepointfive.Cocovariant$B;
+
+        specialinvoke $r4.<javaonepointfive.Cocovariant$B: void <init>()>();
+
+        virtualinvoke $r4.<javaonepointfive.Cocovariant$A: javaonepointfive.Cocovariant$A foo(java.lang.String)>("");
+
+        $r6 = new javaonepointfive.Cocovariant$C;
+
+        specialinvoke $r6.<javaonepointfive.Cocovariant$C: void <init>()>();
+
+        virtualinvoke $r6.<javaonepointfive.Cocovariant$A: javaonepointfive.Cocovariant$A foo(java.lang.String)>("");
+
+        $r8 = new javaonepointfive.Cocovariant$B;
+
+        specialinvoke $r8.<javaonepointfive.Cocovariant$B: void <init>()>();
+
+        virtualinvoke $r8.<javaonepointfive.Cocovariant$B: javaonepointfive.Cocovariant$B foo(java.lang.String)>("");
+
+        $r10 = new javaonepointfive.Cocovariant$C;
+
+        specialinvoke $r10.<javaonepointfive.Cocovariant$C: void <init>()>();
+
+        virtualinvoke $r10.<javaonepointfive.Cocovariant$B: javaonepointfive.Cocovariant$B foo(java.lang.String)>("");
+
+        $r12 = new javaonepointfive.Cocovariant$C;
+
+        specialinvoke $r12.<javaonepointfive.Cocovariant$C: void <init>()>();
+
+        virtualinvoke $r12.<javaonepointfive.Cocovariant$C: javaonepointfive.Cocovariant$C foo(java.lang.String)>("");
+
+        return;
+    }
+}

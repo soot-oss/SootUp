@@ -1,0 +1,17 @@
+class StaticNesting$WhatsIt extends java.lang.Object
+{
+    private int value;
+
+    public void <init>()
+    {
+        StaticNesting$WhatsIt r0;
+
+        r0 := @this: StaticNesting$WhatsIt;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<StaticNesting$WhatsIt: int value> = 0;
+
+        return;
+    }
+}

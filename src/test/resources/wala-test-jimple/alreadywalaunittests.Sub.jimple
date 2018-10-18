@@ -1,0 +1,14 @@
+class alreadywalaunittests.Sub extends alreadywalaunittests.InnerClassSuperA
+{
+
+    void <init>()
+    {
+        alreadywalaunittests.Sub r0;
+
+        r0 := @this: alreadywalaunittests.Sub;
+
+        specialinvoke r0.<alreadywalaunittests.InnerClassSuperA: void <init>()>();
+
+        return;
+    }
+}

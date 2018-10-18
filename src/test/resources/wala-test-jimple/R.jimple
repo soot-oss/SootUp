@@ -1,0 +1,29 @@
+class R extends java.lang.Object implements java.lang.Runnable
+{
+    public int i;
+
+    void <init>(int)
+    {
+        R r0;
+        int i0;
+
+        r0 := @this: R;
+
+        i0 := @parameter0: int;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<R: int i> = i0;
+
+        return;
+    }
+
+    public void run()
+    {
+        R r0;
+
+        r0 := @this: R;
+
+        return;
+    }
+}

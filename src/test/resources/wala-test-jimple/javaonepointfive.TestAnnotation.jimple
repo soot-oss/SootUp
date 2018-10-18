@@ -1,0 +1,11 @@
+annotation interface  javaonepointfive.TestAnnotation extends java.lang.Object implements java.lang.'annotation'.Annotation
+{
+
+    public abstract java.lang.String doSomething();
+
+    public abstract int count();
+
+    public abstract java.lang.String date();
+
+    public abstract int[] stuff();
+}

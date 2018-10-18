@@ -1,0 +1,210 @@
+class JLex.CError extends java.lang.Object
+{
+    static final int E_BADEXPR;
+    static final int E_PAREN;
+    static final int E_LENGTH;
+    static final int E_BRACKET;
+    static final int E_BOL;
+    static final int E_CLOSE;
+    static final int E_NEWLINE;
+    static final int E_BADMAC;
+    static final int E_NOMAC;
+    static final int E_MACDEPTH;
+    static final int E_INIT;
+    static final int E_EOF;
+    static final int E_DIRECT;
+    static final int E_INTERNAL;
+    static final int E_STATE;
+    static final int E_MACDEF;
+    static final int E_SYNTAX;
+    static final int E_BRACE;
+    static final int E_DASH;
+    static final int E_ZERO;
+    static final int E_BADCTRL;
+    static final java.lang.String[] errmsg;
+
+    void <init>()
+    {
+        JLex.CError r0;
+
+        r0 := @this: JLex.CError;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    static void impos(java.lang.String)
+    {
+        java.lang.String r0, $r5;
+        java.lang.StringBuilder $r1, $r3, $r4;
+        java.io.PrintStream $r2;
+
+        r0 := @parameter0: java.lang.String;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = new java.lang.StringBuilder;
+
+        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("JLex Error: ");
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r0);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r5);
+
+        return;
+    }
+
+    static void parse_error(int, int)
+    {
+        int i0, i1;
+        java.lang.StringBuilder $r0, $r2, $r3, $r4, $r6, $r8, $r11;
+        java.io.PrintStream $r1, $r7;
+        java.lang.String $r5, $r10, $r12;
+        java.lang.String[] $r9;
+        java.lang.Error $r13;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        $r0 = new java.lang.StringBuilder;
+
+        specialinvoke $r0.<java.lang.StringBuilder: void <init>()>();
+
+        $r2 = virtualinvoke $r0.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Error: Parse error at line ");
+
+        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i1);
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(".");
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>($r5);
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        $r6 = new java.lang.StringBuilder;
+
+        specialinvoke $r6.<java.lang.StringBuilder: void <init>()>();
+
+        $r8 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("Description: ");
+
+        $r9 = <JLex.CError: java.lang.String[] errmsg>;
+
+        $r10 = $r9[i0];
+
+        $r11 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r10);
+
+        $r12 = virtualinvoke $r11.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>($r12);
+
+        $r13 = new java.lang.Error;
+
+        specialinvoke $r13.<java.lang.Error: void <init>(java.lang.String)>("Parse error.");
+
+        throw $r13;
+    }
+
+    static void <clinit>()
+    {
+        java.lang.String[] $r0;
+
+        <JLex.CError: int E_BADCTRL> = 20;
+
+        <JLex.CError: int E_ZERO> = 19;
+
+        <JLex.CError: int E_DASH> = 18;
+
+        <JLex.CError: int E_BRACE> = 17;
+
+        <JLex.CError: int E_SYNTAX> = 16;
+
+        <JLex.CError: int E_MACDEF> = 15;
+
+        <JLex.CError: int E_STATE> = 14;
+
+        <JLex.CError: int E_INTERNAL> = 13;
+
+        <JLex.CError: int E_DIRECT> = 12;
+
+        <JLex.CError: int E_EOF> = 11;
+
+        <JLex.CError: int E_INIT> = 10;
+
+        <JLex.CError: int E_MACDEPTH> = 9;
+
+        <JLex.CError: int E_NOMAC> = 8;
+
+        <JLex.CError: int E_BADMAC> = 7;
+
+        <JLex.CError: int E_NEWLINE> = 6;
+
+        <JLex.CError: int E_CLOSE> = 5;
+
+        <JLex.CError: int E_BOL> = 4;
+
+        <JLex.CError: int E_BRACKET> = 3;
+
+        <JLex.CError: int E_LENGTH> = 2;
+
+        <JLex.CError: int E_PAREN> = 1;
+
+        <JLex.CError: int E_BADEXPR> = 0;
+
+        $r0 = newarray (java.lang.String)[21];
+
+        $r0[0] = "Malformed regular expression.";
+
+        $r0[1] = "Missing close parenthesis.";
+
+        $r0[2] = "Too many regular expressions or expression too long.";
+
+        $r0[3] = "Missing [ in character class.";
+
+        $r0[4] = "^ must be at start of expression or after [.";
+
+        $r0[5] = "+ ? or * must follow an expression or subexpression.";
+
+        $r0[6] = "Newline in quoted string.";
+
+        $r0[7] = "Missing } in macro expansion.";
+
+        $r0[8] = "Macro does not exist.";
+
+        $r0[9] = "Macro expansions nested too deeply.";
+
+        $r0[10] = "JLex has not been successfully initialized.";
+
+        $r0[11] = "Unexpected end-of-file found.";
+
+        $r0[12] = "Undefined or badly-formed JLex directive.";
+
+        $r0[13] = "Internal JLex error.";
+
+        $r0[14] = "Unitialized state name.";
+
+        $r0[15] = "Badly formed macro definition.";
+
+        $r0[16] = "Syntax error.";
+
+        $r0[17] = "Missing brace at start of lexical action.";
+
+        $r0[18] = "Special character dash - in character class [...] must\n\tbe preceded by start-of-range character.";
+
+        $r0[19] = "Zero-length regular expression.";
+
+        $r0[20] = "Illegal \\^C-style escape sequence (character following caret must\n\tbe alphabetic).";
+
+        <JLex.CError: java.lang.String[] errmsg> = $r0;
+
+        return;
+    }
+}

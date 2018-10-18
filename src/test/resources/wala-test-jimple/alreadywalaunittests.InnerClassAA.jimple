@@ -1,0 +1,84 @@
+public class alreadywalaunittests.InnerClassAA extends java.lang.Object
+{
+    int a_x;
+
+    public void <init>()
+    {
+        alreadywalaunittests.InnerClassAA r0;
+
+        r0 := @this: alreadywalaunittests.InnerClassAA;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        alreadywalaunittests.InnerClassAA $r2;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r2 = new alreadywalaunittests.InnerClassAA;
+
+        specialinvoke $r2.<alreadywalaunittests.InnerClassAA: void <init>()>();
+
+        virtualinvoke $r2.<alreadywalaunittests.InnerClassAA: void doAllThis()>();
+
+        return;
+    }
+
+    public void doAllThis()
+    {
+        alreadywalaunittests.InnerClassAA r0;
+        alreadywalaunittests.InnerClassAA$AB r2;
+        int i0, i1;
+        alreadywalaunittests.InnerClassAA$AA $r3, $r4;
+        java.io.PrintStream $r6, $r7;
+
+        r0 := @this: alreadywalaunittests.InnerClassAA;
+
+        $r3 = new alreadywalaunittests.InnerClassAA$AA;
+
+        specialinvoke $r3.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>(r0);
+
+        $r4 = new alreadywalaunittests.InnerClassAA$AA;
+
+        virtualinvoke r0.<java.lang.Object: java.lang.Class getClass()>();
+
+        specialinvoke $r4.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>(r0);
+
+        r2 = virtualinvoke $r4.<alreadywalaunittests.InnerClassAA$AA: alreadywalaunittests.InnerClassAA$AB makeAB()>();
+
+        r0.<alreadywalaunittests.InnerClassAA: int a_x> = 5;
+
+        i0 = virtualinvoke r2.<alreadywalaunittests.InnerClassAA$AB: int getA_X_from_AB()>();
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>(i0);
+
+        i1 = virtualinvoke r2.<alreadywalaunittests.InnerClassAA$AB: int getA_X_thru_AB()>();
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(int)>(i1);
+
+        virtualinvoke $r4.<alreadywalaunittests.InnerClassAA$AA: void doSomeCrazyStuff()>();
+
+        return;
+    }
+
+    public int getA_X()
+    {
+        alreadywalaunittests.InnerClassAA r0;
+        int $i0;
+
+        r0 := @this: alreadywalaunittests.InnerClassAA;
+
+        $i0 = r0.<alreadywalaunittests.InnerClassAA: int a_x>;
+
+        return $i0;
+    }
+}

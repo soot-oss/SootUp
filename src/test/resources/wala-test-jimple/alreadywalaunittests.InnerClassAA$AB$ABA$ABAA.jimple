@@ -1,0 +1,56 @@
+class alreadywalaunittests.InnerClassAA$AB$ABA$ABAA extends java.lang.Object
+{
+    final alreadywalaunittests.InnerClassAA$AB$ABA this$2;
+
+    void <init>(alreadywalaunittests.InnerClassAA$AB$ABA)
+    {
+        alreadywalaunittests.InnerClassAA$AB$ABA$ABAA r0;
+        alreadywalaunittests.InnerClassAA$AB$ABA r1;
+
+        r0 := @this: alreadywalaunittests.InnerClassAA$AB$ABA$ABAA;
+
+        r1 := @parameter0: alreadywalaunittests.InnerClassAA$AB$ABA;
+
+        r0.<alreadywalaunittests.InnerClassAA$AB$ABA$ABAA: alreadywalaunittests.InnerClassAA$AB$ABA this$2> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    int getABA_X()
+    {
+        alreadywalaunittests.InnerClassAA$AB$ABA$ABAA r0;
+        alreadywalaunittests.InnerClassAA$AB$ABA $r1;
+        int $i0;
+
+        r0 := @this: alreadywalaunittests.InnerClassAA$AB$ABA$ABAA;
+
+        $r1 = r0.<alreadywalaunittests.InnerClassAA$AB$ABA$ABAA: alreadywalaunittests.InnerClassAA$AB$ABA this$2>;
+
+        $i0 = $r1.<alreadywalaunittests.InnerClassAA$AB$ABA: int aba_x>;
+
+        return $i0;
+    }
+
+    int getA_X()
+    {
+        alreadywalaunittests.InnerClassAA$AB$ABA$ABAA r0;
+        alreadywalaunittests.InnerClassAA$AB$ABA $r1;
+        alreadywalaunittests.InnerClassAA$AB $r2;
+        alreadywalaunittests.InnerClassAA $r3;
+        int $i0;
+
+        r0 := @this: alreadywalaunittests.InnerClassAA$AB$ABA$ABAA;
+
+        $r1 = r0.<alreadywalaunittests.InnerClassAA$AB$ABA$ABAA: alreadywalaunittests.InnerClassAA$AB$ABA this$2>;
+
+        $r2 = $r1.<alreadywalaunittests.InnerClassAA$AB$ABA: alreadywalaunittests.InnerClassAA$AB this$1>;
+
+        $r3 = $r2.<alreadywalaunittests.InnerClassAA$AB: alreadywalaunittests.InnerClassAA this$0>;
+
+        $i0 = $r3.<alreadywalaunittests.InnerClassAA: int a_x>;
+
+        return $i0;
+    }
+}

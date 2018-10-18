@@ -1,0 +1,38 @@
+class alreadywalaunittests.InnerClassAA$AB$ABSubA extends alreadywalaunittests.InnerClassAA$AB$ABA
+{
+    final alreadywalaunittests.InnerClassAA$AB this$1;
+
+    void <init>(alreadywalaunittests.InnerClassAA$AB)
+    {
+        alreadywalaunittests.InnerClassAA$AB$ABSubA r0;
+        alreadywalaunittests.InnerClassAA$AB r1;
+
+        r0 := @this: alreadywalaunittests.InnerClassAA$AB$ABSubA;
+
+        r1 := @parameter0: alreadywalaunittests.InnerClassAA$AB;
+
+        r0.<alreadywalaunittests.InnerClassAA$AB$ABSubA: alreadywalaunittests.InnerClassAA$AB this$1> = r1;
+
+        specialinvoke r0.<alreadywalaunittests.InnerClassAA$AB$ABA: void <init>(alreadywalaunittests.InnerClassAA$AB)>(r1);
+
+        return;
+    }
+
+    int getA_X()
+    {
+        alreadywalaunittests.InnerClassAA$AB$ABSubA r0;
+        alreadywalaunittests.InnerClassAA$AB $r1;
+        alreadywalaunittests.InnerClassAA $r2;
+        int $i0;
+
+        r0 := @this: alreadywalaunittests.InnerClassAA$AB$ABSubA;
+
+        $r1 = r0.<alreadywalaunittests.InnerClassAA$AB$ABSubA: alreadywalaunittests.InnerClassAA$AB this$1>;
+
+        $r2 = $r1.<alreadywalaunittests.InnerClassAA$AB: alreadywalaunittests.InnerClassAA this$0>;
+
+        $i0 = $r2.<alreadywalaunittests.InnerClassAA: int a_x>;
+
+        return $i0;
+    }
+}

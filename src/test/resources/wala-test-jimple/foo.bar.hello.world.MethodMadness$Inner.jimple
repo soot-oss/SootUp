@@ -1,0 +1,118 @@
+class foo.bar.hello.world.MethodMadness$Inner extends foo.bar.hello.world.MethodMadness
+{
+    final foo.bar.hello.world.MethodMadness this$0;
+
+    public void <init>(foo.bar.hello.world.MethodMadness)
+    {
+        foo.bar.hello.world.MethodMadness$Inner r0;
+        foo.bar.hello.world.MethodMadness r1;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness$Inner;
+
+        r1 := @parameter0: foo.bar.hello.world.MethodMadness;
+
+        r0.<foo.bar.hello.world.MethodMadness$Inner: foo.bar.hello.world.MethodMadness this$0> = r1;
+
+        specialinvoke r0.<foo.bar.hello.world.MethodMadness: void <init>()>();
+
+        r0.<foo.bar.hello.world.MethodMadness$Inner: int x> = 200000;
+
+        return;
+    }
+
+    private int privateInteger()
+    {
+        foo.bar.hello.world.MethodMadness$Inner r0;
+        int $i0, $i1;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness$Inner;
+
+        $i0 = r0.<foo.bar.hello.world.MethodMadness$Inner: int x>;
+
+        $i1 = 13 + $i0;
+
+        return $i1;
+    }
+
+    protected int protectedInteger()
+    {
+        foo.bar.hello.world.MethodMadness$Inner r0;
+        int $i0, $i1;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness$Inner;
+
+        $i0 = r0.<foo.bar.hello.world.MethodMadness$Inner: int x>;
+
+        $i1 = 233 + $i0;
+
+        return $i1;
+    }
+
+    public void hello()
+    {
+        foo.bar.hello.world.MethodMadness$Inner r0;
+        java.io.PrintStream $r1, $r3, $r5, $r6, $r8, $r9;
+        int $i0, $i1, $i2, $i3, $i4, $i5;
+        foo.bar.hello.world.MethodMadness $r2, $r4, $r7, $r10;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness$Inner;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        $i0 = specialinvoke r0.<foo.bar.hello.world.MethodMadness$Inner: int privateInteger()>();
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0);
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        $r2 = r0.<foo.bar.hello.world.MethodMadness$Inner: foo.bar.hello.world.MethodMadness this$0>;
+
+        $i1 = staticinvoke <foo.bar.hello.world.MethodMadness: int access$000(foo.bar.hello.world.MethodMadness)>($r2);
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i1);
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $r4 = r0.<foo.bar.hello.world.MethodMadness$Inner: foo.bar.hello.world.MethodMadness this$0>;
+
+        $i2 = staticinvoke <foo.bar.hello.world.MethodMadness: int access$100(foo.bar.hello.world.MethodMadness)>($r4);
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i2);
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        $i3 = virtualinvoke r0.<foo.bar.hello.world.MethodMadness$Inner: int protectedInteger()>();
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>($i3);
+
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        $r7 = r0.<foo.bar.hello.world.MethodMadness$Inner: foo.bar.hello.world.MethodMadness this$0>;
+
+        $i4 = virtualinvoke $r7.<foo.bar.hello.world.MethodMadness: int protectedInteger()>();
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(int)>($i4);
+
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        $i5 = virtualinvoke r0.<foo.bar.hello.world.MethodMadness$Inner: int protectedInteger2()>();
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(int)>($i5);
+
+        $r10 = r0.<foo.bar.hello.world.MethodMadness$Inner: foo.bar.hello.world.MethodMadness this$0>;
+
+        staticinvoke <foo.bar.hello.world.MethodMadness: void access$200(foo.bar.hello.world.MethodMadness)>($r10);
+
+        virtualinvoke r0.<foo.bar.hello.world.MethodMadness$Inner: void protectedVoid()>();
+
+        virtualinvoke r0.<foo.bar.hello.world.MethodMadness$Inner: void defaultVoid()>();
+
+        staticinvoke <foo.bar.hello.world.MethodMadness$Inner: void staticTest()>();
+
+        staticinvoke <foo.bar.hello.world.MethodMadness$Inner: void staticTest()>();
+
+        staticinvoke <foo.bar.hello.world.MethodMadness: void staticTest()>();
+
+        return;
+    }
+}

@@ -1,0 +1,34 @@
+public class javaonepointfive.TypeInferencePrimAndStringOp extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.TypeInferencePrimAndStringOp r0;
+
+        r0 := @this: javaonepointfive.TypeInferencePrimAndStringOp;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        java.lang.StringBuilder $r2, $r3, $r4;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r2 = new java.lang.StringBuilder;
+
+        specialinvoke $r2.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("a");
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(2);
+
+        virtualinvoke $r4.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        return;
+    }
+}

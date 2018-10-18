@@ -1,0 +1,37 @@
+public class Scoping1 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        Scoping1 r0;
+
+        r0 := @this: Scoping1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        Scoping1 $r2;
+        java.io.PrintStream $r3, $r4;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r2 = new Scoping1;
+
+        specialinvoke $r2.<Scoping1: void <init>()>();
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(int)>(5);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(double)>(3.14);
+
+        return;
+    }
+}

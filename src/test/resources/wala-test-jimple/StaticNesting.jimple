@@ -1,0 +1,33 @@
+public class StaticNesting extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        StaticNesting r0;
+
+        r0 := @this: StaticNesting;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        StaticNesting $r3;
+        StaticNesting$WhatsIt $r4;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r3 = new StaticNesting;
+
+        specialinvoke $r3.<StaticNesting: void <init>()>();
+
+        $r4 = new StaticNesting$WhatsIt;
+
+        specialinvoke $r4.<StaticNesting$WhatsIt: void <init>()>();
+
+        return;
+    }
+}

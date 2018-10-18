@@ -1,0 +1,26 @@
+class javaonepointfive.Cocovariant$A extends java.lang.Object
+{
+
+    void <init>()
+    {
+        javaonepointfive.Cocovariant$A r0;
+
+        r0 := @this: javaonepointfive.Cocovariant$A;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    javaonepointfive.Cocovariant$A foo(java.lang.String)
+    {
+        javaonepointfive.Cocovariant$A r0;
+        java.lang.String r1;
+
+        r0 := @this: javaonepointfive.Cocovariant$A;
+
+        r1 := @parameter0: java.lang.String;
+
+        return null;
+    }
+}

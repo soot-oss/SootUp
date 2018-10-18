@@ -1,0 +1,3209 @@
+class JLex.CEmit extends java.lang.Object
+{
+    private JLex.CSpec m_spec;
+    private java.io.PrintWriter m_outstream;
+    private final int START;
+    private final int END;
+    private final int NONE;
+    private final boolean EDBG;
+    private final boolean NOT_EDBG;
+
+    void <init>()
+    {
+        JLex.CEmit r0;
+
+        r0 := @this: JLex.CEmit;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<JLex.CEmit: int START> = 1;
+
+        r0.<JLex.CEmit: int END> = 2;
+
+        r0.<JLex.CEmit: int NONE> = 4;
+
+        r0.<JLex.CEmit: boolean EDBG> = 1;
+
+        r0.<JLex.CEmit: boolean NOT_EDBG> = 0;
+
+        specialinvoke r0.<JLex.CEmit: void reset()>();
+
+        return;
+    }
+
+    private void reset()
+    {
+        JLex.CEmit r0;
+
+        r0 := @this: JLex.CEmit;
+
+        r0.<JLex.CEmit: JLex.CSpec m_spec> = null;
+
+        r0.<JLex.CEmit: java.io.PrintWriter m_outstream> = null;
+
+        return;
+    }
+
+    private void set(JLex.CSpec, java.io.PrintWriter)
+    {
+        JLex.CEmit r0;
+        JLex.CSpec r1;
+        java.io.PrintWriter r2;
+        boolean $z0, $z1;
+
+        r0 := @this: JLex.CEmit;
+
+        r1 := @parameter0: JLex.CSpec;
+
+        r2 := @parameter1: java.io.PrintWriter;
+
+        if null == r1 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z0);
+
+        if null == r2 goto label3;
+
+        $z1 = 1;
+
+        goto label4;
+
+     label3:
+        $z1 = 0;
+
+     label4:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z1);
+
+        r0.<JLex.CEmit: JLex.CSpec m_spec> = r1;
+
+        r0.<JLex.CEmit: java.io.PrintWriter m_outstream> = r2;
+
+        return;
+    }
+
+    private void print_details()
+    {
+        JLex.CEmit r0;
+        int i0, $i1, $i2, $i3, $i4, $i5, $i6, i9, i10, i11, $i12;
+        JLex.CDTrans r1;
+        JLex.CAccept r2;
+        java.io.PrintStream $r3, $r6, $r8, $r16, $r33, $r38, $r44, $r45, $r47, $r53;
+        JLex.CSpec $r4, $r12, $r25, $r26, $r30, $r34, $r54;
+        int[] $r5, $r27, $r31, $r32, $r35, $r36;
+        java.lang.StringBuilder $r7, $r9, $r10, $r15, $r17, $r18, $r19, $r22, $r23, $r37, $r39, $r40, $r41, $r42, $r46, $r48, $r49, $r50, $r51;
+        java.lang.String $r11, $r20, $r24, $r43, $r52;
+        java.util.Vector $r13, $r28;
+        java.lang.Object $r14, $r29;
+        char[] $r21;
+        char $c7, $c8;
+        boolean z0;
+
+        r0 := @this: JLex.CEmit;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("---------------------- Transition Table ----------------------");
+
+        i9 = 0;
+
+     label01:
+        $r4 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r5 = $r4.<JLex.CSpec: int[] m_row_map>;
+
+        $i1 = lengthof $r5;
+
+        if i9 >= $i1 goto label11;
+
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        $r7 = new java.lang.StringBuilder;
+
+        specialinvoke $r7.<java.lang.StringBuilder: void <init>()>();
+
+        $r9 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("State ");
+
+        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i9);
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r8.<java.io.PrintStream: void print(java.lang.String)>($r11);
+
+        $r12 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r13 = $r12.<JLex.CSpec: java.util.Vector m_accept_vector>;
+
+        $r14 = virtualinvoke $r13.<java.util.Vector: java.lang.Object elementAt(int)>(i9);
+
+        r2 = (JLex.CAccept) $r14;
+
+        if null != r2 goto label02;
+
+        $r53 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r53.<java.io.PrintStream: void println(java.lang.String)>(" [nonaccepting]");
+
+        goto label03;
+
+     label02:
+        $r16 = <java.lang.System: java.io.PrintStream out>;
+
+        $r15 = new java.lang.StringBuilder;
+
+        specialinvoke $r15.<java.lang.StringBuilder: void <init>()>();
+
+        $r17 = virtualinvoke $r15.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" [accepting, line ");
+
+        $i2 = r2.<JLex.CAccept: int m_line_number>;
+
+        $r18 = virtualinvoke $r17.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i2);
+
+        $r19 = virtualinvoke $r18.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" <");
+
+        $r20 = new java.lang.String;
+
+        $r21 = r2.<JLex.CAccept: char[] m_action>;
+
+        $i3 = r2.<JLex.CAccept: int m_action_read>;
+
+        specialinvoke $r20.<java.lang.String: void <init>(char[],int,int)>($r21, 0, $i3);
+
+        $r22 = virtualinvoke $r19.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r20);
+
+        $r23 = virtualinvoke $r22.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(">]");
+
+        $r24 = virtualinvoke $r23.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r16.<java.io.PrintStream: void println(java.lang.String)>($r24);
+
+     label03:
+        $r25 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r28 = $r25.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        $r26 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r27 = $r26.<JLex.CSpec: int[] m_row_map>;
+
+        $i4 = $r27[i9];
+
+        $r29 = virtualinvoke $r28.<java.util.Vector: java.lang.Object elementAt(int)>($i4);
+
+        r1 = (JLex.CDTrans) $r29;
+
+        z0 = 0;
+
+        $r32 = r1.<JLex.CDTrans: int[] m_dtrans>;
+
+        $r30 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r31 = $r30.<JLex.CSpec: int[] m_col_map>;
+
+        $i5 = $r31[0];
+
+        i10 = $r32[$i5];
+
+        if -1 == i10 goto label04;
+
+        z0 = 1;
+
+        $r47 = <java.lang.System: java.io.PrintStream out>;
+
+        $r46 = new java.lang.StringBuilder;
+
+        specialinvoke $r46.<java.lang.StringBuilder: void <init>()>();
+
+        $r48 = virtualinvoke $r46.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\tgoto ");
+
+        $r49 = virtualinvoke $r48.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i10);
+
+        $r50 = virtualinvoke $r49.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" on [");
+
+        $r51 = virtualinvoke $r50.<java.lang.StringBuilder: java.lang.StringBuilder append(char)>(0);
+
+        $r52 = virtualinvoke $r51.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r47.<java.io.PrintStream: void print(java.lang.String)>($r52);
+
+     label04:
+        i11 = 1;
+
+     label05:
+        $r54 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i12 = $r54.<JLex.CSpec: int m_dtrans_ncols>;
+
+        if i11 >= $i12 goto label09;
+
+        $r36 = r1.<JLex.CDTrans: int[] m_dtrans>;
+
+        $r34 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r35 = $r34.<JLex.CSpec: int[] m_col_map>;
+
+        $i6 = $r35[i11];
+
+        i0 = $r36[$i6];
+
+        if i10 != i0 goto label06;
+
+        if -1 == i10 goto label08;
+
+        $r45 = <java.lang.System: java.io.PrintStream out>;
+
+        $c8 = (char) i11;
+
+        virtualinvoke $r45.<java.io.PrintStream: void print(char)>($c8);
+
+        goto label08;
+
+     label06:
+        i10 = i0;
+
+        if z0 == 0 goto label07;
+
+        $r44 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r44.<java.io.PrintStream: void println(java.lang.String)>("]");
+
+        z0 = 0;
+
+     label07:
+        if -1 == i0 goto label08;
+
+        z0 = 1;
+
+        $r38 = <java.lang.System: java.io.PrintStream out>;
+
+        $r37 = new java.lang.StringBuilder;
+
+        specialinvoke $r37.<java.lang.StringBuilder: void <init>()>();
+
+        $r39 = virtualinvoke $r37.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\tgoto ");
+
+        $r40 = virtualinvoke $r39.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i0);
+
+        $r41 = virtualinvoke $r40.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" on [");
+
+        $c7 = (char) i11;
+
+        $r42 = virtualinvoke $r41.<java.lang.StringBuilder: java.lang.StringBuilder append(char)>($c7);
+
+        $r43 = virtualinvoke $r42.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r38.<java.io.PrintStream: void print(java.lang.String)>($r43);
+
+     label08:
+        i11 = i11 + 1;
+
+        goto label05;
+
+     label09:
+        if z0 == 0 goto label10;
+
+        $r33 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r33.<java.io.PrintStream: void println(java.lang.String)>("]");
+
+     label10:
+        i9 = i9 + 1;
+
+        goto label01;
+
+     label11:
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>("---------------------- Transition Table ----------------------");
+
+        return;
+    }
+
+    void emit(JLex.CSpec, java.io.PrintWriter) throws java.io.IOException
+    {
+        JLex.CEmit r0;
+        JLex.CSpec r1, $r3;
+        java.io.PrintWriter r2, $r4;
+        boolean $z0, $z1;
+
+        r0 := @this: JLex.CEmit;
+
+        r1 := @parameter0: JLex.CSpec;
+
+        r2 := @parameter1: java.io.PrintWriter;
+
+        specialinvoke r0.<JLex.CEmit: void set(JLex.CSpec,java.io.PrintWriter)>(r1, r2);
+
+        $r3 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        if null == $r3 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z0);
+
+        $r4 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        if null == $r4 goto label3;
+
+        $z1 = 1;
+
+        goto label4;
+
+     label3:
+        $z1 = 0;
+
+     label4:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z1);
+
+        specialinvoke r0.<JLex.CEmit: void emit_header()>();
+
+        specialinvoke r0.<JLex.CEmit: void emit_construct()>();
+
+        specialinvoke r0.<JLex.CEmit: void emit_helpers()>();
+
+        specialinvoke r0.<JLex.CEmit: void emit_driver()>();
+
+        specialinvoke r0.<JLex.CEmit: void emit_footer()>();
+
+        specialinvoke r0.<JLex.CEmit: void reset()>();
+
+        return;
+    }
+
+    private void emit_construct() throws java.io.IOException
+    {
+        JLex.CEmit r0;
+        JLex.CSpec $r1, $r13, $r20, $r24, $r32, $r33, $r38, $r40, $r44, $r55, $r57, $r61, $r73, $r77, $r85, $r86, $r89, $r94, $r95, $r103, $r104, $r111, $r112, $r120, $r121, $r130, $r131, $r134, $r135;
+        java.io.PrintWriter $r2, $r3, $r4, $r5, $r6, $r7, $r8, $r9, $r11, $r18, $r25, $r26, $r27, $r28, $r29, $r30, $r31, $r34, $r35, $r36, $r37, $r42, $r43, $r46, $r47, $r48, $r49, $r50, $r51, $r52, $r53, $r54, $r59, $r60, $r63, $r64, $r65, $r66, $r67, $r68, $r69, $r70, $r71, $r75, $r76, $r79, $r80, $r81, $r82, $r83, $r84, $r87, $r88, $r91, $r92, $r97, $r98, $r99, $r100, $r101, $r106, $r107, $r108, $r109, $r114, $r115, $r116, $r117, $r118, $r123, $r124, $r125, $r126, $r127, $r128, $r133;
+        java.lang.StringBuilder $r10, $r12, $r14, $r15, $r17, $r19, $r21, $r22;
+        int $i0, $i1, $i2, $i3, $i4, $i5, $i6;
+        java.lang.String $r16, $r23, $r39, $r56, $r72, $r93, $r102, $r110, $r119, $r129;
+        boolean $z0, $z1, $z2, $z3, $z4, $z5, $z6, $z7, $z8, $z9;
+        char[] $r41, $r45, $r58, $r62, $r74, $r78, $r90, $r96, $r105, $r113, $r122, $r132, $r136;
+
+        r0 := @this: JLex.CEmit;
+
+        $r1 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        if null == $r1 goto label01;
+
+        $z8 = 1;
+
+        goto label02;
+
+     label01:
+        $z8 = 0;
+
+     label02:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z8);
+
+        $r2 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        if null == $r2 goto label03;
+
+        $z9 = 1;
+
+        goto label04;
+
+     label03:
+        $z9 = 0;
+
+     label04:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z9);
+
+        $r3 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r3.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate final int YY_BUFFER_SIZE = 512;");
+
+        $r4 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r4.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate final int YY_F = -1;");
+
+        $r5 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r5.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate final int YY_NO_STATE = -1;");
+
+        $r6 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r6.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate final int YY_NOT_ACCEPT = 0;");
+
+        $r7 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r7.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate final int YY_START = 1;");
+
+        $r8 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r8.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate final int YY_END = 2;");
+
+        $r9 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r9.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate final int YY_NO_ANCHOR = 4;");
+
+        $r11 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r10 = new java.lang.StringBuilder;
+
+        specialinvoke $r10.<java.lang.StringBuilder: void <init>()>();
+
+        $r12 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\tprivate final int YY_BOL = ");
+
+        $r13 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i0 = $r13.<JLex.CSpec: int BOL>;
+
+        $r14 = virtualinvoke $r12.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i0);
+
+        $r15 = virtualinvoke $r14.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(";");
+
+        $r16 = virtualinvoke $r15.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r11.<java.io.PrintWriter: void println(java.lang.String)>($r16);
+
+        $r18 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r17 = new java.lang.StringBuilder;
+
+        specialinvoke $r17.<java.lang.StringBuilder: void <init>()>();
+
+        $r19 = virtualinvoke $r17.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\tprivate final int YY_EOF = ");
+
+        $r20 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i1 = $r20.<JLex.CSpec: int EOF>;
+
+        $r21 = virtualinvoke $r19.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i1);
+
+        $r22 = virtualinvoke $r21.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(";");
+
+        $r23 = virtualinvoke $r22.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r18.<java.io.PrintWriter: void println(java.lang.String)>($r23);
+
+        $r24 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z0 = $r24.<JLex.CSpec: boolean m_integer_type>;
+
+        if $z0 != 0 goto label05;
+
+        $r134 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z7 = $r134.<JLex.CSpec: boolean m_yyeof>;
+
+        if 1 != $z7 goto label06;
+
+     label05:
+        $r25 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r25.<java.io.PrintWriter: void println(java.lang.String)>("\tpublic final int YYEOF = -1;");
+
+     label06:
+        $r135 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r136 = $r135.<JLex.CSpec: char[] m_class_code>;
+
+        if null == $r136 goto label07;
+
+        $r133 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r129 = new java.lang.String;
+
+        $r130 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r132 = $r130.<JLex.CSpec: char[] m_class_code>;
+
+        $r131 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i6 = $r131.<JLex.CSpec: int m_class_read>;
+
+        specialinvoke $r129.<java.lang.String: void <init>(char[],int,int)>($r132, 0, $i6);
+
+        virtualinvoke $r133.<java.io.PrintWriter: void print(java.lang.String)>($r129);
+
+     label07:
+        $r26 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r26.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate java.io.BufferedReader yy_reader;");
+
+        $r27 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r27.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate int yy_buffer_index;");
+
+        $r28 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r28.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate int yy_buffer_read;");
+
+        $r29 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r29.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate int yy_buffer_start;");
+
+        $r30 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r30.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate int yy_buffer_end;");
+
+        $r31 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r31.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate char yy_buffer[];");
+
+        $r32 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z1 = $r32.<JLex.CSpec: boolean m_count_chars>;
+
+        if $z1 == 0 goto label08;
+
+        $r128 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r128.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate int yychar;");
+
+     label08:
+        $r33 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z2 = $r33.<JLex.CSpec: boolean m_count_lines>;
+
+        if $z2 == 0 goto label09;
+
+        $r127 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r127.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate int yyline;");
+
+     label09:
+        $r34 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r34.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate boolean yy_at_bol;");
+
+        $r35 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r35.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate int yy_lexical_state;");
+
+        $r36 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r36.<java.io.PrintWriter: void println()>();
+
+        $r37 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r37.<java.io.PrintWriter: void print(java.lang.String)>("\t");
+
+        $r38 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z3 = $r38.<JLex.CSpec: boolean m_public>;
+
+        if 1 != $z3 goto label10;
+
+        $r126 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r126.<java.io.PrintWriter: void print(java.lang.String)>("public ");
+
+     label10:
+        $r42 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r39 = new java.lang.String;
+
+        $r40 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r41 = $r40.<JLex.CSpec: char[] m_class_name>;
+
+        specialinvoke $r39.<java.lang.String: void <init>(char[])>($r41);
+
+        virtualinvoke $r42.<java.io.PrintWriter: void print(java.lang.String)>($r39);
+
+        $r43 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r43.<java.io.PrintWriter: void print(java.lang.String)>(" (java.io.Reader reader)");
+
+        $r44 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r45 = $r44.<JLex.CSpec: char[] m_init_throw_code>;
+
+        if null == $r45 goto label11;
+
+        $r117 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r117.<java.io.PrintWriter: void println()>();
+
+        $r118 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r118.<java.io.PrintWriter: void print(java.lang.String)>("\t\tthrows ");
+
+        $r123 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r119 = new java.lang.String;
+
+        $r120 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r122 = $r120.<JLex.CSpec: char[] m_init_throw_code>;
+
+        $r121 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i5 = $r121.<JLex.CSpec: int m_init_throw_read>;
+
+        specialinvoke $r119.<java.lang.String: void <init>(char[],int,int)>($r122, 0, $i5);
+
+        virtualinvoke $r123.<java.io.PrintWriter: void print(java.lang.String)>($r119);
+
+        $r124 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r124.<java.io.PrintWriter: void println()>();
+
+        $r125 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r125.<java.io.PrintWriter: void println(java.lang.String)>("\t\t{");
+
+        goto label12;
+
+     label11:
+        $r46 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r46.<java.io.PrintWriter: void println(java.lang.String)>(" {");
+
+     label12:
+        $r47 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r47.<java.io.PrintWriter: void println(java.lang.String)>("\t\tthis ();");
+
+        $r48 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r48.<java.io.PrintWriter: void println(java.lang.String)>("\t\tif (null == reader) {");
+
+        $r49 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r49.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tthrow (new Error(\"Error: Bad input stream initializer.\"));");
+
+        $r50 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r50.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+        $r51 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r51.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_reader = new java.io.BufferedReader(reader);");
+
+        $r52 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r52.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r53 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r53.<java.io.PrintWriter: void println()>();
+
+        $r54 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r54.<java.io.PrintWriter: void print(java.lang.String)>("\t");
+
+        $r55 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z4 = $r55.<JLex.CSpec: boolean m_public>;
+
+        if 1 != $z4 goto label13;
+
+        $r116 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r116.<java.io.PrintWriter: void print(java.lang.String)>("public ");
+
+     label13:
+        $r59 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r56 = new java.lang.String;
+
+        $r57 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r58 = $r57.<JLex.CSpec: char[] m_class_name>;
+
+        specialinvoke $r56.<java.lang.String: void <init>(char[])>($r58);
+
+        virtualinvoke $r59.<java.io.PrintWriter: void print(java.lang.String)>($r56);
+
+        $r60 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r60.<java.io.PrintWriter: void print(java.lang.String)>(" (java.io.InputStream instream)");
+
+        $r61 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r62 = $r61.<JLex.CSpec: char[] m_init_throw_code>;
+
+        if null == $r62 goto label14;
+
+        $r108 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r108.<java.io.PrintWriter: void println()>();
+
+        $r109 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r109.<java.io.PrintWriter: void print(java.lang.String)>("\t\tthrows ");
+
+        $r114 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r110 = new java.lang.String;
+
+        $r111 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r113 = $r111.<JLex.CSpec: char[] m_init_throw_code>;
+
+        $r112 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i4 = $r112.<JLex.CSpec: int m_init_throw_read>;
+
+        specialinvoke $r110.<java.lang.String: void <init>(char[],int,int)>($r113, 0, $i4);
+
+        virtualinvoke $r114.<java.io.PrintWriter: void println(java.lang.String)>($r110);
+
+        $r115 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r115.<java.io.PrintWriter: void println(java.lang.String)>("\t\t{");
+
+        goto label15;
+
+     label14:
+        $r63 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r63.<java.io.PrintWriter: void println(java.lang.String)>(" {");
+
+     label15:
+        $r64 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r64.<java.io.PrintWriter: void println(java.lang.String)>("\t\tthis ();");
+
+        $r65 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r65.<java.io.PrintWriter: void println(java.lang.String)>("\t\tif (null == instream) {");
+
+        $r66 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r66.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tthrow (new Error(\"Error: Bad input stream initializer.\"));");
+
+        $r67 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r67.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+        $r68 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r68.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_reader = new java.io.BufferedReader(new java.io.InputStreamReader(instream));");
+
+        $r69 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r69.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r70 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r70.<java.io.PrintWriter: void println()>();
+
+        $r71 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r71.<java.io.PrintWriter: void print(java.lang.String)>("\tprivate ");
+
+        $r75 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r72 = new java.lang.String;
+
+        $r73 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r74 = $r73.<JLex.CSpec: char[] m_class_name>;
+
+        specialinvoke $r72.<java.lang.String: void <init>(char[])>($r74);
+
+        virtualinvoke $r75.<java.io.PrintWriter: void print(java.lang.String)>($r72);
+
+        $r76 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r76.<java.io.PrintWriter: void print(java.lang.String)>(" ()");
+
+        $r77 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r78 = $r77.<JLex.CSpec: char[] m_init_throw_code>;
+
+        if null == $r78 goto label16;
+
+        $r100 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r100.<java.io.PrintWriter: void println()>();
+
+        $r101 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r101.<java.io.PrintWriter: void print(java.lang.String)>("\t\tthrows ");
+
+        $r106 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r102 = new java.lang.String;
+
+        $r103 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r105 = $r103.<JLex.CSpec: char[] m_init_throw_code>;
+
+        $r104 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i3 = $r104.<JLex.CSpec: int m_init_throw_read>;
+
+        specialinvoke $r102.<java.lang.String: void <init>(char[],int,int)>($r105, 0, $i3);
+
+        virtualinvoke $r106.<java.io.PrintWriter: void println(java.lang.String)>($r102);
+
+        $r107 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r107.<java.io.PrintWriter: void println(java.lang.String)>("\t\t{");
+
+        goto label17;
+
+     label16:
+        $r79 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r79.<java.io.PrintWriter: void println(java.lang.String)>(" {");
+
+     label17:
+        $r80 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r80.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_buffer = new char[YY_BUFFER_SIZE];");
+
+        $r81 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r81.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_buffer_read = 0;");
+
+        $r82 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r82.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_buffer_index = 0;");
+
+        $r83 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r83.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_buffer_start = 0;");
+
+        $r84 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r84.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_buffer_end = 0;");
+
+        $r85 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z5 = $r85.<JLex.CSpec: boolean m_count_chars>;
+
+        if $z5 == 0 goto label18;
+
+        $r99 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r99.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyychar = 0;");
+
+     label18:
+        $r86 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z6 = $r86.<JLex.CSpec: boolean m_count_lines>;
+
+        if $z6 == 0 goto label19;
+
+        $r98 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r98.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyyline = 0;");
+
+     label19:
+        $r87 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r87.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_at_bol = true;");
+
+        $r88 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r88.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_lexical_state = YYINITIAL;");
+
+        $r89 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r90 = $r89.<JLex.CSpec: char[] m_init_code>;
+
+        if null == $r90 goto label20;
+
+        $r97 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r93 = new java.lang.String;
+
+        $r94 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r96 = $r94.<JLex.CSpec: char[] m_init_code>;
+
+        $r95 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i2 = $r95.<JLex.CSpec: int m_init_read>;
+
+        specialinvoke $r93.<java.lang.String: void <init>(char[],int,int)>($r96, 0, $i2);
+
+        virtualinvoke $r97.<java.io.PrintWriter: void print(java.lang.String)>($r93);
+
+     label20:
+        $r91 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r91.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r92 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r92.<java.io.PrintWriter: void println()>();
+
+        return;
+    }
+
+    private void emit_states() throws java.io.IOException
+    {
+        JLex.CEmit r0;
+        java.util.Enumeration r1;
+        java.lang.String r2, $r15, $r29, $r32;
+        JLex.CSpec $r3, $r6, $r12, $r16, $r26;
+        java.util.Hashtable $r4, $r27;
+        boolean $z0, $z1;
+        java.io.PrintWriter $r5, $r8, $r10, $r18, $r19, $r22;
+        int[] $r7, $r13, $r17;
+        int $i0, $i1, $i2, $i3, i4;
+        java.lang.StringBuilder $r9, $r11, $r14, $r21, $r23, $r24, $r25, $r30, $r31;
+        java.lang.Object $r20, $r28;
+
+        r0 := @this: JLex.CEmit;
+
+        $r3 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r4 = $r3.<JLex.CSpec: java.util.Hashtable m_states>;
+
+        r1 = virtualinvoke $r4.<java.util.Hashtable: java.util.Enumeration keys()>();
+
+     label1:
+        $z0 = interfaceinvoke r1.<java.util.Enumeration: boolean hasMoreElements()>();
+
+        if $z0 == 0 goto label4;
+
+        $r20 = interfaceinvoke r1.<java.util.Enumeration: java.lang.Object nextElement()>();
+
+        r2 = (java.lang.String) $r20;
+
+        if null == r2 goto label2;
+
+        $z1 = 1;
+
+        goto label3;
+
+     label2:
+        $z1 = 0;
+
+     label3:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z1);
+
+        $r22 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r21 = new java.lang.StringBuilder;
+
+        specialinvoke $r21.<java.lang.StringBuilder: void <init>()>();
+
+        $r23 = virtualinvoke $r21.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\tprivate final int ");
+
+        $r24 = virtualinvoke $r23.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r2);
+
+        $r25 = virtualinvoke $r24.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" = ");
+
+        $r26 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r27 = $r26.<JLex.CSpec: java.util.Hashtable m_states>;
+
+        $r28 = virtualinvoke $r27.<java.util.Hashtable: java.lang.Object get(java.lang.Object)>(r2);
+
+        $r29 = virtualinvoke $r28.<java.lang.Object: java.lang.String toString()>();
+
+        $r30 = virtualinvoke $r25.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r29);
+
+        $r31 = virtualinvoke $r30.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(";");
+
+        $r32 = virtualinvoke $r31.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r22.<java.io.PrintWriter: void println(java.lang.String)>($r32);
+
+        goto label1;
+
+     label4:
+        $r5 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r5.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate final int yy_state_dtrans[] = {");
+
+        i4 = 0;
+
+     label5:
+        $r6 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r7 = $r6.<JLex.CSpec: int[] m_state_dtrans>;
+
+        $i0 = lengthof $r7;
+
+        if i4 >= $i0 goto label8;
+
+        $r10 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r9 = new java.lang.StringBuilder;
+
+        specialinvoke $r9.<java.lang.StringBuilder: void <init>()>();
+
+        $r11 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\t\t");
+
+        $r12 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r13 = $r12.<JLex.CSpec: int[] m_state_dtrans>;
+
+        $i1 = $r13[i4];
+
+        $r14 = virtualinvoke $r11.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i1);
+
+        $r15 = virtualinvoke $r14.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r10.<java.io.PrintWriter: void print(java.lang.String)>($r15);
+
+        $r16 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r17 = $r16.<JLex.CSpec: int[] m_state_dtrans>;
+
+        $i2 = lengthof $r17;
+
+        $i3 = $i2 - 1;
+
+        if i4 >= $i3 goto label6;
+
+        $r19 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r19.<java.io.PrintWriter: void println(java.lang.String)>(",");
+
+        goto label7;
+
+     label6:
+        $r18 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r18.<java.io.PrintWriter: void println()>();
+
+     label7:
+        i4 = i4 + 1;
+
+        goto label5;
+
+     label8:
+        $r8 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r8.<java.io.PrintWriter: void println(java.lang.String)>("\t};");
+
+        return;
+    }
+
+    private void emit_helpers() throws java.io.IOException
+    {
+        JLex.CEmit r0;
+        JLex.CSpec $r1, $r4, $r6, $r7, $r20, $r22, $r27, $r28, $r37, $r38, $r100;
+        java.io.PrintWriter $r2, $r3, $r8, $r9, $r10, $r11, $r12, $r13, $r14, $r15, $r16, $r17, $r18, $r19, $r21, $r24, $r25, $r30, $r31, $r32, $r33, $r34, $r35, $r40, $r41, $r42, $r43, $r44, $r45, $r46, $r47, $r48, $r49, $r50, $r51, $r52, $r53, $r54, $r55, $r56, $r57, $r58, $r59, $r60, $r61, $r62, $r63, $r64, $r65, $r66, $r67, $r68, $r69, $r70, $r71, $r72, $r73, $r74, $r75, $r76, $r77, $r78, $r79, $r80, $r81, $r82, $r83, $r84, $r85, $r86, $r87, $r88, $r89, $r90, $r91, $r92, $r93, $r94, $r95, $r96, $r97, $r98, $r99, $r101, $r102, $r103, $r104, $r105, $r106, $r107, $r108, $r109, $r110, $r111, $r112, $r113, $r114, $r115, $r116, $r117, $r118, $r119, $r120, $r121, $r122, $r123, $r124, $r125, $r126, $r127, $r128, $r129, $r130, $r131, $r132, $r133, $r134, $r135, $r136, $r137, $r138, $r139, $r140, $r141, $r142, $r143, $r144, $r145, $r146, $r147, $r148, $r149, $r150, $r151, $r152, $r153, $r154, $r155, $r156, $r157, $r158, $r159, $r160, $r161, $r162, $r163, $r164, $r165, $r166, $r167, $r168, $r169, $r170, $r171, $r172, $r173, $r174, $r175, $r176, $r177, $r178, $r179, $r180;
+        char[] $r5, $r23, $r29, $r39;
+        boolean $z0, $z1, $z2, $z3, $z4, $z5;
+        java.lang.String $r26, $r36;
+        int $i0, $i1;
+
+        r0 := @this: JLex.CEmit;
+
+        $r1 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        if null == $r1 goto label01;
+
+        $z3 = 1;
+
+        goto label02;
+
+     label01:
+        $z3 = 0;
+
+     label02:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z3);
+
+        $r2 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        if null == $r2 goto label03;
+
+        $z4 = 1;
+
+        goto label04;
+
+     label03:
+        $z4 = 0;
+
+     label04:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z4);
+
+        $r3 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r3.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate boolean yy_eof_done = false;");
+
+        $r4 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r5 = $r4.<JLex.CSpec: char[] m_eof_code>;
+
+        if null == $r5 goto label07;
+
+        $r21 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r21.<java.io.PrintWriter: void print(java.lang.String)>("\tprivate void yy_do_eof ()");
+
+        $r22 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r23 = $r22.<JLex.CSpec: char[] m_eof_throw_code>;
+
+        if null == $r23 goto label05;
+
+        $r34 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r34.<java.io.PrintWriter: void println()>();
+
+        $r35 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r35.<java.io.PrintWriter: void print(java.lang.String)>("\t\tthrows ");
+
+        $r40 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r36 = new java.lang.String;
+
+        $r37 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r39 = $r37.<JLex.CSpec: char[] m_eof_throw_code>;
+
+        $r38 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i1 = $r38.<JLex.CSpec: int m_eof_throw_read>;
+
+        specialinvoke $r36.<java.lang.String: void <init>(char[],int,int)>($r39, 0, $i1);
+
+        virtualinvoke $r40.<java.io.PrintWriter: void println(java.lang.String)>($r36);
+
+        $r41 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r41.<java.io.PrintWriter: void println(java.lang.String)>("\t\t{");
+
+        goto label06;
+
+     label05:
+        $r24 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r24.<java.io.PrintWriter: void println(java.lang.String)>(" {");
+
+     label06:
+        $r25 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r25.<java.io.PrintWriter: void println(java.lang.String)>("\t\tif (false == yy_eof_done) {");
+
+        $r30 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r26 = new java.lang.String;
+
+        $r27 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r29 = $r27.<JLex.CSpec: char[] m_eof_code>;
+
+        $r28 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i0 = $r28.<JLex.CSpec: int m_eof_read>;
+
+        specialinvoke $r26.<java.lang.String: void <init>(char[],int,int)>($r29, 0, $i0);
+
+        virtualinvoke $r30.<java.io.PrintWriter: void print(java.lang.String)>($r26);
+
+        $r31 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r31.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+        $r32 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r32.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_eof_done = true;");
+
+        $r33 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r33.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+     label07:
+        specialinvoke r0.<JLex.CEmit: void emit_states()>();
+
+        $r42 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r42.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate void yybegin (int state) {");
+
+        $r43 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r43.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_lexical_state = state;");
+
+        $r44 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r44.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r45 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r45.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate int yy_advance ()");
+
+        $r46 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r46.<java.io.PrintWriter: void println(java.lang.String)>("\t\tthrows java.io.IOException {");
+
+        $r47 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r47.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint next_read;");
+
+        $r48 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r48.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint i;");
+
+        $r49 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r49.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint j;");
+
+        $r50 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r50.<java.io.PrintWriter: void println()>();
+
+        $r51 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r51.<java.io.PrintWriter: void println(java.lang.String)>("\t\tif (yy_buffer_index < yy_buffer_read) {");
+
+        $r52 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r52.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\treturn yy_buffer[yy_buffer_index++];");
+
+        $r53 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r53.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+        $r54 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r54.<java.io.PrintWriter: void println()>();
+
+        $r55 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r55.<java.io.PrintWriter: void println(java.lang.String)>("\t\tif (0 != yy_buffer_start) {");
+
+        $r56 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r56.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\ti = yy_buffer_start;");
+
+        $r57 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r57.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tj = 0;");
+
+        $r58 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r58.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\twhile (i < yy_buffer_read) {");
+
+        $r59 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r59.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tyy_buffer[j] = yy_buffer[i];");
+
+        $r60 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r60.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t++i;");
+
+        $r61 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r61.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t++j;");
+
+        $r62 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r62.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t}");
+
+        $r63 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r63.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_buffer_end = yy_buffer_end - yy_buffer_start;");
+
+        $r64 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r64.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_buffer_start = 0;");
+
+        $r65 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r65.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_buffer_read = j;");
+
+        $r66 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r66.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_buffer_index = j;");
+
+        $r67 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r67.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tnext_read = yy_reader.read(yy_buffer,");
+
+        $r68 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r68.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_buffer_read,");
+
+        $r69 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r69.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_buffer.length - yy_buffer_read);");
+
+        $r70 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r70.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tif (-1 == next_read) {");
+
+        $r71 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r71.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\treturn YY_EOF;");
+
+        $r72 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r72.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t}");
+
+        $r73 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r73.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_buffer_read = yy_buffer_read + next_read;");
+
+        $r74 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r74.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+        $r75 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r75.<java.io.PrintWriter: void println()>();
+
+        $r76 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r76.<java.io.PrintWriter: void println(java.lang.String)>("\t\twhile (yy_buffer_index >= yy_buffer_read) {");
+
+        $r77 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r77.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tif (yy_buffer_index >= yy_buffer.length) {");
+
+        $r78 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r78.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tyy_buffer = yy_double(yy_buffer);");
+
+        $r79 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r79.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t}");
+
+        $r80 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r80.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tnext_read = yy_reader.read(yy_buffer,");
+
+        $r81 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r81.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_buffer_read,");
+
+        $r82 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r82.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_buffer.length - yy_buffer_read);");
+
+        $r83 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r83.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tif (-1 == next_read) {");
+
+        $r84 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r84.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\treturn YY_EOF;");
+
+        $r85 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r85.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t}");
+
+        $r86 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r86.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_buffer_read = yy_buffer_read + next_read;");
+
+        $r87 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r87.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+        $r88 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r88.<java.io.PrintWriter: void println(java.lang.String)>("\t\treturn yy_buffer[yy_buffer_index++];");
+
+        $r89 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r89.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r90 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r90.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate void yy_move_end () {");
+
+        $r91 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r91.<java.io.PrintWriter: void println(java.lang.String)>("\t\tif (yy_buffer_end > yy_buffer_start &&");
+
+        $r92 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r92.<java.io.PrintWriter: void println(java.lang.String)>("\t\t    \'\\n\' == yy_buffer[yy_buffer_end-1])");
+
+        $r93 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r93.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_buffer_end--;");
+
+        $r94 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r94.<java.io.PrintWriter: void println(java.lang.String)>("\t\tif (yy_buffer_end > yy_buffer_start &&");
+
+        $r95 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r95.<java.io.PrintWriter: void println(java.lang.String)>("\t\t    \'\\r\' == yy_buffer[yy_buffer_end-1])");
+
+        $r96 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r96.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_buffer_end--;");
+
+        $r97 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r97.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r98 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r98.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate boolean yy_last_was_cr=false;");
+
+        $r99 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r99.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate void yy_mark_start () {");
+
+        $r100 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z5 = $r100.<JLex.CSpec: boolean m_count_lines>;
+
+        if $z5 != 0 goto label08;
+
+        $r20 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z2 = $r20.<JLex.CSpec: boolean m_count_chars>;
+
+        if 1 != $z2 goto label10;
+
+     label08:
+        $r6 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z0 = $r6.<JLex.CSpec: boolean m_count_lines>;
+
+        if $z0 == 0 goto label09;
+
+        $r10 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r10.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint i;");
+
+        $r11 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r11.<java.io.PrintWriter: void println(java.lang.String)>("\t\tfor (i = yy_buffer_start; i < yy_buffer_index; ++i) {");
+
+        $r12 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r12.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tif (\'\\n\' == yy_buffer[i] && !yy_last_was_cr) {");
+
+        $r13 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r13.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t++yyline;");
+
+        $r14 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r14.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t}");
+
+        $r15 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r15.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tif (\'\\r\' == yy_buffer[i]) {");
+
+        $r16 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r16.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t++yyline;");
+
+        $r17 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r17.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tyy_last_was_cr=true;");
+
+        $r18 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r18.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t} else yy_last_was_cr=false;");
+
+        $r19 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r19.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+     label09:
+        $r7 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z1 = $r7.<JLex.CSpec: boolean m_count_chars>;
+
+        if $z1 == 0 goto label10;
+
+        $r8 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r8.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyychar = yychar");
+
+        $r9 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r9.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t+ yy_buffer_index - yy_buffer_start;");
+
+     label10:
+        $r101 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r101.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_buffer_start = yy_buffer_index;");
+
+        $r102 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r102.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r103 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r103.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate void yy_mark_end () {");
+
+        $r104 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r104.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_buffer_end = yy_buffer_index;");
+
+        $r105 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r105.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r106 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r106.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate void yy_to_mark () {");
+
+        $r107 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r107.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_buffer_index = yy_buffer_end;");
+
+        $r108 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r108.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_at_bol = (yy_buffer_end > yy_buffer_start) &&");
+
+        $r109 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r109.<java.io.PrintWriter: void println(java.lang.String)>("\t\t            (\'\\r\' == yy_buffer[yy_buffer_end-1] ||");
+
+        $r110 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r110.<java.io.PrintWriter: void println(java.lang.String)>("\t\t             \'\\n\' == yy_buffer[yy_buffer_end-1] ||");
+
+        $r111 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r111.<java.io.PrintWriter: void println(java.lang.String)>("\t\t             2028/*LS*/ == yy_buffer[yy_buffer_end-1] ||");
+
+        $r112 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r112.<java.io.PrintWriter: void println(java.lang.String)>("\t\t             2029/*PS*/ == yy_buffer[yy_buffer_end-1]);");
+
+        $r113 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r113.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r114 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r114.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate java.lang.String yytext () {");
+
+        $r115 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r115.<java.io.PrintWriter: void println(java.lang.String)>("\t\treturn (new java.lang.String(yy_buffer,");
+
+        $r116 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r116.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_buffer_start,");
+
+        $r117 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r117.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_buffer_end - yy_buffer_start));");
+
+        $r118 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r118.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r119 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r119.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate int yylength () {");
+
+        $r120 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r120.<java.io.PrintWriter: void println(java.lang.String)>("\t\treturn yy_buffer_end - yy_buffer_start;");
+
+        $r121 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r121.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r122 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r122.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate char[] yy_double (char buf[]) {");
+
+        $r123 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r123.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint i;");
+
+        $r124 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r124.<java.io.PrintWriter: void println(java.lang.String)>("\t\tchar newbuf[];");
+
+        $r125 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r125.<java.io.PrintWriter: void println(java.lang.String)>("\t\tnewbuf = new char[2*buf.length];");
+
+        $r126 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r126.<java.io.PrintWriter: void println(java.lang.String)>("\t\tfor (i = 0; i < buf.length; ++i) {");
+
+        $r127 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r127.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tnewbuf[i] = buf[i];");
+
+        $r128 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r128.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+        $r129 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r129.<java.io.PrintWriter: void println(java.lang.String)>("\t\treturn newbuf;");
+
+        $r130 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r130.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r131 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r131.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate final int YY_E_INTERNAL = 0;");
+
+        $r132 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r132.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate final int YY_E_MATCH = 1;");
+
+        $r133 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r133.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate java.lang.String yy_error_string[] = {");
+
+        $r134 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r134.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\"Error: Internal error.\\n\",");
+
+        $r135 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r135.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\"Error: Unmatched input.\\n\"");
+
+        $r136 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r136.<java.io.PrintWriter: void println(java.lang.String)>("\t};");
+
+        $r137 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r137.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate void yy_error (int code,boolean fatal) {");
+
+        $r138 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r138.<java.io.PrintWriter: void println(java.lang.String)>("\t\tjava.lang.System.out.print(yy_error_string[code]);");
+
+        $r139 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r139.<java.io.PrintWriter: void println(java.lang.String)>("\t\tjava.lang.System.out.flush();");
+
+        $r140 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r140.<java.io.PrintWriter: void println(java.lang.String)>("\t\tif (fatal) {");
+
+        $r141 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r141.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tthrow new Error(\"Fatal Error.\\n\");");
+
+        $r142 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r142.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+        $r143 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r143.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        $r144 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r144.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate int[][] unpackFromString(int size1, int size2, String st) {");
+
+        $r145 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r145.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint colonIndex = -1;");
+
+        $r146 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r146.<java.io.PrintWriter: void println(java.lang.String)>("\t\tString lengthString;");
+
+        $r147 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r147.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint sequenceLength = 0;");
+
+        $r148 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r148.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint sequenceInteger = 0;");
+
+        $r149 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r149.<java.io.PrintWriter: void println()>();
+
+        $r150 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r150.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint commaIndex;");
+
+        $r151 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r151.<java.io.PrintWriter: void println(java.lang.String)>("\t\tString workString;");
+
+        $r152 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r152.<java.io.PrintWriter: void println()>();
+
+        $r153 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r153.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint res[][] = new int[size1][size2];");
+
+        $r154 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r154.<java.io.PrintWriter: void println(java.lang.String)>("\t\tfor (int i= 0; i < size1; i++) {");
+
+        $r155 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r155.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tfor (int j= 0; j < size2; j++) {");
+
+        $r156 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r156.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tif (sequenceLength != 0) {");
+
+        $r157 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r157.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tres[i][j] = sequenceInteger;");
+
+        $r158 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r158.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tsequenceLength--;");
+
+        $r159 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r159.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tcontinue;");
+
+        $r160 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r160.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t}");
+
+        $r161 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r161.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tcommaIndex = st.indexOf(\',\');");
+
+        $r162 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r162.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tworkString = (commaIndex==-1) ? st :");
+
+        $r163 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r163.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tst.substring(0, commaIndex);");
+
+        $r164 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r164.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tst = st.substring(commaIndex+1);");
+
+        $r165 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r165.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tcolonIndex = workString.indexOf(\':\');");
+
+        $r166 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r166.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tif (colonIndex == -1) {");
+
+        $r167 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r167.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tres[i][j]=Integer.parseInt(workString);");
+
+        $r168 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r168.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tcontinue;");
+
+        $r169 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r169.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t}");
+
+        $r170 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r170.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tlengthString =");
+
+        $r171 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r171.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tworkString.substring(colonIndex+1);");
+
+        $r172 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r172.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tsequenceLength=Integer.parseInt(lengthString);");
+
+        $r173 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r173.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tworkString=workString.substring(0,colonIndex);");
+
+        $r174 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r174.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tsequenceInteger=Integer.parseInt(workString);");
+
+        $r175 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r175.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tres[i][j] = sequenceInteger;");
+
+        $r176 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r176.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tsequenceLength--;");
+
+        $r177 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r177.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t}");
+
+        $r178 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r178.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+        $r179 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r179.<java.io.PrintWriter: void println(java.lang.String)>("\t\treturn res;");
+
+        $r180 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r180.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        return;
+    }
+
+    private void emit_header() throws java.io.IOException
+    {
+        JLex.CEmit r0;
+        JLex.CSpec $r1, $r5, $r8, $r9, $r13, $r18, $r19;
+        java.io.PrintWriter $r2, $r3, $r4, $r6, $r12, $r15, $r16, $r22, $r23;
+        boolean $z0, $z1, $z2;
+        java.lang.String $r7, $r17;
+        char[] $r10, $r11, $r14, $r20, $r21;
+        int $i0, $i1, $i2;
+
+        r0 := @this: JLex.CEmit;
+
+        $r1 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        if null == $r1 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z1);
+
+        $r2 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        if null == $r2 goto label3;
+
+        $z2 = 1;
+
+        goto label4;
+
+     label3:
+        $z2 = 0;
+
+     label4:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z2);
+
+        $r3 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r3.<java.io.PrintWriter: void println()>();
+
+        $r4 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r4.<java.io.PrintWriter: void println()>();
+
+        $r5 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z0 = $r5.<JLex.CSpec: boolean m_public>;
+
+        if 1 != $z0 goto label5;
+
+        $r23 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r23.<java.io.PrintWriter: void print(java.lang.String)>("public ");
+
+     label5:
+        $r6 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r6.<java.io.PrintWriter: void print(java.lang.String)>("class ");
+
+        $r12 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r7 = new java.lang.String;
+
+        $r8 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r11 = $r8.<JLex.CSpec: char[] m_class_name>;
+
+        $r9 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r10 = $r9.<JLex.CSpec: char[] m_class_name>;
+
+        $i0 = lengthof $r10;
+
+        specialinvoke $r7.<java.lang.String: void <init>(char[],int,int)>($r11, 0, $i0);
+
+        virtualinvoke $r12.<java.io.PrintWriter: void print(java.lang.String)>($r7);
+
+        $r13 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r14 = $r13.<JLex.CSpec: char[] m_implements_name>;
+
+        $i1 = lengthof $r14;
+
+        if $i1 <= 0 goto label6;
+
+        $r16 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r16.<java.io.PrintWriter: void print(java.lang.String)>(" implements ");
+
+        $r22 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r17 = new java.lang.String;
+
+        $r18 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r21 = $r18.<JLex.CSpec: char[] m_implements_name>;
+
+        $r19 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r20 = $r19.<JLex.CSpec: char[] m_implements_name>;
+
+        $i2 = lengthof $r20;
+
+        specialinvoke $r17.<java.lang.String: void <init>(char[],int,int)>($r21, 0, $i2);
+
+        virtualinvoke $r22.<java.io.PrintWriter: void print(java.lang.String)>($r17);
+
+     label6:
+        $r15 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r15.<java.io.PrintWriter: void println(java.lang.String)>(" {");
+
+        return;
+    }
+
+    private void emit_table() throws java.io.IOException
+    {
+        JLex.CEmit r0;
+        JLex.CDTrans r1;
+        boolean z0, z1, $z2, $z3, $z4, $z5, $z6;
+        JLex.CAccept r2;
+        int[] r3, $r12, $r14, $r22, $r33, $r35, $r38, $r39, $r53, $r55;
+        int[][] r4, $r16, $r20;
+        JLex.CSpec $r5, $r8, $r11, $r13, $r21, $r25, $r30, $r34, $r36, $r37, $r40, $r52, $r54;
+        java.io.PrintWriter $r6, $r7, $r10, $r15, $r17, $r18, $r19, $r23, $r24, $r27, $r28, $r29, $r44, $r49, $r50, $r51, $r56, $r57, $r58, $r59;
+        java.util.Vector $r9, $r26, $r31, $r41;
+        int $i0, $i1, $i2, $i3, $i4, $i5, $i6, $i7, $i8, $i9, i10, i11, $i12, i13, i14, i15;
+        java.lang.Object $r32, $r42;
+        java.lang.StringBuilder $r43, $r45, $r46, $r47;
+        java.lang.String $r48;
+
+        r0 := @this: JLex.CEmit;
+
+        $r5 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        if null == $r5 goto label01;
+
+        $z2 = 1;
+
+        goto label02;
+
+     label01:
+        $z2 = 0;
+
+     label02:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z2);
+
+        $r6 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        if null == $r6 goto label03;
+
+        $z3 = 1;
+
+        goto label04;
+
+     label03:
+        $z3 = 0;
+
+     label04:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z3);
+
+        $r7 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r7.<java.io.PrintWriter: void println(java.lang.String)>("\tprivate int yy_acpt[] = {");
+
+        $r8 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r9 = $r8.<JLex.CSpec: java.util.Vector m_accept_vector>;
+
+        i10 = virtualinvoke $r9.<java.util.Vector: int size()>();
+
+        i11 = 0;
+
+     label05:
+        if i11 >= i10 goto label16;
+
+        $r40 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r41 = $r40.<JLex.CSpec: java.util.Vector m_accept_vector>;
+
+        $r42 = virtualinvoke $r41.<java.util.Vector: java.lang.Object elementAt(int)>(i11);
+
+        r2 = (JLex.CAccept) $r42;
+
+        $r44 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r43 = new java.lang.StringBuilder;
+
+        specialinvoke $r43.<java.lang.StringBuilder: void <init>()>();
+
+        $r45 = virtualinvoke $r43.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\t\t/* ");
+
+        $r46 = virtualinvoke $r45.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i11);
+
+        $r47 = virtualinvoke $r46.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" */ ");
+
+        $r48 = virtualinvoke $r47.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r44.<java.io.PrintWriter: void print(java.lang.String)>($r48);
+
+        if null == r2 goto label13;
+
+        $r52 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r53 = $r52.<JLex.CSpec: int[] m_anchor_array>;
+
+        $i6 = $r53[i11];
+
+        $i7 = $i6 & 1;
+
+        if 0 == $i7 goto label06;
+
+        $z4 = 1;
+
+        goto label07;
+
+     label06:
+        $z4 = 0;
+
+     label07:
+        z0 = $z4;
+
+        $r54 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r55 = $r54.<JLex.CSpec: int[] m_anchor_array>;
+
+        $i8 = $r55[i11];
+
+        $i9 = $i8 & 2;
+
+        if 0 == $i9 goto label08;
+
+        $z5 = 1;
+
+        goto label09;
+
+     label08:
+        $z5 = 0;
+
+     label09:
+        z1 = $z5;
+
+        if z0 == 0 goto label10;
+
+        if 1 != $z5 goto label10;
+
+        $r59 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r59.<java.io.PrintWriter: void print(java.lang.String)>("YY_START | YY_END");
+
+        goto label14;
+
+     label10:
+        if z0 == 0 goto label11;
+
+        $r58 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r58.<java.io.PrintWriter: void print(java.lang.String)>("YY_START");
+
+        goto label14;
+
+     label11:
+        if z1 == 0 goto label12;
+
+        $r57 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r57.<java.io.PrintWriter: void print(java.lang.String)>("YY_END");
+
+        goto label14;
+
+     label12:
+        $r56 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r56.<java.io.PrintWriter: void print(java.lang.String)>("YY_NO_ANCHOR");
+
+        goto label14;
+
+     label13:
+        $r49 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r49.<java.io.PrintWriter: void print(java.lang.String)>("YY_NOT_ACCEPT");
+
+     label14:
+        $i12 = i10 - 1;
+
+        if i11 >= $i12 goto label15;
+
+        $r51 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r51.<java.io.PrintWriter: void print(java.lang.String)>(",");
+
+     label15:
+        $r50 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r50.<java.io.PrintWriter: void println()>();
+
+        i11 = i11 + 1;
+
+        goto label05;
+
+     label16:
+        $r10 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r10.<java.io.PrintWriter: void println(java.lang.String)>("\t};");
+
+        $r11 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r12 = $r11.<JLex.CSpec: int[] m_ccls_map>;
+
+        $i0 = lengthof $r12;
+
+        r3 = newarray (int)[$i0];
+
+        i13 = 0;
+
+     label17:
+        $r13 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r14 = $r13.<JLex.CSpec: int[] m_ccls_map>;
+
+        $i1 = lengthof $r14;
+
+        if i13 >= $i1 goto label18;
+
+        $r36 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r39 = $r36.<JLex.CSpec: int[] m_col_map>;
+
+        $r37 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r38 = $r37.<JLex.CSpec: int[] m_ccls_map>;
+
+        $i4 = $r38[i13];
+
+        $i5 = $r39[$i4];
+
+        r3[i13] = $i5;
+
+        i13 = i13 + 1;
+
+        goto label17;
+
+     label18:
+        $r15 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r15.<java.io.PrintWriter: void print(java.lang.String)>("\tprivate int yy_cmap[] = unpackFromString(");
+
+        $r16 = newarray (int[])[1];
+
+        $r16[0] = r3;
+
+        specialinvoke r0.<JLex.CEmit: void emit_table_as_string(int[][])>($r16);
+
+        $r17 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r17.<java.io.PrintWriter: void println(java.lang.String)>(")[0];");
+
+        $r18 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r18.<java.io.PrintWriter: void println()>();
+
+        $r19 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r19.<java.io.PrintWriter: void print(java.lang.String)>("\tprivate int yy_rmap[] = unpackFromString(");
+
+        $r20 = newarray (int[])[1];
+
+        $r21 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r22 = $r21.<JLex.CSpec: int[] m_row_map>;
+
+        $r20[0] = $r22;
+
+        specialinvoke r0.<JLex.CEmit: void emit_table_as_string(int[][])>($r20);
+
+        $r23 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r23.<java.io.PrintWriter: void println(java.lang.String)>(")[0];");
+
+        $r24 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r24.<java.io.PrintWriter: void println()>();
+
+        $r25 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r26 = $r25.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        i14 = virtualinvoke $r26.<java.util.Vector: int size()>();
+
+        r4 = newarray (int[])[i14];
+
+        i15 = 0;
+
+     label19:
+        if i15 >= i14 goto label22;
+
+        $r30 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r31 = $r30.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        $r32 = virtualinvoke $r31.<java.util.Vector: java.lang.Object elementAt(int)>(i15);
+
+        r1 = (JLex.CDTrans) $r32;
+
+        $r33 = r1.<JLex.CDTrans: int[] m_dtrans>;
+
+        $i3 = lengthof $r33;
+
+        $r34 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i2 = $r34.<JLex.CSpec: int m_dtrans_ncols>;
+
+        if $i3 != $i2 goto label20;
+
+        $z6 = 1;
+
+        goto label21;
+
+     label20:
+        $z6 = 0;
+
+     label21:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z6);
+
+        $r35 = r1.<JLex.CDTrans: int[] m_dtrans>;
+
+        r4[i15] = $r35;
+
+        i15 = i15 + 1;
+
+        goto label19;
+
+     label22:
+        $r27 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r27.<java.io.PrintWriter: void print(java.lang.String)>("\tprivate int yy_nxt[][] = unpackFromString(");
+
+        specialinvoke r0.<JLex.CEmit: void emit_table_as_string(int[][])>(r4);
+
+        $r28 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r28.<java.io.PrintWriter: void println(java.lang.String)>(");");
+
+        $r29 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r29.<java.io.PrintWriter: void println()>();
+
+        return;
+    }
+
+    private void emit_table_as_string(int[][])
+    {
+        JLex.CEmit r0;
+        int[][] r1;
+        int i0, $i1, $i2, $i3, $i4, i5, i6, $i7, i8, $i9, i10, $i11;
+        java.lang.String r2, $r14, $r18, $r21, $r23, $r30, $r33, $r35, r44;
+        java.io.PrintWriter $r3, $r4, $r5, $r6, $r10, $r16, $r28;
+        java.lang.StringBuffer $r7, $r22, $r34, r43;
+        java.lang.StringBuilder $r9, $r11, $r12, $r13, $r15, $r17, $r19, $r20, $r27, $r29, $r31, $r32;
+        int[] $r25, $r26, $r42;
+        boolean z0;
+
+        r0 := @this: JLex.CEmit;
+
+        r1 := @parameter0: int[][];
+
+        i5 = 0;
+
+        z0 = 0;
+
+        i6 = -20;
+
+        $r3 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $i1 = lengthof r1;
+
+        virtualinvoke $r3.<java.io.PrintWriter: void print(int)>($i1);
+
+        $r4 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r4.<java.io.PrintWriter: void print(java.lang.String)>(",");
+
+        $r5 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $i2 = lengthof r1;
+
+        if $i2 <= 0 goto label01;
+
+        $r42 = r1[0];
+
+        $i7 = lengthof $r42;
+
+        goto label02;
+
+     label01:
+        $i7 = 0;
+
+     label02:
+        virtualinvoke $r5.<java.io.PrintWriter: void print(int)>($i7);
+
+        $r6 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r6.<java.io.PrintWriter: void println(java.lang.String)>(",");
+
+        $r7 = new java.lang.StringBuffer;
+
+        specialinvoke $r7.<java.lang.StringBuffer: void <init>()>();
+
+        r43 = $r7;
+
+        i8 = 0;
+
+     label03:
+        $i9 = lengthof r1;
+
+        if i8 >= $i9 goto label11;
+
+        i10 = 0;
+
+     label04:
+        $r25 = r1[i8];
+
+        $i4 = lengthof $r25;
+
+        if i10 >= $i4 goto label10;
+
+        $r26 = r1[i8];
+
+        i0 = $r26[i10];
+
+        if i0 != i6 goto label06;
+
+        if z0 == 0 goto label05;
+
+        i5 = i5 + 1;
+
+        goto label08;
+
+     label05:
+        virtualinvoke r43.<java.lang.StringBuffer: java.lang.StringBuffer append(int)>(i0);
+
+        virtualinvoke r43.<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>(":");
+
+        i5 = 2;
+
+        z0 = 1;
+
+        goto label08;
+
+     label06:
+        if z0 == 0 goto label07;
+
+        virtualinvoke r43.<java.lang.StringBuffer: java.lang.StringBuffer append(int)>(i5);
+
+        virtualinvoke r43.<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>(",");
+
+        i5 = 0;
+
+        z0 = 0;
+
+        goto label08;
+
+     label07:
+        if i6 == -20 goto label08;
+
+        virtualinvoke r43.<java.lang.StringBuffer: java.lang.StringBuffer append(int)>(i6);
+
+        virtualinvoke r43.<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>(",");
+
+     label08:
+        i6 = i0;
+
+        $i11 = virtualinvoke r43.<java.lang.StringBuffer: int length()>();
+
+        if $i11 <= 75 goto label09;
+
+        r2 = virtualinvoke r43.<java.lang.StringBuffer: java.lang.String toString()>();
+
+        $r28 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r27 = new java.lang.StringBuilder;
+
+        specialinvoke $r27.<java.lang.StringBuilder: void <init>()>();
+
+        $r29 = virtualinvoke $r27.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\"");
+
+        $r30 = virtualinvoke r2.<java.lang.String: java.lang.String substring(int,int)>(0, 75);
+
+        $r31 = virtualinvoke $r29.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r30);
+
+        $r32 = virtualinvoke $r31.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\" +");
+
+        $r33 = virtualinvoke $r32.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r28.<java.io.PrintWriter: void println(java.lang.String)>($r33);
+
+        $r34 = new java.lang.StringBuffer;
+
+        $r35 = virtualinvoke r2.<java.lang.String: java.lang.String substring(int)>(75);
+
+        specialinvoke $r34.<java.lang.StringBuffer: void <init>(java.lang.String)>($r35);
+
+        r43 = $r34;
+
+     label09:
+        i10 = i10 + 1;
+
+        goto label04;
+
+     label10:
+        i8 = i8 + 1;
+
+        goto label03;
+
+     label11:
+        if z0 == 0 goto label12;
+
+        virtualinvoke r43.<java.lang.StringBuffer: java.lang.StringBuffer append(int)>(i5);
+
+        goto label13;
+
+     label12:
+        virtualinvoke r43.<java.lang.StringBuffer: java.lang.StringBuffer append(int)>(i6);
+
+     label13:
+        $i3 = virtualinvoke r43.<java.lang.StringBuffer: int length()>();
+
+        if $i3 <= 75 goto label14;
+
+        r44 = virtualinvoke r43.<java.lang.StringBuffer: java.lang.String toString()>();
+
+        $r16 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r15 = new java.lang.StringBuilder;
+
+        specialinvoke $r15.<java.lang.StringBuilder: void <init>()>();
+
+        $r17 = virtualinvoke $r15.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\"");
+
+        $r18 = virtualinvoke r44.<java.lang.String: java.lang.String substring(int,int)>(0, 75);
+
+        $r19 = virtualinvoke $r17.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r18);
+
+        $r20 = virtualinvoke $r19.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\" +");
+
+        $r21 = virtualinvoke $r20.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r16.<java.io.PrintWriter: void println(java.lang.String)>($r21);
+
+        $r22 = new java.lang.StringBuffer;
+
+        $r23 = virtualinvoke r44.<java.lang.String: java.lang.String substring(int)>(75);
+
+        specialinvoke $r22.<java.lang.StringBuffer: void <init>(java.lang.String)>($r23);
+
+        r43 = $r22;
+
+     label14:
+        $r10 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r9 = new java.lang.StringBuilder;
+
+        specialinvoke $r9.<java.lang.StringBuilder: void <init>()>();
+
+        $r11 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\"");
+
+        $r12 = virtualinvoke $r11.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.Object)>(r43);
+
+        $r13 = virtualinvoke $r12.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\"");
+
+        $r14 = virtualinvoke $r13.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r10.<java.io.PrintWriter: void print(java.lang.String)>($r14);
+
+        return;
+    }
+
+    private void emit_driver() throws java.io.IOException
+    {
+        JLex.CEmit r0;
+        JLex.CSpec $r1, $r3, $r4, $r7, $r12, $r37, $r39, $r40, $r44, $r45, $r52, $r53, $r60, $r66, $r71;
+        java.io.PrintWriter $r2, $r5, $r9, $r10, $r14, $r15, $r16, $r17, $r18, $r19, $r20, $r21, $r22, $r23, $r24, $r25, $r26, $r27, $r28, $r29, $r30, $r31, $r32, $r33, $r34, $r35, $r36, $r42, $r47, $r48, $r49, $r50, $r55, $r56, $r57, $r58, $r62, $r63, $r64, $r68, $r69, $r70, $r73, $r74, $r75, $r76, $r77, $r78, $r79, $r80, $r81, $r82, $r83, $r84, $r85, $r86, $r87, $r88, $r89, $r90, $r91, $r92, $r93, $r94, $r95, $r96, $r97, $r98, $r99, $r100, $r101, $r102, $r103, $r104, $r105, $r106, $r107, $r108, $r109, $r110, $r111;
+        boolean $z0, $z1, $z2, $z3, $z4;
+        java.lang.String $r6, $r11, $r43, $r51, $r59, $r65;
+        char[] $r8, $r13, $r38, $r41, $r46, $r54, $r61, $r67, $r72;
+        int $i0, $i1;
+
+        r0 := @this: JLex.CEmit;
+
+        $r1 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        if null == $r1 goto label01;
+
+        $z3 = 1;
+
+        goto label02;
+
+     label01:
+        $z3 = 0;
+
+     label02:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z3);
+
+        $r2 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        if null == $r2 goto label03;
+
+        $z4 = 1;
+
+        goto label04;
+
+     label03:
+        $z4 = 0;
+
+     label04:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z4);
+
+        specialinvoke r0.<JLex.CEmit: void emit_table()>();
+
+        $r3 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z0 = $r3.<JLex.CSpec: boolean m_integer_type>;
+
+        if $z0 == 0 goto label05;
+
+        $r64 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r64.<java.io.PrintWriter: void print(java.lang.String)>("\tpublic int ");
+
+        $r68 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r65 = new java.lang.String;
+
+        $r66 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r67 = $r66.<JLex.CSpec: char[] m_function_name>;
+
+        specialinvoke $r65.<java.lang.String: void <init>(char[])>($r67);
+
+        virtualinvoke $r68.<java.io.PrintWriter: void print(java.lang.String)>($r65);
+
+        $r69 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r69.<java.io.PrintWriter: void println(java.lang.String)>(" ()");
+
+        goto label07;
+
+     label05:
+        $r4 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z1 = $r4.<JLex.CSpec: boolean m_intwrap_type>;
+
+        if $z1 == 0 goto label06;
+
+        $r58 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r58.<java.io.PrintWriter: void print(java.lang.String)>("\tpublic java.lang.Integer ");
+
+        $r62 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r59 = new java.lang.String;
+
+        $r60 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r61 = $r60.<JLex.CSpec: char[] m_function_name>;
+
+        specialinvoke $r59.<java.lang.String: void <init>(char[])>($r61);
+
+        virtualinvoke $r62.<java.io.PrintWriter: void print(java.lang.String)>($r59);
+
+        $r63 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r63.<java.io.PrintWriter: void println(java.lang.String)>(" ()");
+
+        goto label07;
+
+     label06:
+        $r5 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r5.<java.io.PrintWriter: void print(java.lang.String)>("\tpublic ");
+
+        $r9 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r6 = new java.lang.String;
+
+        $r7 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r8 = $r7.<JLex.CSpec: char[] m_type_name>;
+
+        specialinvoke $r6.<java.lang.String: void <init>(char[])>($r8);
+
+        virtualinvoke $r9.<java.io.PrintWriter: void print(java.lang.String)>($r6);
+
+        $r10 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r10.<java.io.PrintWriter: void print(java.lang.String)>(" ");
+
+        $r14 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r11 = new java.lang.String;
+
+        $r12 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r13 = $r12.<JLex.CSpec: char[] m_function_name>;
+
+        specialinvoke $r11.<java.lang.String: void <init>(char[])>($r13);
+
+        virtualinvoke $r14.<java.io.PrintWriter: void print(java.lang.String)>($r11);
+
+        $r15 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r15.<java.io.PrintWriter: void println(java.lang.String)>(" ()");
+
+     label07:
+        $r70 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r70.<java.io.PrintWriter: void print(java.lang.String)>("\t\tthrows java.io.IOException");
+
+        $r71 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r72 = $r71.<JLex.CSpec: char[] m_yylex_throw_code>;
+
+        if null == $r72 goto label08;
+
+        $r50 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r50.<java.io.PrintWriter: void print(java.lang.String)>(", ");
+
+        $r55 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r51 = new java.lang.String;
+
+        $r52 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r54 = $r52.<JLex.CSpec: char[] m_yylex_throw_code>;
+
+        $r53 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i1 = $r53.<JLex.CSpec: int m_yylex_throw_read>;
+
+        specialinvoke $r51.<java.lang.String: void <init>(char[],int,int)>($r54, 0, $i1);
+
+        virtualinvoke $r55.<java.io.PrintWriter: void print(java.lang.String)>($r51);
+
+        $r56 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r56.<java.io.PrintWriter: void println()>();
+
+        $r57 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r57.<java.io.PrintWriter: void println(java.lang.String)>("\t\t{");
+
+        goto label09;
+
+     label08:
+        $r16 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r16.<java.io.PrintWriter: void println(java.lang.String)>(" {");
+
+     label09:
+        $r17 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r17.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint yy_lookahead;");
+
+        $r18 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r18.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint yy_anchor = YY_NO_ANCHOR;");
+
+        $r19 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r19.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint yy_state = yy_state_dtrans[yy_lexical_state];");
+
+        $r20 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r20.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint yy_next_state = YY_NO_STATE;");
+
+        $r21 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r21.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint yy_last_accept_state = YY_NO_STATE;");
+
+        $r22 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r22.<java.io.PrintWriter: void println(java.lang.String)>("\t\tboolean yy_initial = true;");
+
+        $r23 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r23.<java.io.PrintWriter: void println(java.lang.String)>("\t\tint yy_this_accept;");
+
+        $r24 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r24.<java.io.PrintWriter: void println()>();
+
+        $r25 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r25.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_mark_start();");
+
+        $r26 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r26.<java.io.PrintWriter: void println(java.lang.String)>("\t\tyy_this_accept = yy_acpt[yy_state];");
+
+        $r27 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r27.<java.io.PrintWriter: void println(java.lang.String)>("\t\tif (YY_NOT_ACCEPT != yy_this_accept) {");
+
+        $r28 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r28.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_last_accept_state = yy_state;");
+
+        $r29 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r29.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_mark_end();");
+
+        $r30 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r30.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+        $r31 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r31.<java.io.PrintWriter: void println(java.lang.String)>("\t\twhile (true) {");
+
+        $r32 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r32.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tif (yy_initial && yy_at_bol) yy_lookahead = YY_BOL;");
+
+        $r33 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r33.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\telse yy_lookahead = yy_advance();");
+
+        $r34 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r34.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_next_state = YY_F;");
+
+        $r35 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r35.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tyy_next_state = yy_nxt[yy_rmap[yy_state]][yy_cmap[yy_lookahead]];");
+
+        $r36 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r36.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tif (YY_EOF == yy_lookahead && true == yy_initial) {");
+
+        $r37 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r38 = $r37.<JLex.CSpec: char[] m_eof_code>;
+
+        if null == $r38 goto label10;
+
+        $r49 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r49.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tyy_do_eof();");
+
+     label10:
+        $r39 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $z2 = $r39.<JLex.CSpec: boolean m_integer_type>;
+
+        if 1 != $z2 goto label11;
+
+        $r48 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r48.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\treturn YYEOF;");
+
+        goto label13;
+
+     label11:
+        $r40 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r41 = $r40.<JLex.CSpec: char[] m_eof_value_code>;
+
+        if null == $r41 goto label12;
+
+        $r47 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r43 = new java.lang.String;
+
+        $r44 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r46 = $r44.<JLex.CSpec: char[] m_eof_value_code>;
+
+        $r45 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $i0 = $r45.<JLex.CSpec: int m_eof_value_read>;
+
+        specialinvoke $r43.<java.lang.String: void <init>(char[],int,int)>($r46, 0, $i0);
+
+        virtualinvoke $r47.<java.io.PrintWriter: void print(java.lang.String)>($r43);
+
+        goto label13;
+
+     label12:
+        $r42 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r42.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\treturn null;");
+
+     label13:
+        $r73 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r73.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t}");
+
+        $r74 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r74.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\tif (YY_F != yy_next_state) {");
+
+        $r75 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r75.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tyy_state = yy_next_state;");
+
+        $r76 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r76.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tyy_initial = false;");
+
+        $r77 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r77.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tyy_this_accept = yy_acpt[yy_state];");
+
+        $r78 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r78.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tif (YY_NOT_ACCEPT != yy_this_accept) {");
+
+        $r79 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r79.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_last_accept_state = yy_state;");
+
+        $r80 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r80.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_mark_end();");
+
+        $r81 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r81.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t}");
+
+        $r82 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r82.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t}");
+
+        $r83 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r83.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\telse {");
+
+        $r84 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r84.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\tif (YY_NO_STATE == yy_last_accept_state) {");
+
+        $r85 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r85.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tthrow (new Error(\"Lexical Error: Unmatched Input.\"));");
+
+        $r86 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r86.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t}");
+
+        $r87 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r87.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\telse {");
+
+        $r88 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r88.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_anchor = yy_acpt[yy_last_accept_state];");
+
+        $r89 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r89.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tif (0 != (YY_END & yy_anchor)) {");
+
+        $r90 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r90.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\t\tyy_move_end();");
+
+        $r91 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r91.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\t}");
+
+        $r92 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r92.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_to_mark();");
+
+        $r93 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r93.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tswitch (yy_last_accept_state) {");
+
+        specialinvoke r0.<JLex.CEmit: void emit_actions(java.lang.String)>("\t\t\t\t\t");
+
+        $r94 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r94.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tdefault:");
+
+        $r95 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r95.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\t\tyy_error(YY_E_INTERNAL,false);");
+
+        $r96 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r96.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tcase -1:");
+
+        $r97 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r97.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\t}");
+
+        $r98 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r98.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_initial = true;");
+
+        $r99 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r99.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_state = yy_state_dtrans[yy_lexical_state];");
+
+        $r100 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r100.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_next_state = YY_NO_STATE;");
+
+        $r101 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r101.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_last_accept_state = YY_NO_STATE;");
+
+        $r102 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r102.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_mark_start();");
+
+        $r103 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r103.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tyy_this_accept = yy_acpt[yy_state];");
+
+        $r104 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r104.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\tif (YY_NOT_ACCEPT != yy_this_accept) {");
+
+        $r105 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r105.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\t\tyy_last_accept_state = yy_state;");
+
+        $r106 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r106.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\t\tyy_mark_end();");
+
+        $r107 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r107.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t\t}");
+
+        $r108 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r108.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t\t}");
+
+        $r109 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r109.<java.io.PrintWriter: void println(java.lang.String)>("\t\t\t}");
+
+        $r110 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r110.<java.io.PrintWriter: void println(java.lang.String)>("\t\t}");
+
+        $r111 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r111.<java.io.PrintWriter: void println(java.lang.String)>("\t}");
+
+        return;
+    }
+
+    private void emit_actions(java.lang.String) throws java.io.IOException
+    {
+        JLex.CEmit r0;
+        java.lang.String r1, $r18, $r23, $r24, $r34, $r39;
+        int i0, $i1, $i2, $i3, i4, i5;
+        JLex.CAccept r2;
+        JLex.CSpec $r3, $r5, $r7, $r9;
+        java.util.Vector $r4, $r8, $r10;
+        int[] $r6;
+        java.lang.Object $r11;
+        java.lang.StringBuilder $r12, $r14, $r15, $r16, $r17, $r19, $r21, $r22, $r28, $r30, $r31, $r32, $r33, $r35, $r37, $r38;
+        java.io.PrintWriter $r13, $r20, $r26, $r27, $r29, $r36;
+        char[] $r25;
+        boolean $z0;
+
+        r0 := @this: JLex.CEmit;
+
+        r1 := @parameter0: java.lang.String;
+
+        $r3 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r4 = $r3.<JLex.CSpec: java.util.Vector m_accept_vector>;
+
+        $i1 = virtualinvoke $r4.<java.util.Vector: int size()>();
+
+        $r5 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r6 = $r5.<JLex.CSpec: int[] m_anchor_array>;
+
+        $i2 = lengthof $r6;
+
+        if $i1 != $i2 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z0);
+
+        i4 = -2;
+
+        $r7 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r8 = $r7.<JLex.CSpec: java.util.Vector m_accept_vector>;
+
+        i0 = virtualinvoke $r8.<java.util.Vector: int size()>();
+
+        i5 = 0;
+
+     label3:
+        if i5 >= i0 goto label5;
+
+        $r9 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        $r10 = $r9.<JLex.CSpec: java.util.Vector m_accept_vector>;
+
+        $r11 = virtualinvoke $r10.<java.util.Vector: java.lang.Object elementAt(int)>(i5);
+
+        r2 = (JLex.CAccept) $r11;
+
+        if null == r2 goto label4;
+
+        $r13 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r12 = new java.lang.StringBuilder;
+
+        specialinvoke $r12.<java.lang.StringBuilder: void <init>()>();
+
+        $r14 = virtualinvoke $r12.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r15 = virtualinvoke $r14.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("case ");
+
+        $r16 = virtualinvoke $r15.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i5);
+
+        $r17 = virtualinvoke $r16.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(":");
+
+        $r18 = virtualinvoke $r17.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r13.<java.io.PrintWriter: void println(java.lang.String)>($r18);
+
+        $r20 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r19 = new java.lang.StringBuilder;
+
+        specialinvoke $r19.<java.lang.StringBuilder: void <init>()>();
+
+        $r21 = virtualinvoke $r19.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r22 = virtualinvoke $r21.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\t");
+
+        $r23 = virtualinvoke $r22.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r20.<java.io.PrintWriter: void print(java.lang.String)>($r23);
+
+        $r26 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r24 = new java.lang.String;
+
+        $r25 = r2.<JLex.CAccept: char[] m_action>;
+
+        $i3 = r2.<JLex.CAccept: int m_action_read>;
+
+        specialinvoke $r24.<java.lang.String: void <init>(char[],int,int)>($r25, 0, $i3);
+
+        virtualinvoke $r26.<java.io.PrintWriter: void print(java.lang.String)>($r24);
+
+        $r27 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r27.<java.io.PrintWriter: void println()>();
+
+        $r29 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r28 = new java.lang.StringBuilder;
+
+        specialinvoke $r28.<java.lang.StringBuilder: void <init>()>();
+
+        $r30 = virtualinvoke $r28.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r31 = virtualinvoke $r30.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("case ");
+
+        $r32 = virtualinvoke $r31.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i4);
+
+        $r33 = virtualinvoke $r32.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(":");
+
+        $r34 = virtualinvoke $r33.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r29.<java.io.PrintWriter: void println(java.lang.String)>($r34);
+
+        $r36 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        $r35 = new java.lang.StringBuilder;
+
+        specialinvoke $r35.<java.lang.StringBuilder: void <init>()>();
+
+        $r37 = virtualinvoke $r35.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r38 = virtualinvoke $r37.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\tbreak;");
+
+        $r39 = virtualinvoke $r38.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r36.<java.io.PrintWriter: void println(java.lang.String)>($r39);
+
+        i4 = i4 + -1;
+
+     label4:
+        i5 = i5 + 1;
+
+        goto label3;
+
+     label5:
+        return;
+    }
+
+    private void emit_footer() throws java.io.IOException
+    {
+        JLex.CEmit r0;
+        JLex.CSpec $r1;
+        java.io.PrintWriter $r2, $r3;
+        boolean $z0, $z1;
+
+        r0 := @this: JLex.CEmit;
+
+        $r1 = r0.<JLex.CEmit: JLex.CSpec m_spec>;
+
+        if null == $r1 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z0);
+
+        $r2 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        if null == $r2 goto label3;
+
+        $z1 = 1;
+
+        goto label4;
+
+     label3:
+        $z1 = 0;
+
+     label4:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z1);
+
+        $r3 = r0.<JLex.CEmit: java.io.PrintWriter m_outstream>;
+
+        virtualinvoke $r3.<java.io.PrintWriter: void println(java.lang.String)>("}");
+
+        return;
+    }
+}

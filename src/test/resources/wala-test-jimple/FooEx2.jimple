@@ -1,0 +1,28 @@
+class FooEx2 extends java.lang.Object
+{
+
+    void <init>()
+    {
+        FooEx2 r0;
+
+        r0 := @this: FooEx2;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void bar()
+    {
+        FooEx2 r0;
+        java.lang.NullPointerException $r1;
+
+        r0 := @this: FooEx2;
+
+        $r1 = new java.lang.NullPointerException;
+
+        specialinvoke $r1.<java.lang.NullPointerException: void <init>()>();
+
+        throw $r1;
+    }
+}

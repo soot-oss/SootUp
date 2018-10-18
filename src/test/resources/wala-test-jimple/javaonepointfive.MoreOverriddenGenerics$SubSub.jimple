@@ -1,0 +1,56 @@
+class javaonepointfive.MoreOverriddenGenerics$SubSub extends javaonepointfive.MoreOverriddenGenerics$Sub
+{
+    final javaonepointfive.MoreOverriddenGenerics this$0;
+
+    void <init>(javaonepointfive.MoreOverriddenGenerics)
+    {
+        javaonepointfive.MoreOverriddenGenerics$SubSub r0;
+        javaonepointfive.MoreOverriddenGenerics r1;
+
+        r0 := @this: javaonepointfive.MoreOverriddenGenerics$SubSub;
+
+        r1 := @parameter0: javaonepointfive.MoreOverriddenGenerics;
+
+        r0.<javaonepointfive.MoreOverriddenGenerics$SubSub: javaonepointfive.MoreOverriddenGenerics this$0> = r1;
+
+        specialinvoke r0.<javaonepointfive.MoreOverriddenGenerics$Sub: void <init>(javaonepointfive.MoreOverriddenGenerics)>(r1);
+
+        return;
+    }
+
+    public java.lang.Long get()
+    {
+        javaonepointfive.MoreOverriddenGenerics$SubSub r0;
+        java.lang.Long $r1;
+
+        r0 := @this: javaonepointfive.MoreOverriddenGenerics$SubSub;
+
+        $r1 = staticinvoke <java.lang.Long: java.lang.Long valueOf(long)>(6L);
+
+        return $r1;
+    }
+
+    public volatile java.lang.Number get()
+    {
+        javaonepointfive.MoreOverriddenGenerics$SubSub r0;
+        java.lang.Long $r1;
+
+        r0 := @this: javaonepointfive.MoreOverriddenGenerics$SubSub;
+
+        $r1 = virtualinvoke r0.<javaonepointfive.MoreOverriddenGenerics$SubSub: java.lang.Long get()>();
+
+        return $r1;
+    }
+
+    public volatile java.lang.Object get()
+    {
+        javaonepointfive.MoreOverriddenGenerics$SubSub r0;
+        java.lang.Long $r1;
+
+        r0 := @this: javaonepointfive.MoreOverriddenGenerics$SubSub;
+
+        $r1 = virtualinvoke r0.<javaonepointfive.MoreOverriddenGenerics$SubSub: java.lang.Long get()>();
+
+        return $r1;
+    }
+}

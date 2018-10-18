@@ -1,0 +1,14 @@
+class dcB extends dcA
+{
+
+    void <init>()
+    {
+        dcB r0;
+
+        r0 := @this: dcB;
+
+        specialinvoke r0.<dcA: void <init>()>();
+
+        return;
+    }
+}

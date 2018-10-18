@@ -1,0 +1,101 @@
+class javaonepointfive.AnonymousGenerics$1 extends java.lang.Object implements javaonepointfive.AnonymousGenerics$Ops
+{
+    final javaonepointfive.AnonymousGenerics this$0;
+
+    void <init>(javaonepointfive.AnonymousGenerics)
+    {
+        javaonepointfive.AnonymousGenerics$1 r0;
+        javaonepointfive.AnonymousGenerics r1;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics$1;
+
+        r1 := @parameter0: javaonepointfive.AnonymousGenerics;
+
+        r0.<javaonepointfive.AnonymousGenerics$1: javaonepointfive.AnonymousGenerics this$0> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public java.lang.String unary(java.lang.String)
+    {
+        javaonepointfive.AnonymousGenerics$1 r0;
+        java.lang.String r1, $r7;
+        java.lang.StringBuilder $r2, $r3, $r4, $r5, $r6;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics$1;
+
+        r1 := @parameter0: java.lang.String;
+
+        $r2 = new java.lang.StringBuilder;
+
+        specialinvoke $r2.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        return $r7;
+    }
+
+    public java.lang.String nullary()
+    {
+        javaonepointfive.AnonymousGenerics$1 r0;
+        java.lang.StringBuilder $r2, $r3, $r4, $r5, $r6;
+        java.lang.String $r7;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics$1;
+
+        $r2 = new java.lang.StringBuilder;
+
+        specialinvoke $r2.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("time to make a move to the global economy ");
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("time to make a move to the global economy ");
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("time to make a move to the global economy ");
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("time to make a move to the global economy ");
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        return $r7;
+    }
+
+    public volatile java.lang.Object unary(java.lang.Object)
+    {
+        javaonepointfive.AnonymousGenerics$1 r0;
+        java.lang.Object r1;
+        java.lang.String $r2, $r3;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics$1;
+
+        r1 := @parameter0: java.lang.Object;
+
+        $r2 = (java.lang.String) r1;
+
+        $r3 = virtualinvoke r0.<javaonepointfive.AnonymousGenerics$1: java.lang.String unary(java.lang.String)>($r2);
+
+        return $r3;
+    }
+
+    public volatile java.lang.Object nullary()
+    {
+        javaonepointfive.AnonymousGenerics$1 r0;
+        java.lang.String $r1;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics$1;
+
+        $r1 = virtualinvoke r0.<javaonepointfive.AnonymousGenerics$1: java.lang.String nullary()>();
+
+        return $r1;
+    }
+}

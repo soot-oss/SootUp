@@ -1,0 +1,7 @@
+interface  javaonepointfive.IGeneric extends java.lang.Object
+{
+
+    public abstract java.lang.Object foo();
+
+    public abstract java.lang.Object bar(java.lang.Object, java.lang.Object);
+}

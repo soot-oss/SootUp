@@ -1,0 +1,41 @@
+class javaonepointfive.ConcreteGeneric2 extends javaonepointfive.ConcreteGeneric
+{
+    java.lang.Object y;
+
+    void <init>()
+    {
+        javaonepointfive.ConcreteGeneric2 r0;
+
+        r0 := @this: javaonepointfive.ConcreteGeneric2;
+
+        specialinvoke r0.<javaonepointfive.ConcreteGeneric: void <init>()>();
+
+        return;
+    }
+
+    public void setFoo(java.lang.Object)
+    {
+        javaonepointfive.ConcreteGeneric2 r0;
+        java.lang.Object r1;
+
+        r0 := @this: javaonepointfive.ConcreteGeneric2;
+
+        r1 := @parameter0: java.lang.Object;
+
+        r0.<javaonepointfive.ConcreteGeneric2: java.lang.Object y> = r1;
+
+        return;
+    }
+
+    public java.lang.Object foo()
+    {
+        javaonepointfive.ConcreteGeneric2 r0;
+        java.lang.Object $r1;
+
+        r0 := @this: javaonepointfive.ConcreteGeneric2;
+
+        $r1 = r0.<javaonepointfive.ConcreteGeneric2: java.lang.Object y>;
+
+        return $r1;
+    }
+}

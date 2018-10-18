@@ -1,0 +1,83 @@
+public class Breaks extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        Breaks r0;
+
+        r0 := @this: Breaks;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private void testBreakFromIf(java.lang.String, Breaks$Ref)
+    {
+        Breaks r0;
+        java.lang.String r1, $r4;
+        Breaks$Ref r2;
+        java.lang.String[] r3;
+        int i0, i1;
+
+        r0 := @this: Breaks;
+
+        r1 := @parameter0: java.lang.String;
+
+        r2 := @parameter1: Breaks$Ref;
+
+        if r1 == null goto label4;
+
+        r3 = virtualinvoke r2.<Breaks$Ref: java.lang.String[] getClasses()>();
+
+        i0 = lengthof r3;
+
+        i1 = 0;
+
+     label1:
+        if i1 >= i0 goto label3;
+
+        $r4 = r3[i1];
+
+        if $r4 != r1 goto label2;
+
+        goto label4;
+
+     label2:
+        i1 = i1 + 1;
+
+        goto label1;
+
+     label3:
+        return;
+
+     label4:
+        if r1 != null goto label5;
+
+        r2.<Breaks$Ref: java.lang.String[] classes> = null;
+
+     label5:
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        Breaks $r1;
+        Breaks$Ref $r2;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new Breaks;
+
+        specialinvoke $r1.<Breaks: void <init>()>();
+
+        $r2 = new Breaks$Ref;
+
+        specialinvoke $r2.<Breaks$Ref: void <init>(java.lang.String[],Breaks$1)>(r0, null);
+
+        specialinvoke $r1.<Breaks: void testBreakFromIf(java.lang.String,Breaks$Ref)>("whatever", $r2);
+
+        return;
+    }
+}

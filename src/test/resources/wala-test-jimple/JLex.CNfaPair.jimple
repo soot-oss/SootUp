@@ -1,0 +1,20 @@
+class JLex.CNfaPair extends java.lang.Object
+{
+    JLex.CNfa m_start;
+    JLex.CNfa m_end;
+
+    void <init>()
+    {
+        JLex.CNfaPair r0;
+
+        r0 := @this: JLex.CNfaPair;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<JLex.CNfaPair: JLex.CNfa m_start> = null;
+
+        r0.<JLex.CNfaPair: JLex.CNfa m_end> = null;
+
+        return;
+    }
+}

@@ -1,0 +1,72 @@
+public class InnerClass extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        InnerClass r0;
+
+        r0 := @this: InnerClass;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        InnerClass $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new InnerClass;
+
+        specialinvoke $r1.<InnerClass: void <init>()>();
+
+        virtualinvoke $r1.<InnerClass: void method()>();
+
+        return;
+    }
+
+    public int fromInner(int)
+    {
+        InnerClass r0;
+        int i0, $i1;
+
+        r0 := @this: InnerClass;
+
+        i0 := @parameter0: int;
+
+        $i1 = i0 + 1;
+
+        return $i1;
+    }
+
+    public int fromInner2(int)
+    {
+        InnerClass r0;
+        int i0, $i1;
+
+        r0 := @this: InnerClass;
+
+        i0 := @parameter0: int;
+
+        $i1 = i0 + 3;
+
+        return $i1;
+    }
+
+    public void method()
+    {
+        InnerClass r0;
+        InnerClass$WhatsIt $r2;
+
+        r0 := @this: InnerClass;
+
+        $r2 = new InnerClass$WhatsIt;
+
+        specialinvoke $r2.<InnerClass$WhatsIt: void <init>(InnerClass)>(r0);
+
+        return;
+    }
+}

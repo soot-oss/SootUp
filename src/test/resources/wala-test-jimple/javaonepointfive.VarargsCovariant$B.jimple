@@ -1,0 +1,45 @@
+class javaonepointfive.VarargsCovariant$B extends javaonepointfive.VarargsCovariant$A
+{
+
+    void <init>()
+    {
+        javaonepointfive.VarargsCovariant$B r0;
+
+        r0 := @this: javaonepointfive.VarargsCovariant$B;
+
+        specialinvoke r0.<javaonepointfive.VarargsCovariant$A: void <init>()>();
+
+        return;
+    }
+
+    transient javaonepointfive.VarargsCovariant$B hello(int[])
+    {
+        javaonepointfive.VarargsCovariant$B r0;
+        int[] r1;
+        java.io.PrintStream $r2;
+
+        r0 := @this: javaonepointfive.VarargsCovariant$B;
+
+        r1 := @parameter0: int[];
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("b hello");
+
+        return r0;
+    }
+
+    volatile javaonepointfive.VarargsCovariant$A hello(int[])
+    {
+        javaonepointfive.VarargsCovariant$B r0, $r2;
+        int[] r1;
+
+        r0 := @this: javaonepointfive.VarargsCovariant$B;
+
+        r1 := @parameter0: int[];
+
+        $r2 = virtualinvoke r0.<javaonepointfive.VarargsCovariant$B: javaonepointfive.VarargsCovariant$B hello(int[])>(r1);
+
+        return $r2;
+    }
+}

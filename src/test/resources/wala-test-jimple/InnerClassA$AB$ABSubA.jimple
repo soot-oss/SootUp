@@ -1,0 +1,38 @@
+class InnerClassA$AB$ABSubA extends InnerClassA$AB$ABA
+{
+    final InnerClassA$AB this$1;
+
+    void <init>(InnerClassA$AB)
+    {
+        InnerClassA$AB$ABSubA r0;
+        InnerClassA$AB r1;
+
+        r0 := @this: InnerClassA$AB$ABSubA;
+
+        r1 := @parameter0: InnerClassA$AB;
+
+        r0.<InnerClassA$AB$ABSubA: InnerClassA$AB this$1> = r1;
+
+        specialinvoke r0.<InnerClassA$AB$ABA: void <init>(InnerClassA$AB)>(r1);
+
+        return;
+    }
+
+    int getA_X()
+    {
+        InnerClassA$AB$ABSubA r0;
+        InnerClassA$AB $r1;
+        InnerClassA $r2;
+        int $i0;
+
+        r0 := @this: InnerClassA$AB$ABSubA;
+
+        $r1 = r0.<InnerClassA$AB$ABSubA: InnerClassA$AB this$1>;
+
+        $r2 = $r1.<InnerClassA$AB: InnerClassA this$0>;
+
+        $i0 = $r2.<InnerClassA: int a_x>;
+
+        return $i0;
+    }
+}
