@@ -34,8 +34,6 @@ import de.upb.soot.views.JavaView;
 
 import java.util.ArrayDeque;
 
-import javax.swing.text.View;
-
 /**
  * A class that models Java's reference types. RefTypes are parameterized by a class name. Two RefType are equal iff they are
  * Parameterized by the same class name as a String. Modified by @author Linghui Luo on 25.07.2018
@@ -81,7 +79,8 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
   }
 
 
-  // TODO: Please change className to ClassSignature here. No use of Strings to determine classes anymore. The first few lines are a good example why.
+  // TODO: Please change className to ClassSignature here. No use of Strings to determine classes anymore. The first few
+  // lines are a good example why.
   /**
    * Create a RefType instance for the given view.
    * 
@@ -175,7 +174,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
       // TODO: This is all highly suspicious. FQCNs should be resolved there through a SignatureFactory.
       SootClass thisClass = this.getView().getSootClass(this.className);
       SootClass otherClass = this.getView().getSootClass(((RefType) other).className);
-      SootClass javalangObject = this.getView().getSootClass(CommonClassSignatures.JavaLangObject).orElseGet(null);
+      SootClass javalangObject = this.getView().getSootClass(CommonClassSignatures.JavaLangObject.className);
 
       ArrayDeque<SootClass> thisHierarchy = new ArrayDeque<>();
       ArrayDeque<SootClass> otherHierarchy = new ArrayDeque<>();

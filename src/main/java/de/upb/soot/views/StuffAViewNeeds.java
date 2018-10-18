@@ -1,5 +1,7 @@
 package de.upb.soot.views;
 
+import de.upb.soot.core.AbstractClass;
+
 public class StuffAViewNeeds {
 
   // How to look up an actor?
@@ -22,9 +24,9 @@ public class StuffAViewNeeds {
    *          the signature of the class to resolve
    * @return the initial resolved SootClass or an empty optional, if resolving fails
    */
-  public java.util.Optional<de.upb.soot.core.SootClass> getClass(de.upb.soot.signatures.ClassSignature signature,
+  public java.util.Optional<AbstractClass> getClass(de.upb.soot.signatures.ClassSignature signature,
       de.upb.soot.views.IView view) {
-    java.util.Optional<de.upb.soot.core.SootClass> result = java.util.Optional.empty();
+    java.util.Optional<AbstractClass> result = java.util.Optional.empty();
     // TODO: cache
 
     // TODO: decide for phantom ---> That's a good question, and how to create them ...
@@ -38,9 +40,9 @@ public class StuffAViewNeeds {
     return result;
   }
 
-  public java.util.Optional<de.upb.soot.core.SootClass>
+  public java.util.Optional<AbstractClass>
       resolveClass(de.upb.soot.namespaces.classprovider.AbstractClassSource classSource, de.upb.soot.views.IView view) {
-    java.util.Optional<de.upb.soot.core.SootClass> result = java.util.Optional.empty();
+    java.util.Optional<AbstractClass> result = java.util.Optional.empty();
     akka.actor.ActorRef cb = getOrCreateActor(classSource, view);
     akka.util.Timeout timeout = new akka.util.Timeout(scala.concurrent.duration.Duration.create(5, "seconds"));
     scala.concurrent.Future<Object> cbFuture
@@ -61,16 +63,16 @@ public class StuffAViewNeeds {
    *          to resolve
    * @return the initial resolved class or an empty Optional, if the class initialization fails
    */
-  public java.util.Optional<de.upb.soot.core.SootClass>
+  public java.util.Optional<AbstractClass>
       reifyClass(de.upb.soot.namespaces.classprovider.AbstractClassSource classSource, de.upb.soot.views.IView view) {
-    java.util.Optional<de.upb.soot.core.SootClass> result = java.util.Optional.empty();
+    java.util.Optional<AbstractClass> result = java.util.Optional.empty();
     akka.actor.ActorRef cb = getOrCreateActor(classSource, view);
     akka.util.Timeout timeout = new akka.util.Timeout(scala.concurrent.duration.Duration.create(5, "seconds"));
     scala.concurrent.Future<Object> cbFuture
         = akka.pattern.Patterns.ask(cb, new de.upb.soot.buildactor.ReifyMessage(), timeout);
     try {
       result
-          = java.util.Optional.of((de.upb.soot.core.SootClass) scala.concurrent.Await.result(cbFuture, timeout.duration()));
+          = java.util.Optional.of((AbstractClass) scala.concurrent.Await.result(cbFuture, timeout.duration()));
     } catch (Exception e) {
       // TODO: Do something meaningful here
     }

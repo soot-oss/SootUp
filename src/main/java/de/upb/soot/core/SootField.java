@@ -21,7 +21,6 @@ package de.upb.soot.core;
  * #L%
  */
 
-import de.upb.soot.jimple.common.type.RefLikeType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.views.IView;
 
@@ -38,25 +37,20 @@ public class SootField extends ClassMember {
   private static final long serialVersionUID = -5101396409117866687L;
 
   /** Constructs a Soot field with the given name, type and modifiers. */
-  public SootField(IView view, String name, Type type, EnumSet<Modifier> modifiers) {
-    super(view);
-    if (name == null || type == null) {
-      throw new RuntimeException("A SootField cannot have a null name or type.");
-    }
-    this.name = name;
-    this.type = type;
-    this.modifiers = modifiers;
+  public SootField(IView view, SootClass klass, String name, Type type, EnumSet<Modifier> modifiers) {
+    super(view, klass, name, type, modifiers);
   }
 
-  public SootField(IView view, SootField field) {
-    this(view, field.name, field.type, field.modifiers);
+  public SootField(IView view, SootClass klass, SootField field) {
+    this(view, klass, field.name, field.type, field.modifiers);
   }
 
   /** Constructs a Soot field with the given name, type and no modifiers. */
-  public SootField(IView view, String name, Type type) {
-    this(view, name, type, EnumSet.noneOf(Modifier.class));
+  public SootField(IView view, SootClass klass, String name, Type type) {
+    this(view, klass, name, type, EnumSet.noneOf(Modifier.class));
   }
 
+  @Override
   public String getSignature() {
     if (sig == null) {
       synchronized (this) {
@@ -72,6 +66,7 @@ public class SootField extends ClassMember {
     return getSignature(cl, getSubSignature(name, type));
   }
 
+  @Override
   public String getSignature(SootClass cl, String subSignature) {
     StringBuilder buffer = new StringBuilder();
 
@@ -82,6 +77,7 @@ public class SootField extends ClassMember {
 
   }
 
+  @Override
   public String getSubSignature() {
     if (subSig == null) {
       synchronized (this) {
@@ -99,32 +95,8 @@ public class SootField extends ClassMember {
     return buffer.toString();
   }
 
-  public synchronized void setDeclaringClass(SootClass sc) {
-    if (sc != null && type instanceof RefLikeType) {
-      this.getView().getFieldNumberer().add(this);
-    }
-    this.declaringClass = sc;
-    this.sig = null;
-  }
-
-  public synchronized void setName(String name) {
-    if (name != null) {
-      this.name = name;
-      this.sig = null;
-      this.subSig = null;
-    }
-  }
-
   public Type getType() {
     return type;
-  }
-
-  public synchronized void setType(Type t) {
-    if (t != null) {
-      this.type = t;
-      this.sig = null;
-      this.subSig = null;
-    }
   }
 
   private String getOriginalStyleDeclaration() {

@@ -5,6 +5,7 @@ import de.upb.soot.Project;
 import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
@@ -44,7 +45,7 @@ public abstract class AbstractView implements IView {
   protected StringNumberer subSigNumberer;
   protected ArrayNumberer<SootMethod> methodNumber;
   protected Set<String> reservedNames;
-  protected List<SootClass> classes;
+  protected List<AbstractClass> classes;
   protected ArrayNumberer<SootField> fieldNumberer;
 
 
@@ -98,20 +99,20 @@ public abstract class AbstractView implements IView {
   }
 
   @Override
-  public List<SootClass> getSootClasses() {
+  public List<AbstractClass> getClasses() {
     return classes;
   }
 
   @Override
-  public Stream<SootClass> classes() {
+  public Stream<AbstractClass> classes() {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public Optional<SootClass> getSootClass(ClassSignature signature) {
-    Optional<SootClass> opt = Optional.empty();
-    for (SootClass c : classes) {
+  public Optional<AbstractClass> getClass(ClassSignature signature) {
+    Optional<AbstractClass> opt = Optional.empty();
+    for (AbstractClass c : classes) {
       if (c.getName().equals(signature.getFullyQualifiedName())) {
         opt = Optional.ofNullable(c);
         break;
@@ -232,11 +233,7 @@ public abstract class AbstractView implements IView {
     return this.options;
   }
 
-  @Override
-  public void addSootClass(SootClass klass) {
-    this.classes.add(klass);
-    addRefType(klass.getName(), klass.getType());
-  }
+
 
   @Override
   public boolean allowsPhantomRefs() {

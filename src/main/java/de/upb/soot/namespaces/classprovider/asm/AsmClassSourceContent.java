@@ -1,5 +1,7 @@
 package de.upb.soot.namespaces.classprovider.asm;
 
+import de.upb.soot.core.SootClass;
+
 public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     implements de.upb.soot.namespaces.classprovider.ISourceContent {
   @Override
@@ -10,11 +12,9 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     System.out.println(this.methods);
     // create the soot class....
     // FIXME: or a soot module ...
-    de.upb.soot.core.SootClass sootClass = new de.upb.soot.core.SootClass(
-            null, (de.upb.soot.namespaces.classprovider.AbstractClassSource) null, de.upb.soot.core.Modifier.ABSTRACT);
+    de.upb.soot.core.SootClass sootClass = new SootClass(view, null, null, null, null, null, null, null, null);
     for (org.objectweb.asm.tree.MethodNode methodSource : this.methods) {
-      de.upb.soot.core.SootMethod sootMethod = new de.upb.soot.core.SootMethod(null, null, null, null);
-      sootMethod.setSource((AsmMethodSource) methodSource);
+      de.upb.soot.core.SootMethod sootMethod = new de.upb.soot.core.SootMethod(null, sootClass, null, null, null);
       sootClass.addMethod(sootMethod);
     }
 

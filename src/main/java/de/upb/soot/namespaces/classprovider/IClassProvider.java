@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces.classprovider;
 
-import de.upb.soot.core.SootClass;
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.ClassSignature;
@@ -38,9 +38,9 @@ public interface IClassProvider {
    *
    */
 
-  public abstract SootClass reify(AbstractClassSource classSource);
+  public abstract AbstractClass reify(AbstractClassSource classSource);
 
-  public abstract de.upb.soot.core.SootClass resolve(de.upb.soot.core.SootClass sootClass);
+  public abstract AbstractClass resolve(AbstractClass sootClass);
 
   public abstract de.upb.soot.core.SootMethod resolveMethodBody(de.upb.soot.core.SootMethod sootMethod);
 
@@ -51,7 +51,7 @@ public interface IClassProvider {
    *          signatures of the classes to resolve
    * @return the resolved classses
    */
-  default public Iterable<de.upb.soot.core.SootClass>
+  default public Iterable<AbstractClass>
       resolveSootClasses(de.upb.soot.signatures.ClassSignature[] sootClasses) {
     if (sootClasses == null) {
       return java.util.Collections.emptyList();
@@ -66,8 +66,8 @@ public interface IClassProvider {
    *          the signature of the class to resolve
    * @return the resolved class
    */
-  default public de.upb.soot.core.SootClass resolveSootClass(de.upb.soot.signatures.ClassSignature signature) {
-    java.util.Optional<de.upb.soot.core.SootClass> moduleClass = view.getSootClass(signature);
+  default public AbstractClass resolveSootClass(de.upb.soot.signatures.ClassSignature signature) {
+    java.util.Optional<AbstractClass> moduleClass = view.getClass(signature);
     return moduleClass.get();
   }
 

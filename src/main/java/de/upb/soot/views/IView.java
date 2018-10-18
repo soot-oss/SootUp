@@ -4,6 +4,7 @@ import de.upb.soot.Options;
 import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
@@ -34,21 +35,21 @@ public interface IView {
    * 
    * @return A list of classes
    */
-  List<SootClass> getSootClasses();
+  List<AbstractClass> getClasses();
 
   /**
    * Returns a stream of classes in the view.
    * 
    * @return A stream of classes
    */
-  Stream<SootClass> classes();
+  Stream<AbstractClass> classes();
 
   /**
    * Return a class with given signature.
    * 
    * @return A class with given signature.
    */
-  Optional<SootClass> getSootClass(ClassSignature signature);
+  Optional<AbstractClass> getClass(ClassSignature signature);
 
   /**
    * Provides the call graph using the default algorithm.
@@ -80,11 +81,6 @@ public interface IView {
    */
   Optional<Scope> getScope();
 
-
-  /**
-   * Add a SootClass object to this view.
-   */
-  void addSootClass(SootClass klass);
 
   ArrayNumberer<SootField> getFieldNumberer();
 

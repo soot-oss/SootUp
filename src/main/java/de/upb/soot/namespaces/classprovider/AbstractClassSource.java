@@ -2,10 +2,10 @@ package de.upb.soot.namespaces.classprovider;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.google.common.base.Objects;
-
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.ClassSignature;
+
+import com.google.common.base.Objects;
 
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -45,7 +45,6 @@ public abstract class AbstractClassSource {
    */
   public AbstractClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature) {
     checkNotNull(srcNamespace);
-
     this.srcNamespace = srcNamespace;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;

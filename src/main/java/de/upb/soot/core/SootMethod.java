@@ -21,14 +21,13 @@ package de.upb.soot.core;
  * #L%
  */
 
-import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.IMethodSource;
 import de.upb.soot.util.NumberedString;
 import de.upb.soot.views.IView;
 
-import java.util.ArrayList;
+import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -56,10 +55,10 @@ public class SootMethod extends ClassMember {
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
    */
-  private List<Type> parameterTypes;
+  private final List<Type> parameterTypes;
 
   /** Declared exceptions thrown by this method. Created upon demand. */
-  protected List<SootClass> exceptions = null;
+  protected final List<SootClass> exceptions;
 
   /** Active body associated with this method. */
   protected volatile Body activeBody;
@@ -70,69 +69,30 @@ public class SootMethod extends ClassMember {
   /**
    * Constructs a SootMethod with the given name, parameter types and return type.
    */
-  public SootMethod(IView view, String name, List<Type> parameterTypes, Type returnType) {
-    this(view, name, parameterTypes, returnType, EnumSet.noneOf(Modifier.class), Collections.<SootClass>emptyList());
+  public SootMethod(IView view, SootClass klass, String name, List<Type> parameterTypes, Type returnType) {
+    this(view, klass, name, parameterTypes, returnType, EnumSet.noneOf(Modifier.class), Collections.<SootClass>emptyList(),
+        null);
   }
 
   /**
    * Constructs a SootMethod with the given name, parameter types, return type and modifiers.
    */
-  public SootMethod(IView view, String name, List<Type> parameterTypes, Type returnType, EnumSet<Modifier> modifiers) {
-    this(view, name, parameterTypes, returnType, modifiers, Collections.<SootClass>emptyList());
+  public SootMethod(IView view, SootClass klass, String name, List<Type> parameterTypes, Type returnType,
+      EnumSet<Modifier> modifiers) {
+    this(view, klass, name, parameterTypes, returnType, modifiers, Collections.<SootClass>emptyList(), null);
   }
 
   /**
    * Constructs a SootMethod with the given name, parameter types, return type, and list of thrown exceptions.
    */
-  public SootMethod(IView view, String name, List<Type> parameterTypes, Type returnType, EnumSet<Modifier> modifiers,
-      List<SootClass> thrownExceptions) {
-    super(view);
-    this.name = name;
-    this.parameterTypes = new ArrayList<Type>();
-    this.parameterTypes.addAll(parameterTypes);
-    this.parameterTypes = Collections.unmodifiableList(this.parameterTypes);
-
-    this.type = returnType;
-    this.modifiers = modifiers;
-
-    if (exceptions == null && !thrownExceptions.isEmpty()) {
-      exceptions = new ArrayList<SootClass>();
-      this.exceptions.addAll(thrownExceptions);
-    }
+  public SootMethod(IView view, SootClass klass, String name, List<Type> parameterTypes, Type returnType,
+      EnumSet<Modifier> modifiers,
+      List<SootClass> thrownExceptions, DebuggingInformation debugInfo) {
+    super(view, klass, name, returnType, modifiers);
+    this.parameterTypes = parameterTypes;
+    this.exceptions = thrownExceptions;
+    this.debugInfo = debugInfo;
     subsignature = this.getView().getSubSigNumberer().findOrAdd(getSubSignature());
-  }
-
-
-
-  /** Sets the name of this method. */
-  public synchronized void setName(String name) {
-    boolean wasDeclared = isDeclared;
-    SootClass oldDeclaringClass = declaringClass;
-    if (wasDeclared) {
-      oldDeclaringClass.removeMethod(this);
-    }
-    this.name = name;
-    subSig = null;
-    sig = null;
-    subsignature = this.getView().getSubSigNumberer().findOrAdd(getSubSignature());
-    if (wasDeclared) {
-      oldDeclaringClass.addMethod(this);
-    }
-  }
-
-  /** Sets the declaring class */
-  public synchronized void setDeclaringClass(SootClass declClass) {
-    // There is nothing to stop this field from being null except when it actually gets in
-    // other classes such as SootMethodRef (when it tries to resolve the method). However, if
-    // the method is not declared, it should not be trying to resolve it anyways. So I see no
-    // problem with having it able to be null.
-    if (declClass != null) {
-      this.getView().getMethodNumberer().add(this);
-    }
-    // We could call setDeclared here, however, when SootClass adds a method, it checks isDeclared
-    // and throws an exception if set. So we currently cannot call setDeclared here.
-    declaringClass = declClass;
-    sig = null;
   }
 
   /**
@@ -145,22 +105,6 @@ public class SootMethod extends ClassMember {
   /** Returns the return type of this method. */
   public Type getReturnType() {
     return type;
-  }
-
-  /** Sets the return type of this method. */
-  public synchronized void setType(Type t) {
-    boolean wasDeclared = isDeclared;
-    SootClass oldDeclaringClass = declaringClass;
-    if (wasDeclared) {
-      oldDeclaringClass.removeMethod(this);
-    }
-    type = t;
-    subSig = null;
-    sig = null;
-    subsignature = this.getView().getSubSigNumberer().findOrAdd(getSubSignature());
-    if (wasDeclared) {
-      oldDeclaringClass.addMethod(this);
-    }
   }
 
   /** Returns the number of parameters taken by this method. */
@@ -178,34 +122,6 @@ public class SootMethod extends ClassMember {
    */
   public List<Type> getParameterTypes() {
     return parameterTypes == null ? Collections.<Type>emptyList() : parameterTypes;
-  }
-
-  /**
-   * Changes the set of parameter types of this method.
-   */
-  public synchronized void setParameterTypes(List<Type> l) {
-    boolean wasDeclared = isDeclared;
-    SootClass oldDeclaringClass = declaringClass;
-    if (wasDeclared) {
-      oldDeclaringClass.removeMethod(this);
-    }
-    this.parameterTypes = l;
-    subSig = null;
-    sig = null;
-    subsignature = this.getView().getSubSigNumberer().findOrAdd(getSubSignature());
-    if (wasDeclared) {
-      oldDeclaringClass.addMethod(this);
-    }
-  }
-
-  /** Returns the MethodSource of the current SootMethod. */
-  public IMethodSource getSource() {
-    return ms;
-  }
-
-  /** Sets the MethodSource of the current SootMethod. */
-  public synchronized void setSource(IMethodSource ms) {
-    this.ms = ms;
   }
 
   /**
@@ -321,54 +237,9 @@ public class SootMethod extends ClassMember {
     activeBody = null;
   }
 
-  /**
-   * Adds the given exception to the list of exceptions thrown by this method unless the exception is already in the list.
-   */
-  public void addExceptionIfAbsent(SootClass e) {
-    if (!throwsException(e)) {
-      addException(e);
-    }
-  }
-
-  /**
-   * Adds the given exception to the list of exceptions thrown by this method.
-   */
-  public void addException(SootClass e) {
-    if (exceptions == null) {
-      exceptions = new ArrayList<SootClass>();
-    } else if (exceptions.contains(e)) {
-      throw new RuntimeException("already throws exception " + e.getClassSignature().toString());
-    }
-
-    exceptions.add(e);
-  }
-
-  /**
-   * Removes the given exception from the list of exceptions thrown by this method.
-   */
-  public void removeException(SootClass e) {
-    if (exceptions == null) {
-      throw new RuntimeException("does not throw exception " + e.getClassSignature().toString());
-    }
-
-    if (!exceptions.contains(e)) {
-      throw new RuntimeException("does not throw exception " + e.getClassSignature().toString());
-    }
-
-    exceptions.remove(e);
-  }
-
   /** Returns true if this method throws exception <code>e</code>. */
   public boolean throwsException(SootClass e) {
     return exceptions != null && exceptions.contains(e);
-  }
-
-  public void setExceptions(List<SootClass> exceptions) {
-    if (exceptions != null && !exceptions.isEmpty()) {
-      this.exceptions = new ArrayList<SootClass>(exceptions);
-    } else {
-      this.exceptions = null;
-    }
   }
 
   /**
@@ -376,10 +247,6 @@ public class SootMethod extends ClassMember {
    */
 
   public List<SootClass> getExceptions() {
-    if (exceptions == null) {
-      exceptions = new ArrayList<SootClass>();
-    }
-
     return exceptions;
   }
 
@@ -490,6 +357,7 @@ public class SootMethod extends ClassMember {
     return getSignature(cl, getSubSignatureImpl(name, params, returnType));
   }
 
+  @Override
   public String getSignature(SootClass cl, String subSignature) {
     StringBuilder buffer = new StringBuilder();
     buffer.append("<");
@@ -504,6 +372,7 @@ public class SootMethod extends ClassMember {
   /**
    * Returns the Soot subsignature of this method. Used to refer to methods unambiguously.
    */
+  @Override
   public String getSubSignature() {
     if (subSig == null) {
       synchronized (this) {
@@ -628,10 +497,6 @@ public class SootMethod extends ClassMember {
 
   public SootClass declaringClass() {
     return this.declaringClass;
-  }
-
-  public void setDebugInfo(DebuggingInformation debugInfo) {
-    this.debugInfo = debugInfo;
   }
 
   public DebuggingInformation getDebugInfo() {

@@ -25,6 +25,7 @@
 package de.upb.soot.jimple;
 
 import de.upb.soot.core.Body;
+import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.ConditionExprBox;
@@ -617,8 +618,8 @@ public class Jimple {
   /**
    * Constructs a StaticField(SootField) grammar chunk.
    */
-  public static SootField newStaticField(IView view, SootField f) {
-    return new SootField(view, f);
+  public static SootField newStaticField(IView view, SootClass klass, SootField f) {
+    return new SootField(view, klass, f);
   }
 
   /**

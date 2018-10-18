@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.core.SootClass;
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
@@ -232,7 +232,7 @@ public class ModuleFinder {
   }
 
   private String getModuleName(AbstractClassSource moduleInfoSource) throws ClassResolvingException {
-    SootClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
+    AbstractClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
     if (!(moduleInfoClass instanceof SootModuleInfo)) {
       throw new ClassResolvingException("Class is named module-info but does not reify to SootModuleInfo");
     }

@@ -1,6 +1,7 @@
 package de.upb.soot.views;
 
 import de.upb.soot.Project;
+import de.upb.soot.core.SootClass;
 
 import java.util.HashSet;
 
@@ -85,5 +86,9 @@ public class JavaView extends AbstractView {
     this.reservedNames.add("cls");
     this.reservedNames.add("dynamicinvoke");
     this.reservedNames.add("strictfp");
+  }
+
+  public void addSootClass(SootClass klass) {
+    this.classes.add(klass);
   }
 }

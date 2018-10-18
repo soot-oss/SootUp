@@ -1,12 +1,13 @@
 package de.upb.soot.buildactor;
 
-import akka.actor.AbstractLoggingActor;
-import akka.actor.Props;
-
+import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.views.IView;
+
+import akka.actor.AbstractLoggingActor;
+import akka.actor.Props;
 
 public class ClassBuilderActor extends AbstractLoggingActor {
 
@@ -50,8 +51,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
 
     // FIXME: somewhere a soot class needs to be created ....
-    sootClass = new de.upb.soot.core.SootClass(view, classSource, content);
-
+    sootClass = new SootClass(view, classSource, content, null, null, null, null, null, null);
     sootClass.resolve(de.upb.soot.core.ResolvingLevel.SIGNATURES);
 
     sender().tell(sootClass, this.getSelf());

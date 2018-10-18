@@ -171,7 +171,7 @@ public class Printer {
     Iterator<SootMethod> methodIt = cl.methodIterator();
 
     if (methodIt.hasNext()) {
-      if (cl.getMethodCount() != 0) {
+      if (cl.getMethods().size() != 0) {
         out.println();
         incJimpleLnNum();
       }

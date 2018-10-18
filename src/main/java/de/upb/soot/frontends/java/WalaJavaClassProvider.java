@@ -1,5 +1,6 @@
 package de.upb.soot.frontends.java;
 
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.namespaces.FileType;
@@ -37,7 +38,7 @@ public class WalaJavaClassProvider implements IClassProvider {
   }
 
   @Override
-  public SootClass resolve(SootClass sootClass) {
+  public AbstractClass resolve(AbstractClass sootClass) {
     // TODO Auto-generated method stub
     return null;
   }
