@@ -4,49 +4,6 @@
  */
 package de.upb.soot.frontends.java;
 
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
-import com.ibm.wala.cast.loader.AstClass;
-import com.ibm.wala.cast.loader.AstField;
-import com.ibm.wala.cast.loader.AstMethod;
-import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-import com.ibm.wala.cfg.AbstractCFG;
-import com.ibm.wala.classLoader.IField;
-import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.shrikeCT.InvalidClassFileException;
-import com.ibm.wala.ssa.SSAArrayLengthInstruction;
-import com.ibm.wala.ssa.SSAArrayLoadInstruction;
-import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
-import com.ibm.wala.ssa.SSAArrayStoreInstruction;
-import com.ibm.wala.ssa.SSABinaryOpInstruction;
-import com.ibm.wala.ssa.SSAComparisonInstruction;
-import com.ibm.wala.ssa.SSAConditionalBranchInstruction;
-import com.ibm.wala.ssa.SSAConversionInstruction;
-import com.ibm.wala.ssa.SSAFieldAccessInstruction;
-import com.ibm.wala.ssa.SSAGetInstruction;
-import com.ibm.wala.ssa.SSAGotoInstruction;
-import com.ibm.wala.ssa.SSAInstanceofInstruction;
-import com.ibm.wala.ssa.SSAInstruction;
-import com.ibm.wala.ssa.SSALoadMetadataInstruction;
-import com.ibm.wala.ssa.SSANewInstruction;
-import com.ibm.wala.ssa.SSAPutInstruction;
-import com.ibm.wala.ssa.SSAReturnInstruction;
-import com.ibm.wala.ssa.SSASwitchInstruction;
-import com.ibm.wala.ssa.SSAThrowInstruction;
-import com.ibm.wala.types.TypeReference;
-import com.ibm.wala.util.collections.HashSetFactory;
-import com.ibm.wala.util.intset.FixedSizeBitVector;
-
 import de.upb.soot.core.Body;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
@@ -78,6 +35,52 @@ import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 
+import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
+import com.ibm.wala.cast.loader.AstClass;
+import com.ibm.wala.cast.loader.AstField;
+import com.ibm.wala.cast.loader.AstMethod;
+import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+import com.ibm.wala.cfg.AbstractCFG;
+import com.ibm.wala.classLoader.IClass;
+import com.ibm.wala.classLoader.IField;
+import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.classLoader.ShrikeClass;
+import com.ibm.wala.shrikeCT.InvalidClassFileException;
+import com.ibm.wala.ssa.SSAArrayLengthInstruction;
+import com.ibm.wala.ssa.SSAArrayLoadInstruction;
+import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
+import com.ibm.wala.ssa.SSAArrayStoreInstruction;
+import com.ibm.wala.ssa.SSABinaryOpInstruction;
+import com.ibm.wala.ssa.SSAComparisonInstruction;
+import com.ibm.wala.ssa.SSAConditionalBranchInstruction;
+import com.ibm.wala.ssa.SSAConversionInstruction;
+import com.ibm.wala.ssa.SSAFieldAccessInstruction;
+import com.ibm.wala.ssa.SSAGetInstruction;
+import com.ibm.wala.ssa.SSAGotoInstruction;
+import com.ibm.wala.ssa.SSAInstanceofInstruction;
+import com.ibm.wala.ssa.SSAInstruction;
+import com.ibm.wala.ssa.SSALoadMetadataInstruction;
+import com.ibm.wala.ssa.SSANewInstruction;
+import com.ibm.wala.ssa.SSAPutInstruction;
+import com.ibm.wala.ssa.SSAReturnInstruction;
+import com.ibm.wala.ssa.SSASwitchInstruction;
+import com.ibm.wala.ssa.SSAThrowInstruction;
+import com.ibm.wala.types.MethodReference;
+import com.ibm.wala.types.TypeReference;
+import com.ibm.wala.util.collections.HashSetFactory;
+import com.ibm.wala.util.intset.FixedSizeBitVector;
+
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 /**
  * Converter which converts WALA IR to jimple.
  * 
@@ -104,34 +107,81 @@ public class WalaIRToJimpleConverter {
    * @return A SootClass converted from walaClass
    */
   public SootClass convertClass(AstClass walaClass) {
-    String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-    ClassSignature classSignature = new DefaultSignatureFactory() {
-    }.getClassSignature(fullyQualifiedClassName);
-    URL url = walaClass.getSourceURL();
-    Path sourcePath = Paths.get(url.getPath());
-    AbstractClassSource classSource = new JavaClassSource(srcNamespace, sourcePath, classSignature);
+    AbstractClassSource classSource = createClassSource(walaClass);
     SootClass sootClass = new SootClass(view, classSource, converModifiers(walaClass));
     view.addSootClass(sootClass);
     sootClass.setApplicationClass();
+    // set super class
+    IClass sc = walaClass.getSuperclass();
+    if (sc != null) {
+      SootClass superClass = null;
+      if (sc instanceof AstClass) {
+        superClass = convertClass((AstClass) sc);
+      } else if (sc instanceof ShrikeClass) {
+        superClass = convertClass((ShrikeClass) sc);
+      }
+      if (superClass != null) {
+        sootClass.setSuperclass(superClass);
+      }
+    }
+
     // convert fields
     Set<IField> fields = HashSetFactory.make(walaClass.getDeclaredInstanceFields());
     fields.addAll(walaClass.getDeclaredStaticFields());
     for (IField walaField : fields) {
-    	SootField sootField = convertField((AstField) walaField);
-    	if (sootClass.getFieldUnsafe(sootField.getName(), sootField.getType()) == null) {
-    	sootClass.addField(sootField);
-        }
+      SootField sootField = convertField((AstField) walaField);
+      if (sootClass.getFieldUnsafe(sootField.getName(), sootField.getType()) == null) {
+        sootClass.addField(sootField);
+      }
     }
     // convert methods
     for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
-    	if (! walaMethod.isAbstract()) {
-    		convertMethod(sootClass, (AstMethod) walaMethod);
-    	}
+      if (!walaMethod.isAbstract()) {
+        convertMethod(sootClass, (AstMethod) walaMethod);
+      }
     }
     // add source position
     Position position = walaClass.getSourcePosition();
     sootClass.setPosition(position);
     return sootClass;
+  }
+
+  /**
+   * Create a dummy {@link SootClass} for walaClass read from wala's byte code front-end. This is used for java library
+   * classes used as super classes of application classes.
+   * 
+   * @param walaClass
+   * @return
+   */
+  private SootClass convertClass(ShrikeClass walaClass) {
+    String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
+    ClassSignature classSignature = new DefaultSignatureFactory() {
+    }.getClassSignature(fullyQualifiedClassName);
+    SootClass cl = new SootClass(view, classSignature);
+    return cl;
+  }
+
+  /**
+   * Create a {@link JavaClassSource} object for the given walaClass.
+   * 
+   * @param walaClass
+   * @return
+   */
+  public AbstractClassSource createClassSource(IClass walaClass) {
+    if (walaClass instanceof AstClass) {
+      AstClass cl = (AstClass) walaClass;
+      String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
+      ClassSignature classSignature = new DefaultSignatureFactory() {
+      }.getClassSignature(fullyQualifiedClassName);
+      URL url = cl.getSourceURL();
+      Path sourcePath = Paths.get(url.getPath());
+      return new JavaClassSource(srcNamespace, sourcePath, classSignature);
+    }
+    if (walaClass instanceof ShrikeClass) {
+      ShrikeClass cl = (ShrikeClass) walaClass;
+      System.out.println(cl.getSourceFileName());
+    }
+    return null;
   }
 
   /**
@@ -162,8 +212,8 @@ public class WalaIRToJimpleConverter {
     String name = walaMethod.getName().toString();
     List<Type> paraTypes = new ArrayList<>();
     for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
-    	Type paraType = convertType(walaMethod.getParameterType(i));
-        paraTypes.add(paraType);
+      Type paraType = convertType(walaMethod.getParameterType(i));
+      paraTypes.add(paraType);
     }
     Type returnType = convertType(walaMethod.getReturnType());
     EnumSet<Modifier> modifier = convertModifiers(walaMethod);
@@ -240,21 +290,104 @@ public class WalaIRToJimpleConverter {
     throw new RuntimeException("Unsupported tpye: " + type);
   }
 
+  /**
+   * Return all modifiers for the given field.
+   * 
+   * @param field
+   * @return
+   */
   public EnumSet<Modifier> convertModifiers(AstField field) {
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
-
+    if (field.isFinal()) {
+      modifiers.add(Modifier.FINAL);
+    }
+    if (field.isPrivate()) {
+      modifiers.add(Modifier.PRIVATE);
+    }
+    if (field.isProtected()) {
+      modifiers.add(Modifier.PROTECTED);
+    }
+    if (field.isPublic()) {
+      modifiers.add(Modifier.PUBLIC);
+    }
+    if (field.isStatic()) {
+      modifiers.add(Modifier.STATIC);
+    }
+    if (field.isVolatile()) {
+      modifiers.add(Modifier.VOLATILE);
+    }
+    // TODO: TRANSIENT field
     return modifiers;
   }
 
+  /**
+   * Return all modifiers for the given method.
+   * 
+   * @param method
+   * @return
+   */
   public EnumSet<Modifier> convertModifiers(AstMethod method) {
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
-    // TODO
+    if (method.isPrivate()) {
+      modifiers.add(Modifier.PRIVATE);
+    }
+    if (method.isProtected()) {
+      modifiers.add(Modifier.PROTECTED);
+    }
+    if (method.isPublic()) {
+      modifiers.add(Modifier.PUBLIC);
+    }
+    if (method.isStatic()) {
+      modifiers.add(Modifier.STATIC);
+    }
+    if (method.isFinal()) {
+      modifiers.add(Modifier.FINAL);
+    }
+    if (method.isAbstract()) {
+      modifiers.add(Modifier.ABSTRACT);
+    }
+    if (method.isSynchronized()) {
+      modifiers.add(Modifier.SYNCHRONIZED);
+    }
+    if (method.isNative()) {
+      modifiers.add(Modifier.NATIVE);
+    }
+    if (method.isSynthetic()) {
+      modifiers.add(Modifier.SYNTHETIC);
+    }
+    if (method.isBridge()) {
+      // TODO: what is this?
+    }
+    if (method.isInit()) {
+      // TODO:
+    }
+    if (method.isClinit()) {
+      // TODO:
+    }
+    // TODO: strictfp and annotation
     return modifiers;
   }
 
   public EnumSet<Modifier> converModifiers(AstClass klass) {
+    int modif = klass.getModifiers();
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
-    // TODO
+    if (klass.isAbstract()) {
+      modifiers.add(Modifier.ABSTRACT);
+    }
+    if (klass.isPrivate()) {
+      modifiers.add(Modifier.PRIVATE);
+    }
+    if (klass.isSynthetic()) {
+      modifiers.add(Modifier.SYNTHETIC);
+    }
+    if (klass.isPublic()) {
+      modifiers.add(Modifier.PUBLIC);
+    }
+    if (klass.isInterface()) {
+      modifiers.add(Modifier.INTERFACE);
+    }
+
+    // TODO: final, enum, annotation
     return modifiers;
   }
 
@@ -282,10 +415,13 @@ public class WalaIRToJimpleConverter {
 
         for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
           TypeReference t = walaMethod.getParameterType(i);
-          Type type = convertType(t);
-          Local paraLocal = localGenerator.generateLocal(type);
-          body.addLocal(paraLocal);
-          body.addStmt(Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, i)));
+          // wala's first parameter can be this reference, so need to check
+          if (!t.equals(walaMethod.getDeclaringClass().getReference())) {
+            Type type = convertType(t);
+            Local paraLocal = localGenerator.generateLocal(type);
+            body.addLocal(paraLocal);
+            body.addStmt(Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, i)));
+          }
         }
 
         // TODO 2. convert traps
@@ -293,11 +429,15 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
 
         for (SSAInstruction inst : insts) {
-          IStmt stmt = convertInstruction(inst);
+          IStmt stmt = convertInstruction(body, localGenerator, inst);
           // set position for each statement
           Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
           stmt.setPosition(stmtPos);
           body.addStmt(stmt);
+        }
+
+        if (walaMethod.getReturnType().equals(TypeReference.Void)) {
+          body.addStmt(Jimple.newReturnVoidStmt());
         }
         return Optional.of(body);
       }
@@ -305,7 +445,7 @@ public class WalaIRToJimpleConverter {
     return Optional.empty();
   }
 
-  public IStmt convertInstruction(SSAInstruction walaInst) {
+  public IStmt convertInstruction(Body body, LocalGenerator localGenerator, SSAInstruction walaInst) {
 
     // TODO what are the different types of SSAInstructions
     if (walaInst instanceof SSAConditionalBranchInstruction) {
@@ -319,7 +459,15 @@ public class WalaIRToJimpleConverter {
     } else if (walaInst instanceof SSASwitchInstruction) {
 
     } else if (walaInst instanceof AstJavaInvokeInstruction) {
+      AstJavaInvokeInstruction invokeInst = (AstJavaInvokeInstruction) walaInst;
+      if (invokeInst.isSpecial()) {
+        if (!body.getMethod().isStatic()) {
+          Local base = body.getThisLocal();
+          MethodReference target = invokeInst.getDeclaredTarget();
+          // view.getSootMethod(target.getSignature());
 
+        }
+      }
     } else if (walaInst instanceof SSAFieldAccessInstruction) {
       if (walaInst instanceof SSAGetInstruction) {
         // field read instruction -> assignStmt
@@ -356,7 +504,7 @@ public class WalaIRToJimpleConverter {
   }
 
   /**
-   * Convert className in wala-format to soot format, e.g., wala-format: Ljava/lang/String -> soot-format: java.lang.String.
+   * Convert className in wala-format to soot-format, e.g., wala-format: Ljava/lang/String -> soot-format: java.lang.String.
    * 
    * @param className
    *          in wala-format
@@ -410,4 +558,22 @@ public class WalaIRToJimpleConverter {
     return ret;
   }
 
+  /**
+   * Convert className in soot-format to wala-format, e.g.,soot-format: java.lang.String.-> wala-format: Ljava/lang/String
+   * 
+   * @param signature
+   * @return
+   */
+  public String convertClassNameFromSoot(String signature) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("L");
+    String[] subNames = signature.split("\\.");
+    for (int i = 0; i < subNames.length; i++) {
+      sb.append(subNames[i]);
+      if (i != subNames.length - 1) {
+        sb.append("/");
+      }
+    }
+    return sb.toString();
+  }
 }

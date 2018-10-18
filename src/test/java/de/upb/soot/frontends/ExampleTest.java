@@ -2,7 +2,6 @@ package de.upb.soot.frontends;
 
 import de.upb.soot.frontends.java.Example;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -11,11 +10,6 @@ import categories.Java8Test;
 @Category(Java8Test.class)
 public class ExampleTest {
 
-
-  @Before
-  public void loadClassesWithWala() {
-
-  }
   @Test
   public void test()
   {
