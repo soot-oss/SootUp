@@ -98,6 +98,7 @@ public class SootClass extends AbstractClass implements Serializable {
       Set<SootClass> interfaces, SootClass outerClass, 
       Position position, EnumSet<Modifier> modifiers) {
     super(view, classSource);
+    view.addClass(this);
     this.sourceContent = content;
     this.classType = type;
     this.superClass = superClass;
