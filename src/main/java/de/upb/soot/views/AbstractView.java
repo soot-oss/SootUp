@@ -7,12 +7,14 @@ import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.ISignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -32,7 +34,7 @@ public abstract class AbstractView implements IView {
   protected Options options;
 
   protected Set<RefType> refTypes;
-  protected List<AbstractClass> classes;
+  protected Map<ISignature, AbstractClass> classes;
   protected Set<String> reservedNames;
 
 
@@ -41,7 +43,7 @@ public abstract class AbstractView implements IView {
     this.options = new Options();
     setReservedNames();
     this.refTypes = new HashSet<>();
-    this.classes = new ArrayList<>();
+    this.classes = new HashMap<>();
   }
 
 
@@ -58,21 +60,21 @@ public abstract class AbstractView implements IView {
 
   @Override
   public void addClass(AbstractClass klass) {
-    this.classes.add(klass);
+    this.classes.put(klass.getSignature(), klass);
   }
 
   @Override
-  public List<AbstractClass> getClasses() {
-    return classes;
+  public Collection<AbstractClass> getClasses() {
+    return classes.values();
   }
 
   @Override
   public Stream<AbstractClass> classes() {
-    return this.classes.stream();
+    return this.classes.values().stream();
   }
 
   @Override
-  public Optional<AbstractClass> getClass(ClassSignature signature) {
+  public Optional<AbstractClass> getClass(JavaClassSignature signature) {
     return this.classes().filter(c -> c.getClassSource().getClassSignature().equals(signature)).findFirst();
   }
 

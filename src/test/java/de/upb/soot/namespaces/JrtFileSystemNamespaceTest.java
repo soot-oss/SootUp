@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 
 import java.util.Collection;
@@ -19,7 +19,7 @@ public class JrtFileSystemNamespaceTest extends AbstractNamespaceTest {
   @Test
   public void getClassSource() {
     JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
-    final ClassSignature sig = getSignatureFactory().getClassSignature("java.lang.System");
+    final JavaClassSignature sig = getSignatureFactory().getClassSignature("java.lang.System");
     testClassReceival(ns, sig, 1);
   }
 
@@ -27,7 +27,7 @@ public class JrtFileSystemNamespaceTest extends AbstractNamespaceTest {
   // FIXME findout why this test is slow > 1 sec
   public void getClassSourceModule() {
     JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
-    final ClassSignature sig = new ModuleSignatureFactory() {
+    final JavaClassSignature sig = new ModuleSignatureFactory() {
     }.getClassSignature("System", "java.lang", "java.base");
     testClassReceival(ns, sig, 1);
 

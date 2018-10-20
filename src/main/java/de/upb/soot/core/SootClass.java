@@ -25,7 +25,7 @@ import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.ISourceContent;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.validation.ClassFlagsValidator;
 import de.upb.soot.validation.ClassValidator;
 import de.upb.soot.validation.MethodDeclarationValidator;
@@ -84,7 +84,7 @@ public class SootClass extends AbstractClass implements Serializable {
   private final EnumSet<Modifier> modifiers;
 
   private RefType refType;
-  private ClassSignature classSignature;
+  private JavaClassSignature classSignature;
   private Set<SootField> fields;
   private Set<SootMethod> methods;
   private Set<SootClass> interfaces;
@@ -103,28 +103,15 @@ public class SootClass extends AbstractClass implements Serializable {
     this.superClass = superClass;
     this.interfaces = interfaces;
     this.classSignature = classSource.getClassSignature();
-    initializeRefType(classSignature.getFullyQualifiedName());
-    this.refType.setSootClass(this);
+    this.refType = view.getRefType(classSignature.getFullyQualifiedName());
+    refType.setSootClass(this);
     this.outerClass = outerClass;
     this.position = position;
     this.modifiers = modifiers;
   }
 
-  /**
-   * Makes sure that there is a RefType pointing to this SootClass. Client code that provides its own SootClass
-   * implementation can override and modify this behavior.
-   *
-   * @param name
-   *          The name of the new class
-   */
-  private void initializeRefType(String name) {
-    // RefType.setView(this.getView());
-    refType = RefType.getInstance(name);
-    refType.setSootClass(this);
-  }
-
   public void resolve(de.upb.soot.core.ResolvingLevel resolvingLevel) {
-    sourceContent.resolve(resolvingLevel, getView(), this);
+    sourceContent.resolve(resolvingLevel, getView());
   }
 
 
@@ -612,14 +599,14 @@ public class SootClass extends AbstractClass implements Serializable {
    * Does this class directly implement the given interface? (see getInterfaceCount())
    */
 
-  public boolean implementsInterface(ClassSignature classSignature) {
+  public boolean implementsInterface(JavaClassSignature classSignature) {
     checkLevel(ResolvingLevel.HIERARCHY);
     if (interfaces == null) {
       return false;
     }
 
     for (SootClass sc : interfaces) {
-      if (sc.getClassSignature().equals(classSignature)) {
+      if (sc.getSignature().equals(classSignature)) {
         return true;
       }
     }
@@ -632,8 +619,8 @@ public class SootClass extends AbstractClass implements Serializable {
 
   public void addInterface(SootClass interfaceClass) {
     checkLevel(ResolvingLevel.HIERARCHY);
-    if (implementsInterface(interfaceClass.getClassSignature())) {
-      throw new RuntimeException("duplicate interface: " + interfaceClass.getClassSignature());
+    if (implementsInterface(interfaceClass.getSignature())) {
+      throw new RuntimeException("duplicate interface: " + interfaceClass.getSignature());
     }
     if (interfaces == null) {
       interfaces = new HashSet<>();
@@ -706,8 +693,8 @@ public class SootClass extends AbstractClass implements Serializable {
   /**
    * Returns the ClassSignature of this class.
    */
-
-  public ClassSignature getClassSignature() {
+  @Override
+  public JavaClassSignature getSignature() {
     return classSignature;
   }
 

@@ -12,7 +12,7 @@ public class MethodSignature {
   public final String methodName;
 
   /** The signature of the declaring class. */
-  public final ClassSignature declClassSignature;
+  public final JavaClassSignature declClassSignature;
 
   /** The method's parameters' signatures. */
   public final List<TypeSignature> parameterSignatures;
@@ -28,7 +28,7 @@ public class MethodSignature {
    * @param declaringClass
    *          the declaring class signature
    */
-  protected MethodSignature(final String methodName, final ClassSignature declaringClass, final TypeSignature returnType,
+  protected MethodSignature(final String methodName, final JavaClassSignature declaringClass, final TypeSignature returnType,
       final List<TypeSignature> parameters) {
     this.methodName = methodName;
     this.declClassSignature = declaringClass;

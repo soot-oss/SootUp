@@ -76,14 +76,14 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
   @Test(expected = NullPointerException.class)
   public void checkNullModule2() {
     ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
-    ClassSignature classSignature = signatureFactory.getClassSignature("A", "mypackage", null);
+    JavaClassSignature classSignature = signatureFactory.getClassSignature("A", "mypackage", null);
   }
 
   @Test
   public void testModuleInfoSignature() {
     ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
 
-    ClassSignature classSignature1 = signatureFactory.getClassSignature("module-info");
+    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("module-info");
     assertTrue(classSignature1.isModuleInfo());
   }
 

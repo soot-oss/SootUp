@@ -110,13 +110,13 @@ public class Printer {
         classPrefix = classPrefix.trim();
       }
 
-      out.print(classPrefix + " " + cl.getView().quotedNameOf(cl.getClassSignature().toString()) + "");
+      out.print(classPrefix + " " + cl.getView().quotedNameOf(cl.getSignature().toString()) + "");
     }
 
     // Print extension
     {
       if (cl.hasSuperclass()) {
-        out.print(" extends " + cl.getView().quotedNameOf(cl.getSuperclass().getClassSignature().toString()) + "");
+        out.print(" extends " + cl.getView().quotedNameOf(cl.getSuperclass().getSignature().toString()) + "");
       }
     }
 
@@ -127,11 +127,11 @@ public class Printer {
       if (interfaceIt.hasNext()) {
         out.print(" implements ");
 
-        out.print("" + cl.getView().quotedNameOf(interfaceIt.next().getClassSignature().toString()) + "");
+        out.print("" + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
 
         while (interfaceIt.hasNext()) {
           out.print(",");
-          out.print(" " + cl.getView().quotedNameOf(interfaceIt.next().getClassSignature().toString()) + "");
+          out.print(" " + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
         }
       }
     }
@@ -312,7 +312,7 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        out.println("        catch " + body.getMethod().getView().quotedNameOf(trap.getException().getClassSignature().toString()) + " from "
+        out.println("        catch " + body.getMethod().getView().quotedNameOf(trap.getException().getSignature().toString()) + " from "
             + up.labels().get(trap.getBeginStmt()) + " to " + up.labels().get(trap.getEndStmt()) + " with "
             + up.labels().get(trap.getHandlerStmt()) + ";");
 

@@ -56,7 +56,7 @@ public class ResolveModuleVisitor extends org.objectweb.asm.ModuleVisitor {
   }
 
   private de.upb.soot.core.SootModuleInfo resolveModule(String module) {
-    de.upb.soot.signatures.ClassSignature moduleSignature
+    de.upb.soot.signatures.JavaClassSignature moduleSignature
         = moduleSignatureFactory.getClassSignature("module-info", "", module);
 
     return (de.upb.soot.core.SootModuleInfo) classProvider.resolveSootClass(moduleSignature);

@@ -71,7 +71,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
    * @return a RefType for the given SootClass.
    */
   public static RefType getInstance(SootClass c) {
-    return getInstance(c.getClassSignature().toString());
+    return getInstance(c.getSignature().toString());
   }
 
 

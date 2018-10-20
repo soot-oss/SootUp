@@ -24,7 +24,7 @@ public class StuffAViewNeeds {
    *          the signature of the class to resolve
    * @return the initial resolved SootClass or an empty optional, if resolving fails
    */
-  public java.util.Optional<AbstractClass> getClass(de.upb.soot.signatures.ClassSignature signature,
+  public java.util.Optional<AbstractClass> getClass(de.upb.soot.signatures.JavaClassSignature signature,
       de.upb.soot.views.IView view) {
     java.util.Optional<AbstractClass> result = java.util.Optional.empty();
     // TODO: cache
@@ -107,7 +107,7 @@ public class StuffAViewNeeds {
    * @return if found the ClassSource, if nothing can be found an empty optional
    */
   public java.util.Optional<de.upb.soot.namespaces.classprovider.AbstractClassSource>
-      pollNamespaces(de.upb.soot.signatures.ClassSignature signature) {
+      pollNamespaces(de.upb.soot.signatures.JavaClassSignature signature) {
     java.util.Optional<de.upb.soot.namespaces.classprovider.AbstractClassSource> result = null;
     for (de.upb.soot.namespaces.INamespace namespace : this.namespaces) {
       result = namespace.getClassSource(signature);

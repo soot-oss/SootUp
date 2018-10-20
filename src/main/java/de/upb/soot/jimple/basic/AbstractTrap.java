@@ -64,7 +64,7 @@ public class AbstractTrap implements Trap, Serializable {
 
   private void writeObject(ObjectOutputStream out) throws IOException {
     out.defaultWriteObject();
-    out.writeObject(exception.getClassSignature().getFullyQualifiedName());
+    out.writeObject(exception.getSignature().getFullyQualifiedName());
   }
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */

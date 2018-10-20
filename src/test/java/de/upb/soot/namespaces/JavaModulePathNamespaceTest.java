@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -31,7 +31,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
     ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace
         = new JavaModulePathNamespace( "target/test-classes/de/upb/soot/namespaces/modules",getClassProvider());
-    final ClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
+    final JavaClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
     Optional<AbstractClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
   }
@@ -41,7 +41,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
     ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();;
     final JavaModulePathNamespace javaClassPathNamespace
         = new JavaModulePathNamespace("target/test-classes/de/upb/soot/namespaces/modules",getClassProvider());
-    final ClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
+    final JavaClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
     // TODO: check for a better minClassFoundNumber
     // also all JDK classes are loaded
     testClassReceival(javaClassPathNamespace, sig, 50);
@@ -52,7 +52,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
     ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace = new JavaModulePathNamespace(
         "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",getClassProvider());
-    final ClassSignature sig = factory.getClassSignature("module-info", "", "de.upb.mod");
+    final JavaClassSignature sig = factory.getClassSignature("module-info", "", "de.upb.mod");
     Optional<AbstractClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
 

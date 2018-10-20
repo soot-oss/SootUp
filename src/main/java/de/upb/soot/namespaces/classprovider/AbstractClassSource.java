@@ -3,7 +3,7 @@ package de.upb.soot.namespaces.classprovider;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 
 import com.google.common.base.Objects;
 
@@ -25,7 +25,7 @@ public abstract class AbstractClassSource {
   private final INamespace srcNamespace;
   // TODO: AD unfortunately I need to change it in the ModuleFinder, since I only know a module's name after resolving its
   // module-info.class
-  private ClassSignature classSignature;
+  private JavaClassSignature classSignature;
   private final Path sourcePath;
 
   /**
@@ -43,14 +43,14 @@ public abstract class AbstractClassSource {
    * @return A not yet resolved {@link AbstractClassSource}, backed up by the given file A not yet resolved {@link AbstractClassSource},
    *         backed up by the given file
    */
-  public AbstractClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature) {
+  public AbstractClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {
     checkNotNull(srcNamespace);
     this.srcNamespace = srcNamespace;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;
   }
 
-  public ClassSignature getClassSignature() {
+  public JavaClassSignature getClassSignature() {
     return classSignature;
   }
 
@@ -72,7 +72,7 @@ public abstract class AbstractClassSource {
     return srcNamespace.getClassProvider();
   }
 
-  public void setClassSignature(ClassSignature classSignature) {
+  public void setClassSignature(JavaClassSignature classSignature) {
     this.classSignature = classSignature;
   }
 

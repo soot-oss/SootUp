@@ -62,9 +62,9 @@ public class DefaultSignatureFactory implements SignatureFactory {
    *           if the given package name is null. Use the empty string to denote the default package.
    */
   @Override
-  public ClassSignature getClassSignature(final String className, final String packageName) {
+  public JavaClassSignature getClassSignature(final String className, final String packageName) {
     PackageSignature packageSignature = getPackageSignature(packageName);
-    return new ClassSignature(className, packageSignature);
+    return new JavaClassSignature(className, packageSignature);
   }
 
   /**
@@ -75,7 +75,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
    * @return a ClassSignature for a Java Class
    */
   @Override
-  public ClassSignature getClassSignature(final String fullyQualifiedClassName) {
+  public JavaClassSignature getClassSignature(final String fullyQualifiedClassName) {
     String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
     String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
     return getClassSignature(className, packageName);
@@ -84,7 +84,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
 
 
   /**
-   * Returns a TypeSignature which can be a {@link ClassSignature},{@link PrimitiveTypeSignature}, {@link VoidTypeSignature},
+   * Returns a TypeSignature which can be a {@link JavaClassSignature},{@link PrimitiveTypeSignature}, {@link VoidTypeSignature},
    * or {@link NullTypeSignature}.
    *
    * @param typeName
@@ -135,7 +135,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
   @Override
   public MethodSignature getMethodSignature(final String methodName, final String fullyQualifiedNameDeclClass,
       final String fqReturnType, final List<String> parameters) {
-    ClassSignature declaringClass = getClassSignature(fullyQualifiedNameDeclClass);
+    JavaClassSignature declaringClass = getClassSignature(fullyQualifiedNameDeclClass);
     TypeSignature returnTypeSignature = getTypeSignature(fqReturnType);
     List<TypeSignature> parameterSignatures = new ArrayList<>();
     for (String fqParameterName : parameters) {
@@ -159,7 +159,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
    * @return a MethodSignature
    */
   @Override
-  public MethodSignature getMethodSignature(final String methodName, final ClassSignature declaringClassSignature,
+  public MethodSignature getMethodSignature(final String methodName, final JavaClassSignature declaringClassSignature,
       final String fqReturnType, final List<String> parameters) {
     TypeSignature returnTypeSignature = getTypeSignature(fqReturnType);
     List<TypeSignature> parameterSignatures = new ArrayList<>();
@@ -171,7 +171,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
   }
 
   @Override
-  public ClassSignature fromPath(final Path file) {
+  public JavaClassSignature fromPath(final Path file) {
     String fullyQualifiedName = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
     return this.getClassSignature(fullyQualifiedName);
   }

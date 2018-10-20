@@ -5,6 +5,7 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
@@ -16,25 +17,25 @@ import org.objectweb.asm.tree.FieldNode;
 
 public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     implements de.upb.soot.namespaces.classprovider.ISourceContent {
-  @Override
-  public void resolve(de.upb.soot.core.ResolvingLevel level, de.upb.soot.views.IView view,
-      de.upb.soot.core.SootClass sootClass) {
 
+  @Override
+  public void resolve(de.upb.soot.core.ResolvingLevel level, de.upb.soot.views.IView view) {
+    JavaClassSignature cs = view.getSignatureFacotry().getClassSignature(this.signature);
     switch (level) {
       case DANGLING:
-        resolveDangling(view, sootClass);
+        resolveDangling(view, cs);
         break;
 
       case HIERARCHY:
-        resolveHierarchy(view, sootClass);
+        resolveHierarchy(view, cs);
         break;
 
       case SIGNATURES:
-        resolveSignature(view, sootClass);
+        resolveSignature(view, cs);
         break;
 
       case BODIES:
-        resolveBody(view, sootClass);
+        resolveBody(view, cs);
         break;
     }
 
@@ -47,7 +48,8 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   }
 
-  private void resolveDangling(IView view, SootClass sootClass) {
+  private void resolveDangling(IView view, JavaClassSignature cs) {
+    SootClass sootClass = (SootClass) view.getClass(cs).get();
     // sootClass.setModifiers(AsmUtil.getModifiers(access & ~org.objectweb.asm.Opcodes.ACC_SUPER));
     // what is whit the reftype?
     // sootClass.setRefType(null);
@@ -59,15 +61,16 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     // FIXME: annotations?
   }
 
-  private void resolveHierarchy(IView view, SootClass sootClass) {
+  private void resolveHierarchy(IView view, JavaClassSignature cs) {
+    SootClass sootClass = (SootClass) view.getClass(cs).get();
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.DANGLING)) {
-      resolveDangling(view, sootClass);
+      resolveDangling(view, cs);
     }
     {
       // add super class
 
       String superClassName = AsmUtil.toQualifiedName(superName);
-      de.upb.soot.signatures.ClassSignature superSignature = view.getSignatureFacotry().getClassSignature(superClassName);
+      de.upb.soot.signatures.JavaClassSignature superSignature = view.getSignatureFacotry().getClassSignature(superClassName);
       Optional<AbstractClass> superClass = view.getClass(superSignature);
       if (superClass.isPresent()) {
         // sootClass.setSuperclass(superClass.get());
@@ -78,7 +81,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
       for (String interfaceName : this.interfaces) {
         String fqInterfaceName = AsmUtil.toQualifiedName(interfaceName);
-        de.upb.soot.signatures.ClassSignature interfaceSig = view.getSignatureFacotry().getClassSignature(fqInterfaceName);
+        de.upb.soot.signatures.JavaClassSignature interfaceSig = view.getSignatureFacotry().getClassSignature(fqInterfaceName);
         Optional<AbstractClass> interfaceClass = view.getClass(interfaceSig);
         if (interfaceClass.isPresent()) {
           // sootClass.setSuperclass(interfaceClass.get());
@@ -88,9 +91,10 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   }
 
-  private void resolveSignature(de.upb.soot.views.IView view, de.upb.soot.core.SootClass sootClass) {
+  private void resolveSignature(de.upb.soot.views.IView view, JavaClassSignature cs) {
+    SootClass sootClass = (SootClass) view.getClass(cs).get();
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.HIERARCHY)) {
-      resolveHierarchy(view, sootClass);
+      resolveHierarchy(view, cs);
     }
 
     {
@@ -114,7 +118,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         List<SootClass> exceptions = new ArrayList<>();
         for (String exceptionName : methodSource.exceptions) {
           String excepetionFQName = AsmUtil.toQualifiedName(exceptionName);
-          de.upb.soot.signatures.ClassSignature exceptionSig
+          de.upb.soot.signatures.JavaClassSignature exceptionSig
               = view.getSignatureFacotry().getClassSignature(excepetionFQName);
           Optional<AbstractClass> excepetionClass = view.getClass(exceptionSig);
           if (excepetionClass.isPresent()) {
@@ -131,9 +135,10 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   }
 
-  private void resolveBody(de.upb.soot.views.IView view, de.upb.soot.core.SootClass sootClass) {
+  private void resolveBody(de.upb.soot.views.IView view, JavaClassSignature cs) {
+    SootClass sootClass = (SootClass) view.getClass(cs).get();
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.SIGNATURES)) {
-      resolveSignature(view, sootClass);
+      resolveSignature(view, cs);
     }
   }
 

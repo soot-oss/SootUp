@@ -14,7 +14,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
   @Override
   public de.upb.soot.namespaces.classprovider.AbstractClassSource createClassSource(
       de.upb.soot.namespaces.INamespace srcNamespace, java.nio.file.Path sourcePath,
-      de.upb.soot.signatures.ClassSignature classSignature) {
+      de.upb.soot.signatures.JavaClassSignature classSignature) {
     return new de.upb.soot.namespaces.classprovider.asm.AsmClassSource(srcNamespace, sourcePath, classSignature);
   }
 

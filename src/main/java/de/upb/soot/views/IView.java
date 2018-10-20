@@ -6,11 +6,11 @@ import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -28,7 +28,7 @@ public interface IView {
    * 
    * @return
    */
-  List<AbstractClass> getClasses();
+  Collection<AbstractClass> getClasses();
 
   /**
    * Returns a stream of classes in the view.
@@ -42,7 +42,7 @@ public interface IView {
    * 
    * @return A class with given signature.
    */
-  Optional<AbstractClass> getClass(ClassSignature signature);
+  Optional<AbstractClass> getClass(JavaClassSignature signature);
 
   /**
    * Provides the call graph using the default algorithm.

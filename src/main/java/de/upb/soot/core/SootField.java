@@ -70,7 +70,7 @@ public class SootField extends ClassMember {
   public String getSignature(SootClass cl, String subSignature) {
     StringBuilder buffer = new StringBuilder();
 
-    buffer.append("<").append(this.getView().quotedNameOf(cl.getClassSignature().toString())).append(": ");
+    buffer.append("<").append(this.getView().quotedNameOf(cl.getSignature().toString())).append(": ");
     buffer.append(subSignature).append(">");
 
     return buffer.toString();

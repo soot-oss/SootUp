@@ -10,7 +10,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
-public class ClassSignature extends TypeSignature {
+public class JavaClassSignature extends TypeSignature {
 
   /** The simple class name. */
   public final String className;
@@ -27,7 +27,7 @@ public class ClassSignature extends TypeSignature {
    * @param packageSignature
    *          the corresponding package
    */
-  protected ClassSignature(final String className, final PackageSignature packageSignature) {
+  protected JavaClassSignature(final String className, final PackageSignature packageSignature) {
     this.className = className;
     this.packageSignature = packageSignature;
   }
@@ -40,7 +40,7 @@ public class ClassSignature extends TypeSignature {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ClassSignature that = (ClassSignature) o;
+    JavaClassSignature that = (JavaClassSignature) o;
     return Objects.equal(className, that.className) && Objects.equal(packageSignature, that.packageSignature);
   }
 

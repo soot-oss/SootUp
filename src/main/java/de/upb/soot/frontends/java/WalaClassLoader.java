@@ -1,7 +1,7 @@
 package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 
 import com.ibm.wala.cast.java.ipa.callgraph.JavaSourceAnalysisScope;
 import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
@@ -100,7 +100,7 @@ public class WalaClassLoader {
    * @param signature
    * @return
    */
-  public Optional<SootClass> getSootClass(ClassSignature signature) {
+  public Optional<SootClass> getSootClass(JavaClassSignature signature) {
     if (classHierarchy == null) {
       buildClassHierachy();
     }

@@ -6,17 +6,17 @@ import java.util.List;
 public interface SignatureFactory {
   PackageSignature getPackageSignature(String packageName);
 
-  ClassSignature getClassSignature(String className, String packageName);
+  JavaClassSignature getClassSignature(String className, String packageName);
 
-  ClassSignature getClassSignature(String fullyQualifiedClassName);
+  JavaClassSignature getClassSignature(String fullyQualifiedClassName);
 
   TypeSignature getTypeSignature(String typeName);
 
   MethodSignature getMethodSignature(String methodName, String fullyQualifiedNameDeclClass, String fqReturnType,
       List<String> parameters);
 
-  MethodSignature getMethodSignature(String methodName, ClassSignature declaringClassSignature, String fqReturnType,
+  MethodSignature getMethodSignature(String methodName, JavaClassSignature declaringClassSignature, String fqReturnType,
       List<String> parameters);
 
-  ClassSignature fromPath(Path file);
+  JavaClassSignature fromPath(Path file);
 }

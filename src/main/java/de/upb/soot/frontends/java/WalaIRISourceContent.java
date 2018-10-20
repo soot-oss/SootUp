@@ -1,7 +1,6 @@
 package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.ResolvingLevel;
-import de.upb.soot.core.SootClass;
 import de.upb.soot.views.IView;
 
 import com.ibm.wala.cast.loader.AstClass;
@@ -24,7 +23,7 @@ public class WalaIRISourceContent implements de.upb.soot.namespaces.classprovide
   }
 
   @Override
-  public void resolve(ResolvingLevel level, IView view, SootClass sootClass) {
+  public void resolve(ResolvingLevel level, IView view) {
     // TODO Auto-generated method stub
 
   }

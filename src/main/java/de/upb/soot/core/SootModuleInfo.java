@@ -2,7 +2,6 @@ package de.upb.soot.core;
 
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.ISignature;
-import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.views.IView;
 
 import com.google.common.collect.Sets;
@@ -117,5 +116,9 @@ public class SootModuleInfo extends AbstractClass {
     return this.getName();
   }
 
+  @Override
+  public ISignature getSignature() {
+    return null;
+  }
 
 }

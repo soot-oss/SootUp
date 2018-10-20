@@ -331,7 +331,7 @@ public class SootMethod extends ClassMember {
     String name = getName();
 
     StringBuffer buffer = new StringBuffer();
-    buffer.append("<" + this.getView().quotedNameOf(getDeclaringClass().getClassSignature().toString()) + ": ");
+    buffer.append("<" + this.getView().quotedNameOf(getDeclaringClass().getSignature().toString()) + ": ");
     buffer.append(name);
     // TODO: sth: AbstractJasminClass
     // buffer.append(AbstractJasminClass.jasminDescriptorOf(makeRef()));
@@ -348,7 +348,7 @@ public class SootMethod extends ClassMember {
   public String getSignature(SootClass cl, String subSignature) {
     StringBuilder buffer = new StringBuilder();
     buffer.append("<");
-    buffer.append(this.getView().quotedNameOf(cl.getClassSignature().toString()));
+    buffer.append(this.getView().quotedNameOf(cl.getSignature().toString()));
     buffer.append(": ");
     buffer.append(subSignature);
     buffer.append(">");
@@ -446,10 +446,10 @@ public class SootMethod extends ClassMember {
       Iterator<SootClass> exceptionIt = this.getExceptions().iterator();
 
       if (exceptionIt.hasNext()) {
-        buffer.append(" throws " + this.getView().quotedNameOf(exceptionIt.next().getClassSignature().toString()));
+        buffer.append(" throws " + this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
 
         while (exceptionIt.hasNext()) {
-          buffer.append(", " + this.getView().quotedNameOf(exceptionIt.next().getClassSignature().toString()));
+          buffer.append(", " + this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
         }
       }
     }

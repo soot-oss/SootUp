@@ -31,8 +31,8 @@ import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
-import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.JavaView;
 
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
@@ -122,7 +122,6 @@ public class WalaIRToJimpleConverter {
     Position position = walaClass.getSourcePosition();
     SootClass sootClass = new SootClass(view, classSource, null, ClassType.Application, superClass, null, null, position,
         converModifiers(walaClass));
-    view.addSootClass(sootClass);
     // convert fields
     Set<IField> fields = HashSetFactory.make(walaClass.getDeclaredInstanceFields());
     fields.addAll(walaClass.getDeclaredStaticFields());
@@ -161,7 +160,7 @@ public class WalaIRToJimpleConverter {
    */
   public AbstractClassSource createClassSource(IClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-    ClassSignature classSignature = new DefaultSignatureFactory() {
+    JavaClassSignature classSignature = new DefaultSignatureFactory() {
     }.getClassSignature(fullyQualifiedClassName);
     if (walaClass instanceof AstClass) {
       AstClass cl = (AstClass) walaClass;

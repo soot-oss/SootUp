@@ -1,6 +1,7 @@
 package de.upb.soot.core;
 
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.signatures.ISignature;
 import de.upb.soot.views.IView;
 
 /**
@@ -25,5 +26,7 @@ public abstract class AbstractClass extends AbstractViewResident {
   }
 
   public abstract String getName();
+
+  public abstract ISignature getSignature();
 
 }

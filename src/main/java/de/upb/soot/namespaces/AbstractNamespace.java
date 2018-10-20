@@ -3,15 +3,13 @@ package de.upb.soot.namespaces;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
-import de.upb.soot.signatures.ClassSignature;
-import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.JavaClassSignature;
 
-import java.util.Collection;
 import java.util.Optional;
 
 /**
  * Basic implementation of {@link INamespace}, encapsulating common behavior. Also used to keep the {@link INamespace}
- * interface clean from internal methods like {@link AbstractNamespace#getClassSource(ClassSignature)}.
+ * interface clean from internal methods like {@link AbstractNamespace#getClassSource(JavaClassSignature)}.
  *
  * @author Manuel Benz created on 22.05.18
  */
@@ -58,8 +56,6 @@ public abstract class AbstractNamespace implements INamespace {
     return new AsmJavaClassProvider();
   }
 
-  protected abstract Collection<AbstractClassSource> getClassSources(SignatureFactory factory);
-
   @Override
-  public abstract Optional<AbstractClassSource> getClassSource(ClassSignature classSignature);
+  public abstract Optional<AbstractClassSource> getClassSource(JavaClassSignature classSignature);
 }
