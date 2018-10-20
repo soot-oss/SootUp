@@ -28,9 +28,8 @@ public class SootMethodTest {
     IView view = new JavaView(null);
     RefType type = RefType.getInstance("java.lang.String");
     SootClass mainClass = new SootClass(view, null, null, null, null, null, null, null, null);
-    SootMethod dummyMainMethod = new SootMethod(view, mainClass, "main", Arrays.asList(new Type[] { type }),
-        VoidType.getInstance(), EnumSet.of(Modifier.PUBLIC, Modifier.STATIC));
-    mainClass.addMethod(dummyMainMethod);
+    SootMethod dummyMainMethod = new SootMethod(view, null, Arrays.asList(new Type[] { type }),
+        VoidType.getInstance(), EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), null);
 
     // assertEquals("<MainClass: void main(java.lang.String)>", dummyMainMethod.getSignature());
 
@@ -41,7 +40,7 @@ public class SootMethodTest {
     body.addStmt(Jimple.newAssignStmt(generator.generateLocal(type), Jimple.newNewExpr(type)));
 
     assertEquals(2, body.getLocalCount());
-    dummyMainMethod.setActiveBody(body);
+    dummyMainMethod = new SootMethod(dummyMainMethod, body);
     assertEquals(true, dummyMainMethod.hasActiveBody());
 
     PrintWriter writer=new PrintWriter(System.out);

@@ -42,15 +42,16 @@ import java.util.StringTokenizer;
  *
  */
 
-public class SootMethod extends ClassMember {
+public class SootMethod extends SootClassMember {
   /**
    * 
    */
   private static final long serialVersionUID = -7438746401781827520L;
-  private DebuggingInformation debugInfo;
+
   private static final String constructorName = "<init>";
   private static final String staticInitializerName = "<clinit>";
 
+  private final DebuggingInformation debugInfo;
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
    */
@@ -60,38 +61,45 @@ public class SootMethod extends ClassMember {
   protected final List<SootClass> exceptions;
 
   /** Active body associated with this method. */
-  protected volatile Body activeBody;
+  protected final Body activeBody;
 
   /** Tells this method how to find out where its body lives. */
-  protected volatile IMethodSource ms;
-
-  private IMethodSource methodSource;
+  private final IMethodSource methodSource;
 
   /**
-   * Constructs a SootMethod with the given name, parameter types and return type.
+   * Constructs a SootMethod object with the given attributes. It contains no active body.
    */
-  public SootMethod(IView view, SootClass klass, String name, List<Type> parameterTypes, Type returnType) {
-    this(view, klass, name, parameterTypes, returnType, EnumSet.noneOf(Modifier.class), Collections.<SootClass>emptyList(),
-        null);
+  public SootMethod(IView view, IMethodSource source, List<Type> parameterTypes,
+      Type returnType, EnumSet<Modifier> modifiers, DebuggingInformation debugInfo) {
+    this(view, source, parameterTypes, returnType, modifiers, Collections.<SootClass>emptyList(), debugInfo);
   }
 
   /**
-   * Constructs a SootMethod with the given name, parameter types, return type and modifiers.
+   * Constructs a SootMethod object with the given attributes.
    */
-  public SootMethod(IView view, SootClass klass, String name, List<Type> parameterTypes, Type returnType,
-      EnumSet<Modifier> modifiers) {
-    this(view, klass, name, parameterTypes, returnType, modifiers, Collections.<SootClass>emptyList(), null);
-  }
-
-  /**
-   * Constructs a SootMethod with the given name, parameter types, return type, and list of thrown exceptions.
-   */
-  public SootMethod(IView view, SootClass klass, String name, List<Type> parameterTypes, Type returnType,
-      EnumSet<Modifier> modifiers, List<SootClass> thrownExceptions, DebuggingInformation debugInfo) {
-    super(view, klass, name, returnType, modifiers);
+  public SootMethod(IView view, IMethodSource source, List<Type> parameterTypes,
+      Type returnType, EnumSet<Modifier> modifiers, List<SootClass> thrownExceptions, DebuggingInformation debugInfo) {
+    super(view, source.getSignature(), returnType, modifiers);
+    this.methodSource = source;
     this.parameterTypes = parameterTypes;
     this.exceptions = thrownExceptions;
     this.debugInfo = debugInfo;
+    this.activeBody = source.getBody(this);
+  }
+
+  /**
+   * Construct a SootMethod object with the attributes of given method and activeBody.
+   * 
+   * @param method
+   * @param activeBody
+   */
+  public SootMethod(SootMethod method, Body activeBody) {
+    super(method.getView(), method.signature, method.type, method.modifiers);
+    this.methodSource = method.methodSource;
+    this.parameterTypes = method.parameterTypes;
+    this.exceptions = method.exceptions;
+    this.debugInfo = method.debugInfo;
+    this.activeBody = method.activeBody;
   }
 
   /**
@@ -123,117 +131,13 @@ public class SootMethod extends ClassMember {
     return parameterTypes == null ? Collections.<Type>emptyList() : parameterTypes;
   }
 
-  /**
-   * Retrieves the active body for this method.
-   */
   public Body getActiveBody() {
-    // Retrieve the active body so thread changes do not affect the
-    // synchronization between if the body exists and the returned body.
-    // This is a quick check just in case the activeBody exists.
-    Body activeBody = this.activeBody;
-    if (activeBody != null) {
-      return activeBody;
-    }
-
-    // Synchronize because we are operating on two fields that may be updated
-    // separately otherwise.
-    synchronized (this) {
-      // Re-check the activeBody because things might have changed
-      activeBody = this.activeBody;
-      if (activeBody != null) {
-        return activeBody;
-      }
-
-      if (declaringClass != null) {
-        declaringClass.checkLevel(ResolvingLevel.BODIES);
-      }
-      if ((declaringClass != null && declaringClass.isPhantomClass()) || isPhantom()) {
-        throw new RuntimeException("cannot get active body for phantom method: " + getSignature());
-      }
-
-      // ignore empty body exceptions if we are just computing coffi metrics
-      /*
-       * TODO: sth if (!soot.jbco.Main.metrics) { throw new RuntimeException("no active body present for method " +
-       * getSignature()); }
-       */
-      return null;
-    }
-  }
-
-  /**
-   * Sets the active body for this method.
-   */
-  public void setActiveBody(Body body) {
-    if ((declaringClass != null) && declaringClass.isPhantomClass()) {
-      throw new RuntimeException("cannot set active body for phantom class! " + this);
-    }
-
-    if (!isConcrete()) {
-      throw new RuntimeException("cannot set body for non-concrete method! " + this);
-    }
-
-    if (body != null && body.getMethod() != this) {
-      body.setMethod(this);
-    }
-
-    activeBody = body;
-  }
-
-  /**
-   * Returns the active body if present, else constructs an active body and returns that.
-   *
-   * If you called Scene.getInstance().loadClassAndSupport() for a class yourself, it will not be an application class, so
-   * you cannot get retrieve its active body. Please call setApplicationClass() on the relevant class.
-   */
-  public Body retrieveActiveBody() {
-    // Retrieve the active body so thread changes do not affect the
-    // synchronization between if the body exists and the returned body.
-    // This is a quick check just in case the activeBody exists.
-    Body activeBody = this.activeBody;
-    if (activeBody != null) {
-      return activeBody;
-    }
-
-    // Synchronize because we are operating on multiple fields that may be updated
-    // separately otherwise.
-    synchronized (this) {
-      // Re-check the activeBody because things might have changed
-      activeBody = this.activeBody;
-      if (activeBody != null) {
-        return activeBody;
-      }
-
-      if (declaringClass != null) {
-        declaringClass.checkLevel(ResolvingLevel.BODIES);
-      }
-      if ((declaringClass != null && declaringClass.isPhantomClass()) || isPhantom()) {
-        throw new RuntimeException("cannot get resident body for phantom method : " + this);
-      }
-
-      if (ms == null) {
-        throw new RuntimeException("No method source set for method " + this);
-      }
-
-      // Method sources are not expected to be thread safe
-      activeBody = ms.getBody(this, "jb");
-      setActiveBody(activeBody);
-
-      // If configured, we drop the method source to save memory
-      if (this.getView().getOptions().drop_bodies_after_load()) {
-        ms = null;
-      }
-      return activeBody;
-    }
+    return this.activeBody;
   }
 
   /** Returns true if this method has an active body. */
   public boolean hasActiveBody() {
     return activeBody != null;
-  }
-
-  /** Releases the active body associated with this method. */
-  public synchronized void releaseActiveBody() {
-    activeBody = null;
   }
 
   /** Returns true if this method throws exception <code>e</code>. */
@@ -248,11 +152,7 @@ public class SootMethod extends ClassMember {
   public List<SootClass> getExceptions() {
     return exceptions;
   }
-
-  public List<SootClass> getExceptionsUnsafe() {
-    return exceptions;
-  }
-
+  
   /**
    * Convenience method returning true if this method is abstract.
    */
@@ -280,7 +180,7 @@ public class SootMethod extends ClassMember {
    */
   public boolean isMain() {
     if (isPublic() && isStatic()) {
-      if( this.getSubSignature().equals("void main(java.lang.String[])")) {    
+      if (this.getSubSignature().equals("void main(java.lang.String[])")) {
         return true;
       }
     }
@@ -293,7 +193,7 @@ public class SootMethod extends ClassMember {
    *         method.
    */
   public boolean isConstructor() {
-    return name.equals(constructorName);
+    return this.signature.name.equals(constructorName);
   }
 
   /**
@@ -301,7 +201,7 @@ public class SootMethod extends ClassMember {
    * @return yes, if this function is a static initializer.
    */
   public boolean isStaticInitializer() {
-    return name.equals(staticInitializerName);
+    return this.signature.name.equals(staticInitializerName);
   }
 
   /**
@@ -311,92 +211,6 @@ public class SootMethod extends ClassMember {
     SootClass cl = getDeclaringClass();
     return cl.isJavaLibraryClass();
   }
-
-  /**
-   * Returns the parameters part of the signature in the format in which it appears in bytecode.
-   */
-  public String getBytecodeParms() {
-    StringBuffer buffer = new StringBuffer();
-    for (Iterator<Type> typeIt = getParameterTypes().iterator(); typeIt.hasNext();) {
-      final Type type = typeIt.next();
-    }
-    return buffer.toString().intern();
-  }
-
-  /**
-   * Returns the signature of this method in the format in which it appears in bytecode (eg. [Ljava/lang/Object instead of
-   * java.lang.Object[]).
-   */
-  public String getBytecodeSignature() {
-    String name = getName();
-
-    StringBuffer buffer = new StringBuffer();
-    buffer.append("<" + this.getView().quotedNameOf(getDeclaringClass().getSignature().toString()) + ": ");
-    buffer.append(name);
-    // TODO: sth: AbstractJasminClass
-    // buffer.append(AbstractJasminClass.jasminDescriptorOf(makeRef()));
-    buffer.append(">");
-
-    return buffer.toString().intern();
-  }
-
-  public String getSignature(SootClass cl, String name, List<Type> params, Type returnType) {
-    return getSignature(cl, getSubSignatureImpl(name, params, returnType));
-  }
-
-  @Override
-  public String getSignature(SootClass cl, String subSignature) {
-    StringBuilder buffer = new StringBuilder();
-    buffer.append("<");
-    buffer.append(this.getView().quotedNameOf(cl.getSignature().toString()));
-    buffer.append(": ");
-    buffer.append(subSignature);
-    buffer.append(">");
-
-    return buffer.toString();
-  }
-
-  /**
-   * Returns the Soot subsignature of this method. Used to refer to methods unambiguously.
-   */
-  @Override
-  public String getSubSignature() {
-    if (subSig == null) {
-      synchronized (this) {
-        if (subSig == null) {
-          subSig = getSubSignatureImpl(getName(), getParameterTypes(), getReturnType());
-        }
-      }
-    }
-    return subSig;
-  }
-
-  public String getSubSignature(String name, List<Type> params, Type returnType) {
-    return getSubSignatureImpl(name, params, returnType);
-  }
-
-  private String getSubSignatureImpl(String name, List<Type> params, Type returnType) {
-    StringBuilder buffer = new StringBuilder();
-
-    buffer.append(returnType.toQuotedString());
-
-    buffer.append(" ");
-    buffer.append(this.getView().quotedNameOf(name));
-    buffer.append("(");
-
-    if (params != null) {
-      for (int i = 0; i < params.size(); i++) {
-        buffer.append(params.get(i).toQuotedString());
-        if (i < params.size() - 1) {
-          buffer.append(",");
-        }
-      }
-    }
-    buffer.append(")");
-
-    return buffer.toString();
-  }
-
 
   /**
    * Returns the declaration of this method, as used at the top of textual body representations (before the {}'s containing
@@ -422,7 +236,7 @@ public class SootMethod extends ClassMember {
     // return type + name
 
     buffer.append(this.getReturnType().toQuotedString() + " ");
-    buffer.append(this.getView().quotedNameOf(this.getName()));
+    buffer.append(this.getView().quotedNameOf(this.signature.toString()));
 
     buffer.append("(");
 
@@ -457,35 +271,13 @@ public class SootMethod extends ClassMember {
     return buffer.toString().intern();
   }
 
-  public SootMethod method() {
-    return this;
-  }
-
   public int getJavaSourceStartLineNumber() {
     return debugInfo.getCodeBodyPosition().getFirstLine();
   }
 
-  public Type returnType() {
-    return this.type;
-  }
-
-  public String name() {
-    return this.name;
-  }
-
-  public List<Type> parameterTypes() {
-    return this.parameterTypes;
-  }
-
-  public SootClass declaringClass() {
-    return this.declaringClass;
-  }
 
   public DebuggingInformation getDebugInfo() {
     return this.debugInfo;
   }
 
-  public void setSource(IMethodSource methodSource) {
-    this.methodSource = methodSource;
-  }
 }

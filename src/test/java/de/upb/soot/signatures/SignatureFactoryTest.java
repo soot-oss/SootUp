@@ -1,6 +1,10 @@
 package de.upb.soot.signatures;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import de.upb.soot.namespaces.FileType;
 
@@ -175,7 +179,7 @@ public class SignatureFactoryTest {
     MethodSignature methodSignature
         = signatureFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
     assertEquals(declClass, methodSignature.declClassSignature);
-    assertEquals(returnType, methodSignature.returnTypeSignature);
+    assertEquals(returnType, methodSignature.typeSignature);
     assertEquals(parameter, methodSignature.parameterSignatures.get(0));
   }
 
@@ -187,7 +191,7 @@ public class SignatureFactoryTest {
 
     MethodSignature methodSignature
         = signatureFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
-    assertEquals("<java.lang.System:java.lang.A foo(java.lang.Class)>", methodSignature.toString());
+    assertEquals("<java.lang.System: java.lang.A foo(java.lang.Class)>", methodSignature.toString());
   }
 
   @Test
@@ -197,7 +201,7 @@ public class SignatureFactoryTest {
     List<String> parameters = Collections.singletonList("java.lang.Class");
 
     MethodSignature methodSignature = signatureFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
-    assertEquals("<java.lang.System:void foo(java.lang.Class)>", methodSignature.toString());
+    assertEquals("<java.lang.System: void foo(java.lang.Class)>", methodSignature.toString());
   }
 
   @Test
@@ -207,7 +211,7 @@ public class SignatureFactoryTest {
     List<String> parameters = Collections.emptyList();
 
     MethodSignature methodSignature = signatureFactory.getMethodSignature("foo", "java.lang.System", "void", parameters);
-    assertEquals("<java.lang.System:void foo()>", methodSignature.toString());
+    assertEquals("<java.lang.System: void foo()>", methodSignature.toString());
   }
 
   @Test
@@ -217,8 +221,16 @@ public class SignatureFactoryTest {
     List<String> parameters = Collections.emptyList();
     JavaClassSignature classSignature = signatureFactory.getClassSignature("java.lang.System");
     MethodSignature methodSignature = signatureFactory.getMethodSignature("foo", classSignature, "void", parameters);
-    assertEquals("<java.lang.System:void foo()>", methodSignature.toString());
+    assertEquals("<java.lang.System: void foo()>", methodSignature.toString());
     assertSame(methodSignature.declClassSignature, classSignature);
+  }
+
+  @Test
+  public void getFieldSignature() {
+    SignatureFactory signatureFactory = new DefaultSignatureFactory();
+    JavaClassSignature classSignature = signatureFactory.getClassSignature("java.lang.System");
+    FieldSignature fieldSignature = signatureFactory.getFieldSignature("foo", classSignature, "int");
+    assertEquals("<java.lang.System: int foo>" + "", fieldSignature.toString());
   }
 
   @Test

@@ -103,7 +103,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         String fieldName = fieldNode.name;
         EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
         Type fieldType = AsmUtil.toJimpleDesc(fieldNode.desc, view).get(0);
-        SootField sootField = new SootField(view, sootClass, name, fieldType, modifiers);
+        SootField sootField = new SootField(view, null, fieldType, modifiers);
       }
 
     }
@@ -127,9 +127,8 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         }
 
         de.upb.soot.core.SootMethod sootMethod
-            = new de.upb.soot.core.SootMethod(view, sootClass, methodName, sigTypes, retType, modifiers, exceptions, null);
-        sootMethod.setSource((AsmMethodSource) methodSource);
-        sootClass.addMethod(sootMethod);
+            = new de.upb.soot.core.SootMethod(view, null, sigTypes, retType, modifiers, exceptions, null);
+        // sootClass.addMethod(sootMethod);
       }
     }
 

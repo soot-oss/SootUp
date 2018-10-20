@@ -7,6 +7,7 @@ package de.upb.soot.frontends.java;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
+import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
@@ -120,22 +121,23 @@ public class WalaIRToJimpleConverter {
     }
     // add source position
     Position position = walaClass.getSourcePosition();
-    SootClass sootClass = new SootClass(view, classSource, null, ClassType.Application, superClass, null, null, position,
+    SootClass sootClass = new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Application, superClass,
+        null, null, position,
         converModifiers(walaClass));
     // convert fields
     Set<IField> fields = HashSetFactory.make(walaClass.getDeclaredInstanceFields());
     fields.addAll(walaClass.getDeclaredStaticFields());
     for (IField walaField : fields) {
       SootField sootField = convertField(sootClass, (AstField) walaField);
-      sootClass.addField(sootField);
     }
     // convert methods
     for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
       if (!walaMethod.isAbstract()) {
         SootMethod sootMethod = convertMethod(sootClass, (AstMethod) walaMethod);
-        sootClass.addMethod(sootMethod);
       }
     }
+
+    // create new instance
     return sootClass;
   }
 
@@ -148,7 +150,8 @@ public class WalaIRToJimpleConverter {
    */
   private SootClass convertClass(ShrikeClass walaClass) {
     AbstractClassSource classSource = createClassSource(walaClass);
-    SootClass sootClass = new SootClass(view, classSource, null, ClassType.Phantom, null, null, null, null, null);
+    SootClass sootClass
+        = new SootClass(view, ResolvingLevel.DANGLING, classSource, ClassType.Phantom, null, null, null, null, null);
     return sootClass;
   }
 
@@ -190,7 +193,7 @@ public class WalaIRToJimpleConverter {
     walaField.isFinal();
     String name = walaField.getName().toString();
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
-    SootField sootField = new SootField(view, klass, name, type, modifiers);
+    SootField sootField = new SootField(view, null, type, modifiers);
     return sootField;
   }
 
@@ -234,13 +237,12 @@ public class WalaIRToJimpleConverter {
     // add debug info
     DebuggingInformation debugInfo = walaMethod.debugInfo();
     SootMethod sootMethod
-        = new SootMethod(view, sootClass, name, paraTypes, returnType, modifier, thrownExceptions, debugInfo);
+        = new SootMethod(view, null, paraTypes, returnType, modifier, thrownExceptions, debugInfo);
     // create and set active body of the SootMethod
     Optional<Body> body = createBody(sootMethod, walaMethod);
     if (body.isPresent()) {
-      sootMethod.setActiveBody(body.get());
+      sootMethod = new SootMethod(sootMethod, body.get());
     }
-
     return sootMethod;
   }
 

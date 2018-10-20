@@ -168,8 +168,7 @@ public class Printer {
   }
 
   private void printMethod(SootClass cl, PrintWriter out) {
-    Iterator<SootMethod> methodIt = cl.methodIterator();
-
+    Iterator<SootMethod> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       if (cl.getMethods().size() != 0) {
         out.println();
@@ -185,7 +184,7 @@ public class Printer {
 
         if (!Modifier.isAbstract(method.getModifiers()) && !Modifier.isNative(method.getModifiers())) {
           if (!method.hasActiveBody()) {
-            method.retrieveActiveBody(); // force loading the body
+            // method.retrieveActiveBody(); // force loading the body
             if (!method.hasActiveBody()) {
               throw new RuntimeException("method " + method.getName() + " has no active body!");
             }

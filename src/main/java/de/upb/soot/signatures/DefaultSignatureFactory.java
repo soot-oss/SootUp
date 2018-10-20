@@ -170,6 +170,12 @@ public class DefaultSignatureFactory implements SignatureFactory {
     return new MethodSignature(methodName, declaringClassSignature, returnTypeSignature, parameterSignatures);
   }
 
+  public FieldSignature getFieldSignature(final String fieldName, final JavaClassSignature declaringClassSignature,
+      final String fieldType) {
+    TypeSignature typeSignature = getTypeSignature(fieldType);
+    return new FieldSignature(fieldName, declaringClassSignature, typeSignature);
+  }
+
   @Override
   public JavaClassSignature fromPath(final Path file) {
     String fullyQualifiedName = FilenameUtils.removeExtension(file.toString()).replace('/', '.');

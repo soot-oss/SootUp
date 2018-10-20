@@ -2,6 +2,8 @@ package de.upb.soot.namespaces.classprovider;
 
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.signatures.AbstractClassMemberSignature;
+import de.upb.soot.signatures.MethodSignature;
 
 /*-
  * #%L
@@ -29,5 +31,6 @@ import de.upb.soot.core.SootMethod;
 
 public interface IMethodSource {
   /** Returns a filled-out body for the given SootMethod. */
-  public Body getBody(SootMethod m, String phaseName);
+  public Body getBody(SootMethod m);
+  public MethodSignature getSignature();
 }

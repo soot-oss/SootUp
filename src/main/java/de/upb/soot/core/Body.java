@@ -391,7 +391,8 @@ public class Body implements Serializable {
   public void validate(List<ValidationException> exceptionList) {
     validate(exceptionList);
     final boolean runAllValidators
-        = this.method.getView().getOptions().debug() || this.method.getView().getOptions().validate();
+        = this.method.declaringClass.getView().getOptions().debug()
+            || this.method.declaringClass.getView().getOptions().validate();
     for (BodyValidator validator : getValidators()) {
       if (!validator.isBasicValidator() && !runAllValidators) {
         continue;

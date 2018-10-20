@@ -22,11 +22,12 @@ package de.upb.soot.core;
  */
 
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.views.IView;
 
 import java.util.EnumSet;
 
-public class SootField extends ClassMember {
+public class SootField extends SootClassMember {
 
   /**
    * Soot's counterpart of the source language's field concept. Soot representation of a Java field. Can be declared to belong
@@ -37,62 +38,17 @@ public class SootField extends ClassMember {
   private static final long serialVersionUID = -5101396409117866687L;
 
   /** Constructs a Soot field with the given name, type and modifiers. */
-  public SootField(IView view, SootClass klass, String name, Type type, EnumSet<Modifier> modifiers) {
-    super(view, klass, name, type, modifiers);
+  public SootField(IView view, FieldSignature signature, Type type, EnumSet<Modifier> modifiers) {
+    super(view, signature, type, modifiers);
   }
 
-  public SootField(IView view, SootClass klass, SootField field) {
-    this(view, klass, field.name, field.type, field.modifiers);
+  public SootField(IView view, SootField field) {
+    this(view, (FieldSignature) field.signature, field.type, field.modifiers);
   }
 
   /** Constructs a Soot field with the given name, type and no modifiers. */
-  public SootField(IView view, SootClass klass, String name, Type type) {
-    this(view, klass, name, type, EnumSet.noneOf(Modifier.class));
-  }
-
-  @Override
-  public String getSignature() {
-    if (sig == null) {
-      synchronized (this) {
-        if (sig == null) {
-          sig = getSignature(getDeclaringClass(), getSubSignature());
-        }
-      }
-    }
-    return sig;
-  }
-
-  public String getSignature(SootClass cl, String name, Type type) {
-    return getSignature(cl, getSubSignature(name, type));
-  }
-
-  @Override
-  public String getSignature(SootClass cl, String subSignature) {
-    StringBuilder buffer = new StringBuilder();
-
-    buffer.append("<").append(this.getView().quotedNameOf(cl.getSignature().toString())).append(": ");
-    buffer.append(subSignature).append(">");
-
-    return buffer.toString();
-
-  }
-
-  @Override
-  public String getSubSignature() {
-    if (subSig == null) {
-      synchronized (this) {
-        if (subSig == null) {
-          subSig = getSubSignature(getName(), getType());
-        }
-      }
-    }
-    return subSig;
-  }
-
-  private String getSubSignature(String name, Type type) {
-    StringBuilder buffer = new StringBuilder();
-    buffer.append(type.toQuotedString() + " " + this.getView().quotedNameOf(name));
-    return buffer.toString();
+  public SootField(IView view, FieldSignature signature, Type type) {
+    this(view, signature, type, EnumSet.noneOf(Modifier.class));
   }
 
   public Type getType() {
@@ -100,19 +56,24 @@ public class SootField extends ClassMember {
   }
 
   private String getOriginalStyleDeclaration() {
-    String qualifiers = Modifier.toString(modifiers) + " " + type.toQuotedString();
-    qualifiers = qualifiers.trim();
-
-    if (qualifiers.isEmpty()) {
-      return this.getView().quotedNameOf(name);
-    } else {
-      return qualifiers + " " + this.getView().quotedNameOf(name) + "";
+    if(modifiers.isEmpty()) {
+      return signature.toString();
+    } else
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.append(Modifier.toString(modifiers));
+      sb.append(" ");
+      sb.append(this.signature.toString());
+      return sb.toString();
     }
-
   }
 
   public String getDeclaration() {
     return getOriginalStyleDeclaration();
   }
 
+  @Override
+  public String toString() {
+    return this.signature.toString();
+  }
 }

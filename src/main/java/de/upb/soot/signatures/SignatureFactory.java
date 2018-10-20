@@ -18,5 +18,7 @@ public interface SignatureFactory {
   MethodSignature getMethodSignature(String methodName, JavaClassSignature declaringClassSignature, String fqReturnType,
       List<String> parameters);
 
+  FieldSignature getFieldSignature(String fieldName, JavaClassSignature declaringClassSignature, String fieldType);
+
   JavaClassSignature fromPath(Path file);
 }

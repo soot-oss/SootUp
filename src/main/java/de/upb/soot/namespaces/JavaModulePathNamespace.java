@@ -1,9 +1,8 @@
 package de.upb.soot.namespaces;
 
-import com.google.common.base.Preconditions;
-
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.ModulePackageSignature;
@@ -11,6 +10,8 @@ import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
+
+import com.google.common.base.Preconditions;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -158,6 +159,11 @@ public class JavaModulePathNamespace extends AbstractNamespace {
         return signature;
       }
       return factory.fromPath(file);
+    }
+
+    @Override
+    public FieldSignature getFieldSignature(String fieldName, JavaClassSignature declaringClassSignature, String fieldType) {
+      return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
     }
   }
 

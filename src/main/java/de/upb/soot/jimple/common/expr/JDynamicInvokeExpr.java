@@ -56,7 +56,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       int tag, List<? extends Value> methodArgs) {
     super(methodRef, new ValueBox[methodArgs.size()]);
 
-    if (!methodRef.getSignature().startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
+    if (!methodRef.getSignature().toString().startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
       throw new IllegalArgumentException(
           "Receiver type of JDynamicInvokeExpr must be " + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + "!");
     }
@@ -163,14 +163,10 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
     buffer.append(Jimple.DYNAMICINVOKE);
     buffer.append(" \"");
-    buffer.append(method.getName()); // quoted method name (can be any UTF8
+    buffer.append(method); // quoted method name (can be any UTF8
     // string)
     buffer.append("\" <");
-    buffer
-        .append(
-            method.getSubSignature(""/* no method name here */,
-                method.parameterTypes(),
-        method.returnType()));
+    buffer.append(method.getSubSignature());
     buffer.append(">(");
 
     if (argBoxes != null) {
@@ -202,9 +198,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
-    up.literal(" \"" + method.getName() + "\" <"
-        + method.getSubSignature(""/* no method name here */, method.parameterTypes(), method.returnType()) + ">(");
-
+    up.literal(" \"" + method.getSignature().name + "\" <"
+        + method.getSubSignature() + ">(");
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
         if (i != 0) {

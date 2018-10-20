@@ -90,7 +90,7 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   @Override
   public Type getType() {
-    return method.returnType();
+    return method.getReturnType();
   }
 
   @Override

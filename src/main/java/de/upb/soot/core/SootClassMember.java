@@ -22,7 +22,7 @@ package de.upb.soot.core;
  */
 
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.util.Numberable;
+import de.upb.soot.signatures.AbstractClassMemberSignature;
 import de.upb.soot.views.IView;
 
 import java.io.Serializable;
@@ -30,37 +30,28 @@ import java.util.EnumSet;
 
 /**
  * Provides methods common to Soot objects belonging to classes, namely SootField and SootMethod.
+ * 
+ * @author Linghui Luo
  */
-public abstract class ClassMember extends AbstractViewResident implements Numberable, Serializable {
+public abstract class SootClassMember extends AbstractViewResident implements Serializable {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -7201796736790814208L;
   protected boolean isDeclared = false;
-  protected boolean isPhantom = false;
+  protected SootClass declaringClass;
 
-  protected final SootClass declaringClass;
   protected final Type type;
-  protected final String name;
-
-  protected volatile String sig;
-  protected volatile String subSig;
-  /** Modifiers associated with this class member (e.g. private, protected, etc.). */
+  protected final AbstractClassMemberSignature signature;
   protected final EnumSet<Modifier> modifiers;
 
-  public abstract String getSubSignature();
-
-  public abstract String getSignature(SootClass cl, String subSignature);
-
   /** Constructor. */
-  public ClassMember(IView view, SootClass klass, String name, Type type, EnumSet<Modifier> modifiers) {
+  public SootClassMember(IView view, AbstractClassMemberSignature siganture, Type type, EnumSet<Modifier> modifiers) {
     super(view);
-    this.declaringClass = klass;
-    this.name = name;
+    this.signature = siganture;
     this.type = type;
     this.modifiers = modifiers;
 
-  }
-
-  /** Returns the name of this method. */
-  public String getName() {
-    return name;
   }
 
   /** Returns the SootClass declaring this one. */
@@ -70,7 +61,11 @@ public abstract class ClassMember extends AbstractViewResident implements Number
 
   /** Returns true when this object is from a phantom class. */
   public boolean isPhantom() {
-    return isPhantom;
+    if(declaringClass!=null) {
+      return declaringClass.isPhantomClass();
+    } else {
+      return false;
+    }
   }
 
   /** Convenience method returning true if this class member is protected. */
@@ -114,8 +109,9 @@ public abstract class ClassMember extends AbstractViewResident implements Number
     return isDeclared;
   }
 
-  public void setDeclared(boolean isDeclared) {
-    this.isDeclared = isDeclared;
+  protected void setDeclaringClass(SootClass klass) {
+    this.declaringClass = klass;
+    this.isDeclared = true;
   }
 
   /**
@@ -123,39 +119,27 @@ public abstract class ClassMember extends AbstractViewResident implements Number
    */
   // TODO: check whether modifiers.hashcode() does what its meant for; former: "modifiers"/int bit flags representing the set
   public int equivHashCode() {
-    return type.hashCode() * 101 + modifiers.hashCode() * 17 + name.hashCode();
+    return type.hashCode() * 101 + modifiers.hashCode() * 17 + signature.hashCode();
   }
 
   /** Returns the signature of this method. */
   @Override
   public String toString() {
-    return getSignature();
-  }
-
-  protected int number = 0;
-
-  @Override
-  public void setNumber(int number) {
-    this.number = number;
-  }
-
-  @Override
-  public int getNumber() {
-    return this.number;
+    return signature.toString();
   }
 
   /**
    * Returns the Soot signature of this method. Used to refer to methods unambiguously.
    */
-  public String getSignature() {
-    if (sig == null) {
-      synchronized (this) {
-        if (sig == null) {
-          sig = getSignature(getDeclaringClass(), getSubSignature());
-        }
-      }
-    }
-    return sig;
+  public AbstractClassMemberSignature getSignature() {
+    return signature;
   }
 
+  public String getSubSignature() {
+    return signature.getSubSignature();
+  }
+
+  public String getName() {
+    return this.signature.name;
+  }
 }

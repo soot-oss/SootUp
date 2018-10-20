@@ -1,5 +1,6 @@
 package de.upb.soot.buildactor;
 
+import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
@@ -50,7 +51,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     // actually I don't want if, but dispatch based on type .. but hard for constructor calls...
 
     // FIXME: somewhere a soot class needs to be created ....
-    sootClass = new SootClass(view, classSource, content, null, null, null, null, null, null);
+    sootClass = new SootClass(view, ResolvingLevel.DANGLING, classSource, null, null, null, null, null, null);
     sootClass.resolve(de.upb.soot.core.ResolvingLevel.SIGNATURES);
 
     sender().tell(sootClass, this.getSelf());
@@ -99,7 +100,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     private void resolveMethod(ResolveMethodMessage m) {
       log().info("Start reifying method [{}].", method.getSignature().toString());
 
-      method.retrieveActiveBody();
+      // method.retrieveActiveBody();
 
       sender().tell(method, this.getSelf());
 

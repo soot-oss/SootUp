@@ -7,18 +7,10 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 /** Represents the fully qualified signature of a method. */
-public class MethodSignature {
-  /** The method's signature. */
-  public final String methodName;
-
-  /** The signature of the declaring class. */
-  public final JavaClassSignature declClassSignature;
+public class MethodSignature extends AbstractClassMemberSignature {
 
   /** The method's parameters' signatures. */
   public final List<TypeSignature> parameterSignatures;
-
-  /** The return type's signature. */
-  public final TypeSignature returnTypeSignature;
 
   /**
    * Internal: Constructs a MethodSignature. Instances should only be created by a {@link DefaultSignatureFactory}
@@ -30,10 +22,8 @@ public class MethodSignature {
    */
   protected MethodSignature(final String methodName, final JavaClassSignature declaringClass, final TypeSignature returnType,
       final List<TypeSignature> parameters) {
-    this.methodName = methodName;
-    this.declClassSignature = declaringClass;
+    super(methodName, declaringClass, returnType);
     this.parameterSignatures = parameters;
-    this.returnTypeSignature = returnType;
   }
 
   @Override
@@ -45,14 +35,14 @@ public class MethodSignature {
       return false;
     }
     MethodSignature that = (MethodSignature) o;
-    return Objects.equal(methodName, that.methodName) && Objects.equal(declClassSignature, that.declClassSignature)
+    return Objects.equal(name, that.name) && Objects.equal(declClassSignature, that.declClassSignature)
         && Objects.equal(parameterSignatures, that.parameterSignatures)
-        && Objects.equal(returnTypeSignature, that.returnTypeSignature);
+        && Objects.equal(typeSignature, that.typeSignature);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(methodName, declClassSignature, parameterSignatures, returnTypeSignature);
+    return Objects.hashCode(name, declClassSignature, parameterSignatures);
   }
 
   /**
@@ -60,25 +50,15 @@ public class MethodSignature {
    *
    * @return a String of the form "returnTypeName methodName(ParameterName(,)*)"
    */
-  public String getSimpleMethodSignature() {
+  @Override
+  public String getSubSignature() {
     StringBuilder sb = new StringBuilder();
-    sb.append(returnTypeSignature.toString());
+    sb.append(typeSignature.toString());
     sb.append(' ');
-    sb.append(methodName);
+    sb.append(name);
     sb.append('(');
     sb.append(StringUtils.join(parameterSignatures, ','));
     sb.append(')');
-    return sb.toString();
-  }
-
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append('<');
-    sb.append(declClassSignature.toString());
-    sb.append(':');
-    sb.append(getSimpleMethodSignature());
-    sb.append('>');
     return sb.toString();
   }
 }
