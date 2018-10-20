@@ -26,7 +26,6 @@ public class SootMethodTest {
   @Test
   public void testCreateMethod() {
     IView view = new JavaView(null);
-    view.addRefType(new RefType(view, "java.lang.String"));
     RefType type = RefType.getInstance("java.lang.String");
     SootClass mainClass = new SootClass(view, null, null, null, null, null, null, null, null);
     SootMethod dummyMainMethod = new SootMethod(view, mainClass, "main", Arrays.asList(new Type[] { type }),

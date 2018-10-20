@@ -2,18 +2,18 @@ package de.upb.soot.jimple;
 
 import de.upb.soot.Project;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.util.printer.Printer;
 import de.upb.soot.views.JavaView;
-import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
+import org.junit.Assume;
+import org.junit.Test;
 
 public abstract class JimpleInstructionsTestBase {
 
@@ -42,7 +42,6 @@ public abstract class JimpleInstructionsTestBase {
         // soot config
         Project project = new Project();
         view = new JavaView( project );
-        RefType.setView( view );
 
         // build class structure
         build();

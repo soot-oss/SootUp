@@ -5,17 +5,10 @@ import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
-import de.upb.soot.util.ArrayNumberer;
-import de.upb.soot.util.StringNumberer;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,10 +22,11 @@ import java.util.stream.Stream;
  *
  */
 public interface IView {
+
   /**
-   * Returns all classes in the view. The objects returned here are immutable.
+   * Return all classes in the view.
    * 
-   * @return A list of classes
+   * @return
    */
   List<AbstractClass> getClasses();
 
@@ -80,39 +74,37 @@ public interface IView {
    */
   Optional<Scope> getScope();
 
+  /**
+   * Returns the {@link RefType} with given className from the view. If there is no RefType with given className exists,
+   * create a new instance.
+   * 
+   * @param className
+   * @return
+   */
+  RefType getRefType(String className);
 
-  ArrayNumberer<SootField> getFieldNumberer();
-
-  // as discussed getThe SignatureFactor
+  /**
+   * Returns the {@link SignatureFactory} for this view.
+   * 
+   * @return
+   */
   SignatureFactory getSignatureFacotry();
+
+  /**
+   * Return the {@link Options} of this view.
+   * 
+   * @return
+   */
+  Options getOptions();
+
+  /**
+   * Add given class to the view.
+   * 
+   * @param klass
+   */
+  void addClass(AbstractClass klass);
 
   boolean doneResolving();
 
-  StringNumberer getSubSigNumberer();
-
-  void addRefType(RefType refType);
-
-  List<SootField> getClassNumberer();
-
   String quotedNameOf(String name);
-
-  boolean allowsPhantomRefs();
-
-  ArrayNumberer<SootMethod> getMethodNumberer();
-
-  List<Local> getLocalNumberer();
-
-  ArrayNumberer<Type> getTypeNumberer();
-
-  RefType getObjectType();
-
-  // TODO. remove references to this method later
-  Optional<SootClass> getSootClass(ClassSignature superSignature);
-
-  RefType getRefType(String className);
-
-  Options getOptions();
-
-  SootClass getSootClass(String className);
-
 }

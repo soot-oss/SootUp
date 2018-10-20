@@ -16,6 +16,7 @@ public abstract class AbstractClass extends AbstractViewResident {
 
   public AbstractClass(IView view, AbstractClassSource cs) {
     super(view);
+    view.addClass(this);
     this.classSource = cs;
   }
 

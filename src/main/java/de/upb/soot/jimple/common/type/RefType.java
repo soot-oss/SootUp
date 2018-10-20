@@ -29,6 +29,7 @@ import de.upb.soot.core.IViewResident;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.CommonClassSignatures;
+import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 
@@ -59,12 +60,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
     {
       throw new NullPointerException("View is not set for RefType");
     }
-    RefType rt = view.getRefType(className);
-    if (rt == null) {
-      rt = new RefType(view, className);
-      view.addRefType(rt);
-    }
-    return rt;
+    return view.getRefType(className);
   }
 
   /**
@@ -99,7 +95,6 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
       throw new RuntimeException("Attempt to create RefType containing a ; --> " + className);
     }
     this.className = className;
-    RefType.view.addRefType(this);
   }
 
   public String getClassName() {
@@ -172,9 +167,12 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
     {
       // Return least common superclass
       // TODO: This is all highly suspicious. FQCNs should be resolved there through a SignatureFactory.
-      SootClass thisClass = this.getView().getSootClass(this.className);
-      SootClass otherClass = this.getView().getSootClass(((RefType) other).className);
-      SootClass javalangObject = this.getView().getSootClass(CommonClassSignatures.JavaLangObject.className);
+      SignatureFactory factory = this.getView().getSignatureFacotry();
+      SootClass thisClass = (SootClass) this.getView().getClass(factory.getClassSignature(this.className)).get();
+      SootClass otherClass
+          = (SootClass) this.getView().getClass(factory.getClassSignature(((RefType) other).className)).get();
+
+      SootClass javalangObject = (SootClass) this.getView().getClass(CommonClassSignatures.JavaLangObject).get();
 
       ArrayDeque<SootClass> thisHierarchy = new ArrayDeque<>();
       ArrayDeque<SootClass> otherHierarchy = new ArrayDeque<>();
@@ -263,16 +261,6 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
   public void accept(IVisitor sw) {
     // TODO Auto-generated method stub
 
-  }
-
-  /**
-   * Set the current view. RefType needs access to view, since all RefTypes are stored in {@link IView}.
-   * 
-   * @param view
-   *          the current view
-   */
-  public static void setView(IView view) {
-    RefType.view = view;
   }
 
   @Override

@@ -23,7 +23,6 @@ package de.upb.soot.core;
 
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.IMethodSource;
-import de.upb.soot.util.NumberedString;
 import de.upb.soot.views.IView;
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
@@ -66,6 +65,8 @@ public class SootMethod extends ClassMember {
   /** Tells this method how to find out where its body lives. */
   protected volatile IMethodSource ms;
 
+  private IMethodSource methodSource;
+
   /**
    * Constructs a SootMethod with the given name, parameter types and return type.
    */
@@ -86,13 +87,11 @@ public class SootMethod extends ClassMember {
    * Constructs a SootMethod with the given name, parameter types, return type, and list of thrown exceptions.
    */
   public SootMethod(IView view, SootClass klass, String name, List<Type> parameterTypes, Type returnType,
-      EnumSet<Modifier> modifiers,
-      List<SootClass> thrownExceptions, DebuggingInformation debugInfo) {
+      EnumSet<Modifier> modifiers, List<SootClass> thrownExceptions, DebuggingInformation debugInfo) {
     super(view, klass, name, returnType, modifiers);
     this.parameterTypes = parameterTypes;
     this.exceptions = thrownExceptions;
     this.debugInfo = debugInfo;
-    subsignature = this.getView().getSubSigNumberer().findOrAdd(getSubSignature());
   }
 
   /**
@@ -281,12 +280,10 @@ public class SootMethod extends ClassMember {
    */
   public boolean isMain() {
     if (isPublic() && isStatic()) {
-      NumberedString main_sig = this.getView().getSubSigNumberer().findOrAdd("void main(java.lang.String[])");
-      if (main_sig.equals(subsignature)) {
+      if( this.getSubSignature().equals("void main(java.lang.String[])")) {    
         return true;
       }
     }
-
     return false;
   }
 
@@ -305,16 +302,6 @@ public class SootMethod extends ClassMember {
    */
   public boolean isStaticInitializer() {
     return name.equals(staticInitializerName);
-  }
-
-  /**
-   * @return yes, if this is a class initializer or main function.
-   */
-  public boolean isEntryMethod() {
-    if (isStatic() && subsignature.equals(this.getView().getSubSigNumberer().findOrAdd("void <clinit>()"))) {
-      return true;
-    }
-    return isMain();
   }
 
   /**
@@ -410,12 +397,6 @@ public class SootMethod extends ClassMember {
     return buffer.toString();
   }
 
-  protected NumberedString subsignature;
-  private IMethodSource methodSource;
-
-  public NumberedString getNumberedSubSignature() {
-    return subsignature;
-  }
 
   /**
    * Returns the declaration of this method, as used at the top of textual body representations (before the {}'s containing

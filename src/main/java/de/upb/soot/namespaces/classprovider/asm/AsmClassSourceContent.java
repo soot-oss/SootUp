@@ -1,5 +1,6 @@
 package de.upb.soot.namespaces.classprovider.asm;
 
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
@@ -67,7 +68,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
       String superClassName = AsmUtil.toQualifiedName(superName);
       de.upb.soot.signatures.ClassSignature superSignature = view.getSignatureFacotry().getClassSignature(superClassName);
-      Optional<SootClass> superClass = view.getSootClass(superSignature);
+      Optional<AbstractClass> superClass = view.getClass(superSignature);
       if (superClass.isPresent()) {
         // sootClass.setSuperclass(superClass.get());
       }
@@ -78,7 +79,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
       for (String interfaceName : this.interfaces) {
         String fqInterfaceName = AsmUtil.toQualifiedName(interfaceName);
         de.upb.soot.signatures.ClassSignature interfaceSig = view.getSignatureFacotry().getClassSignature(fqInterfaceName);
-        Optional<SootClass> interfaceClass = view.getSootClass(interfaceSig);
+        Optional<AbstractClass> interfaceClass = view.getClass(interfaceSig);
         if (interfaceClass.isPresent()) {
           // sootClass.setSuperclass(interfaceClass.get());
         }
@@ -115,9 +116,9 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
           String excepetionFQName = AsmUtil.toQualifiedName(exceptionName);
           de.upb.soot.signatures.ClassSignature exceptionSig
               = view.getSignatureFacotry().getClassSignature(excepetionFQName);
-          Optional<SootClass> excepetionClass = view.getSootClass(exceptionSig);
+          Optional<AbstractClass> excepetionClass = view.getClass(exceptionSig);
           if (excepetionClass.isPresent()) {
-            exceptions.add(excepetionClass.get());
+            exceptions.add((SootClass) excepetionClass.get());
           }
         }
 

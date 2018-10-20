@@ -118,7 +118,7 @@ public class SootClass extends AbstractClass implements Serializable {
    *          The name of the new class
    */
   private void initializeRefType(String name) {
-    RefType.setView(this.getView());
+    // RefType.setView(this.getView());
     refType = RefType.getInstance(name);
     refType.setSootClass(this);
   }

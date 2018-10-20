@@ -2,11 +2,10 @@ package de.upb.soot.views;
 
 import de.upb.soot.Project;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
 
 import java.util.HashSet;
-import java.util.Optional;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
@@ -97,13 +96,7 @@ public class JavaView extends AbstractView {
 
   @Override
   public SignatureFactory getSignatureFacotry() {
-    // TODO Auto-generated method stub
-    return null;
+    return new DefaultSignatureFactory();
   }
 
-  @Override
-  public Optional<SootClass> getSootClass(ClassSignature superSignature) {
-    // TODO Auto-generated method stub
-    return null;
-  }
 }
