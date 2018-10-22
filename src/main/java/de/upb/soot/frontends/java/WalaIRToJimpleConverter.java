@@ -78,6 +78,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -109,7 +110,7 @@ public class WalaIRToJimpleConverter {
    */
   public SootClass convertClass(AstClass walaClass) {
     AbstractClassSource classSource = createClassSource(walaClass);
-    // set super class
+    // get super class
     SootClass superClass = null;
     IClass sc = walaClass.getSuperclass();
     if (sc != null) {
@@ -119,25 +120,38 @@ public class WalaIRToJimpleConverter {
         superClass = convertClass((ShrikeClass) sc);
       }
     }
+
+    // get interfaces
+    Set<JavaClassSignature> interfaces = new HashSet<>();
+
+    // get outer class
+    SootClass outerClass = null;
     // add source position
     Position position = walaClass.getSourcePosition();
-    SootClass sootClass = new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Application, superClass,
-        null, null, position,
-        converModifiers(walaClass));
+
+    // convert modifiers
+    EnumSet<Modifier> modifiers = converModifiers(walaClass);
+
     // convert fields
     Set<IField> fields = HashSetFactory.make(walaClass.getDeclaredInstanceFields());
     fields.addAll(walaClass.getDeclaredStaticFields());
+    Set<SootField> sootFields = new HashSet<>();
     for (IField walaField : fields) {
-      SootField sootField = convertField(sootClass, (AstField) walaField);
+      SootField sootField = convertField((AstField) walaField);
+      sootFields.add(sootField);
     }
     // convert methods
+    Set<SootMethod> sootMethods = new HashSet<>();
     for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
       if (!walaMethod.isAbstract()) {
-        SootMethod sootMethod = convertMethod(sootClass, (AstMethod) walaMethod);
+        SootMethod sootMethod = convertMethod((AstMethod) walaMethod);
+        sootMethods.add(sootMethod);
       }
     }
-
-    // create new instance
+    SootClass sootClass = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application,
+        Optional.ofNullable(superClass.getSignature()), interfaces, Optional.ofNullable(outerClass.getSignature()),
+        sootFields, sootMethods,
+        position, modifiers);
     return sootClass;
   }
 
@@ -151,7 +165,7 @@ public class WalaIRToJimpleConverter {
   private SootClass convertClass(ShrikeClass walaClass) {
     AbstractClassSource classSource = createClassSource(walaClass);
     SootClass sootClass
-        = new SootClass(view, ResolvingLevel.DANGLING, classSource, ClassType.Phantom, null, null, null, null, null);
+        = new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Phantom, null, null, null, null, null);
     return sootClass;
   }
 
@@ -173,6 +187,7 @@ public class WalaIRToJimpleConverter {
     }
     if (walaClass instanceof ShrikeClass) {
       ShrikeClass cl = (ShrikeClass) walaClass;
+      cl.getSourceFileName();
       return new AbstractClassSource(srcNamespace, null, classSignature) {
       };
     }
@@ -188,7 +203,7 @@ public class WalaIRToJimpleConverter {
    *          the wala field
    * @return A SootField object converted from walaField.
    */
-  public SootField convertField(SootClass klass, AstField walaField) {
+  public SootField convertField(AstField walaField) {
     Type type = convertType(walaField.getFieldTypeReference());
     walaField.isFinal();
     String name = walaField.getName().toString();
@@ -205,7 +220,7 @@ public class WalaIRToJimpleConverter {
    * @param walaMethod
    *          the walMethod to be converted
    */
-  public SootMethod convertMethod(SootClass sootClass, AstMethod walaMethod) {
+  public SootMethod convertMethod(AstMethod walaMethod) {
     // create SootMethond instance
     String name = walaMethod.getName().toString();
     List<Type> paraTypes = new ArrayList<>();

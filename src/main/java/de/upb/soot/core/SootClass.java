@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -82,22 +83,24 @@ public class SootClass extends AbstractClass implements Serializable {
   private final JavaClassSignature classSignature;
   private final Set<SootField> fields;
   private final Set<SootMethod> methods;
-  private final Set<SootClass> interfaces;
-  private final SootClass superClass;
-  private final SootClass outerClass;
+  private final Set<JavaClassSignature> interfaces;
+  private final Optional<JavaClassSignature> superClass;
+  private final Optional<JavaClassSignature> outerClass;
 
   public final static String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, AbstractClassSource classSource, ClassType type,
-      SootClass superClass,
-      Set<SootClass> interfaces, SootClass outerClass, Position position, EnumSet<Modifier> modifiers) {
+      Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
+      Position position,
+      EnumSet<Modifier> modifiers) {
     this(view, resolvingLevel, classSource, type, superClass, interfaces, outerClass, new HashSet<>(), new HashSet<>(),
         position, modifiers);
   }
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, AbstractClassSource classSource, ClassType type,
-      SootClass superClass,
-      Set<SootClass> interfaces, SootClass outerClass, Set<SootField> fields, Set<SootMethod> methods, Position position,
+      Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
+      Set<SootField> fields, Set<SootMethod> methods,
+      Position position,
       EnumSet<Modifier> modifiers) {
     super(view, classSource);
     view.addClass(this);
@@ -278,49 +281,6 @@ public class SootClass extends AbstractClass implements Serializable {
     return null;
   }
 
-  /**
-   * Does this class declare a field with the given subsignature?
-   */
-  public boolean declaresField(String subsignature) {
-    checkLevel(ResolvingLevel.SIGNATURES);
-    return getFieldUnsafe(subsignature) != null;
-  }
-
-  /**
-   * Does this class declare a field with the given name?
-   */
-
-  public boolean declaresFieldByName(String name) {
-    checkLevel(ResolvingLevel.SIGNATURES);
-    if (fields == null) {
-      return false;
-    }
-    for (SootField field : fields) {
-      if (field.getSignature().equals(name)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  /**
-   * Does this class declare a field with the given name and type.
-   */
-  public boolean declaresField(String name, Type type) {
-    checkLevel(ResolvingLevel.SIGNATURES);
-    if (fields == null) {
-      return false;
-    }
-    for (SootField field : fields) {
-      if (field.getSignature().equals(name) && field.getType().equals(type)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
   public Set<SootMethod> getMethods() {
     checkLevel(ResolvingLevel.SIGNATURES);
     if (methods == null) {
@@ -428,65 +388,6 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Does this class declare a method with the given name and parameter types?
-   */
-
-  public boolean declaresMethod(String name, List<Type> parameterTypes) {
-    checkLevel(ResolvingLevel.SIGNATURES);
-    if (methods == null) {
-      return false;
-    }
-
-    for (SootMethod method : methods) {
-      if (method.getSignature().equals(name) && method.getParameterTypes().equals(parameterTypes)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  /**
-   * Does this class declare a method with the given name, parameter types, and return type?
-   */
-
-  public boolean declaresMethod(String name, List<Type> parameterTypes, Type returnType) {
-    checkLevel(ResolvingLevel.SIGNATURES);
-    if (methods == null) {
-      return false;
-    }
-
-    for (SootMethod method : methods) {
-      if (method.getSignature().equals(name) && method.getParameterTypes().equals(parameterTypes)
-          && method.getReturnType().equals(returnType)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  /**
-   * Does this class declare a method with the given name?
-   */
-
-  public boolean declaresMethodByName(String name) {
-    checkLevel(ResolvingLevel.SIGNATURES);
-    if (methods == null) {
-      return false;
-    }
-
-    for (SootMethod method : methods) {
-      if (method.getSignature().equals(name)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-
-  /**
    * Returns the modifiers of this class.
    */
   public EnumSet<Modifier> getModifiers() {
@@ -509,7 +410,14 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   public Set<SootClass> getInterfaces() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return interfaces == null ? new HashSet<>() : interfaces;
+    Set<SootClass> ret = new HashSet<>();
+    for (JavaClassSignature i : interfaces) {
+      Optional<AbstractClass> op = this.getView().getClass(i);
+      if (op.isPresent()) {
+        ret.add((SootClass) op.get());
+      }
+    }
+    return ret;
   }
 
   /**
@@ -522,8 +430,8 @@ public class SootClass extends AbstractClass implements Serializable {
       return false;
     }
 
-    for (SootClass sc : interfaces) {
-      if (sc.getSignature().equals(classSignature)) {
+    for (JavaClassSignature sc : interfaces) {
+      if (sc.equals(classSignature)) {
         return true;
       }
     }
@@ -537,54 +445,37 @@ public class SootClass extends AbstractClass implements Serializable {
 
   public boolean hasSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return superClass != null;
+    return superClass.isPresent();
   }
 
   /**
    * WARNING: interfaces are subclasses of the java.lang.Object class! Returns the superclass of this class. (see
    * hasSuperclass())
    */
-  public SootClass getSuperclass() {
+  public Optional<SootClass> getSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    if (superClass == null && !isPhantomClass()) {
+    if (!superClass.isPresent() && !isPhantomClass()) {
       throw new RuntimeException("no superclass for " + classSignature);
     } else {
-      return superClass;
+      return Optional.ofNullable((SootClass) this.getView().getClass(superClass.get()).get());
     }
-  }
-
-  /**
-   * This method returns the superclass, or null if no superclass has been specified for this class.
-   *
-   * WARNING: interfaces are subclasses of the java.lang.Object class! Returns the superclass of this class. (see
-   * hasSuperclass())
-   */
-
-  public SootClass getSuperclassUnsafe() {
-    checkLevel(ResolvingLevel.HIERARCHY);
-    return superClass;
   }
 
   public boolean hasOuterClass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return outerClass != null;
-  }
-
-  public SootClass getOuterClass() {
-    checkLevel(ResolvingLevel.HIERARCHY);
-    if (outerClass == null) {
-      throw new RuntimeException("no outer class");
-    } else {
-      return outerClass;
-    }
+    return outerClass.isPresent();
   }
 
   /**
-   * This method returns the outer class, or null if no outer class has been specified for this class.
+   * This method returns the outer class.
    */
-  public SootClass getOuterClassUnsafe() {
+  public Optional<SootClass> getOuterClass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return outerClass;
+    if (!outerClass.isPresent()) {
+      throw new RuntimeException("no outer class");
+    } else {
+      return Optional.ofNullable((SootClass) this.getView().getClass(outerClass.get()).get());
+    }
   }
 
   public boolean isInnerClass() {

@@ -49,22 +49,23 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
   private static IView view;
 
   /**
-   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in {@link JavaView}.
+   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in
+   * {@link JavaView}.
    * 
    * @param className
    *          The name of the class used to parameterize the created RefType.
    * @return a RefType for the given class name.
    */
   public static RefType getInstance(String className) {
-    if(view ==null)
-    {
+    if (view == null) {
       throw new NullPointerException("View is not set for RefType");
     }
     return view.getRefType(className);
   }
 
   /**
-   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in {@link JavaView}.
+   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in
+   * {@link JavaView}.
    * 
    * @param c
    *          A SootClass for which to create a RefType.
@@ -73,7 +74,6 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
   public static RefType getInstance(SootClass c) {
     return getInstance(c.getSignature().toString());
   }
-
 
   // TODO: Please change className to ClassSignature here. No use of Strings to determine classes anymore. The first few
   // lines are a good example why.
@@ -189,8 +189,9 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
             break;
           }
 
-          sootClass = sootClass.getSuperclassUnsafe();
-          if (sootClass == null) {
+          if (sootClass.getSuperclass().isPresent()) {
+            sootClass = sootClass.getSuperclass().get();
+          } else {
             sootClass = javalangObject;
           }
         }
@@ -207,14 +208,13 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
           if (sootClass == javalangObject) {
             break;
           }
-
-          sootClass = sootClass.getSuperclassUnsafe();
-          if (sootClass == null) {
+          if (sootClass.getSuperclass().isPresent()) {
+            sootClass = sootClass.getSuperclass().get();
+          } else {
             sootClass = javalangObject;
           }
         }
       }
-
       // Find least common superclass
       {
         SootClass commonClass = null;

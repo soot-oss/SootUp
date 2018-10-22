@@ -24,7 +24,15 @@ public class WalaIRISourceContent implements de.upb.soot.namespaces.classprovide
 
   @Override
   public void resolve(ResolvingLevel level, IView view) {
-    // TODO Auto-generated method stub
-
+    switch (level) {
+      case HIERARCHY:
+        break;
+      case SIGNATURES:
+        break;
+      case BODIES:
+        break;
+      default:
+        return;
+    }
   }
 }
