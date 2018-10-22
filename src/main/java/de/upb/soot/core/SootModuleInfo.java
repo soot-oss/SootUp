@@ -78,7 +78,8 @@ public class SootModuleInfo extends AbstractClass {
    * @param version
    *          the module's version
    */
-  public SootModuleInfo(IView view, AbstractClassSource cs, String name, int access, String version) {
+
+  public SootModuleInfo(IView view, AbstractClassSource cs, ModuleSignature moduleSignature, int access, String version) {
     super(view, cs);
     this.moduleSignature = moduleSignature;
     this.accessModifier = access;
