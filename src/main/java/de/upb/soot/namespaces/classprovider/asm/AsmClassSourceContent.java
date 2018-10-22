@@ -3,6 +3,7 @@ package de.upb.soot.namespaces.classprovider.asm;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
+import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.views.IView;
 
@@ -10,8 +11,13 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.ModuleExportNode;
+import org.objectweb.asm.tree.ModuleOpenNode;
+import org.objectweb.asm.tree.ModuleProvideNode;
+import org.objectweb.asm.tree.ModuleRequireNode;
 
 public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     implements de.upb.soot.namespaces.classprovider.ISourceContent {
@@ -56,6 +62,84 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     // FIXME: outerclass?
 
     // FIXME: annotations?
+
+    // FIXME: module --- ?
+    dealWithModule(view, sootClass);
+
+  }
+
+  private void dealWithModule(IView view, SootClass sootClass) {
+    if (module != null) {
+      if (sootClass instanceof SootModuleInfo) {
+        SootModuleInfo sootModuleInfo = (SootModuleInfo) sootClass;
+        {// add exports
+
+          for (ModuleExportNode exportNode : module.exports) {
+            Iterable<Optional<SootClass>> optionals = resolveAsmNamesToSootClasses(exportNode.modules, view);
+            ArrayList<SootModuleInfo> modules = new ArrayList<>();
+            for (Optional<SootClass> sootClassOptional : optionals) {
+              if (sootClassOptional.isPresent() && sootClassOptional.get() instanceof SootModuleInfo) {
+                modules.add((SootModuleInfo) sootClassOptional.get());
+              }
+            }
+
+            sootModuleInfo.addExport(exportNode.packaze, exportNode.access, modules);
+          }
+        }
+
+        {
+          /// add opens
+          for (ModuleOpenNode moduleOpenNode : module.opens) {
+            Iterable<Optional<SootClass>> optionals = resolveAsmNamesToSootClasses(moduleOpenNode.modules, view);
+            ArrayList<SootModuleInfo> modules = new ArrayList<>();
+            for (Optional<SootClass> sootClassOptional : optionals) {
+              if (sootClassOptional.isPresent() && sootClassOptional.get() instanceof SootModuleInfo) {
+                modules.add((SootModuleInfo) sootClassOptional.get());
+              }
+            }
+
+            sootModuleInfo.addOpen(moduleOpenNode.packaze, moduleOpenNode.access, modules);
+          }
+
+        }
+
+        {
+          // add requies
+          for (ModuleRequireNode moduleRequireNode : module.requires) {
+            Optional<SootClass> sootClassOptional = resolveAsmNameToSootClass(moduleRequireNode.module, view);
+            if (sootClassOptional.isPresent() && sootClassOptional.get() instanceof SootModuleInfo) {
+              sootModuleInfo.addRequire((SootModuleInfo) sootClassOptional.get(), moduleRequireNode.access,
+                  moduleRequireNode.version);
+
+            }
+          }
+
+        }
+
+        {
+          // add provides
+          for (ModuleProvideNode moduleProvideNode : module.provides) {
+            Optional<SootClass> serviceOptional = resolveAsmNameToSootClass(moduleProvideNode.service, view);
+            Iterable<Optional<SootClass>> providersOptionals
+                = resolveAsmNamesToSootClasses(moduleProvideNode.providers, view);
+            ArrayList<SootClass> providers = new ArrayList<>();
+            for (Optional<SootClass> sootClassOptional : providersOptionals) {
+              if (sootClassOptional.isPresent()) {
+                providers.add(sootClassOptional.get());
+              }
+            }
+
+            if (serviceOptional.isPresent()) {
+              // FIXME: must service be resolved
+
+              sootModuleInfo.addProvide(moduleProvideNode.service, providers);
+
+            }
+          }
+        }
+
+      }
+    }
   }
 
   private void resolveHierarchy(IView view, SootClass sootClass) {
@@ -65,22 +149,18 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     {
       // add super class
 
-      String superClassName = AsmUtil.toQualifiedName(superName);
-      de.upb.soot.signatures.ClassSignature superSignature = view.getSignatureFacotry().getClassSignature(superClassName);
-      Optional<SootClass> superClass = view.getSootClass(superSignature);
+      Optional<SootClass> superClass = resolveAsmNameToSootClass(superName, view);
       if (superClass.isPresent()) {
         sootClass.setSuperclass(superClass.get());
       }
     }
     {
       // add the interfaces
+      Iterable<Optional<SootClass>> optionals = resolveAsmNamesToSootClasses(this.interfaces, view);
+      for (Optional<SootClass> interfaceClass : optionals) {
 
-      for (String interfaceName : this.interfaces) {
-        String fqInterfaceName = AsmUtil.toQualifiedName(interfaceName);
-        de.upb.soot.signatures.ClassSignature interfaceSig = view.getSignatureFacotry().getClassSignature(fqInterfaceName);
-        Optional<SootClass> interfaceClass = view.getSootClass(interfaceSig);
         if (interfaceClass.isPresent()) {
-          sootClass.setSuperclass(interfaceClass.get());
+          sootClass.addInterface(interfaceClass.get());
         }
       }
     }
@@ -111,11 +191,10 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         List<Type> sigTypes = AsmUtil.toJimpleDesc(methodSource.desc, view);
         Type retType = sigTypes.remove(sigTypes.size() - 1);
         List<SootClass> exceptions = new ArrayList<>();
-        for (String exceptionName : methodSource.exceptions) {
-          String excepetionFQName = AsmUtil.toQualifiedName(exceptionName);
-          de.upb.soot.signatures.ClassSignature exceptionSig
-              = view.getSignatureFacotry().getClassSignature(excepetionFQName);
-          Optional<SootClass> excepetionClass = view.getSootClass(exceptionSig);
+        Iterable<Optional<SootClass>> optionals = resolveAsmNamesToSootClasses(methodSource.exceptions, view);
+
+        for (Optional<SootClass> excepetionClass : optionals) {
+
           if (excepetionClass.isPresent()) {
             exceptions.add(excepetionClass.get());
           }
@@ -136,10 +215,19 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     }
   }
 
-  @Override
-  public org.objectweb.asm.ModuleVisitor visitModule(String name, int access, String version) {
-    // FIXME: do something here??
-    return super.visitModule(name, access, version);
+  private Iterable<Optional<SootClass>> resolveAsmNamesToSootClasses(Iterable<String> modules, IView view) {
+    if (modules == null) {
+      return java.util.Collections.emptyList();
+    }
+    return StreamSupport.stream(modules.spliterator(), false).map(p -> resolveAsmNameToSootClass(p, view))
+        .collect(java.util.stream.Collectors.toList());
+  }
+
+  private Optional<SootClass> resolveAsmNameToSootClass(String asmClassName, IView view) {
+    String excepetionFQName = AsmUtil.toQualifiedName(asmClassName);
+    de.upb.soot.signatures.ClassSignature classSignature = view.getSignatureFacotry().getClassSignature(excepetionFQName);
+    Optional<SootClass> sootClass = view.getSootClass(classSignature);
+    return sootClass;
   }
 
   @Override
