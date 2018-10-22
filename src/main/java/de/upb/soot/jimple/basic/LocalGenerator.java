@@ -123,9 +123,6 @@ public class LocalGenerator {
         name += nextCharName();
       } while (bodyContainsLocal(name));
 
-      // TODO: anomalie detected - needed?
-      type = CharType.getInstance();
-
     } else if (type instanceof DoubleType) {
       do {
         name = isField ? "" : "$";

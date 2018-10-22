@@ -1,10 +1,12 @@
 package de.upb.soot.namespaces.classprovider.asm;
 
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
@@ -21,25 +23,25 @@ import org.objectweb.asm.tree.ModuleRequireNode;
 
 public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     implements de.upb.soot.namespaces.classprovider.ISourceContent {
-  @Override
-  public void resolve(de.upb.soot.core.ResolvingLevel level, de.upb.soot.views.IView view,
-      de.upb.soot.core.SootClass sootClass) {
 
+  @Override
+  public void resolve(de.upb.soot.core.ResolvingLevel level, de.upb.soot.views.IView view) {
+    JavaClassSignature cs = view.getSignatureFacotry().getClassSignature(this.signature);
     switch (level) {
       case DANGLING:
-        resolveDangling(view, sootClass);
+        resolveDangling(view, cs);
         break;
 
       case HIERARCHY:
-        resolveHierarchy(view, sootClass);
+        resolveHierarchy(view, cs);
         break;
 
       case SIGNATURES:
-        resolveSignature(view, sootClass);
+        resolveSignature(view, cs);
         break;
 
       case BODIES:
-        resolveBody(view, sootClass);
+        resolveBody(view, cs);
         break;
     }
 
@@ -52,10 +54,11 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   }
 
-  private void resolveDangling(IView view, SootClass sootClass) {
-    sootClass.setModifiers(AsmUtil.getModifiers(access & ~org.objectweb.asm.Opcodes.ACC_SUPER));
+  private void resolveDangling(IView view, JavaClassSignature cs) {
+    SootClass sootClass = (SootClass) view.getClass(cs).get();
+    // sootClass.setModifiers(AsmUtil.getModifiers(access & ~org.objectweb.asm.Opcodes.ACC_SUPER));
     // what is whit the reftype?
-    sootClass.setRefType(null);
+    // sootClass.setRefType(null);
 
     // FIXME: innerclass?
 
@@ -142,16 +145,17 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     }
   }
 
-  private void resolveHierarchy(IView view, SootClass sootClass) {
+  private void resolveHierarchy(IView view, JavaClassSignature cs) {
+    SootClass sootClass = (SootClass) view.getClass(cs).get();
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.DANGLING)) {
-      resolveDangling(view, sootClass);
+      resolveDangling(view, cs);
     }
     {
       // add super class
 
       Optional<SootClass> superClass = resolveAsmNameToSootClass(superName, view);
       if (superClass.isPresent()) {
-        sootClass.setSuperclass(superClass.get());
+        // sootClass.setSuperclass(superClass.get());
       }
     }
     {
@@ -167,9 +171,10 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   }
 
-  private void resolveSignature(de.upb.soot.views.IView view, de.upb.soot.core.SootClass sootClass) {
+  private void resolveSignature(de.upb.soot.views.IView view, JavaClassSignature cs) {
+    SootClass sootClass = (SootClass) view.getClass(cs).get();
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.HIERARCHY)) {
-      resolveHierarchy(view, sootClass);
+      resolveHierarchy(view, cs);
     }
 
     {
@@ -178,7 +183,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         String fieldName = fieldNode.name;
         EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
         Type fieldType = AsmUtil.toJimpleDesc(fieldNode.desc, view).get(0);
-        SootField sootField = new SootField(view, name, fieldType, modifiers);
+        SootField sootField = new SootField(view, null, null, null, modifiers);
       }
 
     }
@@ -196,22 +201,22 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         for (Optional<SootClass> excepetionClass : optionals) {
 
           if (excepetionClass.isPresent()) {
-            exceptions.add(excepetionClass.get());
+            exceptions.add((SootClass) excepetionClass.get());
           }
         }
 
         de.upb.soot.core.SootMethod sootMethod
-            = new de.upb.soot.core.SootMethod(view, methodName, sigTypes, retType, modifiers, exceptions);
-        sootMethod.setSource((AsmMethodSource) methodSource);
-        sootClass.addMethod(sootMethod);
+            = new de.upb.soot.core.SootMethod(view, null, null, null, null, modifiers, null, null);
+        // sootClass.addMethod(sootMethod);
       }
     }
 
   }
 
-  private void resolveBody(de.upb.soot.views.IView view, de.upb.soot.core.SootClass sootClass) {
+  private void resolveBody(de.upb.soot.views.IView view, JavaClassSignature cs) {
+    SootClass sootClass = (SootClass) view.getClass(cs).get();
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.SIGNATURES)) {
-      resolveSignature(view, sootClass);
+      resolveSignature(view, cs);
     }
   }
 

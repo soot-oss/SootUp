@@ -1,7 +1,7 @@
 package de.upb.soot;
 
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.util.NotYetImplementedException;
 
@@ -36,11 +36,11 @@ public class Scope {
    * 
    * @param classSignatures
    */
-  public Scope(ClassSignature... classSignatures) {
+  public Scope(JavaClassSignature... classSignatures) {
     // TODO Auto-generated constructor stub
   }
 
-  public Scope withStartingSignature(ClassSignature classSignature) {
+  public Scope withStartingSignature(JavaClassSignature classSignature) {
     throw new NotYetImplementedException();
   }
 }

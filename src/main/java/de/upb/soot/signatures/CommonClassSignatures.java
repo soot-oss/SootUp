@@ -12,5 +12,5 @@ public final class CommonClassSignatures {
         factory = new DefaultSignatureFactory();
     }
 
-    public static final ClassSignature JavaLangObject = factory.getClassSignature("Object", "java.lang");
+    public static final JavaClassSignature JavaLangObject = factory.getClassSignature("Object", "java.lang");
 }

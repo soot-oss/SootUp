@@ -110,13 +110,13 @@ public class Printer {
         classPrefix = classPrefix.trim();
       }
 
-      out.print(classPrefix + " " + cl.getView().quotedNameOf(cl.getClassSignature().toString()) + "");
+      out.print(classPrefix + " " + cl.getView().quotedNameOf(cl.getSignature().toString()) + "");
     }
 
     // Print extension
     {
       if (cl.hasSuperclass()) {
-        out.print(" extends " + cl.getView().quotedNameOf(cl.getSuperclass().getClassSignature().toString()) + "");
+        out.print(" extends " + cl.getView().quotedNameOf(cl.getSuperclass().get().getSignature().toString()) + "");
       }
     }
 
@@ -127,11 +127,11 @@ public class Printer {
       if (interfaceIt.hasNext()) {
         out.print(" implements ");
 
-        out.print("" + cl.getView().quotedNameOf(interfaceIt.next().getClassSignature().toString()) + "");
+        out.print("" + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
 
         while (interfaceIt.hasNext()) {
           out.print(",");
-          out.print(" " + cl.getView().quotedNameOf(interfaceIt.next().getClassSignature().toString()) + "");
+          out.print(" " + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
         }
       }
     }
@@ -168,10 +168,9 @@ public class Printer {
   }
 
   private void printMethod(SootClass cl, PrintWriter out) {
-    Iterator<SootMethod> methodIt = cl.methodIterator();
-
+    Iterator<SootMethod> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
-      if (cl.getMethodCount() != 0) {
+      if (cl.getMethods().size() != 0) {
         out.println();
         incJimpleLnNum();
       }
@@ -185,7 +184,7 @@ public class Printer {
 
         if (!Modifier.isAbstract(method.getModifiers()) && !Modifier.isNative(method.getModifiers())) {
           if (!method.hasActiveBody()) {
-            method.retrieveActiveBody(); // force loading the body
+            // method.retrieveActiveBody(); // force loading the body
             if (!method.hasActiveBody()) {
               throw new RuntimeException("method " + method.getName() + " has no active body!");
             }
@@ -312,7 +311,7 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        out.println("        catch " + body.getMethod().getView().quotedNameOf(trap.getException().getClassSignature().toString()) + " from "
+        out.println("        catch " + body.getMethod().getView().quotedNameOf(trap.getException().getSignature().toString()) + " from "
             + up.labels().get(trap.getBeginStmt()) + " to " + up.labels().get(trap.getEndStmt()) + " with "
             + up.labels().get(trap.getHandlerStmt()) + ";");
 

@@ -1,19 +1,20 @@
 package de.upb.soot.frontends.java;
 
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 
 import java.nio.file.Path;
 
 public class WalaJavaClassProvider implements IClassProvider {
 
   @Override
-  public AbstractClassSource createClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature) {
+  public AbstractClassSource createClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {
     // TODO Auto-generated method stub
     return null;
   }
@@ -37,7 +38,7 @@ public class WalaJavaClassProvider implements IClassProvider {
   }
 
   @Override
-  public SootClass resolve(SootClass sootClass) {
+  public AbstractClass resolve(AbstractClass sootClass) {
     // TODO Auto-generated method stub
     return null;
   }

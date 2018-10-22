@@ -10,5 +10,5 @@ import de.upb.soot.views.IView;
  * @author Ben Hermann
  */
 public interface ISourceContent {
-  public void resolve(de.upb.soot.core.ResolvingLevel level, IView view, de.upb.soot.core.SootClass sootClass);
+  public void resolve(de.upb.soot.core.ResolvingLevel level, IView view);
 }

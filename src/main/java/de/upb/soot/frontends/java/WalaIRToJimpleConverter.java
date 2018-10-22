@@ -5,7 +5,9 @@
 package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.Body;
+import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
+import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
@@ -30,11 +32,14 @@ import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
-import de.upb.soot.signatures.ClassSignature;
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.views.IView;
+import de.upb.soot.signatures.FieldSignature;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.JavaView;
 
+import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.cast.loader.AstClass;
 import com.ibm.wala.cast.loader.AstField;
@@ -45,7 +50,6 @@ import com.ibm.wala.cfg.AbstractCFG;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.classLoader.ShrikeClass;
 import com.ibm.wala.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.ssa.SSAArrayLengthInstruction;
 import com.ibm.wala.ssa.SSAArrayLoadInstruction;
@@ -77,6 +81,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -88,7 +93,7 @@ import java.util.Set;
  *
  */
 public class WalaIRToJimpleConverter {
-  private IView view;
+  private JavaView view;
   private INamespace srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
   private HashMap<String, String> walaToSootNameTable;
@@ -108,57 +113,68 @@ public class WalaIRToJimpleConverter {
    */
   public SootClass convertClass(AstClass walaClass) {
     AbstractClassSource classSource = createClassSource(walaClass);
-    SootClass sootClass = new SootClass(view, classSource, converModifiers(walaClass));
-    view.addSootClass(sootClass);
-    sootClass.setApplicationClass();
-    // set super class
+    JavaClassSignature classSig = classSource.getClassSignature();
+    // get super class
     IClass sc = walaClass.getSuperclass();
+    JavaClassSignature superClass = null;
     if (sc != null) {
-      SootClass superClass = null;
-      if (sc instanceof AstClass) {
-        superClass = convertClass((AstClass) sc);
-      } else if (sc instanceof ShrikeClass) {
-        superClass = convertClass((ShrikeClass) sc);
-      }
-      if (superClass != null) {
-        sootClass.setSuperclass(superClass);
+      superClass = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(sc.getName().toString()));
+    }
+
+    // get interfaces
+    Set<JavaClassSignature> interfaces = new HashSet<>();
+    for (IClass i : walaClass.getDirectInterfaces()) {
+      JavaClassSignature inter
+          = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(i.getName().toString()));
+      interfaces.add(inter);
+    }
+
+    // get outer class
+    JavaClassSignature outerClass = null;
+    if (walaClass instanceof JavaClass) {
+      JavaClass javaClass = (JavaClass) walaClass;
+      IClass ec = javaClass.getEnclosingClass();
+      if (ec != null) {
+        outerClass = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(ec.getName().toString()));
       }
     }
+
+    // add source position
+    Position position = walaClass.getSourcePosition();
+
+    // convert modifiers
+    EnumSet<Modifier> modifiers = converModifiers(walaClass);
 
     // convert fields
     Set<IField> fields = HashSetFactory.make(walaClass.getDeclaredInstanceFields());
     fields.addAll(walaClass.getDeclaredStaticFields());
+    Set<SootField> sootFields = new HashSet<>();
     for (IField walaField : fields) {
-      SootField sootField = convertField((AstField) walaField);
-      if (sootClass.getFieldUnsafe(sootField.getName(), sootField.getType()) == null) {
-        sootClass.addField(sootField);
-      }
+      SootField sootField = convertField(classSig, (AstField) walaField);
+      sootFields.add(sootField);
     }
-    // convert methods
-    for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
-      if (!walaMethod.isAbstract()) {
-        convertMethod(sootClass, (AstMethod) walaMethod);
-      }
-    }
-    // add source position
-    Position position = walaClass.getSourcePosition();
-    sootClass.setPosition(position);
-    return sootClass;
-  }
 
-  /**
-   * Create a dummy {@link SootClass} for walaClass read from wala's byte code front-end. This is used for java library
-   * classes used as super classes of application classes.
-   * 
-   * @param walaClass
-   * @return
-   */
-  private SootClass convertClass(ShrikeClass walaClass) {
-    String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-    ClassSignature classSignature = new DefaultSignatureFactory() {
-    }.getClassSignature(fullyQualifiedClassName);
-    SootClass cl = new SootClass(view, classSignature);
-    return cl;
+    // convert methods
+    Set<SootMethod> sootMethods = new HashSet<>();
+    new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
+            interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+
+    // create and set active body of the SootMethod
+    for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
+      SootMethod sootMethod = convertMethod(classSig, (AstMethod) walaMethod);
+      if (!walaMethod.isAbstract()) {
+        Optional<Body> body = createBody(sootMethod, (AstMethod) walaMethod);
+        if (body.isPresent()) {
+          Body b = body.get();
+          sootMethod = new SootMethod(sootMethod, b);
+        }
+        sootMethods.add(sootMethod);
+      }
+    }
+    SootClass ret
+        = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
+        interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+    return ret;
   }
 
   /**
@@ -167,35 +183,31 @@ public class WalaIRToJimpleConverter {
    * @param walaClass
    * @return
    */
-  public AbstractClassSource createClassSource(IClass walaClass) {
-    if (walaClass instanceof AstClass) {
-      AstClass cl = (AstClass) walaClass;
-      String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-      ClassSignature classSignature = new DefaultSignatureFactory() {
-      }.getClassSignature(fullyQualifiedClassName);
-      URL url = cl.getSourceURL();
-      Path sourcePath = Paths.get(url.getPath());
-      return new JavaClassSource(srcNamespace, sourcePath, classSignature);
-    }
-    if (walaClass instanceof ShrikeClass) {
-      ShrikeClass cl = (ShrikeClass) walaClass;
-      System.out.println(cl.getSourceFileName());
-    }
-    return null;
+  public AbstractClassSource createClassSource(AstClass walaClass) {
+    String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
+    JavaClassSignature classSignature = new DefaultSignatureFactory() {
+    }.getClassSignature(fullyQualifiedClassName);
+    URL url = walaClass.getSourceURL();
+    Path sourcePath = Paths.get(url.getPath());
+    return new JavaClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   /**
    * Convert a wala {@link AstField} to {@link SootField}.
-   * 
+   *
+   * @param klass
+   *          the class owns the field
    * @param walaField
+   *          the wala field
    * @return A SootField object converted from walaField.
    */
-  public SootField convertField(AstField walaField) {
+  public SootField convertField(JavaClassSignature classSig, AstField walaField) {
     Type type = convertType(walaField.getFieldTypeReference());
-    walaField.isFinal();
-    String name = walaField.getName().toString();
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
-    SootField sootField = new SootField(view, name, type, modifiers);
+    FieldSignature signature
+        = view.getSignatureFacotry().getFieldSignature(walaField.getName().toString(), classSig, type.toString());
+    SootField sootField
+        = new SootField(view, classSig, signature, view.getSignatureFacotry().getTypeSignature(type.toString()), modifiers);
     return sootField;
   }
 
@@ -207,47 +219,38 @@ public class WalaIRToJimpleConverter {
    * @param walaMethod
    *          the walMethod to be converted
    */
-  public SootMethod convertMethod(SootClass sootClass, AstMethod walaMethod) {
+  public SootMethod convertMethod(JavaClassSignature classSig, AstMethod walaMethod) {
     // create SootMethond instance
-    String name = walaMethod.getName().toString();
-    List<Type> paraTypes = new ArrayList<>();
+    List<TypeSignature> paraTypes = new ArrayList<>();
+    List<String> sigs = new ArrayList<>();
     for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
       Type paraType = convertType(walaMethod.getParameterType(i));
-      paraTypes.add(paraType);
+      paraTypes.add(this.view.getSignatureFacotry().getTypeSignature(paraType.toString()));
+      sigs.add(paraType.toString());
     }
     Type returnType = convertType(walaMethod.getReturnType());
-    EnumSet<Modifier> modifier = convertModifiers(walaMethod);
 
-    List<SootClass> thrownExceptions = new ArrayList<>();
+    EnumSet<Modifier> modifiers = convertModifiers(walaMethod);
+
+    List<JavaClassSignature> thrownExceptions = new ArrayList<>();
     try {
       for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
         String exceptionName = convertClassNameFromWala(exception.getName().toString());
-        if (!view.getSootClass(new DefaultSignatureFactory() {
-        }.getClassSignature(exceptionName)).isPresent()) {
-          // create exception class if it doesn't exist yet in the view.
-          SootClass exceptionClass = new SootClass(view, new DefaultSignatureFactory().getClassSignature(exceptionName));
-          view.addSootClass(exceptionClass);
-          thrownExceptions.add(exceptionClass);
-        }
+        JavaClassSignature exceptionSig = this.view.getSignatureFacotry().getClassSignature(exceptionName);
+        thrownExceptions.add(exceptionSig);
       }
     } catch (UnsupportedOperationException e) {
       e.printStackTrace();
     } catch (InvalidClassFileException e) {
       e.printStackTrace();
     }
-    SootMethod sootMethod = new SootMethod(view, name, paraTypes, returnType, modifier, thrownExceptions);
-    sootClass.addMethod(sootMethod);
-    // create and set active body of the SootMethod
-    Optional<Body> body = createBody(sootMethod, walaMethod);
-    if (body.isPresent()) {
-      sootMethod.setPhantom(false);
-      sootMethod.setActiveBody(body.get());
-    } else {
-      sootMethod.setPhantom(true);
-    }
     // add debug info
     DebuggingInformation debugInfo = walaMethod.debugInfo();
-    sootMethod.setDebugInfo(debugInfo);
+    MethodSignature methodSig = this.view.getSignatureFacotry().getMethodSignature(walaMethod.getName().toString(), classSig,
+        returnType.toString(), sigs);
+    WALAIRMethodSource methodSource = new WALAIRMethodSource(methodSig);
+    SootMethod sootMethod = new SootMethod(view, classSig, methodSource, paraTypes,
+        this.view.getSignatureFacotry().getTypeSignature(returnType.toString()), modifiers, thrownExceptions, debugInfo);
     return sootMethod;
   }
 
@@ -283,7 +286,7 @@ public class WalaIRToJimpleConverter {
           return NullType.getInstance();
         } else {
           String className = convertClassNameFromWala(type.getName().toString());
-          return new RefType(view, className);
+          return view.getRefType(this.view.getSignatureFacotry().getClassSignature(className));
         }
       }
     }
@@ -407,8 +410,9 @@ public class WalaIRToJimpleConverter {
 
         LocalGenerator localGenerator = new LocalGenerator(body);
         if (!sootMethod.isStatic()) {
-          RefType thisType = sootMethod.getDeclaringClass().getType();
-          Local thisLocal = localGenerator.generateLocal(sootMethod.getDeclaringClass().getType());
+
+          RefType thisType = sootMethod.getDeclaringClass().get().getType();
+          Local thisLocal = localGenerator.generateLocal(sootMethod.getDeclaringClass().get().getType());
           body.addLocal(thisLocal);
           body.addStmt(Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType)));
         }

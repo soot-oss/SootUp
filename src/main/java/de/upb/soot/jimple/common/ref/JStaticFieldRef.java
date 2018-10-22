@@ -30,7 +30,7 @@ public class JStaticFieldRef implements FieldRef {
 
   @Override
   public String toString() {
-    return field.getSignature();
+    return field.toString();
   }
 
   @Override

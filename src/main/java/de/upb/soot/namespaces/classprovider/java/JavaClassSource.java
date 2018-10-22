@@ -2,7 +2,7 @@ package de.upb.soot.namespaces.classprovider.java;
 
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 
 import java.nio.file.Path;
 
@@ -13,7 +13,7 @@ import java.nio.file.Path;
  */
 public class JavaClassSource extends AbstractClassSource {
 
-  public JavaClassSource(INamespace srcNamespace, Path sourcePath, ClassSignature classSignature) {
+  public JavaClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {
     super(srcNamespace, sourcePath, classSignature);
   }
 }

@@ -64,7 +64,7 @@ public class AbstractTrap implements Trap, Serializable {
 
   private void writeObject(ObjectOutputStream out) throws IOException {
     out.defaultWriteObject();
-    out.writeObject(exception.getName());
+    out.writeObject(exception.getSignature().getFullyQualifiedName());
   }
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
@@ -76,14 +76,17 @@ public class AbstractTrap implements Trap, Serializable {
     this.unitBoxes = Collections.unmodifiableList(Arrays.asList(beginStmtBox, endStmtBox, handlerStmtBox));
   }
 
+  @Override
   public IStmt getBeginStmt() {
     return beginStmtBox.getStmt();
   }
 
+  @Override
   public IStmt getEndStmt() {
     return endStmtBox.getStmt();
   }
 
+  @Override
   public IStmt getHandlerStmt() {
     return handlerStmtBox.getStmt();
   }
@@ -112,6 +115,7 @@ public class AbstractTrap implements Trap, Serializable {
     }
   }
 
+  @Override
   public SootClass getException() {
     return exception;
   }

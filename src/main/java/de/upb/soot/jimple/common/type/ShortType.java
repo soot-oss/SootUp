@@ -27,6 +27,7 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
 
 /**
  * Soot representation of the Java built-in type 'short'. Implemented as a singleton.
@@ -60,7 +61,7 @@ public class ShortType extends PrimType {
 
   @Override
   public String toString() {
-    return "short";
+    return PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE.toString();
   }
 
   @Override

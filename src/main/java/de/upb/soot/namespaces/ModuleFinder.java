@@ -1,10 +1,10 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.core.SootClass;
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModuleDecoratorClassSignature;
 import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
@@ -232,7 +232,7 @@ public class ModuleFinder {
   }
 
   private String getModuleName(AbstractClassSource moduleInfoSource) throws ClassResolvingException {
-    SootClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
+    AbstractClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
     if (!(moduleInfoClass instanceof SootModuleInfo)) {
       throw new ClassResolvingException("Class is named module-info but does not reify to SootModuleInfo");
     }
@@ -248,7 +248,7 @@ public class ModuleFinder {
     // add the module name, which was unknown before
     // moduleInfoSource.setClassSignature();
     ModuleSignature moduleSignature = ModuleSignatureFactory.getModuleSignature(moduleName);
-    ClassSignature sig = new ModuleDecoratorClassSignature(ModuleSignatureFactory.MODULE_INFO_CLASS, moduleSignature);
+    JavaClassSignature sig = new ModuleDecoratorClassSignature(ModuleSignatureFactory.MODULE_INFO_CLASS, moduleSignature);
     moduleInfoSource.setClassSignature(sig);
   }
 

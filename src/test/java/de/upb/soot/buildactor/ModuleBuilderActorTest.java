@@ -2,11 +2,11 @@ package de.upb.soot.buildactor;
 
 import static org.junit.Assert.assertTrue;
 
-import de.upb.soot.core.SootClass;
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 
 import java.util.Optional;
 
@@ -41,13 +41,13 @@ public class ModuleBuilderActorTest {
     de.upb.soot.views.IView iView = createNewScene();
 
     // FIXME: this casting is so ugly
-    final ClassSignature sig
+    final JavaClassSignature sig
         = new de.upb.soot.signatures.ModuleSignatureFactory().getClassSignature("module-info", "", "de.upb.mod");
     Optional<AbstractClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
 
     assertTrue(source.isPresent());
 
-    Optional<SootClass> result = stuffAViewNeeds.reifyClass(source.get(), iView);
+    Optional<AbstractClass> result = stuffAViewNeeds.reifyClass(source.get(), iView);
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
   }
@@ -56,13 +56,13 @@ public class ModuleBuilderActorTest {
   public void resolveMessageModuleInfoTest() throws Exception {
     de.upb.soot.views.IView iView = createNewScene();
 
-    final ClassSignature sig
+    final JavaClassSignature sig
         = (new de.upb.soot.signatures.ModuleSignatureFactory()).getClassSignature("module-info", "", "de.upb.mod");
     Optional<AbstractClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
 
     assertTrue(source.isPresent());
 
-    Optional<SootClass> result = stuffAViewNeeds.reifyClass(source.get(), iView);
+    Optional<AbstractClass> result = stuffAViewNeeds.reifyClass(source.get(), iView);
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
     result = stuffAViewNeeds.resolveClass(source.get(), iView);

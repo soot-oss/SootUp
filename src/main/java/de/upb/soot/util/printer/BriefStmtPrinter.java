@@ -28,20 +28,24 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   public void method(SootMethod m) {
     handleIndent();
     if (m.isStatic()) {
-      output.append(m.declaringClass().getName());
+      if (m.getDeclaringClass().isPresent()) {
+        output.append(m.getDeclaringClass().get().getName());
+      }
       literal(".");
     }
-    output.append(m.name());
+    output.append(m.getSignature().name);
   }
 
   @Override
   public void field(SootField f) {
     handleIndent();
     if (f.isStatic()) {
-      output.append(f.getDeclaringClass().getName());
+      if (f.getDeclaringClass().isPresent()) {
+        output.append(f.getDeclaringClass().get().getName());
+      }
       literal(".");
     }
-    output.append(f.getName());
+    output.append(f.getSignature().name);
   }
 
   @Override

@@ -50,10 +50,10 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     super(Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
     if (!method.getView().getOptions().ignore_resolution_errors()) {
       // Check that the method's class is resolved enough
-      method.declaringClass().checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
+      method.getDeclaringClass().get().checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
       // now check if the class is valid
-      if (method.declaringClass().isInterface()) {
-        SootClass sc = method.declaringClass();
+      if (method.getDeclaringClass().get().isInterface()) {
+        SootClass sc = method.getDeclaringClass().get();
       }
     }
 

@@ -4,19 +4,15 @@ import de.upb.soot.Options;
 import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
-import de.upb.soot.util.ArrayNumberer;
-import de.upb.soot.util.StringNumberer;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -28,26 +24,27 @@ import java.util.stream.Stream;
  *
  */
 public interface IView {
+
   /**
-   * Returns all classes in the view. The objects returned here are immutable.
+   * Return all classes in the view.
    * 
-   * @return A list of classes
+   * @return
    */
-  List<SootClass> getSootClasses();
+  Collection<AbstractClass> getClasses();
 
   /**
    * Returns a stream of classes in the view.
    * 
    * @return A stream of classes
    */
-  Stream<SootClass> classes();
+  Stream<AbstractClass> classes();
 
   /**
    * Return a class with given signature.
    * 
    * @return A class with given signature.
    */
-  Optional<SootClass> getSootClass(ClassSignature signature);
+  Optional<AbstractClass> getClass(JavaClassSignature signature);
 
   /**
    * Provides the call graph using the default algorithm.
@@ -80,40 +77,45 @@ public interface IView {
   Optional<Scope> getScope();
 
   /**
-   * Add a SootClass object to this view.
+   * Returns the {@link RefType} with given class Signature from the view. If there is no RefType with given className
+   * exists, create a new instance.
+   * 
+   * @param className
+   * @return
    */
-  void addSootClass(SootClass klass);
+  RefType getRefType(TypeSignature classSignature);
 
-  ArrayNumberer<SootField> getFieldNumberer();
+  /**
+   * Return the {@link Type} wtih given signature from the view. If there is no Type with given signature exists, create a
+   * new instance.
+   * 
+   * @param signature
+   * @return
+   */
+  Type getType(TypeSignature signature);
 
-  // as discussed getThe SignatureFactor
+  /**
+   * Returns the {@link SignatureFactory} for this view.
+   * 
+   * @return
+   */
   SignatureFactory getSignatureFacotry();
+
+  /**
+   * Return the {@link Options} of this view.
+   * 
+   * @return
+   */
+  Options getOptions();
+
+  /**
+   * Add given class to the view.
+   * 
+   * @param klass
+   */
+  void addClass(AbstractClass klass);
 
   boolean doneResolving();
 
-  StringNumberer getSubSigNumberer();
-
-  void addRefType(RefType refType);
-
-  List<SootField> getClassNumberer();
-
   String quotedNameOf(String name);
-
-  boolean allowsPhantomRefs();
-
-  ArrayNumberer<SootMethod> getMethodNumberer();
-
-  List<Local> getLocalNumberer();
-
-  ArrayNumberer<Type> getTypeNumberer();
-
-  RefType getObjectType();
-
-  // TODO. remove references to this method later
-  SootClass getSootClass(String className);
-
-  RefType getRefType(String className);
-
-  Options getOptions();
-
 }

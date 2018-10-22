@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces.classprovider.asm;
 
-import de.upb.soot.core.SootClass;
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 
@@ -14,7 +14,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
   @Override
   public de.upb.soot.namespaces.classprovider.AbstractClassSource createClassSource(
       de.upb.soot.namespaces.INamespace srcNamespace, java.nio.file.Path sourcePath,
-      de.upb.soot.signatures.ClassSignature classSignature) {
+      de.upb.soot.signatures.JavaClassSignature classSignature) {
     return new de.upb.soot.namespaces.classprovider.asm.AsmClassSource(srcNamespace, sourcePath, classSignature);
   }
 
@@ -67,7 +67,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
   }
 
   @Override
-  public SootClass reify(AbstractClassSource classSource) {
+  public AbstractClass reify(AbstractClassSource classSource) {
 
     // for modules
     if (classSource.getClassSignature().isModuleInfo()) {
@@ -79,7 +79,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
   }
 
   @Override
-  public de.upb.soot.core.SootClass resolve(de.upb.soot.core.SootClass sootClass) {
+  public AbstractClass resolve(AbstractClass sootClass) {
     AbstractClassSource classSource = sootClass.getClassSource();
     if (classSource.getClassSignature().isModuleInfo()) {
       return getSootModule(classSource, new de.upb.soot.namespaces.classprovider.asm.modules.ResolveModuleVisitor(
@@ -92,7 +92,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
 
   @Override
   public de.upb.soot.core.SootMethod resolveMethodBody(de.upb.soot.core.SootMethod sootMethod) {
-    AbstractClassSource classSource = sootMethod.declaringClass().getClassSource();
+    AbstractClassSource classSource = sootMethod.getDeclaringClass().get().getClassSource();
     if (classSource.getClassSignature().isModuleInfo()) {
       return null;
     }

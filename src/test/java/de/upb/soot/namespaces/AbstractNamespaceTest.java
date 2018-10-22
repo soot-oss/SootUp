@@ -2,7 +2,7 @@ package de.upb.soot.namespaces;
 
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -50,11 +50,11 @@ public abstract class AbstractNamespaceTest {
     return new AsmJavaClassProvider();
   }
 
-  protected void testClassReceival(AbstractNamespace ns, ClassSignature sig, int minClassesFound) {
+  protected void testClassReceival(AbstractNamespace ns, JavaClassSignature sig, int minClassesFound) {
     testClassReceival(ns, sig, minClassesFound, -1);
   }
 
-  protected void testClassReceival(AbstractNamespace ns, ClassSignature sig, int minClassesFound, int maxClassesFound) {
+  protected void testClassReceival(AbstractNamespace ns, JavaClassSignature sig, int minClassesFound, int maxClassesFound) {
     final Optional<AbstractClassSource> clazz = ns.getClassSource(sig);
 
     Assert.assertTrue(clazz.isPresent());

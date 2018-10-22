@@ -1,13 +1,15 @@
 package de.upb.soot.core;
 
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.views.IView;
-
 import com.google.common.collect.Sets;
+
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.signatures.ISignature;
+import de.upb.soot.signatures.ModuleSignature;
+import de.upb.soot.views.IView;
 
 import java.util.HashSet;
 
-public class SootModuleInfo extends SootClass {
+public class SootModuleInfo extends AbstractClass {
 
   /**
    * 
@@ -50,7 +52,7 @@ public class SootModuleInfo extends SootClass {
     }
   }
 
-  private String name;
+  private ModuleSignature moduleSignature;
 
   private HashSet<ModuleReference> requiredModules = new HashSet<>();
 
@@ -58,7 +60,7 @@ public class SootModuleInfo extends SootClass {
 
   private HashSet<PackageReference> openedPackages = new HashSet<>();
 
-  private HashSet<SootClass> usedServices = new HashSet<>();
+  private HashSet<AbstractClass> usedServices = new HashSet<>();
 
   // FIXME: how to create automatic modules
   private boolean isAutomaticModule;
@@ -69,23 +71,19 @@ public class SootModuleInfo extends SootClass {
    * 
    * @param cs
    *          the ClassSource that was used to create this module-info
-   * @param name
-   *          the module name
+   * @param moduleSignature
+   *          the moduleSignature
    * @param access
    *          the module access modifier
    * @param version
    *          the module's version
    */
-  public SootModuleInfo(IView view, AbstractClassSource cs, String name, int access, String version) {
+
+  public SootModuleInfo(IView view, AbstractClassSource cs, ModuleSignature moduleSignature, int access, String version) {
     super(view, cs);
-    this.name = name;
+    this.moduleSignature = moduleSignature;
     this.accessModifier = access;
     // FIXME: add code
-  }
-
-  @Override
-  public String getName() {
-    return name;
   }
 
   public void addRequire(SootModuleInfo module, int access, String version) {
@@ -103,16 +101,26 @@ public class SootModuleInfo extends SootClass {
     this.openedPackages.add(packageReference);
   }
 
-  public void addUse(SootClass service) {
+  public void addUse(AbstractClass service) {
     this.usedServices.add(service);
   }
 
   // FIXME: add here
-  public void addProvide(String service, Iterable<SootClass> providers) {
+  public void addProvide(String service, Iterable<AbstractClass> providers) {
   }
 
   public boolean isAutomaticModule() {
     return isAutomaticModule;
+  }
+
+  @Override
+  public String getName() {
+    return moduleSignature.moduleName;
+  }
+
+  @Override
+  public ISignature getSignature() {
+    return moduleSignature;
   }
 
 }

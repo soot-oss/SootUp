@@ -1,6 +1,26 @@
 package de.upb.soot.views;
 
 import de.upb.soot.Project;
+import de.upb.soot.jimple.common.type.BooleanType;
+import de.upb.soot.jimple.common.type.ByteType;
+import de.upb.soot.jimple.common.type.CharType;
+import de.upb.soot.jimple.common.type.DoubleType;
+import de.upb.soot.jimple.common.type.FloatType;
+import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.LongType;
+import de.upb.soot.jimple.common.type.NullType;
+import de.upb.soot.jimple.common.type.ShortType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.common.type.UnknownType;
+import de.upb.soot.jimple.common.type.VoidType;
+import de.upb.soot.signatures.ArrayTypeSignature;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.NullTypeSignature;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.VoidTypeSignature;
 
 import java.util.HashSet;
 
@@ -86,4 +106,47 @@ public class JavaView extends AbstractView {
     this.reservedNames.add("dynamicinvoke");
     this.reservedNames.add("strictfp");
   }
+
+  @Override
+  public SignatureFactory getSignatureFacotry() {
+    return new DefaultSignatureFactory();
+  }
+
+  @Override
+  public Type getType(TypeSignature signature) {
+    if (signature instanceof PrimitiveTypeSignature) {
+      if (signature.equals(PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE)) {
+        return ByteType.getInstance();
+      } else if (signature.equals(PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE)) {
+        return ShortType.getInstance();
+      } else if (signature.equals(PrimitiveTypeSignature.INT_TYPE_SIGNATURE)) {
+        return IntType.getInstance();
+      } else if (signature.equals(PrimitiveTypeSignature.LONG_TYPE_SIGNATURE)) {
+        return LongType.getInstance();
+      } else if (signature.equals(PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE)) {
+        return FloatType.getInstance();
+      } else if (signature.equals(PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE)) {
+        return DoubleType.getInstance();
+      } else if (signature.equals(PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE)) {
+        return BooleanType.getInstance();
+      } else if (signature.equals(PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE)) {
+        return CharType.getInstance();
+      } else {
+        throw new RuntimeException("Unsupported PrimitiveTypeSignature: " + signature.toString());
+      }
+    }
+    else if (signature instanceof VoidTypeSignature) {
+      return VoidType.getInstance();
+    } else if (signature instanceof NullTypeSignature) {
+      return NullType.getInstance();
+    } else if (signature instanceof JavaClassSignature) {
+      return getRefType(signature);
+    } else if (signature instanceof ArrayTypeSignature) {
+      // TODO:
+      throw new RuntimeException("Unsupported ArrayTypeSignature: " + signature.toString());
+    } else {
+      return UnknownType.getInstance();
+    }
+  }
+
 }

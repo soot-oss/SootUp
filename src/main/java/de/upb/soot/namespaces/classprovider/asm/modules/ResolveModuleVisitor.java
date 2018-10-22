@@ -1,5 +1,6 @@
 package de.upb.soot.namespaces.classprovider.asm.modules;
 
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 
@@ -55,7 +56,7 @@ public class ResolveModuleVisitor extends org.objectweb.asm.ModuleVisitor {
   }
 
   private de.upb.soot.core.SootModuleInfo resolveModule(String module) {
-    de.upb.soot.signatures.ClassSignature moduleSignature
+    de.upb.soot.signatures.JavaClassSignature moduleSignature
         = moduleSignatureFactory.getClassSignature("module-info", "", module);
 
     return (de.upb.soot.core.SootModuleInfo) classProvider.resolveSootClass(moduleSignature);
@@ -68,12 +69,12 @@ public class ResolveModuleVisitor extends org.objectweb.asm.ModuleVisitor {
     return java.util.Arrays.stream(modules).map(p -> resolveModule(p)).collect(java.util.stream.Collectors.toList());
   }
 
-  private de.upb.soot.core.SootClass resolveService(String service) {
+  private AbstractClass resolveService(String service) {
 
     return classProvider.resolveSootClass(moduleSignatureFactory.getClassSignature(service));
   }
 
-  private Iterable<de.upb.soot.core.SootClass> resolveServices(String[] providers) {
+  private Iterable<AbstractClass> resolveServices(String[] providers) {
     if (providers == null) {
       return java.util.Collections.emptyList();
     }

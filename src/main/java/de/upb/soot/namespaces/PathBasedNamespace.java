@@ -2,7 +2,7 @@ package de.upb.soot.namespaces;
 
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.Utils;
 
@@ -64,7 +64,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
   }
 
-  protected Optional<AbstractClassSource> getClassSourceInternal(ClassSignature signature, Path path) {
+  protected Optional<AbstractClassSource> getClassSourceInternal(JavaClassSignature signature, Path path) {
     Path pathToClass = path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
 
     if (!Files.exists(pathToClass)) {
@@ -86,7 +86,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    public Optional<AbstractClassSource> getClassSource(ClassSignature signature) {
+    public Optional<AbstractClassSource> getClassSource(JavaClassSignature signature) {
       return getClassSourceInternal(signature, path);
     }
   }
@@ -98,7 +98,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    public Optional<AbstractClassSource> getClassSource(ClassSignature signature) {
+    public Optional<AbstractClassSource> getClassSource(JavaClassSignature signature) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
         return getClassSourceInternal(signature, archiveRoot);
@@ -108,7 +108,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    protected Collection<AbstractClassSource> getClassSources(SignatureFactory factory) {
+    public Collection<AbstractClassSource> getClassSources(SignatureFactory factory) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
         return walkDirectory(archiveRoot, factory);

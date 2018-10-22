@@ -4,7 +4,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.Utils;
 
@@ -119,7 +119,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Optional<AbstractClassSource> getClassSource(ClassSignature signature) {
+  public Optional<AbstractClassSource> getClassSource(JavaClassSignature signature) {
     for (AbstractNamespace ns : cpEntries) {
       final Optional<AbstractClassSource> classSource = ns.getClassSource(signature);
       if (classSource.isPresent()) {
