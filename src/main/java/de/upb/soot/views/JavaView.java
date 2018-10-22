@@ -11,6 +11,8 @@ import de.upb.soot.jimple.common.type.LongType;
 import de.upb.soot.jimple.common.type.NullType;
 import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.common.type.UnknownType;
+import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.signatures.ArrayTypeSignature;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
@@ -18,6 +20,7 @@ import de.upb.soot.signatures.NullTypeSignature;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.VoidTypeSignature;
 
 import java.util.HashSet;
 
@@ -132,8 +135,9 @@ public class JavaView extends AbstractView {
         throw new RuntimeException("Unsupported PrimitiveTypeSignature: " + signature.toString());
       }
     }
-
-    else if (signature instanceof NullTypeSignature) {
+    else if (signature instanceof VoidTypeSignature) {
+      return VoidType.getInstance();
+    } else if (signature instanceof NullTypeSignature) {
       return NullType.getInstance();
     } else if (signature instanceof JavaClassSignature) {
       return getRefType(signature);
@@ -141,7 +145,7 @@ public class JavaView extends AbstractView {
       // TODO:
       throw new RuntimeException("Unsupported ArrayTypeSignature: " + signature.toString());
     } else {
-      throw new RuntimeException("Unsupported TypeSignature: " + signature.toString());
+      return UnknownType.getInstance();
     }
   }
 
