@@ -33,6 +33,7 @@ import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
 import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.JavaView;
 
@@ -47,7 +48,6 @@ import com.ibm.wala.cfg.AbstractCFG;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.classLoader.ShrikeClass;
 import com.ibm.wala.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.ssa.SSAArrayLengthInstruction;
 import com.ibm.wala.ssa.SSAArrayLoadInstruction;
@@ -113,13 +113,14 @@ public class WalaIRToJimpleConverter {
     AbstractClassSource classSource = createClassSource(walaClass);
     // get super class
     IClass sc = walaClass.getSuperclass();
-    JavaClassSignature superClass
-        = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(sc.getName().toString()));
+    JavaClassSignature superClass = null;
+    if (sc != null) {
+      superClass = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(sc.getName().toString()));
+    }
 
     // get interfaces
     Set<JavaClassSignature> interfaces = new HashSet<>();
-    for (IClass i : walaClass.getDirectInterfaces())
-    {
+    for (IClass i : walaClass.getDirectInterfaces()) {
       JavaClassSignature inter
           = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(i.getName().toString()));
       interfaces.add(inter);
@@ -127,8 +128,7 @@ public class WalaIRToJimpleConverter {
 
     // get outer class
     JavaClassSignature outerClass = null;
-    if(walaClass instanceof JavaClass)
-    {
+    if (walaClass instanceof JavaClass) {
       JavaClass javaClass = (JavaClass) walaClass;
       IClass ec = javaClass.getEnclosingClass();
       outerClass = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(ec.getName().toString()));
@@ -145,7 +145,7 @@ public class WalaIRToJimpleConverter {
     fields.addAll(walaClass.getDeclaredStaticFields());
     Set<SootField> sootFields = new HashSet<>();
     for (IField walaField : fields) {
-      SootField sootField = convertField((AstField) walaField);
+      SootField sootField = convertField(classSource.getClassSignature(), (AstField) walaField);
       sootFields.add(sootField);
     }
     // convert methods
@@ -156,24 +156,9 @@ public class WalaIRToJimpleConverter {
         sootMethods.add(sootMethod);
       }
     }
-    SootClass sootClass = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application,
-        Optional.ofNullable(superClass), interfaces, Optional.ofNullable(outerClass),
-        sootFields, sootMethods,
-        position, modifiers);
-    return sootClass;
-  }
-
-  /**
-   * Create a dummy {@link SootClass} for walaClass read from wala's byte code front-end. This is used for java library
-   * classes used as super classes of application classes.
-   * 
-   * @param walaClass
-   * @return
-   */
-  private SootClass convertClass(ShrikeClass walaClass) {
-    AbstractClassSource classSource = createClassSource(walaClass);
     SootClass sootClass
-        = new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Phantom, null, null, null, null, null);
+        = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
+            interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
     return sootClass;
   }
 
@@ -183,23 +168,13 @@ public class WalaIRToJimpleConverter {
    * @param walaClass
    * @return
    */
-  public AbstractClassSource createClassSource(IClass walaClass) {
+  public AbstractClassSource createClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassSignature classSignature = new DefaultSignatureFactory() {
     }.getClassSignature(fullyQualifiedClassName);
-    if (walaClass instanceof AstClass) {
-      AstClass cl = (AstClass) walaClass;
-      URL url = cl.getSourceURL();
-      Path sourcePath = Paths.get(url.getPath());
-      return new JavaClassSource(srcNamespace, sourcePath, classSignature);
-    }
-    if (walaClass instanceof ShrikeClass) {
-      ShrikeClass cl = (ShrikeClass) walaClass;
-      cl.getSourceFileName();
-      return new AbstractClassSource(srcNamespace, null, classSignature) {
-      };
-    }
-    return null;
+    URL url = walaClass.getSourceURL();
+    Path sourcePath = Paths.get(url.getPath());
+    return new JavaClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   /**
@@ -211,10 +186,12 @@ public class WalaIRToJimpleConverter {
    *          the wala field
    * @return A SootField object converted from walaField.
    */
-  public SootField convertField(AstField walaField) {
+  public SootField convertField(JavaClassSignature classSig, AstField walaField) {
     Type type = convertType(walaField.getFieldTypeReference());
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
-    SootField sootField = new SootField(view, null, type, modifiers);
+    FieldSignature signature
+        = view.getSignatureFacotry().getFieldSignature(walaField.getName().toString(), classSig, type.toString());
+    SootField sootField = new SootField(view, signature, null, modifiers);
     return sootField;
   }
 
@@ -228,7 +205,6 @@ public class WalaIRToJimpleConverter {
    */
   public SootMethod convertMethod(AstMethod walaMethod) {
     // create SootMethond instance
-    String name = walaMethod.getName().toString();
     List<Type> paraTypes = new ArrayList<>();
     for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
       Type paraType = convertType(walaMethod.getParameterType(i));
@@ -257,8 +233,7 @@ public class WalaIRToJimpleConverter {
     }
     // add debug info
     DebuggingInformation debugInfo = walaMethod.debugInfo();
-    SootMethod sootMethod
-        = new SootMethod(view, null, paraTypes, returnType, modifier, thrownExceptions, debugInfo);
+    SootMethod sootMethod = new SootMethod(view, null, null, null, modifier, null, debugInfo);
     // create and set active body of the SootMethod
     Optional<Body> body = createBody(sootMethod, walaMethod);
     if (body.isPresent()) {

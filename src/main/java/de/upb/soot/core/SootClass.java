@@ -107,7 +107,7 @@ public class SootClass extends AbstractClass implements Serializable {
     this.superClass = superClass;
     this.interfaces = interfaces;
     this.classSignature = classSource.getClassSignature();
-    this.refType = view.getRefType(classSignature.getFullyQualifiedName());
+    this.refType = view.getRefType(classSignature);
     refType.setSootClass(this);
     this.outerClass = outerClass;
     this.position = position;

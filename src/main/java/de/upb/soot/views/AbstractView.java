@@ -9,6 +9,7 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 
 import java.util.Collection;
@@ -37,7 +38,6 @@ public abstract class AbstractView implements IView {
   protected Map<ISignature, AbstractClass> classes;
   protected Set<String> reservedNames;
 
-
   public AbstractView(Project project) {
     this.project = project;
     this.options = new Options();
@@ -46,12 +46,12 @@ public abstract class AbstractView implements IView {
     this.classes = new HashMap<>();
   }
 
-
   @Override
-  public RefType getRefType(String className) {
-    Optional<RefType> op = this.refTypes.stream().filter(r -> r.getClassName().equals(className)).findFirst();
+  public RefType getRefType(TypeSignature classSignature) {
+    Optional<RefType> op
+        = this.refTypes.stream().filter(r -> r.getClassName().equals(classSignature.toString())).findFirst();
     if (!op.isPresent()) {
-      RefType refType = new RefType(this, className);
+      RefType refType = new RefType(this, classSignature.toString());
       this.refTypes.add(refType);
       return refType;
     }

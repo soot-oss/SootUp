@@ -23,6 +23,8 @@ package de.upb.soot.core;
 
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.IMethodSource;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
@@ -35,9 +37,9 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * Soot's counterpart of the source language's method concept. Soot representation of a Java method. Can be declared to
- * belong to a SootClass. Does not contain the actual code, which belongs to a Body. The getActiveBody() method points to the
- * currently-active body.
+ * Soot's counterpart of th import java.util.stream.Collectors;e source language's method concept. Soot representation of a
+ * Java method. Can be declared to belong to a SootClass. Does not contain the actual code, which belongs to a Body. The
+ * getActiveBody() method points to the currently-active body.
  *
  * Modified by Linghui Luo
  *
@@ -56,10 +58,10 @@ public class SootMethod extends SootClassMember {
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
    */
-  private final List<Type> parameterTypes;
+  private final List<TypeSignature> parameterTypes;
 
   /** Declared exceptions thrown by this method. Created upon demand. */
-  protected final List<SootClass> exceptions;
+  protected final List<JavaClassSignature> exceptions;
 
   /** Active body associated with this method. */
   protected final Body activeBody;
@@ -70,16 +72,17 @@ public class SootMethod extends SootClassMember {
   /**
    * Constructs a SootMethod object with the given attributes. It contains no active body.
    */
-  public SootMethod(IView view, IMethodSource source, List<Type> parameterTypes,
-      Type returnType, EnumSet<Modifier> modifiers, DebuggingInformation debugInfo) {
-    this(view, source, parameterTypes, returnType, modifiers, Collections.<SootClass>emptyList(), debugInfo);
+  public SootMethod(IView view, IMethodSource source, List<TypeSignature> parameterTypes,
+      TypeSignature returnType, EnumSet<Modifier> modifiers, DebuggingInformation debugInfo) {
+    this(view, source, parameterTypes, returnType, modifiers, Collections.<JavaClassSignature>emptyList(), debugInfo);
   }
 
   /**
    * Constructs a SootMethod object with the given attributes.
    */
-  public SootMethod(IView view, IMethodSource source, List<Type> parameterTypes,
-      Type returnType, EnumSet<Modifier> modifiers, List<SootClass> thrownExceptions, DebuggingInformation debugInfo) {
+  public SootMethod(IView view, IMethodSource source, List<TypeSignature> parameterTypes,
+      TypeSignature returnType, EnumSet<Modifier> modifiers, List<JavaClassSignature> thrownExceptions,
+      DebuggingInformation debugInfo) {
     super(view, source.getSignature(), returnType, modifiers);
     this.methodSource = source;
     this.parameterTypes = parameterTypes;
@@ -95,7 +98,7 @@ public class SootMethod extends SootClassMember {
    * @param activeBody
    */
   public SootMethod(SootMethod method, Body activeBody) {
-    super(method.getView(), method.signature, method.type, method.modifiers);
+    super(method.getView(), method.signature, method.typeSingature, method.modifiers);
     this.methodSource = method.methodSource;
     this.parameterTypes = method.parameterTypes;
     this.exceptions = method.exceptions;
@@ -112,7 +115,7 @@ public class SootMethod extends SootClassMember {
 
   /** Returns the return type of this method. */
   public Type getReturnType() {
-    return type;
+    return this.getView().getType(this.typeSingature);
   }
 
   /** Returns the number of parameters taken by this method. */
@@ -122,14 +125,16 @@ public class SootMethod extends SootClassMember {
 
   /** Gets the type of the <i>n</i>th parameter of this method. */
   public Type getParameterType(int n) {
-    return parameterTypes.get(n);
+    return this.getView().getType(parameterTypes.get(n));
   }
 
   /**
    * Returns a read-only list of the parameter types of this method.
    */
-  public List<Type> getParameterTypes() {
-    return parameterTypes == null ? Collections.<Type>emptyList() : parameterTypes;
+  public Collection<Type> getParameterTypes() {
+    Collection<Type> ret = Collections.emptySet();
+    parameterTypes.forEach(t -> ret.add(this.getView().getType(t)));
+    return ret;
   }
 
   public Body getActiveBody() {
@@ -151,9 +156,13 @@ public class SootMethod extends SootClassMember {
    */
 
   public Collection<SootClass> getExceptions() {
-    return exceptions;
+    Collection<SootClass> ret = Collections.emptySet();
+    exceptions.stream().filter(e -> this.getView().getClass(e).isPresent())
+        .forEach(e -> ret.add((SootClass) this.getView().getClass(e).get()));
+    return ret;
   }
   
+
   /**
    * Convenience method returning true if this method is abstract.
    */

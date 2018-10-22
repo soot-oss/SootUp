@@ -6,8 +6,10 @@ import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 
 import java.util.Collection;
@@ -75,13 +77,22 @@ public interface IView {
   Optional<Scope> getScope();
 
   /**
-   * Returns the {@link RefType} with given className from the view. If there is no RefType with given className exists,
-   * create a new instance.
+   * Returns the {@link RefType} with given class Signature from the view. If there is no RefType with given className
+   * exists, create a new instance.
    * 
    * @param className
    * @return
    */
-  RefType getRefType(String className);
+  RefType getRefType(TypeSignature classSignature);
+
+  /**
+   * Return the {@link Type} wtih given signature from the view. If there is no Type with given signature exists, create a
+   * new instance.
+   * 
+   * @param signature
+   * @return
+   */
+  Type getType(TypeSignature signature);
 
   /**
    * Returns the {@link SignatureFactory} for this view.

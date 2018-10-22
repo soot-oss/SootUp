@@ -5,14 +5,11 @@ import static org.junit.Assert.assertEquals;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.util.printer.Printer;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.EnumSet;
 
 import org.junit.Test;
@@ -28,8 +25,7 @@ public class SootMethodTest {
     IView view = new JavaView(null);
     RefType type = RefType.getInstance("java.lang.String");
     SootClass mainClass = new SootClass(view, null, null, null, null, null, null, null, null);
-    SootMethod dummyMainMethod = new SootMethod(view, null, Arrays.asList(new Type[] { type }),
-        VoidType.getInstance(), EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), null);
+    SootMethod dummyMainMethod = new SootMethod(view, null, null, null, EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), null);
 
     // assertEquals("<MainClass: void main(java.lang.String)>", dummyMainMethod.getSignature());
 

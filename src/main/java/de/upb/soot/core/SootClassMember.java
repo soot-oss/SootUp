@@ -21,8 +21,8 @@ package de.upb.soot.core;
  * #L%
  */
 
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.AbstractClassMemberSignature;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 
 import java.io.Serializable;
@@ -41,15 +41,16 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
   protected boolean isDeclared = false;
   protected SootClass declaringClass;
 
-  protected final Type type;
+  protected final TypeSignature typeSingature;
   protected final AbstractClassMemberSignature signature;
   protected final EnumSet<Modifier> modifiers;
 
   /** Constructor. */
-  public SootClassMember(IView view, AbstractClassMemberSignature siganture, Type type, EnumSet<Modifier> modifiers) {
+  public SootClassMember(IView view, AbstractClassMemberSignature siganture, TypeSignature type,
+      EnumSet<Modifier> modifiers) {
     super(view);
     this.signature = siganture;
-    this.type = type;
+    this.typeSingature = type;
     this.modifiers = modifiers;
 
   }
@@ -119,7 +120,7 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
    */
   // TODO: check whether modifiers.hashcode() does what its meant for; former: "modifiers"/int bit flags representing the set
   public int equivHashCode() {
-    return type.hashCode() * 101 + modifiers.hashCode() * 17 + signature.hashCode();
+    return typeSingature.hashCode() * 101 + modifiers.hashCode() * 17 + signature.hashCode();
   }
 
   /** Returns the signature of this method. */

@@ -106,7 +106,7 @@ public final class AsmUtil {
               ;
             }
             String cls = desc.substring(begin, idx++);
-            baseType = view.getRefType((AsmUtil.toQualifiedName(cls)));
+            baseType = view.getRefType(view.getSignatureFacotry().getTypeSignature((AsmUtil.toQualifiedName(cls))));
             break this_type;
           default:
             throw new AssertionError("Unknown type: " + c);

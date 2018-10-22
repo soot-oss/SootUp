@@ -60,7 +60,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
     if (view == null) {
       throw new NullPointerException("View is not set for RefType");
     }
-    return view.getRefType(className);
+    return view.getRefType(view.getSignatureFacotry().getTypeSignature(className));
   }
 
   /**
