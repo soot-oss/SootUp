@@ -97,7 +97,7 @@ public class SootMethod extends SootClassMember {
 
   /**
    * Construct a SootMethod object with the attributes of given method and activeBody.
-   * 
+   *
    * @param method
    * @param activeBody
    */
@@ -143,6 +143,9 @@ public class SootMethod extends SootClassMember {
     return ret;
   }
 
+  /**
+   * Retrieves the active body for this method.
+   */
   public Body getActiveBody() {
     return this.activeBody;
   }
@@ -167,7 +170,6 @@ public class SootMethod extends SootClassMember {
         .forEach(e -> ret.add((SootClass) this.getView().getClass(e).get()));
     return ret;
   }
-  
 
   /**
    * Convenience method returning true if this method is abstract.
