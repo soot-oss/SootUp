@@ -32,8 +32,10 @@ import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.StringTokenizer;
 
 /**
@@ -72,23 +74,25 @@ public class SootMethod extends SootClassMember {
   /**
    * Constructs a SootMethod object with the given attributes. It contains no active body.
    */
-  public SootMethod(IView view, IMethodSource source, List<TypeSignature> parameterTypes,
+  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSource source, List<TypeSignature> parameterTypes,
       TypeSignature returnType, EnumSet<Modifier> modifiers, DebuggingInformation debugInfo) {
-    this(view, source, parameterTypes, returnType, modifiers, Collections.<JavaClassSignature>emptyList(), debugInfo);
+    this(view, declaringClass, source, parameterTypes, returnType, modifiers, Collections.<JavaClassSignature>emptyList(),
+        debugInfo);
   }
 
   /**
    * Constructs a SootMethod object with the given attributes.
    */
-  public SootMethod(IView view, IMethodSource source, List<TypeSignature> parameterTypes,
+  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSource source, List<TypeSignature> parameterTypes,
       TypeSignature returnType, EnumSet<Modifier> modifiers, List<JavaClassSignature> thrownExceptions,
       DebuggingInformation debugInfo) {
-    super(view, source.getSignature(), returnType, modifiers);
+    super(view, declaringClass, source.getSignature(), returnType, modifiers);
     this.methodSource = source;
     this.parameterTypes = parameterTypes;
     this.exceptions = thrownExceptions;
     this.debugInfo = debugInfo;
     this.activeBody = source.getBody(this);
+    this.activeBody.setMethod(this);
   }
 
   /**
@@ -98,12 +102,14 @@ public class SootMethod extends SootClassMember {
    * @param activeBody
    */
   public SootMethod(SootMethod method, Body activeBody) {
-    super(method.getView(), method.signature, method.typeSingature, method.modifiers);
+    super(method.getView(), method.getDeclaringClassSignature(), method.signature, method.typeSingature,
+        method.modifiers);
     this.methodSource = method.methodSource;
     this.parameterTypes = method.parameterTypes;
     this.exceptions = method.exceptions;
     this.debugInfo = method.debugInfo;
-    this.activeBody = method.activeBody;
+    this.activeBody = activeBody;
+    this.activeBody.setMethod(this);
   }
 
   /**
@@ -132,7 +138,7 @@ public class SootMethod extends SootClassMember {
    * Returns a read-only list of the parameter types of this method.
    */
   public Collection<Type> getParameterTypes() {
-    Collection<Type> ret = Collections.emptySet();
+    HashSet<Type> ret = new HashSet<Type>();
     parameterTypes.forEach(t -> ret.add(this.getView().getType(t)));
     return ret;
   }
@@ -218,8 +224,13 @@ public class SootMethod extends SootClassMember {
    * We rely on the JDK class recognition to decide if a method is JDK method.
    */
   public boolean isJavaLibraryMethod() {
-    SootClass cl = getDeclaringClass();
-    return cl.isJavaLibraryClass();
+    Optional<SootClass> op = getDeclaringClass();
+    if (op.isPresent()) {
+      SootClass cl = op.get();
+      return cl.isJavaLibraryClass();
+    } else {
+      return false;
+    }
   }
 
   /**

@@ -101,7 +101,6 @@ public class SootClass extends AbstractClass implements Serializable {
       Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
       Set<SootField> fields, Set<SootMethod> methods, Position position, EnumSet<Modifier> modifiers) {
     super(view, classSource);
-    view.addClass(this);
     this.resolvingLevel = resolvingLevel;
     this.classType = type;
     this.superClass = superClass;
@@ -114,12 +113,7 @@ public class SootClass extends AbstractClass implements Serializable {
     this.modifiers = modifiers;
     this.fields = fields;
     this.methods = methods;
-    for (SootField field : fields) {
-      field.setDeclaringClass(this);
-    }
-    for (SootMethod method : methods) {
-      method.setDeclaringClass(this);
-    }
+    view.addClass(this);
   }
 
   public void resolve(de.upb.soot.core.ResolvingLevel resolvingLevel) {
@@ -442,7 +436,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
   public boolean hasSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return superClass.isPresent();
+    return superClass.isPresent() && getSuperclass().isPresent();
   }
 
   /**
@@ -456,7 +450,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
   public boolean hasOuterClass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return outerClass.isPresent();
+    return outerClass.isPresent() && getOuterClass().isPresent();
   }
 
   /**

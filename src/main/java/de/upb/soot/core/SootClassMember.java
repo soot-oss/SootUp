@@ -22,11 +22,13 @@ package de.upb.soot.core;
  */
 
 import de.upb.soot.signatures.AbstractClassMemberSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 
 import java.io.Serializable;
 import java.util.EnumSet;
+import java.util.Optional;
 
 /**
  * Provides methods common to Soot objects belonging to classes, namely SootField and SootMethod.
@@ -38,17 +40,17 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
    * 
    */
   private static final long serialVersionUID = -7201796736790814208L;
-  protected boolean isDeclared = false;
-  protected SootClass declaringClass;
-
+  protected final JavaClassSignature declaringClassSig;
   protected final TypeSignature typeSingature;
   protected final AbstractClassMemberSignature signature;
   protected final EnumSet<Modifier> modifiers;
 
   /** Constructor. */
-  public SootClassMember(IView view, AbstractClassMemberSignature siganture, TypeSignature type,
+  public SootClassMember(IView view, JavaClassSignature declaringClass, AbstractClassMemberSignature siganture,
+      TypeSignature type,
       EnumSet<Modifier> modifiers) {
     super(view);
+    this.declaringClassSig = declaringClass;
     this.signature = siganture;
     this.typeSingature = type;
     this.modifiers = modifiers;
@@ -56,17 +58,16 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
   }
 
   /** Returns the SootClass declaring this one. */
-  public SootClass getDeclaringClass() {
-    return declaringClass;
+  public Optional<SootClass> getDeclaringClass() {
+    return this.getView().getClass(declaringClassSig).map(c -> (SootClass) c);
   }
 
+  public JavaClassSignature getDeclaringClassSignature() {
+    return this.declaringClassSig;
+  }
   /** Returns true when this object is from a phantom class. */
   public boolean isPhantom() {
-    if(declaringClass!=null) {
-      return declaringClass.isPhantomClass();
-    } else {
-      return false;
-    }
+    return this.getDeclaringClass().isPresent() && this.getDeclaringClass().get().isPhantomClass();
   }
 
   /** Convenience method returning true if this class member is protected. */
@@ -107,12 +108,7 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
 
   /** Returns true when some SootClass object declares this object. */
   public boolean isDeclared() {
-    return isDeclared;
-  }
-
-  protected void setDeclaringClass(SootClass klass) {
-    this.declaringClass = klass;
-    this.isDeclared = true;
+    return this.getView().getClass(declaringClassSig).isPresent();
   }
 
   /**
@@ -143,4 +139,5 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
   public String getName() {
     return this.signature.name;
   }
+
 }

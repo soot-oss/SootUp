@@ -92,7 +92,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
 
   @Override
   public de.upb.soot.core.SootMethod resolveMethodBody(de.upb.soot.core.SootMethod sootMethod) {
-    AbstractClassSource classSource = sootMethod.getDeclaringClass().getClassSource();
+    AbstractClassSource classSource = sootMethod.getDeclaringClass().get().getClassSource();
     if (classSource.getClassSignature().isModuleInfo()) {
       return null;
     }

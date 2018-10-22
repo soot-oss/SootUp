@@ -25,7 +25,8 @@ public class SootMethodTest {
     IView view = new JavaView(null);
     RefType type = RefType.getInstance("java.lang.String");
     SootClass mainClass = new SootClass(view, null, null, null, null, null, null, null, null);
-    SootMethod dummyMainMethod = new SootMethod(view, null, null, null, EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), null);
+    SootMethod dummyMainMethod
+        = new SootMethod(view, null, null, null, null, EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), null);
 
     // assertEquals("<MainClass: void main(java.lang.String)>", dummyMainMethod.getSignature());
 

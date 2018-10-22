@@ -140,7 +140,7 @@ public class Body implements Serializable {
    *          the method that owns this body.
    *
    */
-  public void setMethod(SootMethod method) {
+  protected void setMethod(SootMethod method) {
     this.method = method;
   }
 
@@ -391,8 +391,8 @@ public class Body implements Serializable {
   public void validate(List<ValidationException> exceptionList) {
     validate(exceptionList);
     final boolean runAllValidators
-        = this.method.declaringClass.getView().getOptions().debug()
-            || this.method.declaringClass.getView().getOptions().validate();
+        = this.method.getView().getOptions().debug()
+            || this.method.getView().getOptions().validate();
     for (BodyValidator validator : getValidators()) {
       if (!validator.isBasicValidator() && !runAllValidators) {
         continue;
@@ -407,7 +407,9 @@ public class Body implements Serializable {
 
   /** Inserts usual statements for handling this & parameters into body. */
   public void insertIdentityStmts() {
-    insertIdentityStmts(getMethod().getDeclaringClass());
+    if (getMethod().getDeclaringClass().isPresent()) {
+      insertIdentityStmts(getMethod().getDeclaringClass().get());
+    }
   }
 
   /**

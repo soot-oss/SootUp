@@ -23,6 +23,7 @@ package de.upb.soot.core;
 
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.FieldSignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 
@@ -39,17 +40,19 @@ public class SootField extends SootClassMember {
   private static final long serialVersionUID = -5101396409117866687L;
 
   /** Constructs a Soot field with the given name, type and modifiers. */
-  public SootField(IView view, FieldSignature signature, TypeSignature type, EnumSet<Modifier> modifiers) {
-    super(view, signature, type, modifiers);
+  public SootField(IView view, JavaClassSignature declaringClass, FieldSignature signature, TypeSignature type,
+      EnumSet<Modifier> modifiers) {
+    super(view, declaringClass, signature, type, modifiers);
   }
 
   public SootField(IView view, SootField field) {
-    this(view, (FieldSignature) field.signature, field.typeSingature, field.modifiers);
+    this(view, field.getDeclaringClassSignature(), (FieldSignature) field.signature, field.typeSingature,
+        field.modifiers);
   }
 
   /** Constructs a Soot field with the given name, type and no modifiers. */
-  public SootField(IView view, FieldSignature signature, TypeSignature type) {
-    this(view, signature, type, EnumSet.noneOf(Modifier.class));
+  public SootField(IView view, JavaClassSignature declaringClass, FieldSignature signature, TypeSignature type) {
+    this(view, declaringClass, signature, type, EnumSet.noneOf(Modifier.class));
   }
 
   public Type getType() {
