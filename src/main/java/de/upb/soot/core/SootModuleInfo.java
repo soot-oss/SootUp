@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.ISignature;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.views.IView;
 
@@ -18,10 +19,10 @@ public class SootModuleInfo extends AbstractClass {
 
   private class ModuleReference {
 
-    private SootModuleInfo moduleInfo;
+    private JavaClassSignature moduleInfo;
     private int accessModifier;
 
-    public ModuleReference(SootModuleInfo moduleInfo, int accessModifier) {
+    public ModuleReference(JavaClassSignature moduleInfo, int accessModifier) {
       this.moduleInfo = moduleInfo;
       this.accessModifier = accessModifier;
     }
@@ -30,9 +31,9 @@ public class SootModuleInfo extends AbstractClass {
   private class PackageReference {
     private String packageName;
     private int modifer;
-    private HashSet<SootModuleInfo> targetModules;
+    private HashSet<JavaClassSignature> targetModules;
 
-    public PackageReference(String packageName, int modifier, HashSet<SootModuleInfo> targetModules) {
+    public PackageReference(String packageName, int modifier, HashSet<JavaClassSignature> targetModules) {
       this.packageName = packageName;
       this.modifer = modifier;
       this.targetModules = targetModules;
@@ -86,17 +87,17 @@ public class SootModuleInfo extends AbstractClass {
     // FIXME: add code
   }
 
-  public void addRequire(SootModuleInfo module, int access, String version) {
+  public void addRequire(JavaClassSignature module, int access, String version) {
     ModuleReference required = new ModuleReference(module, access);
     this.requiredModules.add(required);
   }
 
-  public void addExport(String packaze, int access, Iterable<SootModuleInfo> modules) {
+  public void addExport(String packaze, int access, Iterable<JavaClassSignature> modules) {
     PackageReference packageReference = new PackageReference(packaze, access, Sets.newHashSet(modules));
     this.exportedPackages.add(packageReference);
   }
 
-  public void addOpen(String packaze, int access, Iterable<SootModuleInfo> modules) {
+  public void addOpen(String packaze, int access, Iterable<JavaClassSignature> modules) {
     PackageReference packageReference = new PackageReference(packaze, access, Sets.newHashSet(modules));
     this.openedPackages.add(packageReference);
   }
@@ -106,7 +107,7 @@ public class SootModuleInfo extends AbstractClass {
   }
 
   // FIXME: add here
-  public void addProvide(String service, Iterable<AbstractClass> providers) {
+  public void addProvide(String service, Iterable<JavaClassSignature> providers) {
   }
 
   public boolean isAutomaticModule() {

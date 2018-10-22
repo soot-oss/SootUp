@@ -14,6 +14,7 @@ import java.util.stream.StreamSupport;
  * </p>
  *
  * @author Manuel Benz created on 07.06.18
+ * @author Andreas Dann
  */
 public class Utils {
   public static <T> Stream<T> optionalToStream(Optional<T> o) {
@@ -22,5 +23,15 @@ public class Utils {
 
   public static <T> Stream<T> iteratorToStream(Iterator<T> it) {
     return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, Spliterator.ORDERED), false);
+  }
+
+  /**
+   * Turns an Optional<T> into a Stream<T> of length zero or one depending upon whether a value is present.
+   */
+  static <T> Stream<T> streamOpt(Optional<T> opt) {
+    if (opt.isPresent())
+      return Stream.of(opt.get());
+    else
+      return Stream.empty();
   }
 }

@@ -1,14 +1,12 @@
 package de.upb.soot.buildactor;
 
-import de.upb.soot.core.ResolvingLevel;
-import de.upb.soot.core.SootClass;
+import akka.actor.AbstractLoggingActor;
+import akka.actor.Props;
+
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.views.IView;
-
-import akka.actor.AbstractLoggingActor;
-import akka.actor.Props;
 
 public class ClassBuilderActor extends AbstractLoggingActor {
 
@@ -51,8 +49,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     // actually I don't want if, but dispatch based on type .. but hard for constructor calls...
 
     // FIXME: somewhere a soot class needs to be created ....
-    sootClass = new SootClass(view, ResolvingLevel.DANGLING, classSource, null, null, null, null, null, null);
-    sootClass.resolve(de.upb.soot.core.ResolvingLevel.SIGNATURES);
+    content.resolve(de.upb.soot.core.ResolvingLevel.SIGNATURES, view);
 
     sender().tell(sootClass, this.getSelf());
 
