@@ -29,7 +29,10 @@ import de.upb.soot.core.IViewResident;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.CommonClassSignatures;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 
@@ -43,7 +46,7 @@ import java.util.ArrayDeque;
 public class RefType extends RefLikeType implements IViewResident, Comparable<RefType> {
 
   /** the class name that parameterizes this RefType. */
-  private String className;
+  private TypeSignature className;
   private volatile SootClass sootClass;
   private AnySubType anySubType;
   private static IView view;
@@ -75,8 +78,6 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
     return getInstance(c.getSignature().toString());
   }
 
-  // TODO: Please change className to ClassSignature here. No use of Strings to determine classes anymore. The first few
-  // lines are a good example why.
   /**
    * Create a RefType instance for the given view.
    * 
@@ -85,20 +86,11 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
    */
   public RefType(IView view, String className) {
     RefType.view = view;
-    if (className.startsWith("[")) {
-      throw new RuntimeException("Attempt to create RefType whose name starts with [ --> " + className);
-    }
-    if (className.indexOf("/") >= 0) {
-      throw new RuntimeException("Attempt to create RefType containing a / --> " + className);
-    }
-    if (className.indexOf(";") >= 0) {
-      throw new RuntimeException("Attempt to create RefType containing a ; --> " + className);
-    }
-    this.className = className;
+    this.className = new DefaultSignatureFactory().getClassSignature(className);
   }
 
   public String getClassName() {
-    return className;
+    return className.toString();
   }
 
   @Override
@@ -111,7 +103,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
   }
 
   public void setClassName(String className) {
-    this.className = className;
+    this.className = new DefaultSignatureFactory().getClassSignature(className);
   }
 
   /**
@@ -137,7 +129,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
   @Override
   public String toString() {
-    return className;
+    return className.toString();
   }
 
   /**
@@ -145,7 +137,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
    */
   @Override
   public String toQuotedString() {
-    return this.getView().quotedNameOf(className);
+    return this.getView().quotedNameOf(className.toString());
   }
 
   @Override
@@ -168,9 +160,9 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
       // Return least common superclass
       // TODO: This is all highly suspicious. FQCNs should be resolved there through a SignatureFactory.
       SignatureFactory factory = this.getView().getSignatureFacotry();
-      SootClass thisClass = (SootClass) this.getView().getClass(factory.getClassSignature(this.className)).get();
+      SootClass thisClass = (SootClass) this.getView().getClass(factory.getClassSignature(this.className.toString())).get();
       SootClass otherClass
-          = (SootClass) this.getView().getClass(factory.getClassSignature(((RefType) other).className)).get();
+          = (SootClass) this.getView().getClass(factory.getClassSignature(((RefType) other).className.toString())).get();
 
       SootClass javalangObject = (SootClass) this.getView().getClass(CommonClassSignatures.JavaLangObject).get();
 

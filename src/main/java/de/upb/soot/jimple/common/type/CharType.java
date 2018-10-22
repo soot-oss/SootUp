@@ -27,6 +27,7 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
 
 /**
  * Soot representation of the Java built-in type 'char'. Implemented as a singleton.
@@ -55,7 +56,7 @@ public class CharType extends PrimType {
 
   @Override
   public String toString() {
-    return "char";
+    return PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE.toString();
   }
 
   @Override
