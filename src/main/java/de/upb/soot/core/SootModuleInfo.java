@@ -1,10 +1,11 @@
 package de.upb.soot.core;
 
+import com.google.common.collect.Sets;
+
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.ISignature;
+import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.views.IView;
-
-import com.google.common.collect.Sets;
 
 import java.util.HashSet;
 
@@ -51,7 +52,7 @@ public class SootModuleInfo extends AbstractClass {
     }
   }
 
-  private String name;
+  private ModuleSignature moduleSignature;
 
   private HashSet<ModuleReference> requiredModules = new HashSet<>();
 
@@ -70,8 +71,8 @@ public class SootModuleInfo extends AbstractClass {
    * 
    * @param cs
    *          the ClassSource that was used to create this module-info
-   * @param name
-   *          the module name
+   * @param moduleSignature
+   *          the moduleSignature
    * @param access
    *          the module access modifier
    * @param version
@@ -79,7 +80,7 @@ public class SootModuleInfo extends AbstractClass {
    */
   public SootModuleInfo(IView view, AbstractClassSource cs, String name, int access, String version) {
     super(view, cs);
-    this.name = name;
+    this.moduleSignature = moduleSignature;
     this.accessModifier = access;
     // FIXME: add code
   }
@@ -113,12 +114,12 @@ public class SootModuleInfo extends AbstractClass {
 
   @Override
   public String getName() {
-    return this.getName();
+    return moduleSignature.moduleName;
   }
 
   @Override
   public ISignature getSignature() {
-    return null;
+    return moduleSignature;
   }
 
 }

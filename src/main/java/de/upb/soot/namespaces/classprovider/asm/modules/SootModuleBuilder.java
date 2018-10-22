@@ -1,5 +1,7 @@
 package de.upb.soot.namespaces.classprovider.asm.modules;
 
+import de.upb.soot.signatures.ModuleSignature;
+import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.views.IView;
 
 public class SootModuleBuilder extends org.objectweb.asm.ClassVisitor {
@@ -28,7 +30,8 @@ public class SootModuleBuilder extends org.objectweb.asm.ClassVisitor {
 
   @Override
   public org.objectweb.asm.ModuleVisitor visitModule(String name, int access, String version) {
-    result = new de.upb.soot.core.SootModuleInfo(view, source, name, access, version);
+    ModuleSignature moduleSignature = new ModuleSignatureFactory().getModuleSignature(name);
+    result = new de.upb.soot.core.SootModuleInfo(view, source, moduleSignature, access, version);
 
     return visitor;
   }
