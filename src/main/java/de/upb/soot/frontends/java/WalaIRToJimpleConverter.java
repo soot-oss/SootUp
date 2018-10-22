@@ -36,6 +36,7 @@ import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.JavaView;
 
+import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.cast.loader.AstClass;
 import com.ibm.wala.cast.loader.AstField;
@@ -111,21 +112,28 @@ public class WalaIRToJimpleConverter {
   public SootClass convertClass(AstClass walaClass) {
     AbstractClassSource classSource = createClassSource(walaClass);
     // get super class
-    SootClass superClass = null;
     IClass sc = walaClass.getSuperclass();
-    if (sc != null) {
-      if (sc instanceof AstClass) {
-        superClass = convertClass((AstClass) sc);
-      } else if (sc instanceof ShrikeClass) {
-        superClass = convertClass((ShrikeClass) sc);
-      }
-    }
+    JavaClassSignature superClass
+        = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(sc.getName().toString()));
 
     // get interfaces
     Set<JavaClassSignature> interfaces = new HashSet<>();
+    for (IClass i : walaClass.getDirectInterfaces())
+    {
+      JavaClassSignature inter
+          = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(i.getName().toString()));
+      interfaces.add(inter);
+    }
 
     // get outer class
-    SootClass outerClass = null;
+    JavaClassSignature outerClass = null;
+    if(walaClass instanceof JavaClass)
+    {
+      JavaClass javaClass = (JavaClass) walaClass;
+      IClass ec = javaClass.getEnclosingClass();
+      outerClass = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(ec.getName().toString()));
+    }
+
     // add source position
     Position position = walaClass.getSourcePosition();
 
@@ -149,7 +157,7 @@ public class WalaIRToJimpleConverter {
       }
     }
     SootClass sootClass = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application,
-        Optional.ofNullable(superClass.getSignature()), interfaces, Optional.ofNullable(outerClass.getSignature()),
+        Optional.ofNullable(superClass), interfaces, Optional.ofNullable(outerClass),
         sootFields, sootMethods,
         position, modifiers);
     return sootClass;
@@ -205,8 +213,6 @@ public class WalaIRToJimpleConverter {
    */
   public SootField convertField(AstField walaField) {
     Type type = convertType(walaField.getFieldTypeReference());
-    walaField.isFinal();
-    String name = walaField.getName().toString();
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
     SootField sootField = new SootField(view, null, type, modifiers);
     return sootField;

@@ -27,6 +27,7 @@ import de.upb.soot.views.IView;
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -149,7 +150,7 @@ public class SootMethod extends SootClassMember {
    * Returns a backed list of the exceptions thrown by this method.
    */
 
-  public List<SootClass> getExceptions() {
+  public Collection<SootClass> getExceptions() {
     return exceptions;
   }
   

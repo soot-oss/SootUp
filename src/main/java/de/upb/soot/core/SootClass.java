@@ -36,6 +36,7 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -91,17 +92,14 @@ public class SootClass extends AbstractClass implements Serializable {
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, AbstractClassSource classSource, ClassType type,
       Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
-      Position position,
-      EnumSet<Modifier> modifiers) {
+      Position position, EnumSet<Modifier> modifiers) {
     this(view, resolvingLevel, classSource, type, superClass, interfaces, outerClass, new HashSet<>(), new HashSet<>(),
         position, modifiers);
   }
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, AbstractClassSource classSource, ClassType type,
       Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
-      Set<SootField> fields, Set<SootMethod> methods,
-      Position position,
-      EnumSet<Modifier> modifiers) {
+      Set<SootField> fields, Set<SootMethod> methods, Position position, EnumSet<Modifier> modifiers) {
     super(view, classSource);
     view.addClass(this);
     this.resolvingLevel = resolvingLevel;
@@ -186,11 +184,10 @@ public class SootClass extends AbstractClass implements Serializable {
   /**
    * Returns a backed Chain of fields.
    */
-  public Set<SootField> getFields() {
+  public Collection<SootField> getFields() {
     checkLevel(ResolvingLevel.SIGNATURES);
     return fields == null ? new HashSet<>() : fields;
   }
-
 
   /**
    * Returns the field of this class with the given name and type. If the field cannot be found, an exception is thrown.
@@ -281,7 +278,7 @@ public class SootClass extends AbstractClass implements Serializable {
     return null;
   }
 
-  public Set<SootMethod> getMethods() {
+  public Collection<SootMethod> getMethods() {
     checkLevel(ResolvingLevel.SIGNATURES);
     if (methods == null) {
       return Collections.emptySet();
@@ -408,7 +405,7 @@ public class SootClass extends AbstractClass implements Serializable {
   /**
    * Returns a backed Chain of the interfaces that are directly implemented by this class. (see getInterfaceCount())
    */
-  public Set<SootClass> getInterfaces() {
+  public Collection<SootClass> getInterfaces() {
     checkLevel(ResolvingLevel.HIERARCHY);
     Set<SootClass> ret = new HashSet<>();
     for (JavaClassSignature i : interfaces) {
@@ -454,11 +451,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   public Optional<SootClass> getSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    if (!superClass.isPresent() && !isPhantomClass()) {
-      throw new RuntimeException("no superclass for " + classSignature);
-    } else {
-      return Optional.ofNullable((SootClass) this.getView().getClass(superClass.get()).get());
-    }
+    return superClass.flatMap(s -> this.getView().getClass(s).map(c -> (SootClass) c));
   }
 
   public boolean hasOuterClass() {
@@ -471,11 +464,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   public Optional<SootClass> getOuterClass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    if (!outerClass.isPresent()) {
-      throw new RuntimeException("no outer class");
-    } else {
-      return Optional.ofNullable((SootClass) this.getView().getClass(outerClass.get()).get());
-    }
+    return outerClass.flatMap(s -> this.getView().getClass(s).map(c -> (SootClass) c));
   }
 
   public boolean isInnerClass() {
