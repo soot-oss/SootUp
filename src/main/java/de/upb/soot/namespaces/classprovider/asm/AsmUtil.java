@@ -10,10 +10,13 @@ import de.upb.soot.jimple.common.type.LongType;
 import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.VoidType;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 public final class AsmUtil {
 
@@ -119,4 +122,19 @@ public final class AsmUtil {
     return types;
   }
 
+  public static Iterable<Optional<JavaClassSignature>> asmIDToSignature(Iterable<String> modules, IView view) {
+    if (modules == null) {
+      return java.util.Collections.emptyList();
+    }
+    return StreamSupport.stream(modules.spliterator(), false).map(p -> resolveAsmNameToClassSignature(p, view))
+        .collect(java.util.stream.Collectors.toList());
+  }
+
+  // FIXME: double check optional here
+  public static Optional<JavaClassSignature> resolveAsmNameToClassSignature(String asmClassName, IView view) {
+    String excepetionFQName = toQualifiedName(asmClassName);
+    JavaClassSignature classSignature
+        = view.getSignatureFacotry().getClassSignature(excepetionFQName);
+    return Optional.ofNullable(classSignature);
+  }
 }

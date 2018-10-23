@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.StreamSupport;
 
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.ModuleExportNode;
@@ -89,7 +88,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         {// add exports
 
           for (ModuleExportNode exportNode : module.exports) {
-            Iterable<Optional<JavaClassSignature>> optionals = asmIDToSignature(exportNode.modules, view);
+            Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(exportNode.modules, view);
             ArrayList<JavaClassSignature> modules = new ArrayList<>();
             for (Optional<JavaClassSignature> sootClassOptional : optionals) {
               if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
@@ -104,7 +103,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         {
           /// add opens
           for (ModuleOpenNode moduleOpenNode : module.opens) {
-            Iterable<Optional<JavaClassSignature>> optionals = asmIDToSignature(moduleOpenNode.modules, view);
+            Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(moduleOpenNode.modules, view);
             ArrayList<JavaClassSignature> modules = new ArrayList<>();
             for (Optional<JavaClassSignature> sootClassOptional : optionals) {
               if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
@@ -120,7 +119,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         {
           // add requies
           for (ModuleRequireNode moduleRequireNode : module.requires) {
-            Optional<JavaClassSignature> sootClassOptional = resolveAsmNameToClassSignature(moduleRequireNode.module, view);
+            Optional<JavaClassSignature> sootClassOptional = AsmUtil.resolveAsmNameToClassSignature(moduleRequireNode.module, view);
             if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
               sootModuleInfo.addRequire(sootClassOptional.get(), moduleRequireNode.access, moduleRequireNode.version);
 
@@ -132,9 +131,9 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         {
           // add provides
           for (ModuleProvideNode moduleProvideNode : module.provides) {
-            Optional<JavaClassSignature> serviceOptional = resolveAsmNameToClassSignature(moduleProvideNode.service, view);
+            Optional<JavaClassSignature> serviceOptional = AsmUtil.resolveAsmNameToClassSignature(moduleProvideNode.service, view);
             Iterable<Optional<JavaClassSignature>> providersOptionals
-                = asmIDToSignature(moduleProvideNode.providers, view);
+                = AsmUtil.asmIDToSignature(moduleProvideNode.providers, view);
             ArrayList<JavaClassSignature> providers = new ArrayList<>();
             for (Optional<JavaClassSignature> sootClassOptional : providersOptionals) {
               if (sootClassOptional.isPresent()) {
@@ -170,14 +169,14 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     {
       // add super class
 
-      Optional<JavaClassSignature> superClass = resolveAsmNameToClassSignature(superName, view);
+      Optional<JavaClassSignature> superClass = AsmUtil.resolveAsmNameToClassSignature(superName, view);
       if (superClass.isPresent()) {
         mySuperCl = superClass;
       }
     }
     {
       // add the interfaces
-      Iterable<Optional<JavaClassSignature>> optionals = asmIDToSignature(this.interfaces, view);
+      Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(this.interfaces, view);
       for (Optional<JavaClassSignature> interfaceClass : optionals) {
 
         if (interfaceClass.isPresent()) {
@@ -220,7 +219,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         List<Type> sigTypes = AsmUtil.toJimpleDesc(methodSource.desc, view);
         Type retType = sigTypes.remove(sigTypes.size() - 1);
         List<JavaClassSignature> exceptions = new ArrayList<>();
-        Iterable<Optional<JavaClassSignature>> optionals = asmIDToSignature(methodSource.exceptions, view);
+        Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(methodSource.exceptions, view);
 
         for (Optional<JavaClassSignature> excepetionClass : optionals) {
 
@@ -250,23 +249,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     return bodyStep.bodies("dummy");
   }
 
-  private Iterable<Optional<JavaClassSignature>> asmIDToSignature(Iterable<String> modules, IView view) {
-    if (modules == null) {
-      return java.util.Collections.emptyList();
-    }
-    return StreamSupport.stream(modules.spliterator(), false).map(p -> resolveAsmNameToClassSignature(p, view))
-        .collect(java.util.stream.Collectors.toList());
-  }
-
-  // FIXME: double check optional here
-  private Optional<JavaClassSignature> resolveAsmNameToClassSignature(String asmClassName, IView view) {
-    String excepetionFQName = AsmUtil.toQualifiedName(asmClassName);
-    de.upb.soot.signatures.JavaClassSignature classSignature
-        = view.getSignatureFacotry().getClassSignature(excepetionFQName);
-    return Optional.ofNullable(classSignature);
-  }
-
-  @Override
+    @Override
   public org.objectweb.asm.MethodVisitor visitMethod(int access, String name, String desc, String signature,
       String[] exceptions) {
 

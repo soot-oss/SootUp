@@ -1,27 +1,118 @@
 package de.upb.soot.core;
 
+import com.google.common.collect.Sets;
+
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.views.IView;
 
-import com.google.common.collect.Sets;
-
+import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashSet;
 
 public class SootModuleInfo extends AbstractClass {
 
+  // implementation of StepBuilder Pattern to create SootClasses consistent
+  // http://www.svlada.com/step-builder-pattern/
+
   /**
-   * 
+   * Creates a SootClass with a fluent interfaces and enforces at compile team a clean order to ensure a consistent state of
+   * the soot class Therefore, a different Interface is returned after each step.. (therby order is enforced)
+   */
+  public interface DanglingStep extends Build {
+    HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType);
+  }
+
+  public interface HierachyStep extends Build {
+    Build hierachy(Collection<ModuleReference> requires, Collection<PackageReference> exports,
+        Collection<PackageReference> opens, Collection<JavaClassSignature> services);
+  }
+
+  public interface Build {
+    SootModuleInfo build();
+  }
+
+  public static class SootModuleInfoBuilder implements DanglingStep, HierachyStep, Build {
+    private ResolvingLevel resolvingLevel;
+    private ClassType classType;
+    private EnumSet<Modifier> modifiers;
+    private AbstractClassSource classSource;
+    private IView view;
+    private Collection<ModuleReference> requires;
+    private Collection<PackageReference> exports;
+    private Collection<PackageReference> opens;
+    private Collection<JavaClassSignature> services;
+
+    public SootModuleInfoBuilder() {
+    }
+
+    @Override
+    public HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType) {
+      this.view = view;
+      this.classSource = source;
+      this.classType = classType;
+      this.resolvingLevel = ResolvingLevel.DANGLING;
+      return this;
+    }
+
+    @Override
+    public Build hierachy(Collection<ModuleReference> requires, Collection<PackageReference> exports,
+        Collection<PackageReference> opens, Collection<JavaClassSignature> services) {
+
+      this.requires = requires;
+      this.exports = exports;
+      this.opens = opens;
+      this.services = services;
+      this.resolvingLevel = ResolvingLevel.HIERARCHY;
+      return this;
+    }
+
+    @Override
+    public SootModuleInfo build() {
+      return new SootModuleInfo(this);
+    }
+
+  }
+
+  public static DanglingStep builder() {
+    return new SootModuleInfoBuilder();
+  }
+
+  // FIXME: check if everything is here...
+  public static SootModuleInfoBuilder fromExisting(SootModuleInfo sootClass) {
+    SootModuleInfoBuilder builder = new SootModuleInfoBuilder();
+    // builder.resolvingLevel = sootClass.resolvingLevel;
+    builder.modifiers = sootClass.modifiers;
+    builder.classSource = sootClass.classSource;
+    builder.requires = sootClass.requiredModules;
+    builder.exports = sootClass.exportedPackages;
+    builder.opens = sootClass.openedPackages;
+    builder.services = sootClass.usedServices;
+    return builder;
+  }
+
+  // FIXME: add missing statementss
+  private SootModuleInfo(SootModuleInfoBuilder builder) {
+    super(builder.view, builder.classSource, Collections.emptySet());
+    this.resolvingLevel = builder.resolvingLevel;
+    this.moduleSignature = builder.classSource.getClassSignature();
+    this.modifiers = builder.modifiers;
+    builder.view.addClass(this);
+
+  }
+
+  /**
+   *
    */
   private static final long serialVersionUID = -6856798288630958622L;
 
-  private class ModuleReference {
+  public class ModuleReference {
 
     private JavaClassSignature moduleInfo;
     private int accessModifier;
+    private AbstractClassSource classSource;
 
     public ModuleReference(JavaClassSignature moduleInfo, int accessModifier) {
       this.moduleInfo = moduleInfo;
@@ -29,7 +120,7 @@ public class SootModuleInfo extends AbstractClass {
     }
   }
 
-  private class PackageReference {
+  public class PackageReference {
     private String packageName;
     private int modifer;
     private HashSet<JavaClassSignature> targetModules;
@@ -54,7 +145,8 @@ public class SootModuleInfo extends AbstractClass {
     }
   }
 
-  private ModuleSignature moduleSignature;
+  private JavaClassSignature moduleSignature;
+  private final ResolvingLevel resolvingLevel;
 
   private HashSet<ModuleReference> requiredModules = new HashSet<>();
 
@@ -62,15 +154,18 @@ public class SootModuleInfo extends AbstractClass {
 
   private HashSet<PackageReference> openedPackages = new HashSet<>();
 
-  private HashSet<AbstractClass> usedServices = new HashSet<>();
+  private HashSet<JavaClassSignature> usedServices = new HashSet<>();
 
   // FIXME: how to create automatic modules
   private boolean isAutomaticModule;
-  private int accessModifier;
+  private EnumSet<Modifier> modifiers;
+
+  // FIXME: or module Signature?
+  private String name;
 
   /**
    * Create a new SootModuleInfo.
-   * 
+   *
    * @param cs
    *          the ClassSource that was used to create this module-info
    * @param moduleSignature
@@ -78,13 +173,16 @@ public class SootModuleInfo extends AbstractClass {
    * @param access
    *          the module access modifier
    * @param version
-   *          the module's version
+   * @param resolvingLevel
    */
 
-  public SootModuleInfo(IView view, AbstractClassSource cs, ModuleSignature moduleSignature, int access, String version) {
+  public SootModuleInfo(IView view, AbstractClassSource cs, JavaClassSignature moduleSignature, int access, String version,
+      ResolvingLevel resolvingLevel) {
     super(view, cs, Collections.emptySet());
     this.moduleSignature = moduleSignature;
-    this.accessModifier = access;
+    this.resolvingLevel = resolvingLevel;
+    this.modifiers = null;
+    view.addClass(this);
     // FIXME: add code
   }
 
@@ -103,12 +201,16 @@ public class SootModuleInfo extends AbstractClass {
     this.openedPackages.add(packageReference);
   }
 
-  public void addUse(AbstractClass service) {
+  public void addUse(JavaClassSignature service) {
     this.usedServices.add(service);
   }
 
   // FIXME: add here
   public void addProvide(String service, Iterable<JavaClassSignature> providers) {
+  }
+
+  public ResolvingLevel resolvingLevel() {
+    return resolvingLevel;
   }
 
   public boolean isAutomaticModule() {
@@ -117,12 +219,12 @@ public class SootModuleInfo extends AbstractClass {
 
   @Override
   public String getName() {
-    return moduleSignature.moduleName;
+    return ((JavaClassSignature) moduleSignature).className;
   }
 
   @Override
   public ISignature getSignature() {
-    return moduleSignature;
+    return this.moduleSignature;
   }
 
 }

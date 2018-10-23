@@ -31,6 +31,8 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
    */
   @Override
   public de.upb.soot.namespaces.classprovider.ISourceContent getContent(AbstractClassSource classSource) {
+    // FIXME: maybe check here if module info file ... and create other ClassSource
+
     AsmClassSourceContent asmClassSourceContent = new AsmClassSourceContent();
     java.net.URI uri = classSource.getSourcePath().toUri();
 
