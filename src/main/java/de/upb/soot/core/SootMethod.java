@@ -92,7 +92,9 @@ public class SootMethod extends SootClassMember implements IMethod {
     this.exceptions = thrownExceptions;
     this.debugInfo = debugInfo;
     this.activeBody = source.getBody(this);
-    this.activeBody.setMethod(this);
+    if (this.activeBody != null) {
+      this.activeBody.setMethod(this);
+    }
   }
 
   /**
@@ -109,7 +111,9 @@ public class SootMethod extends SootClassMember implements IMethod {
     this.exceptions = method.exceptions;
     this.debugInfo = method.debugInfo;
     this.activeBody = activeBody;
-    this.activeBody.setMethod(this);
+    if (this.activeBody != null) {
+      this.activeBody.setMethod(this);
+    }
   }
 
   /**
