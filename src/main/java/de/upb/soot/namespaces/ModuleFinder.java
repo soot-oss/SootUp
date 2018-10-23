@@ -232,7 +232,9 @@ public class ModuleFinder {
   }
 
   private String getModuleName(AbstractClassSource moduleInfoSource) throws ClassResolvingException {
-    AbstractClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
+    // FIXME: somhow in need the module name from the source code ...
+    // AbstractClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
+    AbstractClass moduleInfoClass = null;
     if (!(moduleInfoClass instanceof SootModuleInfo)) {
       throw new ClassResolvingException("Class is named module-info but does not reify to SootModuleInfo");
     }

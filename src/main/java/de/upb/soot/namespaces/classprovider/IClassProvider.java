@@ -14,8 +14,6 @@ import java.nio.file.Path;
  */
 public interface IClassProvider {
 
-  // TODO: needed to create references to other classes ... or init the resolving process...
-  de.upb.soot.views.IView view = null;
 
   AbstractClassSource createClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature);
 
@@ -33,42 +31,5 @@ public interface IClassProvider {
    */
   de.upb.soot.namespaces.classprovider.ISourceContent getContent(AbstractClassSource classSource);
 
-  /**
-   * TODO AD: Methods the ASM classProvider may implement to resolve a class
-   *
-   */
-
-  public abstract AbstractClass reify(AbstractClassSource classSource);
-
-  public abstract AbstractClass resolve(AbstractClass sootClass);
-
-  public abstract de.upb.soot.core.SootMethod resolveMethodBody(de.upb.soot.core.SootMethod sootMethod);
-
-  /**
-   * Resolves an array of classes.
-   *
-   * @param sootClasses
-   *          signatures of the classes to resolve
-   * @return the resolved classses
-   */
-  default public Iterable<AbstractClass>
-      resolveSootClasses(de.upb.soot.signatures.JavaClassSignature[] sootClasses) {
-    if (sootClasses == null) {
-      return java.util.Collections.emptyList();
-    }
-    return java.util.Arrays.stream(sootClasses).map(p -> resolveSootClass(p)).collect(java.util.stream.Collectors.toList());
-  }
-
-  /**
-   * Resolve a SootClass.
-   *
-   * @param signature
-   *          the signature of the class to resolve
-   * @return the resolved class
-   */
-  default public AbstractClass resolveSootClass(de.upb.soot.signatures.JavaClassSignature signature) {
-    java.util.Optional<AbstractClass> moduleClass = view.getClass(signature);
-    return moduleClass.get();
-  }
 
 }
