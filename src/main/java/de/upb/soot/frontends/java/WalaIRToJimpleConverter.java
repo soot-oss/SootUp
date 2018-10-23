@@ -4,41 +4,6 @@
  */
 package de.upb.soot.frontends.java;
 
-import de.upb.soot.core.Body;
-import de.upb.soot.core.ClassType;
-import de.upb.soot.core.Modifier;
-import de.upb.soot.core.ResolvingLevel;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.basic.LocalGenerator;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.ArrayType;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.NullType;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.VoidType;
-import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.TypeSignature;
-import de.upb.soot.views.JavaView;
-
 import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.cast.loader.AstClass;
@@ -74,6 +39,40 @@ import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
+
+import de.upb.soot.core.Body;
+import de.upb.soot.core.ClassType;
+import de.upb.soot.core.Modifier;
+import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootField;
+import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.LocalGenerator;
+import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.type.ArrayType;
+import de.upb.soot.jimple.common.type.BooleanType;
+import de.upb.soot.jimple.common.type.ByteType;
+import de.upb.soot.jimple.common.type.CharType;
+import de.upb.soot.jimple.common.type.DoubleType;
+import de.upb.soot.jimple.common.type.FloatType;
+import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.LongType;
+import de.upb.soot.jimple.common.type.NullType;
+import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.ShortType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.common.type.VoidType;
+import de.upb.soot.namespaces.INamespace;
+import de.upb.soot.namespaces.JavaSourcePathNamespace;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.FieldSignature;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.views.JavaView;
 
 import java.net.URL;
 import java.nio.file.Path;
@@ -156,8 +155,12 @@ public class WalaIRToJimpleConverter {
 
     // convert methods
     Set<SootMethod> sootMethods = new HashSet<>();
-    new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
-            interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+    SootClass.DanglingStep builder = SootClass.builder();
+    SootClass sootClass = builder.dangling(view, classSource, ClassType.Application)
+        .hierachy(Optional.ofNullable(superClass), interfaces, modifiers, Optional.ofNullable(outerClass))
+        .signature(sootFields, sootMethods).bodies("").build();
+    // new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
+    // interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
 
     // create and set active body of the SootMethod
     for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
@@ -171,9 +174,16 @@ public class WalaIRToJimpleConverter {
         sootMethods.add(sootMethod);
       }
     }
-    SootClass ret
-        = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
-        interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+    //FIXME: Sry, I don't know if this is correct...
+    // SootClass ret
+    // = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
+    // interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+
+    SootClass.DanglingStep builder2 = SootClass.builder();
+    SootClass ret = builder2.dangling(view, classSource, ClassType.Application)
+        .hierachy(Optional.ofNullable(superClass), interfaces, modifiers, Optional.ofNullable(outerClass))
+        .signature(sootFields, sootMethods).bodies("").build();
+
     return ret;
   }
 
