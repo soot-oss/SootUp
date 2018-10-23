@@ -23,13 +23,14 @@ package de.upb.soot.util.printer;
 
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.MethodSignature;
 
 
 /**
@@ -65,6 +66,8 @@ public interface IStmtPrinter {
   public void local(Local jimpleLocal);
 
   public void type(Type t);
+
+  public void methodSignature(MethodSignature sig);
 
   public void method(SootMethod m);
 

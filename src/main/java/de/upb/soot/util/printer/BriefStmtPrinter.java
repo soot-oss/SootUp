@@ -10,6 +10,7 @@ import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.MethodSignature;
 
 /**
  * IStmtPrinter implementation for normal Jimple
@@ -85,6 +86,11 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   public void type(Type t) {
     handleIndent();
     output.append(t.toString());
+  }
+
+  @Override
+  public void methodSignature(MethodSignature sig) {
+    output.append(sig.toString());
   }
 
 }

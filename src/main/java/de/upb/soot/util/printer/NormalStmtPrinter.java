@@ -8,6 +8,7 @@ import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.MethodSignature;
 
 /**
  * IStmtPrinter implementation for normal (full) Jimple
@@ -59,5 +60,10 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
   public void literal(String s) {
     handleIndent();
     output.append(s);
+  }
+
+  @Override
+  public void methodSignature(MethodSignature sig) {
+    output.append(sig.toString());
   }
 }

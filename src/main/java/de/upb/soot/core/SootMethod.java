@@ -263,7 +263,7 @@ public class SootMethod extends SootClassMember implements IMethod {
     // return type + name
 
     buffer.append(this.getReturnType().toQuotedString() + " ");
-    buffer.append(this.getView().quotedNameOf(this.signature.toString()));
+    buffer.append(this.getView().quotedNameOf(this.getSignature().name));
 
     buffer.append("(");
 
@@ -272,13 +272,10 @@ public class SootMethod extends SootClassMember implements IMethod {
     // int count = 0;
     while (typeIt.hasNext()) {
       Type t = typeIt.next();
-
       buffer.append(t.toQuotedString());
-
       if (typeIt.hasNext()) {
         buffer.append(", ");
       }
-
     }
     buffer.append(")");
 

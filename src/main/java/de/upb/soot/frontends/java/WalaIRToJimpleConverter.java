@@ -14,6 +14,7 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
+import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;
@@ -157,7 +158,7 @@ public class WalaIRToJimpleConverter {
     // convert methods
     Set<SootMethod> sootMethods = new HashSet<>();
     new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
-            interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+        interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
 
     // create and set active body of the SootMethod
     for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
@@ -173,7 +174,7 @@ public class WalaIRToJimpleConverter {
     }
     SootClass ret
         = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
-        interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+            interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
     return ret;
   }
 
@@ -224,9 +225,12 @@ public class WalaIRToJimpleConverter {
     List<TypeSignature> paraTypes = new ArrayList<>();
     List<String> sigs = new ArrayList<>();
     for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
-      Type paraType = convertType(walaMethod.getParameterType(i));
-      paraTypes.add(this.view.getSignatureFacotry().getTypeSignature(paraType.toString()));
-      sigs.add(paraType.toString());
+      TypeReference type = walaMethod.getParameterType(i);
+      if (!type.equals(walaMethod.getDeclaringClass().getReference())) {
+        Type paraType = convertType(type);
+        paraTypes.add(this.view.getSignatureFacotry().getTypeSignature(paraType.toString()));
+        sigs.add(paraType.toString());
+      }
     }
     Type returnType = convertType(walaMethod.getReturnType());
 
@@ -412,7 +416,7 @@ public class WalaIRToJimpleConverter {
         if (!sootMethod.isStatic()) {
 
           RefType thisType = sootMethod.getDeclaringClass().get().getType();
-          Local thisLocal = localGenerator.generateLocal(sootMethod.getDeclaringClass().get().getType());
+          Local thisLocal = localGenerator.generateField(sootMethod.getDeclaringClass().get().getType());
           body.addLocal(thisLocal);
           body.addStmt(Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType)));
         }
@@ -468,9 +472,17 @@ public class WalaIRToJimpleConverter {
         if (!body.getMethod().isStatic()) {
           Local base = body.getThisLocal();
           MethodReference target = invokeInst.getDeclaredTarget();
-
-          // view.getSootMethod(target.getSignature());
-
+          String declaringClassSignature = convertClassNameFromWala(target.getDeclaringClass().getName().toString());
+          String returnType = convertType(target.getReturnType()).toString();
+          List<String> parameters = new ArrayList<>();
+          for (int i = 1; i < target.getNumberOfParameters(); i++) {
+            Type paraType = convertType(target.getParameterType(i));
+            parameters.add(paraType.toString());
+          }
+          MethodSignature methodSig = view.getSignatureFacotry().getMethodSignature(target.getName().toString(),
+              declaringClassSignature, returnType, parameters);
+          JSpecialInvokeExpr expr = Jimple.newSpecialInvokeExpr(view, base, methodSig);
+          return Jimple.newInvokeStmt(expr);
         }
       }
     } else if (walaInst instanceof SSAFieldAccessInstruction) {

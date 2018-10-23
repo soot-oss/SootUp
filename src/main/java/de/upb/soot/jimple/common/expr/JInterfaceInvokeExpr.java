@@ -110,10 +110,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    Optional<SootMethod> op = getMethod();
-    if (op.isPresent()) {
-      up.method(op.get());
-    }
+    up.methodSignature(method);
     up.literal("(");
 
     if (argBoxes != null) {

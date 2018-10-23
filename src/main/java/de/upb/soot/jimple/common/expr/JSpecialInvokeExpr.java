@@ -26,7 +26,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.ImmediateBox;
 import de.upb.soot.jimple.basic.Local;
@@ -37,7 +36,6 @@ import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   /**
@@ -97,10 +95,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    Optional<SootMethod> op = getMethod();
-    if (op.isPresent()) {
-      up.method(op.get());
-    }
+    up.methodSignature(method);
     up.literal("(");
 
     if (argBoxes != null) {
