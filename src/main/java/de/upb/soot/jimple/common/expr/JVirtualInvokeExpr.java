@@ -26,16 +26,17 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.core.ResolvingLevel;
-import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   /**
@@ -46,17 +47,8 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   /**
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
-  public JVirtualInvokeExpr(Value base, SootMethod method, List<? extends Value> args) {
-    super(Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
-    if (!method.getView().getOptions().ignore_resolution_errors()) {
-      // Check that the method's class is resolved enough
-      method.getDeclaringClass().get().checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
-      // now check if the class is valid
-      if (method.getDeclaringClass().get().isInterface()) {
-        SootClass sc = method.getDeclaringClass().get();
-      }
-    }
-
+  public JVirtualInvokeExpr(IView view, Value base, MethodSignature method, List<? extends Value> args) {
+    super(view, Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
@@ -65,19 +57,16 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   @Override
   public Object clone() {
     ArrayList<Value> clonedArgs = new ArrayList<Value>(getArgCount());
-
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
-
-    return new JVirtualInvokeExpr(getBase(), method, clonedArgs);
+    return new JVirtualInvokeExpr(this.getView(), getBase(), method, clonedArgs);
   }
 
   @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
-    buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + method.getSignature() + "(");
-
+    buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
         if (i != 0) {
@@ -87,9 +76,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
         buffer.append(argBoxes[i].getValue().toString());
       }
     }
-
     buffer.append(")");
-
     return buffer.toString();
   }
 
@@ -98,14 +85,15 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
    */
   @Override
   public void toString(IStmtPrinter up) {
-
     up.literal(Jimple.VIRTUALINVOKE);
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.method(method);
+    Optional<SootMethod> op = getMethod();
+    if (op.isPresent()) {
+      up.method(op.get());
+    }
     up.literal("(");
-
     if (argBoxes != null) {
       final int len = argBoxes.length;
       for (int i = 0; i < len; i++) {

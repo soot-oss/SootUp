@@ -91,6 +91,7 @@ import de.upb.soot.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
 
 import java.util.Arrays;
@@ -377,104 +378,109 @@ public class Jimple {
   /**
    * Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk.
    */
-  public static JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, List<? extends Value> args) {
-    return new JStaticInvokeExpr(method, args);
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodSignature method, List<? extends Value> args) {
+    return new JStaticInvokeExpr(view, method, args);
   }
 
-  public static JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, Value... args) {
-    return newStaticInvokeExpr(method, Arrays.asList(args));
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodSignature method, Value... args) {
+    return newStaticInvokeExpr(view, method, Arrays.asList(args));
   }
 
-  public static JStaticInvokeExpr newStaticInvokeExpr(SootMethod method, Value arg) {
-    return newStaticInvokeExpr(method, Collections.singletonList(arg));
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodSignature method, Value arg) {
+    return newStaticInvokeExpr(view, method, Collections.singletonList(arg));
   }
 
-  public static JStaticInvokeExpr newStaticInvokeExpr(SootMethod method) {
-    return newStaticInvokeExpr(method, Collections.<Value>emptyList());
-  }
-
-  /**
-   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
-   */
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
-    return new JSpecialInvokeExpr(base, method, args);
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodSignature method) {
+    return newStaticInvokeExpr(view, method, Collections.<Value>emptyList());
   }
 
   /**
    * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, Value... args) {
-    return newSpecialInvokeExpr(base, method, Arrays.asList(args));
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodSignature method,
+      List<? extends Value> args) {
+    return new JSpecialInvokeExpr(view, base, method, args);
   }
 
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method, Value arg) {
-    return newSpecialInvokeExpr(base, method, Collections.<Value>singletonList(arg));
+  /**
+   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
+   */
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodSignature method, Value... args) {
+    return newSpecialInvokeExpr(view, base, method, Arrays.asList(args));
   }
 
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(Local base, SootMethod method) {
-    return newSpecialInvokeExpr(base, method, Collections.<Value>emptyList());
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodSignature method, Value arg) {
+    return newSpecialInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
+  }
+
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodSignature method) {
+    return newSpecialInvokeExpr(view, base, method, Collections.<Value>emptyList());
   }
 
   /**
    * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod methodRef, List args)
    * grammar chunk.
    */
-  public static JDynamicInvokeExpr newDynamicInvokeExpr(SootMethod bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      SootMethod methodRef, List<? extends Value> args) {
-    return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
+  public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef,
+      List<? extends Value> bootstrapArgs,
+      MethodSignature methodRef, List<? extends Value> args) {
+    return new JDynamicInvokeExpr(view, bootstrapMethodRef, bootstrapArgs, methodRef, args);
   }
 
   /**
    * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod methodRef, List args)
    * grammar chunk.
    */
-  public static JDynamicInvokeExpr newDynamicInvokeExpr(SootMethod bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      SootMethod methodRef, int tag, List<? extends Value> args) {
-    return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
+  public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef,
+      List<? extends Value> bootstrapArgs,
+      MethodSignature methodRef, int tag, List<? extends Value> args) {
+    return new JDynamicInvokeExpr(view, bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
 
   /**
    * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
-    return new JVirtualInvokeExpr(base, method, args);
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodSignature method,
+      List<? extends Value> args) {
+    return new JVirtualInvokeExpr(view, base, method, args);
   }
 
   /**
    * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, Value... args) {
-    return newVirtualInvokeExpr(base, method, Arrays.asList(args));
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodSignature method, Value... args) {
+    return newVirtualInvokeExpr(view, base, method, Arrays.asList(args));
   }
 
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method, Value arg) {
-    return newVirtualInvokeExpr(base, method, Collections.<Value>singletonList(arg));
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodSignature method, Value arg) {
+    return newVirtualInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
   }
 
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(Local base, SootMethod method) {
-    return newVirtualInvokeExpr(base, method, Collections.<Value>emptyList());
-  }
-
-  /**
-   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
-   */
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
-    return new JInterfaceInvokeExpr(base, method, args);
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodSignature method) {
+    return newVirtualInvokeExpr(view, base, method, Collections.<Value>emptyList());
   }
 
   /**
    * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
    */
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, Value... args) {
-    return newInterfaceInvokeExpr(base, method, Arrays.asList(args));
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodSignature method,
+      List<? extends Value> args) {
+    return new JInterfaceInvokeExpr(view, base, method, args);
   }
 
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method, Value arg) {
-    return newInterfaceInvokeExpr(base, method, Collections.<Value>singletonList(arg));
+  /**
+   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar chunk.
+   */
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodSignature method, Value... args) {
+    return newInterfaceInvokeExpr(view, base, method, Arrays.asList(args));
   }
 
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, SootMethod method) {
-    return newInterfaceInvokeExpr(base, method, Collections.<Value>emptyList());
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodSignature method, Value arg) {
+    return newInterfaceInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
+  }
+
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodSignature method) {
+    return newInterfaceInvokeExpr(view, base, method, Collections.<Value>emptyList());
   }
 
   /**

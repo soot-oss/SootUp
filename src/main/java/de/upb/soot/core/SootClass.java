@@ -37,7 +37,6 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -83,7 +82,6 @@ public class SootClass extends AbstractClass implements Serializable {
   private final RefType refType;
   private final JavaClassSignature classSignature;
   private final Set<SootField> fields;
-  private final Set<SootMethod> methods;
   private final Set<JavaClassSignature> interfaces;
   private final Optional<JavaClassSignature> superClass;
   private final Optional<JavaClassSignature> outerClass;
@@ -100,7 +98,7 @@ public class SootClass extends AbstractClass implements Serializable {
   public SootClass(IView view, ResolvingLevel resolvingLevel, AbstractClassSource classSource, ClassType type,
       Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
       Set<SootField> fields, Set<SootMethod> methods, Position position, EnumSet<Modifier> modifiers) {
-    super(view, classSource);
+    super(view, classSource, methods);
     this.resolvingLevel = resolvingLevel;
     this.classType = type;
     this.superClass = superClass;
@@ -112,7 +110,6 @@ public class SootClass extends AbstractClass implements Serializable {
     this.position = position;
     this.modifiers = modifiers;
     this.fields = fields;
-    this.methods = methods;
     view.addClass(this);
   }
 
@@ -272,14 +269,6 @@ public class SootClass extends AbstractClass implements Serializable {
     return null;
   }
 
-  public Collection<SootMethod> getMethods() {
-    checkLevel(ResolvingLevel.SIGNATURES);
-    if (methods == null) {
-      return Collections.emptySet();
-    }
-    return methods;
-  }
-
   /**
    * Attempts to retrieve the method with the given name, parameters and return type. If no matching method can be found, an
    * exception is thrown.
@@ -304,7 +293,8 @@ public class SootClass extends AbstractClass implements Serializable {
       return null;
     }
 
-    for (SootMethod method : methods) {
+    for (IMethod m : methods) {
+      SootMethod method = (SootMethod) m;
       if (method.getSignature().equals(name) && parameterTypes.equals(method.getParameterTypes())
           && returnType.equals(method.getReturnType())) {
         return method;
@@ -326,7 +316,8 @@ public class SootClass extends AbstractClass implements Serializable {
       return null;
     }
 
-    for (SootMethod method : methods) {
+    for (IMethod m : methods) {
+      SootMethod method = (SootMethod) m;
       if (method.getSignature().equals(name) && parameterTypes.equals(method.getParameterTypes())) {
         if (foundMethod == null) {
           foundMethod = method;
@@ -354,7 +345,8 @@ public class SootClass extends AbstractClass implements Serializable {
       return null;
     }
 
-    for (SootMethod method : methods) {
+    for (IMethod m : methods) {
+      SootMethod method = (SootMethod) m;
       if (method.getSignature().equals(name)) {
         if (foundMethod == null) {
           foundMethod = method;

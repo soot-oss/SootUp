@@ -468,6 +468,7 @@ public class WalaIRToJimpleConverter {
         if (!body.getMethod().isStatic()) {
           Local base = body.getThisLocal();
           MethodReference target = invokeInst.getDeclaredTarget();
+
           // view.getSootMethod(target.getSignature());
 
         }

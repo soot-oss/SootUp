@@ -22,6 +22,7 @@
 package de.upb.soot.util.printer;
 
 import de.upb.soot.core.Body;
+import de.upb.soot.core.IMethod;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
@@ -168,7 +169,7 @@ public class Printer {
   }
 
   private void printMethod(SootClass cl, PrintWriter out) {
-    Iterator<SootMethod> methodIt = cl.getMethods().iterator();
+    Iterator<? extends IMethod> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       if (cl.getMethods().size() != 0) {
         out.println();
@@ -176,7 +177,7 @@ public class Printer {
       }
 
       while (methodIt.hasNext()) {
-        SootMethod method = methodIt.next();
+        SootMethod method = (SootMethod) methodIt.next();
 
         if (method.isPhantom()) {
           continue;

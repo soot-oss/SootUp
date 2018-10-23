@@ -31,10 +31,13 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.ImmediateBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   /**
@@ -45,8 +48,8 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   /**
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
-  public JSpecialInvokeExpr(Local base, SootMethod method, List<? extends Value> args) {
-    super(Jimple.newLocalBox(base), method, new ImmediateBox[args.size()]);
+  public JSpecialInvokeExpr(IView view, Local base, MethodSignature method, List<? extends Value> args) {
+    super(view, Jimple.newLocalBox(base), method, new ImmediateBox[args.size()]);
 
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
@@ -61,13 +64,13 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JSpecialInvokeExpr((Local) getBase(), method, clonedArgs);
+    return new JSpecialInvokeExpr(this.getView(), (Local) getBase(), method, clonedArgs);
   }
 
   @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
-    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + method.getSignature() + "(");
+    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
 
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
@@ -94,7 +97,10 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.method(method);
+    Optional<SootMethod> op = getMethod();
+    if (op.isPresent()) {
+      up.method(op.get());
+    }
     up.literal("(");
 
     if (argBoxes != null) {

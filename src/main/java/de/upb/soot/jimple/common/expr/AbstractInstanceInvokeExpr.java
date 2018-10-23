@@ -25,20 +25,16 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   /**
@@ -47,12 +43,9 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   private static final long serialVersionUID = 5554270441921308784L;
   protected final ValueBox baseBox;
 
-  protected AbstractInstanceInvokeExpr(ValueBox baseBox, SootMethod method, ValueBox[] argBoxes) {
-    super(method, argBoxes);
+  protected AbstractInstanceInvokeExpr(IView view, ValueBox baseBox, MethodSignature method, ValueBox[] argBoxes) {
+    super(view, method, argBoxes);
     this.baseBox = baseBox;
-    if (method.isStatic()) {
-      throw new RuntimeException("wrong static-ness");
-    }
   }
 
   public Value getBase() {
@@ -92,7 +85,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public boolean equivTo(Object o) {
-
     if (o instanceof AbstractInstanceInvokeExpr) {
       AbstractInstanceInvokeExpr ie = (AbstractInstanceInvokeExpr) o;
       if (!(baseBox.getValue().equivTo(ie.baseBox.getValue()) && getMethod().equals(ie.getMethod())
@@ -116,17 +108,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
    */
   @Override
   public int equivHashCode() {
-    return baseBox.getValue().equivHashCode() * 101 + getMethod().equivHashCode() * 17;
+    return baseBox.getValue().equivHashCode() * 101 + getMethod().hashCode() * 17;
   }
-
-  private static int sizeOfType(Type t) {
-    if (t instanceof DoubleType || t instanceof LongType) {
-      return 2;
-    } else if (t instanceof VoidType) {
-      return 0;
-    } else {
-      return 1;
-    }
-  }
-
 }

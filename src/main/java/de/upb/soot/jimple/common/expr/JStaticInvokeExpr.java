@@ -32,10 +32,13 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class JStaticInvokeExpr extends AbstractInvokeExpr {
   /**
@@ -46,13 +49,9 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   /**
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
-  public JStaticInvokeExpr(SootMethod method, List<? extends Value> args) {
-    super(method, new ValueBox[args.size()]);
-    if (!method.isStatic()) {
-      throw new RuntimeException("wrong static-ness");
-    }
+  public JStaticInvokeExpr(IView view, MethodSignature method, List<? extends Value> args) {
+    super(view, method, new ValueBox[args.size()]);
     this.method = method;
-
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
@@ -66,8 +65,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
-
-    return new JStaticInvokeExpr(method, clonedArgs);
+    return new JStaticInvokeExpr(this.getView(), method, clonedArgs);
   }
 
   /**
@@ -98,14 +96,14 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
    */
   @Override
   public int equivHashCode() {
-    return getMethod().equivHashCode();
+    return getMethod().hashCode();
   }
 
   @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
 
-    buffer.append(Jimple.STATICINVOKE + " " + method.getSignature() + "(");
+    buffer.append(Jimple.STATICINVOKE + " " + method + "(");
 
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
@@ -129,7 +127,10 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);
     up.literal(" ");
-    up.method(method);
+    Optional<SootMethod> op = getMethod();
+    if (op.isPresent()) {
+      up.method(op.get());
+    }
     up.literal("(");
 
     if (argBoxes != null) {

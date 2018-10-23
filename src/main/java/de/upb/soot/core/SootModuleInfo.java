@@ -1,12 +1,13 @@
 package de.upb.soot.core;
 
-import com.google.common.collect.Sets;
-
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.views.IView;
 
+import com.google.common.collect.Sets;
+
+import java.util.Collections;
 import java.util.HashSet;
 
 public class SootModuleInfo extends AbstractClass {
@@ -80,7 +81,7 @@ public class SootModuleInfo extends AbstractClass {
    */
 
   public SootModuleInfo(IView view, AbstractClassSource cs, ModuleSignature moduleSignature, int access, String version) {
-    super(view, cs);
+    super(view, cs, Collections.emptySet());
     this.moduleSignature = moduleSignature;
     this.accessModifier = access;
     // FIXME: add code

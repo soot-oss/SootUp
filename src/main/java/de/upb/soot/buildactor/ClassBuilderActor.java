@@ -1,5 +1,6 @@
 package de.upb.soot.buildactor;
 
+import de.upb.soot.core.IMethod;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
@@ -65,8 +66,8 @@ public class ClassBuilderActor extends AbstractLoggingActor {
       throw new IllegalStateException();
     }
 
-    for (SootMethod method : sootClass.getMethods()) {
-      //
+    for (IMethod i : sootClass.getMethods()) {
+      SootMethod method = (SootMethod) i;
       akka.actor.ActorRef methodActor
           = getContext().actorOf(de.upb.soot.buildactor.ClassBuilderActor.props(sootClass, method));
       akka.util.Timeout timeout = new akka.util.Timeout(scala.concurrent.duration.Duration.create(5, "seconds"));

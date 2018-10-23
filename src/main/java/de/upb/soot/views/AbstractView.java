@@ -8,7 +8,6 @@ import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.signatures.ISignature;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 
@@ -74,7 +73,7 @@ public abstract class AbstractView implements IView {
   }
 
   @Override
-  public Optional<AbstractClass> getClass(JavaClassSignature signature) {
+  public Optional<AbstractClass> getClass(ISignature signature) {
     return this.classes().filter(c -> c.getClassSource().getClassSignature().equals(signature)).findFirst();
   }
 

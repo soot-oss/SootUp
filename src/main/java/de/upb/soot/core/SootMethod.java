@@ -47,7 +47,7 @@ import java.util.StringTokenizer;
  *
  */
 
-public class SootMethod extends SootClassMember {
+public class SootMethod extends SootClassMember implements IMethod {
   /**
    * 
    */

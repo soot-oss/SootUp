@@ -26,34 +26,46 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.core.AbstractClass;
+import de.upb.soot.core.AbstractViewResident;
+import de.upb.soot.core.IMethod;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-public abstract class AbstractInvokeExpr implements Expr {
+public abstract class AbstractInvokeExpr extends AbstractViewResident implements Expr {
   /**
    * 
    */
   private static final long serialVersionUID = 1796920588315752175L;
-  protected SootMethod method;
+  protected MethodSignature method;
   protected final ValueBox[] argBoxes;
 
-  protected AbstractInvokeExpr(SootMethod method, ValueBox[] argBoxes) {
+  protected AbstractInvokeExpr(IView view, MethodSignature method, ValueBox[] argBoxes) {
+    super(view);
     this.method = method;
     this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
   }
 
-  public void setMethodRef(SootMethod method) {
-    this.method = method;
-  }
-
-  public SootMethod getMethod() {
-    return method;
+  public Optional<SootMethod> getMethod() {
+    JavaClassSignature signature = method.declClassSignature;
+    Optional<AbstractClass> op=this.getView().getClass(signature);
+    if(op.isPresent())
+    {
+      AbstractClass klass = op.get();
+      Optional<? extends IMethod> m = klass.getMethod(method);
+      return m.map(c -> (SootMethod) c);
+    }
+    return Optional.empty();
   }
 
   @Override
@@ -90,7 +102,7 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   @Override
   public Type getType() {
-    return method.getReturnType();
+    return this.getView().getType(method.typeSignature);
   }
 
   @Override
@@ -98,14 +110,11 @@ public abstract class AbstractInvokeExpr implements Expr {
     if (argBoxes == null) {
       return Collections.emptyList();
     }
-
     List<ValueBox> list = new ArrayList<ValueBox>();
     Collections.addAll(list, argBoxes);
-
     for (ValueBox element : argBoxes) {
       list.addAll(element.getValue().getUseBoxes());
     }
-
     return list;
   }
 

@@ -7,7 +7,7 @@ import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
@@ -44,7 +44,7 @@ public interface IView {
    * 
    * @return A class with given signature.
    */
-  Optional<AbstractClass> getClass(JavaClassSignature signature);
+  Optional<AbstractClass> getClass(ISignature signature);
 
   /**
    * Provides the call graph using the default algorithm.
