@@ -314,6 +314,48 @@ public class SignatureFactoryTest {
 
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void getTypeSignatureArray() {
+    SignatureFactory signatureFactory = new DefaultSignatureFactory();
+    TypeSignature classSignature2 = signatureFactory.getTypeSignature("java.lang.System[[]");
+  }
+
+  @Test
+  public void getTypeSignatureArray2() {
+    SignatureFactory signatureFactory = new DefaultSignatureFactory();
+    TypeSignature base = signatureFactory.getTypeSignature("int");
+
+    TypeSignature classSignature2 = signatureFactory.getTypeSignature("int[]");
+    assertTrue(classSignature2 instanceof ArrayTypeSignature);
+    assertEquals(((ArrayTypeSignature) classSignature2).dimension, 1);
+    assertEquals(((ArrayTypeSignature) classSignature2).baseType, base);
+
+  }
+
+  @Test
+  public void getTypeSignatureArray3() {
+    SignatureFactory signatureFactory = new DefaultSignatureFactory();
+    TypeSignature base = signatureFactory.getTypeSignature("int");
+
+    TypeSignature classSignature2 = signatureFactory.getTypeSignature("int[][][][][]");
+    assertTrue(classSignature2 instanceof ArrayTypeSignature);
+    assertEquals(((ArrayTypeSignature) classSignature2).dimension, 5);
+    assertEquals(((ArrayTypeSignature) classSignature2).baseType, base);
+
+  }
+
+  @Test
+  public void getTypeSignatureArray4() {
+    SignatureFactory signatureFactory = new DefaultSignatureFactory();
+    TypeSignature base = signatureFactory.getTypeSignature("java.lang.Fantasy");
+
+    TypeSignature classSignature2 = signatureFactory.getTypeSignature("java.lang.Fantasy[]");
+    assertTrue(classSignature2 instanceof ArrayTypeSignature);
+    assertEquals(((ArrayTypeSignature) classSignature2).dimension, 1);
+    assertEquals(((ArrayTypeSignature) classSignature2).baseType, base);
+
+  }
+
   @Test(expected = NullPointerException.class)
   public void checkNullPackage() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();

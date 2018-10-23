@@ -81,42 +81,83 @@ public class DefaultSignatureFactory implements SignatureFactory {
     return getClassSignature(className, packageName);
   }
 
-
-
   /**
-   * Returns a TypeSignature which can be a {@link JavaClassSignature},{@link PrimitiveTypeSignature}, {@link VoidTypeSignature},
-   * or {@link NullTypeSignature}.
+   * Returns a TypeSignature which can be a {@link JavaClassSignature},{@link PrimitiveTypeSignature},
+   * {@link VoidTypeSignature}, or {@link NullTypeSignature}.
    *
    * @param typeName
    *          the fully-qualified name of the class or for primitives its simple name, e.g., int, null, void, ...
    * @return the type signature
    */
   @Override
-  public TypeSignature getTypeSignature(final String typeName) {
+  public TypeSignature getTypeSignature(final String typeDesc) {
+
+    int len = typeDesc.length();
+    int idx = 0;
+    StringBuilder stringBuilder = new StringBuilder();
+    int nrDims = 0;
+    int closed = 0;
+
+    // check if this is an array type ...
+    while (idx != len) {
+      char c = typeDesc.charAt(idx++);
+      switch (c) {
+        case '[':
+          ++nrDims;
+          break;
+        case ']':
+          ++closed;
+          break;
+        default:
+          stringBuilder.append(c);
+          break;
+      }
+    }
+    if (nrDims != closed) {
+      throw new IllegalArgumentException("Invalid type descriptor");
+    }
+
+    String typeName = stringBuilder.toString();
+    TypeSignature ret;
     switch (typeName.toLowerCase()) {
       case "byte":
-        return PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE;
+        ret = PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE;
+        break;
       case "short":
-        return PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE;
+        ret = PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE;
+        break;
       case "int":
-        return PrimitiveTypeSignature.INT_TYPE_SIGNATURE;
+        ret = PrimitiveTypeSignature.INT_TYPE_SIGNATURE;
+        break;
       case "long":
-        return PrimitiveTypeSignature.LONG_TYPE_SIGNATURE;
+        ret = PrimitiveTypeSignature.LONG_TYPE_SIGNATURE;
+        break;
       case "float":
-        return PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE;
+        ret = PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE;
+        break;
       case "double":
-        return PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
+        ret = PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
+        break;
       case "char":
-        return PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE;
+        ret = PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE;
+        break;
       case "boolean":
-        return PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE;
+        ret = PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE;
+        break;
       case "null":
-        return NullTypeSignature.NULL_TYPE_SIGNATURE;
+        ret = NullTypeSignature.NULL_TYPE_SIGNATURE;
+        break;
       case "void":
-        return VoidTypeSignature.VOID_TYPE_SIGNATURE;
+        ret = VoidTypeSignature.VOID_TYPE_SIGNATURE;
+        break;
       default:
-        return getClassSignature(typeName);
+        ret = getClassSignature(typeName);
     }
+    if (nrDims > 0) {
+      ret = new ArrayTypeSignature(ret, nrDims);
+    }
+    return ret;
+
   }
 
   /**
