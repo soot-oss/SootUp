@@ -1,9 +1,11 @@
 package de.upb.soot.namespaces.classprovider.asm.modules;
 
 import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.asmIDToSignature;
+import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.getModifiers;
 import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.resolveAsmNameToClassSignature;
 
 import de.upb.soot.core.SootModuleInfo;
+import de.upb.soot.namespaces.classprovider.asm.AsmUtil;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
 
@@ -57,14 +59,6 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
 
   }
 
-  private void dealWithModule(IView view, SootModuleInfo sootClass) {
-    if (module != null) {
-      if (sootClass instanceof SootModuleInfo) {
-        SootModuleInfo sootModuleInfo = (SootModuleInfo) sootClass;
-
-      }
-    }
-  }
 
   private SootModuleInfo.Build resolveHierarchy(IView view, JavaClassSignature cs) {
     SootModuleInfo sootClass = (SootModuleInfo) view.getClass(cs).get();
@@ -93,6 +87,9 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
         }
         // FIXME: create constructs here
         // sootModuleInfo.addExport(exportNode.packaze, exportNode.access, modules);
+        SootModuleInfo.PackageReference reference
+            = new SootModuleInfo.PackageReference(exportNode.packaze, getModifiers(exportNode.access), modules);
+        opens.add(reference);
       }
     }
 
@@ -107,7 +104,9 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
           }
         }
 
-        // sootModuleInfo.addOpen(moduleOpenNode.packaze, moduleOpenNode.access, modules);
+        SootModuleInfo.PackageReference reference
+            = new SootModuleInfo.PackageReference(moduleOpenNode.packaze, getModifiers(moduleOpenNode.access), modules);
+        opens.add(reference);
       }
 
     }
@@ -118,6 +117,9 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
         Optional<JavaClassSignature> sootClassOptional = resolveAsmNameToClassSignature(moduleRequireNode.module, view);
         if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
           // sootModuleInfo.addRequire(sootClassOptional.get(), moduleRequireNode.access, moduleRequireNode.version);
+          SootModuleInfo.ModuleReference reference
+              = new SootModuleInfo.ModuleReference(sootClassOptional.get(), AsmUtil.getModifiers(moduleRequireNode.access));
+          requieres.add(reference);
 
         }
       }
@@ -136,10 +138,7 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
         }
 
         if (serviceOptional.isPresent()) {
-          // FIXME: service be resolved
-
-          // sootModuleInfo.addProvide(moduleProvideNode.service, providers);
-
+          providers.add(serviceOptional.get());
         }
       }
     }

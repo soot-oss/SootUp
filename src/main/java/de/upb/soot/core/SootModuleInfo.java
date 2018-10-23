@@ -1,7 +1,5 @@
 package de.upb.soot.core;
 
-import com.google.common.collect.Sets;
-
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.JavaClassSignature;
@@ -108,28 +106,29 @@ public class SootModuleInfo extends AbstractClass {
    */
   private static final long serialVersionUID = -6856798288630958622L;
 
-  public class ModuleReference {
+  public static class ModuleReference {
 
     private JavaClassSignature moduleInfo;
-    private int accessModifier;
+    private EnumSet<Modifier> modifiers;
     private AbstractClassSource classSource;
 
-    public ModuleReference(JavaClassSignature moduleInfo, int accessModifier) {
+    public ModuleReference(JavaClassSignature moduleInfo, EnumSet<Modifier> accessModifier) {
       this.moduleInfo = moduleInfo;
-      this.accessModifier = accessModifier;
+      this.modifiers = accessModifier;
     }
   }
 
-  public class PackageReference {
+  public static class PackageReference {
     private String packageName;
-    private int modifer;
+    private EnumSet<Modifier> modifers;
     private HashSet<JavaClassSignature> targetModules;
 
-    public PackageReference(String packageName, int modifier, HashSet<JavaClassSignature> targetModules) {
+    public PackageReference(String packageName, EnumSet<Modifier> modifier, Collection<JavaClassSignature> targetModules) {
       this.packageName = packageName;
-      this.modifer = modifier;
-      this.targetModules = targetModules;
+      this.modifers = modifier;
+      this.targetModules = new HashSet<>(targetModules);
     }
+
     // e.g. hash by packagename?
 
     public boolean isPublic() {
@@ -176,37 +175,14 @@ public class SootModuleInfo extends AbstractClass {
    * @param resolvingLevel
    */
 
-  public SootModuleInfo(IView view, AbstractClassSource cs, JavaClassSignature moduleSignature, int access, String version,
-      ResolvingLevel resolvingLevel) {
+  public SootModuleInfo(IView view, AbstractClassSource cs, JavaClassSignature moduleSignature, EnumSet<Modifier> access,
+      String version, ResolvingLevel resolvingLevel) {
     super(view, cs, Collections.emptySet());
     this.moduleSignature = moduleSignature;
     this.resolvingLevel = resolvingLevel;
     this.modifiers = null;
     view.addClass(this);
     // FIXME: add code
-  }
-
-  public void addRequire(JavaClassSignature module, int access, String version) {
-    ModuleReference required = new ModuleReference(module, access);
-    this.requiredModules.add(required);
-  }
-
-  public void addExport(String packaze, int access, Iterable<JavaClassSignature> modules) {
-    PackageReference packageReference = new PackageReference(packaze, access, Sets.newHashSet(modules));
-    this.exportedPackages.add(packageReference);
-  }
-
-  public void addOpen(String packaze, int access, Iterable<JavaClassSignature> modules) {
-    PackageReference packageReference = new PackageReference(packaze, access, Sets.newHashSet(modules));
-    this.openedPackages.add(packageReference);
-  }
-
-  public void addUse(JavaClassSignature service) {
-    this.usedServices.add(service);
-  }
-
-  // FIXME: add here
-  public void addProvide(String service, Iterable<JavaClassSignature> providers) {
   }
 
   public ResolvingLevel resolvingLevel() {

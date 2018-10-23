@@ -61,100 +61,12 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
   }
 
   private SootClass.HierachyStep resolveDangling(IView view, JavaClassSignature cs) {
-    SootClass sootClass = (SootClass) view.getClass(cs).get();
-    // sootClass.setModifiers(AsmUtil.getModifiers(access & ~org.objectweb.asm.Opcodes.ACC_SUPER));
-    // what is whit the reftype?
-    // sootClass.setRefType(null);
 
-    // FIXME: innerclass?
-
-    // FIXME: outerclass?
-
-    // FIXME: annotations?
-
-    // FIXME: module --- ?
-    //FIXME: where to create a module?
-    SootModuleInfo sootModuleInfo = null;
-    dealWithModule(view, sootModuleInfo);
-    // FIXME: what to use here
     return SootClass.builder().dangling(view, null, null);
 
   }
 
-  private void dealWithModule(IView view, SootModuleInfo sootClass) {
-    if (module != null) {
-      if (sootClass instanceof SootModuleInfo) {
-        SootModuleInfo sootModuleInfo = (SootModuleInfo) sootClass;
-        {// add exports
-
-          for (ModuleExportNode exportNode : module.exports) {
-            Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(exportNode.modules, view);
-            ArrayList<JavaClassSignature> modules = new ArrayList<>();
-            for (Optional<JavaClassSignature> sootClassOptional : optionals) {
-              if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
-                modules.add(sootClassOptional.get());
-              }
-            }
-
-            sootModuleInfo.addExport(exportNode.packaze, exportNode.access, modules);
-          }
-        }
-
-        {
-          /// add opens
-          for (ModuleOpenNode moduleOpenNode : module.opens) {
-            Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(moduleOpenNode.modules, view);
-            ArrayList<JavaClassSignature> modules = new ArrayList<>();
-            for (Optional<JavaClassSignature> sootClassOptional : optionals) {
-              if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
-                modules.add(sootClassOptional.get());
-              }
-            }
-
-            sootModuleInfo.addOpen(moduleOpenNode.packaze, moduleOpenNode.access, modules);
-          }
-
-        }
-
-        {
-          // add requies
-          for (ModuleRequireNode moduleRequireNode : module.requires) {
-            Optional<JavaClassSignature> sootClassOptional = AsmUtil.resolveAsmNameToClassSignature(moduleRequireNode.module, view);
-            if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
-              sootModuleInfo.addRequire(sootClassOptional.get(), moduleRequireNode.access, moduleRequireNode.version);
-
-            }
-          }
-
-        }
-
-        {
-          // add provides
-          for (ModuleProvideNode moduleProvideNode : module.provides) {
-            Optional<JavaClassSignature> serviceOptional = AsmUtil.resolveAsmNameToClassSignature(moduleProvideNode.service, view);
-            Iterable<Optional<JavaClassSignature>> providersOptionals
-                = AsmUtil.asmIDToSignature(moduleProvideNode.providers, view);
-            ArrayList<JavaClassSignature> providers = new ArrayList<>();
-            for (Optional<JavaClassSignature> sootClassOptional : providersOptionals) {
-              if (sootClassOptional.isPresent()) {
-                providers.add(sootClassOptional.get());
-              }
-            }
-
-            if (serviceOptional.isPresent()) {
-              // FIXME: must service be resolved
-
-              sootModuleInfo.addProvide(moduleProvideNode.service, providers);
-
-            }
-          }
-        }
-
-      }
-    }
-  }
-
-  private SootClass.SignatureStep resolveHierarchy(IView view, JavaClassSignature cs) {
+    private SootClass.SignatureStep resolveHierarchy(IView view, JavaClassSignature cs) {
     SootClass sootClass = (SootClass) view.getClass(cs).get();
     Set<JavaClassSignature> interfaces = new HashSet<>();
     Optional<JavaClassSignature> mySuperCl = null;

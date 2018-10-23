@@ -2,8 +2,12 @@ package de.upb.soot.namespaces.classprovider.asm;
 
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ISourceContent;
+import de.upb.soot.namespaces.classprovider.asm.modules.AsmModuleSourceContent;
 
 import java.nio.file.Path;
+
+import org.objectweb.asm.ClassVisitor;
 
 public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovider.IClassProvider {
 
@@ -31,9 +35,15 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
    */
   @Override
   public de.upb.soot.namespaces.classprovider.ISourceContent getContent(AbstractClassSource classSource) {
-    // FIXME: maybe check here if module info file ... and create other ClassSource
 
-    AsmClassSourceContent asmClassSourceContent = new AsmClassSourceContent();
+    ISourceContent classNode = null;
+    // FIXME: maybe check here if module info file ... and create other ClassSource
+    if (classSource.getClassSignature().isModuleInfo()) {
+      classNode = new AsmModuleSourceContent();
+    } else {
+      classNode = new AsmClassSourceContent();
+    }
+
     java.net.URI uri = classSource.getSourcePath().toUri();
 
     try {
@@ -43,7 +53,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
         org.objectweb.asm.ClassReader clsr
             = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
 
-        clsr.accept(asmClassSourceContent, org.objectweb.asm.ClassReader.SKIP_FRAMES);
+        clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
       } else {
         // a zip file system needs to be re-openend
         // otherwise it crashes
@@ -56,7 +66,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
           org.objectweb.asm.ClassReader clsr
               = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
 
-          clsr.accept(asmClassSourceContent, org.objectweb.asm.ClassReader.SKIP_FRAMES);
+          clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
         }
       }
 
@@ -64,7 +74,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
       e.printStackTrace();
     }
 
-    return asmClassSourceContent;
+    return classNode;
   }
 
 }
