@@ -21,6 +21,8 @@ package de.upb.soot.core;
  * #L%
  */
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
@@ -31,8 +33,6 @@ import de.upb.soot.validation.MethodDeclarationValidator;
 import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.views.IView;
-
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -70,6 +70,127 @@ import java.util.regex.Pattern;
  */
 
 public class SootClass extends AbstractClass implements Serializable {
+
+  // implementation of StepBuilder Pattern to create SootClasses consistent
+  // http://www.svlada.com/step-builder-pattern/
+
+  /**
+   * Creates a SootClass with a fluent interfaces and enforces at compile team a clean order to ensure a consistent state of
+   * the soot class Therefore, a different Interface is returned after each step.. (therby order is enforced)
+   */
+  public interface DanglingStep extends Build {
+    HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType);
+  }
+
+  public interface HierachyStep extends Build {
+    SignatureStep hierachy(Optional<JavaClassSignature> superclass, Set<JavaClassSignature> interfaces,
+        EnumSet<Modifier> modifiers, Optional<JavaClassSignature> outerClass);
+  }
+
+  public interface SignatureStep extends Build {
+    BodyStep signature(Set<SootField> fields, Set<IMethod> methods);
+  }
+
+  public interface BodyStep extends Build {
+    Build bodies(String content);
+  }
+
+  public interface Build {
+    SootClass build();
+  }
+
+  public static class SootClassBuilder implements DanglingStep, HierachyStep, SignatureStep, BodyStep, Build {
+    private ResolvingLevel resolvingLevel;
+    private ClassType classType;
+    private Position position;
+    private EnumSet<Modifier> modifiers;
+    private RefType refType;
+    private Set<SootField> fields;
+    private Set<? extends IMethod> methods;
+    private Set<JavaClassSignature> interfaces;
+    private Optional<JavaClassSignature> superClass;
+    private Optional<JavaClassSignature> outerClass;
+    private AbstractClassSource classSource;
+    private IView view;
+
+    public SootClassBuilder() {
+    }
+
+    @Override
+    public HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType) {
+      this.view = view;
+      this.classSource = source;
+      this.classType = classType;
+      this.resolvingLevel = ResolvingLevel.DANGLING;
+      return this;
+    }
+
+    // FIXME: decided what a Class at Hierachy Level must have resoled...
+    @Override
+    public SignatureStep hierachy(Optional<JavaClassSignature> superclass, Set<JavaClassSignature> interfaces,
+        EnumSet<Modifier> modifiers, Optional<JavaClassSignature> outerClass) {
+
+      this.superClass = superclass;
+      this.interfaces = interfaces;
+      this.modifiers = modifiers;
+      this.resolvingLevel = ResolvingLevel.HIERARCHY;
+      return this;
+    }
+
+    @Override
+    public BodyStep signature(Set<SootField> fields, Set<IMethod> methods) {
+      this.fields = fields;
+      this.methods = methods;
+      this.resolvingLevel = ResolvingLevel.SIGNATURES;
+      return this;
+    }
+
+    @Override
+    public Build bodies(String content) {
+      return null;
+    }
+
+    @Override
+    public SootClass build() {
+      return new SootClass(this);
+    }
+
+  }
+
+  public static DanglingStep builder() {
+    return new SootClassBuilder();
+  }
+
+  // FIXME: check if everything is here...
+  public static SootClassBuilder fromExisting(SootClass sootClass) {
+    SootClassBuilder builder = new SootClassBuilder();
+    builder.resolvingLevel = sootClass.resolvingLevel;
+    builder.methods = sootClass.methods;
+    builder.fields = sootClass.fields;
+    builder.modifiers = sootClass.modifiers;
+    builder.classSource = sootClass.classSource;
+    builder.classType = sootClass.classType;
+    builder.interfaces = sootClass.interfaces;
+    return builder;
+  }
+
+  // FIXME: add missing statementss
+  private SootClass(SootClassBuilder builder) {
+    super(builder.view, builder.classSource, builder.methods);
+    this.resolvingLevel = builder.resolvingLevel;
+    this.classType = builder.classType;
+    this.superClass = builder.superClass;
+    this.interfaces = builder.interfaces;
+    this.classSignature = builder.classSource.getClassSignature();
+    this.refType = builder.view.getRefType(classSignature);
+    refType.setSootClass(this);
+    this.outerClass = builder.outerClass;
+    this.position = builder.position;
+    this.modifiers = builder.modifiers;
+    this.fields = builder.fields;
+    builder.view.addClass(this);
+
+  }
 
   /**
    * 
