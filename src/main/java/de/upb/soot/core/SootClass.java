@@ -37,6 +37,7 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -102,14 +103,14 @@ public class SootClass extends AbstractClass implements Serializable {
     this.resolvingLevel = resolvingLevel;
     this.classType = type;
     this.superClass = superClass;
-    this.interfaces = interfaces;
+    this.interfaces = Collections.unmodifiableSet(interfaces);
     this.classSignature = classSource.getClassSignature();
     this.refType = view.getRefType(classSignature);
     refType.setSootClass(this);
     this.outerClass = outerClass;
     this.position = position;
     this.modifiers = modifiers;
-    this.fields = fields;
+    this.fields = Collections.unmodifiableSet(fields);
     view.addClass(this);
   }
 

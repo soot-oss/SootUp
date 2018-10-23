@@ -74,6 +74,7 @@ public abstract class AbstractView implements IView {
 
   @Override
   public Optional<AbstractClass> getClass(ISignature signature) {
+    // we can also implement this by resolving none-exist class in view on demand in future.
     return this.classes().filter(c -> c.getClassSource().getClassSignature().equals(signature)).findFirst();
   }
 

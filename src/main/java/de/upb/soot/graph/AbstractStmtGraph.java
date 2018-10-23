@@ -6,10 +6,10 @@ import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.common.stmt.IStmt;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   protected Map<IStmt, List<IStmt>> stmtToPreds;
   protected SootMethod method;
   protected Body body;
-  protected LinkedHashSet<IStmt> orderedStmts;
+  protected Collection<IStmt> orderedStmts;
 
   /**
    * Performs the work that is required to construct any sort of <tt>IStmtGraph</tt>.

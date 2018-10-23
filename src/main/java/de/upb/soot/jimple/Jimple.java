@@ -24,9 +24,7 @@
 
 package de.upb.soot.jimple;
 
-import de.upb.soot.core.Body;
 import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.ConditionExprBox;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.IdentityRefBox;
@@ -683,16 +681,10 @@ public class Jimple {
     return new InvokeExprBox(value);
   }
 
-  /** Returns an empty body associated with method method. */
-  public static Body newBody(SootMethod method) {
-    return new Body(method);
-  }
-
   /**
    * Constructs a NewExpr(RefType) grammar chunk.
    */
   public static Value newNewExpr(RefType type) {
     return new JNewExpr(type);
   }
-
 }

@@ -1,6 +1,5 @@
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.core.Body;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
@@ -15,8 +14,8 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.common.type.VoidType;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /*-
  * #%L
@@ -47,24 +46,28 @@ import java.util.Set;
  *
  */
 public class LocalGenerator {
+  private List<Local> locals;
+  private Local thisLocal;
 
-  protected final Body body;
-
-  public LocalGenerator(Body b) {
-    body = b;
+  public LocalGenerator() {
+    this.locals = new ArrayList<>();
   }
-
-  protected transient Set<String> localNames = null;
 
   protected boolean bodyContainsLocal(String name) {
-    return localNames.contains(name);
+    return locals.stream().filter(c -> c.name.equals(name)).findFirst().isPresent();
   }
 
-  private void initLocalNames() {
-    localNames = new HashSet<String>();
-    for (Local l : body.getLocals()) {
-      localNames.add(l.getName());
+  /**
+   * generate this local with given type
+   * 
+   * @param type
+   * @return
+   */
+  public Local generateThisLocal(Type type) {
+    if (this.thisLocal == null) {
+      this.thisLocal = generateField(type);
     }
+    return this.thisLocal;
   }
 
   /**
@@ -82,9 +85,6 @@ public class LocalGenerator {
   }
 
   private Local generate(Type type, boolean isField) {
-
-    // store local names for enhanced performance
-    initLocalNames();
 
     String name = "v";
 
@@ -154,8 +154,6 @@ public class LocalGenerator {
     } else {
       throw new RuntimeException("Unhandled Type of Local variable to Generate - Not Implemented");
     }
-
-    localNames = null;
     return createLocal(name, type);
   }
 
@@ -226,10 +224,22 @@ public class LocalGenerator {
     return "u" + tempUnknownType;
   }
 
-  // this should be used for generated locals only
-  protected Local createLocal(String name, Type sootType) {
+  private Local createLocal(String name, Type sootType) {
     Local sootLocal = Jimple.newLocal(name, sootType);
-    body.addLocal(sootLocal);
+    locals.add(sootLocal);
     return sootLocal;
+  }
+
+  /**
+   * Return all locals created for the body referenced in this LocalGenrator.
+   * 
+   * @return
+   */
+  public List<Local> getLocals() {
+    return this.locals;
+  }
+
+  public Local getThisLocal() {
+    return this.thisLocal;
   }
 }

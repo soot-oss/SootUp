@@ -88,8 +88,8 @@ public class SootMethod extends SootClassMember implements IMethod {
       DebuggingInformation debugInfo) {
     super(view, declaringClass, source.getSignature(), returnType, modifiers);
     this.methodSource = source;
-    this.parameterTypes = parameterTypes;
-    this.exceptions = thrownExceptions;
+    this.parameterTypes = Collections.unmodifiableList(parameterTypes);
+    this.exceptions = Collections.unmodifiableList(thrownExceptions);
     this.debugInfo = debugInfo;
     this.activeBody = source.getBody(this);
     if (this.activeBody != null) {
@@ -107,8 +107,8 @@ public class SootMethod extends SootClassMember implements IMethod {
     super(method.getView(), method.getDeclaringClassSignature(), method.signature, method.typeSingature,
         method.modifiers);
     this.methodSource = method.methodSource;
-    this.parameterTypes = method.parameterTypes;
-    this.exceptions = method.exceptions;
+    this.parameterTypes = Collections.unmodifiableList(method.parameterTypes);
+    this.exceptions = Collections.unmodifiableList(method.exceptions);
     this.debugInfo = method.debugInfo;
     this.activeBody = activeBody;
     if (this.activeBody != null) {

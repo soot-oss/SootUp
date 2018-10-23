@@ -37,8 +37,8 @@ import de.upb.soot.util.DeterministicHashMap;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -252,7 +252,7 @@ public class Printer {
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
   private void printStatementsInBody(Body body, PrintWriter out, LabeledStmtPrinter up, AbstractStmtGraph unitGraph) {
-    LinkedHashSet<IStmt> units = body.getStmts();
+    Collection<IStmt> units = body.getStmts();
     IStmt previousStmt;
 
     for (IStmt currentStmt : units) {

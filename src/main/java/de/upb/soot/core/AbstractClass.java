@@ -5,6 +5,7 @@ import de.upb.soot.signatures.ISignature;
 import de.upb.soot.views.IView;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public abstract class AbstractClass extends AbstractViewResident {
 
   public AbstractClass(IView view, AbstractClassSource cs, Set<? extends IMethod> methods) {
     super(view);
-    this.methods = methods;
+    this.methods = Collections.unmodifiableSet(methods);
     this.classSource = cs;
   }
 

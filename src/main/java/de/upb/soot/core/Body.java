@@ -21,18 +21,15 @@ package de.upb.soot.core;
  * #L%
  */
 
-import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.Trap;
-import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.util.EscapedWriter;
 import de.upb.soot.util.printer.Printer;
 import de.upb.soot.validation.BodyValidator;
@@ -55,15 +52,10 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class that models the Jimple body (code attribute) of a method.
@@ -77,20 +69,19 @@ public class Body implements Serializable {
    */
   private static final long serialVersionUID = -755840890323977315L;
 
-  private Position position;
-
-  private static final Logger logger = LoggerFactory.getLogger(Body.class);
-  /** The method associated with this Body. */
-  protected transient SootMethod method = null;
-
   /** The locals for this Body. */
-  protected LinkedHashSet<Local> locals = new LinkedHashSet<Local>();
+  protected final List<Local> locals;
 
   /** The traps for this Body. */
-  protected LinkedHashSet<Trap> traps = new LinkedHashSet<Trap>();
+  protected final List<Trap> traps;
 
   /** The stmts for this Body. */
-  protected LinkedHashSet<IStmt> stmts = new LinkedHashSet<IStmt>();
+  protected final List<IStmt> stmts;
+
+  private final Position position;
+
+  /** The method associated with this Body. */
+  protected SootMethod method;
 
   private static BodyValidator[] validators;
 
@@ -99,26 +90,47 @@ public class Body implements Serializable {
    *
    * @return the array containing validators
    */
-  private synchronized static BodyValidator[] getValidators() {
+  private static BodyValidator[] getValidators() {
     if (validators == null) {
       validators = new BodyValidator[] { LocalsValidator.getInstance(), TrapsValidator.getInstance(),
           StmtBoxesValidator.getInstance(), UsesValidator.getInstance(), ValueBoxesValidator.getInstance(),
-          // CheckInitValidator.getInstance(),
-          CheckTypesValidator.getInstance(), CheckVoidLocalesValidator.getInstance(), CheckEscapingValidator.getInstance() };
+          CheckInitValidator.getInstance(), CheckTypesValidator.getInstance(), CheckVoidLocalesValidator.getInstance(),
+          CheckEscapingValidator.getInstance() };
     }
     return validators;
   };
 
   /**
-   * Creates a Body associated to the given method. Used by subclasses during initialization. Creation of a Body is triggered
-   * by e.g. Jimple.getInstance().newBody(options).
+   * Creates a Body associated to the given method.
+   * 
+   * @param m
+   * @param locals
+   *          please use {@link LocalGenerator} to generate local for a body.
+   * @param traps
+   * @param stmts
+   * @param position
    */
-  public Body(SootMethod m) {
+  public Body(SootMethod m, List<Local> locals, List<Trap> traps, List<IStmt> stmts, Position position) {
+    this(locals, traps, stmts, position);
     this.method = m;
   }
 
-  /** Creates an extremely empty Body. The Body is not associated to any method. */
-  protected Body() {
+  /**
+   * Creates an body which is not associated to any method.
+   * 
+   * @param locals
+   *          please use {@link LocalGenerator} to generate local for a body.
+   * @param traps
+   * @param stmts
+   * @param position
+   */
+  public Body(List<Local> locals, List<Trap> traps, List<IStmt> stmts, Position position) {
+    this.locals = Collections.unmodifiableList(locals);
+    this.traps = Collections.unmodifiableList(traps);
+    this.stmts = Collections.unmodifiableList(stmts);
+    this.position = position;
+    this.method = null;
+    checkInit();
   }
 
   /**
@@ -147,52 +159,6 @@ public class Body implements Serializable {
   /** Returns the number of locals declared in this body. */
   public int getLocalCount() {
     return locals.size();
-  }
-
-  /** Copies the contents of the given Body into this one. */
-  public Map<Object, Object> importBodyContentsFrom(Body b) {
-    HashMap<Object, Object> bindings = new HashMap<Object, Object>();
-    {
-      // Clone units in body's statement list
-      for (IStmt original : b.getStmts()) {
-        IStmt copy = original.clone();
-
-        // Add cloned unit to our unitChain.
-        stmts.add(copy);
-
-        // Build old <-> new map to be able to patch up references to other units
-        // within the cloned units. (these are still refering to the original
-        // unit objects).
-        bindings.put(original, copy);
-      }
-    }
-
-    {
-      // Clone trap units.
-      for (Trap original : b.getTraps()) {
-        Trap copy = (Trap) original.clone();
-
-        // Add cloned unit to our trap list.
-        traps.add(copy);
-
-        // Store old <-> new mapping.
-        bindings.put(original, copy);
-      }
-    }
-
-    {
-      // Clone local units.
-      for (Local original : b.getLocals()) {
-        Local copy = (Local) original.clone();
-
-        // Add cloned unit to our trap list.
-        locals.add(copy);
-
-        // Build old <-> new mapping.
-        bindings.put(original, copy);
-      }
-    }
-    return bindings;
   }
 
   protected void runValidation(BodyValidator validator) {
@@ -229,12 +195,12 @@ public class Body implements Serializable {
   }
 
   /** Returns a backed chain of the locals declared in this Body. */
-  public LinkedHashSet<Local> getLocals() {
+  public Collection<Local> getLocals() {
     return locals;
   }
 
   /** Returns a backed view of the traps found in this Body. */
-  public LinkedHashSet<Trap> getTraps() {
+  public Collection<Trap> getTraps() {
     return traps;
   }
 
@@ -277,12 +243,10 @@ public class Body implements Serializable {
    * @throws RuntimeException
    *           if a JParameterRef is missing
    */
-  public List<Local> getParameterLocals() {
+  public Collection<Local> getParameterLocals() {
     final int numParams = getMethod().getParameterCount();
     final List<Local> retVal = new ArrayList<Local>(numParams);
-
-    // Parameters are zero-indexed, so the keeping of the index is safe
-    for (IStmt u : getStmts()) {
+    for (IStmt u : stmts) {
       if (u instanceof JIdentityStmt) {
         JIdentityStmt is = (JIdentityStmt) u;
         if (is.getRightOp() instanceof JParameterRef) {
@@ -294,39 +258,16 @@ public class Body implements Serializable {
     if (retVal.size() != numParams) {
       throw new RuntimeException("couldn't find JParameterRef! in " + getMethod());
     }
-    return retVal;
+    return Collections.unmodifiableCollection(retVal);
   }
 
   /**
-   * Returns the list of parameter references used in this body. The list is as long as the number of parameters declared in
-   * the associated method's signature. The list may have <code>null</code> entries for parameters not referenced in the
-   * body. The returned list is of fixed size.
-   */
-  public List<Value> getParameterRefs() {
-    Value[] res = new Value[getMethod().getParameterCount()];
-    for (IStmt s : getStmts()) {
-      if (s instanceof JIdentityStmt) {
-        Value rightOp = ((JIdentityStmt) s).getRightOp();
-        if (rightOp instanceof JParameterRef) {
-          JParameterRef parameterRef = (JParameterRef) rightOp;
-          res[parameterRef.getIndex()] = parameterRef;
-        }
-      }
-    }
-    return Arrays.asList(res);
-  }
-
-  /**
-   * Returns the Chain of Stmts that make up this body. The units are returned as a PatchingChain. The client can then
-   * manipulate the chain, adding and removing units, and the changes will be reflected in the body. Since a PatchingChain is
-   * returned the client need <i>not</i> worry about removing exception boundary units or otherwise corrupting the chain.
+   * Returns the statements that make up this body.
+   * 
+   * @return the statements in this Body
    *
-   * @return the units in this Body
-   *
-   *         see PatchingChain
-   * @see Stmt
    */
-  public LinkedHashSet<IStmt> getStmts() {
+  public Collection<IStmt> getStmts() {
     return stmts;
   }
 
@@ -344,19 +285,11 @@ public class Body implements Serializable {
     try {
       new Printer().printTo(this, writerOut);
     } catch (RuntimeException e) {
-      logger.error(e.getMessage(), e);
+      throw new RuntimeException();
     }
     writerOut.flush();
     writerOut.close();
     return streamOut.toString();
-  }
-
-  public void addStmt(IStmt stmt) {
-    this.stmts.add(stmt);
-  }
-
-  public void setPosition(Position position) {
-    this.position = position;
   }
 
   public Position getPosition() {
@@ -366,8 +299,7 @@ public class Body implements Serializable {
   /** Clones the current body, making deep copies of the contents. */
   @Override
   public Object clone() {
-    Body b = new Body(this.method);
-    b.importBodyContentsFrom(this);
+    Body b = new Body(this.method, this.locals, this.traps, this.stmts, this.position);
     return b;
   }
 
@@ -391,8 +323,7 @@ public class Body implements Serializable {
   public void validate(List<ValidationException> exceptionList) {
     validate(exceptionList);
     final boolean runAllValidators
-        = this.method.getView().getOptions().debug()
-            || this.method.getView().getOptions().validate();
+        = this.method.getView().getOptions().debug() || this.method.getView().getOptions().validate();
     for (BodyValidator validator : getValidators()) {
       if (!validator.isBasicValidator() && !runAllValidators) {
         continue;
@@ -403,52 +334,6 @@ public class Body implements Serializable {
 
   public void validateIdentityStatements() {
     runValidation(IdentityStatementsValidator.getInstance());
-  }
-
-  /** Inserts usual statements for handling this & parameters into body. */
-  public void insertIdentityStmts() {
-    if (getMethod().getDeclaringClass().isPresent()) {
-      insertIdentityStmts(getMethod().getDeclaringClass().get());
-    }
-  }
-
-  /**
-   * Inserts usual statements for handling this & parameters into body.
-   *
-   * @param declaringClass
-   *          the class, which should be used for this references. Can be null for static methods
-   */
-  public void insertIdentityStmts(SootClass declaringClass) {
-    final LinkedHashSet<IStmt> stmts = getStmts();
-    final LinkedHashSet<Local> locals = getLocals();
-    IStmt lastStmt = null;
-
-    // add this-ref before everything else
-    if (!getMethod().isStatic()) {
-      if (declaringClass == null) {
-        throw new IllegalArgumentException(
-            String.format("No declaring class given for method %s", method.getSubSignature()));
-      }
-      Local l = Jimple.newLocal("this", RefType.getInstance(declaringClass));
-      IStmt s = Jimple.newIdentityStmt(l, Jimple.newThisRef((RefType) l.getType()));
-
-      locals.add(l);
-      /*
-       * TODO: check Stmt problems unitChain.addFirst(s); lastStmt = s;
-       */
-    }
-
-    int i = 0;
-    for (Type t : getMethod().getParameterTypes()) {
-      Local l = Jimple.newLocal("parameter" + i, t);
-      IStmt s = Jimple.newIdentityStmt(l, Jimple.newParameterRef(l.getType(), i));
-      // TODO: check: Stmt problems
-      /*
-       * localChain.add(l); if (lastStmt == null) { unitChain.addFirst(s); } else { unitChain.insertAfter(s, lastStmt); }
-       * lastStmt = s;
-       */
-      i++;
-    }
   }
 
   /** Returns the first non-identity stmt in this body. */
@@ -466,12 +351,12 @@ public class Body implements Serializable {
     return (IStmt) o;
   }
 
-  public List<ValueBox> getUseBoxes() {
+  public Collection<ValueBox> getUseBoxes() {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public List<ValueBox> getDefBoxes() {
+  public Collection<ValueBox> getDefBoxes() {
     // TODO Auto-generated method stub
     return null;
   }
@@ -484,9 +369,9 @@ public class Body implements Serializable {
    * <p>
    * This method is typically used for pointer patching, e.g. when the unit chain is cloned.
    *
-   * @return A list of all the StmtBoxes held by this body's units.
+   * @return A collection of all the StmtBoxes held by this body's units.
    **/
-  public List<IStmtBox> getAllStmtBoxes() {
+  public Collection<IStmtBox> getAllStmtBoxes() {
     ArrayList<IStmtBox> stmtBoxList = new ArrayList<IStmtBox>();
     {
       Iterator<IStmt> it = stmts.iterator();
@@ -503,15 +388,7 @@ public class Body implements Serializable {
         stmtBoxList.addAll(item.getStmtBoxes());
       }
     }
-    return stmtBoxList;
+    return Collections.unmodifiableCollection(stmtBoxList);
   }
 
-  /**
-   * Add local to locals.
-   * 
-   * @param local
-   */
-  public void addLocal(Local local) {
-    this.getLocals().add(local);
-  }
 }

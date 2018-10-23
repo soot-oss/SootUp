@@ -8,9 +8,9 @@ import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.Type;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -81,7 +81,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   }
 
   private void createLabelMaps(Body body) {
-    LinkedHashSet<IStmt> units = body.getStmts();
+    Collection<IStmt> units = body.getStmts();
 
     labels = new HashMap<IStmt, String>(units.size() * 2 + 1, 0.7f);
     references = new HashMap<IStmt, String>(units.size() * 2 + 1, 0.7f);

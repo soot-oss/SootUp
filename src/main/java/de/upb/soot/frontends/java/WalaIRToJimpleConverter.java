@@ -14,6 +14,7 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
+import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.ArrayType;
@@ -401,24 +402,23 @@ public class WalaIRToJimpleConverter {
   private Optional<Body> createBody(SootMethod sootMethod, AstMethod walaMethod) {
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
+      List<Trap> traps=new ArrayList<>();
+      List<IStmt> stmts = new ArrayList<>();
+      LocalGenerator localGenerator = new LocalGenerator();
       // convert all wala instructions to jimple statements
       SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
       if (insts.length > 0) {
-        Body body = new Body(sootMethod);
+
         // set position for body
         DebuggingInformation debugInfo = walaMethod.debugInfo();
         Position bodyPos = debugInfo.getCodeBodyPosition();
-        body.setPosition(bodyPos);
 
         /* Look AsmMethodSource.getBody, see AsmMethodSource.emitLocals(); */
 
-        LocalGenerator localGenerator = new LocalGenerator(body);
         if (!sootMethod.isStatic()) {
-
           RefType thisType = sootMethod.getDeclaringClass().get().getType();
-          Local thisLocal = localGenerator.generateField(sootMethod.getDeclaringClass().get().getType());
-          body.addLocal(thisLocal);
-          body.addStmt(Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType)));
+          Local thisLocal = localGenerator.generateThisLocal(sootMethod.getDeclaringClass().get().getType());
+          stmts.add(Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType)));
         }
 
         for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
@@ -427,8 +427,7 @@ public class WalaIRToJimpleConverter {
           if (!t.equals(walaMethod.getDeclaringClass().getReference())) {
             Type type = convertType(t);
             Local paraLocal = localGenerator.generateLocal(type);
-            body.addLocal(paraLocal);
-            body.addStmt(Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, i)));
+            stmts.add(Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, i)));
           }
         }
 
@@ -437,23 +436,24 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
 
         for (SSAInstruction inst : insts) {
-          IStmt stmt = convertInstruction(body, localGenerator, inst);
+          IStmt stmt = convertInstruction(sootMethod, localGenerator, inst);
           // set position for each statement
           Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
           stmt.setPosition(stmtPos);
-          body.addStmt(stmt);
+          stmts.add(stmt);
         }
 
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
-          body.addStmt(Jimple.newReturnVoidStmt());
+          stmts.add(Jimple.newReturnVoidStmt());
         }
+        Body body = new Body(sootMethod, localGenerator.getLocals(), traps, stmts, bodyPos);
         return Optional.of(body);
       }
     }
     return Optional.empty();
   }
 
-  public IStmt convertInstruction(Body body, LocalGenerator localGenerator, SSAInstruction walaInst) {
+  public IStmt convertInstruction(SootMethod method, LocalGenerator localGenerator, SSAInstruction walaInst) {
 
     // TODO what are the different types of SSAInstructions
     if (walaInst instanceof SSAConditionalBranchInstruction) {
@@ -469,8 +469,8 @@ public class WalaIRToJimpleConverter {
     } else if (walaInst instanceof AstJavaInvokeInstruction) {
       AstJavaInvokeInstruction invokeInst = (AstJavaInvokeInstruction) walaInst;
       if (invokeInst.isSpecial()) {
-        if (!body.getMethod().isStatic()) {
-          Local base = body.getThisLocal();
+        if (!method.isStatic()) {
+          Local base = localGenerator.getThisLocal();
           MethodReference target = invokeInst.getDeclaredTarget();
           String declaringClassSignature = convertClassNameFromWala(target.getDeclaringClass().getName().toString());
           String returnType = convertType(target.getReturnType()).toString();
