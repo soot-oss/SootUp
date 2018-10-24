@@ -1,0 +1,30 @@
+final class JLex.SparseBitSet$1 extends java.lang.Object implements JLex.SparseBitSet$BinOp
+{
+
+    void <init>()
+    {
+        JLex.SparseBitSet$1 r0;
+
+        r0 := @this: JLex.SparseBitSet$1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public final long op(long, long)
+    {
+        JLex.SparseBitSet$1 r0;
+        long l0, l1, $l2;
+
+        r0 := @this: JLex.SparseBitSet$1;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $l2 = l0 & l1;
+
+        return $l2;
+    }
+}

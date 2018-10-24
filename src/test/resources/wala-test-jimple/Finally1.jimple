@@ -1,0 +1,61 @@
+public class Finally1 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        Finally1 r0;
+
+        r0 := @this: Finally1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[]) throws BadLanguageExceptionF1
+    {
+        java.lang.String[] r0;
+        Finally1 $r4;
+        FooF1 $r5;
+        java.io.PrintStream $r6, $r7, $r9;
+        java.lang.Throwable $r8;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r4 = new Finally1;
+
+        specialinvoke $r4.<Finally1: void <init>()>();
+
+     label1:
+        $r5 = new FooF1;
+
+        specialinvoke $r5.<FooF1: void <init>()>();
+
+        virtualinvoke $r5.<FooF1: void bar()>();
+
+     label2:
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>("blah");
+
+        goto label4;
+
+     label3:
+        $r8 := @caughtexception;
+
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(java.lang.String)>("blah");
+
+        throw $r8;
+
+     label4:
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>("feep");
+
+        return;
+
+        catch java.lang.Throwable from label1 to label2 with label3;
+    }
+}

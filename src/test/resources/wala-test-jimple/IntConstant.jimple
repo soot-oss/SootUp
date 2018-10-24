@@ -1,0 +1,5 @@
+interface  IntConstant extends java.lang.Object
+{
+
+    public abstract int getConstant();
+}

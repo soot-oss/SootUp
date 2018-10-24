@@ -1,0 +1,94 @@
+public class NullArrayInit extends java.lang.Object
+{
+    java.lang.String[] x;
+
+    public void <init>()
+    {
+        NullArrayInit r0;
+        java.lang.String[] $r1;
+
+        r0 := @this: NullArrayInit;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r1 = newarray (java.lang.String)[1];
+
+        $r1[0] = null;
+
+        r0.<NullArrayInit: java.lang.String[] x> = $r1;
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0, $r12, $r13, $r14, $r15, $r16, $r18, $r19;
+        NullArrayInit $r9;
+        java.lang.Object[] $r10, $r11;
+        java.lang.String[][] $r17;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r9 = new NullArrayInit;
+
+        specialinvoke $r9.<NullArrayInit: void <init>()>();
+
+        $r10 = newarray (java.lang.Object)[2];
+
+        $r10[0] = null;
+
+        $r10[1] = null;
+
+        $r11 = newarray (java.lang.Object)[1];
+
+        $r11[0] = null;
+
+        $r12 = newarray (java.lang.String)[1];
+
+        $r12[0] = null;
+
+        $r13 = newarray (java.lang.String)[2];
+
+        $r13[0] = null;
+
+        $r13[1] = null;
+
+        $r14 = newarray (java.lang.String)[3];
+
+        $r14[0] = null;
+
+        $r14[1] = "hello";
+
+        $r14[2] = null;
+
+        $r15 = newarray (java.lang.String)[1];
+
+        $r15[0] = null;
+
+        $r16 = newarray (java.lang.String)[3];
+
+        $r16[0] = null;
+
+        $r16[1] = null;
+
+        $r16[2] = null;
+
+        $r17 = newarray (java.lang.String[])[2];
+
+        $r18 = newarray (java.lang.String)[2];
+
+        $r18[0] = null;
+
+        $r18[1] = null;
+
+        $r17[0] = $r18;
+
+        $r19 = newarray (java.lang.String)[1];
+
+        $r19[0] = null;
+
+        $r17[1] = $r19;
+
+        return;
+    }
+}

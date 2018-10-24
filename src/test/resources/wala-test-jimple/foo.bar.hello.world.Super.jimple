@@ -1,0 +1,20 @@
+class foo.bar.hello.world.Super extends java.lang.Object
+{
+    java.lang.String s;
+
+    void <init>(java.lang.String)
+    {
+        foo.bar.hello.world.Super r0;
+        java.lang.String r1;
+
+        r0 := @this: foo.bar.hello.world.Super;
+
+        r1 := @parameter0: java.lang.String;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<foo.bar.hello.world.Super: java.lang.String s> = r1;
+
+        return;
+    }
+}

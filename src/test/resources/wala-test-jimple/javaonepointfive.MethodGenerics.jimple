@@ -1,0 +1,99 @@
+public class javaonepointfive.MethodGenerics extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.MethodGenerics r0;
+
+        r0 := @this: javaonepointfive.MethodGenerics;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    static void fromArrayToCollection(java.lang.Object[], java.util.Collection)
+    {
+        java.lang.Object[] r0;
+        java.util.Collection r1;
+        java.lang.Object $r2;
+
+        r0 := @parameter0: java.lang.Object[];
+
+        r1 := @parameter1: java.util.Collection;
+
+        $r2 = r0[0];
+
+        interfaceinvoke r1.<java.util.Collection: boolean add(java.lang.Object)>($r2);
+
+        return;
+    }
+
+    static void foo(java.lang.String, java.lang.String)
+    {
+        java.lang.String r0, r2;
+        java.io.PrintStream $r1;
+
+        r2 := @parameter0: java.lang.String;
+
+        r0 := @parameter1: java.lang.String;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(r0);
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.MethodGenerics $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.MethodGenerics;
+
+        specialinvoke $r1.<javaonepointfive.MethodGenerics: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.MethodGenerics: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.MethodGenerics r0;
+        java.util.ArrayList $r3;
+        java.lang.String[] $r4;
+        java.io.PrintStream $r5;
+
+        r0 := @this: javaonepointfive.MethodGenerics;
+
+        $r3 = new java.util.ArrayList;
+
+        specialinvoke $r3.<java.util.ArrayList: void <init>()>();
+
+        $r4 = newarray (java.lang.String)[5];
+
+        $r4[0] = "coucou monde";
+
+        $r4[1] = "ciao mondo";
+
+        $r4[2] = "guten tag welt";
+
+        $r4[3] = "hola mundo";
+
+        $r4[4] = "shalom olam";
+
+        staticinvoke <javaonepointfive.MethodGenerics: void fromArrayToCollection(java.lang.Object[],java.util.Collection)>($r4, $r3);
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.Object)>($r3);
+
+        staticinvoke <javaonepointfive.MethodGenerics: void foo(java.lang.String,java.lang.String)>("whatever", "whatever");
+
+        return;
+    }
+}

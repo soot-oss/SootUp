@@ -1,0 +1,38 @@
+class AnonymousClass$2 extends AnonymousClass$1FooImpl
+{
+    final java.lang.Integer val$base;
+    final AnonymousClass this$0;
+
+    void <init>(AnonymousClass, int, java.lang.Integer)
+    {
+        AnonymousClass$2 r0;
+        AnonymousClass r1;
+        int i0;
+        java.lang.Integer r2;
+
+        r0 := @this: AnonymousClass$2;
+
+        r1 := @parameter0: AnonymousClass;
+
+        i0 := @parameter1: int;
+
+        r2 := @parameter2: java.lang.Integer;
+
+        r0.<AnonymousClass$2: AnonymousClass this$0> = r1;
+
+        r0.<AnonymousClass$2: java.lang.Integer val$base> = r2;
+
+        specialinvoke r0.<AnonymousClass$1FooImpl: void <init>(AnonymousClass,int,java.lang.Integer)>(r1, i0, r2);
+
+        return;
+    }
+
+    public int getValue()
+    {
+        AnonymousClass$2 r0;
+
+        r0 := @this: AnonymousClass$2;
+
+        return 7;
+    }
+}

@@ -1,0 +1,93 @@
+public class Monitor2 extends java.lang.Object
+{
+    int i;
+
+    private static boolean randomIsolate()
+    {
+        double $d0;
+        byte $b0;
+        boolean $z0;
+
+        $d0 = staticinvoke <java.lang.Math: double random()>();
+
+        $b0 = $d0 cmpl 0.5;
+
+        if $b0 <= 0 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        return $z0;
+    }
+
+    public void <init>()
+    {
+        Monitor2 r0;
+
+        r0 := @this: Monitor2;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<Monitor2: int i> = 0;
+
+        return;
+    }
+
+    public void incr()
+    {
+        Monitor2 r0;
+        int $i0, $i1;
+        java.lang.Throwable $r4;
+
+        r0 := @this: Monitor2;
+
+        entermonitor r0;
+
+     label1:
+        $i0 = r0.<Monitor2: int i>;
+
+        $i1 = $i0 + 1;
+
+        r0.<Monitor2: int i> = $i1;
+
+        exitmonitor r0;
+
+     label2:
+        goto label5;
+
+     label3:
+        $r4 := @caughtexception;
+
+        exitmonitor r0;
+
+     label4:
+        throw $r4;
+
+     label5:
+        return;
+
+        catch java.lang.Throwable from label1 to label2 with label3;
+        catch java.lang.Throwable from label3 to label4 with label3;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        Monitor2 $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new Monitor2;
+
+        specialinvoke $r1.<Monitor2: void <init>()>();
+
+        virtualinvoke $r1.<Monitor2: void incr()>();
+
+        return;
+    }
+}

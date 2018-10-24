@@ -1,0 +1,23 @@
+public class foo.bar.hello.world.MiniaturList2 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        foo.bar.hello.world.MiniaturList2 r0;
+
+        r0 := @this: foo.bar.hello.world.MiniaturList2;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+
+        r0 := @parameter0: java.lang.String[];
+
+        return;
+    }
+}

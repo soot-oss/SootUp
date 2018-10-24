@@ -1,0 +1,32 @@
+final class InnerClassLexicalReads$1 extends java.lang.Object implements IntConstant
+{
+    final int val$y;
+
+    void <init>(int)
+    {
+        InnerClassLexicalReads$1 r0;
+        int i0;
+
+        r0 := @this: InnerClassLexicalReads$1;
+
+        i0 := @parameter0: int;
+
+        r0.<InnerClassLexicalReads$1: int val$y> = i0;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public int getConstant()
+    {
+        InnerClassLexicalReads$1 r0;
+        int $i0;
+
+        r0 := @this: InnerClassLexicalReads$1;
+
+        $i0 = r0.<InnerClassLexicalReads$1: int val$y>;
+
+        return $i0;
+    }
+}

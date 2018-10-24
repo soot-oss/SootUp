@@ -1,0 +1,51 @@
+public class Thread1 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        Thread1 r0;
+
+        r0 := @this: Thread1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private void test()
+    {
+        Thread1 r0;
+        R $r3;
+        java.lang.Thread $r4;
+
+        r0 := @this: Thread1;
+
+        $r3 = new R;
+
+        specialinvoke $r3.<R: void <init>(int)>(2);
+
+        $r4 = new java.lang.Thread;
+
+        specialinvoke $r4.<java.lang.Thread: void <init>(java.lang.Runnable)>($r3);
+
+        virtualinvoke $r4.<java.lang.Thread: void start()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        Thread1 $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new Thread1;
+
+        specialinvoke $r1.<Thread1: void <init>()>();
+
+        specialinvoke $r1.<Thread1: void test()>();
+
+        return;
+    }
+}

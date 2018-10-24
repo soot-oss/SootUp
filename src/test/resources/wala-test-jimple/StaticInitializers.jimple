@@ -1,0 +1,72 @@
+public class StaticInitializers extends java.lang.Object
+{
+    private static StaticInitializers$X x;
+    private static StaticInitializers$X y;
+
+    public void <init>()
+    {
+        StaticInitializers r0;
+
+        r0 := @this: StaticInitializers;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private int sum()
+    {
+        StaticInitializers r0;
+        StaticInitializers$X $r1, $r2;
+        int $i0, $i1, $i2;
+
+        r0 := @this: StaticInitializers;
+
+        $r1 = <StaticInitializers: StaticInitializers$X x>;
+
+        $i0 = virtualinvoke $r1.<StaticInitializers$X: int sum()>();
+
+        $r2 = <StaticInitializers: StaticInitializers$X y>;
+
+        $i1 = virtualinvoke $r2.<StaticInitializers$X: int diff()>();
+
+        $i2 = $i0 * $i1;
+
+        return $i2;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        StaticInitializers $r2;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r2 = new StaticInitializers;
+
+        specialinvoke $r2.<StaticInitializers: void <init>()>();
+
+        specialinvoke $r2.<StaticInitializers: int sum()>();
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        StaticInitializers$X $r0, $r1;
+
+        $r0 = new StaticInitializers$X;
+
+        specialinvoke $r0.<StaticInitializers$X: void <init>()>();
+
+        <StaticInitializers: StaticInitializers$X x> = $r0;
+
+        $r1 = new StaticInitializers$X;
+
+        specialinvoke $r1.<StaticInitializers$X: void <init>()>();
+
+        <StaticInitializers: StaticInitializers$X y> = $r1;
+
+        return;
+    }
+}

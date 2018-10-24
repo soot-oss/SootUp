@@ -1,0 +1,46 @@
+public class DefaultConstructors extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        DefaultConstructors r0;
+
+        r0 := @this: DefaultConstructors;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        java.lang.Object[] r1;
+        E $r2, $r3;
+        java.lang.Object $r5;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r2 = new E;
+
+        specialinvoke $r2.<E: void <init>()>();
+
+        $r3 = new E;
+
+        specialinvoke $r3.<E: void <init>(int,int)>(7, 8);
+
+        r1 = newarray (java.lang.Object)[4];
+
+        virtualinvoke r1.<java.lang.Object: java.lang.Object clone()>();
+
+        $r5 = new java.lang.Object;
+
+        specialinvoke $r5.<java.lang.Object: void <init>()>();
+
+        virtualinvoke r1.<java.lang.Object: boolean equals(java.lang.Object)>($r5);
+
+        virtualinvoke r1.<java.lang.Object: java.lang.String toString()>();
+
+        return;
+    }
+}

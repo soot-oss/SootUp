@@ -1,0 +1,32 @@
+class FooIT1 extends java.lang.Object implements IFoo
+{
+    private char fValue;
+
+    public void <init>(char)
+    {
+        FooIT1 r0;
+        char c0;
+
+        r0 := @this: FooIT1;
+
+        c0 := @parameter0: char;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<FooIT1: char fValue> = c0;
+
+        return;
+    }
+
+    public char getValue()
+    {
+        FooIT1 r0;
+        char $c0;
+
+        r0 := @this: FooIT1;
+
+        $c0 = r0.<FooIT1: char fValue>;
+
+        return $c0;
+    }
+}

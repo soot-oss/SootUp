@@ -1,0 +1,1337 @@
+class JLex.CMakeNfa extends java.lang.Object
+{
+    private JLex.CSpec m_spec;
+    private JLex.CLexGen m_lexGen;
+    private JLex.CInput m_input;
+
+    void <init>()
+    {
+        JLex.CMakeNfa r0;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        specialinvoke r0.<JLex.CMakeNfa: void reset()>();
+
+        return;
+    }
+
+    private void reset()
+    {
+        JLex.CMakeNfa r0;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        r0.<JLex.CMakeNfa: JLex.CInput m_input> = null;
+
+        r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen> = null;
+
+        r0.<JLex.CMakeNfa: JLex.CSpec m_spec> = null;
+
+        return;
+    }
+
+    private void set(JLex.CLexGen, JLex.CSpec, JLex.CInput)
+    {
+        JLex.CMakeNfa r0;
+        JLex.CLexGen r1;
+        JLex.CSpec r2;
+        JLex.CInput r3;
+        boolean $z0, $z1, $z2;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        r1 := @parameter0: JLex.CLexGen;
+
+        r2 := @parameter1: JLex.CSpec;
+
+        r3 := @parameter2: JLex.CInput;
+
+        if null == r3 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z0);
+
+        if null == r1 goto label3;
+
+        $z1 = 1;
+
+        goto label4;
+
+     label3:
+        $z1 = 0;
+
+     label4:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z1);
+
+        if null == r2 goto label5;
+
+        $z2 = 1;
+
+        goto label6;
+
+     label5:
+        $z2 = 0;
+
+     label6:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z2);
+
+        r0.<JLex.CMakeNfa: JLex.CInput m_input> = r3;
+
+        r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen> = r1;
+
+        r0.<JLex.CMakeNfa: JLex.CSpec m_spec> = r2;
+
+        return;
+    }
+
+    void allocate_BOL_EOF(JLex.CSpec)
+    {
+        JLex.CMakeNfa r0;
+        JLex.CSpec r1;
+        int $i0, $i1, $i2, $i3;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        r1 := @parameter0: JLex.CSpec;
+
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>(1);
+
+        $i0 = r1.<JLex.CSpec: int m_dtrans_ncols>;
+
+        $i1 = $i0 + 1;
+
+        r1.<JLex.CSpec: int m_dtrans_ncols> = $i1;
+
+        r1.<JLex.CSpec: int BOL> = $i0;
+
+        $i2 = r1.<JLex.CSpec: int m_dtrans_ncols>;
+
+        $i3 = $i2 + 1;
+
+        r1.<JLex.CSpec: int m_dtrans_ncols> = $i3;
+
+        r1.<JLex.CSpec: int EOF> = $i2;
+
+        return;
+    }
+
+    void thompson(JLex.CLexGen, JLex.CSpec, JLex.CInput) throws java.io.IOException
+    {
+        JLex.CMakeNfa r0;
+        JLex.CLexGen r1;
+        JLex.CSpec r2, $r5, $r8, $r9, $r11, $r13, $r17, $r22, $r25;
+        JLex.CInput r3;
+        JLex.CNfa r4, $r10;
+        java.util.Hashtable $r6;
+        java.util.Vector[] $r7, $r27;
+        java.util.Vector $r12, $r18, $r23, $r26;
+        boolean $z0;
+        java.lang.StringBuilder $r14, $r16, $r19, $r20;
+        java.io.PrintStream $r15;
+        int $i0, $i1, i2, i3, i4, i5;
+        java.lang.String $r21;
+        java.lang.Object $r24;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        r1 := @parameter0: JLex.CLexGen;
+
+        r2 := @parameter1: JLex.CSpec;
+
+        r3 := @parameter2: JLex.CInput;
+
+        specialinvoke r0.<JLex.CMakeNfa: void reset()>();
+
+        specialinvoke r0.<JLex.CMakeNfa: void set(JLex.CLexGen,JLex.CSpec,JLex.CInput)>(r1, r2, r3);
+
+        $r5 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r6 = $r5.<JLex.CSpec: java.util.Hashtable m_states>;
+
+        i2 = virtualinvoke $r6.<java.util.Hashtable: int size()>();
+
+        $r8 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r7 = newarray (java.util.Vector)[i2];
+
+        $r8.<JLex.CSpec: java.util.Vector[] m_state_rules> = $r7;
+
+        i3 = 0;
+
+     label1:
+        if i3 >= i2 goto label2;
+
+        $r25 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r27 = $r25.<JLex.CSpec: java.util.Vector[] m_state_rules>;
+
+        $r26 = new java.util.Vector;
+
+        specialinvoke $r26.<java.util.Vector: void <init>()>();
+
+        $r27[i3] = $r26;
+
+        i3 = i3 + 1;
+
+        goto label1;
+
+     label2:
+        $r9 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r10 = specialinvoke r0.<JLex.CMakeNfa: JLex.CNfa machine()>();
+
+        $r9.<JLex.CSpec: JLex.CNfa m_nfa_start> = $r10;
+
+        $r11 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r12 = $r11.<JLex.CSpec: java.util.Vector m_nfa_states>;
+
+        i4 = virtualinvoke $r12.<java.util.Vector: int size()>();
+
+        i5 = 0;
+
+     label3:
+        if i5 >= i4 goto label4;
+
+        $r22 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r23 = $r22.<JLex.CSpec: java.util.Vector m_nfa_states>;
+
+        $r24 = virtualinvoke $r23.<java.util.Vector: java.lang.Object elementAt(int)>(i5);
+
+        r4 = (JLex.CNfa) $r24;
+
+        r4.<JLex.CNfa: int m_label> = i5;
+
+        i5 = i5 + 1;
+
+        goto label3;
+
+     label4:
+        $r13 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $z0 = $r13.<JLex.CSpec: boolean m_verbose>;
+
+        if $z0 == 0 goto label5;
+
+        $r15 = <java.lang.System: java.io.PrintStream out>;
+
+        $r14 = new java.lang.StringBuilder;
+
+        specialinvoke $r14.<java.lang.StringBuilder: void <init>()>();
+
+        $r16 = virtualinvoke $r14.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("NFA comprised of ");
+
+        $r17 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r18 = $r17.<JLex.CSpec: java.util.Vector m_nfa_states>;
+
+        $i0 = virtualinvoke $r18.<java.util.Vector: int size()>();
+
+        $i1 = $i0 + 1;
+
+        $r19 = virtualinvoke $r16.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i1);
+
+        $r20 = virtualinvoke $r19.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" states.");
+
+        $r21 = virtualinvoke $r20.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r15.<java.io.PrintStream: void println(java.lang.String)>($r21);
+
+     label5:
+        specialinvoke r0.<JLex.CMakeNfa: void reset()>();
+
+        return;
+    }
+
+    private void discardCNfa(JLex.CNfa)
+    {
+        JLex.CMakeNfa r0;
+        JLex.CNfa r1;
+        JLex.CSpec $r2;
+        java.util.Vector $r3;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        r1 := @parameter0: JLex.CNfa;
+
+        $r2 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r3 = $r2.<JLex.CSpec: java.util.Vector m_nfa_states>;
+
+        virtualinvoke $r3.<java.util.Vector: boolean removeElement(java.lang.Object)>(r1);
+
+        return;
+    }
+
+    private void processStates(JLex.SparseBitSet, JLex.CNfa)
+    {
+        JLex.CMakeNfa r0;
+        JLex.SparseBitSet r1;
+        JLex.CNfa r2;
+        int i0, i1;
+        JLex.CSpec $r3, $r5;
+        java.util.Hashtable $r4;
+        boolean $z0;
+        java.util.Vector[] $r6;
+        java.util.Vector $r7;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        r1 := @parameter0: JLex.SparseBitSet;
+
+        r2 := @parameter1: JLex.CNfa;
+
+        $r3 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r4 = $r3.<JLex.CSpec: java.util.Hashtable m_states>;
+
+        i0 = virtualinvoke $r4.<java.util.Hashtable: int size()>();
+
+        i1 = 0;
+
+     label1:
+        if i1 >= i0 goto label3;
+
+        $z0 = virtualinvoke r1.<JLex.SparseBitSet: boolean get(int)>(i1);
+
+        if $z0 == 0 goto label2;
+
+        $r5 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r6 = $r5.<JLex.CSpec: java.util.Vector[] m_state_rules>;
+
+        $r7 = $r6[i1];
+
+        virtualinvoke $r7.<java.util.Vector: void addElement(java.lang.Object)>(r2);
+
+     label2:
+        i1 = i1 + 1;
+
+        goto label1;
+
+     label3:
+        return;
+    }
+
+    private JLex.CNfa machine() throws java.io.IOException
+    {
+        JLex.CMakeNfa r0;
+        JLex.CNfa r1, $r13, $r15, $r16, $r18, $r19, $r21, $r22, $r25, $r28, $r32, $r33, $r39, $r40, $r41, $r42, $r43, r44, r50;
+        JLex.CSpec $r3, $r6, $r9, $r12, $r14, $r17, $r23, $r26, $r37, $r38, $r46, $r48;
+        JLex.CLexGen $r4, $r7, $r34, $r35;
+        int $i1, $i2, $i3, $i4, $i5, $i7, $i8, i9, $i10;
+        JLex.SparseBitSet $r11, r45, r47;
+        JLex.CSet $r20, $r24, $r27;
+        JLex.CAccept $r29;
+        JLex.CInput $r30;
+        char[] $r31;
+        java.util.Hashtable $r49;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        $r3 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        r1 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r3);
+
+        r44 = r1;
+
+        $r4 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        r45 = virtualinvoke $r4.<JLex.CLexGen: JLex.SparseBitSet getStates()>();
+
+        $r6 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r6.<JLex.CSpec: int m_current_token> = 1;
+
+        $r7 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r7.<JLex.CLexGen: int advance()>();
+
+        $r9 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i1 = $r9.<JLex.CSpec: int m_current_token>;
+
+        if 11 == $i1 goto label1;
+
+        $r42 = specialinvoke r0.<JLex.CMakeNfa: JLex.CNfa rule()>();
+
+        r1.<JLex.CNfa: JLex.CNfa m_next> = $r42;
+
+        $r43 = r1.<JLex.CNfa: JLex.CNfa m_next>;
+
+        specialinvoke r0.<JLex.CMakeNfa: void processStates(JLex.SparseBitSet,JLex.CNfa)>(r45, $r43);
+
+     label1:
+        $r46 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i8 = $r46.<JLex.CSpec: int m_current_token>;
+
+        if 11 == $i8 goto label3;
+
+        $r34 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        r47 = virtualinvoke $r34.<JLex.CLexGen: JLex.SparseBitSet getStates()>();
+
+        $r35 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r35.<JLex.CLexGen: int advance()>();
+
+        $r37 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i7 = $r37.<JLex.CSpec: int m_current_token>;
+
+        if 11 != $i7 goto label2;
+
+        goto label3;
+
+     label2:
+        $r38 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r39 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r38);
+
+        r44.<JLex.CNfa: JLex.CNfa m_next2> = $r39;
+
+        r44 = r44.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r40 = specialinvoke r0.<JLex.CMakeNfa: JLex.CNfa rule()>();
+
+        r44.<JLex.CNfa: JLex.CNfa m_next> = $r40;
+
+        $r41 = r44.<JLex.CNfa: JLex.CNfa m_next>;
+
+        specialinvoke r0.<JLex.CMakeNfa: void processStates(JLex.SparseBitSet,JLex.CNfa)>(r47, $r41);
+
+        goto label1;
+
+     label3:
+        $r11 = new JLex.SparseBitSet;
+
+        specialinvoke $r11.<JLex.SparseBitSet: void <init>()>();
+
+        i9 = 0;
+
+     label4:
+        $r48 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r49 = $r48.<JLex.CSpec: java.util.Hashtable m_states>;
+
+        $i10 = virtualinvoke $r49.<java.util.Hashtable: int size()>();
+
+        if i9 >= $i10 goto label5;
+
+        virtualinvoke $r11.<JLex.SparseBitSet: void set(int)>(i9);
+
+        i9 = i9 + 1;
+
+        goto label4;
+
+     label5:
+        $r12 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r13 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r12);
+
+        r44.<JLex.CNfa: JLex.CNfa m_next2> = $r13;
+
+        r50 = r44.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r14 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r15 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r14);
+
+        r50.<JLex.CNfa: JLex.CNfa m_next> = $r15;
+
+        $r16 = r50.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r16.<JLex.CNfa: int m_edge> = -1;
+
+        $r18 = r50.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r17 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r19 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r17);
+
+        $r18.<JLex.CNfa: JLex.CNfa m_next> = $r19;
+
+        $r21 = r50.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r20 = new JLex.CSet;
+
+        specialinvoke $r20.<JLex.CSet: void <init>()>();
+
+        $r21.<JLex.CNfa: JLex.CSet m_set> = $r20;
+
+        $r22 = r50.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r24 = $r22.<JLex.CNfa: JLex.CSet m_set>;
+
+        $r23 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i2 = $r23.<JLex.CSpec: int BOL>;
+
+        virtualinvoke $r24.<JLex.CSet: void add(int)>($i2);
+
+        $r25 = r50.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r27 = $r25.<JLex.CNfa: JLex.CSet m_set>;
+
+        $r26 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i3 = $r26.<JLex.CSpec: int EOF>;
+
+        virtualinvoke $r27.<JLex.CSet: void add(int)>($i3);
+
+        $r28 = r50.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r32 = $r28.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r29 = new JLex.CAccept;
+
+        $r31 = newarray (char)[0];
+
+        $r30 = r0.<JLex.CMakeNfa: JLex.CInput m_input>;
+
+        $i4 = $r30.<JLex.CInput: int m_line_number>;
+
+        $i5 = $i4 + 1;
+
+        specialinvoke $r29.<JLex.CAccept: void <init>(char[],int,int)>($r31, 0, $i5);
+
+        $r32.<JLex.CNfa: JLex.CAccept m_accept> = $r29;
+
+        $r33 = r50.<JLex.CNfa: JLex.CNfa m_next>;
+
+        specialinvoke r0.<JLex.CMakeNfa: void processStates(JLex.SparseBitSet,JLex.CNfa)>($r11, $r33);
+
+        return r1;
+    }
+
+    private JLex.CNfa rule() throws java.io.IOException
+    {
+        JLex.CMakeNfa r0;
+        JLex.CNfaPair r1, r2;
+        JLex.CSpec $r3, $r4, $r9, $r10, $r14, $r18, $r24, $r25;
+        int $i0, $i1, $i2, $i3, $i4;
+        JLex.CLexGen $r5, $r8, $r23;
+        JLex.CAccept $r6;
+        JLex.CInput $r7;
+        JLex.CNfa $r11, $r12, $r13, $r15, $r16, $r17, $r19, $r20, $r21, $r22, $r26, r27, r28;
+        byte b5;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        b5 = 0;
+
+        r1 = staticinvoke <JLex.CAlloc: JLex.CNfaPair newCNfaPair()>();
+
+        $r3 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i0 = $r3.<JLex.CSpec: int m_current_token>;
+
+        if 3 != $i0 goto label1;
+
+        b5 = 1;
+
+        $r23 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r23.<JLex.CLexGen: int advance()>();
+
+        specialinvoke r0.<JLex.CMakeNfa: void expr(JLex.CNfaPair)>(r1);
+
+        $r24 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        r27 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r24);
+
+        $r25 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i4 = $r25.<JLex.CSpec: int BOL>;
+
+        r27.<JLex.CNfa: int m_edge> = $i4;
+
+        $r26 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        r27.<JLex.CNfa: JLex.CNfa m_next> = $r26;
+
+        r28 = r1.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        goto label2;
+
+     label1:
+        specialinvoke r0.<JLex.CMakeNfa: void expr(JLex.CNfaPair)>(r1);
+
+        r27 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        r28 = r1.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+     label2:
+        $r4 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i1 = $r4.<JLex.CSpec: int m_current_token>;
+
+        if 4 != $i1 goto label3;
+
+        $r8 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r8.<JLex.CLexGen: int advance()>();
+
+        $r9 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        r2 = staticinvoke <JLex.CAlloc: JLex.CNfaPair newNLPair(JLex.CSpec)>($r9);
+
+        $r10 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r11 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r10);
+
+        r28.<JLex.CNfa: JLex.CNfa m_next> = $r11;
+
+        $r13 = r28.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r12 = r2.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r13.<JLex.CNfa: JLex.CNfa m_next> = $r12;
+
+        $r15 = r28.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r14 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r16 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r14);
+
+        $r15.<JLex.CNfa: JLex.CNfa m_next2> = $r16;
+
+        $r17 = r28.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r19 = $r17.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r18 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i3 = $r18.<JLex.CSpec: int EOF>;
+
+        $r19.<JLex.CNfa: int m_edge> = $i3;
+
+        $r20 = r28.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r22 = $r20.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r21 = r2.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        $r22.<JLex.CNfa: JLex.CNfa m_next> = $r21;
+
+        r28 = r2.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        b5 = b5 | 2;
+
+     label3:
+        if r28 != null goto label4;
+
+        $r7 = r0.<JLex.CMakeNfa: JLex.CInput m_input>;
+
+        $i2 = $r7.<JLex.CInput: int m_line_number>;
+
+        staticinvoke <JLex.CError: void parse_error(int,int)>(19, $i2);
+
+     label4:
+        $r5 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        $r6 = virtualinvoke $r5.<JLex.CLexGen: JLex.CAccept packAccept()>();
+
+        r28.<JLex.CNfa: JLex.CAccept m_accept> = $r6;
+
+        r28.<JLex.CNfa: int m_anchor> = b5;
+
+        return r27;
+    }
+
+    private void expr(JLex.CNfaPair) throws java.io.IOException
+    {
+        JLex.CMakeNfa r0;
+        JLex.CNfaPair r1, r2;
+        JLex.CLexGen $r4;
+        JLex.CSpec $r5, $r8, $r11;
+        JLex.CNfa $r6, $r7, $r9, $r10, r12, r13;
+        boolean $z0;
+        int $i1;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        r1 := @parameter0: JLex.CNfaPair;
+
+        if null == r1 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z0);
+
+        r2 = staticinvoke <JLex.CAlloc: JLex.CNfaPair newCNfaPair()>();
+
+        specialinvoke r0.<JLex.CMakeNfa: void cat_expr(JLex.CNfaPair)>(r1);
+
+     label3:
+        $r11 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i1 = $r11.<JLex.CSpec: int m_current_token>;
+
+        if 16 != $i1 goto label4;
+
+        $r4 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r4.<JLex.CLexGen: int advance()>();
+
+        specialinvoke r0.<JLex.CMakeNfa: void cat_expr(JLex.CNfaPair)>(r2);
+
+        $r5 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        r12 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r5);
+
+        $r6 = r2.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        r12.<JLex.CNfa: JLex.CNfa m_next2> = $r6;
+
+        $r7 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        r12.<JLex.CNfa: JLex.CNfa m_next> = $r7;
+
+        r1.<JLex.CNfaPair: JLex.CNfa m_start> = r12;
+
+        $r8 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        r13 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r8);
+
+        $r9 = r1.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        $r9.<JLex.CNfa: JLex.CNfa m_next> = r13;
+
+        $r10 = r2.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        $r10.<JLex.CNfa: JLex.CNfa m_next> = r13;
+
+        r1.<JLex.CNfaPair: JLex.CNfa m_end> = r13;
+
+        goto label3;
+
+     label4:
+        return;
+    }
+
+    private void cat_expr(JLex.CNfaPair) throws java.io.IOException
+    {
+        JLex.CMakeNfa r0;
+        JLex.CNfaPair r1, r2;
+        JLex.CSpec $r3, $r8;
+        int $i0, $i1;
+        boolean $z0, $z1, $z2;
+        JLex.CNfa $r4, $r5, $r6, $r7;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        r1 := @parameter0: JLex.CNfaPair;
+
+        if null == r1 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z1);
+
+        r2 = staticinvoke <JLex.CAlloc: JLex.CNfaPair newCNfaPair()>();
+
+        $r3 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i0 = $r3.<JLex.CSpec: int m_current_token>;
+
+        $z0 = specialinvoke r0.<JLex.CMakeNfa: boolean first_in_cat(int)>($i0);
+
+        if $z0 == 0 goto label3;
+
+        specialinvoke r0.<JLex.CMakeNfa: void factor(JLex.CNfaPair)>(r1);
+
+     label3:
+        $r8 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i1 = $r8.<JLex.CSpec: int m_current_token>;
+
+        $z2 = specialinvoke r0.<JLex.CMakeNfa: boolean first_in_cat(int)>($i1);
+
+        if $z2 == 0 goto label4;
+
+        specialinvoke r0.<JLex.CMakeNfa: void factor(JLex.CNfaPair)>(r2);
+
+        $r5 = r1.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        $r4 = r2.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        virtualinvoke $r5.<JLex.CNfa: void mimic(JLex.CNfa)>($r4);
+
+        $r6 = r2.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        specialinvoke r0.<JLex.CMakeNfa: void discardCNfa(JLex.CNfa)>($r6);
+
+        $r7 = r2.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        r1.<JLex.CNfaPair: JLex.CNfa m_end> = $r7;
+
+        goto label3;
+
+     label4:
+        return;
+    }
+
+    private boolean first_in_cat(int)
+    {
+        JLex.CMakeNfa r0;
+        int i0, $i1, $i2, $i3;
+        JLex.CInput $r1, $r2, $r3;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        i0 := @parameter0: int;
+
+        tableswitch(i0)
+        {
+            case 1: goto label1;
+            case 2: goto label5;
+            case 3: goto label4;
+            case 4: goto label1;
+            case 5: goto label3;
+            case 6: goto label5;
+            case 7: goto label5;
+            case 8: goto label1;
+            case 9: goto label2;
+            case 10: goto label5;
+            case 11: goto label5;
+            case 12: goto label5;
+            case 13: goto label5;
+            case 14: goto label5;
+            case 15: goto label2;
+            case 16: goto label1;
+            case 17: goto label2;
+            default: goto label5;
+        };
+
+     label1:
+        return 0;
+
+     label2:
+        $r1 = r0.<JLex.CMakeNfa: JLex.CInput m_input>;
+
+        $i1 = $r1.<JLex.CInput: int m_line_number>;
+
+        staticinvoke <JLex.CError: void parse_error(int,int)>(5, $i1);
+
+        return 0;
+
+     label3:
+        $r2 = r0.<JLex.CMakeNfa: JLex.CInput m_input>;
+
+        $i2 = $r2.<JLex.CInput: int m_line_number>;
+
+        staticinvoke <JLex.CError: void parse_error(int,int)>(3, $i2);
+
+        return 0;
+
+     label4:
+        $r3 = r0.<JLex.CMakeNfa: JLex.CInput m_input>;
+
+        $i3 = $r3.<JLex.CInput: int m_line_number>;
+
+        staticinvoke <JLex.CError: void parse_error(int,int)>(4, $i3);
+
+        return 0;
+
+     label5:
+        return 1;
+    }
+
+    private void factor(JLex.CNfaPair) throws java.io.IOException
+    {
+        JLex.CMakeNfa r0;
+        JLex.CNfaPair r1;
+        JLex.CSpec $r2, $r5, $r6, $r7, $r8, $r9, $r11, $r15, $r16;
+        int $i0, $i1, $i2, $i3, $i4, $i5, $i6;
+        JLex.CNfa $r3, $r4, r10, r12, $r13, $r14;
+        JLex.CLexGen $r17;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        r1 := @parameter0: JLex.CNfaPair;
+
+        specialinvoke r0.<JLex.CMakeNfa: void term(JLex.CNfaPair)>(r1);
+
+        $r2 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i0 = $r2.<JLex.CSpec: int m_current_token>;
+
+        if 9 == $i0 goto label1;
+
+        $r7 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i3 = $r7.<JLex.CSpec: int m_current_token>;
+
+        if 17 == $i3 goto label1;
+
+        $r8 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i4 = $r8.<JLex.CSpec: int m_current_token>;
+
+        if 15 != $i4 goto label6;
+
+     label1:
+        $r9 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        r10 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r9);
+
+        $r11 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        r12 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r11);
+
+        $r13 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        r10.<JLex.CNfa: JLex.CNfa m_next> = $r13;
+
+        $r14 = r1.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        $r14.<JLex.CNfa: JLex.CNfa m_next> = r12;
+
+        $r15 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i5 = $r15.<JLex.CSpec: int m_current_token>;
+
+        if 9 == $i5 goto label2;
+
+        $r6 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i2 = $r6.<JLex.CSpec: int m_current_token>;
+
+        if 15 != $i2 goto label3;
+
+     label2:
+        r10.<JLex.CNfa: JLex.CNfa m_next2> = r12;
+
+     label3:
+        $r16 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i6 = $r16.<JLex.CSpec: int m_current_token>;
+
+        if 9 == $i6 goto label4;
+
+        $r5 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i1 = $r5.<JLex.CSpec: int m_current_token>;
+
+        if 17 != $i1 goto label5;
+
+     label4:
+        $r4 = r1.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        $r3 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r4.<JLex.CNfa: JLex.CNfa m_next2> = $r3;
+
+     label5:
+        r1.<JLex.CNfaPair: JLex.CNfa m_start> = r10;
+
+        r1.<JLex.CNfaPair: JLex.CNfa m_end> = r12;
+
+        $r17 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r17.<JLex.CLexGen: int advance()>();
+
+     label6:
+        return;
+    }
+
+    private void term(JLex.CNfaPair) throws java.io.IOException
+    {
+        JLex.CMakeNfa r0;
+        JLex.CNfaPair r1;
+        JLex.CNfa r2, $r7, $r8;
+        JLex.CSpec $r4, $r5, $r6, $r10, $r13, $r15, $r18, $r20, $r23, $r25, $r30, $r32, $r35, $r37, $r40, $r41, $r42, $r45, $r48;
+        int $i0, $i1, $i2, $i4, $i5, $i8, $i9, $i10, $i11, $i15, $i18, $i19, $i21;
+        JLex.CSet $r12, $r21, $r24, $r26, $r27, $r28, $r29, $r31, $r33, $r34, $r36;
+        boolean $z0, $z2, $z3, z4, $z6, $z7;
+        JLex.CLexGen $r16, $r22, $r38, $r43, $r47, $r49;
+        char $c12, $c13, $c16;
+        JLex.CInput $r46;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        r1 := @parameter0: JLex.CNfaPair;
+
+        $r4 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i0 = $r4.<JLex.CSpec: int m_current_token>;
+
+        if 14 != $i0 goto label02;
+
+        $r43 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r43.<JLex.CLexGen: int advance()>();
+
+        specialinvoke r0.<JLex.CMakeNfa: void expr(JLex.CNfaPair)>(r1);
+
+        $r45 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i18 = $r45.<JLex.CSpec: int m_current_token>;
+
+        if 8 != $i18 goto label01;
+
+        $r47 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r47.<JLex.CLexGen: int advance()>();
+
+        goto label15;
+
+     label01:
+        $r46 = r0.<JLex.CMakeNfa: JLex.CInput m_input>;
+
+        $i19 = $r46.<JLex.CInput: int m_line_number>;
+
+        staticinvoke <JLex.CError: void parse_error(int,int)>(16, $i19);
+
+        goto label15;
+
+     label02:
+        $r5 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        r2 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r5);
+
+        r1.<JLex.CNfaPair: JLex.CNfa m_start> = r2;
+
+        $r6 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $r7 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>($r6);
+
+        r2.<JLex.CNfa: JLex.CNfa m_next> = $r7;
+
+        $r8 = r2.<JLex.CNfa: JLex.CNfa m_next>;
+
+        r1.<JLex.CNfaPair: JLex.CNfa m_end> = $r8;
+
+        $r10 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i1 = $r10.<JLex.CSpec: int m_current_token>;
+
+        if 12 != $i1 goto label03;
+
+        $r42 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $c16 = $r42.<JLex.CSpec: char m_lexeme>;
+
+        $z3 = staticinvoke <java.lang.Character: boolean isLetter(char)>($c16);
+
+        if $z3 == 0 goto label03;
+
+        z4 = 1;
+
+        goto label04;
+
+     label03:
+        z4 = 0;
+
+     label04:
+        $r48 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i21 = $r48.<JLex.CSpec: int m_current_token>;
+
+        if 2 == $i21 goto label05;
+
+        $r40 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i15 = $r40.<JLex.CSpec: int m_current_token>;
+
+        if 6 == $i15 goto label05;
+
+        $r41 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $z2 = $r41.<JLex.CSpec: boolean m_ignorecase>;
+
+        if $z2 == 0 goto label06;
+
+        if z4 == 0 goto label06;
+
+     label05:
+        $z6 = 1;
+
+        goto label07;
+
+     label06:
+        $z6 = 0;
+
+     label07:
+        if 0 != $z6 goto label08;
+
+        $r37 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $c13 = $r37.<JLex.CSpec: char m_lexeme>;
+
+        r2.<JLex.CNfa: int m_edge> = $c13;
+
+        $r38 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r38.<JLex.CLexGen: int advance()>();
+
+        goto label15;
+
+     label08:
+        r2.<JLex.CNfa: int m_edge> = -1;
+
+        $r12 = new JLex.CSet;
+
+        specialinvoke $r12.<JLex.CSet: void <init>()>();
+
+        r2.<JLex.CNfa: JLex.CSet m_set> = $r12;
+
+        $r13 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $z0 = $r13.<JLex.CSpec: boolean m_ignorecase>;
+
+        if $z0 == 0 goto label09;
+
+        if z4 == 0 goto label09;
+
+        $r36 = r2.<JLex.CNfa: JLex.CSet m_set>;
+
+        $r35 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $c12 = $r35.<JLex.CSpec: char m_lexeme>;
+
+        virtualinvoke $r36.<JLex.CSet: void addncase(char)>($c12);
+
+        goto label14;
+
+     label09:
+        $r15 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i2 = $r15.<JLex.CSpec: int m_current_token>;
+
+        if 2 != $i2 goto label10;
+
+        $r28 = r2.<JLex.CNfa: JLex.CSet m_set>;
+
+        virtualinvoke $r28.<JLex.CSet: void add(int)>(10);
+
+        $r29 = r2.<JLex.CNfa: JLex.CSet m_set>;
+
+        virtualinvoke $r29.<JLex.CSet: void add(int)>(13);
+
+        $r31 = r2.<JLex.CNfa: JLex.CSet m_set>;
+
+        $r30 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i10 = $r30.<JLex.CSpec: int BOL>;
+
+        virtualinvoke $r31.<JLex.CSet: void add(int)>($i10);
+
+        $r33 = r2.<JLex.CNfa: JLex.CSet m_set>;
+
+        $r32 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i11 = $r32.<JLex.CSpec: int EOF>;
+
+        virtualinvoke $r33.<JLex.CSet: void add(int)>($i11);
+
+        $r34 = r2.<JLex.CNfa: JLex.CSet m_set>;
+
+        virtualinvoke $r34.<JLex.CSet: void complement()>();
+
+        goto label14;
+
+     label10:
+        $r16 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r16.<JLex.CLexGen: int advance()>();
+
+        $r18 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i4 = $r18.<JLex.CSpec: int m_current_token>;
+
+        if 3 != $i4 goto label11;
+
+        $r22 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r22.<JLex.CLexGen: int advance()>();
+
+        $r24 = r2.<JLex.CNfa: JLex.CSet m_set>;
+
+        $r23 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i8 = $r23.<JLex.CSpec: int BOL>;
+
+        virtualinvoke $r24.<JLex.CSet: void add(int)>($i8);
+
+        $r26 = r2.<JLex.CNfa: JLex.CSet m_set>;
+
+        $r25 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i9 = $r25.<JLex.CSpec: int EOF>;
+
+        virtualinvoke $r26.<JLex.CSet: void add(int)>($i9);
+
+        $r27 = r2.<JLex.CNfa: JLex.CSet m_set>;
+
+        virtualinvoke $r27.<JLex.CSet: void complement()>();
+
+     label11:
+        $r20 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i5 = $r20.<JLex.CSpec: int m_current_token>;
+
+        if 5 != $i5 goto label12;
+
+        $z7 = 1;
+
+        goto label13;
+
+     label12:
+        $z7 = 0;
+
+     label13:
+        if 0 != $z7 goto label14;
+
+        $r21 = r2.<JLex.CNfa: JLex.CSet m_set>;
+
+        specialinvoke r0.<JLex.CMakeNfa: void dodash(JLex.CSet)>($r21);
+
+     label14:
+        $r49 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r49.<JLex.CLexGen: int advance()>();
+
+     label15:
+        return;
+    }
+
+    private void dodash(JLex.CSet) throws java.io.IOException
+    {
+        JLex.CMakeNfa r0;
+        JLex.CSet r1;
+        JLex.CSpec $r3, $r5, $r7, $r8, $r9, $r10, $r11, $r13, $r15, $r16;
+        int $i0, $i1, $i2, $i7, i10;
+        boolean $z0, $z1;
+        char $c3, $c5, $c8, $c9;
+        JLex.CLexGen $r12, $r17;
+
+        r0 := @this: JLex.CMakeNfa;
+
+        r1 := @parameter0: JLex.CSet;
+
+        i10 = -1;
+
+     label1:
+        $r3 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i0 = $r3.<JLex.CSpec: int m_current_token>;
+
+        if 1 == $i0 goto label8;
+
+        $r5 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i1 = $r5.<JLex.CSpec: int m_current_token>;
+
+        if 5 == $i1 goto label8;
+
+        $r7 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i2 = $r7.<JLex.CSpec: int m_current_token>;
+
+        if 10 != $i2 goto label5;
+
+        if -1 == i10 goto label5;
+
+        $r12 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r12.<JLex.CLexGen: int advance()>();
+
+        $r13 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $i7 = $r13.<JLex.CSpec: int m_current_token>;
+
+        if $i7 != 5 goto label2;
+
+        virtualinvoke r1.<JLex.CSet: void add(int)>(45);
+
+        goto label8;
+
+     label2:
+        $r15 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $c8 = $r15.<JLex.CSpec: char m_lexeme>;
+
+        if i10 > $c8 goto label7;
+
+        $r16 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $z1 = $r16.<JLex.CSpec: boolean m_ignorecase>;
+
+        if $z1 == 0 goto label3;
+
+        $c9 = (char) i10;
+
+        virtualinvoke r1.<JLex.CSet: void addncase(char)>($c9);
+
+        goto label4;
+
+     label3:
+        virtualinvoke r1.<JLex.CSet: void add(int)>(i10);
+
+     label4:
+        i10 = i10 + 1;
+
+        goto label2;
+
+     label5:
+        $r8 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        i10 = $r8.<JLex.CSpec: char m_lexeme>;
+
+        $r9 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $z0 = $r9.<JLex.CSpec: boolean m_ignorecase>;
+
+        if $z0 == 0 goto label6;
+
+        $r11 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $c5 = $r11.<JLex.CSpec: char m_lexeme>;
+
+        virtualinvoke r1.<JLex.CSet: void addncase(char)>($c5);
+
+        goto label7;
+
+     label6:
+        $r10 = r0.<JLex.CMakeNfa: JLex.CSpec m_spec>;
+
+        $c3 = $r10.<JLex.CSpec: char m_lexeme>;
+
+        virtualinvoke r1.<JLex.CSet: void add(int)>($c3);
+
+     label7:
+        $r17 = r0.<JLex.CMakeNfa: JLex.CLexGen m_lexGen>;
+
+        virtualinvoke $r17.<JLex.CLexGen: int advance()>();
+
+        goto label1;
+
+     label8:
+        return;
+    }
+}

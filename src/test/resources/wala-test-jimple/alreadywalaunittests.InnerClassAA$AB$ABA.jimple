@@ -1,0 +1,21 @@
+class alreadywalaunittests.InnerClassAA$AB$ABA extends java.lang.Object
+{
+    int aba_x;
+    final alreadywalaunittests.InnerClassAA$AB this$1;
+
+    void <init>(alreadywalaunittests.InnerClassAA$AB)
+    {
+        alreadywalaunittests.InnerClassAA$AB$ABA r0;
+        alreadywalaunittests.InnerClassAA$AB r1;
+
+        r0 := @this: alreadywalaunittests.InnerClassAA$AB$ABA;
+
+        r1 := @parameter0: alreadywalaunittests.InnerClassAA$AB;
+
+        r0.<alreadywalaunittests.InnerClassAA$AB$ABA: alreadywalaunittests.InnerClassAA$AB this$1> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}

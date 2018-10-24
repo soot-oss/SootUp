@@ -1,0 +1,28 @@
+final class Scoping2$1 extends java.lang.Object
+{
+
+    void <init>()
+    {
+        Scoping2$1 r0;
+
+        r0 := @this: Scoping2$1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void foo()
+    {
+        Scoping2$1 r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: Scoping2$1;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("x = 5");
+
+        return;
+    }
+}

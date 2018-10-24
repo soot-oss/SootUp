@@ -1,0 +1,7 @@
+interface  AnonymousClass$Foo extends java.lang.Object
+{
+
+    public abstract int getValue();
+
+    public abstract int getValueBase();
+}

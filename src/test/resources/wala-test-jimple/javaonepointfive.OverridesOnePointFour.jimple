@@ -1,0 +1,52 @@
+public class javaonepointfive.OverridesOnePointFour extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.OverridesOnePointFour r0;
+
+        r0 := @this: javaonepointfive.OverridesOnePointFour;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.OverridesOnePointFour $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.OverridesOnePointFour;
+
+        specialinvoke $r1.<javaonepointfive.OverridesOnePointFour: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.OverridesOnePointFour: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.OverridesOnePointFour r0;
+        java.lang.Number r2;
+        javaonepointfive.OverridesOnePointFour$Sub $r3;
+        java.io.PrintStream $r4;
+
+        r0 := @this: javaonepointfive.OverridesOnePointFour;
+
+        $r3 = new javaonepointfive.OverridesOnePointFour$Sub;
+
+        specialinvoke $r3.<javaonepointfive.OverridesOnePointFour$Sub: void <init>()>();
+
+        r2 = interfaceinvoke $r3.<javaonepointfive.OverridesOnePointFour$Super: java.lang.Number get()>();
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.Object)>(r2);
+
+        return;
+    }
+}

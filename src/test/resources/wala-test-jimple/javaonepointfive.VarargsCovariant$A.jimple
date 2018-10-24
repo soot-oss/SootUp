@@ -1,0 +1,31 @@
+class javaonepointfive.VarargsCovariant$A extends java.lang.Object
+{
+
+    void <init>()
+    {
+        javaonepointfive.VarargsCovariant$A r0;
+
+        r0 := @this: javaonepointfive.VarargsCovariant$A;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    transient javaonepointfive.VarargsCovariant$A hello(int[])
+    {
+        javaonepointfive.VarargsCovariant$A r0;
+        int[] r1;
+        java.io.PrintStream $r2;
+
+        r0 := @this: javaonepointfive.VarargsCovariant$A;
+
+        r1 := @parameter0: int[];
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("a hello");
+
+        return r0;
+    }
+}

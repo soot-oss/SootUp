@@ -1,0 +1,28 @@
+class FooEx1 extends java.lang.Object
+{
+
+    void <init>()
+    {
+        FooEx1 r0;
+
+        r0 := @this: FooEx1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void bar() throws BadLanguageExceptionEx1
+    {
+        FooEx1 r0;
+        BadLanguageExceptionEx1 $r1;
+
+        r0 := @this: FooEx1;
+
+        $r1 = new BadLanguageExceptionEx1;
+
+        specialinvoke $r1.<BadLanguageExceptionEx1: void <init>()>();
+
+        throw $r1;
+    }
+}

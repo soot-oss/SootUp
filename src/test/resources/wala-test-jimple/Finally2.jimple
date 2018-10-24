@@ -1,0 +1,69 @@
+public class Finally2 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        Finally2 r0;
+
+        r0 := @this: Finally2;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[]) throws java.io.IOException
+    {
+        java.lang.String[] r0;
+        FooF2 $r2;
+        java.io.PrintStream $r3, $r5, $r7;
+        java.lang.Throwable $r4;
+        BadLanguageExceptionF2 $r6;
+
+        r0 := @parameter0: java.lang.String[];
+
+     label1:
+        $r2 = new FooF2;
+
+        specialinvoke $r2.<FooF2: void <init>()>();
+
+        virtualinvoke $r2.<FooF2: void bar()>();
+
+        virtualinvoke $r2.<FooF2: void bletch()>();
+
+     label2:
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("blah");
+
+        goto label6;
+
+     label3:
+        $r6 := @caughtexception;
+
+        virtualinvoke $r6.<BadLanguageExceptionF2: void printStackTrace()>();
+
+     label4:
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>("blah");
+
+        goto label6;
+
+     label5:
+        $r4 := @caughtexception;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("blah");
+
+        throw $r4;
+
+     label6:
+        return;
+
+        catch BadLanguageExceptionF2 from label1 to label2 with label3;
+        catch java.lang.Throwable from label1 to label2 with label5;
+        catch java.lang.Throwable from label3 to label4 with label5;
+    }
+}

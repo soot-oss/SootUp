@@ -1,0 +1,106 @@
+public class javaonepointfive.VarargsOverriding extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.VarargsOverriding r0;
+
+        r0 := @this: javaonepointfive.VarargsOverriding;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.VarargsOverriding $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.VarargsOverriding;
+
+        specialinvoke $r1.<javaonepointfive.VarargsOverriding: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.VarargsOverriding: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.VarargsOverriding r0;
+        javaonepointfive.Bet $r5;
+        java.lang.String[] $r6, $r8, $r10, $r12;
+        javaonepointfive.Beta $r7;
+        javaonepointfive.VarityTestSuper $r9;
+        javaonepointfive.VarityTestSub $r11;
+
+        r0 := @this: javaonepointfive.VarargsOverriding;
+
+        $r5 = new javaonepointfive.Bet;
+
+        specialinvoke $r5.<javaonepointfive.Bet: void <init>()>();
+
+        $r6 = newarray (java.lang.String)[2];
+
+        $r6[0] = "hello";
+
+        $r6[1] = "world";
+
+        virtualinvoke $r5.<javaonepointfive.Alef: void foo(java.lang.String[])>($r6);
+
+        virtualinvoke $r5.<javaonepointfive.Bet: void foo(java.lang.String,java.lang.String)>("hello", "world");
+
+        $r7 = new javaonepointfive.Beta;
+
+        specialinvoke $r7.<javaonepointfive.Beta: void <init>()>();
+
+        virtualinvoke $r7.<javaonepointfive.Alpha: void foo(java.lang.String,java.lang.String)>("hello", "world");
+
+        virtualinvoke $r7.<javaonepointfive.Beta: void foo(java.lang.String,java.lang.String)>("hello", "world");
+
+        $r8 = newarray (java.lang.String)[4];
+
+        $r8[0] = "hello";
+
+        $r8[1] = "world";
+
+        $r8[2] = "and";
+
+        $r8[3] = "more";
+
+        virtualinvoke $r7.<javaonepointfive.Beta: void foo(java.lang.String[])>($r8);
+
+        $r9 = new javaonepointfive.VarityTestSuper;
+
+        specialinvoke $r9.<javaonepointfive.VarityTestSuper: void <init>()>();
+
+        $r10 = newarray (java.lang.String)[3];
+
+        $r10[0] = "Hello";
+
+        $r10[1] = "world";
+
+        $r10[2] = "howareya";
+
+        virtualinvoke $r9.<javaonepointfive.VarityTestSuper: void bar(java.lang.String[])>($r10);
+
+        $r11 = new javaonepointfive.VarityTestSub;
+
+        specialinvoke $r11.<javaonepointfive.VarityTestSub: void <init>()>();
+
+        $r12 = newarray (java.lang.String)[3];
+
+        $r12[0] = "Hello";
+
+        $r12[1] = "world";
+
+        $r12[2] = "howareya";
+
+        virtualinvoke $r11.<javaonepointfive.VarityTestSuper: void bar(java.lang.String[])>($r12);
+
+        return;
+    }
+}

@@ -1,0 +1,67 @@
+class foo.bar.hello.world.SuperEnclosing$SubEnclosed extends foo.bar.hello.world.SuperEnclosing
+{
+    int seVar2;
+    final foo.bar.hello.world.SuperEnclosing this$0;
+
+    void <init>(foo.bar.hello.world.SuperEnclosing)
+    {
+        foo.bar.hello.world.SuperEnclosing$SubEnclosed r0;
+        foo.bar.hello.world.SuperEnclosing r1;
+
+        r0 := @this: foo.bar.hello.world.SuperEnclosing$SubEnclosed;
+
+        r1 := @parameter0: foo.bar.hello.world.SuperEnclosing;
+
+        r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: foo.bar.hello.world.SuperEnclosing this$0> = r1;
+
+        specialinvoke r0.<foo.bar.hello.world.SuperEnclosing: void <init>()>();
+
+        r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar2> = 11;
+
+        r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar> = 5;
+
+        r1.<foo.bar.hello.world.SuperEnclosing: int seVar> = 7;
+
+        r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar2> = 12;
+
+        r1.<foo.bar.hello.world.SuperEnclosing: int seVar2> = 13;
+
+        return;
+    }
+
+    int hello()
+    {
+        foo.bar.hello.world.SuperEnclosing$SubEnclosed r0;
+        int $i0;
+
+        r0 := @this: foo.bar.hello.world.SuperEnclosing$SubEnclosed;
+
+        $i0 = r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar>;
+
+        return $i0;
+    }
+
+    int helloAgain()
+    {
+        foo.bar.hello.world.SuperEnclosing$SubEnclosed r0;
+        int $i0;
+
+        r0 := @this: foo.bar.hello.world.SuperEnclosing$SubEnclosed;
+
+        $i0 = r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar>;
+
+        return $i0;
+    }
+
+    int hello2()
+    {
+        foo.bar.hello.world.SuperEnclosing$SubEnclosed r0;
+        int $i0;
+
+        r0 := @this: foo.bar.hello.world.SuperEnclosing$SubEnclosed;
+
+        $i0 = r0.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar2>;
+
+        return $i0;
+    }
+}

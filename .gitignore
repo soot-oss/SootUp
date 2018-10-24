@@ -2,6 +2,7 @@
 ### Java template
 # Compiled class file
 *.class
+!src/test/resources/**/*.class
 
 # Log file
 *.log
@@ -143,3 +144,11 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+!src/test/resources/**/*.jar
+# allow jar in testresources
+\.checkstyle
+
+\.project
+
+\.classpath

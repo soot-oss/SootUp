@@ -1,0 +1,27 @@
+class Sub$SubInner extends java.lang.Object
+{
+    final Sub this$0;
+
+    public void <init>(Sub)
+    {
+        Sub$SubInner r0;
+        Sub r1;
+        InnerClassSuper$SuperOuter $r3;
+
+        r0 := @this: Sub$SubInner;
+
+        r1 := @parameter0: Sub;
+
+        r0.<Sub$SubInner: Sub this$0> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r3 = new InnerClassSuper$SuperOuter;
+
+        specialinvoke $r3.<InnerClassSuper$SuperOuter: void <init>(InnerClassSuper)>(r1);
+
+        virtualinvoke $r3.<InnerClassSuper$SuperOuter: void test()>();
+
+        return;
+    }
+}

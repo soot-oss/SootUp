@@ -1,0 +1,46 @@
+public class Inheritance1 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        Inheritance1 r0;
+
+        r0 := @this: Inheritance1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        Inheritance1 $r4;
+        Base $r5;
+        Derived $r6;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r4 = new Inheritance1;
+
+        specialinvoke $r4.<Inheritance1: void <init>()>();
+
+        $r5 = new Base;
+
+        specialinvoke $r5.<Base: void <init>()>();
+
+        $r6 = new Derived;
+
+        specialinvoke $r6.<Derived: void <init>()>();
+
+        virtualinvoke $r5.<Base: void foo()>();
+
+        virtualinvoke $r6.<Base: void foo()>();
+
+        virtualinvoke $r5.<Base: java.lang.String bar(int)>(3);
+
+        virtualinvoke $r6.<Base: java.lang.String bar(int)>(5);
+
+        return;
+    }
+}

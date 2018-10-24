@@ -1,0 +1,47 @@
+public class FunkySupers extends java.lang.Object
+{
+    int y;
+
+    public void <init>()
+    {
+        FunkySupers r0;
+
+        r0 := @this: FunkySupers;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    int funky(FunkySupers)
+    {
+        FunkySupers r0, r1;
+
+        r0 := @this: FunkySupers;
+
+        r1 := @parameter0: FunkySupers;
+
+        return 5;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        SubFunkySupers $r1;
+        FunkySupers $r2;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new SubFunkySupers;
+
+        specialinvoke $r1.<SubFunkySupers: void <init>()>();
+
+        $r2 = new FunkySupers;
+
+        specialinvoke $r2.<FunkySupers: void <init>()>();
+
+        virtualinvoke $r1.<SubFunkySupers: int funky(FunkySupers)>($r2);
+
+        return;
+    }
+}

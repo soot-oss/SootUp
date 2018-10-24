@@ -1,0 +1,293 @@
+public class foo.bar.hello.world.MethodMadness extends java.lang.Object
+{
+    public static int s;
+    public int x;
+
+    public void <init>()
+    {
+        foo.bar.hello.world.MethodMadness r0;
+        java.io.PrintStream $r1;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<foo.bar.hello.world.MethodMadness: int x> = 100000;
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>("constructor");
+
+        return;
+    }
+
+    public void <init>(java.lang.String)
+    {
+        foo.bar.hello.world.MethodMadness r0;
+        java.lang.String r1, $r6;
+        java.lang.StringBuilder $r2, $r4, $r5;
+        java.io.PrintStream $r3;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness;
+
+        r1 := @parameter0: java.lang.String;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<foo.bar.hello.world.MethodMadness: int x> = 100000;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        $r2 = new java.lang.StringBuilder;
+
+        specialinvoke $r2.<java.lang.StringBuilder: void <init>()>();
+
+        $r4 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("hello world");
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r1);
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r6);
+
+        return;
+    }
+
+    public static void staticTest()
+    {
+        java.io.PrintStream $r0;
+
+        $r0 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>("staticTest");
+
+        return;
+    }
+
+    protected int protectedInteger()
+    {
+        foo.bar.hello.world.MethodMadness r0, $r1, $r2;
+        int $i0, $i1, $i2, $i3, $i4;
+        java.lang.StringBuilder $r3, $r5, $r6;
+        java.io.PrintStream $r4;
+        java.lang.String $r7;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness;
+
+        <foo.bar.hello.world.MethodMadness: int s> = 5;
+
+        $r1 = new foo.bar.hello.world.MethodMadness;
+
+        specialinvoke $r1.<foo.bar.hello.world.MethodMadness: void <init>(java.lang.String)>("thrownaway");
+
+        staticinvoke <foo.bar.hello.world.MethodMadness: void staticTest()>();
+
+        $r2 = new foo.bar.hello.world.MethodMadness;
+
+        specialinvoke $r2.<foo.bar.hello.world.MethodMadness: void <init>(java.lang.String)>("thrownaway");
+
+        $i0 = <foo.bar.hello.world.MethodMadness: int s>;
+
+        $i1 = $i0 + 1;
+
+        <foo.bar.hello.world.MethodMadness: int s> = $i1;
+
+        staticinvoke <foo.bar.hello.world.MethodMadness: void staticTest()>();
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $r3 = new java.lang.StringBuilder;
+
+        specialinvoke $r3.<java.lang.StringBuilder: void <init>()>();
+
+        $r5 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("s from nullmm: ");
+
+        $i2 = <foo.bar.hello.world.MethodMadness: int s>;
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i2);
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r7);
+
+        $i3 = r0.<foo.bar.hello.world.MethodMadness: int x>;
+
+        $i4 = 6 + $i3;
+
+        return $i4;
+    }
+
+    protected int protectedInteger2()
+    {
+        foo.bar.hello.world.MethodMadness r0;
+        int $i0, $i1;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness;
+
+        $i0 = r0.<foo.bar.hello.world.MethodMadness: int x>;
+
+        $i1 = 66 + $i0;
+
+        return $i1;
+    }
+
+    void defaultVoid()
+    {
+        foo.bar.hello.world.MethodMadness r0;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness;
+
+        return;
+    }
+
+    private void privateVoid()
+    {
+        foo.bar.hello.world.MethodMadness r0;
+        java.lang.StringBuilder $r1, $r3, $r4;
+        java.io.PrintStream $r2;
+        int $i0;
+        java.lang.String $r5;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = new java.lang.StringBuilder;
+
+        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("privateVoid ");
+
+        $i0 = r0.<foo.bar.hello.world.MethodMadness: int x>;
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i0);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r5);
+
+        return;
+    }
+
+    protected void protectedVoid()
+    {
+        foo.bar.hello.world.MethodMadness r0;
+        java.lang.StringBuilder $r1, $r3, $r4;
+        java.io.PrintStream $r2;
+        int $i0;
+        java.lang.String $r5;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness;
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = new java.lang.StringBuilder;
+
+        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("protectedVoid ");
+
+        $i0 = r0.<foo.bar.hello.world.MethodMadness: int x>;
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i0);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r5);
+
+        return;
+    }
+
+    private int privateInteger()
+    {
+        foo.bar.hello.world.MethodMadness r0;
+        int $i0, $i1;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness;
+
+        $i0 = r0.<foo.bar.hello.world.MethodMadness: int x>;
+
+        $i1 = 7 + $i0;
+
+        return $i1;
+    }
+
+    private int privateInteger2()
+    {
+        foo.bar.hello.world.MethodMadness r0;
+        int $i0, $i1;
+
+        r0 := @this: foo.bar.hello.world.MethodMadness;
+
+        $i0 = r0.<foo.bar.hello.world.MethodMadness: int x>;
+
+        $i1 = 77 + $i0;
+
+        return $i1;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        foo.bar.hello.world.MethodMadness$Inner $r1;
+        foo.bar.hello.world.MethodMadness $r2;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new foo.bar.hello.world.MethodMadness$Inner;
+
+        $r2 = new foo.bar.hello.world.MethodMadness;
+
+        specialinvoke $r2.<foo.bar.hello.world.MethodMadness: void <init>()>();
+
+        virtualinvoke $r2.<java.lang.Object: java.lang.Class getClass()>();
+
+        specialinvoke $r1.<foo.bar.hello.world.MethodMadness$Inner: void <init>(foo.bar.hello.world.MethodMadness)>($r2);
+
+        virtualinvoke $r1.<foo.bar.hello.world.MethodMadness$Inner: void hello()>();
+
+        return;
+    }
+
+    static int access$000(foo.bar.hello.world.MethodMadness)
+    {
+        foo.bar.hello.world.MethodMadness r0;
+        int $i0;
+
+        r0 := @parameter0: foo.bar.hello.world.MethodMadness;
+
+        $i0 = specialinvoke r0.<foo.bar.hello.world.MethodMadness: int privateInteger()>();
+
+        return $i0;
+    }
+
+    static int access$100(foo.bar.hello.world.MethodMadness)
+    {
+        foo.bar.hello.world.MethodMadness r0;
+        int $i0;
+
+        r0 := @parameter0: foo.bar.hello.world.MethodMadness;
+
+        $i0 = specialinvoke r0.<foo.bar.hello.world.MethodMadness: int privateInteger2()>();
+
+        return $i0;
+    }
+
+    static void access$200(foo.bar.hello.world.MethodMadness)
+    {
+        foo.bar.hello.world.MethodMadness r0;
+
+        r0 := @parameter0: foo.bar.hello.world.MethodMadness;
+
+        specialinvoke r0.<foo.bar.hello.world.MethodMadness: void privateVoid()>();
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        <foo.bar.hello.world.MethodMadness: int s> = 12345;
+
+        return;
+    }
+}

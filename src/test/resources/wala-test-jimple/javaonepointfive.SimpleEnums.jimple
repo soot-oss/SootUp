@@ -1,0 +1,89 @@
+public class javaonepointfive.SimpleEnums extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.SimpleEnums r0;
+
+        r0 := @this: javaonepointfive.SimpleEnums;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private void doit(javaonepointfive.SimpleEnums$Direction)
+    {
+        javaonepointfive.SimpleEnums r0;
+        javaonepointfive.SimpleEnums$Direction r1, $r7;
+        java.lang.StringBuilder $r2, $r4, $r5, $r8;
+        java.io.PrintStream $r3;
+        java.lang.String $r6, $r9;
+
+        r0 := @this: javaonepointfive.SimpleEnums;
+
+        r1 := @parameter0: javaonepointfive.SimpleEnums$Direction;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        $r2 = new java.lang.StringBuilder;
+
+        specialinvoke $r2.<java.lang.StringBuilder: void <init>()>();
+
+        $r4 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.Object)>(r1);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" ");
+
+        $r6 = virtualinvoke r1.<javaonepointfive.SimpleEnums$Direction: java.lang.String toString()>();
+
+        $r7 = staticinvoke <javaonepointfive.SimpleEnums$Direction: javaonepointfive.SimpleEnums$Direction valueOf(java.lang.String)>($r6);
+
+        $r8 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.Object)>($r7);
+
+        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r9);
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.SimpleEnums$Direction[] r1;
+        int i0, i1;
+        javaonepointfive.SimpleEnums$Direction r2;
+        java.io.PrintStream $r3;
+        javaonepointfive.SimpleEnums $r4;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("never eat shredded wheat");
+
+        r1 = staticinvoke <javaonepointfive.SimpleEnums$Direction: javaonepointfive.SimpleEnums$Direction[] values()>();
+
+        i0 = lengthof r1;
+
+        i1 = 0;
+
+     label1:
+        if i1 >= i0 goto label2;
+
+        r2 = r1[i1];
+
+        $r4 = new javaonepointfive.SimpleEnums;
+
+        specialinvoke $r4.<javaonepointfive.SimpleEnums: void <init>()>();
+
+        specialinvoke $r4.<javaonepointfive.SimpleEnums: void doit(javaonepointfive.SimpleEnums$Direction)>(r2);
+
+        i1 = i1 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+}

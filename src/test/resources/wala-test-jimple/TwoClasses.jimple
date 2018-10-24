@@ -1,0 +1,108 @@
+public class TwoClasses extends java.lang.Object
+{
+    private int value;
+    private float fval;
+
+    public void <init>(int)
+    {
+        TwoClasses r0;
+        int i0;
+
+        r0 := @this: TwoClasses;
+
+        i0 := @parameter0: int;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<TwoClasses: float fval> = 3.14F;
+
+        r0.<TwoClasses: int value> = i0;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        TwoClasses r0;
+
+        r0 := @this: TwoClasses;
+
+        specialinvoke r0.<TwoClasses: void <init>(int)>(0);
+
+        return;
+    }
+
+    public static void doStuff(int)
+    {
+        int i0, i2;
+        TwoClasses $r1;
+
+        i0 := @parameter0: int;
+
+        $r1 = new TwoClasses;
+
+        specialinvoke $r1.<TwoClasses: void <init>()>();
+
+        virtualinvoke $r1.<TwoClasses: void instanceMethod1()>();
+
+        i2 = 0;
+
+     label1:
+        if i2 >= i0 goto label2;
+
+        i2 = i2 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        int i0, i1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        i0 = 0;
+
+        i1 = 0;
+
+     label1:
+        if i1 >= 10 goto label2;
+
+        i0 = i0 + i1;
+
+        i1 = i1 + 1;
+
+        goto label1;
+
+     label2:
+        staticinvoke <TwoClasses: void doStuff(int)>(i0);
+
+        return;
+    }
+
+    public void instanceMethod1()
+    {
+        TwoClasses r0;
+
+        r0 := @this: TwoClasses;
+
+        virtualinvoke r0.<TwoClasses: void instanceMethod2()>();
+
+        return;
+    }
+
+    public void instanceMethod2()
+    {
+        TwoClasses r0;
+
+        r0 := @this: TwoClasses;
+
+        staticinvoke <Bar: Bar create(char)>(97);
+
+        return;
+    }
+}

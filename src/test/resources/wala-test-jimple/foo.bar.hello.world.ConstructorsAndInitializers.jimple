@@ -1,0 +1,88 @@
+public class foo.bar.hello.world.ConstructorsAndInitializers extends foo.bar.hello.world.Super
+{
+    static int iX;
+    static int sX;
+    java.lang.Object x;
+
+    void <init>()
+    {
+        foo.bar.hello.world.ConstructorsAndInitializers r0;
+
+        r0 := @this: foo.bar.hello.world.ConstructorsAndInitializers;
+
+        specialinvoke r0.<foo.bar.hello.world.ConstructorsAndInitializers: void <init>(java.lang.String)>("hello");
+
+        return;
+    }
+
+    protected void <init>(java.lang.String)
+    {
+        foo.bar.hello.world.ConstructorsAndInitializers r0;
+        java.lang.String r1;
+        int $i1;
+        foo.bar.hello.world.ConstructorsAndInitializers$1 $r2;
+
+        r0 := @this: foo.bar.hello.world.ConstructorsAndInitializers;
+
+        r1 := @parameter0: java.lang.String;
+
+        specialinvoke r0.<foo.bar.hello.world.Super: void <init>(java.lang.String)>("yo");
+
+        <foo.bar.hello.world.ConstructorsAndInitializers: int iX> = 88;
+
+        <foo.bar.hello.world.ConstructorsAndInitializers: int sX> = 6;
+
+        $i1 = 5 + 9;
+
+        <foo.bar.hello.world.ConstructorsAndInitializers: int iX> = $i1;
+
+        $r2 = new foo.bar.hello.world.ConstructorsAndInitializers$1;
+
+        specialinvoke $r2.<foo.bar.hello.world.ConstructorsAndInitializers$1: void <init>(foo.bar.hello.world.ConstructorsAndInitializers,java.lang.String)>(r0, "yo wassup");
+
+        r0.<foo.bar.hello.world.ConstructorsAndInitializers: java.lang.Object x> = $r2;
+
+        <foo.bar.hello.world.ConstructorsAndInitializers: int iX> = 99;
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        foo.bar.hello.world.ConstructorsAndInitializers $r2;
+        java.io.PrintStream $r3;
+        java.lang.Object $r4;
+        java.lang.String $r5;
+        foo.bar.hello.world.ConstructorsAndInitializers$1T $r6;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        $r2 = new foo.bar.hello.world.ConstructorsAndInitializers;
+
+        specialinvoke $r2.<foo.bar.hello.world.ConstructorsAndInitializers: void <init>()>();
+
+        $r4 = $r2.<foo.bar.hello.world.ConstructorsAndInitializers: java.lang.Object x>;
+
+        $r5 = virtualinvoke $r4.<java.lang.Object: java.lang.String toString()>();
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r5);
+
+        $r6 = new foo.bar.hello.world.ConstructorsAndInitializers$1T;
+
+        specialinvoke $r6.<foo.bar.hello.world.ConstructorsAndInitializers$1T: void <init>()>();
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        <foo.bar.hello.world.ConstructorsAndInitializers: int sX> = 11;
+
+        <foo.bar.hello.world.ConstructorsAndInitializers: int sX> = 22;
+
+        return;
+    }
+}

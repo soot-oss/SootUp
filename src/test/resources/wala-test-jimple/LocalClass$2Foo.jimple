@@ -1,0 +1,63 @@
+class LocalClass$2Foo extends java.lang.Object
+{
+    int value;
+    final java.lang.Integer val$base;
+    final LocalClass this$0;
+
+    public void <init>(LocalClass, int, java.lang.Integer)
+    {
+        LocalClass$2Foo r0;
+        LocalClass r1;
+        int i0;
+        java.lang.Integer r2;
+
+        r0 := @this: LocalClass$2Foo;
+
+        r1 := @parameter0: LocalClass;
+
+        i0 := @parameter1: int;
+
+        r2 := @parameter2: java.lang.Integer;
+
+        r0.<LocalClass$2Foo: LocalClass this$0> = r1;
+
+        r0.<LocalClass$2Foo: java.lang.Integer val$base> = r2;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<LocalClass$2Foo: int value> = i0;
+
+        return;
+    }
+
+    public int getValue()
+    {
+        LocalClass$2Foo r0;
+        int $i0;
+
+        r0 := @this: LocalClass$2Foo;
+
+        $i0 = r0.<LocalClass$2Foo: int value>;
+
+        return $i0;
+    }
+
+    public int getValueBase()
+    {
+        LocalClass$2Foo r0;
+        java.lang.Integer $r1;
+        int $i0, $i1, $i2;
+
+        r0 := @this: LocalClass$2Foo;
+
+        $i0 = r0.<LocalClass$2Foo: int value>;
+
+        $r1 = r0.<LocalClass$2Foo: java.lang.Integer val$base>;
+
+        $i1 = virtualinvoke $r1.<java.lang.Integer: int intValue()>();
+
+        $i2 = $i0 - $i1;
+
+        return $i2;
+    }
+}

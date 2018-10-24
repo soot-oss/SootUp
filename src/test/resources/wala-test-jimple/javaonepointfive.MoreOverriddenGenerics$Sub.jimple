@@ -1,0 +1,47 @@
+class javaonepointfive.MoreOverriddenGenerics$Sub extends javaonepointfive.MoreOverriddenGenerics$Super
+{
+    final javaonepointfive.MoreOverriddenGenerics this$0;
+
+    void <init>(javaonepointfive.MoreOverriddenGenerics)
+    {
+        javaonepointfive.MoreOverriddenGenerics$Sub r0;
+        javaonepointfive.MoreOverriddenGenerics r1;
+
+        r0 := @this: javaonepointfive.MoreOverriddenGenerics$Sub;
+
+        r1 := @parameter0: javaonepointfive.MoreOverriddenGenerics;
+
+        r0.<javaonepointfive.MoreOverriddenGenerics$Sub: javaonepointfive.MoreOverriddenGenerics this$0> = r1;
+
+        specialinvoke r0.<javaonepointfive.MoreOverriddenGenerics$Super: void <init>(javaonepointfive.MoreOverriddenGenerics)>(r1);
+
+        return;
+    }
+
+    public java.lang.Number get()
+    {
+        javaonepointfive.MoreOverriddenGenerics$Sub r0;
+        java.lang.Object $r1;
+        java.lang.Number $r2;
+
+        r0 := @this: javaonepointfive.MoreOverriddenGenerics$Sub;
+
+        $r1 = specialinvoke r0.<javaonepointfive.MoreOverriddenGenerics$Super: java.lang.Object get()>();
+
+        $r2 = (java.lang.Number) $r1;
+
+        return $r2;
+    }
+
+    public volatile java.lang.Object get()
+    {
+        javaonepointfive.MoreOverriddenGenerics$Sub r0;
+        java.lang.Number $r1;
+
+        r0 := @this: javaonepointfive.MoreOverriddenGenerics$Sub;
+
+        $r1 = virtualinvoke r0.<javaonepointfive.MoreOverriddenGenerics$Sub: java.lang.Number get()>();
+
+        return $r1;
+    }
+}

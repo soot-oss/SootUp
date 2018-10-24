@@ -1,0 +1,70 @@
+public class Monitor extends java.lang.Object
+{
+    int i;
+
+    public void <init>()
+    {
+        Monitor r0;
+
+        r0 := @this: Monitor;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<Monitor: int i> = 0;
+
+        return;
+    }
+
+    public void incr()
+    {
+        Monitor r0;
+        int $i0, $i1;
+        java.lang.Throwable $r4;
+
+        r0 := @this: Monitor;
+
+        entermonitor r0;
+
+     label1:
+        $i0 = r0.<Monitor: int i>;
+
+        $i1 = $i0 + 1;
+
+        r0.<Monitor: int i> = $i1;
+
+        exitmonitor r0;
+
+     label2:
+        goto label5;
+
+     label3:
+        $r4 := @caughtexception;
+
+        exitmonitor r0;
+
+     label4:
+        throw $r4;
+
+     label5:
+        return;
+
+        catch java.lang.Throwable from label1 to label2 with label3;
+        catch java.lang.Throwable from label3 to label4 with label3;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        Monitor $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new Monitor;
+
+        specialinvoke $r1.<Monitor: void <init>()>();
+
+        virtualinvoke $r1.<Monitor: void incr()>();
+
+        return;
+    }
+}

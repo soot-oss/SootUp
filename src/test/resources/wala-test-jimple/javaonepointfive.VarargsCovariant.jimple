@@ -1,0 +1,74 @@
+public class javaonepointfive.VarargsCovariant extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.VarargsCovariant r0;
+
+        r0 := @this: javaonepointfive.VarargsCovariant;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.VarargsCovariant $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.VarargsCovariant;
+
+        specialinvoke $r1.<javaonepointfive.VarargsCovariant: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.VarargsCovariant: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.VarargsCovariant r0;
+        javaonepointfive.VarargsCovariant$A $r1;
+        int[] $r2, $r5;
+        javaonepointfive.VarargsCovariant$B $r4;
+
+        r0 := @this: javaonepointfive.VarargsCovariant;
+
+        $r1 = new javaonepointfive.VarargsCovariant$A;
+
+        specialinvoke $r1.<javaonepointfive.VarargsCovariant$A: void <init>()>();
+
+        $r2 = newarray (int)[4];
+
+        $r2[0] = 3114;
+
+        $r2[1] = 35;
+
+        $r2[2] = 74;
+
+        $r2[3] = 51617054;
+
+        virtualinvoke $r1.<javaonepointfive.VarargsCovariant$A: javaonepointfive.VarargsCovariant$A hello(int[])>($r2);
+
+        $r4 = new javaonepointfive.VarargsCovariant$B;
+
+        specialinvoke $r4.<javaonepointfive.VarargsCovariant$B: void <init>()>();
+
+        $r5 = newarray (int)[4];
+
+        $r5[0] = 3114;
+
+        $r5[1] = 35;
+
+        $r5[2] = 74;
+
+        $r5[3] = 51617054;
+
+        virtualinvoke $r4.<javaonepointfive.VarargsCovariant$A: javaonepointfive.VarargsCovariant$A hello(int[])>($r5);
+
+        return;
+    }
+}

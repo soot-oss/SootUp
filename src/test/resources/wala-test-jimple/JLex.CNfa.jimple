@@ -1,0 +1,136 @@
+class JLex.CNfa extends java.lang.Object
+{
+    int m_edge;
+    JLex.CSet m_set;
+    JLex.CNfa m_next;
+    JLex.CNfa m_next2;
+    JLex.CAccept m_accept;
+    int m_anchor;
+    int m_label;
+    JLex.SparseBitSet m_states;
+    static final int NO_LABEL;
+    static final int CCL;
+    static final int EMPTY;
+    static final int EPSILON;
+
+    void <init>()
+    {
+        JLex.CNfa r0;
+
+        r0 := @this: JLex.CNfa;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<JLex.CNfa: int m_edge> = -2;
+
+        r0.<JLex.CNfa: JLex.CSet m_set> = null;
+
+        r0.<JLex.CNfa: JLex.CNfa m_next> = null;
+
+        r0.<JLex.CNfa: JLex.CNfa m_next2> = null;
+
+        r0.<JLex.CNfa: JLex.CAccept m_accept> = null;
+
+        r0.<JLex.CNfa: int m_anchor> = 0;
+
+        r0.<JLex.CNfa: int m_label> = -1;
+
+        r0.<JLex.CNfa: JLex.SparseBitSet m_states> = null;
+
+        return;
+    }
+
+    void mimic(JLex.CNfa)
+    {
+        JLex.CNfa r0, r1, $r3, $r4;
+        int $i0, $i1;
+        JLex.CSet $r2, $r10, $r11, $r12, $r13;
+        JLex.CAccept $r5;
+        JLex.SparseBitSet $r6, $r7, $r9;
+        java.lang.Object $r8;
+
+        r0 := @this: JLex.CNfa;
+
+        r1 := @parameter0: JLex.CNfa;
+
+        $i0 = r1.<JLex.CNfa: int m_edge>;
+
+        r0.<JLex.CNfa: int m_edge> = $i0;
+
+        $r2 = r1.<JLex.CNfa: JLex.CSet m_set>;
+
+        if null == $r2 goto label2;
+
+        $r10 = r0.<JLex.CNfa: JLex.CSet m_set>;
+
+        if null != $r10 goto label1;
+
+        $r13 = new JLex.CSet;
+
+        specialinvoke $r13.<JLex.CSet: void <init>()>();
+
+        r0.<JLex.CNfa: JLex.CSet m_set> = $r13;
+
+     label1:
+        $r12 = r0.<JLex.CNfa: JLex.CSet m_set>;
+
+        $r11 = r1.<JLex.CNfa: JLex.CSet m_set>;
+
+        virtualinvoke $r12.<JLex.CSet: void mimic(JLex.CSet)>($r11);
+
+        goto label3;
+
+     label2:
+        r0.<JLex.CNfa: JLex.CSet m_set> = null;
+
+     label3:
+        $r3 = r1.<JLex.CNfa: JLex.CNfa m_next>;
+
+        r0.<JLex.CNfa: JLex.CNfa m_next> = $r3;
+
+        $r4 = r1.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        r0.<JLex.CNfa: JLex.CNfa m_next2> = $r4;
+
+        $r5 = r1.<JLex.CNfa: JLex.CAccept m_accept>;
+
+        r0.<JLex.CNfa: JLex.CAccept m_accept> = $r5;
+
+        $i1 = r1.<JLex.CNfa: int m_anchor>;
+
+        r0.<JLex.CNfa: int m_anchor> = $i1;
+
+        $r6 = r1.<JLex.CNfa: JLex.SparseBitSet m_states>;
+
+        if null == $r6 goto label4;
+
+        $r7 = r1.<JLex.CNfa: JLex.SparseBitSet m_states>;
+
+        $r8 = virtualinvoke $r7.<JLex.SparseBitSet: java.lang.Object clone()>();
+
+        $r9 = (JLex.SparseBitSet) $r8;
+
+        r0.<JLex.CNfa: JLex.SparseBitSet m_states> = $r9;
+
+        goto label5;
+
+     label4:
+        r0.<JLex.CNfa: JLex.SparseBitSet m_states> = null;
+
+     label5:
+        return;
+    }
+
+    public static void <clinit>()
+    {
+        <JLex.CNfa: int EPSILON> = -3;
+
+        <JLex.CNfa: int EMPTY> = -2;
+
+        <JLex.CNfa: int CCL> = -1;
+
+        <JLex.CNfa: int NO_LABEL> = -1;
+
+        return;
+    }
+}

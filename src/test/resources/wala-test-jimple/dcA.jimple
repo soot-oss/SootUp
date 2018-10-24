@@ -1,0 +1,33 @@
+class dcA extends java.lang.Object
+{
+    int x;
+
+    void <init>()
+    {
+        dcA r0;
+
+        r0 := @this: dcA;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<dcA: int x> = 5;
+
+        return;
+    }
+
+    void <init>(int)
+    {
+        dcA r0;
+        int i0;
+
+        r0 := @this: dcA;
+
+        i0 := @parameter0: int;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<dcA: int x> = i0;
+
+        return;
+    }
+}

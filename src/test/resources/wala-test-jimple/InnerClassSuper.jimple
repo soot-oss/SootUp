@@ -1,0 +1,38 @@
+public class InnerClassSuper extends java.lang.Object
+{
+    int x;
+
+    public void <init>()
+    {
+        InnerClassSuper r0;
+
+        r0 := @this: InnerClassSuper;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<InnerClassSuper: int x> = 5;
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        Sub$SubInner $r1;
+        Sub $r2;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new Sub$SubInner;
+
+        $r2 = new Sub;
+
+        specialinvoke $r2.<Sub: void <init>()>();
+
+        virtualinvoke $r2.<java.lang.Object: java.lang.Class getClass()>();
+
+        specialinvoke $r1.<Sub$SubInner: void <init>(Sub)>($r2);
+
+        return;
+    }
+}

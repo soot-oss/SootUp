@@ -1,0 +1,23 @@
+final class foo.bar.hello.world.InnerClasses$1 extends java.lang.Object
+{
+
+    void <init>()
+    {
+        foo.bar.hello.world.InnerClasses$1 r0;
+
+        r0 := @this: foo.bar.hello.world.InnerClasses$1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public int hashCode()
+    {
+        foo.bar.hello.world.InnerClasses$1 r0;
+
+        r0 := @this: foo.bar.hello.world.InnerClasses$1;
+
+        return 5;
+    }
+}

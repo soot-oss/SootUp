@@ -1,0 +1,21 @@
+class InnerClassA$AB$ABA extends java.lang.Object
+{
+    int aba_x;
+    final InnerClassA$AB this$1;
+
+    void <init>(InnerClassA$AB)
+    {
+        InnerClassA$AB$ABA r0;
+        InnerClassA$AB r1;
+
+        r0 := @this: InnerClassA$AB$ABA;
+
+        r1 := @parameter0: InnerClassA$AB;
+
+        r0.<InnerClassA$AB$ABA: InnerClassA$AB this$1> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}

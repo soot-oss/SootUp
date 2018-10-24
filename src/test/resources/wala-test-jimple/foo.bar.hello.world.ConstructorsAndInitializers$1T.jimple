@@ -1,0 +1,14 @@
+class foo.bar.hello.world.ConstructorsAndInitializers$1T extends java.lang.Object
+{
+
+    void <init>()
+    {
+        foo.bar.hello.world.ConstructorsAndInitializers$1T r0;
+
+        r0 := @this: foo.bar.hello.world.ConstructorsAndInitializers$1T;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}

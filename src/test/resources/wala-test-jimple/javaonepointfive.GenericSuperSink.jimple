@@ -1,0 +1,77 @@
+public class javaonepointfive.GenericSuperSink extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.GenericSuperSink r0;
+
+        r0 := @this: javaonepointfive.GenericSuperSink;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.GenericSuperSink $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.GenericSuperSink;
+
+        specialinvoke $r1.<javaonepointfive.GenericSuperSink: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.GenericSuperSink: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.GenericSuperSink r0;
+        java.util.ArrayList $r2, $r3, $r7;
+        java.util.Iterator $r4, $r8;
+        java.lang.Object $r5, $r9;
+        java.io.PrintStream $r6, $r10;
+
+        r0 := @this: javaonepointfive.GenericSuperSink;
+
+        $r2 = new java.util.ArrayList;
+
+        specialinvoke $r2.<java.util.ArrayList: void <init>()>();
+
+        interfaceinvoke $r2.<java.util.Collection: boolean add(java.lang.Object)>("hello");
+
+        $r3 = new java.util.ArrayList;
+
+        specialinvoke $r3.<java.util.ArrayList: void <init>()>();
+
+        $r4 = interfaceinvoke $r2.<java.util.Collection: java.util.Iterator iterator()>();
+
+        $r5 = interfaceinvoke $r4.<java.util.Iterator: java.lang.Object next()>();
+
+        interfaceinvoke $r3.<java.util.Collection: boolean add(java.lang.Object)>($r5);
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.Object)>($r3);
+
+        $r7 = new java.util.ArrayList;
+
+        specialinvoke $r7.<java.util.ArrayList: void <init>()>();
+
+        $r8 = interfaceinvoke $r2.<java.util.Collection: java.util.Iterator iterator()>();
+
+        $r9 = interfaceinvoke $r8.<java.util.Iterator: java.lang.Object next()>();
+
+        interfaceinvoke $r7.<java.util.Collection: boolean add(java.lang.Object)>($r9);
+
+        $r10 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r10.<java.io.PrintStream: void println(java.lang.Object)>($r7);
+
+        return;
+    }
+}

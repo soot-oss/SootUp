@@ -1,0 +1,78 @@
+public class javaonepointfive.ExplicitBoxingTest extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.ExplicitBoxingTest r0;
+
+        r0 := @this: javaonepointfive.ExplicitBoxingTest;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.ExplicitBoxingTest $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.ExplicitBoxingTest;
+
+        specialinvoke $r1.<javaonepointfive.ExplicitBoxingTest: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.ExplicitBoxingTest: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.ExplicitBoxingTest r0;
+        java.lang.Integer r2, r4;
+        int i0, i1, $i2, $i3, i5, i7;
+        java.io.PrintStream $r5, $r6, $r7, $r8;
+
+        r0 := @this: javaonepointfive.ExplicitBoxingTest;
+
+        i5 = 6 + 6;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>(i5);
+
+        staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(11);
+
+        $i2 = i5 + i5;
+
+        r2 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>($i2);
+
+        i0 = virtualinvoke r2.<java.lang.Integer: int intValue()>();
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(int)>(i0);
+
+        i7 = 6 + 6;
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(int)>(i7);
+
+        staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(11);
+
+        $i3 = i7 + i7;
+
+        r4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>($i3);
+
+        i1 = virtualinvoke r4.<java.lang.Integer: int intValue()>();
+
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(int)>(i1);
+
+        return;
+    }
+}

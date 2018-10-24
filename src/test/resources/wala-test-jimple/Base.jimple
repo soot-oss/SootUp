@@ -1,0 +1,38 @@
+class Base extends java.lang.Object
+{
+
+    void <init>()
+    {
+        Base r0;
+
+        r0 := @this: Base;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void foo()
+    {
+        Base r0;
+
+        r0 := @this: Base;
+
+        return;
+    }
+
+    public java.lang.String bar(int)
+    {
+        Base r0;
+        int i0;
+        java.lang.String $r1;
+
+        r0 := @this: Base;
+
+        i0 := @parameter0: int;
+
+        $r1 = staticinvoke <java.lang.Integer: java.lang.String toOctalString(int)>(i0);
+
+        return $r1;
+    }
+}

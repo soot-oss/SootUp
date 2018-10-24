@@ -1,0 +1,212 @@
+public class foo.bar.hello.world.InnerClasses extends foo.bar.hello.world.Temp
+{
+    static java.lang.String xxxx;
+
+    public void <init>()
+    {
+        foo.bar.hello.world.InnerClasses r0;
+
+        r0 := @this: foo.bar.hello.world.InnerClasses;
+
+        specialinvoke r0.<foo.bar.hello.world.Temp: void <init>()>();
+
+        return;
+    }
+
+    java.lang.Object supportLocalBusiness()
+    {
+        foo.bar.hello.world.InnerClasses r0;
+        foo.bar.hello.world.InnerClasses$1FooBar $r1;
+
+        r0 := @this: foo.bar.hello.world.InnerClasses;
+
+        $r1 = new foo.bar.hello.world.InnerClasses$1FooBar;
+
+        specialinvoke $r1.<foo.bar.hello.world.InnerClasses$1FooBar: void <init>(foo.bar.hello.world.InnerClasses)>(r0);
+
+        return $r1;
+    }
+
+    static java.lang.Object anonymousCoward()
+    {
+        foo.bar.hello.world.InnerClasses$1 $r0;
+
+        $r0 = new foo.bar.hello.world.InnerClasses$1;
+
+        specialinvoke $r0.<foo.bar.hello.world.InnerClasses$1: void <init>()>();
+
+        return $r0;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        foo.bar.hello.world.Outie$Innie $r5;
+        foo.bar.hello.world.Outie $r6;
+        java.io.PrintStream $r8, $r11, $r14, $r16, $r19, $r23, $r27, $r31, $r36, $r37, $r38;
+        java.lang.Object $r9, $r15;
+        int $i0, $i1, $i2, $i3, $i4, $i5, $i6, $i7, $i8;
+        foo.bar.hello.world.InnerClasses$2 $r10;
+        foo.bar.hello.world.InnerClasses$3 $r12;
+        foo.bar.hello.world.InnerClasses $r13;
+        foo.bar.hello.world.SuperEnclosing$SubEnclosed $r17, $r21, $r25, $r29;
+        foo.bar.hello.world.SuperEnclosing $r18, $r22, $r26, $r30;
+        foo.bar.hello.world.SuperEnclosing2 $r33;
+        foo.bar.hello.world.SuperEnclosing2$SubEnclosed2 $r34;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r5 = new foo.bar.hello.world.Outie$Innie;
+
+        $r6 = new foo.bar.hello.world.Outie;
+
+        specialinvoke $r6.<foo.bar.hello.world.Outie: void <init>(java.lang.String)>("eenie");
+
+        virtualinvoke $r6.<java.lang.Object: java.lang.Class getClass()>();
+
+        specialinvoke $r5.<foo.bar.hello.world.Outie$Innie: void <init>(foo.bar.hello.world.Outie)>($r6);
+
+        virtualinvoke $r5.<foo.bar.hello.world.Outie$Innie: void meenie()>();
+
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        $r9 = staticinvoke <foo.bar.hello.world.InnerClasses: java.lang.Object anonymousCoward()>();
+
+        $i0 = virtualinvoke $r9.<java.lang.Object: int hashCode()>();
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(int)>($i0);
+
+        $r10 = new foo.bar.hello.world.InnerClasses$2;
+
+        specialinvoke $r10.<foo.bar.hello.world.InnerClasses$2: void <init>(java.lang.String)>("weird");
+
+        $r11 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r11.<java.io.PrintStream: void println(java.lang.Object)>($r10);
+
+        $r12 = new foo.bar.hello.world.InnerClasses$3;
+
+        specialinvoke $r12.<foo.bar.hello.world.InnerClasses$3: void <init>(java.lang.Object)>("hello");
+
+        $r14 = <java.lang.System: java.io.PrintStream out>;
+
+        $r13 = new foo.bar.hello.world.InnerClasses;
+
+        specialinvoke $r13.<foo.bar.hello.world.InnerClasses: void <init>()>();
+
+        $r15 = virtualinvoke $r13.<foo.bar.hello.world.InnerClasses: java.lang.Object supportLocalBusiness()>();
+
+        $i1 = virtualinvoke $r15.<java.lang.Object: int hashCode()>();
+
+        virtualinvoke $r14.<java.io.PrintStream: void println(int)>($i1);
+
+        $r16 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r16.<java.io.PrintStream: void println(java.lang.Object)>($r12);
+
+        $r19 = <java.lang.System: java.io.PrintStream out>;
+
+        $r17 = new foo.bar.hello.world.SuperEnclosing$SubEnclosed;
+
+        $r18 = new foo.bar.hello.world.SuperEnclosing;
+
+        specialinvoke $r18.<foo.bar.hello.world.SuperEnclosing: void <init>()>();
+
+        virtualinvoke $r18.<java.lang.Object: java.lang.Class getClass()>();
+
+        specialinvoke $r17.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: void <init>(foo.bar.hello.world.SuperEnclosing)>($r18);
+
+        $i2 = virtualinvoke $r17.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int hello()>();
+
+        virtualinvoke $r19.<java.io.PrintStream: void println(int)>($i2);
+
+        $r23 = <java.lang.System: java.io.PrintStream out>;
+
+        $r21 = new foo.bar.hello.world.SuperEnclosing$SubEnclosed;
+
+        $r22 = new foo.bar.hello.world.SuperEnclosing;
+
+        specialinvoke $r22.<foo.bar.hello.world.SuperEnclosing: void <init>()>();
+
+        virtualinvoke $r22.<java.lang.Object: java.lang.Class getClass()>();
+
+        specialinvoke $r21.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: void <init>(foo.bar.hello.world.SuperEnclosing)>($r22);
+
+        $i3 = $r21.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar>;
+
+        virtualinvoke $r23.<java.io.PrintStream: void println(int)>($i3);
+
+        $r27 = <java.lang.System: java.io.PrintStream out>;
+
+        $r25 = new foo.bar.hello.world.SuperEnclosing$SubEnclosed;
+
+        $r26 = new foo.bar.hello.world.SuperEnclosing;
+
+        specialinvoke $r26.<foo.bar.hello.world.SuperEnclosing: void <init>()>();
+
+        virtualinvoke $r26.<java.lang.Object: java.lang.Class getClass()>();
+
+        specialinvoke $r25.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: void <init>(foo.bar.hello.world.SuperEnclosing)>($r26);
+
+        $i4 = virtualinvoke $r25.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int hello2()>();
+
+        virtualinvoke $r27.<java.io.PrintStream: void println(int)>($i4);
+
+        $r31 = <java.lang.System: java.io.PrintStream out>;
+
+        $r29 = new foo.bar.hello.world.SuperEnclosing$SubEnclosed;
+
+        $r30 = new foo.bar.hello.world.SuperEnclosing;
+
+        specialinvoke $r30.<foo.bar.hello.world.SuperEnclosing: void <init>()>();
+
+        virtualinvoke $r30.<java.lang.Object: java.lang.Class getClass()>();
+
+        specialinvoke $r29.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: void <init>(foo.bar.hello.world.SuperEnclosing)>($r30);
+
+        $i5 = $r29.<foo.bar.hello.world.SuperEnclosing$SubEnclosed: int seVar2>;
+
+        virtualinvoke $r31.<java.io.PrintStream: void println(int)>($i5);
+
+        $r33 = new foo.bar.hello.world.SuperEnclosing2;
+
+        specialinvoke $r33.<foo.bar.hello.world.SuperEnclosing2: void <init>()>();
+
+        $r34 = new foo.bar.hello.world.SuperEnclosing2$SubEnclosed2;
+
+        virtualinvoke $r33.<java.lang.Object: java.lang.Class getClass()>();
+
+        specialinvoke $r34.<foo.bar.hello.world.SuperEnclosing2$SubEnclosed2: void <init>(foo.bar.hello.world.SuperEnclosing2)>($r33);
+
+        $r36 = <java.lang.System: java.io.PrintStream out>;
+
+        $i6 = virtualinvoke $r34.<foo.bar.hello.world.SuperEnclosing2$SubEnclosed2: int hello()>();
+
+        virtualinvoke $r36.<java.io.PrintStream: void println(int)>($i6);
+
+        virtualinvoke $r34.<foo.bar.hello.world.SuperEnclosing2$SubEnclosed2: void setSEVar()>();
+
+        $r37 = <java.lang.System: java.io.PrintStream out>;
+
+        $i7 = virtualinvoke $r34.<foo.bar.hello.world.SuperEnclosing2$SubEnclosed2: int hello()>();
+
+        virtualinvoke $r37.<java.io.PrintStream: void println(int)>($i7);
+
+        virtualinvoke $r33.<foo.bar.hello.world.SuperEnclosing2: void setSEVar()>();
+
+        $r38 = <java.lang.System: java.io.PrintStream out>;
+
+        $i8 = virtualinvoke $r34.<foo.bar.hello.world.SuperEnclosing2$SubEnclosed2: int hello()>();
+
+        virtualinvoke $r38.<java.io.PrintStream: void println(int)>($i8);
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        <foo.bar.hello.world.InnerClasses: java.lang.String xxxx> = "odd";
+
+        return;
+    }
+}

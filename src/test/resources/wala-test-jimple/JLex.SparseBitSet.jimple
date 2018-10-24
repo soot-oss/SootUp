@@ -1,0 +1,1598 @@
+final class JLex.SparseBitSet extends java.lang.Object implements java.lang.Cloneable
+{
+    int[] offs;
+    long[] bits;
+    int size;
+    private static final int LG_BITS;
+    private static final int BITS;
+    private static final int BITS_M1;
+    private static final JLex.SparseBitSet$BinOp AND;
+    private static final JLex.SparseBitSet$BinOp OR;
+    private static final JLex.SparseBitSet$BinOp XOR;
+
+    public void <init>()
+    {
+        JLex.SparseBitSet r0;
+        long[] $r1;
+        int[] $r2;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r1 = newarray (long)[4];
+
+        r0.<JLex.SparseBitSet: long[] bits> = $r1;
+
+        $r2 = newarray (int)[4];
+
+        r0.<JLex.SparseBitSet: int[] offs> = $r2;
+
+        r0.<JLex.SparseBitSet: int size> = 0;
+
+        return;
+    }
+
+    public void <init>(int)
+    {
+        JLex.SparseBitSet r0;
+        int i0;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        i0 := @parameter0: int;
+
+        specialinvoke r0.<JLex.SparseBitSet: void <init>()>();
+
+        return;
+    }
+
+    public void <init>(JLex.SparseBitSet)
+    {
+        JLex.SparseBitSet r0, r1;
+        int $i0, $i1;
+        long[] $r2;
+        int[] $r3;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        r1 := @parameter0: JLex.SparseBitSet;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $i0 = r1.<JLex.SparseBitSet: int size>;
+
+        $r2 = newarray (long)[$i0];
+
+        r0.<JLex.SparseBitSet: long[] bits> = $r2;
+
+        $i1 = r1.<JLex.SparseBitSet: int size>;
+
+        $r3 = newarray (int)[$i1];
+
+        r0.<JLex.SparseBitSet: int[] offs> = $r3;
+
+        r0.<JLex.SparseBitSet: int size> = 0;
+
+        return;
+    }
+
+    private void new_block(int)
+    {
+        JLex.SparseBitSet r0;
+        int i0, $i1;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        i0 := @parameter0: int;
+
+        $i1 = specialinvoke r0.<JLex.SparseBitSet: int bsearch(int)>(i0);
+
+        specialinvoke r0.<JLex.SparseBitSet: void new_block(int,int)>($i1, i0);
+
+        return;
+    }
+
+    private void new_block(int, int)
+    {
+        JLex.SparseBitSet r0;
+        int i0, i1, $i2, $i3, $i4, $i5, $i6, $i7, $i8, $i9, $i10, $i11;
+        long[] r1, $r3, $r4, $r5;
+        int[] r2, $r6;
+        boolean $z0;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        $i3 = r0.<JLex.SparseBitSet: int size>;
+
+        $r3 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $i2 = lengthof $r3;
+
+        if $i3 != $i2 goto label1;
+
+        $i6 = r0.<JLex.SparseBitSet: int size>;
+
+        $i7 = $i6 * 3;
+
+        r1 = newarray (long)[$i7];
+
+        $i8 = r0.<JLex.SparseBitSet: int size>;
+
+        $i9 = $i8 * 3;
+
+        r2 = newarray (int)[$i9];
+
+        $r5 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $i10 = r0.<JLex.SparseBitSet: int size>;
+
+        staticinvoke <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>($r5, 0, r1, 0, $i10);
+
+        $r6 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i11 = r0.<JLex.SparseBitSet: int size>;
+
+        staticinvoke <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>($r6, 0, r2, 0, $i11);
+
+        r0.<JLex.SparseBitSet: long[] bits> = r1;
+
+        r0.<JLex.SparseBitSet: int[] offs> = r2;
+
+     label1:
+        $i5 = r0.<JLex.SparseBitSet: int size>;
+
+        $r4 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $i4 = lengthof $r4;
+
+        if $i5 >= $i4 goto label2;
+
+        $z0 = 1;
+
+        goto label3;
+
+     label2:
+        $z0 = 0;
+
+     label3:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z0);
+
+        specialinvoke r0.<JLex.SparseBitSet: void insert_block(int,int)>(i0, i1);
+
+        return;
+    }
+
+    private void insert_block(int, int)
+    {
+        JLex.SparseBitSet r0;
+        int i0, i1, $i2, $i3, $i4, $i5, $i6, $i7, $i8, $i9, $i10, $i11, $i12;
+        long[] $r1, $r2, $r6;
+        int[] $r3, $r4, $r5, $r7;
+        boolean $z0, $z1;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        $i2 = r0.<JLex.SparseBitSet: int size>;
+
+        if i0 > $i2 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z0);
+
+        $i3 = r0.<JLex.SparseBitSet: int size>;
+
+        if i0 == $i3 goto label3;
+
+        $r7 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i12 = $r7[i0];
+
+        if $i12 == i1 goto label4;
+
+     label3:
+        $z1 = 1;
+
+        goto label5;
+
+     label4:
+        $z1 = 0;
+
+     label5:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z1);
+
+        $r2 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $r1 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $i6 = i0 + 1;
+
+        $i4 = r0.<JLex.SparseBitSet: int size>;
+
+        $i5 = $i4 - i0;
+
+        staticinvoke <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>($r2, i0, $r1, $i6, $i5);
+
+        $r4 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $r3 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i9 = i0 + 1;
+
+        $i7 = r0.<JLex.SparseBitSet: int size>;
+
+        $i8 = $i7 - i0;
+
+        staticinvoke <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>($r4, i0, $r3, $i9, $i8);
+
+        $r5 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $r5[i0] = i1;
+
+        $r6 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $r6[i0] = 0L;
+
+        $i10 = r0.<JLex.SparseBitSet: int size>;
+
+        $i11 = $i10 + 1;
+
+        r0.<JLex.SparseBitSet: int size> = $i11;
+
+        return;
+    }
+
+    private int bsearch(int)
+    {
+        JLex.SparseBitSet r0;
+        int i0, i1, $i2, $i3, $i4, i5, i6;
+        int[] $r1, $r2;
+        boolean $z0;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        i0 := @parameter0: int;
+
+        i5 = 0;
+
+        i6 = r0.<JLex.SparseBitSet: int size>;
+
+     label1:
+        if i5 >= i6 goto label5;
+
+        $i2 = i5 + i6;
+
+        i1 = $i2 / 2;
+
+        $r1 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i3 = $r1[i1];
+
+        if i0 >= $i3 goto label2;
+
+        i6 = i1;
+
+        goto label4;
+
+     label2:
+        $r2 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i4 = $r2[i1];
+
+        if i0 <= $i4 goto label3;
+
+        i5 = i1 + 1;
+
+        goto label4;
+
+     label3:
+        return i1;
+
+     label4:
+        goto label1;
+
+     label5:
+        if i5 != i6 goto label6;
+
+        $z0 = 1;
+
+        goto label7;
+
+     label6:
+        $z0 = 0;
+
+     label7:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z0);
+
+        return i5;
+    }
+
+    public void set(int)
+    {
+        JLex.SparseBitSet r0;
+        int i0, i1, i2, $i3, $i4, $i7;
+        int[] $r1;
+        long[] $r2;
+        long $l6, $l8, $l9;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        i0 := @parameter0: int;
+
+        i1 = i0 >> 6;
+
+        i2 = specialinvoke r0.<JLex.SparseBitSet: int bsearch(int)>(i1);
+
+        $i3 = r0.<JLex.SparseBitSet: int size>;
+
+        if i2 >= $i3 goto label1;
+
+        $r1 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i4 = $r1[i2];
+
+        if $i4 == i1 goto label2;
+
+     label1:
+        specialinvoke r0.<JLex.SparseBitSet: void new_block(int,int)>(i2, i1);
+
+     label2:
+        $r2 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $l6 = $r2[i2];
+
+        $i7 = i0 & 63;
+
+        $l8 = 1L << $i7;
+
+        $l9 = $l6 | $l8;
+
+        $r2[i2] = $l9;
+
+        return;
+    }
+
+    public void clear(int)
+    {
+        JLex.SparseBitSet r0;
+        int i0, i1, i2, $i3, $i4, $i7;
+        int[] $r1;
+        long[] $r2;
+        long $l6, $l8, $l9, $l10;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        i0 := @parameter0: int;
+
+        i1 = i0 >> 6;
+
+        i2 = specialinvoke r0.<JLex.SparseBitSet: int bsearch(int)>(i1);
+
+        $i3 = r0.<JLex.SparseBitSet: int size>;
+
+        if i2 >= $i3 goto label1;
+
+        $r1 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i4 = $r1[i2];
+
+        if $i4 == i1 goto label2;
+
+     label1:
+        specialinvoke r0.<JLex.SparseBitSet: void new_block(int,int)>(i2, i1);
+
+     label2:
+        $r2 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $l6 = $r2[i2];
+
+        $i7 = i0 & 63;
+
+        $l8 = 1L << $i7;
+
+        $l9 = $l8 ^ -1L;
+
+        $l10 = $l6 & $l9;
+
+        $r2[i2] = $l10;
+
+        return;
+    }
+
+    public void clearAll()
+    {
+        JLex.SparseBitSet r0;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        r0.<JLex.SparseBitSet: int size> = 0;
+
+        return;
+    }
+
+    public boolean get(int)
+    {
+        JLex.SparseBitSet r0;
+        int i0, i1, i2, $i3, $i4, $i5;
+        int[] $r1;
+        long[] $r2;
+        long $l6, $l7, $l8;
+        byte $b9;
+        boolean $z0;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        i0 := @parameter0: int;
+
+        i1 = i0 >> 6;
+
+        i2 = specialinvoke r0.<JLex.SparseBitSet: int bsearch(int)>(i1);
+
+        $i3 = r0.<JLex.SparseBitSet: int size>;
+
+        if i2 >= $i3 goto label1;
+
+        $r1 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i4 = $r1[i2];
+
+        if $i4 == i1 goto label2;
+
+     label1:
+        return 0;
+
+     label2:
+        $r2 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $l7 = $r2[i2];
+
+        $i5 = i0 & 63;
+
+        $l6 = 1L << $i5;
+
+        $l8 = $l7 & $l6;
+
+        $b9 = 0L cmp $l8;
+
+        if $b9 == 0 goto label3;
+
+        $z0 = 1;
+
+        goto label4;
+
+     label3:
+        $z0 = 0;
+
+     label4:
+        return $z0;
+    }
+
+    public void and(JLex.SparseBitSet)
+    {
+        JLex.SparseBitSet r0, r1;
+        JLex.SparseBitSet$BinOp $r2;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        r1 := @parameter0: JLex.SparseBitSet;
+
+        $r2 = <JLex.SparseBitSet: JLex.SparseBitSet$BinOp AND>;
+
+        staticinvoke <JLex.SparseBitSet: void binop(JLex.SparseBitSet,JLex.SparseBitSet,JLex.SparseBitSet$BinOp)>(r0, r1, $r2);
+
+        return;
+    }
+
+    public void or(JLex.SparseBitSet)
+    {
+        JLex.SparseBitSet r0, r1;
+        JLex.SparseBitSet$BinOp $r2;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        r1 := @parameter0: JLex.SparseBitSet;
+
+        $r2 = <JLex.SparseBitSet: JLex.SparseBitSet$BinOp OR>;
+
+        staticinvoke <JLex.SparseBitSet: void binop(JLex.SparseBitSet,JLex.SparseBitSet,JLex.SparseBitSet$BinOp)>(r0, r1, $r2);
+
+        return;
+    }
+
+    public void xor(JLex.SparseBitSet)
+    {
+        JLex.SparseBitSet r0, r1;
+        JLex.SparseBitSet$BinOp $r2;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        r1 := @parameter0: JLex.SparseBitSet;
+
+        $r2 = <JLex.SparseBitSet: JLex.SparseBitSet$BinOp XOR>;
+
+        staticinvoke <JLex.SparseBitSet: void binop(JLex.SparseBitSet,JLex.SparseBitSet,JLex.SparseBitSet$BinOp)>(r0, r1, $r2);
+
+        return;
+    }
+
+    private static final void binop(JLex.SparseBitSet, JLex.SparseBitSet, JLex.SparseBitSet$BinOp)
+    {
+        JLex.SparseBitSet r0, r1;
+        JLex.SparseBitSet$BinOp r2;
+        int $i0, $i1, $i2, $i3, $i4, $i5, $i6, $i7, $i11, $i12, $i13, $i15, $i16, $i17, i18, i19, i20, i21, i22, i23, i25;
+        long[] $r3, $r4, $r5, $r6, $r7, $r10, $r11, $r13, $r17, r21;
+        int[] $r8, $r9, $r12, $r14, $r15, $r16, $r18, $r19, $r20, r22;
+        long $l8, $l9, $l10, $l14, l24;
+        byte $b26;
+
+        r0 := @parameter0: JLex.SparseBitSet;
+
+        r1 := @parameter1: JLex.SparseBitSet;
+
+        r2 := @parameter2: JLex.SparseBitSet$BinOp;
+
+        $i1 = r0.<JLex.SparseBitSet: int size>;
+
+        $i0 = r1.<JLex.SparseBitSet: int size>;
+
+        i18 = $i1 + $i0;
+
+        $r3 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $i2 = lengthof $r3;
+
+        if $i2 >= i18 goto label01;
+
+        r21 = newarray (long)[i18];
+
+        r22 = newarray (int)[i18];
+
+        i19 = 0;
+
+        i20 = r0.<JLex.SparseBitSet: int size>;
+
+        goto label02;
+
+     label01:
+        r21 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        r22 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $r4 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $i4 = lengthof $r4;
+
+        $i3 = r0.<JLex.SparseBitSet: int size>;
+
+        i19 = $i4 - $i3;
+
+        $r5 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        i20 = lengthof $r5;
+
+        $r7 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $r6 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $i5 = r0.<JLex.SparseBitSet: int size>;
+
+        staticinvoke <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>($r7, 0, $r6, i19, $i5);
+
+        $r9 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $r8 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i6 = r0.<JLex.SparseBitSet: int size>;
+
+        staticinvoke <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>($r9, 0, $r8, i19, $i6);
+
+     label02:
+        i21 = 0;
+
+        i22 = i19;
+
+        i23 = 0;
+
+     label03:
+        if i22 < i20 goto label04;
+
+        $i17 = r1.<JLex.SparseBitSet: int size>;
+
+        if i23 >= $i17 goto label11;
+
+     label04:
+        if i22 >= i20 goto label06;
+
+        $i13 = r1.<JLex.SparseBitSet: int size>;
+
+        if i23 >= $i13 goto label05;
+
+        $r19 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i16 = $r19[i22];
+
+        $r20 = r1.<JLex.SparseBitSet: int[] offs>;
+
+        $i15 = $r20[i23];
+
+        if $i16 >= $i15 goto label06;
+
+     label05:
+        $r17 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $l14 = $r17[i22];
+
+        l24 = interfaceinvoke r2.<JLex.SparseBitSet$BinOp: long op(long,long)>($l14, 0L);
+
+        $r18 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        i25 = $r18[i22];
+
+        i22 = i22 + 1;
+
+        goto label09;
+
+     label06:
+        $i7 = r1.<JLex.SparseBitSet: int size>;
+
+        if i23 >= $i7 goto label08;
+
+        if i22 >= i20 goto label07;
+
+        $r15 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i12 = $r15[i22];
+
+        $r16 = r1.<JLex.SparseBitSet: int[] offs>;
+
+        $i11 = $r16[i23];
+
+        if $i12 <= $i11 goto label08;
+
+     label07:
+        $r13 = r1.<JLex.SparseBitSet: long[] bits>;
+
+        $l10 = $r13[i23];
+
+        l24 = interfaceinvoke r2.<JLex.SparseBitSet$BinOp: long op(long,long)>(0L, $l10);
+
+        $r14 = r1.<JLex.SparseBitSet: int[] offs>;
+
+        i25 = $r14[i23];
+
+        i23 = i23 + 1;
+
+        goto label09;
+
+     label08:
+        $r10 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $l9 = $r10[i22];
+
+        $r11 = r1.<JLex.SparseBitSet: long[] bits>;
+
+        $l8 = $r11[i23];
+
+        l24 = interfaceinvoke r2.<JLex.SparseBitSet$BinOp: long op(long,long)>($l9, $l8);
+
+        $r12 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        i25 = $r12[i22];
+
+        i22 = i22 + 1;
+
+        i23 = i23 + 1;
+
+     label09:
+        $b26 = l24 cmp 0L;
+
+        if $b26 == 0 goto label10;
+
+        r21[i21] = l24;
+
+        r22[i21] = i25;
+
+        i21 = i21 + 1;
+
+     label10:
+        goto label03;
+
+     label11:
+        r0.<JLex.SparseBitSet: long[] bits> = r21;
+
+        r0.<JLex.SparseBitSet: int[] offs> = r22;
+
+        r0.<JLex.SparseBitSet: int size> = i21;
+
+        return;
+    }
+
+    public int hashCode()
+    {
+        JLex.SparseBitSet r0;
+        int $i0, $i3, $i4, i9;
+        long $l1, $l2, $l5, $l6, $l7, l8;
+        long[] $r1;
+        int[] $r2;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        l8 = 1234L;
+
+        i9 = 0;
+
+     label1:
+        $i0 = r0.<JLex.SparseBitSet: int size>;
+
+        if i9 >= $i0 goto label2;
+
+        $r1 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $l6 = $r1[i9];
+
+        $r2 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i4 = $r2[i9];
+
+        $l5 = (long) $i4;
+
+        $l7 = $l6 * $l5;
+
+        l8 = l8 ^ $l7;
+
+        i9 = i9 + 1;
+
+        goto label1;
+
+     label2:
+        $l1 = l8 >> 32;
+
+        $l2 = $l1 ^ l8;
+
+        $i3 = (int) $l2;
+
+        return $i3;
+    }
+
+    public int size()
+    {
+        JLex.SparseBitSet r0;
+        int $i0, $i1, $i2, $i3, $i4, $i5;
+        int[] $r1;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        $i0 = r0.<JLex.SparseBitSet: int size>;
+
+        if $i0 != 0 goto label1;
+
+        $i5 = 0;
+
+        goto label2;
+
+     label1:
+        $r1 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i1 = r0.<JLex.SparseBitSet: int size>;
+
+        $i2 = $i1 - 1;
+
+        $i3 = $r1[$i2];
+
+        $i4 = 1 + $i3;
+
+        $i5 = $i4 << 6;
+
+     label2:
+        return $i5;
+    }
+
+    public boolean equals(java.lang.Object)
+    {
+        JLex.SparseBitSet r0, $r2;
+        java.lang.Object r1;
+        boolean $z0, $z1;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        r1 := @parameter0: java.lang.Object;
+
+        if r1 == null goto label1;
+
+        $z0 = r1 instanceof JLex.SparseBitSet;
+
+        if $z0 == 0 goto label1;
+
+        $r2 = (JLex.SparseBitSet) r1;
+
+        $z1 = staticinvoke <JLex.SparseBitSet: boolean equals(JLex.SparseBitSet,JLex.SparseBitSet)>(r0, $r2);
+
+        return $z1;
+
+     label1:
+        return 0;
+    }
+
+    public static boolean equals(JLex.SparseBitSet, JLex.SparseBitSet)
+    {
+        JLex.SparseBitSet r0, r1;
+        int $i0, $i1, $i2, $i3, $i7, $i8, $i11, $i12, $i13, $i14, $i17, $i18, $i19, i20, i21, $i22;
+        long[] $r2, $r3, $r4, $r7;
+        long $l4, $l5, $l9, $l15;
+        byte $b6, $b10, $b16;
+        int[] $r5, $r6, $r8, $r9;
+
+        r0 := @parameter0: JLex.SparseBitSet;
+
+        r1 := @parameter1: JLex.SparseBitSet;
+
+        i20 = 0;
+
+        i21 = 0;
+
+     label1:
+        $i22 = r0.<JLex.SparseBitSet: int size>;
+
+        if i20 < $i22 goto label2;
+
+        $i19 = r1.<JLex.SparseBitSet: int size>;
+
+        if i21 >= $i19 goto label7;
+
+     label2:
+        $i0 = r0.<JLex.SparseBitSet: int size>;
+
+        if i20 >= $i0 goto label4;
+
+        $i13 = r1.<JLex.SparseBitSet: int size>;
+
+        if i21 >= $i13 goto label3;
+
+        $r8 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i18 = $r8[i20];
+
+        $r9 = r1.<JLex.SparseBitSet: int[] offs>;
+
+        $i17 = $r9[i21];
+
+        if $i18 >= $i17 goto label4;
+
+     label3:
+        $r7 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $i14 = i20;
+
+        i20 = i20 + 1;
+
+        $l15 = $r7[$i14];
+
+        $b16 = $l15 cmp 0L;
+
+        if $b16 == 0 goto label1;
+
+        return 0;
+
+     label4:
+        $i1 = r1.<JLex.SparseBitSet: int size>;
+
+        if i21 >= $i1 goto label6;
+
+        $i7 = r0.<JLex.SparseBitSet: int size>;
+
+        if i20 >= $i7 goto label5;
+
+        $r5 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i12 = $r5[i20];
+
+        $r6 = r1.<JLex.SparseBitSet: int[] offs>;
+
+        $i11 = $r6[i21];
+
+        if $i12 <= $i11 goto label6;
+
+     label5:
+        $r4 = r1.<JLex.SparseBitSet: long[] bits>;
+
+        $i8 = i21;
+
+        i21 = i21 + 1;
+
+        $l9 = $r4[$i8];
+
+        $b10 = $l9 cmp 0L;
+
+        if $b10 == 0 goto label1;
+
+        return 0;
+
+     label6:
+        $r2 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $i2 = i20;
+
+        i20 = i20 + 1;
+
+        $l5 = $r2[$i2];
+
+        $r3 = r1.<JLex.SparseBitSet: long[] bits>;
+
+        $i3 = i21;
+
+        i21 = i21 + 1;
+
+        $l4 = $r3[$i3];
+
+        $b6 = $l5 cmp $l4;
+
+        if $b6 == 0 goto label1;
+
+        return 0;
+
+     label7:
+        return 1;
+    }
+
+    public java.lang.Object clone()
+    {
+        JLex.SparseBitSet r0, r12;
+        java.lang.Object $r1, $r3, $r7;
+        long[] $r2, $r4, $r5;
+        int[] $r6, $r8, $r9;
+        java.lang.CloneNotSupportedException $r10;
+        java.lang.InternalError $r11;
+
+        r0 := @this: JLex.SparseBitSet;
+
+     label1:
+        $r1 = specialinvoke r0.<java.lang.Object: java.lang.Object clone()>();
+
+        r12 = (JLex.SparseBitSet) $r1;
+
+        $r2 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $r3 = virtualinvoke $r2.<java.lang.Object: java.lang.Object clone()>();
+
+        $r4 = (long[]) $r3;
+
+        $r5 = (long[]) $r4;
+
+        r12.<JLex.SparseBitSet: long[] bits> = $r5;
+
+        $r6 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $r7 = virtualinvoke $r6.<java.lang.Object: java.lang.Object clone()>();
+
+        $r8 = (int[]) $r7;
+
+        $r9 = (int[]) $r8;
+
+        r12.<JLex.SparseBitSet: int[] offs> = $r9;
+
+     label2:
+        return r12;
+
+     label3:
+        $r10 := @caughtexception;
+
+        $r11 = new java.lang.InternalError;
+
+        specialinvoke $r11.<java.lang.InternalError: void <init>()>();
+
+        throw $r11;
+
+        catch java.lang.CloneNotSupportedException from label1 to label2 with label3;
+    }
+
+    public java.util.Enumeration elements()
+    {
+        JLex.SparseBitSet r0;
+        JLex.SparseBitSet$4 $r1;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        $r1 = new JLex.SparseBitSet$4;
+
+        specialinvoke $r1.<JLex.SparseBitSet$4: void <init>(JLex.SparseBitSet)>(r0);
+
+        return $r1;
+    }
+
+    public java.lang.String toString()
+    {
+        JLex.SparseBitSet r0;
+        java.util.Enumeration r2;
+        java.lang.StringBuffer $r3;
+        boolean $z0;
+        java.lang.String $r6;
+        int $i0;
+        java.lang.Object $r7;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        $r3 = new java.lang.StringBuffer;
+
+        specialinvoke $r3.<java.lang.StringBuffer: void <init>()>();
+
+        virtualinvoke $r3.<java.lang.StringBuffer: java.lang.StringBuffer append(char)>(123);
+
+        r2 = virtualinvoke r0.<JLex.SparseBitSet: java.util.Enumeration elements()>();
+
+     label1:
+        $z0 = interfaceinvoke r2.<java.util.Enumeration: boolean hasMoreElements()>();
+
+        if $z0 == 0 goto label3;
+
+        $i0 = virtualinvoke $r3.<java.lang.StringBuffer: int length()>();
+
+        if $i0 <= 1 goto label2;
+
+        virtualinvoke $r3.<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.String)>(", ");
+
+     label2:
+        $r7 = interfaceinvoke r2.<java.util.Enumeration: java.lang.Object nextElement()>();
+
+        virtualinvoke $r3.<java.lang.StringBuffer: java.lang.StringBuffer append(java.lang.Object)>($r7);
+
+        goto label1;
+
+     label3:
+        virtualinvoke $r3.<java.lang.StringBuffer: java.lang.StringBuffer append(char)>(125);
+
+        $r6 = virtualinvoke $r3.<java.lang.StringBuffer: java.lang.String toString()>();
+
+        return $r6;
+    }
+
+    private boolean isValid()
+    {
+        JLex.SparseBitSet r0;
+        long[] $r1, $r3;
+        int[] $r2, $r4, $r5, $r6;
+        int $i0, $i1, $i2, $i3, $i4, $i5, $i6, $i7, $i8, i9, $i10;
+
+        r0 := @this: JLex.SparseBitSet;
+
+        $r1 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $i1 = lengthof $r1;
+
+        $r2 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i0 = lengthof $r2;
+
+        if $i1 == $i0 goto label1;
+
+        return 0;
+
+     label1:
+        $i3 = r0.<JLex.SparseBitSet: int size>;
+
+        $r3 = r0.<JLex.SparseBitSet: long[] bits>;
+
+        $i2 = lengthof $r3;
+
+        if $i3 <= $i2 goto label2;
+
+        return 0;
+
+     label2:
+        $i4 = r0.<JLex.SparseBitSet: int size>;
+
+        if $i4 == 0 goto label3;
+
+        $r6 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i8 = $r6[0];
+
+        if 0 > $i8 goto label3;
+
+        return 0;
+
+     label3:
+        i9 = 1;
+
+     label4:
+        $i10 = r0.<JLex.SparseBitSet: int size>;
+
+        if i9 >= $i10 goto label6;
+
+        $r4 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i7 = $r4[i9];
+
+        $r5 = r0.<JLex.SparseBitSet: int[] offs>;
+
+        $i5 = i9 - 1;
+
+        $i6 = $r5[$i5];
+
+        if $i7 >= $i6 goto label5;
+
+        return 0;
+
+     label5:
+        i9 = i9 + 1;
+
+        goto label4;
+
+     label6:
+        return 1;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        int i0, $i1, $i2, $i3, $i4, $i5, $i6, $i7, $i8, $i9, $i10, i11, i12, i13, $i14, i15, i16, $i17;
+        JLex.SparseBitSet $r4, r16, r17, r18, r20;
+        boolean $z0, $z1, $z2, $z3, $z4, $z5, $z6, $z7, $z8, $z9, $z10, $z11, $z12, $z13, $z14, $z15, $z16, $z17, $z18, $z19, $z20, $z21, $z22, $z23, $z24, $z25, $z26, $z27, $z28, $z29, $z30, $z31, $z32, $z33, $z34, $z35, $z36, $z37, $z38, $z39, $z40, $z41, $z42, $z43;
+        java.lang.Object $r5, $r6, $r7, $r9, $r12, $r19;
+        java.io.PrintStream $r8;
+        java.lang.Integer $r10, $r11, $r13;
+        java.util.Random $r14;
+        java.util.Vector $r15;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r4 = new JLex.SparseBitSet;
+
+        specialinvoke $r4.<JLex.SparseBitSet: void <init>()>();
+
+        $z0 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>(0);
+
+        if $z0 != 0 goto label01;
+
+        $z19 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>(1);
+
+        if $z19 != 0 goto label01;
+
+        $z20 = 1;
+
+        goto label02;
+
+     label01:
+        $z20 = 0;
+
+     label02:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z20);
+
+        $z21 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>(123329);
+
+        if $z21 != 0 goto label03;
+
+        $z22 = 1;
+
+        goto label04;
+
+     label03:
+        $z22 = 0;
+
+     label04:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z22);
+
+        virtualinvoke $r4.<JLex.SparseBitSet: void set(int)>(0);
+
+        $z1 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>(0);
+
+        if $z1 == 0 goto label05;
+
+        $z18 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>(1);
+
+        if $z18 != 0 goto label05;
+
+        $z23 = 1;
+
+        goto label06;
+
+     label05:
+        $z23 = 0;
+
+     label06:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z23);
+
+        virtualinvoke $r4.<JLex.SparseBitSet: void set(int)>(1);
+
+        $z24 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>(0);
+
+        if $z24 == 0 goto label07;
+
+        $z17 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>(1);
+
+        if $z17 == 0 goto label07;
+
+        $z25 = 1;
+
+        goto label08;
+
+     label07:
+        $z25 = 0;
+
+     label08:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z25);
+
+        virtualinvoke $r4.<JLex.SparseBitSet: void clearAll()>();
+
+        $z26 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>(0);
+
+        if $z26 != 0 goto label09;
+
+        $z16 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>(1);
+
+        if $z16 != 0 goto label09;
+
+        $z27 = 1;
+
+        goto label10;
+
+     label09:
+        $z27 = 0;
+
+     label10:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z27);
+
+        $r14 = new java.util.Random;
+
+        specialinvoke $r14.<java.util.Random: void <init>()>();
+
+        $r15 = new java.util.Vector;
+
+        specialinvoke $r15.<java.util.Vector: void <init>()>();
+
+        i11 = 0;
+
+     label11:
+        if i11 >= 500 goto label16;
+
+        $i5 = virtualinvoke $r14.<java.util.Random: int nextInt()>();
+
+        $i6 = $i5 >>> 1;
+
+        $i7 = $i6 % 65536;
+
+        i12 = $i7 << 1;
+
+        virtualinvoke $r4.<JLex.SparseBitSet: void set(int)>(i12);
+
+        $r11 = new java.lang.Integer;
+
+        specialinvoke $r11.<java.lang.Integer: void <init>(int)>(i12);
+
+        virtualinvoke $r15.<java.util.Vector: void addElement(java.lang.Object)>($r11);
+
+        $z12 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>(i12);
+
+        if $z12 == 0 goto label12;
+
+        $i9 = i12 + 1;
+
+        $z14 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>($i9);
+
+        if $z14 != 0 goto label12;
+
+        $i10 = i12 - 1;
+
+        $z15 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>($i10);
+
+        if $z15 != 0 goto label12;
+
+        $z28 = 1;
+
+        goto label13;
+
+     label12:
+        $z28 = 0;
+
+     label13:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z28);
+
+        i13 = 0;
+
+     label14:
+        $i14 = virtualinvoke $r15.<java.util.Vector: int size()>();
+
+        if i13 >= $i14 goto label15;
+
+        $r12 = virtualinvoke $r15.<java.util.Vector: java.lang.Object elementAt(int)>(i13);
+
+        $r13 = (java.lang.Integer) $r12;
+
+        $i8 = virtualinvoke $r13.<java.lang.Integer: int intValue()>();
+
+        $z13 = virtualinvoke $r4.<JLex.SparseBitSet: boolean get(int)>($i8);
+
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z13);
+
+        i13 = i13 + 1;
+
+        goto label14;
+
+     label15:
+        i11 = i11 + 1;
+
+        goto label11;
+
+     label16:
+        $r5 = virtualinvoke $r4.<JLex.SparseBitSet: java.lang.Object clone()>();
+
+        r16 = (JLex.SparseBitSet) $r5;
+
+        $z2 = virtualinvoke $r4.<JLex.SparseBitSet: boolean equals(java.lang.Object)>(r16);
+
+        if $z2 == 0 goto label17;
+
+        $z11 = virtualinvoke r16.<JLex.SparseBitSet: boolean equals(java.lang.Object)>($r4);
+
+        if $z11 == 0 goto label17;
+
+        $z29 = 1;
+
+        goto label18;
+
+     label17:
+        $z29 = 0;
+
+     label18:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z29);
+
+        i15 = 0;
+
+     label19:
+        if i15 >= 250 goto label22;
+
+        $i2 = virtualinvoke $r14.<java.util.Random: int nextInt()>();
+
+        $i3 = $i2 >>> 1;
+
+        $i4 = virtualinvoke $r15.<java.util.Vector: int size()>();
+
+        i16 = $i3 % $i4;
+
+        $r9 = virtualinvoke $r15.<java.util.Vector: java.lang.Object elementAt(int)>(i16);
+
+        $r10 = (java.lang.Integer) $r9;
+
+        i0 = virtualinvoke $r10.<java.lang.Integer: int intValue()>();
+
+        virtualinvoke r16.<JLex.SparseBitSet: void clear(int)>(i0);
+
+        virtualinvoke $r15.<java.util.Vector: void removeElementAt(int)>(i16);
+
+        $z10 = virtualinvoke r16.<JLex.SparseBitSet: boolean get(int)>(i0);
+
+        if $z10 != 0 goto label20;
+
+        $z30 = 1;
+
+        goto label21;
+
+     label20:
+        $z30 = 0;
+
+     label21:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z30);
+
+        i15 = i15 + 1;
+
+        goto label19;
+
+     label22:
+        $z3 = virtualinvoke $r4.<JLex.SparseBitSet: boolean equals(java.lang.Object)>(r16);
+
+        if $z3 != 0 goto label23;
+
+        $z31 = 1;
+
+        goto label24;
+
+     label23:
+        $z31 = 0;
+
+     label24:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z31);
+
+        $r6 = virtualinvoke $r4.<JLex.SparseBitSet: java.lang.Object clone()>();
+
+        r17 = (JLex.SparseBitSet) $r6;
+
+        $r7 = virtualinvoke $r4.<JLex.SparseBitSet: java.lang.Object clone()>();
+
+        r18 = (JLex.SparseBitSet) $r7;
+
+        virtualinvoke r17.<JLex.SparseBitSet: void and(JLex.SparseBitSet)>($r4);
+
+        $z4 = virtualinvoke r17.<JLex.SparseBitSet: boolean equals(java.lang.Object)>($r4);
+
+        if $z4 == 0 goto label25;
+
+        $z9 = virtualinvoke $r4.<JLex.SparseBitSet: boolean equals(java.lang.Object)>(r17);
+
+        if $z9 == 0 goto label25;
+
+        $z32 = 1;
+
+        goto label26;
+
+     label25:
+        $z32 = 0;
+
+     label26:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z32);
+
+        virtualinvoke r17.<JLex.SparseBitSet: void xor(JLex.SparseBitSet)>($r4);
+
+        $z33 = virtualinvoke r17.<JLex.SparseBitSet: boolean equals(java.lang.Object)>($r4);
+
+        if $z33 != 0 goto label27;
+
+        $i1 = virtualinvoke r17.<JLex.SparseBitSet: int size()>();
+
+        if $i1 != 0 goto label27;
+
+        $z34 = 1;
+
+        goto label28;
+
+     label27:
+        $z34 = 0;
+
+     label28:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z34);
+
+        virtualinvoke r18.<JLex.SparseBitSet: void or(JLex.SparseBitSet)>(r16);
+
+        $z35 = virtualinvoke r18.<JLex.SparseBitSet: boolean equals(java.lang.Object)>($r4);
+
+        if $z35 == 0 goto label29;
+
+        $z8 = virtualinvoke r16.<JLex.SparseBitSet: boolean equals(java.lang.Object)>(r18);
+
+        if $z8 != 0 goto label29;
+
+        $z36 = 1;
+
+        goto label30;
+
+     label29:
+        $z36 = 0;
+
+     label30:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z36);
+
+        virtualinvoke r18.<JLex.SparseBitSet: void and(JLex.SparseBitSet)>(r16);
+
+        $z37 = virtualinvoke r18.<JLex.SparseBitSet: boolean equals(java.lang.Object)>($r4);
+
+        if $z37 != 0 goto label31;
+
+        $z7 = virtualinvoke r16.<JLex.SparseBitSet: boolean equals(java.lang.Object)>(r18);
+
+        if $z7 == 0 goto label31;
+
+        $z38 = 1;
+
+        goto label32;
+
+     label31:
+        $z38 = 0;
+
+     label32:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z38);
+
+        virtualinvoke r18.<JLex.SparseBitSet: void xor(JLex.SparseBitSet)>($r4);
+
+        $z39 = virtualinvoke r18.<JLex.SparseBitSet: boolean equals(java.lang.Object)>($r4);
+
+        if $z39 != 0 goto label33;
+
+        $z6 = virtualinvoke r16.<JLex.SparseBitSet: boolean equals(java.lang.Object)>(r18);
+
+        if $z6 != 0 goto label33;
+
+        $z40 = 1;
+
+        goto label34;
+
+     label33:
+        $z40 = 0;
+
+     label34:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z40);
+
+        virtualinvoke r17.<JLex.SparseBitSet: void or(JLex.SparseBitSet)>(r18);
+
+        virtualinvoke r17.<JLex.SparseBitSet: void or(JLex.SparseBitSet)>(r16);
+
+        $z41 = virtualinvoke r17.<JLex.SparseBitSet: boolean equals(java.lang.Object)>($r4);
+
+        if $z41 == 0 goto label35;
+
+        $z5 = virtualinvoke $r4.<JLex.SparseBitSet: boolean equals(java.lang.Object)>(r17);
+
+        if $z5 == 0 goto label35;
+
+        $z42 = 1;
+
+        goto label36;
+
+     label35:
+        $z42 = 0;
+
+     label36:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z42);
+
+        $r19 = virtualinvoke r18.<JLex.SparseBitSet: java.lang.Object clone()>();
+
+        r20 = (JLex.SparseBitSet) $r19;
+
+        virtualinvoke r20.<JLex.SparseBitSet: void and(JLex.SparseBitSet)>(r16);
+
+        $i17 = virtualinvoke r20.<JLex.SparseBitSet: int size()>();
+
+        if $i17 != 0 goto label37;
+
+        $z43 = 1;
+
+        goto label38;
+
+     label37:
+        $z43 = 0;
+
+     label38:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z43);
+
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>("Success.");
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        JLex.SparseBitSet$1 $r0;
+        JLex.SparseBitSet$2 $r1;
+        JLex.SparseBitSet$3 $r2;
+
+        <JLex.SparseBitSet: int BITS_M1> = 63;
+
+        <JLex.SparseBitSet: int BITS> = 64;
+
+        <JLex.SparseBitSet: int LG_BITS> = 6;
+
+        $r0 = new JLex.SparseBitSet$1;
+
+        specialinvoke $r0.<JLex.SparseBitSet$1: void <init>()>();
+
+        <JLex.SparseBitSet: JLex.SparseBitSet$BinOp AND> = $r0;
+
+        $r1 = new JLex.SparseBitSet$2;
+
+        specialinvoke $r1.<JLex.SparseBitSet$2: void <init>()>();
+
+        <JLex.SparseBitSet: JLex.SparseBitSet$BinOp OR> = $r1;
+
+        $r2 = new JLex.SparseBitSet$3;
+
+        specialinvoke $r2.<JLex.SparseBitSet$3: void <init>()>();
+
+        <JLex.SparseBitSet: JLex.SparseBitSet$BinOp XOR> = $r2;
+
+        return;
+    }
+}

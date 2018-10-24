@@ -1,0 +1,216 @@
+class JLex.CAlloc extends java.lang.Object
+{
+
+    void <init>()
+    {
+        JLex.CAlloc r0;
+
+        r0 := @this: JLex.CAlloc;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    static JLex.CDfa newCDfa(JLex.CSpec)
+    {
+        JLex.CSpec r0;
+        JLex.CDfa $r2;
+        java.util.Vector $r3, $r4;
+        int $i0;
+
+        r0 := @parameter0: JLex.CSpec;
+
+        $r2 = new JLex.CDfa;
+
+        $r3 = r0.<JLex.CSpec: java.util.Vector m_dfa_states>;
+
+        $i0 = virtualinvoke $r3.<java.util.Vector: int size()>();
+
+        specialinvoke $r2.<JLex.CDfa: void <init>(int)>($i0);
+
+        $r4 = r0.<JLex.CSpec: java.util.Vector m_dfa_states>;
+
+        virtualinvoke $r4.<java.util.Vector: void addElement(java.lang.Object)>($r2);
+
+        return $r2;
+    }
+
+    static JLex.CNfaPair newCNfaPair()
+    {
+        JLex.CNfaPair $r1;
+
+        $r1 = new JLex.CNfaPair;
+
+        specialinvoke $r1.<JLex.CNfaPair: void <init>()>();
+
+        return $r1;
+    }
+
+    static JLex.CNfaPair newNLPair(JLex.CSpec)
+    {
+        JLex.CSpec r0;
+        JLex.CNfaPair r1;
+        JLex.CNfa $r2, $r3, $r4, $r5, $r6, $r7, $r8, $r10, $r11, $r12, $r14, $r15, $r16, $r17, $r18, $r19, $r20, $r21, $r22, $r23, $r24, $r25, $r26, $r27, $r28, $r29, $r30, $r31, $r32, $r33, $r34, $r35, $r36, $r37, $r38, $r39, $r40, $r41, $r42, $r44, $r45;
+        JLex.CSet $r9, $r13, $r43, $r46;
+        int $i0, $i1;
+
+        r0 := @parameter0: JLex.CSpec;
+
+        r1 = staticinvoke <JLex.CAlloc: JLex.CNfaPair newCNfaPair()>();
+
+        $r2 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>(r0);
+
+        r1.<JLex.CNfaPair: JLex.CNfa m_end> = $r2;
+
+        $r3 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>(r0);
+
+        r1.<JLex.CNfaPair: JLex.CNfa m_start> = $r3;
+
+        $r4 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r5 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>(r0);
+
+        $r4.<JLex.CNfa: JLex.CNfa m_next> = $r5;
+
+        $r6 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r7 = $r6.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r7.<JLex.CNfa: int m_edge> = -1;
+
+        $r8 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r10 = $r8.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r9 = new JLex.CSet;
+
+        specialinvoke $r9.<JLex.CSet: void <init>()>();
+
+        $r10.<JLex.CNfa: JLex.CSet m_set> = $r9;
+
+        $r11 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r12 = $r11.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r13 = $r12.<JLex.CNfa: JLex.CSet m_set>;
+
+        virtualinvoke $r13.<JLex.CSet: void add(int)>(10);
+
+        $i0 = r0.<JLex.CSpec: int m_dtrans_ncols>;
+
+        $i1 = $i0 - 2;
+
+        if $i1 <= 2029 goto label1;
+
+        $r41 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r42 = $r41.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r43 = $r42.<JLex.CNfa: JLex.CSet m_set>;
+
+        virtualinvoke $r43.<JLex.CSet: void add(int)>(2028);
+
+        $r44 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r45 = $r44.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r46 = $r45.<JLex.CNfa: JLex.CSet m_set>;
+
+        virtualinvoke $r46.<JLex.CSet: void add(int)>(2029);
+
+     label1:
+        $r14 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r16 = $r14.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r15 = r1.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        $r16.<JLex.CNfa: JLex.CNfa m_next> = $r15;
+
+        $r17 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r18 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>(r0);
+
+        $r17.<JLex.CNfa: JLex.CNfa m_next2> = $r18;
+
+        $r19 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r20 = $r19.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r20.<JLex.CNfa: int m_edge> = 13;
+
+        $r21 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r22 = $r21.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r23 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>(r0);
+
+        $r22.<JLex.CNfa: JLex.CNfa m_next> = $r23;
+
+        $r24 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r25 = $r24.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r27 = $r25.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r26 = r1.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        $r27.<JLex.CNfa: JLex.CNfa m_next> = $r26;
+
+        $r28 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r29 = $r28.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r30 = $r29.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r31 = staticinvoke <JLex.CAlloc: JLex.CNfa newCNfa(JLex.CSpec)>(r0);
+
+        $r30.<JLex.CNfa: JLex.CNfa m_next2> = $r31;
+
+        $r32 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r33 = $r32.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r34 = $r33.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r35 = $r34.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r35.<JLex.CNfa: int m_edge> = 10;
+
+        $r36 = r1.<JLex.CNfaPair: JLex.CNfa m_start>;
+
+        $r37 = $r36.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r38 = $r37.<JLex.CNfa: JLex.CNfa m_next>;
+
+        $r40 = $r38.<JLex.CNfa: JLex.CNfa m_next2>;
+
+        $r39 = r1.<JLex.CNfaPair: JLex.CNfa m_end>;
+
+        $r40.<JLex.CNfa: JLex.CNfa m_next> = $r39;
+
+        return r1;
+    }
+
+    static JLex.CNfa newCNfa(JLex.CSpec)
+    {
+        JLex.CSpec r0;
+        JLex.CNfa $r2;
+        java.util.Vector $r3;
+
+        r0 := @parameter0: JLex.CSpec;
+
+        $r2 = new JLex.CNfa;
+
+        specialinvoke $r2.<JLex.CNfa: void <init>()>();
+
+        $r3 = r0.<JLex.CSpec: java.util.Vector m_nfa_states>;
+
+        virtualinvoke $r3.<java.util.Vector: void addElement(java.lang.Object)>($r2);
+
+        $r2.<JLex.CNfa: int m_edge> = -3;
+
+        return $r2;
+    }
+}

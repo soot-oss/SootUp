@@ -1,0 +1,72 @@
+public class javaonepointfive.AnonGeneNullarySimple extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.AnonGeneNullarySimple r0;
+
+        r0 := @this: javaonepointfive.AnonGeneNullarySimple;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.AnonGeneNullarySimple $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.AnonGeneNullarySimple;
+
+        specialinvoke $r1.<javaonepointfive.AnonGeneNullarySimple: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.AnonGeneNullarySimple: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.AnonGeneNullarySimple r0;
+        java.lang.String r2, r3, $r11;
+        javaonepointfive.AnonGeneNullarySimple$StrTripler $r4, $r6;
+        java.lang.Object $r5;
+        java.lang.StringBuilder $r7, $r9, $r10;
+        java.io.PrintStream $r8;
+
+        r0 := @this: javaonepointfive.AnonGeneNullarySimple;
+
+        $r4 = new javaonepointfive.AnonGeneNullarySimple$StrTripler;
+
+        specialinvoke $r4.<javaonepointfive.AnonGeneNullarySimple$StrTripler: void <init>()>();
+
+        $r5 = interfaceinvoke $r4.<javaonepointfive.AnonGeneNullarySimple$Ops: java.lang.Object nullary()>();
+
+        r2 = (java.lang.String) $r5;
+
+        $r6 = new javaonepointfive.AnonGeneNullarySimple$StrTripler;
+
+        specialinvoke $r6.<javaonepointfive.AnonGeneNullarySimple$StrTripler: void <init>()>();
+
+        r3 = virtualinvoke $r6.<javaonepointfive.AnonGeneNullarySimple$StrTripler: java.lang.String nullary()>();
+
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        $r7 = new java.lang.StringBuilder;
+
+        specialinvoke $r7.<java.lang.StringBuilder: void <init>()>();
+
+        $r9 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r2);
+
+        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r3);
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>($r11);
+
+        return;
+    }
+}

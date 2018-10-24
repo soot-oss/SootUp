@@ -1,0 +1,45 @@
+public class foo.bar.hello.world.Misc extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        foo.bar.hello.world.Misc r0;
+
+        r0 := @this: foo.bar.hello.world.Misc;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        java.lang.String r1;
+        boolean $z0;
+        java.io.PrintStream $r3;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $z0 = "hello" instanceof java.lang.Object;
+
+        if $z0 == 0 goto label1;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("strings are objects in java");
+
+        r1 = (java.lang.String) "hello";
+
+        tableswitch(97)
+        {
+            case 97: goto label1;
+            case 98: goto label1;
+            case 99: goto label1;
+            default: goto label1;
+        };
+
+     label1:
+        return;
+    }
+}

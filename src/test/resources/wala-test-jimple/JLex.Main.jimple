@@ -1,0 +1,62 @@
+public class JLex.Main extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        JLex.Main r0;
+
+        r0 := @this: JLex.Main;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[]) throws java.io.IOException
+    {
+        java.lang.String[] r0;
+        int $i0;
+        JLex.CLexGen $r3;
+        java.lang.String $r4, $r8;
+        java.io.PrintStream $r5, $r7;
+        java.lang.Error $r6;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $i0 = lengthof r0;
+
+        if $i0 >= 1 goto label1;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("Usage: JLex.Main <filename>");
+
+        return;
+
+     label1:
+        $r3 = new JLex.CLexGen;
+
+        $r4 = r0[0];
+
+        specialinvoke $r3.<JLex.CLexGen: void <init>(java.lang.String)>($r4);
+
+        virtualinvoke $r3.<JLex.CLexGen: void generate()>();
+
+     label2:
+        goto label4;
+
+     label3:
+        $r6 := @caughtexception;
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        $r8 = virtualinvoke $r6.<java.lang.Error: java.lang.String getMessage()>();
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>($r8);
+
+     label4:
+        return;
+
+        catch java.lang.Error from label1 to label2 with label3;
+    }
+}

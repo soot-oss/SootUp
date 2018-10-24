@@ -1,0 +1,14 @@
+class foo.bar.hello.world.Temp extends java.lang.Object
+{
+
+    void <init>()
+    {
+        foo.bar.hello.world.Temp r0;
+
+        r0 := @this: foo.bar.hello.world.Temp;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}

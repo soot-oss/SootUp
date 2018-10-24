@@ -1,0 +1,31 @@
+class InnerClass$WhatsIt$NotAgain extends java.lang.Object
+{
+    java.lang.Object x;
+    final InnerClass$WhatsIt this$1;
+
+    public void <init>(InnerClass$WhatsIt)
+    {
+        InnerClass$WhatsIt$NotAgain r0;
+        InnerClass$WhatsIt r1;
+        InnerClass$WhatsThat $r2;
+        InnerClass $r3;
+
+        r0 := @this: InnerClass$WhatsIt$NotAgain;
+
+        r1 := @parameter0: InnerClass$WhatsIt;
+
+        r0.<InnerClass$WhatsIt$NotAgain: InnerClass$WhatsIt this$1> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r2 = new InnerClass$WhatsThat;
+
+        $r3 = r1.<InnerClass$WhatsIt: InnerClass this$0>;
+
+        specialinvoke $r2.<InnerClass$WhatsThat: void <init>(InnerClass)>($r3);
+
+        r0.<InnerClass$WhatsIt$NotAgain: java.lang.Object x> = $r2;
+
+        return;
+    }
+}

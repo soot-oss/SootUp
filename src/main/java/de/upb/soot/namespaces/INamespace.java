@@ -1,7 +1,10 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.signatures.ClassSignature;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.SignatureFactory;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -9,23 +12,27 @@ import java.util.Optional;
 /**
  * Public interface to a namespace. Namespaces are sources for {@link SootClass}es, e.g. Java Classpath, Android APK, JAR
  * file, etc.
+ * The strategy to traverse something.
  *
  * @author Manuel Benz created on 22.05.18
+ * @author Ben Hermann
+ * @author Linghui Luo
+ *
  */
 public interface INamespace {
-  /**
-   * Searches the namespace and sub-namespaces for all contained classes.
-   * 
-   * @return A collection of not-yet-resolved {@link SootClass}es
-   */
-  Collection<SootClass> getClasses();
 
   /**
-   * Searches the namespace and all sub-namespaces for a {@link SootClass} matching the given {@link ClassSignature}.
-   *
-   * @param classSignature
-   *          The {@link ClassSignature} denoting the searched {@link SootClass}
-   * @return An optional containing the found class or empty if the class does not reside in this namespace
+   * Create or find a class source for a given signature.
+   * @param signature The signature of the class to be found.
+   * @return The source entry for that class.
    */
-  Optional<SootClass> getClass(ClassSignature classSignature);
+  Optional<AbstractClassSource> getClassSource(JavaClassSignature signature);
+
+  /**
+   * The class provider attached to this namespace.
+   * @return An instance of {@link IClassProvider} to be used.
+   */
+  IClassProvider getClassProvider();
+
+  Collection<AbstractClassSource> getClassSources(SignatureFactory factory);
 }

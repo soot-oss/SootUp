@@ -1,0 +1,63 @@
+public class javaonepointfive.GenericMemberClasses extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.GenericMemberClasses r0;
+
+        r0 := @this: javaonepointfive.GenericMemberClasses;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.GenericMemberClasses $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.GenericMemberClasses;
+
+        specialinvoke $r1.<javaonepointfive.GenericMemberClasses: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.GenericMemberClasses: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.GenericMemberClasses r0;
+        java.lang.Object r2;
+        javaonepointfive.GenericMemberClasses$A $r3;
+        boolean $z0;
+        java.io.PrintStream $r4;
+
+        r0 := @this: javaonepointfive.GenericMemberClasses;
+
+        $r3 = new javaonepointfive.GenericMemberClasses$A;
+
+        specialinvoke $r3.<javaonepointfive.GenericMemberClasses$A: void <init>(javaonepointfive.GenericMemberClasses)>(r0);
+
+     label1:
+        $z0 = virtualinvoke $r3.<javaonepointfive.GenericMemberClasses$A: boolean hasNext()>();
+
+        if $z0 == 0 goto label2;
+
+        r2 = virtualinvoke $r3.<javaonepointfive.GenericMemberClasses$A: java.lang.Object next()>();
+
+        virtualinvoke $r3.<javaonepointfive.GenericMemberClasses$A: void remove()>();
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.Object)>(r2);
+
+        goto label1;
+
+     label2:
+        return;
+    }
+}

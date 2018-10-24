@@ -1,0 +1,29 @@
+class JLex.CBunch extends java.lang.Object
+{
+    java.util.Vector m_nfa_set;
+    JLex.SparseBitSet m_nfa_bit;
+    JLex.CAccept m_accept;
+    int m_anchor;
+    int m_accept_index;
+
+    void <init>()
+    {
+        JLex.CBunch r0;
+
+        r0 := @this: JLex.CBunch;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<JLex.CBunch: java.util.Vector m_nfa_set> = null;
+
+        r0.<JLex.CBunch: JLex.SparseBitSet m_nfa_bit> = null;
+
+        r0.<JLex.CBunch: JLex.CAccept m_accept> = null;
+
+        r0.<JLex.CBunch: int m_anchor> = 0;
+
+        r0.<JLex.CBunch: int m_accept_index> = -1;
+
+        return;
+    }
+}

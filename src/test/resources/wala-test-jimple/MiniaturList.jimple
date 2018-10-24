@@ -1,0 +1,147 @@
+public class MiniaturList extends java.lang.Object
+{
+    MiniaturList next;
+    int data;
+
+    public void <init>()
+    {
+        MiniaturList r0;
+
+        r0 := @this: MiniaturList;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public MiniaturList remove(int)
+    {
+        MiniaturList r0, $r1, r2, r3, r4;
+        int i0, $i1;
+
+        r0 := @this: MiniaturList;
+
+        i0 := @parameter0: int;
+
+        r2 = null;
+
+        r3 = r0;
+
+        r4 = r0;
+
+     label1:
+        if r4 == null goto label4;
+
+        $i1 = r4.<MiniaturList: int data>;
+
+        if $i1 != i0 goto label3;
+
+        if r2 != null goto label2;
+
+        r3 = r4.<MiniaturList: MiniaturList next>;
+
+        goto label4;
+
+     label2:
+        $r1 = r4.<MiniaturList: MiniaturList next>;
+
+        r2.<MiniaturList: MiniaturList next> = $r1;
+
+        goto label4;
+
+     label3:
+        r2 = r4;
+
+        r4 = r4.<MiniaturList: MiniaturList next>;
+
+        goto label1;
+
+     label4:
+        return r3;
+    }
+
+    public static MiniaturList cons(int, MiniaturList)
+    {
+        int i0;
+        MiniaturList r0, $r2;
+
+        i0 := @parameter0: int;
+
+        r0 := @parameter1: MiniaturList;
+
+        $r2 = new MiniaturList;
+
+        specialinvoke $r2.<MiniaturList: void <init>()>();
+
+        $r2.<MiniaturList: int data> = i0;
+
+        $r2.<MiniaturList: MiniaturList next> = r0;
+
+        return $r2;
+    }
+
+    public boolean contains(int)
+    {
+        MiniaturList r0, r1;
+        int i0, $i1;
+
+        r0 := @this: MiniaturList;
+
+        i0 := @parameter0: int;
+
+        r1 = r0;
+
+     label1:
+        if r1 == null goto label3;
+
+        $i1 = r1.<MiniaturList: int data>;
+
+        if $i1 != i0 goto label2;
+
+        return 1;
+
+     label2:
+        r1 = r1.<MiniaturList: MiniaturList next>;
+
+        goto label1;
+
+     label3:
+        return 0;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        MiniaturList r1, $r2, $r3, $r4, r7, r8;
+        java.io.PrintStream $r5, $r6;
+        boolean $z0, $z1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r2 = staticinvoke <MiniaturList: MiniaturList cons(int,MiniaturList)>(2, null);
+
+        $r3 = staticinvoke <MiniaturList: MiniaturList cons(int,MiniaturList)>(3, $r2);
+
+        $r4 = staticinvoke <MiniaturList: MiniaturList cons(int,MiniaturList)>(2, $r3);
+
+        r7 = staticinvoke <MiniaturList: MiniaturList cons(int,MiniaturList)>(1, $r4);
+
+        r1 = staticinvoke <MiniaturList: MiniaturList cons(int,MiniaturList)>(5, null);
+
+        r8 = virtualinvoke r7.<MiniaturList: MiniaturList remove(int)>(2);
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $z0 = virtualinvoke r8.<MiniaturList: boolean contains(int)>(3);
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(boolean)>($z0);
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        $z1 = virtualinvoke r1.<MiniaturList: boolean contains(int)>(6);
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(boolean)>($z1);
+
+        return;
+    }
+}

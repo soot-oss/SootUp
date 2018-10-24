@@ -1,0 +1,197 @@
+class JLex.CSet extends java.lang.Object
+{
+    private JLex.SparseBitSet m_set;
+    private boolean m_complement;
+
+    void <init>()
+    {
+        JLex.CSet r0;
+        JLex.SparseBitSet $r1;
+
+        r0 := @this: JLex.CSet;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r1 = new JLex.SparseBitSet;
+
+        specialinvoke $r1.<JLex.SparseBitSet: void <init>()>();
+
+        r0.<JLex.CSet: JLex.SparseBitSet m_set> = $r1;
+
+        r0.<JLex.CSet: boolean m_complement> = 0;
+
+        return;
+    }
+
+    void complement()
+    {
+        JLex.CSet r0;
+
+        r0 := @this: JLex.CSet;
+
+        r0.<JLex.CSet: boolean m_complement> = 1;
+
+        return;
+    }
+
+    void add(int)
+    {
+        JLex.CSet r0;
+        int i0;
+        JLex.SparseBitSet $r1;
+
+        r0 := @this: JLex.CSet;
+
+        i0 := @parameter0: int;
+
+        $r1 = r0.<JLex.CSet: JLex.SparseBitSet m_set>;
+
+        virtualinvoke $r1.<JLex.SparseBitSet: void set(int)>(i0);
+
+        return;
+    }
+
+    void addncase(char)
+    {
+        JLex.CSet r0;
+        char c0, $c1, $c2, $c3;
+
+        r0 := @this: JLex.CSet;
+
+        c0 := @parameter0: char;
+
+        virtualinvoke r0.<JLex.CSet: void add(int)>(c0);
+
+        $c1 = staticinvoke <java.lang.Character: char toLowerCase(char)>(c0);
+
+        virtualinvoke r0.<JLex.CSet: void add(int)>($c1);
+
+        $c2 = staticinvoke <java.lang.Character: char toTitleCase(char)>(c0);
+
+        virtualinvoke r0.<JLex.CSet: void add(int)>($c2);
+
+        $c3 = staticinvoke <java.lang.Character: char toUpperCase(char)>(c0);
+
+        virtualinvoke r0.<JLex.CSet: void add(int)>($c3);
+
+        return;
+    }
+
+    boolean contains(int)
+    {
+        JLex.CSet r0;
+        int i0;
+        boolean z0, $z1, $z2;
+        JLex.SparseBitSet $r1;
+
+        r0 := @this: JLex.CSet;
+
+        i0 := @parameter0: int;
+
+        $r1 = r0.<JLex.CSet: JLex.SparseBitSet m_set>;
+
+        z0 = virtualinvoke $r1.<JLex.SparseBitSet: boolean get(int)>(i0);
+
+        $z1 = r0.<JLex.CSet: boolean m_complement>;
+
+        if $z1 == 0 goto label3;
+
+        if 0 != z0 goto label1;
+
+        $z2 = 1;
+
+        goto label2;
+
+     label1:
+        $z2 = 0;
+
+     label2:
+        return $z2;
+
+     label3:
+        return z0;
+    }
+
+    void mimic(JLex.CSet)
+    {
+        JLex.CSet r0, r1;
+        boolean $z0;
+        JLex.SparseBitSet $r2, $r4;
+        java.lang.Object $r3;
+
+        r0 := @this: JLex.CSet;
+
+        r1 := @parameter0: JLex.CSet;
+
+        $z0 = r1.<JLex.CSet: boolean m_complement>;
+
+        r0.<JLex.CSet: boolean m_complement> = $z0;
+
+        $r2 = r1.<JLex.CSet: JLex.SparseBitSet m_set>;
+
+        $r3 = virtualinvoke $r2.<JLex.SparseBitSet: java.lang.Object clone()>();
+
+        $r4 = (JLex.SparseBitSet) $r3;
+
+        r0.<JLex.CSet: JLex.SparseBitSet m_set> = $r4;
+
+        return;
+    }
+
+    void map(JLex.CSet, int[])
+    {
+        JLex.CSet r0, r1;
+        int[] r2;
+        java.util.Enumeration r3;
+        int i0, $i1, $i2;
+        boolean $z0, $z1;
+        JLex.SparseBitSet $r4, $r5, $r8;
+        java.lang.Object $r6;
+        java.lang.Integer $r7;
+
+        r0 := @this: JLex.CSet;
+
+        r1 := @parameter0: JLex.CSet;
+
+        r2 := @parameter1: int[];
+
+        $z0 = r1.<JLex.CSet: boolean m_complement>;
+
+        r0.<JLex.CSet: boolean m_complement> = $z0;
+
+        $r4 = r0.<JLex.CSet: JLex.SparseBitSet m_set>;
+
+        virtualinvoke $r4.<JLex.SparseBitSet: void clearAll()>();
+
+        $r5 = r1.<JLex.CSet: JLex.SparseBitSet m_set>;
+
+        r3 = virtualinvoke $r5.<JLex.SparseBitSet: java.util.Enumeration elements()>();
+
+     label1:
+        $z1 = interfaceinvoke r3.<java.util.Enumeration: boolean hasMoreElements()>();
+
+        if $z1 == 0 goto label3;
+
+        $r6 = interfaceinvoke r3.<java.util.Enumeration: java.lang.Object nextElement()>();
+
+        $r7 = (java.lang.Integer) $r6;
+
+        i0 = virtualinvoke $r7.<java.lang.Integer: int intValue()>();
+
+        $i1 = lengthof r2;
+
+        if i0 >= $i1 goto label2;
+
+        $r8 = r0.<JLex.CSet: JLex.SparseBitSet m_set>;
+
+        $i2 = r2[i0];
+
+        virtualinvoke $r8.<JLex.SparseBitSet: void set(int)>($i2);
+
+     label2:
+        goto label1;
+
+     label3:
+        return;
+    }
+}

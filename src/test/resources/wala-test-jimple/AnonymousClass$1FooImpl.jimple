@@ -1,0 +1,57 @@
+abstract class AnonymousClass$1FooImpl extends java.lang.Object implements AnonymousClass$Foo
+{
+    int y;
+    final java.lang.Integer val$base;
+    final AnonymousClass this$0;
+
+    public abstract int getValue();
+
+    void <init>(AnonymousClass, int, java.lang.Integer)
+    {
+        AnonymousClass$1FooImpl r0;
+        AnonymousClass r1;
+        int i0;
+        java.lang.Integer r2;
+
+        r0 := @this: AnonymousClass$1FooImpl;
+
+        r1 := @parameter0: AnonymousClass;
+
+        i0 := @parameter1: int;
+
+        r2 := @parameter2: java.lang.Integer;
+
+        r0.<AnonymousClass$1FooImpl: AnonymousClass this$0> = r1;
+
+        r0.<AnonymousClass$1FooImpl: java.lang.Integer val$base> = r2;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<AnonymousClass$1FooImpl: int y> = i0;
+
+        return;
+    }
+
+    public int getValueBase()
+    {
+        AnonymousClass$1FooImpl r0;
+        int $i0, $i1, $i2, $i3, $i4;
+        java.lang.Integer $r1;
+
+        r0 := @this: AnonymousClass$1FooImpl;
+
+        $i0 = r0.<AnonymousClass$1FooImpl: int y>;
+
+        $i1 = virtualinvoke r0.<AnonymousClass$1FooImpl: int getValue()>();
+
+        $i2 = $i0 + $i1;
+
+        $r1 = r0.<AnonymousClass$1FooImpl: java.lang.Integer val$base>;
+
+        $i3 = virtualinvoke $r1.<java.lang.Integer: int intValue()>();
+
+        $i4 = $i2 - $i3;
+
+        return $i4;
+    }
+}

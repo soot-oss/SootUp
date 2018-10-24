@@ -1,0 +1,134 @@
+public class javaonepointfive.Wildcards extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.Wildcards r0;
+
+        r0 := @this: javaonepointfive.Wildcards;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void printCollection(java.util.ArrayList)
+    {
+        javaonepointfive.Wildcards r0;
+        java.util.ArrayList r1;
+        java.lang.Object r2;
+        java.io.PrintStream $r3;
+
+        r0 := @this: javaonepointfive.Wildcards;
+
+        r1 := @parameter0: java.util.ArrayList;
+
+        r2 = virtualinvoke r1.<java.util.ArrayList: java.lang.Object get(int)>(0);
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.Object)>(r2);
+
+        return;
+    }
+
+    public void printCollection1(java.util.ArrayList)
+    {
+        javaonepointfive.Wildcards r0;
+        java.util.ArrayList r1;
+        java.lang.Object r2;
+        java.io.PrintStream $r3;
+
+        r0 := @this: javaonepointfive.Wildcards;
+
+        r1 := @parameter0: java.util.ArrayList;
+
+        r2 = virtualinvoke r1.<java.util.ArrayList: java.lang.Object get(int)>(0);
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.Object)>(r2);
+
+        return;
+    }
+
+    public void printCollection2(java.util.ArrayList)
+    {
+        javaonepointfive.Wildcards r0;
+        java.util.ArrayList r1;
+        java.lang.String r2;
+        java.lang.Object $r3;
+        java.io.PrintStream $r4;
+
+        r0 := @this: javaonepointfive.Wildcards;
+
+        r1 := @parameter0: java.util.ArrayList;
+
+        $r3 = virtualinvoke r1.<java.util.ArrayList: java.lang.Object get(int)>(0);
+
+        r2 = (java.lang.String) $r3;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>(r2);
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.Wildcards $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.Wildcards;
+
+        specialinvoke $r1.<javaonepointfive.Wildcards: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.Wildcards: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.Wildcards r0;
+        java.util.ArrayList $r3, $r4;
+        java.lang.Integer $r5, $r6;
+
+        r0 := @this: javaonepointfive.Wildcards;
+
+        $r3 = new java.util.ArrayList;
+
+        specialinvoke $r3.<java.util.ArrayList: void <init>()>();
+
+        virtualinvoke $r3.<java.util.ArrayList: boolean add(java.lang.Object)>("hello");
+
+        virtualinvoke $r3.<java.util.ArrayList: boolean add(java.lang.Object)>("goodbye");
+
+        virtualinvoke r0.<javaonepointfive.Wildcards: void printCollection(java.util.ArrayList)>($r3);
+
+        virtualinvoke r0.<javaonepointfive.Wildcards: void printCollection1(java.util.ArrayList)>($r3);
+
+        virtualinvoke r0.<javaonepointfive.Wildcards: void printCollection2(java.util.ArrayList)>($r3);
+
+        $r4 = new java.util.ArrayList;
+
+        specialinvoke $r4.<java.util.ArrayList: void <init>()>();
+
+        $r5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(123);
+
+        virtualinvoke $r4.<java.util.ArrayList: boolean add(java.lang.Object)>($r5);
+
+        $r6 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(42);
+
+        virtualinvoke $r4.<java.util.ArrayList: boolean add(java.lang.Object)>($r6);
+
+        virtualinvoke r0.<javaonepointfive.Wildcards: void printCollection(java.util.ArrayList)>($r4);
+
+        virtualinvoke r0.<javaonepointfive.Wildcards: void printCollection1(java.util.ArrayList)>($r4);
+
+        return;
+    }
+}

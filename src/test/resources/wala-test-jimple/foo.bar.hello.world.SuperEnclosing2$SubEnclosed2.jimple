@@ -1,0 +1,42 @@
+class foo.bar.hello.world.SuperEnclosing2$SubEnclosed2 extends foo.bar.hello.world.SuperEnclosing2
+{
+    final foo.bar.hello.world.SuperEnclosing2 this$0;
+
+    void <init>(foo.bar.hello.world.SuperEnclosing2)
+    {
+        foo.bar.hello.world.SuperEnclosing2$SubEnclosed2 r0;
+        foo.bar.hello.world.SuperEnclosing2 r1;
+        int $i0, $i1;
+
+        r0 := @this: foo.bar.hello.world.SuperEnclosing2$SubEnclosed2;
+
+        r1 := @parameter0: foo.bar.hello.world.SuperEnclosing2;
+
+        r0.<foo.bar.hello.world.SuperEnclosing2$SubEnclosed2: foo.bar.hello.world.SuperEnclosing2 this$0> = r1;
+
+        specialinvoke r0.<foo.bar.hello.world.SuperEnclosing2: void <init>()>();
+
+        $i0 = staticinvoke <foo.bar.hello.world.SuperEnclosing2: int access$000(foo.bar.hello.world.SuperEnclosing2)>(r1);
+
+        $i1 = $i0 + 7;
+
+        staticinvoke <foo.bar.hello.world.SuperEnclosing2: int access$002(foo.bar.hello.world.SuperEnclosing2,int)>(r1, $i1);
+
+        return;
+    }
+
+    int hello()
+    {
+        foo.bar.hello.world.SuperEnclosing2$SubEnclosed2 r0;
+        foo.bar.hello.world.SuperEnclosing2 $r1;
+        int $i0;
+
+        r0 := @this: foo.bar.hello.world.SuperEnclosing2$SubEnclosed2;
+
+        $r1 = r0.<foo.bar.hello.world.SuperEnclosing2$SubEnclosed2: foo.bar.hello.world.SuperEnclosing2 this$0>;
+
+        $i0 = staticinvoke <foo.bar.hello.world.SuperEnclosing2: int access$000(foo.bar.hello.world.SuperEnclosing2)>($r1);
+
+        return $i0;
+    }
+}

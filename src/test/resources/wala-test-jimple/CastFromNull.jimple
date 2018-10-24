@@ -1,0 +1,28 @@
+public class CastFromNull extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        CastFromNull r0;
+
+        r0 := @this: CastFromNull;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        CastFromNull $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new CastFromNull;
+
+        specialinvoke $r1.<CastFromNull: void <init>()>();
+
+        return;
+    }
+}

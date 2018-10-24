@@ -1,0 +1,34 @@
+final enum class javaonepointfive.NotSoSimpleEnums$Direction$1 extends javaonepointfive.NotSoSimpleEnums$Direction
+{
+
+    void <init>(java.lang.String, int, java.lang.String)
+    {
+        javaonepointfive.NotSoSimpleEnums$Direction$1 r0;
+        java.lang.String r1, r2;
+        int i0;
+
+        r0 := @this: javaonepointfive.NotSoSimpleEnums$Direction$1;
+
+        r1 := @parameter0: java.lang.String;
+
+        i0 := @parameter1: int;
+
+        r2 := @parameter2: java.lang.String;
+
+        specialinvoke r0.<javaonepointfive.NotSoSimpleEnums$Direction: void <init>(java.lang.String,int,java.lang.String,javaonepointfive.NotSoSimpleEnums$1)>(r1, i0, r2, null);
+
+        return;
+    }
+
+    public javaonepointfive.NotSoSimpleEnums$Direction getOpposite()
+    {
+        javaonepointfive.NotSoSimpleEnums$Direction$1 r0;
+        javaonepointfive.NotSoSimpleEnums$Direction $r1;
+
+        r0 := @this: javaonepointfive.NotSoSimpleEnums$Direction$1;
+
+        $r1 = <javaonepointfive.NotSoSimpleEnums$Direction$1: javaonepointfive.NotSoSimpleEnums$Direction SOUTH>;
+
+        return $r1;
+    }
+}

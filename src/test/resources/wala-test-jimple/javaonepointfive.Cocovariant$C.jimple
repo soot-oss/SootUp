@@ -1,0 +1,54 @@
+class javaonepointfive.Cocovariant$C extends javaonepointfive.Cocovariant$B
+{
+
+    void <init>()
+    {
+        javaonepointfive.Cocovariant$C r0;
+
+        r0 := @this: javaonepointfive.Cocovariant$C;
+
+        specialinvoke r0.<javaonepointfive.Cocovariant$B: void <init>()>();
+
+        return;
+    }
+
+    javaonepointfive.Cocovariant$C foo(java.lang.String)
+    {
+        javaonepointfive.Cocovariant$C r0;
+        java.lang.String r1;
+
+        r0 := @this: javaonepointfive.Cocovariant$C;
+
+        r1 := @parameter0: java.lang.String;
+
+        return null;
+    }
+
+    volatile javaonepointfive.Cocovariant$B foo(java.lang.String)
+    {
+        javaonepointfive.Cocovariant$C r0, $r2;
+        java.lang.String r1;
+
+        r0 := @this: javaonepointfive.Cocovariant$C;
+
+        r1 := @parameter0: java.lang.String;
+
+        $r2 = virtualinvoke r0.<javaonepointfive.Cocovariant$C: javaonepointfive.Cocovariant$C foo(java.lang.String)>(r1);
+
+        return $r2;
+    }
+
+    volatile javaonepointfive.Cocovariant$A foo(java.lang.String)
+    {
+        javaonepointfive.Cocovariant$C r0, $r2;
+        java.lang.String r1;
+
+        r0 := @this: javaonepointfive.Cocovariant$C;
+
+        r1 := @parameter0: java.lang.String;
+
+        $r2 = virtualinvoke r0.<javaonepointfive.Cocovariant$C: javaonepointfive.Cocovariant$C foo(java.lang.String)>(r1);
+
+        return $r2;
+    }
+}

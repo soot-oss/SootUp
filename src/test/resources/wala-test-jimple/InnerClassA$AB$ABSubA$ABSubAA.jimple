@@ -1,0 +1,73 @@
+class InnerClassA$AB$ABSubA$ABSubAA extends java.lang.Object
+{
+    final InnerClassA$AB$ABSubA this$2;
+
+    void <init>(InnerClassA$AB$ABSubA)
+    {
+        InnerClassA$AB$ABSubA$ABSubAA r0;
+        InnerClassA$AB$ABSubA r1;
+
+        r0 := @this: InnerClassA$AB$ABSubA$ABSubAA;
+
+        r1 := @parameter0: InnerClassA$AB$ABSubA;
+
+        r0.<InnerClassA$AB$ABSubA$ABSubAA: InnerClassA$AB$ABSubA this$2> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    int getABA_X()
+    {
+        InnerClassA$AB$ABSubA$ABSubAA r0;
+        InnerClassA$AB$ABSubA $r1;
+        int $i0;
+
+        r0 := @this: InnerClassA$AB$ABSubA$ABSubAA;
+
+        $r1 = r0.<InnerClassA$AB$ABSubA$ABSubAA: InnerClassA$AB$ABSubA this$2>;
+
+        $i0 = $r1.<InnerClassA$AB$ABSubA: int aba_x>;
+
+        return $i0;
+    }
+
+    int getA_X()
+    {
+        InnerClassA$AB$ABSubA$ABSubAA r0;
+        InnerClassA$AB$ABSubA $r1;
+        InnerClassA$AB $r2;
+        InnerClassA $r3;
+        int $i0;
+
+        r0 := @this: InnerClassA$AB$ABSubA$ABSubAA;
+
+        $r1 = r0.<InnerClassA$AB$ABSubA$ABSubAA: InnerClassA$AB$ABSubA this$2>;
+
+        $r2 = $r1.<InnerClassA$AB$ABSubA: InnerClassA$AB this$1>;
+
+        $r3 = $r2.<InnerClassA$AB: InnerClassA this$0>;
+
+        $i0 = $r3.<InnerClassA: int a_x>;
+
+        return $i0;
+    }
+
+    InnerClassA$AB$ABA$ABAA makeABAA()
+    {
+        InnerClassA$AB$ABSubA$ABSubAA r0;
+        InnerClassA$AB$ABA$ABAA $r1;
+        InnerClassA$AB$ABSubA $r2;
+
+        r0 := @this: InnerClassA$AB$ABSubA$ABSubAA;
+
+        $r1 = new InnerClassA$AB$ABA$ABAA;
+
+        $r2 = r0.<InnerClassA$AB$ABSubA$ABSubAA: InnerClassA$AB$ABSubA this$2>;
+
+        specialinvoke $r1.<InnerClassA$AB$ABA$ABAA: void <init>(InnerClassA$AB$ABA)>($r2);
+
+        return $r1;
+    }
+}
