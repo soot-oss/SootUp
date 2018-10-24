@@ -44,7 +44,7 @@ import java.util.ArrayDeque;
 public class RefType extends RefLikeType implements IViewResident, Comparable<RefType> {
 
   /** the class name that parameterizes this RefType. */
-  private TypeSignature typeSignature;
+  private final TypeSignature typeSignature;
   private volatile SootClass sootClass;
   private AnySubType anySubType;
   private static IView view;
@@ -87,8 +87,8 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
     this.typeSignature = typeSignature;
   }
 
-  public String getTypeSignature() {
-    return typeSignature.toString();
+  public TypeSignature getTypeSignature() {
+    return typeSignature;
   }
 
   @Override
@@ -100,9 +100,6 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
     return sootClass != null;
   }
 
-  public void setTypeSignature(TypeSignature typeSignature ) {
-    this.typeSignature = typeSignature;
-  }
 
   /**
    * Set the SootClass object corresponding to this RefType.

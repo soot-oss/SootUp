@@ -1,6 +1,7 @@
 package de.upb.soot.views;
 
 import de.upb.soot.Project;
+import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
 import de.upb.soot.jimple.common.type.CharType;
@@ -23,6 +24,8 @@ import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
 
 import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
@@ -31,11 +34,13 @@ import java.util.HashSet;
  */
 public class JavaView extends AbstractView {
 
+  private Set<ArrayType> arrayTypes;
   /**
    * Instantiates a new view.
    */
   public JavaView(Project project) {
     super(project);
+    this.arrayTypes = new HashSet<>();
   }
 
 
@@ -112,6 +117,18 @@ public class JavaView extends AbstractView {
     return new DefaultSignatureFactory();
   }
 
+  private ArrayType getArrayType(ArrayTypeSignature arrayTypeSignature)
+  {
+    Optional<ArrayType> op
+        = this.arrayTypes.stream().filter(r -> r.toString().equals(arrayTypeSignature.toString())).findFirst();
+    if (!op.isPresent()) {
+      ArrayType arrayType
+          = ArrayType.getInstance(getRefType(arrayTypeSignature.baseType), arrayTypeSignature.dimension);
+      this.arrayTypes.add(arrayType);
+      return arrayType;
+    }
+    return op.get();
+  }
   @Override
   public Type getType(TypeSignature signature) {
     if (signature instanceof PrimitiveTypeSignature) {
@@ -142,8 +159,7 @@ public class JavaView extends AbstractView {
     } else if (signature instanceof JavaClassSignature) {
       return getRefType(signature);
     } else if (signature instanceof ArrayTypeSignature) {
-      // TODO:
-      throw new RuntimeException("Unsupported ArrayTypeSignature: " + signature.toString());
+      return getArrayType((ArrayTypeSignature) signature);
     } else {
       return UnknownType.getInstance();
     }

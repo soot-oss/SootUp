@@ -48,7 +48,7 @@ public abstract class AbstractView implements IView {
   @Override
   public RefType getRefType(TypeSignature classSignature) {
     Optional<RefType> op
-        = this.refTypes.stream().filter(r -> r.getTypeSignature().equals(classSignature.toString())).findFirst();
+        = this.refTypes.stream().filter(r -> r.getTypeSignature().equals(classSignature)).findFirst();
     if (!op.isPresent()) {
       RefType refType = new RefType(this, classSignature);
       this.refTypes.add(refType);
