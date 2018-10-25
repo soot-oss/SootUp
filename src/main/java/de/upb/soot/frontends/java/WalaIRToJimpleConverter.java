@@ -120,14 +120,14 @@ public class WalaIRToJimpleConverter {
     IClass sc = walaClass.getSuperclass();
     JavaClassSignature superClass = null;
     if (sc != null) {
-      superClass = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(sc.getName().toString()));
+      superClass = view.getSignatureFactory().getClassSignature(convertClassNameFromWala(sc.getName().toString()));
     }
 
     // get interfaces
     Set<JavaClassSignature> interfaces = new HashSet<>();
     for (IClass i : walaClass.getDirectInterfaces()) {
       JavaClassSignature inter
-          = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(i.getName().toString()));
+          = view.getSignatureFactory().getClassSignature(convertClassNameFromWala(i.getName().toString()));
       interfaces.add(inter);
     }
 
@@ -137,7 +137,7 @@ public class WalaIRToJimpleConverter {
       JavaClass javaClass = (JavaClass) walaClass;
       IClass ec = javaClass.getEnclosingClass();
       if (ec != null) {
-        outerClass = view.getSignatureFacotry().getClassSignature(convertClassNameFromWala(ec.getName().toString()));
+        outerClass = view.getSignatureFactory().getClassSignature(convertClassNameFromWala(ec.getName().toString()));
       }
     }
 
@@ -207,9 +207,9 @@ public class WalaIRToJimpleConverter {
     Type type = convertType(walaField.getFieldTypeReference());
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
     FieldSignature signature
-        = view.getSignatureFacotry().getFieldSignature(walaField.getName().toString(), classSig, type.toString());
+        = view.getSignatureFactory().getFieldSignature(walaField.getName().toString(), classSig, type.toString());
     SootField sootField
-        = new SootField(view, classSig, signature, view.getSignatureFacotry().getTypeSignature(type.toString()), modifiers);
+        = new SootField(view, classSig, signature, view.getSignatureFactory().getTypeSignature(type.toString()), modifiers);
     return sootField;
   }
 
@@ -229,7 +229,7 @@ public class WalaIRToJimpleConverter {
       TypeReference type = walaMethod.getParameterType(i);
       if (!type.equals(walaMethod.getDeclaringClass().getReference())) {
         Type paraType = convertType(type);
-        paraTypes.add(this.view.getSignatureFacotry().getTypeSignature(paraType.toString()));
+        paraTypes.add(this.view.getSignatureFactory().getTypeSignature(paraType.toString()));
         sigs.add(paraType.toString());
       }
     }
@@ -241,7 +241,7 @@ public class WalaIRToJimpleConverter {
     try {
       for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
         String exceptionName = convertClassNameFromWala(exception.getName().toString());
-        JavaClassSignature exceptionSig = this.view.getSignatureFacotry().getClassSignature(exceptionName);
+        JavaClassSignature exceptionSig = this.view.getSignatureFactory().getClassSignature(exceptionName);
         thrownExceptions.add(exceptionSig);
       }
     } catch (UnsupportedOperationException e) {
@@ -251,11 +251,11 @@ public class WalaIRToJimpleConverter {
     }
     // add debug info
     DebuggingInformation debugInfo = walaMethod.debugInfo();
-    MethodSignature methodSig = this.view.getSignatureFacotry().getMethodSignature(walaMethod.getName().toString(), classSig,
+    MethodSignature methodSig = this.view.getSignatureFactory().getMethodSignature(walaMethod.getName().toString(), classSig,
         returnType.toString(), sigs);
     WALAIRMethodSource methodSource = new WALAIRMethodSource(methodSig);
     SootMethod sootMethod = new SootMethod(view, classSig, methodSource, paraTypes,
-        this.view.getSignatureFacotry().getTypeSignature(returnType.toString()), modifiers, thrownExceptions, debugInfo);
+        this.view.getSignatureFactory().getTypeSignature(returnType.toString()), modifiers, thrownExceptions, debugInfo);
     return sootMethod;
   }
 
@@ -291,7 +291,7 @@ public class WalaIRToJimpleConverter {
           return NullType.getInstance();
         } else {
           String className = convertClassNameFromWala(type.getName().toString());
-          return view.getRefType(this.view.getSignatureFacotry().getClassSignature(className));
+          return view.getRefType(this.view.getSignatureFactory().getClassSignature(className));
         }
       }
     }
@@ -479,7 +479,7 @@ public class WalaIRToJimpleConverter {
             Type paraType = convertType(target.getParameterType(i));
             parameters.add(paraType.toString());
           }
-          MethodSignature methodSig = view.getSignatureFacotry().getMethodSignature(target.getName().toString(),
+          MethodSignature methodSig = view.getSignatureFactory().getMethodSignature(target.getName().toString(),
               declaringClassSignature, returnType, parameters);
           JSpecialInvokeExpr expr = Jimple.newSpecialInvokeExpr(view, base, methodSig);
           return Jimple.newInvokeStmt(expr);

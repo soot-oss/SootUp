@@ -109,7 +109,7 @@ public final class AsmUtil {
               ;
             }
             String cls = desc.substring(begin, idx++);
-            baseType = view.getRefType(view.getSignatureFacotry().getTypeSignature((AsmUtil.toQualifiedName(cls))));
+            baseType = view.getRefType(view.getSignatureFactory().getTypeSignature((AsmUtil.toQualifiedName(cls))));
             break this_type;
           default:
             throw new AssertionError("Unknown type: " + c);
@@ -134,7 +134,7 @@ public final class AsmUtil {
   public static Optional<JavaClassSignature> resolveAsmNameToClassSignature(String asmClassName, IView view) {
     String excepetionFQName = toQualifiedName(asmClassName);
     JavaClassSignature classSignature
-        = view.getSignatureFacotry().getClassSignature(excepetionFQName);
+        = view.getSignatureFactory().getClassSignature(excepetionFQName);
     return Optional.ofNullable(classSignature);
   }
 }
