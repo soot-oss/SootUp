@@ -46,12 +46,12 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
   protected final EnumSet<Modifier> modifiers;
 
   /** Constructor. */
-  public SootClassMember(IView view, JavaClassSignature declaringClass, AbstractClassMemberSignature siganture,
+  public SootClassMember(IView view, JavaClassSignature declaringClass, AbstractClassMemberSignature signature,
       TypeSignature type,
       EnumSet<Modifier> modifiers) {
     super(view);
     this.declaringClassSig = declaringClass;
-    this.signature = siganture;
+    this.signature = signature;
     this.typeSingature = type;
     this.modifiers = modifiers;
 
