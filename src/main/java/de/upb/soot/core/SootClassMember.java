@@ -41,7 +41,7 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
    */
   private static final long serialVersionUID = -7201796736790814208L;
   protected final JavaClassSignature declaringClassSig;
-  protected final TypeSignature typeSingature;
+  protected final TypeSignature typeSignature;
   protected final AbstractClassMemberSignature signature;
   protected final EnumSet<Modifier> modifiers;
 
@@ -52,7 +52,7 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
     super(view);
     this.declaringClassSig = declaringClass;
     this.signature = signature;
-    this.typeSingature = type;
+    this.typeSignature = type;
     this.modifiers = modifiers;
 
   }
@@ -116,7 +116,7 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
    */
   // TODO: check whether modifiers.hashcode() does what its meant for; former: "modifiers"/int bit flags representing the set
   public int equivHashCode() {
-    return typeSingature.hashCode() * 101 + modifiers.hashCode() * 17 + signature.hashCode();
+    return typeSignature.hashCode() * 101 + modifiers.hashCode() * 17 + signature.hashCode();
   }
 
   /** Returns the signature of this method. */

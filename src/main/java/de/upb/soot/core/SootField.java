@@ -46,7 +46,7 @@ public class SootField extends SootClassMember {
   }
 
   public SootField(IView view, SootField field) {
-    this(view, field.getDeclaringClassSignature(), (FieldSignature) field.signature, field.typeSingature,
+    this(view, field.getDeclaringClassSignature(), (FieldSignature) field.signature, field.typeSignature,
         field.modifiers);
   }
 
@@ -56,7 +56,7 @@ public class SootField extends SootClassMember {
   }
 
   public Type getType() {
-    return this.getView().getType(typeSingature);
+    return this.getView().getType(typeSignature);
   }
 
   private String getOriginalStyleDeclaration() {

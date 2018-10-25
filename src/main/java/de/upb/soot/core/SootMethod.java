@@ -104,7 +104,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    * @param activeBody
    */
   public SootMethod(SootMethod method, Body activeBody) {
-    super(method.getView(), method.getDeclaringClassSignature(), method.signature, method.typeSingature,
+    super(method.getView(), method.getDeclaringClassSignature(), method.signature, method.typeSignature,
         method.modifiers);
     this.methodSource = method.methodSource;
     this.parameterTypes = Collections.unmodifiableList(method.parameterTypes);
@@ -125,7 +125,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
   /** Returns the return type of this method. */
   public Type getReturnType() {
-    return this.getView().getType(this.typeSingature);
+    return this.getView().getType(this.typeSignature);
   }
 
   /** Returns the number of parameters taken by this method. */
