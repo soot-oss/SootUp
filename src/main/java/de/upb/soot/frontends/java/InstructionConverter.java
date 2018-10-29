@@ -12,7 +12,10 @@ import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.AbstractBinopExpr;
 import de.upb.soot.jimple.common.expr.AbstractConditionExpr;
 import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
+import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
+import de.upb.soot.jimple.common.expr.JVirtualInvokeExpr;
 import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIfStmt;
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.Type;
@@ -66,6 +69,7 @@ public class InstructionConverter {
   private LocalGenerator localGenerator;
   // <ifStmt, iindex>
   protected Map<JIfStmt, Integer> targetsOfIfStmts;
+  protected Map<JGotoStmt, Integer> targetsOfGotoStmts;
   private Map<Integer, Local> locals;
 
   public InstructionConverter(WalaIRToJimpleConverter converter, SootMethod sootMethod, AstMethod walaMethod,
@@ -76,32 +80,56 @@ public class InstructionConverter {
     this.symbolTable = walaMethod.symbolTable();
     this.localGenerator = localGenerator;
     this.targetsOfIfStmts = new HashMap<>();
+    this.targetsOfGotoStmts = new HashMap<>();
     this.locals = new HashMap<>();
   }
 
   public IStmt convertInvokeInstruction(AstJavaInvokeInstruction invokeInst) {
+    MethodReference target = invokeInst.getDeclaredTarget();
+    String declaringClassSignature = converter.convertClassNameFromWala(target.getDeclaringClass().getName().toString());
+    String returnType = converter.convertType(target.getReturnType()).toString();
+    List<String> parameters = new ArrayList<>();
+    List<Type> paraTypes = new ArrayList<>();
+    List<Value> args = new ArrayList<>();
+
+    for (int i = 0; i < target.getNumberOfParameters(); i++) {
+      Type paraType = converter.convertType(target.getParameterType(i));
+      paraTypes.add(paraType);
+      parameters.add(paraType.toString());
+    }
+    int i = 0;
+    if (!invokeInst.isStatic()) {
+      i = 1;// virtual invoke this first use is thisRef.
+    }
+    for (; i < invokeInst.getNumberOfUses(); i++) {
+      Local arg = getLocal(paraTypes.get(i - 1), invokeInst.getUse(i));
+      args.add(arg);
+    }
+
+    MethodSignature methodSig = converter.view.getSignatureFacotry().getMethodSignature(target.getName().toString(),
+        declaringClassSignature, returnType, parameters);
     if (invokeInst.isSpecial()) {
       if (!sootMethod.isStatic()) {
+        // constructor
         Local base = localGenerator.getThisLocal();
-        MethodReference target = invokeInst.getDeclaredTarget();
-        String declaringClassSignature = converter.convertClassNameFromWala(target.getDeclaringClass().getName().toString());
-        String returnType = converter.convertType(target.getReturnType()).toString();
-        List<String> parameters = new ArrayList<>();
-        for (int i = 1; i < target.getNumberOfParameters(); i++) {
-          Type paraType = converter.convertType(target.getParameterType(i));
-          parameters.add(paraType.toString());
-        }
-        MethodSignature methodSig = converter.view.getSignatureFacotry().getMethodSignature(target.getName().toString(),
-            declaringClassSignature, returnType, parameters);
-        JSpecialInvokeExpr expr = Jimple.newSpecialInvokeExpr(converter.view, base, methodSig);
+        JSpecialInvokeExpr expr = Jimple.newSpecialInvokeExpr(converter.view, base, methodSig, args);
         return Jimple.newInvokeStmt(expr);
       } else {
-        // TODO
+        JStaticInvokeExpr expr = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
+        return Jimple.newInvokeStmt(expr);
       }
     } else {
-      // TODO
+      if (!sootMethod.isStatic()) {
+        int receiver = invokeInst.getReceiver();
+        Type classType = converter.convertType(target.getDeclaringClass());
+        Local base = getLocal(classType, receiver);
+        JVirtualInvokeExpr expr = Jimple.newVirtualInvokeExpr(converter.view, base, methodSig, args);
+        return Jimple.newInvokeStmt(expr);
+      } else {
+        JStaticInvokeExpr expr = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
+        return Jimple.newInvokeStmt(expr);
+      }
     }
-    return Jimple.newNopStmt();
   }
 
   public IStmt convertBranchInstruction(SSAConditionalBranchInstruction condInst) {
@@ -195,7 +223,7 @@ public class InstructionConverter {
     if (inst instanceof SSAConditionalBranchInstruction) {
       ret = this.convertBranchInstruction((SSAConditionalBranchInstruction) inst);
     } else if (inst instanceof SSAGotoInstruction) {
-
+      ret = this.convertGoToInstruction((SSAGotoInstruction) inst);
     } else if (inst instanceof SSAReturnInstruction) {
 
     } else if (inst instanceof SSAThrowInstruction) {
@@ -246,7 +274,21 @@ public class InstructionConverter {
         }
       }
     }
+    if (targetsOfGotoStmts.containsValue(inst.iindex)) {
+      for (JGotoStmt gotoStmt : targetsOfGotoStmts.keySet()) {
+        if (targetsOfGotoStmts.get(gotoStmt).equals(inst.iindex)) {
+          gotoStmt.setTarget(ret);
+        }
+      }
+    }
     return ret;
+  }
+
+  public IStmt convertGoToInstruction(SSAGotoInstruction gotoInst) {
+    JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
+    JGotoStmt gotoStmt = Jimple.newGotoStmt(target);
+    this.targetsOfGotoStmts.put(gotoStmt, gotoInst.getTarget());
+    return gotoStmt;
   }
 
   public IStmt convertGetInstruction(SSAGetInstruction inst) {

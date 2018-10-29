@@ -16,6 +16,7 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIfStmt;
 import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;
@@ -437,8 +438,14 @@ public class WalaIRToJimpleConverter {
               }
             }
           }
+          if (instConverter.targetsOfGotoStmts.containsValue(-1)) {
+            for (JGotoStmt gotoStmt : instConverter.targetsOfGotoStmts.keySet()) {
+              if (instConverter.targetsOfGotoStmts.get(gotoStmt).equals(-1)) {
+                gotoStmt.setTarget(ret);
+              }
+            }
+          }
         }
-
         Body body = new Body(sootMethod, localGenerator.getLocals(), traps, stmts, bodyPos);
         return Optional.of(body);
       }
