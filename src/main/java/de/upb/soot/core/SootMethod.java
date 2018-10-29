@@ -29,10 +29,10 @@ import de.upb.soot.views.IView;
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -142,7 +142,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    * Returns a read-only list of the parameter types of this method.
    */
   public Collection<Type> getParameterTypes() {
-    HashSet<Type> ret = new HashSet<Type>();
+    List<Type> ret = new ArrayList<Type>();
     parameterTypes.forEach(t -> ret.add(this.getView().getType(t)));
     return ret;
   }

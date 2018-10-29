@@ -15,8 +15,8 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.Trap;
-import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.JIfStmt;
 import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
@@ -42,7 +42,6 @@ import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.JavaView;
 
 import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
-import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.cast.loader.AstClass;
 import com.ibm.wala.cast.loader.AstField;
 import com.ibm.wala.cast.loader.AstMethod;
@@ -53,26 +52,7 @@ import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.shrikeCT.InvalidClassFileException;
-import com.ibm.wala.ssa.SSAArrayLengthInstruction;
-import com.ibm.wala.ssa.SSAArrayLoadInstruction;
-import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
-import com.ibm.wala.ssa.SSAArrayStoreInstruction;
-import com.ibm.wala.ssa.SSABinaryOpInstruction;
-import com.ibm.wala.ssa.SSAComparisonInstruction;
-import com.ibm.wala.ssa.SSAConditionalBranchInstruction;
-import com.ibm.wala.ssa.SSAConversionInstruction;
-import com.ibm.wala.ssa.SSAFieldAccessInstruction;
-import com.ibm.wala.ssa.SSAGetInstruction;
-import com.ibm.wala.ssa.SSAGotoInstruction;
-import com.ibm.wala.ssa.SSAInstanceofInstruction;
 import com.ibm.wala.ssa.SSAInstruction;
-import com.ibm.wala.ssa.SSALoadMetadataInstruction;
-import com.ibm.wala.ssa.SSANewInstruction;
-import com.ibm.wala.ssa.SSAPutInstruction;
-import com.ibm.wala.ssa.SSAReturnInstruction;
-import com.ibm.wala.ssa.SSASwitchInstruction;
-import com.ibm.wala.ssa.SSAThrowInstruction;
-import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
@@ -95,7 +75,7 @@ import java.util.Set;
  *
  */
 public class WalaIRToJimpleConverter {
-  private JavaView view;
+  protected JavaView view;
   private INamespace srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
   private HashMap<String, String> walaToSootNameTable;
@@ -253,7 +233,7 @@ public class WalaIRToJimpleConverter {
     DebuggingInformation debugInfo = walaMethod.debugInfo();
     MethodSignature methodSig = this.view.getSignatureFacotry().getMethodSignature(walaMethod.getName().toString(), classSig,
         returnType.toString(), sigs);
-    WALAIRMethodSource methodSource = new WALAIRMethodSource(methodSig);
+    WalaIRMethodSource methodSource = new WalaIRMethodSource(methodSig);
     SootMethod sootMethod = new SootMethod(view, classSig, methodSource, paraTypes,
         this.view.getSignatureFacotry().getTypeSignature(returnType.toString()), modifiers, thrownExceptions, debugInfo);
     return sootMethod;
@@ -400,9 +380,10 @@ public class WalaIRToJimpleConverter {
   }
 
   private Optional<Body> createBody(SootMethod sootMethod, AstMethod walaMethod) {
+
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
-      List<Trap> traps=new ArrayList<>();
+      List<Trap> traps = new ArrayList<>();
       List<IStmt> stmts = new ArrayList<>();
       LocalGenerator localGenerator = new LocalGenerator();
       // convert all wala instructions to jimple statements
@@ -421,22 +402,25 @@ public class WalaIRToJimpleConverter {
           stmts.add(Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType)));
         }
 
-        for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
-          TypeReference t = walaMethod.getParameterType(i);
-          // wala's first parameter can be this reference, so need to check
-          if (!t.equals(walaMethod.getDeclaringClass().getReference())) {
-            Type type = convertType(t);
-            Local paraLocal = localGenerator.generateLocal(type);
-            stmts.add(Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, i)));
-          }
+        int startPara = 0;
+        if (walaMethod.isStatic()) {
+          // wala's first parameter is this reference for non-static method
+          startPara = 1;
+        }
+        for (; startPara < walaMethod.getNumberOfParameters(); startPara++) {
+          TypeReference t = walaMethod.getParameterType(startPara);
+          Type type = convertType(t);
+          Local paraLocal
+              = localGenerator.generateParameterLocal(type, startPara);
+          stmts.add(Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, startPara)));
         }
 
         // TODO 2. convert traps
         // get exceptions which are not caught
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
-
+        InstructionConverter instConverter = new InstructionConverter(this, sootMethod, walaMethod, localGenerator);
         for (SSAInstruction inst : insts) {
-          IStmt stmt = convertInstruction(sootMethod, localGenerator, inst);
+          IStmt stmt = instConverter.convertInstruction(inst);
           // set position for each statement
           Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
           stmt.setPosition(stmtPos);
@@ -444,80 +428,22 @@ public class WalaIRToJimpleConverter {
         }
 
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
+          IStmt ret = Jimple.newReturnVoidStmt();
           stmts.add(Jimple.newReturnVoidStmt());
+          if (instConverter.targetsOfIfStmts.containsValue(-1)) {
+            for (JIfStmt ifStmt : instConverter.targetsOfIfStmts.keySet()) {
+              if (instConverter.targetsOfIfStmts.get(ifStmt).equals(-1)) {
+                ifStmt.setTarget(ret);
+              }
+            }
+          }
         }
+
         Body body = new Body(sootMethod, localGenerator.getLocals(), traps, stmts, bodyPos);
         return Optional.of(body);
       }
     }
     return Optional.empty();
-  }
-
-  public IStmt convertInstruction(SootMethod method, LocalGenerator localGenerator, SSAInstruction walaInst) {
-
-    // TODO what are the different types of SSAInstructions
-    if (walaInst instanceof SSAConditionalBranchInstruction) {
-
-    } else if (walaInst instanceof SSAGotoInstruction) {
-
-    } else if (walaInst instanceof SSAReturnInstruction) {
-
-    } else if (walaInst instanceof SSAThrowInstruction) {
-
-    } else if (walaInst instanceof SSASwitchInstruction) {
-
-    } else if (walaInst instanceof AstJavaInvokeInstruction) {
-      AstJavaInvokeInstruction invokeInst = (AstJavaInvokeInstruction) walaInst;
-      if (invokeInst.isSpecial()) {
-        if (!method.isStatic()) {
-          Local base = localGenerator.getThisLocal();
-          MethodReference target = invokeInst.getDeclaredTarget();
-          String declaringClassSignature = convertClassNameFromWala(target.getDeclaringClass().getName().toString());
-          String returnType = convertType(target.getReturnType()).toString();
-          List<String> parameters = new ArrayList<>();
-          for (int i = 1; i < target.getNumberOfParameters(); i++) {
-            Type paraType = convertType(target.getParameterType(i));
-            parameters.add(paraType.toString());
-          }
-          MethodSignature methodSig = view.getSignatureFacotry().getMethodSignature(target.getName().toString(),
-              declaringClassSignature, returnType, parameters);
-          JSpecialInvokeExpr expr = Jimple.newSpecialInvokeExpr(view, base, methodSig);
-          return Jimple.newInvokeStmt(expr);
-        }
-      }
-    } else if (walaInst instanceof SSAFieldAccessInstruction) {
-      if (walaInst instanceof SSAGetInstruction) {
-        // field read instruction -> assignStmt
-      } else if (walaInst instanceof SSAPutInstruction) {
-        // field write instruction
-      } else {
-        throw new RuntimeException("Unsupported instruction type: " + walaInst.getClass().toString());
-      }
-    } else if (walaInst instanceof SSAArrayLengthInstruction) {
-
-    } else if (walaInst instanceof SSAArrayReferenceInstruction) {
-      if (walaInst instanceof SSAArrayLoadInstruction) {
-
-      } else if (walaInst instanceof SSAArrayStoreInstruction) {
-
-      } else {
-        throw new RuntimeException("Unsupported instruction type: " + walaInst.getClass().toString());
-      }
-    } else if (walaInst instanceof SSANewInstruction) {
-
-    } else if (walaInst instanceof SSAComparisonInstruction) {
-
-    } else if (walaInst instanceof SSAConversionInstruction) {
-
-    } else if (walaInst instanceof SSAInstanceofInstruction) {
-
-    } else if (walaInst instanceof SSABinaryOpInstruction) {
-
-    }
-    if (walaInst instanceof SSALoadMetadataInstruction) {
-
-    }
-    return Jimple.newNopStmt();
   }
 
   /**
@@ -555,7 +481,7 @@ public class WalaIRToJimpleConverter {
         if (temp.length > 0) {
           String name = temp[temp.length - 1];
           if (!name.contains("$")) {
-            // This is aN inner class
+            // This is an inner class
             String outClass = sb.toString();
             int count = 1;
             if (this.clsWithInnerCls.containsKey(outClass)) {

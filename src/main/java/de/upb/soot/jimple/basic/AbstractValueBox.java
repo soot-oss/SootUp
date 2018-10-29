@@ -37,6 +37,10 @@ public abstract class AbstractValueBox implements ValueBox {
   private static final long serialVersionUID = -796126298513013484L;
   private Value value;
 
+  public AbstractValueBox(Value value) {
+    setValue(value);
+  }
+
   @Override
   public void setValue(Value value) {
     if (value == null) {

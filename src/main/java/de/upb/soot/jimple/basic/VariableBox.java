@@ -34,7 +34,7 @@ public class VariableBox extends AbstractValueBox {
   private static final long serialVersionUID = 9045705549481103168L;
 
   public VariableBox(Value value) {
-    setValue(value);
+    super(value);
   }
 
   @Override

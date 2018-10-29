@@ -34,7 +34,7 @@ public class InvokeExprBox extends AbstractValueBox {
   private static final long serialVersionUID = 5556549213602125525L;
 
   public InvokeExprBox(Value value) {
-    setValue(value);
+    super(value);
   }
 
   @Override

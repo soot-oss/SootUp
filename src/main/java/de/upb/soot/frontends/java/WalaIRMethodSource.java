@@ -5,11 +5,11 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.namespaces.classprovider.IMethodSource;
 import de.upb.soot.signatures.MethodSignature;
 
-public class WALAIRMethodSource implements IMethodSource {
+public class WalaIRMethodSource implements IMethodSource {
 
   private MethodSignature methodSignature;
 
-  public WALAIRMethodSource(MethodSignature methodSignature) {
+  public WalaIRMethodSource(MethodSignature methodSignature) {
     this.methodSignature = methodSignature;
   }
 

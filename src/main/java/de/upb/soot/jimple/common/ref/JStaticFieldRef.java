@@ -16,7 +16,7 @@ public class JStaticFieldRef implements FieldRef {
   private static final long serialVersionUID = -8744248848897714882L;
   protected SootField field;
 
-  protected JStaticFieldRef(SootField field) {
+  public JStaticFieldRef(SootField field) {
     if (!field.isStatic()) {
       throw new RuntimeException("wrong static-ness");
     }

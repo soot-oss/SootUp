@@ -57,7 +57,7 @@ public class MethodSignature extends AbstractClassMemberSignature {
     sb.append(' ');
     sb.append(name);
     sb.append('(');
-    sb.append(StringUtils.join(parameterSignatures, ','));
+    sb.append(StringUtils.join(parameterSignatures, ", "));
     sb.append(')');
     return sb.toString();
   }
