@@ -13,14 +13,17 @@ import de.upb.soot.jimple.common.constant.DoubleConstant;
 import de.upb.soot.jimple.common.constant.FloatConstant;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.constant.LongConstant;
+import de.upb.soot.jimple.common.constant.NullConstant;
 import de.upb.soot.jimple.common.constant.StringConstant;
 import de.upb.soot.jimple.common.expr.AbstractBinopExpr;
 import de.upb.soot.jimple.common.expr.AbstractConditionExpr;
 import de.upb.soot.jimple.common.expr.JCastExpr;
 import de.upb.soot.jimple.common.expr.JInstanceOfExpr;
+import de.upb.soot.jimple.common.expr.JNegExpr;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIfStmt;
+import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.RefType;
@@ -32,6 +35,7 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
 import com.ibm.wala.cast.ir.ssa.AssignInstruction;
+import com.ibm.wala.cast.ir.ssa.AstLexicalRead;
 import com.ibm.wala.cast.ir.ssa.CAstBinaryOp;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.cast.java.ssa.AstJavaNewEnclosingInstruction;
@@ -41,15 +45,18 @@ import com.ibm.wala.classLoader.CallSiteReference;
 import com.ibm.wala.shrikeBT.IBinaryOpInstruction;
 import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.IOperator;
 import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.Operator;
+import com.ibm.wala.shrikeBT.IShiftInstruction;
 import com.ibm.wala.ssa.SSAArrayLengthInstruction;
 import com.ibm.wala.ssa.SSAArrayLoadInstruction;
 import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
 import com.ibm.wala.ssa.SSAArrayStoreInstruction;
 import com.ibm.wala.ssa.SSABinaryOpInstruction;
+import com.ibm.wala.ssa.SSACheckCastInstruction;
 import com.ibm.wala.ssa.SSAComparisonInstruction;
 import com.ibm.wala.ssa.SSAConditionalBranchInstruction;
 import com.ibm.wala.ssa.SSAConversionInstruction;
 import com.ibm.wala.ssa.SSAFieldAccessInstruction;
+import com.ibm.wala.ssa.SSAGetCaughtExceptionInstruction;
 import com.ibm.wala.ssa.SSAGetInstruction;
 import com.ibm.wala.ssa.SSAGotoInstruction;
 import com.ibm.wala.ssa.SSAInstanceofInstruction;
@@ -60,6 +67,7 @@ import com.ibm.wala.ssa.SSAPutInstruction;
 import com.ibm.wala.ssa.SSAReturnInstruction;
 import com.ibm.wala.ssa.SSASwitchInstruction;
 import com.ibm.wala.ssa.SSAThrowInstruction;
+import com.ibm.wala.ssa.SSAUnaryOpInstruction;
 import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.types.MethodReference;
@@ -114,12 +122,6 @@ public class InstructionConverter {
       ret = this.convertGoToInstruction((SSAGotoInstruction) inst);
     } else if (inst instanceof SSAReturnInstruction) {
       ret = this.convertReturnInstruction((SSAReturnInstruction) inst);
-    } else if (inst instanceof SSAThrowInstruction) {
-      // TODO
-      ret = null;
-    } else if (inst instanceof SSASwitchInstruction) {
-      // TODO
-      ret = null;
     } else if (inst instanceof AstJavaInvokeInstruction) {
       ret = this.convertInvokeInstruction((AstJavaInvokeInstruction) inst);
     } else if (inst instanceof SSAFieldAccessInstruction) {
@@ -130,31 +132,25 @@ public class InstructionConverter {
       } else {
         throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
       }
-    } else if (inst instanceof SSAArrayLengthInstruction) {
-      // TODO
-      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
-    } else if (inst instanceof SSAArrayReferenceInstruction) {
-      if (inst instanceof SSAArrayLoadInstruction) {
-        // TODO
-        ret = null;
-      } else if (inst instanceof SSAArrayStoreInstruction) {
-        // TODO
-        ret = null;
-      } else {
-        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
-      }
     } else if (inst instanceof SSANewInstruction) {
       ret = convertNewInstruction((SSANewInstruction) inst);
-    } else if (inst instanceof SSAComparisonInstruction) {
-      ret = convertComparisonInstruction((SSAComparisonInstruction) inst);
-      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
     } else if (inst instanceof SSAConversionInstruction) {
       ret = convertConversionInstruction((SSAConversionInstruction) inst);
     } else if (inst instanceof SSAInstanceofInstruction) {
       ret = convertInstanceofInstruction((SSAInstanceofInstruction) inst);
     } else if (inst instanceof SSABinaryOpInstruction) {
-      SSABinaryOpInstruction binOpInst = (SSABinaryOpInstruction) inst;
-      ret = this.convertBinaryOpInstruction(binOpInst);
+      ret = this.convertBinaryOpInstruction((SSABinaryOpInstruction) inst);
+    } else if (inst instanceof SSAUnaryOpInstruction) {
+      ret = this.convertUnaryOpInstruction((SSAUnaryOpInstruction) inst);
+    } else if (inst instanceof SSAComparisonInstruction) {
+      ret = convertComparisonInstruction((SSAComparisonInstruction) inst);
+      // TODO
+    } else if (inst instanceof SSAThrowInstruction) {
+      // TODO
+      ret = null;
+    } else if (inst instanceof SSASwitchInstruction) {
+      // TODO
+      ret = null;
     } else if (inst instanceof SSALoadMetadataInstruction) {
       // TODO
       ret = null;
@@ -167,12 +163,49 @@ public class InstructionConverter {
     } else if (inst instanceof EnclosingObjectReference) {
       // TODO
       ret = null;
+    } else if (inst instanceof AstLexicalRead) {
+      // TODO
+      ret = null;
+    } else if (inst instanceof SSACheckCastInstruction) {
+      // TODO
+      ret = null;
+    } else if (inst instanceof SSAGetCaughtExceptionInstruction) {
+      // TODO
+      ret = null;
+    } else if (inst instanceof SSAArrayLengthInstruction) {
+      // TODO
+    } else if (inst instanceof SSAArrayReferenceInstruction) {
+      if (inst instanceof SSAArrayLoadInstruction) {
+        // TODO
+        ret = null;
+      } else if (inst instanceof SSAArrayStoreInstruction) {
+        // TODO
+        ret = null;
+      } else {
+        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+      }
     } else {
       throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
     }
     // if current stmt is the target of an if stmt, set it up.
     this.setTarget(ret, inst.iindex);
     return Optional.ofNullable(ret);
+  }
+
+  private IStmt convertUnaryOpInstruction(SSAUnaryOpInstruction inst) {
+    int def = inst.getDef();
+    int use = inst.getUse(0);
+    Value op = null;
+    // TODO: change type
+    Type type = IntType.getInstance();
+    if (symbolTable.isConstant(use)) {
+      op = getConstant(use);
+    } else {
+      op = getLocal(type, use);
+    }
+    Local left = getLocal(type, def);
+    JNegExpr expr = Jimple.newNegExpr(op);
+    return Jimple.newAssignStmt(left, expr);
   }
 
   private IStmt convertPutInstruction(SSAPutInstruction inst) {
@@ -206,7 +239,20 @@ public class InstructionConverter {
     int result = inst.getDef();
     Type type = converter.convertType(inst.getNewSite().getDeclaredType());
     Value var = getLocal(type, result);
-    Value rvalue = Jimple.newNewExpr((RefType) type);
+    Value rvalue = null;
+    if (type instanceof ArrayType) {
+      int use = inst.getUse(0);
+      Value size = null;
+      if (symbolTable.isConstant(use)) {
+        size = getConstant(use);
+      } else {
+        // TODO: size type unsure
+         size=getLocal(IntType.getInstance(), use);
+      }
+      rvalue = Jimple.newNewArrayExpr(type, size);
+    } else {
+      rvalue = Jimple.newNewExpr((RefType) type);
+    }
     return Jimple.newAssignStmt(var, rvalue);
   }
 
@@ -270,41 +316,36 @@ public class InstructionConverter {
         arg = getConstant(use);
       } else {
         if (invokeInst.getNumberOfUses() > paraTypes.size()) {
-          arg = getLocal(paraTypes.get(i-1), use);
+          arg = getLocal(paraTypes.get(i - 1), use);
         } else {
           arg = getLocal(paraTypes.get(i), use);
         }
       }
+      assert (arg != null);
       args.add(arg);
     }
 
     MethodSignature methodSig = converter.view.getSignatureFacotry().getMethodSignature(target.getName().toString(),
         declaringClassSignature, returnType, parameters);
 
-    if (callee.isSpecial()) {
-      if (!callee.isStatic()) {
-        // constructor
-        Local base = localGenerator.getThisLocal();
-        invoke = Jimple.newSpecialInvokeExpr(converter.view, base, methodSig, args);
+    if (!callee.isStatic()) {
+      int receiver = invokeInst.getReceiver();
+      Type classType = converter.convertType(target.getDeclaringClass());
+      Local base = getLocal(classType, receiver);
+      if (callee.isSpecial()) {
+        base = getLocal(converter.convertType(walaMethod.getDeclaringClass().getReference()), receiver);
+        invoke = Jimple.newSpecialInvokeExpr(converter.view, base, methodSig, args); // constructor
+      } else if (callee.isVirtual()) {
+        invoke = Jimple.newVirtualInvokeExpr(converter.view, base, methodSig, args);
+      } else if (callee.isInterface()) {
+        invoke = Jimple.newInterfaceInvokeExpr(converter.view, base, methodSig, args);
       } else {
-        invoke = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
+        throw new RuntimeException("Unsupported invoke instruction: " + callee.toString());
       }
     } else {
-      if (!callee.isStatic()) {
-        int receiver = invokeInst.getReceiver();
-        Type classType = converter.convertType(target.getDeclaringClass());
-        Local base = getLocal(classType, receiver);
-        if (callee.isVirtual()) {
-          invoke = Jimple.newVirtualInvokeExpr(converter.view, base, methodSig, args);
-        } else if (callee.isInterface()) {
-          invoke = Jimple.newInterfaceInvokeExpr(converter.view, base, methodSig, args);
-        } else {
-          throw new RuntimeException("Unsupported invoke instruction: " + callee.toString());
-        }
-      } else {
-        invoke = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
-      }
+      invoke = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
     }
+
     if (!invokeInst.hasDef()) {
       return Jimple.newInvokeStmt(invoke);
     } else {
@@ -354,6 +395,7 @@ public class InstructionConverter {
   }
 
   private IStmt convertBinaryOpInstruction(SSABinaryOpInstruction binOpInst) {
+
     int def = binOpInst.getDef();
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
@@ -362,9 +404,9 @@ public class InstructionConverter {
     Value result = getLocal(type, def);
     Value op1 = null;
     if (symbolTable.isConstant(val1)) {
-      op1=getConstant(val1);
+      op1 = getConstant(val1);
     } else {
-      op1=getLocal(type, val1);
+      op1 = getLocal(type, val1);
     }
     Value op2 = null;
     if (symbolTable.isConstant(val2)) {
@@ -402,8 +444,15 @@ public class InstructionConverter {
       binExpr = Jimple.newGtExpr(op1, op2);
     } else if (operator.equals(CAstBinaryOp.LE)) {
       binExpr = Jimple.newLtExpr(op1, op2);
+    } else if (operator.equals(IShiftInstruction.Operator.SHL)) {
+      binExpr = Jimple.newShlExpr(op1, op2);
+    } else if (operator.equals(IShiftInstruction.Operator.SHR)) {
+      binExpr = Jimple.newShrExpr(op1, op2);
+    } else if (operator.equals(IShiftInstruction.Operator.USHR)) {
+      binExpr = Jimple.newUshrExpr(op1, op2);
     } else {
-      throw new RuntimeException("Unsupported binary operator: " + operator);
+
+      throw new RuntimeException("Unsupported binary operator: " + operator.getClass());
     }
     return Jimple.newAssignStmt(result, binExpr);
   }
@@ -464,14 +513,16 @@ public class InstructionConverter {
       }
     } else if (value instanceof Byte || value instanceof Char || value instanceof Short || value instanceof Integer) {
       return IntConstant.getInstance((int) value);
-    } else if (value instanceof Long) {
+    } else if (symbolTable.isLongConstant(valueNumber)) {
       return LongConstant.getInstance((long) value);
-    } else if (value instanceof Double) {
+    } else if (symbolTable.isDoubleConstant(valueNumber)) {
       return DoubleConstant.getInstance((double) value);
-    } else if (value instanceof Float) {
+    } else if (symbolTable.isFloatConstant(valueNumber)) {
       return FloatConstant.getInstance((float) value);
-    } else if (value instanceof String) {
+    } else if (symbolTable.isStringConstant(valueNumber)) {
       return StringConstant.getInstance((String) value);
+    } else if (symbolTable.isNullConstant(valueNumber)) {
+      return NullConstant.getInstance();
     } else {
       throw new RuntimeException("Unsupported constant type: " + value.getClass().toString());
     }
@@ -479,20 +530,21 @@ public class InstructionConverter {
 
   private Local getLocal(Type type, int valueNumber) {
     if (type.toString().equals(sootMethod.getDeclaringClassSignature().toString())) {
-      return localGenerator.getThisLocal();
+      if (!walaMethod.isStatic()) {
+        return localGenerator.getThisLocal();
+      }
     }
     if (symbolTable.isParameter(valueNumber)) {
-      if (walaMethod.isStatic()) {
-        return localGenerator.getParemeterLocal(valueNumber);
-      } else {
-        return localGenerator.getParemeterLocal(valueNumber - 1);
+      Local para = localGenerator.getParemeterLocal(valueNumber - 1);
+      if (para != null) {
+        return para;
       }
     }
     if (!locals.containsKey(valueNumber)) {
       Local local = localGenerator.generateLocal(type);
       locals.put(valueNumber, local);
     }
-    Local ret= locals.get(valueNumber);
+    Local ret = locals.get(valueNumber);
 
     if (!ret.getType().equals(type)) {
       // ret.setType(ret.getType().merge(type));

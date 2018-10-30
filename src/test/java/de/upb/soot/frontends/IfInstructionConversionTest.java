@@ -42,7 +42,8 @@ public class IfInstructionConversionTest {
   @Test
   public void test1() {
     Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("simpleIfElse", declareClassSig, "void", Arrays.asList("int", "int", "int")));
+        sigFactory.getMethodSignature("simpleIfElseIfTakeThen", declareClassSig, "void",
+            Arrays.asList("int", "int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     PrintWriter writer = new PrintWriter(System.out);

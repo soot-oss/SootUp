@@ -52,7 +52,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testAddDouble() {
-    // TODO: failed test
     Optional<SootMethod> m = loader.getSootMethod(
         sigFactory.getMethodSignature("addDouble", declareClassSig, "double", Arrays.asList("double", "float")));
     assertTrue(m.isPresent());
@@ -199,7 +198,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testLShiftByte() {
-    // TODO: failed test
     Optional<SootMethod> m
         = loader.getSootMethod(sigFactory.getMethodSignature("lshiftByte", declareClassSig, "byte", Arrays.asList("byte")));
     assertTrue(m.isPresent());
@@ -213,7 +211,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testRShiftShort() {
-    // TODO: failed test
     Optional<SootMethod> m = loader.getSootMethod(
         sigFactory.getMethodSignature("rshiftShort", declareClassSig, "short", Arrays.asList("short", "int")));
     assertTrue(m.isPresent());
@@ -283,7 +280,6 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testNot() {
-    // TODO: failed test
     Optional<SootMethod> m
         = loader.getSootMethod(sigFactory.getMethodSignature("not", declareClassSig, "boolean", Arrays.asList("boolean")));
     assertTrue(m.isPresent());

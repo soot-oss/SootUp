@@ -197,12 +197,14 @@ public class WalaIRToJimpleConverter {
     // create SootMethond instance
     List<TypeSignature> paraTypes = new ArrayList<>();
     List<String> sigs = new ArrayList<>();
-    for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
-      TypeReference type = walaMethod.getParameterType(i);
-      if (!type.equals(walaMethod.getDeclaringClass().getReference())) {
-        Type paraType = convertType(type);
-        paraTypes.add(this.view.getSignatureFacotry().getTypeSignature(paraType.toString()));
-        sigs.add(paraType.toString());
+    if (walaMethod.symbolTable() != null) {
+      for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
+        TypeReference type = walaMethod.getParameterType(i);
+        if (!type.equals(walaMethod.getDeclaringClass().getReference())) {
+          Type paraType = convertType(type);
+          paraTypes.add(this.view.getSignatureFacotry().getTypeSignature(paraType.toString()));
+          sigs.add(paraType.toString());
+        }
       }
     }
     Type returnType = convertType(walaMethod.getReturnType());
