@@ -8,9 +8,15 @@ import de.upb.soot.jimple.basic.JStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.common.constant.Constant;
+import de.upb.soot.jimple.common.constant.DoubleConstant;
+import de.upb.soot.jimple.common.constant.FloatConstant;
 import de.upb.soot.jimple.common.constant.IntConstant;
+import de.upb.soot.jimple.common.constant.LongConstant;
+import de.upb.soot.jimple.common.constant.StringConstant;
 import de.upb.soot.jimple.common.expr.AbstractBinopExpr;
 import de.upb.soot.jimple.common.expr.AbstractConditionExpr;
+import de.upb.soot.jimple.common.expr.JCastExpr;
 import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.soot.jimple.common.expr.JVirtualInvokeExpr;
@@ -30,7 +36,6 @@ import com.ibm.wala.cast.loader.AstMethod;
 import com.ibm.wala.shrikeBT.IBinaryOpInstruction;
 import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.IOperator;
 import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.Operator;
-import com.ibm.wala.ssa.ConstantValue;
 import com.ibm.wala.ssa.SSAArrayLengthInstruction;
 import com.ibm.wala.ssa.SSAArrayLoadInstruction;
 import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
@@ -59,7 +64,16 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import scala.Char;
+
+/**
+ * This class converts wala instruction to jimple statement.
+ * 
+ * @author Linghui Luo
+ *
+ */
 public class InstructionConverter {
 
   private WalaIRToJimpleConverter converter;
@@ -84,7 +98,90 @@ public class InstructionConverter {
     this.locals = new HashMap<>();
   }
 
-  public IStmt convertInvokeInstruction(AstJavaInvokeInstruction invokeInst) {
+  public Optional<IStmt> convertInstruction(SSAInstruction inst) {
+    IStmt ret = Jimple.newNopStmt();
+    System.out.println(inst);
+    // TODO what are the different types of SSAInstructions
+    if (inst instanceof SSAConditionalBranchInstruction) {
+      ret = this.convertBranchInstruction((SSAConditionalBranchInstruction) inst);
+    } else if (inst instanceof SSAGotoInstruction) {
+      ret = this.convertGoToInstruction((SSAGotoInstruction) inst);
+    } else if (inst instanceof SSAReturnInstruction) {
+      ret = this.convertReturnInstruction((SSAReturnInstruction) inst);
+    } else if (inst instanceof SSAThrowInstruction) {
+      // TODO
+      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+    } else if (inst instanceof SSASwitchInstruction) {
+      // TODO
+      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+    } else if (inst instanceof AstJavaInvokeInstruction) {
+      ret = this.convertInvokeInstruction((AstJavaInvokeInstruction) inst);
+    } else if (inst instanceof SSAFieldAccessInstruction) {
+      if (inst instanceof SSAGetInstruction) {
+        ret = this.convertGetInstruction((SSAGetInstruction) inst);
+      } else if (inst instanceof SSAPutInstruction) {
+        // field write instruction
+        // TODO
+        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+      } else {
+        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+      }
+    } else if (inst instanceof SSAArrayLengthInstruction) {
+      // TODO
+      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+    } else if (inst instanceof SSAArrayReferenceInstruction) {
+      if (inst instanceof SSAArrayLoadInstruction) {
+        // TODO
+        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+      } else if (inst instanceof SSAArrayStoreInstruction) {
+        // TODO
+        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+      } else {
+        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+      }
+    } else if (inst instanceof SSANewInstruction) {
+      // TODO
+      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+    } else if (inst instanceof SSAComparisonInstruction) {
+      // TODO
+      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+    } else if (inst instanceof SSAConversionInstruction) {
+      ret = convertConversionInstruction((SSAConversionInstruction) inst);
+    } else if (inst instanceof SSAInstanceofInstruction) {
+      // TODO
+      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+    } else if (inst instanceof SSABinaryOpInstruction) {
+      SSABinaryOpInstruction binOpInst = (SSABinaryOpInstruction) inst;
+      ret = this.convertBinaryOpInstruction(binOpInst);
+    } else if (inst instanceof SSALoadMetadataInstruction) {
+      // TODO
+      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+    }
+    else {
+      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+    }
+    // if current stmt is the target of an if stmt, set it up.
+    this.setTarget(ret, inst.iindex);
+    return Optional.ofNullable(ret);
+  }
+
+  private IStmt convertConversionInstruction(SSAConversionInstruction inst) {
+    Type fromType = converter.convertType(inst.getFromType());
+    Type toType = converter.convertType(inst.getToType());
+    int def = inst.getDef();
+    int use = inst.getUse(0);
+    Value lvalue = getLocal(toType, def);
+    Value rvalue = null;
+    if (symbolTable.isConstant(use)) {
+      rvalue = getConstant(use);
+    } else {
+      rvalue = getLocal(fromType, use);
+    }
+    JCastExpr cast = Jimple.newCastExpr(rvalue, toType);
+    return Jimple.newAssignStmt(lvalue, cast);
+  }
+
+  private IStmt convertInvokeInstruction(AstJavaInvokeInstruction invokeInst) {
     MethodReference target = invokeInst.getDeclaredTarget();
     String declaringClassSignature = converter.convertClassNameFromWala(target.getDeclaringClass().getName().toString());
     String returnType = converter.convertType(target.getReturnType()).toString();
@@ -132,7 +229,7 @@ public class InstructionConverter {
     }
   }
 
-  public IStmt convertBranchInstruction(SSAConditionalBranchInstruction condInst) {
+  private IStmt convertBranchInstruction(SSAConditionalBranchInstruction condInst) {
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
     Value value1 = null;
@@ -171,7 +268,7 @@ public class InstructionConverter {
     // return Jimple.newNopStmt();
   }
 
-  public IStmt convertBinaryOpInstruction(SSABinaryOpInstruction binOpInst) {
+  private IStmt convertBinaryOpInstruction(SSABinaryOpInstruction binOpInst) {
     int def = binOpInst.getDef();
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
@@ -216,82 +313,31 @@ public class InstructionConverter {
     return Jimple.newAssignStmt(result, binExpr);
   }
 
-  public IStmt convertInstruction(SSAInstruction inst) {
-    IStmt ret = Jimple.newNopStmt();
-
-    // TODO what are the different types of SSAInstructions
-    if (inst instanceof SSAConditionalBranchInstruction) {
-      ret = this.convertBranchInstruction((SSAConditionalBranchInstruction) inst);
-    } else if (inst instanceof SSAGotoInstruction) {
-      ret = this.convertGoToInstruction((SSAGotoInstruction) inst);
-    } else if (inst instanceof SSAReturnInstruction) {
-
-    } else if (inst instanceof SSAThrowInstruction) {
-
-    } else if (inst instanceof SSASwitchInstruction) {
-
-    } else if (inst instanceof AstJavaInvokeInstruction) {
-      ret = this.convertInvokeInstruction((AstJavaInvokeInstruction) inst);
-    } else if (inst instanceof SSAFieldAccessInstruction) {
-      if (inst instanceof SSAGetInstruction) {
-        ret = this.convertGetInstruction((SSAGetInstruction) inst);
-      } else if (inst instanceof SSAPutInstruction) {
-        // field write instruction
+  private IStmt convertReturnInstruction(SSAReturnInstruction inst) {
+    int result = inst.getResult();
+    if (inst.returnsVoid()) {
+      // this is return void stmt
+      return Jimple.newReturnVoidStmt();
+    } else {
+      Value ret;
+      if (symbolTable.isConstant(result)) {
+        ret = getConstant(result);
       } else {
-        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+        // TODO. how to get the type of result?
+        ret = this.locals.get(result);
       }
-    } else if (inst instanceof SSAArrayLengthInstruction) {
-
-    } else if (inst instanceof SSAArrayReferenceInstruction) {
-      if (inst instanceof SSAArrayLoadInstruction) {
-
-      } else if (inst instanceof SSAArrayStoreInstruction) {
-
-      } else {
-        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
-      }
-    } else if (inst instanceof SSANewInstruction) {
-
-    } else if (inst instanceof SSAComparisonInstruction) {
-
-    } else if (inst instanceof SSAConversionInstruction) {
-
-    } else if (inst instanceof SSAInstanceofInstruction) {
-
-    } else if (inst instanceof SSABinaryOpInstruction) {
-      SSABinaryOpInstruction binOpInst = (SSABinaryOpInstruction) inst;
-      ret = this.convertBinaryOpInstruction(binOpInst);
+      return Jimple.newReturnStmt(ret);
     }
-
-    if (inst instanceof SSALoadMetadataInstruction) {
-
-    }
-    // if current stmt is the target of an if stmt, set it up.
-    if (targetsOfIfStmts.containsValue(inst.iindex)) {
-      for (JIfStmt ifStmt : targetsOfIfStmts.keySet()) {
-        if (targetsOfIfStmts.get(ifStmt).equals(inst.iindex)) {
-          ifStmt.setTarget(ret);
-        }
-      }
-    }
-    if (targetsOfGotoStmts.containsValue(inst.iindex)) {
-      for (JGotoStmt gotoStmt : targetsOfGotoStmts.keySet()) {
-        if (targetsOfGotoStmts.get(gotoStmt).equals(inst.iindex)) {
-          gotoStmt.setTarget(ret);
-        }
-      }
-    }
-    return ret;
   }
 
-  public IStmt convertGoToInstruction(SSAGotoInstruction gotoInst) {
+  private IStmt convertGoToInstruction(SSAGotoInstruction gotoInst) {
     JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
     JGotoStmt gotoStmt = Jimple.newGotoStmt(target);
     this.targetsOfGotoStmts.put(gotoStmt, gotoInst.getTarget());
     return gotoStmt;
   }
 
-  public IStmt convertGetInstruction(SSAGetInstruction inst) {
+  private IStmt convertGetInstruction(SSAGetInstruction inst) {
     int def = inst.getDef(0);
     FieldReference fieldRef = inst.getDeclaredField();
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
@@ -313,6 +359,29 @@ public class InstructionConverter {
     return Jimple.newAssignStmt(var, rvalue);
   }
 
+  private Constant getConstant(int valueNumber) {
+    Object value = symbolTable.getConstantValue(valueNumber);
+    if (value instanceof Boolean) {
+      if (value.equals(true)) {
+        return IntConstant.getInstance(1);
+      } else {
+        return IntConstant.getInstance(0);
+      }
+    } else if (value instanceof Byte || value instanceof Char || value instanceof Short || value instanceof Integer) {
+      return IntConstant.getInstance((int) value);
+    } else if (value instanceof Long) {
+      return LongConstant.getInstance((long) value);
+    } else if (value instanceof Double) {
+      return DoubleConstant.getInstance((double) value);
+    } else if (value instanceof Float) {
+      return FloatConstant.getInstance((float) value);
+    } else if (value instanceof String) {
+      return StringConstant.getInstance((String) value);
+    } else {
+      throw new RuntimeException("Unsupported constant type: " + value.getClass().toString());
+    }
+  }
+
   private Local getLocal(Type type, int valueNumber) {
     if (symbolTable.isParameter(valueNumber)) {
       if (walaMethod.isStatic()) {
@@ -331,10 +400,29 @@ public class InstructionConverter {
     return locals.get(valueNumber);
   }
 
-  private void getValue(int valueNumber) {
-    if (symbolTable.isConstant(valueNumber)) {
-      ConstantValue constant = (ConstantValue) symbolTable.getConstantValue(valueNumber);
-      System.out.println("contant: " + constant.getValue());
+  /**
+   * Test if the given stmt is the target stmt of {@link JIfStmt} or {@link JGotoStmt} and set it as the target if it is the
+   * case.
+   * 
+   * @param stmt
+   *          the converted jimple stmt.
+   * @param iindex
+   *          the instruction index of the corresponding instruction in Wala.
+   */
+  protected void setTarget(IStmt stmt, int iindex) {
+    if (this.targetsOfIfStmts.containsValue(iindex)) {
+      for (JIfStmt ifStmt : this.targetsOfIfStmts.keySet()) {
+        if (this.targetsOfIfStmts.get(ifStmt).equals(iindex)) {
+          ifStmt.setTarget(stmt);
+        }
+      }
+    }
+    if (this.targetsOfGotoStmts.containsValue(iindex)) {
+      for (JGotoStmt gotoStmt : this.targetsOfGotoStmts.keySet()) {
+        if (this.targetsOfGotoStmts.get(gotoStmt).equals(iindex)) {
+          gotoStmt.setTarget(stmt);
+        }
+      }
     }
   }
 }

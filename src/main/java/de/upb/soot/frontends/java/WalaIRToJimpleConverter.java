@@ -16,8 +16,6 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.stmt.JGotoStmt;
-import de.upb.soot.jimple.common.stmt.JIfStmt;
 import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
@@ -139,21 +137,14 @@ public class WalaIRToJimpleConverter {
 
     // convert methods
     Set<SootMethod> sootMethods = new HashSet<>();
-    new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
+    new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Application, Optional.ofNullable(superClass),
         interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
 
-    // create and set active body of the SootMethod
     for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
       SootMethod sootMethod = convertMethod(classSig, (AstMethod) walaMethod);
-      if (!walaMethod.isAbstract()) {
-        Optional<Body> body = createBody(sootMethod, (AstMethod) walaMethod);
-        if (body.isPresent()) {
-          Body b = body.get();
-          sootMethod = new SootMethod(sootMethod, b);
-        }
-        sootMethods.add(sootMethod);
-      }
+      sootMethods.add(sootMethod);
     }
+
     SootClass ret
         = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
             interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
@@ -237,6 +228,14 @@ public class WalaIRToJimpleConverter {
     WalaIRMethodSource methodSource = new WalaIRMethodSource(methodSig);
     SootMethod sootMethod = new SootMethod(view, classSig, methodSource, paraTypes,
         this.view.getSignatureFacotry().getTypeSignature(returnType.toString()), modifiers, thrownExceptions, debugInfo);
+    // create and set active body of the SootMethod
+    if (!walaMethod.isAbstract()) {
+      Optional<Body> body = createBody(sootMethod, walaMethod);
+      if (body.isPresent()) {
+        Body b = body.get();
+        sootMethod = new SootMethod(sootMethod, b);
+      }
+    }
     return sootMethod;
   }
 
@@ -398,8 +397,8 @@ public class WalaIRToJimpleConverter {
         /* Look AsmMethodSource.getBody, see AsmMethodSource.emitLocals(); */
 
         if (!sootMethod.isStatic()) {
-          RefType thisType = sootMethod.getDeclaringClass().get().getType();
-          Local thisLocal = localGenerator.generateThisLocal(sootMethod.getDeclaringClass().get().getType());
+          RefType thisType = view.getRefType(sootMethod.getDeclaringClassSignature());
+          Local thisLocal = localGenerator.generateThisLocal(thisType);
           stmts.add(Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType)));
         }
 
@@ -411,40 +410,30 @@ public class WalaIRToJimpleConverter {
         for (; startPara < walaMethod.getNumberOfParameters(); startPara++) {
           TypeReference t = walaMethod.getParameterType(startPara);
           Type type = convertType(t);
-          Local paraLocal
-              = localGenerator.generateParameterLocal(type, startPara);
+          Local paraLocal = localGenerator.generateParameterLocal(type, startPara);
           stmts.add(Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, startPara)));
         }
 
         // TODO 2. convert traps
         // get exceptions which are not caught
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
+
         InstructionConverter instConverter = new InstructionConverter(this, sootMethod, walaMethod, localGenerator);
         for (SSAInstruction inst : insts) {
-          IStmt stmt = instConverter.convertInstruction(inst);
-          // set position for each statement
-          Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
-          stmt.setPosition(stmtPos);
-          stmts.add(stmt);
+          Optional<IStmt> op = instConverter.convertInstruction(inst);
+          if (op.isPresent()) {
+            IStmt stmt = op.get();
+            // set position for each statement
+            Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
+            stmt.setPosition(stmtPos);
+            stmts.add(stmt);
+          }
         }
-
+        // add return void stmt for methods with return type beiing void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
           IStmt ret = Jimple.newReturnVoidStmt();
-          stmts.add(Jimple.newReturnVoidStmt());
-          if (instConverter.targetsOfIfStmts.containsValue(-1)) {
-            for (JIfStmt ifStmt : instConverter.targetsOfIfStmts.keySet()) {
-              if (instConverter.targetsOfIfStmts.get(ifStmt).equals(-1)) {
-                ifStmt.setTarget(ret);
-              }
-            }
-          }
-          if (instConverter.targetsOfGotoStmts.containsValue(-1)) {
-            for (JGotoStmt gotoStmt : instConverter.targetsOfGotoStmts.keySet()) {
-              if (instConverter.targetsOfGotoStmts.get(gotoStmt).equals(-1)) {
-                gotoStmt.setTarget(ret);
-              }
-            }
-          }
+          instConverter.setTarget(ret, -1);
+          stmts.add(ret);
         }
         Body body = new Body(sootMethod, localGenerator.getLocals(), traps, stmts, bodyPos);
         return Optional.of(body);
