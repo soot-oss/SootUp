@@ -211,6 +211,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
     return new MethodSignature(methodName, declaringClassSignature, returnTypeSignature, parameterSignatures);
   }
 
+  @Override
   public FieldSignature getFieldSignature(final String fieldName, final JavaClassSignature declaringClassSignature,
       final String fieldType) {
     TypeSignature typeSignature = getTypeSignature(fieldType);

@@ -403,7 +403,7 @@ public class WalaIRToJimpleConverter {
         }
 
         int startPara = 0;
-        if (walaMethod.isStatic()) {
+        if (!walaMethod.isStatic()) {
           // wala's first parameter is this reference for non-static method
           startPara = 1;
         }

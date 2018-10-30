@@ -17,22 +17,27 @@ import de.upb.soot.jimple.common.constant.StringConstant;
 import de.upb.soot.jimple.common.expr.AbstractBinopExpr;
 import de.upb.soot.jimple.common.expr.AbstractConditionExpr;
 import de.upb.soot.jimple.common.expr.JCastExpr;
-import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
-import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.soot.jimple.common.expr.JVirtualInvokeExpr;
+import de.upb.soot.jimple.common.expr.JInstanceOfExpr;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIfStmt;
+import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
+import com.ibm.wala.cast.ir.ssa.AssignInstruction;
 import com.ibm.wala.cast.ir.ssa.CAstBinaryOp;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
+import com.ibm.wala.cast.java.ssa.AstJavaNewEnclosingInstruction;
+import com.ibm.wala.cast.java.ssa.EnclosingObjectReference;
 import com.ibm.wala.cast.loader.AstMethod;
+import com.ibm.wala.classLoader.CallSiteReference;
 import com.ibm.wala.shrikeBT.IBinaryOpInstruction;
 import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.IOperator;
 import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.Operator;
@@ -99,8 +104,9 @@ public class InstructionConverter {
   }
 
   public Optional<IStmt> convertInstruction(SSAInstruction inst) {
+    // System.out.println(sootMethod.getSignature());
     IStmt ret = Jimple.newNopStmt();
-    System.out.println(inst);
+    // System.out.println(inst);
     // TODO what are the different types of SSAInstructions
     if (inst instanceof SSAConditionalBranchInstruction) {
       ret = this.convertBranchInstruction((SSAConditionalBranchInstruction) inst);
@@ -110,19 +116,17 @@ public class InstructionConverter {
       ret = this.convertReturnInstruction((SSAReturnInstruction) inst);
     } else if (inst instanceof SSAThrowInstruction) {
       // TODO
-      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+      ret = null;
     } else if (inst instanceof SSASwitchInstruction) {
       // TODO
-      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+      ret = null;
     } else if (inst instanceof AstJavaInvokeInstruction) {
       ret = this.convertInvokeInstruction((AstJavaInvokeInstruction) inst);
     } else if (inst instanceof SSAFieldAccessInstruction) {
       if (inst instanceof SSAGetInstruction) {
-        ret = this.convertGetInstruction((SSAGetInstruction) inst);
+        ret = this.convertGetInstruction((SSAGetInstruction) inst);// field read
       } else if (inst instanceof SSAPutInstruction) {
-        // field write instruction
-        // TODO
-        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+        ret = this.convertPutInstruction((SSAPutInstruction) inst);// field write
       } else {
         throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
       }
@@ -132,37 +136,94 @@ public class InstructionConverter {
     } else if (inst instanceof SSAArrayReferenceInstruction) {
       if (inst instanceof SSAArrayLoadInstruction) {
         // TODO
-        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+        ret = null;
       } else if (inst instanceof SSAArrayStoreInstruction) {
         // TODO
-        throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+        ret = null;
       } else {
         throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
       }
     } else if (inst instanceof SSANewInstruction) {
-      // TODO
-      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+      ret = convertNewInstruction((SSANewInstruction) inst);
     } else if (inst instanceof SSAComparisonInstruction) {
-      // TODO
+      ret = convertComparisonInstruction((SSAComparisonInstruction) inst);
       throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
     } else if (inst instanceof SSAConversionInstruction) {
       ret = convertConversionInstruction((SSAConversionInstruction) inst);
     } else if (inst instanceof SSAInstanceofInstruction) {
-      // TODO
-      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
+      ret = convertInstanceofInstruction((SSAInstanceofInstruction) inst);
     } else if (inst instanceof SSABinaryOpInstruction) {
       SSABinaryOpInstruction binOpInst = (SSABinaryOpInstruction) inst;
       ret = this.convertBinaryOpInstruction(binOpInst);
     } else if (inst instanceof SSALoadMetadataInstruction) {
       // TODO
-      throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
-    }
-    else {
+      ret = null;
+    } else if (inst instanceof AssignInstruction) {
+      // TODO
+      ret = null;
+    } else if (inst instanceof AstJavaNewEnclosingInstruction) {
+      // TODO
+      ret = null;
+    } else if (inst instanceof EnclosingObjectReference) {
+      // TODO
+      ret = null;
+    } else {
       throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
     }
     // if current stmt is the target of an if stmt, set it up.
     this.setTarget(ret, inst.iindex);
     return Optional.ofNullable(ret);
+  }
+
+  private IStmt convertPutInstruction(SSAPutInstruction inst) {
+    FieldReference fieldRef = inst.getDeclaredField();
+    Type fieldType = converter.convertType(inst.getDeclaredFieldType());
+    String walaClassName = fieldRef.getDeclaringClass().getName().toString();
+    SignatureFactory sigfactory = converter.view.getSignatureFacotry();
+    JavaClassSignature classSig = sigfactory.getClassSignature(converter.convertClassNameFromWala(walaClassName));
+    FieldSignature fieldSig = sigfactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
+    Value fieldValue = null;
+    if (inst.isStatic()) {
+      fieldValue = Jimple.newStaticFieldRef(new SootField(converter.view, classSig, fieldSig,
+          sigfactory.getTypeSignature(fieldType.toString()), EnumSet.of(Modifier.STATIC)));
+    } else {
+      int ref = inst.getRef();
+      Local base = getLocal(converter.view.getRefType(classSig), ref);
+      fieldValue = Jimple.newInstanceFieldRef(base,
+          new SootField(converter.view, classSig, fieldSig, sigfactory.getTypeSignature(fieldType.toString())));
+    }
+    Value value = null;
+    int val = inst.getVal();
+    if (symbolTable.isConstant(val)) {
+      value = getConstant(val);
+    } else {
+      value = getLocal(fieldType, val);
+    }
+    return Jimple.newAssignStmt(fieldValue, value);
+  }
+
+  private IStmt convertNewInstruction(SSANewInstruction inst) {
+    int result = inst.getDef();
+    Type type = converter.convertType(inst.getNewSite().getDeclaredType());
+    Value var = getLocal(type, result);
+    Value rvalue = Jimple.newNewExpr((RefType) type);
+    return Jimple.newAssignStmt(var, rvalue);
+  }
+
+  private IStmt convertComparisonInstruction(SSAComparisonInstruction inst) {
+    // TODO
+    return Jimple.newNopStmt();
+  }
+
+  private IStmt convertInstanceofInstruction(SSAInstanceofInstruction inst) {
+    int result = inst.getDef();
+    int ref = inst.getRef();
+    Type checkedType = converter.convertType(inst.getCheckedType());
+    // TODO. how to get type of ref?
+    Local op = getLocal(UnknownType.getInstance(), ref);
+    JInstanceOfExpr expr = Jimple.newInstanceOfExpr(op, checkedType);
+    Value left = getLocal(BooleanType.getInstance(), result);
+    return Jimple.newAssignStmt(left, expr);
   }
 
   private IStmt convertConversionInstruction(SSAConversionInstruction inst) {
@@ -182,50 +243,74 @@ public class InstructionConverter {
   }
 
   private IStmt convertInvokeInstruction(AstJavaInvokeInstruction invokeInst) {
+    if (invokeInst.isSpecial()) {
+      System.out.println(invokeInst);
+    }
+    Value invoke = null;
+    CallSiteReference callee = invokeInst.getCallSite();
     MethodReference target = invokeInst.getDeclaredTarget();
     String declaringClassSignature = converter.convertClassNameFromWala(target.getDeclaringClass().getName().toString());
     String returnType = converter.convertType(target.getReturnType()).toString();
     List<String> parameters = new ArrayList<>();
     List<Type> paraTypes = new ArrayList<>();
     List<Value> args = new ArrayList<>();
-
     for (int i = 0; i < target.getNumberOfParameters(); i++) {
-      Type paraType = converter.convertType(target.getParameterType(i));
+      Type paraType = converter.convertType(target.getParameterType(i));// note the parameters do not include "this"
       paraTypes.add(paraType);
       parameters.add(paraType.toString());
     }
     int i = 0;
-    if (!invokeInst.isStatic()) {
-      i = 1;// virtual invoke this first use is thisRef.
+    if (!callee.isStatic()) {
+      i = 1;// non-static invoke this first use is thisRef.
     }
     for (; i < invokeInst.getNumberOfUses(); i++) {
-      Local arg = getLocal(paraTypes.get(i - 1), invokeInst.getUse(i));
+      int use = invokeInst.getUse(i);
+      Value arg = null;
+      if (symbolTable.isConstant(use)) {
+        arg = getConstant(use);
+      } else {
+        if (invokeInst.getNumberOfUses() > paraTypes.size()) {
+          arg = getLocal(paraTypes.get(i-1), use);
+        } else {
+          arg = getLocal(paraTypes.get(i), use);
+        }
+      }
       args.add(arg);
     }
 
     MethodSignature methodSig = converter.view.getSignatureFacotry().getMethodSignature(target.getName().toString(),
         declaringClassSignature, returnType, parameters);
-    if (invokeInst.isSpecial()) {
-      if (!sootMethod.isStatic()) {
+
+    if (callee.isSpecial()) {
+      if (!callee.isStatic()) {
         // constructor
         Local base = localGenerator.getThisLocal();
-        JSpecialInvokeExpr expr = Jimple.newSpecialInvokeExpr(converter.view, base, methodSig, args);
-        return Jimple.newInvokeStmt(expr);
+        invoke = Jimple.newSpecialInvokeExpr(converter.view, base, methodSig, args);
       } else {
-        JStaticInvokeExpr expr = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
-        return Jimple.newInvokeStmt(expr);
+        invoke = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
       }
     } else {
-      if (!sootMethod.isStatic()) {
+      if (!callee.isStatic()) {
         int receiver = invokeInst.getReceiver();
         Type classType = converter.convertType(target.getDeclaringClass());
         Local base = getLocal(classType, receiver);
-        JVirtualInvokeExpr expr = Jimple.newVirtualInvokeExpr(converter.view, base, methodSig, args);
-        return Jimple.newInvokeStmt(expr);
+        if (callee.isVirtual()) {
+          invoke = Jimple.newVirtualInvokeExpr(converter.view, base, methodSig, args);
+        } else if (callee.isInterface()) {
+          invoke = Jimple.newInterfaceInvokeExpr(converter.view, base, methodSig, args);
+        } else {
+          throw new RuntimeException("Unsupported invoke instruction: " + callee.toString());
+        }
       } else {
-        JStaticInvokeExpr expr = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
-        return Jimple.newInvokeStmt(expr);
+        invoke = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
       }
+    }
+    if (!invokeInst.hasDef()) {
+      return Jimple.newInvokeStmt(invoke);
+    } else {
+      Type type = converter.convertType(invokeInst.getDeclaredResultType());
+      Local v = getLocal(type, invokeInst.getDef());
+      return Jimple.newAssignStmt(v, invoke);
     }
   }
 
@@ -275,8 +360,18 @@ public class InstructionConverter {
     // TODO: only int type?
     Type type = IntType.getInstance();
     Value result = getLocal(type, def);
-    Value op1 = getLocal(type, val1);
-    Value op2 = getLocal(type, val2);
+    Value op1 = null;
+    if (symbolTable.isConstant(val1)) {
+      op1=getConstant(val1);
+    } else {
+      op1=getLocal(type, val1);
+    }
+    Value op2 = null;
+    if (symbolTable.isConstant(val2)) {
+      op2 = getConstant(val2);
+    } else {
+      op2 = getLocal(type, val2);
+    }
     AbstractBinopExpr binExpr = null;
     IBinaryOpInstruction.IOperator operator = binOpInst.getOperator();
     if (operator.equals(IBinaryOpInstruction.Operator.ADD)) {
@@ -324,7 +419,7 @@ public class InstructionConverter {
         ret = getConstant(result);
       } else {
         // TODO. how to get the type of result?
-        ret = this.locals.get(result);
+        ret = this.getLocal(UnknownType.getInstance(), result);
       }
       return Jimple.newReturnStmt(ret);
     }
@@ -383,6 +478,9 @@ public class InstructionConverter {
   }
 
   private Local getLocal(Type type, int valueNumber) {
+    if (type.toString().equals(sootMethod.getDeclaringClassSignature().toString())) {
+      return localGenerator.getThisLocal();
+    }
     if (symbolTable.isParameter(valueNumber)) {
       if (walaMethod.isStatic()) {
         return localGenerator.getParemeterLocal(valueNumber);
@@ -390,14 +488,18 @@ public class InstructionConverter {
         return localGenerator.getParemeterLocal(valueNumber - 1);
       }
     }
-    if (!walaMethod.isStatic() && valueNumber == 0) {
-      return localGenerator.getThisLocal();
-    }
     if (!locals.containsKey(valueNumber)) {
       Local local = localGenerator.generateLocal(type);
       locals.put(valueNumber, local);
     }
-    return locals.get(valueNumber);
+    Local ret= locals.get(valueNumber);
+
+    if (!ret.getType().equals(type)) {
+      // ret.setType(ret.getType().merge(type));
+      // TODO. re-implement merge.
+      // throw new RuntimeException("Different types for same local variable: "+ret.getType()+"<->"+type);
+    }
+    return ret;
   }
 
   /**
