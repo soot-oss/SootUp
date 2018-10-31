@@ -154,6 +154,19 @@ public class SignatureFactoryTest {
   }
 
   @Test
+  public void getInnerClassSignature() {
+    SignatureFactory signatureFactory = new DefaultSignatureFactory();
+    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("java.lang.System$MyClass");
+    JavaClassSignature classSignature2 = signatureFactory.getClassSignature("System$MyClass", "java.lang");
+    // Class Signatures are unique but not their package
+    boolean sameObject = classSignature1 == classSignature2;
+    assertFalse(sameObject);
+    assertEquals(classSignature1, classSignature2);
+    assertTrue(classSignature1.isInnerClass);
+    assertTrue(classSignature2.isInnerClass);
+  }
+
+  @Test
   public void getClassSignaturesPackage() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
     JavaClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
