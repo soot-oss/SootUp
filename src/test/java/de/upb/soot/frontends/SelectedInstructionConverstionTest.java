@@ -123,4 +123,61 @@ public class SelectedInstructionConverstionTest {
     writer.flush();
     writer.close();
   }
+
+  @Test
+  public void testThrowInstruction() {
+    declareClassSig = sigFactory.getClassSignature("FooEx1");
+    Optional<SootMethod> m
+        = loader.getSootMethod(sigFactory.getMethodSignature("bar", declareClassSig, "void", Arrays.asList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    PrintWriter writer = new PrintWriter(System.out);
+    Printer printer = new Printer();
+    printer.printTo(method.getActiveBody(), writer);
+    writer.flush();
+    writer.close();
+  }
+
+  @Test
+  public void testSwitchInstruction() {
+    declareClassSig = sigFactory.getClassSignature("bugfixes.DoWhileInCase");
+    Optional<SootMethod> m = loader
+        .getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Arrays.asList("java.lang.String[]")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    PrintWriter writer = new PrintWriter(System.out);
+    Printer printer = new Printer();
+    printer.printTo(method.getActiveBody(), writer);
+    writer.flush();
+    writer.close();
+  }
+
+  @Test
+  public void testLoadMetadataInstruction() {
+    declareClassSig = sigFactory.getClassSignature("javaonepointfive.EnumSwitch$Palo");
+    Optional<SootMethod> m = loader.getSootMethod(
+        sigFactory.getMethodSignature("valueOf", declareClassSig,
+            "javaonepointfive.EnumSwitch$Palo", Arrays.asList("java.lang.String")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    PrintWriter writer = new PrintWriter(System.out);
+    Printer printer = new Printer();
+    printer.printTo(method.getActiveBody(), writer);
+    writer.flush();
+    writer.close();
+  }
+
+  @Test
+  public void testCheckCastInstruction() {
+    declareClassSig = sigFactory.getClassSignature("javaonepointfive.EnumSwitch$Palo");
+    Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("valueOf", declareClassSig,
+        "javaonepointfive.EnumSwitch$Palo", Arrays.asList("java.lang.String")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    PrintWriter writer = new PrintWriter(System.out);
+    Printer printer = new Printer();
+    printer.printTo(method.getActiveBody(), writer);
+    writer.flush();
+    writer.close();
+  }
 }

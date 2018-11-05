@@ -8,6 +8,7 @@ import de.upb.soot.jimple.basic.JStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.common.constant.ClassConstant;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.constant.DoubleConstant;
 import de.upb.soot.jimple.common.constant.FloatConstant;
@@ -29,13 +30,16 @@ import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
+import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
 import com.ibm.wala.cast.ir.ssa.AssignInstruction;
+import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
 import com.ibm.wala.cast.ir.ssa.AstLexicalRead;
+import com.ibm.wala.cast.ir.ssa.AstLexicalWrite;
 import com.ibm.wala.cast.ir.ssa.CAstBinaryOp;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.cast.java.ssa.AstJavaNewEnclosingInstruction;
@@ -62,6 +66,7 @@ import com.ibm.wala.ssa.SSAGotoInstruction;
 import com.ibm.wala.ssa.SSAInstanceofInstruction;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.ssa.SSALoadMetadataInstruction;
+import com.ibm.wala.ssa.SSAMonitorInstruction;
 import com.ibm.wala.ssa.SSANewInstruction;
 import com.ibm.wala.ssa.SSAPutInstruction;
 import com.ibm.wala.ssa.SSAReturnInstruction;
@@ -71,6 +76,7 @@ import com.ibm.wala.ssa.SSAUnaryOpInstruction;
 import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.types.MethodReference;
+import com.ibm.wala.types.TypeReference;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -97,6 +103,9 @@ public class InstructionConverter {
   // <ifStmt, iindex>
   protected Map<JIfStmt, Integer> targetsOfIfStmts;
   protected Map<JGotoStmt, Integer> targetsOfGotoStmts;
+  protected Map<JLookupSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
+  protected Map<JLookupSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
+  protected Map<JLookupSwitchStmt, List<IStmt>> targetStmtsOfLookUpSwitchStmts;
   private Map<Integer, Local> locals;
 
   public InstructionConverter(WalaIRToJimpleConverter converter, SootMethod sootMethod, AstMethod walaMethod,
@@ -108,6 +117,8 @@ public class InstructionConverter {
     this.localGenerator = localGenerator;
     this.targetsOfIfStmts = new HashMap<>();
     this.targetsOfGotoStmts = new HashMap<>();
+    this.targetsOfLookUpSwitchStmts = new HashMap<>();
+    this.defaultOfLookUpSwitchStmts = new HashMap<>();
     this.locals = new HashMap<>();
   }
 
@@ -143,17 +154,14 @@ public class InstructionConverter {
     } else if (inst instanceof SSAUnaryOpInstruction) {
       ret = this.convertUnaryOpInstruction((SSAUnaryOpInstruction) inst);
     } else if (inst instanceof SSAComparisonInstruction) {
-      ret = convertComparisonInstruction((SSAComparisonInstruction) inst);
-      // TODO
+      // TODO this exists only in byte code
+      ret = null;
     } else if (inst instanceof SSAThrowInstruction) {
-      // TODO
-      ret = null;
+      ret = this.convertThrowInstruction((SSAThrowInstruction) inst);
     } else if (inst instanceof SSASwitchInstruction) {
-      // TODO
-      ret = null;
+      ret = this.convertSwitchInstruction((SSASwitchInstruction) inst);
     } else if (inst instanceof SSALoadMetadataInstruction) {
-      // TODO
-      ret = null;
+      ret = this.convertLoadMetadataInstruction((SSALoadMetadataInstruction) inst);
     } else if (inst instanceof AssignInstruction) {
       // TODO
       ret = null;
@@ -166,10 +174,19 @@ public class InstructionConverter {
     } else if (inst instanceof AstLexicalRead) {
       // TODO
       ret = null;
-    } else if (inst instanceof SSACheckCastInstruction) {
+    } else if (inst instanceof AstLexicalWrite) {
       // TODO
       ret = null;
-    } else if (inst instanceof SSAGetCaughtExceptionInstruction) {
+    } else if (inst instanceof AstAssertInstruction) {
+      // TODO
+      ret = null;
+    } else if (inst instanceof SSACheckCastInstruction) {
+      ret = this.convertCheckCastInstruction((SSACheckCastInstruction) inst);
+    } else if (inst instanceof SSAMonitorInstruction) {
+      ret = null;
+    }
+
+    else if (inst instanceof SSAGetCaughtExceptionInstruction) {
       // TODO
       ret = null;
     } else if (inst instanceof SSAArrayLengthInstruction) {
@@ -190,6 +207,59 @@ public class InstructionConverter {
     // if current stmt is the target of an if stmt, set it up.
     this.setTarget(ret, inst.iindex);
     return Optional.ofNullable(ret);
+  }
+
+  private IStmt convertCheckCastInstruction(SSACheckCastInstruction inst) {
+    TypeReference[] types = inst.getDeclaredResultTypes();
+    Local result = getLocal(converter.convertType(types[0]), inst.getResult());
+    Value rvalue = null;
+    int val = inst.getVal();
+    if (symbolTable.isConstant(val)) {
+      rvalue = getConstant(val);
+    } else {
+      rvalue = getLocal(converter.convertType(types[0]), val);
+    }
+    // TODO declaredResultType is wrong
+    JCastExpr castExpr = Jimple.newCastExpr(rvalue, converter.convertType(types[0]));
+    return Jimple.newAssignStmt(result, castExpr);
+  }
+
+  private IStmt convertLoadMetadataInstruction(SSALoadMetadataInstruction inst) {
+    Local lval = getLocal(converter.convertType(inst.getType()), inst.getDef());
+    TypeReference token = (TypeReference) inst.getToken();
+    ClassConstant c = ClassConstant.getInstance(token.getName().toString());
+    return Jimple.newAssignStmt(lval, c);
+  }
+
+  private IStmt convertSwitchInstruction(SSASwitchInstruction inst) {
+    int val = inst.getUse(0);
+    Local local = getLocal(UnknownType.getInstance(), val);
+    int[] cases = inst.getCasesAndLabels();
+    int defaultCase = inst.getDefault();
+    List<IntConstant> lookupValues = new ArrayList<>();
+    List<Integer> targetsList = new ArrayList<>();
+    List<? extends IStmt> targets = new ArrayList<>();
+    for (int i = 0; i < cases.length; i++) {
+      int c = cases[i];
+      if (i % 2 == 0) {
+        IntConstant cValue = IntConstant.getInstance(c);
+        lookupValues.add(cValue);
+      } else {
+        targetsList.add(c);
+        targets.add(null);// add null as placeholder for targets
+      }
+    }
+    IStmt defaultTarget = null;
+    JLookupSwitchStmt stmt = Jimple.newLookupSwitchStmt(local, lookupValues, targets, defaultTarget);
+    this.targetsOfLookUpSwitchStmts.put(stmt, targetsList);
+    this.defaultOfLookUpSwitchStmts.put(stmt, defaultCase);
+    return stmt;
+  }
+
+  private IStmt convertThrowInstruction(SSAThrowInstruction inst) {
+    int exception = inst.getException();
+    Local local = getLocal(UnknownType.getInstance(), exception);
+    return Jimple.newThrowStmt(local);
   }
 
   private IStmt convertUnaryOpInstruction(SSAUnaryOpInstruction inst) {
@@ -247,7 +317,7 @@ public class InstructionConverter {
         size = getConstant(use);
       } else {
         // TODO: size type unsure
-         size=getLocal(IntType.getInstance(), use);
+        size = getLocal(IntType.getInstance(), use);
       }
       rvalue = Jimple.newNewArrayExpr(type, size);
     } else {
@@ -333,7 +403,9 @@ public class InstructionConverter {
       Type classType = converter.convertType(target.getDeclaringClass());
       Local base = getLocal(classType, receiver);
       if (callee.isSpecial()) {
-        base = getLocal(converter.convertType(walaMethod.getDeclaringClass().getReference()), receiver);
+        Type baseType = UnknownType.getInstance();
+        // TODO. baseType could be a problem.
+        base = getLocal(baseType, receiver);
         invoke = Jimple.newSpecialInvokeExpr(converter.view, base, methodSig, args); // constructor
       } else if (callee.isVirtual()) {
         invoke = Jimple.newVirtualInvokeExpr(converter.view, base, methodSig, args);
@@ -529,6 +601,9 @@ public class InstructionConverter {
   }
 
   private Local getLocal(Type type, int valueNumber) {
+    if (locals.containsKey(valueNumber)) {
+      return locals.get(valueNumber);
+    }
     if (type.toString().equals(sootMethod.getDeclaringClassSignature().toString())) {
       if (!walaMethod.isStatic()) {
         return localGenerator.getThisLocal();
@@ -578,5 +653,24 @@ public class InstructionConverter {
         }
       }
     }
+    if (this.defaultOfLookUpSwitchStmts.containsValue(iindex)) {
+      for (JLookupSwitchStmt lookupSwitch : this.defaultOfLookUpSwitchStmts.keySet()) {
+        if (this.defaultOfLookUpSwitchStmts.get(lookupSwitch).equals(iindex)) {
+          lookupSwitch.setDefaultTarget(stmt);
+        }
+      }
+    }
+    for (JLookupSwitchStmt lookupSwith : this.targetsOfLookUpSwitchStmts.keySet()) {
+      if (this.targetsOfLookUpSwitchStmts.get(lookupSwith).contains(iindex)) {
+        List<IStmt> targets = lookupSwith.getTargets();
+        if(targets.contains(null))
+        {// targets only contains placeholder
+          targets = new ArrayList<>();
+        }
+        targets.add(stmt);
+        lookupSwith.setTargets(targets);
+      }
+    }
   }
+
 }
