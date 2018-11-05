@@ -2,15 +2,20 @@ package de.upb.soot.frontends;
 
 import de.upb.soot.frontends.java.Example;
 
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 import categories.Java8Test;
 
+/**
+ *
+ * @author Linghui Luo
+ *
+ */
 @Category(Java8Test.class)
 public class ExampleTest {
 
-  @Test
+  @Ignore
   public void test()
   {
     String srcDir

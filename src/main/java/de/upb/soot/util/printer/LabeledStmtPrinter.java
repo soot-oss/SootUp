@@ -81,10 +81,10 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   }
 
   private void createLabelMaps(Body body) {
-    Collection<IStmt> units = body.getStmts();
+    Collection<IStmt> stmts = body.getStmts();
 
-    labels = new HashMap<IStmt, String>(units.size() * 2 + 1, 0.7f);
-    references = new HashMap<IStmt, String>(units.size() * 2 + 1, 0.7f);
+    labels = new HashMap<IStmt, String>(stmts.size() * 2 + 1, 0.7f);
+    references = new HashMap<IStmt, String>(stmts.size() * 2 + 1, 0.7f);
 
     // Create statement name table
     Set<IStmt> labelStmts = new HashSet<IStmt>();
@@ -111,7 +111,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    for (IStmt s : units) {
+    for (IStmt s : stmts) {
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));
       }

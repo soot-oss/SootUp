@@ -9,6 +9,11 @@ import org.junit.experimental.categories.Category;
 
 import categories.Java8Test;
 
+/**
+ * 
+ * @author Linghui Luo
+ *
+ */
 @Category(Java8Test.class)
 public class WalaIRToJimpleConverterTest {
   private WalaIRToJimpleConverter converter = new WalaIRToJimpleConverter("");
