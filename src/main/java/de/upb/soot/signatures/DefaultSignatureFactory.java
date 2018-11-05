@@ -2,6 +2,7 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Preconditions;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -220,7 +221,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
 
   @Override
   public JavaClassSignature fromPath(final Path file) {
-    String fullyQualifiedName = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
+    String fullyQualifiedName = FilenameUtils.removeExtension(file.toString()).replace(File.separator.charAt(0), '.');
     return this.getClassSignature(fullyQualifiedName);
   }
 }
