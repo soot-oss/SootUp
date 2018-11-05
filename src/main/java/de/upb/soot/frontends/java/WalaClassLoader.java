@@ -114,6 +114,17 @@ public class WalaClassLoader {
     String className = walaToSoot.convertClassNameFromSoot(signature.getFullyQualifiedName());
     JavaClass walaClass
         = (JavaClass) classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).lookupClass(TypeName.findOrCreate(className));
+    if (className.contains("$") && walaClass == null) {
+      // this is an inner class and was not found
+      Iterator<IClass> it = classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).iterateAllClasses();
+      while (it.hasNext()) {
+        JavaClass c = (JavaClass) it.next();
+        String cname = walaToSoot.convertClassNameFromWala(c.getName().toString());
+        if (cname.equals(signature.getFullyQualifiedName())) {
+          walaClass = c;
+        }
+      }
+    }
     if (walaClass == null) {
       return Optional.empty();
     }
@@ -129,6 +140,18 @@ public class WalaClassLoader {
     String className = walaToSoot.convertClassNameFromSoot(signature.declClassSignature.getFullyQualifiedName());
     JavaClass walaClass
         = (JavaClass) classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).lookupClass(TypeName.findOrCreate(className));
+
+    if (className.contains("$") && walaClass == null) {
+      // this is an inner class and was not found
+      Iterator<IClass> it = classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).iterateAllClasses();
+      while (it.hasNext()) {
+        JavaClass c = (JavaClass) it.next();
+        String cname = walaToSoot.convertClassNameFromWala(c.getName().toString());
+        if (cname.equals(signature.declClassSignature.getFullyQualifiedName())) {
+          walaClass=c;
+        }
+      }
+    }
     if (walaClass == null) {
       return Optional.empty();
     }

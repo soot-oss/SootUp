@@ -78,6 +78,7 @@ public class WalaIRToJimpleConverter {
   private INamespace srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
   private HashMap<String, String> walaToSootNameTable;
+  private Set<SootField> sootFields;
 
   public WalaIRToJimpleConverter(String sourceDirPath) {
     srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
@@ -129,10 +130,19 @@ public class WalaIRToJimpleConverter {
     // convert fields
     Set<IField> fields = HashSetFactory.make(walaClass.getDeclaredInstanceFields());
     fields.addAll(walaClass.getDeclaredStaticFields());
-    Set<SootField> sootFields = new HashSet<>();
+    sootFields = new HashSet<>();
     for (IField walaField : fields) {
       SootField sootField = convertField(classSig, (AstField) walaField);
       sootFields.add(sootField);
+    }
+
+    if (outerClass != null) {
+      // create enclosing reference to outerClass
+      Type type = view.getType(outerClass);
+      FieldSignature signature = view.getSignatureFacotry().getFieldSignature("this$0", classSig, type.toString());
+      SootField enclosingObject = new SootField(view, classSig, signature,
+          view.getSignatureFacotry().getTypeSignature(type.toString()), EnumSet.of(Modifier.FINAL));
+      sootFields.add(enclosingObject);
     }
 
     // convert methods
@@ -147,9 +157,10 @@ public class WalaIRToJimpleConverter {
 
     SootClass ret
         = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
-            interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+        interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
     return ret;
   }
+
 
   /**
    * Create a {@link JavaClassSource} object for the given walaClass.
@@ -516,5 +527,11 @@ public class WalaIRToJimpleConverter {
       }
     }
     return sb.toString();
+  }
+
+  protected void addSootField(SootField field) {
+    if (this.sootFields != null) {
+      this.sootFields.add(field);
+    }
   }
 }

@@ -603,13 +603,13 @@ public class Jimple {
   public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
       List<? extends IStmt> targets,
       IStmt defaultTarget) {
-    return null;
+    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
   }
 
   public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
       List<? extends IStmtBox> targets,
       IStmtBox defaultTarget) {
-    return null;
+    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
   }
 
   /**

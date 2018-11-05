@@ -24,4 +24,5 @@ public class ExampleTest {
     String[] args = { srcDir, exclusionFilePath };
     Example.main(args);
   }
+
 }

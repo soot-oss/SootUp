@@ -88,6 +88,17 @@ public class LocalGenerator {
     return generate(type, false);
   }
 
+  /**
+   * generates a new @local with given type and name.
+   * 
+   * @param type
+   * @param name
+   * @return
+   */
+  public Local generateLocal(Type type, String name) {
+    return createLocal(name, type);
+  }
+
   public Local generateParameterLocal(Type type, int index) {
     if (!this.paraLocals.containsKey(index)) {
       Local paraLocal = generate(type, false);
