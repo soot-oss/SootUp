@@ -2,13 +2,12 @@ package de.upb.soot.frontends;
 
 import static org.junit.Assert.assertTrue;
 
+import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.util.printer.Printer;
 
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -42,30 +41,21 @@ public class SelectedInstructionConverstionTest {
   public void test1() {
     // TODO FIX IT
     declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA.AA");
-    Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("makeAB", declareClassSig,
-            "alreadywalaunittests.InnerClassAA.AB", Arrays.asList()));
+    Optional<SootMethod> m = loader.getSootMethod(
+        sigFactory.getMethodSignature("makeAB", declareClassSig, "alreadywalaunittests.InnerClassAA.AB", Arrays.asList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
   }
 
   @Test
   public void test2() {
     declareClassSig = sigFactory.getClassSignature("AnonymousClass");
-    Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("method", declareClassSig, "void", Arrays.asList()));
+    Optional<SootMethod> m
+        = loader.getSootMethod(sigFactory.getMethodSignature("method", declareClassSig, "void", Arrays.asList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
   }
 
   @Test
@@ -75,11 +65,7 @@ public class SelectedInstructionConverstionTest {
         = loader.getSootMethod(sigFactory.getMethodSignature("doAllThis", declareClassSig, "void", Arrays.asList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
   }
 
   @Test
@@ -89,25 +75,17 @@ public class SelectedInstructionConverstionTest {
         .getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Arrays.asList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
   }
 
   @Test
   public void test5() {
     declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA");
-    Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("<init>", declareClassSig, "void", Arrays.asList()));
+    Optional<SootMethod> m
+        = loader.getSootMethod(sigFactory.getMethodSignature("<init>", declareClassSig, "void", Arrays.asList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
   }
 
   @Test
@@ -117,11 +95,7 @@ public class SelectedInstructionConverstionTest {
         = loader.getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Arrays.asList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
   }
 
   @Test
@@ -131,11 +105,7 @@ public class SelectedInstructionConverstionTest {
         = loader.getSootMethod(sigFactory.getMethodSignature("bar", declareClassSig, "void", Arrays.asList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
   }
 
   @Test
@@ -145,26 +115,17 @@ public class SelectedInstructionConverstionTest {
         .getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Arrays.asList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
   }
 
   @Test
   public void testLoadMetadataInstruction() {
     declareClassSig = sigFactory.getClassSignature("javaonepointfive.EnumSwitch$Palo");
-    Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("valueOf", declareClassSig,
-            "javaonepointfive.EnumSwitch$Palo", Arrays.asList("java.lang.String")));
+    Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("valueOf", declareClassSig,
+        "javaonepointfive.EnumSwitch$Palo", Arrays.asList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
   }
 
   @Test
@@ -174,10 +135,52 @@ public class SelectedInstructionConverstionTest {
         "javaonepointfive.EnumSwitch$Palo", Arrays.asList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testEnclosingObjectReference() {
+    declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA$AA");
+    Optional<SootMethod> m
+        = loader.getSootMethod(sigFactory.getMethodSignature("doSomeCrazyStuff", declareClassSig, "void", Arrays.asList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testEnclosingObjectReferenceField() {
+    declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA$AA");
+    Optional<SootClass> m = loader.getSootClass(declareClassSig);
+    assertTrue(m.isPresent());
+    Utils.print(m.get(), false);
+  }
+
+  @Test
+  public void testAstLexicalRead() {
+    declareClassSig = sigFactory.getClassSignature("AnonymousClass$1");
+    Optional<SootMethod> m
+        = loader.getSootMethod(sigFactory.getMethodSignature("getValueBase", declareClassSig, "int", Arrays.asList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testAstLexicalReadField() {
+    declareClassSig = sigFactory.getClassSignature("AnonymousClass$1");
+    Optional<SootClass> m = loader.getSootClass(declareClassSig);
+    assertTrue(m.isPresent());
+    Utils.print(m.get(), false);
+  }
+
+  @Test
+  public void testAstLexicalWrite() {
+    declareClassSig = sigFactory.getClassSignature("foo.bar.hello.world.InnerClasses");
+    Optional<SootMethod> m = loader.getSootMethod(
+        sigFactory.getMethodSignature("anonymousCoward", declareClassSig, "java.lang.Object", Arrays.asList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
   }
 }

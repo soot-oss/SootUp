@@ -45,10 +45,6 @@ public class GetInstructionConversionTest {
             sigFactory.getMethodSignature("getA_X", declareClassSig, "int", Arrays.asList()));
      assertTrue(m.isPresent());
      SootMethod method = m.get();
-     PrintWriter writer = new PrintWriter(System.out);
-     Printer printer = new Printer();
-     printer.printTo(method.getActiveBody(), writer);
-     writer.flush();
-     writer.close();
+    Utils.print(method, false);
    }
 }

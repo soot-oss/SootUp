@@ -6,9 +6,7 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.util.printer.Printer;
 
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -41,73 +39,52 @@ public class IfInstructionConversionTest {
 
   @Test
   public void test1() {
-    Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("simpleIfElseIfTakeThen", declareClassSig, "void",
-            Arrays.asList("int", "int", "int")));
+    Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("simpleIfElseIfTakeThen", declareClassSig,
+        "void", Arrays.asList("int", "int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
   public void test2() {
-    Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("simpleIfElse",
-        declareClassSig, "boolean",
-        Arrays.asList("int", "int")));
+    Optional<SootMethod> m = loader.getSootMethod(
+        sigFactory.getMethodSignature("simpleIfElse", declareClassSig, "boolean", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
-  public void test3() {  
-    Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("simpleIfElse",
-        declareClassSig, "boolean",
-        Arrays.asList("boolean", "boolean")));
+  public void test3() {
+    Optional<SootMethod> m = loader.getSootMethod(
+        sigFactory.getMethodSignature("simpleIfElse", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
   public void test4() {
-    Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("simpleIf",
-        declareClassSig, "boolean",
+    Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("simpleIf", declareClassSig, "boolean",
         Collections.singletonList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
-  public void test5()
-  {
-    Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("simpleIfElseIfTakeElse",
-        declareClassSig,
+  public void test5() {
+    Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("simpleIfElseIfTakeElse", declareClassSig,
         "void", Arrays.asList("double", "double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
 }

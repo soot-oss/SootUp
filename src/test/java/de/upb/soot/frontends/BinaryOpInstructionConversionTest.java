@@ -6,9 +6,7 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.util.printer.Printer;
 
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -39,15 +37,12 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testAddByte() {
-    Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("addByte", declareClassSig, "byte", Arrays.asList("byte", "byte")));
+    Optional<SootMethod> m = loader
+        .getSootMethod(sigFactory.getMethodSignature("addByte", declareClassSig, "byte", Arrays.asList("byte", "byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -56,11 +51,8 @@ public class BinaryOpInstructionConversionTest {
         sigFactory.getMethodSignature("addDouble", declareClassSig, "double", Arrays.asList("double", "float")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -69,23 +61,18 @@ public class BinaryOpInstructionConversionTest {
         sigFactory.getMethodSignature("mulDouble", declareClassSig, "double", Arrays.asList("double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
+
   @Test
   public void testSubChar() {
     Optional<SootMethod> m = loader
         .getSootMethod(sigFactory.getMethodSignature("subChar", declareClassSig, "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -94,24 +81,18 @@ public class BinaryOpInstructionConversionTest {
         .getSootMethod(sigFactory.getMethodSignature("mulShort", declareClassSig, "short", Arrays.asList("short", "short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
   public void testDivInt() {
-    Optional<SootMethod> m = loader
-        .getSootMethod(sigFactory.getMethodSignature("divInt", declareClassSig, "int", Arrays.asList("int", "int")));
+    Optional<SootMethod> m
+        = loader.getSootMethod(sigFactory.getMethodSignature("divInt", declareClassSig, "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -120,13 +101,9 @@ public class BinaryOpInstructionConversionTest {
         .getSootMethod(sigFactory.getMethodSignature("modChar", declareClassSig, "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
-  }
+    Utils.print(method, false);
 
+  }
 
   @Test
   public void testIncShort() {
@@ -135,13 +112,10 @@ public class BinaryOpInstructionConversionTest {
         = loader.getSootMethod(sigFactory.getMethodSignature("incShort", declareClassSig, "short", Arrays.asList("short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
-  
+
   @Test
   public void testDecInt() {
     // TODO: failed test
@@ -149,25 +123,18 @@ public class BinaryOpInstructionConversionTest {
         = loader.getSootMethod(sigFactory.getMethodSignature("decInt", declareClassSig, "int", Arrays.asList("int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
   public void testOrLong() {
-    Optional<SootMethod> m
-        = loader
-            .getSootMethod(sigFactory.getMethodSignature("orLong", declareClassSig, "long", Arrays.asList("long", "long")));
+    Optional<SootMethod> m = loader
+        .getSootMethod(sigFactory.getMethodSignature("orLong", declareClassSig, "long", Arrays.asList("long", "long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -176,11 +143,8 @@ public class BinaryOpInstructionConversionTest {
         = loader.getSootMethod(sigFactory.getMethodSignature("xorInt", declareClassSig, "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -189,11 +153,8 @@ public class BinaryOpInstructionConversionTest {
         .getSootMethod(sigFactory.getMethodSignature("andChar", declareClassSig, "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -202,11 +163,8 @@ public class BinaryOpInstructionConversionTest {
         = loader.getSootMethod(sigFactory.getMethodSignature("lshiftByte", declareClassSig, "byte", Arrays.asList("byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -215,25 +173,19 @@ public class BinaryOpInstructionConversionTest {
         sigFactory.getMethodSignature("rshiftShort", declareClassSig, "short", Arrays.asList("short", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
   public void testNegLong() {
     // TODO: failed test
-    Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("negLong", declareClassSig, "long", Arrays.asList("long")));
+    Optional<SootMethod> m
+        = loader.getSootMethod(sigFactory.getMethodSignature("negLong", declareClassSig, "long", Arrays.asList("long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -243,11 +195,8 @@ public class BinaryOpInstructionConversionTest {
         sigFactory.getMethodSignature("zeroFillRshiftInt", declareClassSig, "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -257,11 +206,8 @@ public class BinaryOpInstructionConversionTest {
         sigFactory.getMethodSignature("logicalAnd", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -271,11 +217,8 @@ public class BinaryOpInstructionConversionTest {
         sigFactory.getMethodSignature("logicalOr", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -284,11 +227,8 @@ public class BinaryOpInstructionConversionTest {
         = loader.getSootMethod(sigFactory.getMethodSignature("not", declareClassSig, "boolean", Arrays.asList("boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -297,11 +237,8 @@ public class BinaryOpInstructionConversionTest {
         .getSootMethod(sigFactory.getMethodSignature("equal", declareClassSig, "boolean", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -310,11 +247,8 @@ public class BinaryOpInstructionConversionTest {
         sigFactory.getMethodSignature("notEqual", declareClassSig, "boolean", Arrays.asList("float", "float")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -323,11 +257,8 @@ public class BinaryOpInstructionConversionTest {
         sigFactory.getMethodSignature("greater", declareClassSig, "boolean", Arrays.asList("double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -336,11 +267,8 @@ public class BinaryOpInstructionConversionTest {
         .getSootMethod(sigFactory.getMethodSignature("smaller", declareClassSig, "boolean", Arrays.asList("long", "long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -349,11 +277,8 @@ public class BinaryOpInstructionConversionTest {
         sigFactory.getMethodSignature("greaterEqual", declareClassSig, "boolean", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 
   @Test
@@ -362,10 +287,7 @@ public class BinaryOpInstructionConversionTest {
         sigFactory.getMethodSignature("smallerEqual", declareClassSig, "boolean", Arrays.asList("byte", "byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
+
   }
 }

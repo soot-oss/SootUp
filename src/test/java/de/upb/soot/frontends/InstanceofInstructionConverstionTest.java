@@ -6,9 +6,7 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.util.printer.Printer;
 
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -44,10 +42,6 @@ public class InstanceofInstructionConverstionTest {
             sigFactory.getMethodSignature("instanceOf", declareClassSig, "boolean", Arrays.asList("java.lang.Object")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    PrintWriter writer = new PrintWriter(System.out);
-    Printer printer = new Printer();
-    printer.printTo(method.getActiveBody(), writer);
-    writer.flush();
-    writer.close();
+    Utils.print(method, false);
   }
 }

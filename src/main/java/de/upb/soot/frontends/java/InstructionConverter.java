@@ -21,6 +21,7 @@ import de.upb.soot.jimple.common.expr.AbstractConditionExpr;
 import de.upb.soot.jimple.common.expr.JCastExpr;
 import de.upb.soot.jimple.common.expr.JInstanceOfExpr;
 import de.upb.soot.jimple.common.expr.JNegExpr;
+import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIfStmt;
@@ -38,6 +39,7 @@ import de.upb.soot.signatures.SignatureFactory;
 
 import com.ibm.wala.cast.ir.ssa.AssignInstruction;
 import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
+import com.ibm.wala.cast.ir.ssa.AstLexicalAccess.Access;
 import com.ibm.wala.cast.ir.ssa.AstLexicalRead;
 import com.ibm.wala.cast.ir.ssa.AstLexicalWrite;
 import com.ibm.wala.cast.ir.ssa.CAstBinaryOp;
@@ -154,7 +156,7 @@ public class InstructionConverter {
     } else if (inst instanceof SSAUnaryOpInstruction) {
       ret = this.convertUnaryOpInstruction((SSAUnaryOpInstruction) inst);
     } else if (inst instanceof SSAComparisonInstruction) {
-      // TODO this exists only in byte code
+      // TODO need to find an example
       ret = null;
     } else if (inst instanceof SSAThrowInstruction) {
       ret = this.convertThrowInstruction((SSAThrowInstruction) inst);
@@ -163,30 +165,27 @@ public class InstructionConverter {
     } else if (inst instanceof SSALoadMetadataInstruction) {
       ret = this.convertLoadMetadataInstruction((SSALoadMetadataInstruction) inst);
     } else if (inst instanceof AssignInstruction) {
-      // TODO
+      // TODO need to find an example
       ret = null;
     } else if (inst instanceof AstJavaNewEnclosingInstruction) {
-      // TODO
+      // TODO need to find an example
       ret = null;
     } else if (inst instanceof EnclosingObjectReference) {
-      // TODO
-      ret = null;
+      ret = this.convertEnclosingObjectReference((EnclosingObjectReference) inst);
     } else if (inst instanceof AstLexicalRead) {
-      // TODO
-      ret = null;
+      ret = this.convertAstLexicalRead((AstLexicalRead) inst);
     } else if (inst instanceof AstLexicalWrite) {
-      // TODO
-      ret = null;
+      ret = this.convertAstLexicalWrite((AstLexicalWrite) inst);
     } else if (inst instanceof AstAssertInstruction) {
       // TODO
       ret = null;
+      // System.err.println("ooooooooooooooo");
+      // throw new RuntimeException();
     } else if (inst instanceof SSACheckCastInstruction) {
       ret = this.convertCheckCastInstruction((SSACheckCastInstruction) inst);
     } else if (inst instanceof SSAMonitorInstruction) {
       ret = null;
-    }
-
-    else if (inst instanceof SSAGetCaughtExceptionInstruction) {
+    } else if (inst instanceof SSAGetCaughtExceptionInstruction) {
       // TODO
       ret = null;
     } else if (inst instanceof SSAArrayLengthInstruction) {
@@ -207,6 +206,67 @@ public class InstructionConverter {
     // if current stmt is the target of an if stmt, set it up.
     this.setTarget(ret, inst.iindex);
     return Optional.ofNullable(ret);
+  }
+
+  private IStmt convertAstLexicalWrite(AstLexicalWrite inst) {
+    Access access = inst.getAccess(0);
+    Type type = converter.convertType(access.type);
+    Value right = null;
+    if (symbolTable.isConstant(access.valueNumber)) {
+      right = getConstant(access.valueNumber);
+    } else {
+      right = getLocal(type, access.valueNumber);
+    }
+    SignatureFactory fact = converter.view.getSignatureFacotry();
+    JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
+    // TODO check modifier
+    Value left = null;
+    if (!walaMethod.isStatic()) {
+      SootField field
+          = new SootField(converter.view, cSig, fact.getFieldSignature("val$" + access.variableName, cSig, type.toString()),
+              fact.getTypeSignature(type.toString()), EnumSet.of(Modifier.FINAL));
+      left = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), field);
+      converter.addSootField(field);// add this field to class
+    } else {
+      left = localGenerator.generateLocal(type, access.variableName);
+    }
+    return Jimple.newAssignStmt(left, right);
+  }
+
+  private IStmt convertAstLexicalRead(AstLexicalRead inst) {
+    Access access = inst.getAccess(0);
+    Type type = converter.convertType(access.type);
+    Local left = getLocal(type, access.valueNumber);
+    SignatureFactory fact = converter.view.getSignatureFacotry();
+    JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
+    // TODO check modifier
+    Value rvalue = null;
+    if (!walaMethod.isStatic()) {
+      SootField field
+          = new SootField(converter.view, cSig, fact.getFieldSignature("val$" + access.variableName, cSig, type.toString()),
+              fact.getTypeSignature(type.toString()), EnumSet.of(Modifier.FINAL));
+      rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), field);
+      converter.addSootField(field);// add this field to class
+    } else {
+      rvalue = null;
+      // TODO
+      // rvalue = localGenerator.generateLocal(type, access.variableName);
+    }
+    return Jimple.newAssignStmt(left, rvalue);
+  }
+
+  private IStmt convertEnclosingObjectReference(EnclosingObjectReference inst) {
+    Type enclosingType = converter.convertType(inst.getEnclosingType());
+    Value variable = getLocal(enclosingType, inst.getDef());
+    SignatureFactory fact = converter.view.getSignatureFacotry();
+    JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
+
+    // TODO check modifier
+    SootField enclosingObject
+        = new SootField(converter.view, cSig, fact.getFieldSignature("this$0", cSig, enclosingType.toString()),
+            fact.getTypeSignature(enclosingType.toString()), EnumSet.of(Modifier.FINAL));
+    JInstanceFieldRef rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), enclosingObject);
+    return Jimple.newAssignStmt(variable, rvalue);
   }
 
   private IStmt convertCheckCastInstruction(SSACheckCastInstruction inst) {
@@ -359,9 +419,6 @@ public class InstructionConverter {
   }
 
   private IStmt convertInvokeInstruction(AstJavaInvokeInstruction invokeInst) {
-    if (invokeInst.isSpecial()) {
-      System.out.println(invokeInst);
-    }
     Value invoke = null;
     CallSiteReference callee = invokeInst.getCallSite();
     MethodReference target = invokeInst.getDeclaredTarget();
@@ -663,8 +720,7 @@ public class InstructionConverter {
     for (JLookupSwitchStmt lookupSwith : this.targetsOfLookUpSwitchStmts.keySet()) {
       if (this.targetsOfLookUpSwitchStmts.get(lookupSwith).contains(iindex)) {
         List<IStmt> targets = lookupSwith.getTargets();
-        if(targets.contains(null))
-        {// targets only contains placeholder
+        if (targets.contains(null)) {// targets only contains placeholder
           targets = new ArrayList<>();
         }
         targets.add(stmt);

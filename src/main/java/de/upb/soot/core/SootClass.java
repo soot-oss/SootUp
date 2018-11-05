@@ -353,7 +353,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
     SootField foundField = null;
     for (SootField field : fields) {
-      if (field.getSignature().equals(name)) {
+      if (field.getSignature().name.equals(name)) {
         if (foundField == null) {
           foundField = field;
         } else {
