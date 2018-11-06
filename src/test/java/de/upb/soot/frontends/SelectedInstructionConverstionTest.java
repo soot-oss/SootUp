@@ -163,7 +163,7 @@ public class SelectedInstructionConverstionTest {
         = loader.getSootMethod(sigFactory.getMethodSignature("getValueBase", declareClassSig, "int", Arrays.asList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Utils.print(method, true);
+    Utils.print(method, false);
   }
 
   @Test
