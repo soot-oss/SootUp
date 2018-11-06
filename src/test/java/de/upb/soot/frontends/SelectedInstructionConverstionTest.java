@@ -163,7 +163,7 @@ public class SelectedInstructionConverstionTest {
         = loader.getSootMethod(sigFactory.getMethodSignature("getValueBase", declareClassSig, "int", Arrays.asList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Utils.print(method, false);
+    Utils.print(method, true);
   }
 
   @Test
@@ -258,7 +258,14 @@ public class SelectedInstructionConverstionTest {
         .getSootMethod(sigFactory.getMethodSignature("foo", declareClassSig, "void", Arrays.asList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Utils.print(method, true);
+    Utils.print(method, false);
   }
 
+  public void testAstLexialReadWithMultipleAccesses() {
+    // TODO
+  }
+
+  public void testAstLexialWriteWithMultipleAccesses() {
+    // TODO
+  }
 }

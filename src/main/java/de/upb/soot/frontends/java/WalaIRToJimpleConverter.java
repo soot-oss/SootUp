@@ -64,6 +64,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -431,6 +432,7 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
 
         InstructionConverter instConverter = new InstructionConverter(this, sootMethod, walaMethod, localGenerator);
+        Map<IStmt, Integer> stmt2IIndex = new HashMap<>();
         for (SSAInstruction inst : insts) {
           List<IStmt> retStmts = instConverter.convertInstruction(inst);
           if (!retStmts.isEmpty()) {
@@ -439,8 +441,13 @@ public class WalaIRToJimpleConverter {
               Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
               stmt.setPosition(stmtPos);
               stmts.add(stmt);
+              stmt2IIndex.put(stmt, inst.iindex);
             }
           }
+        }
+        // set target for goto or conditional statements
+        for (IStmt stmt : stmt2IIndex.keySet()) {
+          instConverter.setTarget(stmt, stmt2IIndex.get(stmt));
         }
         // add return void stmt for methods with return type beiing void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
