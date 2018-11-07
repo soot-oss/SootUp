@@ -32,8 +32,8 @@ import java.util.EnumSet;
 public class SootField extends SootClassMember {
 
   /**
-   * Soot's counterpart of the source language's field concept. Soot representation of a Java field. Can be declared to belong
-   * to a SootClass.
+   * Soot's counterpart of the source language's field concept. Soot representation of a Java field. Can be declared to
+   * belong to a SootClass.
    *
    * Modified by Linghui Luo
    **/
@@ -46,8 +46,7 @@ public class SootField extends SootClassMember {
   }
 
   public SootField(IView view, SootField field) {
-    this(view, field.getDeclaringClassSignature(), (FieldSignature) field.signature, field.typeSignature,
-        field.modifiers);
+    this(view, field.getDeclaringClassSignature(), (FieldSignature) field.signature, field.typeSignature, field.modifiers);
   }
 
   /** Constructs a Soot field with the given name, type and no modifiers. */
@@ -60,14 +59,13 @@ public class SootField extends SootClassMember {
   }
 
   private String getOriginalStyleDeclaration() {
-    if(modifiers.isEmpty()) {
-      return signature.toString();
-    } else
-    {
+    if (modifiers.isEmpty()) {
+      return signature.getSubSignature();
+    } else {
       StringBuilder sb = new StringBuilder();
       sb.append(Modifier.toString(modifiers));
-      sb.append(" ");
-      sb.append(this.signature.toString());
+      sb.append(' ');
+      sb.append(this.signature.getSubSignature());
       return sb.toString();
     }
   }

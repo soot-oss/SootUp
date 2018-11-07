@@ -15,7 +15,9 @@ import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.common.type.VoidType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*-
  * #%L
@@ -48,9 +50,11 @@ import java.util.List;
 public class LocalGenerator {
   private List<Local> locals;
   private Local thisLocal;
+  private Map<Integer, Local> paraLocals;
 
   public LocalGenerator() {
     this.locals = new ArrayList<>();
+    this.paraLocals = new HashMap<>();
   }
 
   protected boolean bodyContainsLocal(String name) {
@@ -84,8 +88,26 @@ public class LocalGenerator {
     return generate(type, false);
   }
 
-  private Local generate(Type type, boolean isField) {
+  /**
+   * generates a new @local with given type and name.
+   * 
+   * @param type
+   * @param name
+   * @return
+   */
+  public Local generateLocal(Type type, String name) {
+    return createLocal(name, type);
+  }
 
+  public Local generateParameterLocal(Type type, int index) {
+    if (!this.paraLocals.containsKey(index)) {
+      Local paraLocal = generate(type, false);
+      this.paraLocals.put(index, paraLocal);
+    }
+    return this.paraLocals.get(index);
+  }
+
+  private Local generate(Type type, boolean isField) {
     String name = "v";
 
     if (type instanceof IntType) {
@@ -241,5 +263,9 @@ public class LocalGenerator {
 
   public Local getThisLocal() {
     return this.thisLocal;
+  }
+
+  public Local getParemeterLocal(int i) {
+    return this.paraLocals.get(i);
   }
 }

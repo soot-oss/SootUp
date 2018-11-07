@@ -70,6 +70,7 @@ import de.upb.soot.jimple.common.expr.JXorExpr;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
+import de.upb.soot.jimple.common.ref.JStaticFieldRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
@@ -602,13 +603,13 @@ public class Jimple {
   public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
       List<? extends IStmt> targets,
       IStmt defaultTarget) {
-    return null;
+    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
   }
 
   public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
       List<? extends IStmtBox> targets,
       IStmtBox defaultTarget) {
-    return null;
+    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
   }
 
   /**
@@ -619,10 +620,10 @@ public class Jimple {
   }
 
   /**
-   * Constructs a StaticField(SootField) grammar chunk.
+   * Constructs a JStaticFieldRef(SootField) grammar chunk.
    */
-  public static SootField newStaticField(IView view, SootField f) {
-    return new SootField(view, f);
+  public static JStaticFieldRef newStaticFieldRef(SootField f) {
+    return new JStaticFieldRef(f);
   }
 
   /**

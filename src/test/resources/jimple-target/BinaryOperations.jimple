@@ -1,0 +1,522 @@
+public class BinaryOperations extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        BinaryOperations r0;
+
+        r0 := @this: BinaryOperations;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public byte addByte(byte, byte)
+    {
+        BinaryOperations r0;
+        byte b0, b1, $b3;
+        int $i2;
+
+        r0 := @this: BinaryOperations;
+
+        b0 := @parameter0: byte;
+
+        b1 := @parameter1: byte;
+
+        $i2 = b0 + b1;
+
+        $b3 = (byte) $i2;
+
+        return $b3;
+    }
+
+    public double addDouble(double, float)
+    {
+        BinaryOperations r0;
+        double d0, $d1, $d2;
+        float f0;
+
+        r0 := @this: BinaryOperations;
+
+        d0 := @parameter0: double;
+
+        f0 := @parameter1: float;
+
+        $d1 = (double) f0;
+
+        $d2 = d0 + $d1;
+
+        return $d2;
+    }
+
+    public double mulDouble(double, double)
+    {
+        BinaryOperations r0;
+        double d0, d1, $d2;
+
+        r0 := @this: BinaryOperations;
+
+        d0 := @parameter0: double;
+
+        d1 := @parameter1: double;
+
+        $d2 = d0 * d1;
+
+        return $d2;
+    }
+
+    public char subChar(char, char)
+    {
+        BinaryOperations r0;
+        char c0, c1, $c3;
+        int $i2;
+
+        r0 := @this: BinaryOperations;
+
+        c0 := @parameter0: char;
+
+        c1 := @parameter1: char;
+
+        $i2 = c0 - c1;
+
+        $c3 = (char) $i2;
+
+        return $c3;
+    }
+
+    public short mulShort(short, short)
+    {
+        BinaryOperations r0;
+        short s0, s1, $s3;
+        int $i2;
+
+        r0 := @this: BinaryOperations;
+
+        s0 := @parameter0: short;
+
+        s1 := @parameter1: short;
+
+        $i2 = s0 * s1;
+
+        $s3 = (short) $i2;
+
+        return $s3;
+    }
+
+    public int divInt(int, int)
+    {
+        BinaryOperations r0;
+        int i0, i1, $i2;
+
+        r0 := @this: BinaryOperations;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        $i2 = i0 / i1;
+
+        return $i2;
+    }
+
+    public char modChar(char, char)
+    {
+        BinaryOperations r0;
+        char c0, c1, $c3;
+        int $i2;
+
+        r0 := @this: BinaryOperations;
+
+        c0 := @parameter0: char;
+
+        c1 := @parameter1: char;
+
+        $i2 = c0 % c1;
+
+        $c3 = (char) $i2;
+
+        return $c3;
+    }
+
+    public short incShort(short)
+    {
+        BinaryOperations r0;
+        int $i0;
+        short s1, s2;
+
+        r0 := @this: BinaryOperations;
+
+        s1 := @parameter0: short;
+
+        $i0 = s1 + 1;
+
+        s2 = (short) $i0;
+
+        return s1;
+    }
+
+    public int decInt(int)
+    {
+        BinaryOperations r0;
+        int i0, i1;
+
+        r0 := @this: BinaryOperations;
+
+        i0 := @parameter0: int;
+
+        i1 = i0 + -1;
+
+        return i1;
+    }
+
+    public long orLong(long, long)
+    {
+        BinaryOperations r0;
+        long l0, l1, $l2;
+
+        r0 := @this: BinaryOperations;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $l2 = l0 | l1;
+
+        return $l2;
+    }
+
+    public int xorInt(int, int)
+    {
+        BinaryOperations r0;
+        int i0, i1, $i2;
+
+        r0 := @this: BinaryOperations;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        $i2 = i0 ^ i1;
+
+        return $i2;
+    }
+
+    public char andChar(char, char)
+    {
+        BinaryOperations r0;
+        char c0, c1, $c2, $c3;
+
+        r0 := @this: BinaryOperations;
+
+        c0 := @parameter0: char;
+
+        c1 := @parameter1: char;
+
+        $c2 = c0 & c1;
+
+        $c3 = (char) $c2;
+
+        return $c3;
+    }
+
+    public byte lshiftByte(byte)
+    {
+        BinaryOperations r0;
+        byte b0, $b2;
+        int $i1;
+
+        r0 := @this: BinaryOperations;
+
+        b0 := @parameter0: byte;
+
+        $i1 = b0 << 2;
+
+        $b2 = (byte) $i1;
+
+        return $b2;
+    }
+
+    public short rshiftShort(short, int)
+    {
+        BinaryOperations r0;
+        short s0, $s2, $s3;
+        int i1;
+
+        r0 := @this: BinaryOperations;
+
+        s0 := @parameter0: short;
+
+        i1 := @parameter1: int;
+
+        $s2 = s0 >> i1;
+
+        $s3 = (short) $s2;
+
+        return $s3;
+    }
+
+    public long negLong(long)
+    {
+        BinaryOperations r0;
+        long l0, $l1;
+
+        r0 := @this: BinaryOperations;
+
+        l0 := @parameter0: long;
+
+        $l1 = l0 ^ -1L;
+
+        return $l1;
+    }
+
+    public int zeroFillRshiftInt(int, int)
+    {
+        BinaryOperations r0;
+        int i0, i1, $i2;
+
+        r0 := @this: BinaryOperations;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        $i2 = i0 >>> i1;
+
+        return $i2;
+    }
+
+    public boolean logicalAnd(boolean, boolean)
+    {
+        BinaryOperations r0;
+        boolean z0, z1, $z2;
+
+        r0 := @this: BinaryOperations;
+
+        z0 := @parameter0: boolean;
+
+        z1 := @parameter1: boolean;
+
+        if z0 == 0 goto label1;
+
+        if z1 == 0 goto label1;
+
+        $z2 = 1;
+
+        goto label2;
+
+     label1:
+        $z2 = 0;
+
+     label2:
+        return $z2;
+    }
+
+    public boolean logicalOr(boolean, boolean)
+    {
+        BinaryOperations r0;
+        boolean z0, z1, $z2;
+
+        r0 := @this: BinaryOperations;
+
+        z0 := @parameter0: boolean;
+
+        z1 := @parameter1: boolean;
+
+        if z0 != 0 goto label1;
+
+        if z1 == 0 goto label2;
+
+     label1:
+        $z2 = 1;
+
+        goto label3;
+
+     label2:
+        $z2 = 0;
+
+     label3:
+        return $z2;
+    }
+
+    public boolean not(boolean)
+    {
+        BinaryOperations r0;
+        boolean z0, $z1;
+
+        r0 := @this: BinaryOperations;
+
+        z0 := @parameter0: boolean;
+
+        if z0 != 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        return $z1;
+    }
+
+    public boolean equal(int, int)
+    {
+        BinaryOperations r0;
+        int i0, i1;
+        boolean $z0;
+
+        r0 := @this: BinaryOperations;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        if i0 != i1 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        return $z0;
+    }
+
+    public boolean notEqual(float, float)
+    {
+        BinaryOperations r0;
+        float f0, f1;
+        byte $b0;
+        boolean $z0;
+
+        r0 := @this: BinaryOperations;
+
+        f0 := @parameter0: float;
+
+        f1 := @parameter1: float;
+
+        $b0 = f0 cmpl f1;
+
+        if $b0 == 0 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        return $z0;
+    }
+
+    public boolean greater(double, double)
+    {
+        BinaryOperations r0;
+        double d0, d1;
+        byte $b0;
+        boolean $z0;
+
+        r0 := @this: BinaryOperations;
+
+        d0 := @parameter0: double;
+
+        d1 := @parameter1: double;
+
+        $b0 = d0 cmpl d1;
+
+        if $b0 <= 0 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        return $z0;
+    }
+
+    public boolean smaller(long, long)
+    {
+        BinaryOperations r0;
+        long l0, l1;
+        byte $b2;
+        boolean $z0;
+
+        r0 := @this: BinaryOperations;
+
+        l0 := @parameter0: long;
+
+        l1 := @parameter1: long;
+
+        $b2 = l0 cmp l1;
+
+        if $b2 >= 0 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        return $z0;
+    }
+
+    public boolean greaterEqual(char, char)
+    {
+        BinaryOperations r0;
+        char c0, c1;
+        boolean $z0;
+
+        r0 := @this: BinaryOperations;
+
+        c0 := @parameter0: char;
+
+        c1 := @parameter1: char;
+
+        if c0 < c1 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        return $z0;
+    }
+
+    public boolean smallerEqual(byte, byte)
+    {
+        BinaryOperations r0;
+        byte b0, b1;
+        boolean $z0;
+
+        r0 := @this: BinaryOperations;
+
+        b0 := @parameter0: byte;
+
+        b1 := @parameter1: byte;
+
+        if b0 > b1 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        return $z0;
+    }
+}

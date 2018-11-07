@@ -21,8 +21,6 @@ package de.upb.soot.core;
  * #L%
  */
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
@@ -33,6 +31,8 @@ import de.upb.soot.validation.MethodDeclarationValidator;
 import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.views.IView;
+
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -353,7 +353,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
     SootField foundField = null;
     for (SootField field : fields) {
-      if (field.getSignature().equals(name)) {
+      if (field.getSignature().name.equals(name)) {
         if (foundField == null) {
           foundField = field;
         } else {
@@ -456,24 +456,22 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the method with the given name. This method may throw an AmbiguousMethodException if there are more
-   * than one method with the given name. If no method with the given is found, null is returned.
+   * Attempts to retrieve the method with the given subSignature. This method may throw an AmbiguousMethodException if there
+   * are more than one method with the given subSignature. If no method with the given is found, null is returned.
    */
-  public SootMethod getMethodByNameUnsafe(String name) {
+  public SootMethod getMethodBySubSignature(String subSignature) {
     checkLevel(ResolvingLevel.SIGNATURES);
     SootMethod foundMethod = null;
-
     if (methods == null) {
       return null;
     }
-
     for (IMethod m : methods) {
       SootMethod method = (SootMethod) m;
-      if (method.getSignature().equals(name)) {
+      if (method.getSubSignature().toString().equals(subSignature)) {
         if (foundMethod == null) {
           foundMethod = method;
         } else {
-          throw new RuntimeException("ambiguous method: " + name + " in class " + this);
+          throw new RuntimeException("ambiguous method: " + subSignature + " in class " + this);
         }
       }
     }
@@ -485,7 +483,7 @@ public class SootClass extends AbstractClass implements Serializable {
    * than one method with the given name. If no method with the given is found, an exception is thrown as well.
    */
   public SootMethod getMethodByName(String name) {
-    SootMethod foundMethod = getMethodByNameUnsafe(name);
+    SootMethod foundMethod = getMethodBySubSignature(name);
     if (foundMethod == null) {
       throw new RuntimeException("couldn't find method " + name + "(*) in " + this);
     }

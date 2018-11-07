@@ -35,7 +35,7 @@ public class RValueBox extends AbstractValueBox {
   private static final long serialVersionUID = 1137427420610950327L;
 
   public RValueBox(Value value) {
-    setValue(value);
+    super(value);
   }
 
   @Override
