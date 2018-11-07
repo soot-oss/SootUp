@@ -217,7 +217,7 @@ public class InstructionConverter {
     } else {
       right = getLocal(type, access.valueNumber);
     }
-    SignatureFactory fact = converter.view.getSignatureFacotry();
+    SignatureFactory fact = converter.view.getSignatureFactory();
     JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
     // TODO check modifier
     Value left = null;
@@ -237,7 +237,7 @@ public class InstructionConverter {
     Access access = inst.getAccess(0);
     Type type = converter.convertType(access.type);
     Local left = getLocal(type, access.valueNumber);
-    SignatureFactory fact = converter.view.getSignatureFacotry();
+    SignatureFactory fact = converter.view.getSignatureFactory();
     JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
     // TODO check modifier
     Value rvalue = null;
@@ -258,7 +258,7 @@ public class InstructionConverter {
   private IStmt convertEnclosingObjectReference(EnclosingObjectReference inst) {
     Type enclosingType = converter.convertType(inst.getEnclosingType());
     Value variable = getLocal(enclosingType, inst.getDef());
-    SignatureFactory fact = converter.view.getSignatureFacotry();
+    SignatureFactory fact = converter.view.getSignatureFactory();
     JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
 
     // TODO check modifier
@@ -342,7 +342,7 @@ public class InstructionConverter {
     FieldReference fieldRef = inst.getDeclaredField();
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
-    SignatureFactory sigfactory = converter.view.getSignatureFacotry();
+    SignatureFactory sigfactory = converter.view.getSignatureFactory();
     JavaClassSignature classSig = sigfactory.getClassSignature(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig = sigfactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
     Value fieldValue = null;
@@ -452,7 +452,7 @@ public class InstructionConverter {
       args.add(arg);
     }
 
-    MethodSignature methodSig = converter.view.getSignatureFacotry().getMethodSignature(target.getName().toString(),
+    MethodSignature methodSig = converter.view.getSignatureFactory().getMethodSignature(target.getName().toString(),
         declaringClassSignature, returnType, parameters);
 
     if (!callee.isStatic()) {
@@ -615,7 +615,7 @@ public class InstructionConverter {
     FieldReference fieldRef = inst.getDeclaredField();
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
-    SignatureFactory sigfactory = converter.view.getSignatureFacotry();
+    SignatureFactory sigfactory = converter.view.getSignatureFactory();
     JavaClassSignature classSig = sigfactory.getClassSignature(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig = sigfactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
     Value rvalue = null;
