@@ -211,13 +211,18 @@ public class WalaIRToJimpleConverter {
     if (walaMethod.symbolTable() != null) {
       for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
         TypeReference type = walaMethod.getParameterType(i);
-        if (!type.equals(walaMethod.getDeclaringClass().getReference())) {
-          Type paraType = convertType(type);
-          paraTypes.add(this.view.getSignatureFacotry().getTypeSignature(paraType.toString()));
-          sigs.add(paraType.toString());
+        if (i == 0) {
+          if (!walaMethod.isStatic()) {
+            // ignore this pointer
+            continue;
+          }
         }
+        Type paraType = convertType(type);
+        paraTypes.add(this.view.getSignatureFacotry().getTypeSignature(paraType.toString()));
+        sigs.add(paraType.toString());
       }
     }
+
     Type returnType = convertType(walaMethod.getReturnType());
 
     EnumSet<Modifier> modifiers = convertModifiers(walaMethod);

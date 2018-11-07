@@ -1,0 +1,31 @@
+public class InvokeStatic extends java.lang.Object
+{
+    static java.lang.String string;
+    static java.lang.String x;
+
+    static void <clinit>()
+    {
+        java.lang.String $r0;
+
+        $r0 = new java.lang.String;
+
+        specialinvoke $r0.<java.lang.String: void <init>()>();
+
+        <InvokeStatic: java.lang.String string> = $r0;
+
+        <InvokeStatic: java.lang.String x> = "abc";
+
+        return;
+    }
+
+    public void <init>()
+    {
+        InvokeStatic r0;
+
+        r0 := @this: InvokeStatic;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}
