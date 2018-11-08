@@ -33,6 +33,8 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
+import java.util.Comparator;
+
 public class JIdentityStmt extends AbstractDefinitionStmt {
   /**
    * 
@@ -82,14 +84,31 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
     return null;
   }
 
+
+  @Override
   public boolean equivTo(Object o) {
-    // TODO Auto-generated method stub
-    return false;
+
+    if( !(o instanceof JIdentityStmt) ){
+      return false;
+    }
+
+    JIdentityStmt identityStmt = (JIdentityStmt) o;
+    if(! (leftBox.getValue().equivTo( identityStmt.leftBox.getValue()) && rightBox.getValue().equivTo( identityStmt.rightBox.getValue()) )){
+      return false;
+    }
+
+    return true;
   }
 
+  @Override
   public int equivHashCode() {
-    // TODO Auto-generated method stub
-    return 0;
+    return leftBox.getValue().equivHashCode() + 31 * rightBox.getValue().equivHashCode();
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<?> comparator) {
+    // TODO: implement!
+    return false;
   }
 
 }

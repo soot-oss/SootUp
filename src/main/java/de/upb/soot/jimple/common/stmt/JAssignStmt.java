@@ -12,9 +12,9 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Immediate;
 import de.upb.soot.jimple.basic.RValueBox;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.StmtBoxOwner;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -26,6 +26,7 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -378,4 +379,26 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     ((IStmtVisitor) sw).caseAssignStmt(this);
   }
 
+  @Override
+  public boolean equivTo(Object o) {
+
+    if (o instanceof JAssignStmt) {
+      JAssignStmt jas = (JAssignStmt) o;
+      return leftBox.getValue().equivTo(jas.leftBox.getValue()) && rightBox.getValue().equivTo(jas.rightBox.getValue());
+    }
+
+    return false;
+  }
+
+  @Override
+  public int equivHashCode() {
+    return leftBox.getValue().equivHashCode() + 31 * rightBox.getValue().equivHashCode();
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<?> comparator) {
+    // TODO: implement
+    // return comparator.compare( this , o) == 0;
+    return false;
+  }
 }

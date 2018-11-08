@@ -38,6 +38,8 @@ import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 public class JLookupSwitchStmt extends AbstractSwitchStmt {
@@ -166,4 +168,41 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     ((IStmtVisitor) sw).caseLookupSwitchStmt(this);
   }
 
+  @Override
+  public boolean equivTo(Object o) {
+    if( ! (o instanceof JLookupSwitchStmt)){
+      return false;
+    }
+
+    JLookupSwitchStmt lsw = (JLookupSwitchStmt) o;
+    if( lookupValues.size() != lsw.getLookupValues().size() ){
+      return false;
+    }
+    Iterator<IntConstant> lvIterator = lookupValues.iterator();
+    for( IntConstant lvOther : lsw.getLookupValues() ){
+      if( !lvOther.equivTo( lvIterator.next() )){
+        return false;
+      }
+    }
+
+    return super.equivTo((AbstractSwitchStmt) o);
+  }
+
+  @Override
+  public int equivHashCode() {
+    int res = 7;
+    int prime = 31;
+
+    for( IntConstant lv: lookupValues ){
+      res = res * prime + lv.equivHashCode();
+    }
+
+    return res + prime * super.equivHashCode();
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<?> comparator) {
+    // TODO: implemnt!
+    return false;
+  }
 }

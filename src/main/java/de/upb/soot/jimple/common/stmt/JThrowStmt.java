@@ -32,6 +32,8 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
+import java.util.Comparator;
+
 public class JThrowStmt extends AbstractOpStmt {
 
   /**
@@ -76,6 +78,25 @@ public class JThrowStmt extends AbstractOpStmt {
 
   @Override
   public boolean branches() {
+    return false;
+  }
+
+  public boolean equivTo(Object o) {
+    if(!(o instanceof JThrowStmt)){
+      return false;
+    }
+    return super.equivTo((AbstractOpStmt) o);
+  }
+
+  @Override
+  public int equivHashCode() {
+    return super.equivHashCode();
+  }
+
+
+  @Override
+  public boolean equivTo(Object o, Comparator<?> comparator) {
+    // TODO: implement!
     return false;
   }
 

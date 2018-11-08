@@ -26,11 +26,15 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.StmtBoxOwner;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.jimple.common.constant.IntConstant;
+import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public abstract class AbstractSwitchStmt extends AbstractStmt {
@@ -162,4 +166,35 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   public final boolean branches() {
     return true;
   }
+
+
+  protected boolean equivTo( AbstractSwitchStmt o) {
+    if( keyBox != o.keyBox || defaultTargetBox != o.defaultTargetBox ){
+      return false;
+    }
+
+    if( targetBoxes.length != targetBoxes.length ){
+      return false;
+    }
+    int i = 0;
+    for( IStmtBox boxOther : o.targetBoxes ){
+      if( !boxOther.getStmt().equivTo( targetBoxes[i++].getStmt() )){
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  public int equivHashCode() {
+    int prime = 31;
+    int res = defaultTargetBox.getStmt().equivHashCode() + prime * keyBox.getValue().equivHashCode();
+
+    for( IStmtBox lv: targetBoxes ){
+      res = prime * res + lv.getStmt().equivHashCode();
+    }
+
+    return res;
+  }
+
 }

@@ -29,12 +29,15 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 public class JTableSwitchStmt extends AbstractSwitchStmt {
@@ -167,6 +170,34 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   @Override
   public void accept(IVisitor sw) {
     ((IStmtVisitor) sw).caseTableSwitchStmt(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if( ! (o instanceof JTableSwitchStmt)){
+      return false;
+    }
+
+    if( lowIndex != ((JTableSwitchStmt) o).lowIndex || highIndex != ((JTableSwitchStmt) o).highIndex ){
+      return false;
+    }
+
+    return super.equivTo((AbstractSwitchStmt) o);
+  }
+
+  @Override
+  public int equivHashCode() {
+    int prime = 31;
+    int ret = prime * lowIndex;
+    ret = prime * ret + highIndex;
+    ret = prime * ret + super.equivHashCode();
+    return ret;
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<?> comparator) {
+    // TODO: implement!
+    return false;
   }
 
 }

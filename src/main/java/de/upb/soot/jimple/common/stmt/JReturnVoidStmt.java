@@ -30,6 +30,8 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
+import java.util.Comparator;
+
 public class JReturnVoidStmt extends AbstractStmt {
   /**
    * 
@@ -68,5 +70,26 @@ public class JReturnVoidStmt extends AbstractStmt {
   public boolean branches() {
     return false;
   }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if(!(o instanceof JReturnVoidStmt)){
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int equivHashCode() {
+    // TODO: what to return?
+    return 42;
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<?> comparator) {
+    // TODO: implement!
+    return false;
+  }
+
 
 }

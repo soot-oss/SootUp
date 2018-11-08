@@ -29,9 +29,12 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
+import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
+
+import java.util.Comparator;
 
 public class JEnterMonitorStmt extends AbstractOpStmt {
   /**
@@ -77,6 +80,25 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
 
   @Override
   public boolean branches() {
+    return false;
+  }
+
+  public boolean equivTo(Object o) {
+    if(!(o instanceof JEnterMonitorStmt)){
+      return false;
+    }
+    return super.equivTo( (AbstractOpStmt) o);
+  }
+
+  @Override
+  public int equivHashCode() {
+    return super.equivHashCode();
+  }
+
+
+  @Override
+  public boolean equivTo(Object o, Comparator<?> comparator) {
+    // TODO: implement!
     return false;
   }
 
