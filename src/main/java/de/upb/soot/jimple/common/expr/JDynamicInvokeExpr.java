@@ -41,6 +41,7 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -258,5 +259,11 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
   public int getHandleTag() {
     return tag;
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

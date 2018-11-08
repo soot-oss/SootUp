@@ -29,7 +29,8 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+
+import java.util.Comparator;
 
 public class JAndExpr extends AbstractIntLongBinopExpr {
   /**
@@ -56,5 +57,10 @@ public class JAndExpr extends AbstractIntLongBinopExpr {
     return new JAndExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
 
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
 }

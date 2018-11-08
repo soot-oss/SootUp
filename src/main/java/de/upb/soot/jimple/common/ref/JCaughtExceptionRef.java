@@ -32,6 +32,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class JCaughtExceptionRef implements IdentityRef {
@@ -82,5 +83,11 @@ public class JCaughtExceptionRef implements IdentityRef {
   @Override
   public void accept(IVisitor sw) {
     // TODO
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

@@ -35,6 +35,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class JNewArrayExpr implements Expr {
@@ -150,5 +151,11 @@ public class JNewArrayExpr implements Expr {
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNewArrayExpr(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

@@ -36,6 +36,7 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class JStaticInvokeExpr extends AbstractInvokeExpr {
@@ -144,5 +145,11 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseStaticInvokeExpr(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }
