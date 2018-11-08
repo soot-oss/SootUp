@@ -64,6 +64,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -157,10 +158,9 @@ public class WalaIRToJimpleConverter {
 
     SootClass ret
         = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
-        interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+            interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
     return ret;
   }
-
 
   /**
    * Create a {@link JavaClassSource} object for the given walaClass.
@@ -180,7 +180,7 @@ public class WalaIRToJimpleConverter {
   /**
    * Convert a wala {@link AstField} to {@link SootField}.
    *
-   * @param klass
+   * @param classSig
    *          the class owns the field
    * @param walaField
    *          the wala field
@@ -199,7 +199,7 @@ public class WalaIRToJimpleConverter {
   /**
    * Convert a wala {@link AstMethod} to {@link SootMethod} and add it into the given sootClass.
    *
-   * @param sootClass
+   * @param classSig
    *          the SootClass which should contain the converted SootMethod
    * @param walaMethod
    *          the walMethod to be converted
@@ -211,13 +211,18 @@ public class WalaIRToJimpleConverter {
     if (walaMethod.symbolTable() != null) {
       for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
         TypeReference type = walaMethod.getParameterType(i);
-        if (!type.equals(walaMethod.getDeclaringClass().getReference())) {
-          Type paraType = convertType(type);
-          paraTypes.add(this.view.getSignatureFactory().getTypeSignature(paraType.toString()));
-          sigs.add(paraType.toString());
+        if (i == 0) {
+          if (!walaMethod.isStatic()) {
+            // ignore this pointer
+            continue;
+          }
         }
+        Type paraType = convertType(type);
+        paraTypes.add(this.view.getSignatureFactory().getTypeSignature(paraType.toString()));
+        sigs.add(paraType.toString());
       }
     }
+
     Type returnType = convertType(walaMethod.getReturnType());
 
     EnumSet<Modifier> modifiers = convertModifiers(walaMethod);
@@ -393,6 +398,7 @@ public class WalaIRToJimpleConverter {
   }
 
   private Optional<Body> createBody(SootMethod sootMethod, AstMethod walaMethod) {
+
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
       List<Trap> traps = new ArrayList<>();
@@ -431,15 +437,22 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
 
         InstructionConverter instConverter = new InstructionConverter(this, sootMethod, walaMethod, localGenerator);
+        Map<IStmt, Integer> stmt2IIndex = new HashMap<>();
         for (SSAInstruction inst : insts) {
-          Optional<IStmt> op = instConverter.convertInstruction(inst);
-          if (op.isPresent()) {
-            IStmt stmt = op.get();
-            // set position for each statement
-            Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
-            stmt.setPosition(stmtPos);
-            stmts.add(stmt);
+          List<IStmt> retStmts = instConverter.convertInstruction(inst);
+          if (!retStmts.isEmpty()) {
+            for (IStmt stmt : retStmts) {
+              // set position for each statement
+              Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
+              stmt.setPosition(stmtPos);
+              stmts.add(stmt);
+              stmt2IIndex.put(stmt, inst.iindex);
+            }
           }
+        }
+        // set target for goto or conditional statements
+        for (IStmt stmt : stmt2IIndex.keySet()) {
+          instConverter.setTarget(stmt, stmt2IIndex.get(stmt));
         }
         // add return void stmt for methods with return type beiing void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {

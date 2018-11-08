@@ -32,10 +32,11 @@ import de.upb.soot.util.Numberable;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
- * Local variable in {@link de.upb.soot.core.Body}. Use {@link de.upb.soot.jimple.basic.LocalGenerator}
+ * Local variable in {@link de.upb.soot.core.Body}. Use {@link de.upb.soot.jimple.basic.LocalGenerator} to generate locals.
  * 
  * @author Linghui Luo
  *
@@ -54,15 +55,15 @@ public class Local implements Value, Numberable, Immediate {
     setType(type);
   }
 
-  /** Returns true if the given object is structurally equal to this one. */
   @Override
   public boolean equivTo(Object o) {
-    return this.equals(o);
+    if (o instanceof Local) {
+      return this.equivHashCode() == ((Local) o).equivHashCode();
+    } else {
+      return false;
+    }
   }
 
-  /**
-   * Returns a hash code for this object, consistent with structural equality.
-   */
   @Override
   public int equivHashCode() {
     final int prime = 31;
@@ -133,4 +134,10 @@ public class Local implements Value, Numberable, Immediate {
   }
 
   private int number = 0;
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 }

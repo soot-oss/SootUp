@@ -36,6 +36,7 @@ import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class JNewMultiArrayExpr implements Expr {
@@ -187,5 +188,11 @@ public class JNewMultiArrayExpr implements Expr {
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNewMultiArrayExpr(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

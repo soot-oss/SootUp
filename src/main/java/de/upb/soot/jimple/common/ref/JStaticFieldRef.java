@@ -7,6 +7,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class JStaticFieldRef implements FieldRef {
@@ -81,6 +82,12 @@ public class JStaticFieldRef implements FieldRef {
   public void accept(IVisitor v) {
     // TODO Auto-generated method stub
 
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 }

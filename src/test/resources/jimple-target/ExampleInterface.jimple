@@ -1,0 +1,5 @@
+public interface  ExampleInterface extends java.lang.Object
+{
+
+    public abstract void interfaceMethod();
+}

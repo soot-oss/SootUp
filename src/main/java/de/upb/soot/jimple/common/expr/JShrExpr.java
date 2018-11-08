@@ -33,7 +33,8 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+
+import java.util.Comparator;
 
 public class JShrExpr extends AbstractIntLongBinopExpr {
   /**
@@ -77,6 +78,12 @@ public class JShrExpr extends AbstractIntLongBinopExpr {
   @Override
   public Object clone() {
     return new JShrExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 }

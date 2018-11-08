@@ -32,6 +32,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class JThisRef implements IdentityRef {
@@ -86,6 +87,12 @@ public class JThisRef implements IdentityRef {
   @Override
   public Object clone() {
     return new JThisRef(thisType);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 }

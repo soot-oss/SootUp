@@ -29,7 +29,8 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+
+import java.util.Comparator;
 
 public class JSubExpr extends AbstractFloatBinopExpr {
   /**
@@ -54,6 +55,12 @@ public class JSubExpr extends AbstractFloatBinopExpr {
   @Override
   public Object clone() {
     return new JSubExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 }
