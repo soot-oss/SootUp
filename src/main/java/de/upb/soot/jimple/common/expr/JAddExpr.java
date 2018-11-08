@@ -29,10 +29,10 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
 
-public class
-JAddExpr extends AbstractFloatBinopExpr {
+import java.util.Comparator;
+
+public class JAddExpr extends AbstractFloatBinopExpr {
   /**
    * 
    */
@@ -57,5 +57,10 @@ JAddExpr extends AbstractFloatBinopExpr {
     return new JAddExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
 
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
+  }
 
 }

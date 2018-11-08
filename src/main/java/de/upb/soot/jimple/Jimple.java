@@ -67,6 +67,7 @@ import de.upb.soot.jimple.common.expr.JSubExpr;
 import de.upb.soot.jimple.common.expr.JUshrExpr;
 import de.upb.soot.jimple.common.expr.JVirtualInvokeExpr;
 import de.upb.soot.jimple.common.expr.JXorExpr;
+import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
@@ -97,6 +98,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
 
 
 
@@ -648,6 +650,13 @@ public class Jimple {
   }
 
   /**
+   * Constructs a ArrayRef(Local, Immediate) grammar chunk.
+   */
+  public static JArrayRef newArrayRef(Value base, Value index) {
+    return new JArrayRef(base, index);
+  }
+
+  /**
    * Constructs a CaughtExceptionRef() grammar chunk.
    */
   public static JCaughtExceptionRef newCaughtExceptionRef() {
@@ -685,7 +694,7 @@ public class Jimple {
   /**
    * Constructs a NewExpr(RefType) grammar chunk.
    */
-  public static Value newNewExpr(RefType type) {
+  public static JNewExpr newNewExpr(RefType type) {
     return new JNewExpr(type);
   }
 }

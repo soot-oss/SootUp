@@ -48,6 +48,8 @@ public class WalaClassLoader {
   public WalaClassLoader(String sourceDirPath, String exclusionFilePath) {
     this.sourceDirPath = sourceDirPath;
     this.exclusionFilePath = exclusionFilePath;
+    // disable System.err messages generated from eclipse jdt
+    System.setProperty("wala.jdt.quiet", "true");
   }
 
   /**

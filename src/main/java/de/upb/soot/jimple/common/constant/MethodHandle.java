@@ -31,6 +31,8 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.Comparator;
+
 public class MethodHandle extends Constant {
   /**
    * 
@@ -95,5 +97,11 @@ public class MethodHandle extends Constant {
       return false;
     }
     return true;
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

@@ -30,6 +30,10 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.Comparator;
+
+import soot.util.StringTools;
+
 public class StringConstant extends Constant {
   /**
    * 
@@ -65,5 +69,16 @@ public class StringConstant extends Constant {
   @Override
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseStringConstant(this);
+  }
+
+  @Override
+  public String toString() {
+    return StringTools.getQuotedStringOf(value);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

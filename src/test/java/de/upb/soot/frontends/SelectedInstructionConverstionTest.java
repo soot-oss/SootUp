@@ -149,7 +149,7 @@ public class SelectedInstructionConverstionTest {
   }
 
   @Test
-  public void testEnclosingObjectReferenceField() {
+  public void testEnclosingObjectReferenceWithFieldCreation() {
     declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA$AA");
     Optional<SootClass> m = loader.getSootClass(declareClassSig);
     assertTrue(m.isPresent());
@@ -167,7 +167,17 @@ public class SelectedInstructionConverstionTest {
   }
 
   @Test
-  public void testAstLexicalReadField() {
+  public void testAstLexicalReadFromField() {
+    declareClassSig = sigFactory.getClassSignature("Scoping2");
+    Optional<SootMethod> m = loader
+        .getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Arrays.asList("java.lang.String[]")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testAstLexicalReadWithFieldCreation() {
     declareClassSig = sigFactory.getClassSignature("AnonymousClass$1");
     Optional<SootClass> m = loader.getSootClass(declareClassSig);
     assertTrue(m.isPresent());
@@ -182,5 +192,80 @@ public class SelectedInstructionConverstionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
+  }
+
+  @Test
+  public void testAstLexicalWriteToField() {
+    declareClassSig = sigFactory.getClassSignature("foo.bar.hello.world.InnerClasses");
+    Optional<SootMethod> m = loader.getSootMethod(
+        sigFactory.getMethodSignature("supportLocalBusiness", declareClassSig, "java.lang.Object", Arrays.asList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testAstLexicalWriteWithFieldCreation() {
+    declareClassSig = sigFactory.getClassSignature("foo.bar.hello.world.InnerClasses");
+    Optional<SootClass> m = loader.getSootClass(declareClassSig);
+    assertTrue(m.isPresent());
+    Utils.print(m.get(), false);
+  }
+
+  @Test
+  public void testAstAssertInstruction() {
+    declareClassSig = sigFactory.getClassSignature("MiniaturSliceBug");
+    Optional<SootMethod> m = loader.getSootMethod(
+        sigFactory.getMethodSignature("validNonDispatchedCall", declareClassSig, "void", Arrays.asList("IntWrapper")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testAstAssertInstructionWithFieldCreation() {
+    declareClassSig = sigFactory.getClassSignature("MiniaturSliceBug");
+    Optional<SootClass> m = loader.getSootClass(declareClassSig);
+    assertTrue(m.isPresent());
+    Utils.print(m.get(), false);
+  }
+
+  @Test
+  public void testMonitorInstruction() {
+    declareClassSig = sigFactory.getClassSignature("Monitor");
+    Optional<SootMethod> m = loader.getSootMethod(
+        sigFactory.getMethodSignature("incr", declareClassSig, "void", Arrays.asList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testGetCaughtExceptionInstruction() {
+    declareClassSig = sigFactory.getClassSignature("Exception1");
+    Optional<SootMethod> m
+        = loader.getSootMethod(
+            sigFactory.getMethodSignature("main", declareClassSig, "void", Arrays.asList("java.lang.String[]")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testArrayInstructions() {
+    declareClassSig = sigFactory.getClassSignature("Array1");
+    Optional<SootMethod> m = loader
+        .getSootMethod(sigFactory.getMethodSignature("foo", declareClassSig, "void", Arrays.asList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
+
+  public void testAstLexialReadWithMultipleAccesses() {
+    // TODO
+  }
+
+  public void testAstLexialWriteWithMultipleAccesses() {
+    // TODO
   }
 }
