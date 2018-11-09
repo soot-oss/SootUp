@@ -266,12 +266,13 @@ public class InstructionConverter {
     List<IStmt> stmts = new ArrayList<>();
     // create a static field for checking if assertion is disabled.
     JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
+    FieldSignature fieldSig = sigFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean");
     SootField assertionsDisabled
         = new SootField(converter.view, cSig, sigFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean"),
             sigFactory.getTypeSignature("boolean"), EnumSet.of(Modifier.FINAL, Modifier.STATIC));
     converter.addSootField(assertionsDisabled);
     Local testLocal = localGenerator.generateLocal(BooleanType.getInstance());
-    JStaticFieldRef assertFieldRef = Jimple.newStaticFieldRef(assertionsDisabled);
+    JStaticFieldRef assertFieldRef = Jimple.newStaticFieldRef(converter.view, fieldSig);
     JAssignStmt assignStmt = Jimple.newAssignStmt(testLocal, assertFieldRef);
     stmts.add(assignStmt);
 
@@ -321,10 +322,10 @@ public class InstructionConverter {
       // TODO check modifier
       Value left = null;
       if (!walaMethod.isStatic()) {
-        SootField field = new SootField(converter.view, cSig,
-            sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString()),
-            sigFactory.getTypeSignature(type.toString()), EnumSet.of(Modifier.FINAL));
-        left = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), field);
+        FieldSignature fieldSig = sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
+        SootField field = new SootField(converter.view, cSig, fieldSig, sigFactory.getTypeSignature(type.toString()),
+            EnumSet.of(Modifier.FINAL));
+        left = Jimple.newInstanceFieldRef(converter.view, localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field);// add this field to class
         // TODO in old jimple this is not supported
       } else {
@@ -345,10 +346,10 @@ public class InstructionConverter {
       // TODO check modifier
       Value rvalue = null;
       if (!walaMethod.isStatic()) {
-        SootField field = new SootField(converter.view, cSig,
-            sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString()),
-            sigFactory.getTypeSignature(type.toString()), EnumSet.of(Modifier.FINAL));
-        rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), field);
+        FieldSignature fieldSig = sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
+        SootField field = new SootField(converter.view, cSig, fieldSig, sigFactory.getTypeSignature(type.toString()),
+            EnumSet.of(Modifier.FINAL));
+        rvalue = Jimple.newInstanceFieldRef(converter.view, localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field);// add this field to class
       } else {
         rvalue = localGenerator.generateLocal(type);
@@ -364,10 +365,10 @@ public class InstructionConverter {
     JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
 
     // TODO check modifier
-    SootField enclosingObject
-        = new SootField(converter.view, cSig, sigFactory.getFieldSignature("this$0", cSig, enclosingType.toString()),
-            sigFactory.getTypeSignature(enclosingType.toString()), EnumSet.of(Modifier.FINAL));
-    JInstanceFieldRef rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), enclosingObject);
+    FieldSignature fieldSig = sigFactory.getFieldSignature("this$0", cSig, enclosingType.toString());
+    SootField enclosingObject = new SootField(converter.view, cSig, fieldSig,
+        sigFactory.getTypeSignature(enclosingType.toString()), EnumSet.of(Modifier.FINAL));
+    JInstanceFieldRef rvalue = Jimple.newInstanceFieldRef(converter.view, localGenerator.getThisLocal(), fieldSig);
     return Jimple.newAssignStmt(variable, rvalue);
   }
 
@@ -453,13 +454,11 @@ public class InstructionConverter {
     FieldSignature fieldSig = sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
     Value fieldValue = null;
     if (inst.isStatic()) {
-      fieldValue = Jimple.newStaticFieldRef(new SootField(converter.view, classSig, fieldSig,
-          sigFactory.getTypeSignature(fieldType.toString()), EnumSet.of(Modifier.STATIC)));
+      fieldValue = Jimple.newStaticFieldRef(converter.view, fieldSig);
     } else {
       int ref = inst.getRef();
       Local base = getLocal(converter.view.getRefType(classSig), ref);
-      fieldValue = Jimple.newInstanceFieldRef(base,
-          new SootField(converter.view, classSig, fieldSig, sigFactory.getTypeSignature(fieldType.toString())));
+      fieldValue = Jimple.newInstanceFieldRef(converter.view, base, fieldSig);
     }
     Value value = null;
     int val = inst.getVal();
@@ -725,13 +724,11 @@ public class InstructionConverter {
     FieldSignature fieldSig = sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
     Value rvalue = null;
     if (inst.isStatic()) {
-      rvalue = Jimple.newStaticFieldRef(new SootField(converter.view, classSig, fieldSig,
-          sigFactory.getTypeSignature(fieldType.toString()), EnumSet.of(Modifier.STATIC)));
+      rvalue = Jimple.newStaticFieldRef(converter.view, fieldSig);
     } else {
       int ref = inst.getRef();
       Local base = getLocal(converter.view.getRefType(classSig), ref);
-      rvalue = Jimple.newInstanceFieldRef(base,
-          new SootField(converter.view, classSig, fieldSig, sigFactory.getTypeSignature(fieldType.toString())));
+      rvalue = Jimple.newInstanceFieldRef(converter.view, base, fieldSig);
     }
     Value var = getLocal(fieldType, def);
     return Jimple.newAssignStmt(var, rvalue);

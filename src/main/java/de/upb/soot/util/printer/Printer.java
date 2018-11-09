@@ -22,6 +22,7 @@
 package de.upb.soot.util.printer;
 
 import de.upb.soot.core.Body;
+import de.upb.soot.core.IField;
 import de.upb.soot.core.IMethod;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
@@ -144,11 +145,11 @@ public class Printer {
 
     // Print fields
     {
-      Iterator<SootField> fieldIt = cl.getFields().iterator();
+      Iterator<? extends IField> fieldIt = cl.getFields().iterator();
 
       if (fieldIt.hasNext()) {
         while (fieldIt.hasNext()) {
-          SootField f = fieldIt.next();
+          SootField f = (SootField) fieldIt.next();
 
           if (f.isPhantom()) {
             continue;

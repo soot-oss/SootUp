@@ -227,7 +227,7 @@ public class SelectedInstructionConverstionTest {
     declareClassSig = sigFactory.getClassSignature("MiniaturSliceBug");
     Optional<SootClass> m = loader.getSootClass(declareClassSig);
     assertTrue(m.isPresent());
-    Utils.print(m.get(), false);
+    Utils.print(m.get(), true);
   }
 
   @Test

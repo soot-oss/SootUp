@@ -1,57 +1,56 @@
 package de.upb.soot.jimple.common.ref;
 
+import de.upb.soot.core.AbstractClass;
+import de.upb.soot.core.IField;
 import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.views.IView;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class JStaticFieldRef implements FieldRef {
   /**
    * 
    */
   private static final long serialVersionUID = -8744248848897714882L;
-  protected SootField field;
+  private final FieldSignature fieldSig;
+  private IView view;
 
-  public JStaticFieldRef(SootField field) {
-    if (!field.isStatic()) {
-      throw new RuntimeException("wrong static-ness");
-    }
-    this.field = field;
+  public JStaticFieldRef(IView view, FieldSignature fieldSig) {
+    this.fieldSig = fieldSig;
+    this.view = view;
   }
 
   @Override
   public Object clone() {
-    return new JStaticFieldRef(field);
+    return new JStaticFieldRef(this.view, fieldSig);
   }
 
   @Override
   public String toString() {
-    return field.toString();
+    return fieldSig.toString();
   }
 
   @Override
   public void toString(IStmtPrinter up) {
-    up.field(field);
+    up.fieldSignature(fieldSig);
   }
 
   @Override
-  public SootField getFieldRef() {
-    return field;
-  }
-
-  @Override
-  public void setFieldRef(SootField field) {
-    this.field = field;
-  }
-
-  @Override
-  public SootField getField() {
-    return field;
+  public Optional<SootField> getField() {
+    Optional<AbstractClass> declClass = view.getClass(fieldSig.declClassSignature);
+    if (declClass.isPresent()) {
+      Optional<? extends IField> f = declClass.get().getField(fieldSig);
+      return f.map(c -> (SootField) c);
+    }
+    return Optional.empty();
   }
 
   @Override
@@ -70,18 +69,21 @@ public class JStaticFieldRef implements FieldRef {
 
   @Override
   public int equivHashCode() {
-    return getField().equivHashCode();
+    if (getField().isPresent()) {
+      return getField().get().equivHashCode() * 23;
+    } else {
+      return 22;
+    }
   }
 
   @Override
   public Type getType() {
-    return field.getType();
+    return view.getType(fieldSig.typeSignature);
   }
 
   @Override
   public void accept(IVisitor v) {
     // TODO Auto-generated method stub
-
   }
 
   @Override
