@@ -58,9 +58,8 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
 
   public Optional<SootMethod> getMethod() {
     JavaClassSignature signature = method.declClassSignature;
-    Optional<AbstractClass> op=this.getView().getClass(signature);
-    if(op.isPresent())
-    {
+    Optional<AbstractClass> op = this.getView().getClass(signature);
+    if (op.isPresent()) {
       AbstractClass klass = op.get();
       Optional<? extends IMethod> m = klass.getMethod(method);
       return m.map(c -> (SootMethod) c);

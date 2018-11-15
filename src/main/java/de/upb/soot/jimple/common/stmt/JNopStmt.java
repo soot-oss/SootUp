@@ -30,8 +30,6 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
-import java.util.Comparator;
-
 public class JNopStmt extends AbstractStmt {
   /**
    * 
@@ -80,11 +78,6 @@ public class JNopStmt extends AbstractStmt {
   public int equivHashCode() {
     // TODO: what to return
     return 42;
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

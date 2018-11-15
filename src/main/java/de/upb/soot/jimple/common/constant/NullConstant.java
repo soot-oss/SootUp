@@ -45,7 +45,7 @@ public class NullConstant extends Constant {
 
   public static NullConstant getInstance() {
     if (nullconstant == null) {
-      nullconstant=new NullConstant();
+      nullconstant = new NullConstant();
     }
     return nullconstant;
   }

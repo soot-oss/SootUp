@@ -32,7 +32,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class JGotoStmt extends AbstractStmt {
@@ -125,11 +124,6 @@ public class JGotoStmt extends AbstractStmt {
      * res + prime * targetBox.getStmt().equivHashCode();
      */
     return targetBox.getStmt().equivHashCode();
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

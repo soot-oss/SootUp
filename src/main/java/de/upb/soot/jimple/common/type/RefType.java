@@ -100,7 +100,6 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
     return sootClass != null;
   }
 
-
   /**
    * Set the SootClass object corresponding to this RefType.
    * 
@@ -155,7 +154,8 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
       // Return least common superclass
       // TODO: This is all highly suspicious. FQCNs should be resolved there through a SignatureFactory.
       SignatureFactory factory = this.getView().getSignatureFactory();
-      SootClass thisClass = (SootClass) this.getView().getClass(factory.getClassSignature(this.typeSignature.toString())).get();
+      SootClass thisClass
+          = (SootClass) this.getView().getClass(factory.getClassSignature(this.typeSignature.toString())).get();
       SootClass otherClass
           = (SootClass) this.getView().getClass(factory.getClassSignature(((RefType) other).typeSignature.toString())).get();
 

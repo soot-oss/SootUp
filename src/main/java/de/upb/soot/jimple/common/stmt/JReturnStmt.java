@@ -32,8 +32,6 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
-import java.util.Comparator;
-
 public class JReturnStmt extends AbstractOpStmt {
   /**
    * 
@@ -91,11 +89,6 @@ public class JReturnStmt extends AbstractOpStmt {
   @Override
   public int equivHashCode() {
     return super.equivHashCode();
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

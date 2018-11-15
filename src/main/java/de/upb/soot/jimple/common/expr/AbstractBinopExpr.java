@@ -30,6 +30,7 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractBinopExpr implements Expr {
@@ -84,6 +85,11 @@ public abstract class AbstractBinopExpr implements Expr {
           && getSymbol().equals(abe.getSymbol());
     }
     return false;
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */

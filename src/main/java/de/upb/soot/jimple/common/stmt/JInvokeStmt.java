@@ -34,7 +34,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class JInvokeStmt extends AbstractStmt {
@@ -127,11 +126,6 @@ public class JInvokeStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return invokeExprBox.getValue().equivHashCode();
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }
