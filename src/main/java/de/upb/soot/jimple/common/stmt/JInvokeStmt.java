@@ -116,11 +116,8 @@ public class JInvokeStmt extends AbstractStmt {
     if (!(o instanceof JInvokeStmt)) {
       return false;
     }
-    if (invokeExprBox.getValue().equivTo(((JInvokeStmt) o).getInvokeExpr())) {
-      return false;
-    }
 
-    return true;
+    return getInvokeExpr().equivTo(((JInvokeStmt) o).getInvokeExpr());
   }
 
   @Override
