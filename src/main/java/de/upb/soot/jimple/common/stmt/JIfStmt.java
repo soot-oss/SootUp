@@ -163,9 +163,8 @@ public class JIfStmt extends AbstractStmt {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<?> comparator) {
-    // TODO: implement!
-    return false;
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare( this, o) == 0;
   }
 
 

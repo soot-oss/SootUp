@@ -106,9 +106,8 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<?> comparator) {
-    // TODO: implement!
-    return false;
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare( this, o) == 0;
   }
 
 }

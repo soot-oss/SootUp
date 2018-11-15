@@ -396,9 +396,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<?> comparator) {
-    // TODO: implement
-    // return comparator.compare( this , o) == 0;
-    return false;
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare( this, o) == 0;
   }
 }

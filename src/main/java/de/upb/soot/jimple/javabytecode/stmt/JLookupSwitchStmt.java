@@ -201,8 +201,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<?> comparator) {
-    // TODO: implemnt!
-    return false;
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare( this, o) == 0;
   }
 }
