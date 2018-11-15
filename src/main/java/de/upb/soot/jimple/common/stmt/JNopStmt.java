@@ -71,7 +71,7 @@ public class JNopStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    return !(o instanceof JNopStmt);
+    return o instanceof JNopStmt;
   }
 
   @Override
