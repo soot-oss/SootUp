@@ -30,8 +30,6 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-import java.util.Comparator;
-
 public class JEqExpr extends AbstractConditionExpr {
   /**
    * 
@@ -55,12 +53,6 @@ public class JEqExpr extends AbstractConditionExpr {
   @Override
   public Object clone() {
     return new JEqExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
-    // TODO Auto-generated method stub
-    return false;
   }
 
 }

@@ -46,7 +46,7 @@ public class SootField extends SootClassMember implements IField {
   }
 
   public SootField(IView view, SootField field) {
-    this(view, field.getDeclaringClassSignature(), (FieldSignature) field.signature, field.typeSingature, field.modifiers);
+    this(view, field.getDeclaringClassSignature(), (FieldSignature) field.signature, field.typeSignature, field.modifiers);
   }
 
   /** Constructs a Soot field with the given name, type and no modifiers. */
@@ -55,7 +55,7 @@ public class SootField extends SootClassMember implements IField {
   }
 
   public Type getType() {
-    return this.getView().getType(typeSingature);
+    return this.getView().getType(typeSignature);
   }
 
   private String getOriginalStyleDeclaration() {

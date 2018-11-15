@@ -33,6 +33,8 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
+import java.util.Comparator;
+
 public class JExitMonitorStmt extends AbstractOpStmt {
   /**
    * 
@@ -78,6 +80,23 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   @Override
   public boolean branches() {
     return false;
+  }
+
+  public boolean equivTo(Object o) {
+    if (!(o instanceof JExitMonitorStmt)) {
+      return false;
+    }
+    return super.equivTo((AbstractOpStmt) o);
+  }
+
+  @Override
+  public int equivHashCode() {
+    return super.equivHashCode();
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

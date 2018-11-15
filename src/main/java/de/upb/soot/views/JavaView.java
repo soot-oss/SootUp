@@ -113,7 +113,7 @@ public class JavaView extends AbstractView {
   }
 
   @Override
-  public SignatureFactory getSignatureFacotry() {
+  public SignatureFactory getSignatureFactory() {
     return new DefaultSignatureFactory();
   }
 

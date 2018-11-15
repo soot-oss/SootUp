@@ -110,4 +110,19 @@ public class JInvokeStmt extends AbstractStmt {
     return false;
   }
 
+  @Override
+  public boolean equivTo(Object o) {
+
+    if (!(o instanceof JInvokeStmt)) {
+      return false;
+    }
+
+    return getInvokeExpr().equivTo(((JInvokeStmt) o).getInvokeExpr());
+  }
+
+  @Override
+  public int equivHashCode() {
+    return invokeExprBox.getValue().equivHashCode();
+  }
+
 }

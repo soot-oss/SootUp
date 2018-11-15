@@ -29,11 +29,13 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractStmt;
+import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class JRetStmt extends AbstractStmt {
@@ -105,6 +107,27 @@ public class JRetStmt extends AbstractStmt {
   @Override
   public boolean branches() {
     return false;
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (!(o instanceof JReturnStmt)) {
+      return false;
+    }
+    if (stmtAddressBox != ((JRetStmt) o).stmtAddressBox) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int equivHashCode() {
+    return stmtAddressBox.getValue().equivHashCode();
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

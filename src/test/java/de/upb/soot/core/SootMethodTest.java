@@ -35,7 +35,7 @@ public class SootMethodTest {
   @Test
   public void testCreateMethod() {
     IView view = new JavaView(null);
-    Type type = view.getType(view.getSignatureFacotry().getTypeSignature("java.lang.String"));
+    Type type = view.getType(view.getSignatureFactory().getTypeSignature("java.lang.String"));
 
 
     List<IStmt> stmts=new ArrayList<>();
@@ -48,16 +48,16 @@ public class SootMethodTest {
     assertEquals(2, body.getLocalCount());
 
     SootMethod dummyMainMethod
-        = new SootMethod(view, null, new WalaIRMethodSource(view.getSignatureFacotry().getMethodSignature("main",
+        = new SootMethod(view, null, new WalaIRMethodSource(view.getSignatureFactory().getMethodSignature("main",
             "dummyMain", "void", Collections.emptyList())), Collections.emptyList(),
-            view.getSignatureFacotry().getTypeSignature("void"),
+            view.getSignatureFactory().getTypeSignature("void"),
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), Collections.emptyList(), null);
     dummyMainMethod = new SootMethod(dummyMainMethod, body);
     assertEquals(true, dummyMainMethod.hasActiveBody());
     
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
         new JavaClassSource(new JavaSourcePathNamespace(""), null,
-            view.getSignatureFacotry().getClassSignature("dummyMain")),
+            view.getSignatureFactory().getClassSignature("dummyMain")),
         ClassType.Application, Optional.empty(),
         Collections.emptySet(), Optional.empty(), Collections.emptySet(), Collections.singleton(dummyMainMethod), null,
         EnumSet.of(Modifier.PUBLIC));

@@ -69,4 +69,15 @@ public class JNopStmt extends AbstractStmt {
     return false;
   }
 
+  @Override
+  public boolean equivTo(Object o) {
+    return o instanceof JNopStmt;
+  }
+
+  @Override
+  public int equivHashCode() {
+    // TODO: what to return
+    return 42;
+  }
+
 }
