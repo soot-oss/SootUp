@@ -35,6 +35,7 @@ import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class JIfStmt extends AbstractStmt {
@@ -149,11 +150,7 @@ public class JIfStmt extends AbstractStmt {
       return false;
     }
     JIfStmt ifStmt = (JIfStmt) o;
-    if (!(ifStmt.getCondition().equivTo(conditionBox.getValue()) && ifStmt.getTarget().equivTo(targetBox.getStmt()))) {
-      return false;
-    }
-
-    return true;
+    return ifStmt.getCondition().equivTo(getCondition()) && ifStmt.getTarget().equivTo(getTarget());
   }
 
   @Override
