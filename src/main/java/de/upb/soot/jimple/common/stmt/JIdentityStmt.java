@@ -80,8 +80,7 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   }
 
   public Type getType() {
-    // TODO Auto-generated method stub
-    return null;
+    return leftBox.getValue().getType();
   }
 
   @Override
