@@ -52,6 +52,8 @@ public class JAssignStmtTest {
         Assert.assertEquals("$i0 = 42", lStmt.toString());
         Assert.assertEquals("i2 = 42", fStmt.toString());
         Assert.assertEquals("$i0 = 42 + 33102", deepStmt.toString());
+        
+        // TODO equivTo with comparator
 
     }
 
