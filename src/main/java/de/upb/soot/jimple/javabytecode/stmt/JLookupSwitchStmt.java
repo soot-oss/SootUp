@@ -81,8 +81,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   /** Constructs a new JLookupSwitchStmt. lookupValues should be a list of IntConst s. */
   public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends IStmtBox> targets,
       IStmtBox defaultTarget) {
-    this(Jimple.newImmediateBox(key), lookupValues, targets.toArray(new IStmtBox[targets.size()]),
-        defaultTarget);
+    this(Jimple.newImmediateBox(key), lookupValues, targets.toArray(new IStmtBox[targets.size()]), defaultTarget);
   }
 
   protected JLookupSwitchStmt(ValueBox keyBox, List<IntConstant> lookupValues, IStmtBox[] targetBoxes,
@@ -170,17 +169,17 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if( ! (o instanceof JLookupSwitchStmt)){
+    if (!(o instanceof JLookupSwitchStmt)) {
       return false;
     }
 
     JLookupSwitchStmt lsw = (JLookupSwitchStmt) o;
-    if( lookupValues.size() != lsw.getLookupValues().size() ){
+    if (lookupValues.size() != lsw.getLookupValues().size()) {
       return false;
     }
     Iterator<IntConstant> lvIterator = lookupValues.iterator();
-    for( IntConstant lvOther : lsw.getLookupValues() ){
-      if( !lvOther.equivTo( lvIterator.next() )){
+    for (IntConstant lvOther : lsw.getLookupValues()) {
+      if (!lvOther.equivTo(lvIterator.next())) {
         return false;
       }
     }
@@ -193,7 +192,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     int res = 7;
     int prime = 31;
 
-    for( IntConstant lv: lookupValues ){
+    for (IntConstant lv : lookupValues) {
       res = res * prime + lv.equivHashCode();
     }
 
@@ -202,6 +201,6 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare( this, o) == 0;
+    return comparator.compare(this, o) == 0;
   }
 }

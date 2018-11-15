@@ -29,7 +29,6 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractOpStmt extends AbstractStmt {
@@ -66,9 +65,8 @@ public abstract class AbstractOpStmt extends AbstractStmt {
     return list;
   }
 
-
   protected boolean equivTo(AbstractOpStmt o) {
-    return opBox.getValue().equivTo( o.getOp() );
+    return opBox.getValue().equivTo(o.getOp());
   }
 
   public int equivHashCode() {

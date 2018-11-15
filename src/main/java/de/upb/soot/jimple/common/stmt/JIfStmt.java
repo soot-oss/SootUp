@@ -146,26 +146,25 @@ public class JIfStmt extends AbstractStmt {
   @Override
   public boolean equivTo(Object o) {
 
-      if( !( o instanceof JIfStmt)){
-          return false;
-      }
-        JIfStmt ifStmt = (JIfStmt) o;
-      if( !(ifStmt.getCondition().equivTo(conditionBox.getValue()) && ifStmt.getTarget().equivTo(targetBox.getStmt()))){
-          return false;
-      }
+    if (!(o instanceof JIfStmt)) {
+      return false;
+    }
+    JIfStmt ifStmt = (JIfStmt) o;
+    if (!(ifStmt.getCondition().equivTo(conditionBox.getValue()) && ifStmt.getTarget().equivTo(targetBox.getStmt()))) {
+      return false;
+    }
 
     return true;
   }
 
   @Override
   public int equivHashCode() {
-      return conditionBox.getValue().equivHashCode() + 31 * targetBox.getStmt().equivHashCode();
+    return conditionBox.getValue().equivHashCode() + 31 * targetBox.getStmt().equivHashCode();
   }
 
   @Override
   public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare( this, o) == 0;
+    return comparator.compare(this, o) == 0;
   }
-
 
 }

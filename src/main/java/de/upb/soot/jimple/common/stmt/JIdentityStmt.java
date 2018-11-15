@@ -84,16 +84,16 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
     return null;
   }
 
-
   @Override
   public boolean equivTo(Object o) {
 
-    if( !(o instanceof JIdentityStmt) ){
+    if (!(o instanceof JIdentityStmt)) {
       return false;
     }
 
     JIdentityStmt identityStmt = (JIdentityStmt) o;
-    if(! (leftBox.getValue().equivTo( identityStmt.leftBox.getValue()) && rightBox.getValue().equivTo( identityStmt.rightBox.getValue()) )){
+    if (!(leftBox.getValue().equivTo(identityStmt.leftBox.getValue())
+        && rightBox.getValue().equivTo(identityStmt.rightBox.getValue()))) {
       return false;
     }
 
@@ -107,7 +107,7 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
 
   @Override
   public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare( this, o) == 0;
+    return comparator.compare(this, o) == 0;
   }
 
 }

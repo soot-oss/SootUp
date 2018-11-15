@@ -29,7 +29,6 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
-import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -84,10 +83,10 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   }
 
   public boolean equivTo(Object o) {
-    if(!(o instanceof JExitMonitorStmt)){
+    if (!(o instanceof JExitMonitorStmt)) {
       return false;
     }
-    return super.equivTo( (AbstractOpStmt) o);
+    return super.equivTo((AbstractOpStmt) o);
   }
 
   @Override
@@ -95,10 +94,9 @@ public class JExitMonitorStmt extends AbstractOpStmt {
     return super.equivHashCode();
   }
 
-
   @Override
   public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare( this, o) == 0;
+    return comparator.compare(this, o) == 0;
   }
 
 }

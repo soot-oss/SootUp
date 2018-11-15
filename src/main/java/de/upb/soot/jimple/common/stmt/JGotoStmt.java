@@ -108,38 +108,28 @@ public class JGotoStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-      if(!(o instanceof JGotoStmt) || !targetBox.getStmt().equivTo( ((JGotoStmt) o).targetBox.getStmt() )){
-          return false;
-      }
-      /*
-      JGotoStmt gotoStmt = (JGotoStmt) o;
-      List<IStmtBox> gotoStmtBoxes = gotoStmt.getStmtBoxes();
-      if( gotoStmtBoxes.size() != targetBoxes.size() ){
-          return false;
-      }
-      if( gotoStmt.equivHashCode() != equivHashCode()){
-          return false;
-      }*/
-      return true;
+    if (!(o instanceof JGotoStmt) || !targetBox.getStmt().equivTo(((JGotoStmt) o).targetBox.getStmt())) {
+      return false;
+    }
+    /*
+     * JGotoStmt gotoStmt = (JGotoStmt) o; List<IStmtBox> gotoStmtBoxes = gotoStmt.getStmtBoxes(); if( gotoStmtBoxes.size()
+     * != targetBoxes.size() ){ return false; } if( gotoStmt.equivHashCode() != equivHashCode()){ return false; }
+     */
+    return true;
   }
 
   @Override
   public int equivHashCode() {
-      /*
-      int res = 7;
-      int prime = 31;
-      for(IStmtBox box : targetBoxes){
-          res += prime * box.getStmt().equivHashCode();
-      }
-      return res + prime * targetBox.getStmt().equivHashCode();
-      */
-     return targetBox.getStmt().equivHashCode();
+    /*
+     * int res = 7; int prime = 31; for(IStmtBox box : targetBoxes){ res += prime * box.getStmt().equivHashCode(); } return
+     * res + prime * targetBox.getStmt().equivHashCode();
+     */
+    return targetBox.getStmt().equivHashCode();
   }
 
   @Override
   public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare( this, o) == 0;
+    return comparator.compare(this, o) == 0;
   }
-
 
 }

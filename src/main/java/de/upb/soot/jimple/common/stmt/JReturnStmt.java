@@ -82,10 +82,10 @@ public class JReturnStmt extends AbstractOpStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if(!(o instanceof JReturnStmt)){
+    if (!(o instanceof JReturnStmt)) {
       return false;
     }
-    return super.equivTo( (AbstractOpStmt) o);
+    return super.equivTo((AbstractOpStmt) o);
   }
 
   @Override
@@ -95,7 +95,7 @@ public class JReturnStmt extends AbstractOpStmt {
 
   @Override
   public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare( this, o) == 0;
+    return comparator.compare(this, o) == 0;
   }
 
 }

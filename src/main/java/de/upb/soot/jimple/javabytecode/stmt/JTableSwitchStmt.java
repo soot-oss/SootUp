@@ -29,7 +29,6 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
@@ -37,7 +36,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 public class JTableSwitchStmt extends AbstractSwitchStmt {
@@ -67,11 +65,11 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   }
 
   public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets, IStmtBox defaultTarget) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[targets.size()]),
-        defaultTarget);
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[targets.size()]), defaultTarget);
   }
 
-  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, IStmtBox[] targetBoxes, IStmtBox defaultTargetBox) {
+  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, IStmtBox[] targetBoxes,
+      IStmtBox defaultTargetBox) {
     super(keyBox, defaultTargetBox, targetBoxes);
 
     if (lowIndex > highIndex) {
@@ -174,11 +172,11 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if( ! (o instanceof JTableSwitchStmt)){
+    if (!(o instanceof JTableSwitchStmt)) {
       return false;
     }
 
-    if( lowIndex != ((JTableSwitchStmt) o).lowIndex || highIndex != ((JTableSwitchStmt) o).highIndex ){
+    if (lowIndex != ((JTableSwitchStmt) o).lowIndex || highIndex != ((JTableSwitchStmt) o).highIndex) {
       return false;
     }
 
@@ -196,7 +194,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare( this, o) == 0;
+    return comparator.compare(this, o) == 0;
   }
 
 }

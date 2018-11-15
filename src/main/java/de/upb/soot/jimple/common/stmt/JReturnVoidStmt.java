@@ -73,7 +73,7 @@ public class JReturnVoidStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if(!(o instanceof JReturnVoidStmt)){
+    if (!(o instanceof JReturnVoidStmt)) {
       return false;
     }
     return true;
@@ -87,8 +87,7 @@ public class JReturnVoidStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare( this, o) == 0;
+    return comparator.compare(this, o) == 0;
   }
-
 
 }

@@ -111,10 +111,10 @@ public class JRetStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if( !( o instanceof JReturnStmt)){
+    if (!(o instanceof JReturnStmt)) {
       return false;
     }
-    if( stmtAddressBox != ((JRetStmt) o).stmtAddressBox ){
+    if (stmtAddressBox != ((JRetStmt) o).stmtAddressBox) {
       return false;
     }
     return true;
@@ -127,7 +127,7 @@ public class JRetStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare( this, o) == 0;
+    return comparator.compare(this, o) == 0;
   }
 
 }
