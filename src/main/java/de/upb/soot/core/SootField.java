@@ -29,7 +29,7 @@ import de.upb.soot.views.IView;
 
 import java.util.EnumSet;
 
-public class SootField extends SootClassMember {
+public class SootField extends SootClassMember implements IField {
 
   /**
    * Soot's counterpart of the source language's field concept. Soot representation of a Java field. Can be declared to

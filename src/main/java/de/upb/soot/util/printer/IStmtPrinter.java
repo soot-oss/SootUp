@@ -30,6 +30,7 @@ import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 
 
@@ -74,6 +75,8 @@ public interface IStmtPrinter {
   public void constant(Constant c);
 
   public void field(SootField f);
+
+  public void fieldSignature(FieldSignature fieldSig);
 
   public void stmtRef(IStmt u, boolean branchTarget);
 

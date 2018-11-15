@@ -24,7 +24,6 @@
 
 package de.upb.soot.jimple;
 
-import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.basic.ConditionExprBox;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.IdentityRefBox;
@@ -91,6 +90,7 @@ import de.upb.soot.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
 
@@ -622,10 +622,10 @@ public class Jimple {
   }
 
   /**
-   * Constructs a JStaticFieldRef(SootField) grammar chunk.
+   * Constructs a JStaticFieldRef(FieldSignature) grammar chunk.
    */
-  public static JStaticFieldRef newStaticFieldRef(SootField f) {
-    return new JStaticFieldRef(f);
+  public static JStaticFieldRef newStaticFieldRef(IView view, FieldSignature f) {
+    return new JStaticFieldRef(view, f);
   }
 
   /**
@@ -643,10 +643,10 @@ public class Jimple {
   }
 
   /**
-   * Constructs a InstanceFieldRef(Local, SootFieldRef) grammar chunk.
+   * Constructs a InstanceFieldRef(Local, FieldSignature) grammar chunk.
    */
-  public static JInstanceFieldRef newInstanceFieldRef(Value base, SootField f) {
-    return new JInstanceFieldRef(base, f);
+  public static JInstanceFieldRef newInstanceFieldRef(IView view, Value base, FieldSignature f) {
+    return new JInstanceFieldRef(view, base, f);
   }
 
   /**

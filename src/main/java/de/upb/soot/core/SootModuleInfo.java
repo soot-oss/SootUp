@@ -93,7 +93,7 @@ public class SootModuleInfo extends AbstractClass {
 
   // FIXME: add missing statementss
   private SootModuleInfo(SootModuleInfoBuilder builder) {
-    super(builder.view, builder.classSource, Collections.emptySet());
+    super(builder.view, builder.classSource, Collections.emptySet(), Collections.emptySet());
     this.resolvingLevel = builder.resolvingLevel;
     this.moduleSignature = builder.classSource.getClassSignature();
     this.modifiers = builder.modifiers;
@@ -177,7 +177,7 @@ public class SootModuleInfo extends AbstractClass {
 
   public SootModuleInfo(IView view, AbstractClassSource cs, JavaClassSignature moduleSignature, EnumSet<Modifier> access,
       String version, ResolvingLevel resolvingLevel) {
-    super(view, cs, Collections.emptySet());
+    super(view, cs, Collections.emptySet(), Collections.emptySet());
     this.moduleSignature = moduleSignature;
     this.resolvingLevel = resolvingLevel;
     this.modifiers = null;
@@ -195,7 +195,7 @@ public class SootModuleInfo extends AbstractClass {
 
   @Override
   public String getName() {
-    return ((JavaClassSignature) moduleSignature).className;
+    return moduleSignature.className;
   }
 
   @Override

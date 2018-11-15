@@ -10,6 +10,7 @@ import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 
 /**
@@ -91,6 +92,11 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   @Override
   public void methodSignature(MethodSignature sig) {
     output.append(sig.toString());
+  }
+
+  @Override
+  public void fieldSignature(FieldSignature fieldSig) {
+    output.append(fieldSig.toString());
   }
 
 }
