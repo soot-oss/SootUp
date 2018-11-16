@@ -35,6 +35,7 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
+import java.util.Comparator;
 import java.util.List;
 
 public class JTableSwitchStmt extends AbstractSwitchStmt {
@@ -64,11 +65,11 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   }
 
   public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets, IStmtBox defaultTarget) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[targets.size()]),
-        defaultTarget);
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[targets.size()]), defaultTarget);
   }
 
-  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, IStmtBox[] targetBoxes, IStmtBox defaultTargetBox) {
+  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, IStmtBox[] targetBoxes,
+      IStmtBox defaultTargetBox) {
     super(keyBox, defaultTargetBox, targetBoxes);
 
     if (lowIndex > highIndex) {
@@ -167,6 +168,33 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   @Override
   public void accept(IVisitor sw) {
     ((IStmtVisitor) sw).caseTableSwitchStmt(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (!(o instanceof JTableSwitchStmt)) {
+      return false;
+    }
+
+    if (lowIndex != ((JTableSwitchStmt) o).lowIndex || highIndex != ((JTableSwitchStmt) o).highIndex) {
+      return false;
+    }
+
+    return super.equivTo((AbstractSwitchStmt) o);
+  }
+
+  @Override
+  public int equivHashCode() {
+    int prime = 31;
+    int ret = prime * lowIndex;
+    ret = prime * ret + highIndex;
+    ret = prime * ret + super.equivHashCode();
+    return ret;
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

@@ -1,5 +1,8 @@
 package de.upb.soot.jimple.common.stmt;
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+
+import de.upb.soot.jimple.basic.EquivTo;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
@@ -8,14 +11,10 @@ import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IAcceptor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-
 import java.io.Serializable;
 import java.util.List;
 
-public interface IStmt extends IAcceptor, Serializable
-{
-
+public interface IStmt extends EquivTo, IAcceptor, Serializable {
   /** Returns a list of Boxes containing Values used in this Stmt. */
   public List<ValueBox> getUseBoxes();
 

@@ -22,7 +22,7 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
 
   @Override
   public void resolve(de.upb.soot.core.ResolvingLevel level, IView view) {
-    JavaClassSignature cs = view.getSignatureFacotry().getClassSignature(this.signature);
+    JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
     SootModuleInfo.SootModuleInfoBuilder builder = null;
     if (module != null) {
       throw new IllegalArgumentException("This is not a module-info file");

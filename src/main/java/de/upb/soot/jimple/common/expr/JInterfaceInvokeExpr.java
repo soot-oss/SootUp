@@ -126,9 +126,8 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
-    // TODO Auto-generated method stub
-    return false;
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

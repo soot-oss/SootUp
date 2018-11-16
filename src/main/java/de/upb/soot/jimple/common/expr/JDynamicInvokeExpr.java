@@ -60,8 +60,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
    * Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox.
    */
   public JDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef,
-      int tag, List<? extends Value> methodArgs) {
+      MethodSignature methodRef, int tag, List<? extends Value> methodArgs) {
     super(view, methodRef, new ValueBox[methodArgs.size()]);
     if (!methodRef.toString().startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
       throw new IllegalArgumentException(
@@ -83,8 +82,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
    * Makes a parameterized call to JDynamicInvokeExpr method.
    */
   public JDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef,
-      List<? extends Value> methodArgs) {
+      MethodSignature methodRef, List<? extends Value> methodArgs) {
     /*
      * Here the static-handle is chosen as default value, because this works for Java.
      */
@@ -210,8 +208,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
-    up.literal(" \"" + method.name + "\" <"
-        + method.getSubSignature() + ">(");
+    up.literal(" \"" + method.name + "\" <" + method.getSubSignature() + ">(");
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
         if (i != 0) {
@@ -262,8 +259,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
-    // TODO Auto-generated method stub
-    return false;
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
+
 }

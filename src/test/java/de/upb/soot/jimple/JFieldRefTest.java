@@ -39,7 +39,7 @@ public class JFieldRefTest {
   @Test
   public void testJStaticFieldRef() {
     IView view = new JavaView(null);
-    SignatureFactory fact = view.getSignatureFacotry();
+    SignatureFactory fact = view.getSignatureFactory();
     JavaClassSignature declaringClassSignature = fact.getClassSignature("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field
@@ -60,7 +60,7 @@ public class JFieldRefTest {
   @Test
   public void testJInstanceFieldRef() {
     IView view = new JavaView(null);
-    SignatureFactory fact = view.getSignatureFacotry();
+    SignatureFactory fact = view.getSignatureFactory();
     JavaClassSignature declaringClassSignature = fact.getClassSignature("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field

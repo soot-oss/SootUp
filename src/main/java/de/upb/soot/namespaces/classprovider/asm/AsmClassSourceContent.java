@@ -4,7 +4,6 @@ import de.upb.soot.core.IMethod;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
@@ -17,17 +16,13 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.ModuleExportNode;
-import org.objectweb.asm.tree.ModuleOpenNode;
-import org.objectweb.asm.tree.ModuleProvideNode;
-import org.objectweb.asm.tree.ModuleRequireNode;
 
 public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     implements de.upb.soot.namespaces.classprovider.ISourceContent {
 
   @Override
   public void resolve(de.upb.soot.core.ResolvingLevel level, de.upb.soot.views.IView view) {
-    JavaClassSignature cs = view.getSignatureFacotry().getClassSignature(this.signature);
+    JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
     SootClass.SootClassBuilder builder = null;
     // FIXME: currently ugly because, the orignal class is always re-resolved but never copied...
     switch (level) {
