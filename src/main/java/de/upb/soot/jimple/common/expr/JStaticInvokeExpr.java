@@ -50,7 +50,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
    */
   public JStaticInvokeExpr(IView view, MethodSignature method, List<? extends Value> args) {
     super(view, method, new ValueBox[args.size()]);
-    this.method = method;
+    this.methodSignature = method;
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
@@ -64,7 +64,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
-    return new JStaticInvokeExpr(this.getView(), method, clonedArgs);
+    return new JStaticInvokeExpr(this.getView(), methodSignature, clonedArgs);
   }
 
   /**
@@ -102,7 +102,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   public String toString() {
     StringBuffer buffer = new StringBuffer();
 
-    buffer.append(Jimple.STATICINVOKE + " " + method + "(");
+    buffer.append(Jimple.STATICINVOKE + " " + methodSignature + "(");
 
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
@@ -126,7 +126,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);
     up.literal(" ");
-    up.methodSignature(method);
+    up.methodSignature(methodSignature);
     up.literal("(");
 
     if (argBoxes != null) {

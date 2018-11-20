@@ -27,10 +27,9 @@ public class Example {
     Options.v().set_whole_program(true);
     Options.v().setPhaseOption("cg.spark", "on");
 
-    Scene.v().loadDynamicClasses();
-    // load basic classes from soot
-    Scene.v().loadBasicClasses();
 
+    // load basic classes from soot
+    Scene.v().loadNecessaryClasses();
 
     String sourceDirPath = args[0];
     String exclusionFilePath = args[1];
@@ -39,13 +38,8 @@ public class Example {
     List<SootClass> sootClasses = loader.getSootClasses();
 
     // Convert classes in new jimple to old one
-    JimpleConverter jimpleConverter=new JimpleConverter();
-    for(SootClass sootClass: sootClasses) {
-      soot.SootClass klass = jimpleConverter.convertSootClass(sootClass);
-      // add each application class to Scene
-      Scene.v().addClass(klass);
-      klass.setApplicationClass();
-    }
+    JimpleConverter jimpleConverter = new JimpleConverter(sootClasses);
+    jimpleConverter.convertAllClasses();
     // TODO. implement your analysis in transform, source code location info are stored in tag
     Transformer t = new SceneTransformer() {
       @Override

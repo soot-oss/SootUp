@@ -539,7 +539,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
   public boolean hasSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return superClass.isPresent() && getSuperclass().isPresent();
+    return superClass.isPresent();
   }
 
   /**
@@ -553,7 +553,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
   public boolean hasOuterClass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return outerClass.isPresent() && getOuterClass().isPresent();
+    return outerClass.isPresent();
   }
 
   /**
@@ -748,6 +748,14 @@ public class SootClass extends AbstractClass implements Serializable {
   @Override
   public String getName() {
     return this.classSignature.getFullyQualifiedName();
+  }
+
+  public Optional<JavaClassSignature> getSuperclassSignature() {
+    return superClass;
+  }
+
+  public Optional<JavaClassSignature> getOuterClassSignature() {
+    return outerClass;
   }
 
 }

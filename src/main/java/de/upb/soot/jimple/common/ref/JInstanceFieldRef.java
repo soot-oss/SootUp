@@ -11,13 +11,9 @@
 
 package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.IField;
-import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -26,18 +22,15 @@ import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
-public class JInstanceFieldRef implements FieldRef {
+public class JInstanceFieldRef extends FieldRef {
 
   /**
    * 
    */
   private static final long serialVersionUID = 2900174317359676686L;
 
-  private final FieldSignature fieldSig;
   private final ValueBox baseBox;
-  private IView view;
 
   /**
    * Create a reference to a class' instance field.
@@ -50,27 +43,26 @@ public class JInstanceFieldRef implements FieldRef {
    *          the field sig
    */
   public JInstanceFieldRef(IView view, Value base, FieldSignature fieldSig) {
+    super(view, fieldSig);
     ValueBox baseBox = Jimple.newLocalBox(base);
     this.baseBox = baseBox;
-    this.fieldSig = fieldSig;
-    this.view = view;
   }
 
   @Override
   public Object clone() {
-    return new JInstanceFieldRef(this.view, Jimple.cloneIfNecessary(getBase()), fieldSig);
+    return new JInstanceFieldRef(this.view, Jimple.cloneIfNecessary(getBase()), fieldSignature);
   }
 
   @Override
   public String toString() {
-    return baseBox.getValue().toString() + "." + fieldSig.toString();
+    return baseBox.getValue().toString() + "." + fieldSignature.toString();
   }
 
   @Override
   public void toString(IStmtPrinter up) {
     baseBox.toString(up);
     up.literal(".");
-    up.fieldSignature(fieldSig);
+    up.fieldSignature(fieldSignature);
   }
 
   public Value getBase() {
@@ -85,16 +77,6 @@ public class JInstanceFieldRef implements FieldRef {
     baseBox.setValue(base);
   }
 
-  @Override
-  public Optional<SootField> getField() {
-    Optional<AbstractClass> declClass = view.getClass(fieldSig.declClassSignature);
-    if (declClass.isPresent()) {
-      Optional<? extends IField> f = declClass.get().getField(fieldSig);
-      return f.map(c -> (SootField) c);
-    }
-    return Optional.empty();
-  }
-
   /**
    * Returns a list useBoxes of type ValueBox.
    */
@@ -106,11 +88,6 @@ public class JInstanceFieldRef implements FieldRef {
     useBoxes.add(baseBox);
 
     return useBoxes;
-  }
-
-  @Override
-  public Type getType() {
-    return view.getType(fieldSig.typeSignature);
   }
 
   @Override

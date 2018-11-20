@@ -1,10 +1,6 @@
 package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.IField;
-import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -13,44 +9,31 @@ import de.upb.soot.views.IView;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
-public class JStaticFieldRef implements FieldRef {
+public class JStaticFieldRef extends FieldRef {
   /**
    * 
    */
   private static final long serialVersionUID = -8744248848897714882L;
-  private final FieldSignature fieldSig;
-  private IView view;
+
 
   public JStaticFieldRef(IView view, FieldSignature fieldSig) {
-    this.fieldSig = fieldSig;
-    this.view = view;
+    super(view, fieldSig);
   }
 
   @Override
   public Object clone() {
-    return new JStaticFieldRef(this.view, fieldSig);
+    return new JStaticFieldRef(this.view, fieldSignature);
   }
 
   @Override
   public String toString() {
-    return fieldSig.toString();
+    return fieldSignature.toString();
   }
 
   @Override
   public void toString(IStmtPrinter up) {
-    up.fieldSignature(fieldSig);
-  }
-
-  @Override
-  public Optional<SootField> getField() {
-    Optional<AbstractClass> declClass = view.getClass(fieldSig.declClassSignature);
-    if (declClass.isPresent()) {
-      Optional<? extends IField> f = declClass.get().getField(fieldSig);
-      return f.map(c -> (SootField) c);
-    }
-    return Optional.empty();
+    up.fieldSignature(fieldSignature);
   }
 
   @Override
@@ -74,11 +57,6 @@ public class JStaticFieldRef implements FieldRef {
     } else {
       return 22;
     }
-  }
-
-  @Override
-  public Type getType() {
-    return view.getType(fieldSig.typeSignature);
   }
 
   @Override

@@ -109,7 +109,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JDynamicInvokeExpr(this.getView(), bsm, clonedBsmArgs, method, tag, clonedArgs);
+    return new JDynamicInvokeExpr(this.getView(), bsm, clonedBsmArgs, methodSignature, tag, clonedArgs);
   }
 
   @Override
@@ -139,7 +139,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
           i++;
         }
       }
-      if (!method.equals(ie.method)) {
+      if (!methodSignature.equals(ie.methodSignature)) {
         return false;
       }
       if (!bsm.equals(ie.bsm)) {
@@ -174,10 +174,10 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     StringBuffer buffer = new StringBuffer();
     buffer.append(Jimple.DYNAMICINVOKE);
     buffer.append(" \"");
-    buffer.append(method); // quoted method name (can be any UTF8
+    buffer.append(methodSignature); // quoted method name (can be any UTF8
     // string)
     buffer.append("\" <");
-    buffer.append(method.getSubSignature());
+    buffer.append(methodSignature.getSubSignature());
     buffer.append(">(");
 
     if (argBoxes != null) {
@@ -208,7 +208,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
-    up.literal(" \"" + method.name + "\" <" + method.getSubSignature() + ">(");
+    up.literal(" \"" + methodSignature.name + "\" <" + methodSignature.getSubSignature() + ">(");
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
         if (i != 0) {

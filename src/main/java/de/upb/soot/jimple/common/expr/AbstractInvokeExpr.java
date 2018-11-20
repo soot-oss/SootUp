@@ -47,24 +47,28 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
    * 
    */
   private static final long serialVersionUID = 1796920588315752175L;
-  protected MethodSignature method;
+  protected MethodSignature methodSignature;
   protected final ValueBox[] argBoxes;
 
   protected AbstractInvokeExpr(IView view, MethodSignature method, ValueBox[] argBoxes) {
     super(view);
-    this.method = method;
+    this.methodSignature = method;
     this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
   }
 
   public Optional<SootMethod> getMethod() {
-    JavaClassSignature signature = method.declClassSignature;
+    JavaClassSignature signature = methodSignature.declClassSignature;
     Optional<AbstractClass> op = this.getView().getClass(signature);
     if (op.isPresent()) {
       AbstractClass klass = op.get();
-      Optional<? extends IMethod> m = klass.getMethod(method);
+      Optional<? extends IMethod> m = klass.getMethod(methodSignature);
       return m.map(c -> (SootMethod) c);
     }
     return Optional.empty();
+  }
+
+  public MethodSignature getMethodSignature() {
+    return this.methodSignature;
   }
 
   @Override
@@ -101,7 +105,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
 
   @Override
   public Type getType() {
-    return this.getView().getType(method.typeSignature);
+    return this.getView().getType(methodSignature.typeSignature);
   }
 
   @Override

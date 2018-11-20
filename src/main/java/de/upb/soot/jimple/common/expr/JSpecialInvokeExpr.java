@@ -63,13 +63,13 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JSpecialInvokeExpr(this.getView(), (Local) getBase(), method, clonedArgs);
+    return new JSpecialInvokeExpr(this.getView(), (Local) getBase(), methodSignature, clonedArgs);
   }
 
   @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
-    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
+    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + methodSignature + "(");
 
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
@@ -96,7 +96,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.methodSignature(method);
+    up.methodSignature(methodSignature);
     up.literal("(");
 
     if (argBoxes != null) {

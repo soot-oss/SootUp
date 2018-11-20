@@ -59,13 +59,13 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
-    return new JVirtualInvokeExpr(this.getView(), getBase(), method, clonedArgs);
+    return new JVirtualInvokeExpr(this.getView(), getBase(), methodSignature, clonedArgs);
   }
 
   @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
-    buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
+    buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + methodSignature + "(");
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
         if (i != 0) {
@@ -88,7 +88,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.methodSignature(method);
+    up.methodSignature(methodSignature);
     up.literal("(");
     if (argBoxes != null) {
       final int len = argBoxes.length;
