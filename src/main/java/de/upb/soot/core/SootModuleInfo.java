@@ -20,7 +20,9 @@ public class SootModuleInfo extends AbstractClass {
    * the soot class Therefore, a different Interface is returned after each step.. (therby order is enforced)
    */
   public interface DanglingStep extends Build {
-    HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType);
+    HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType, String moduleName);
+
+    HierachyStep isAutomaticModule(boolean isAutomatic);
   }
 
   public interface HierachyStep extends Build {
@@ -42,16 +44,25 @@ public class SootModuleInfo extends AbstractClass {
     private Collection<PackageReference> exports;
     private Collection<PackageReference> opens;
     private Collection<JavaClassSignature> services;
+    private boolean isAutomaticModule = false;
+    private String moduleName;
 
     public SootModuleInfoBuilder() {
     }
 
     @Override
-    public HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType) {
+    public HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType, String name) {
       this.view = view;
       this.classSource = source;
       this.classType = classType;
       this.resolvingLevel = ResolvingLevel.DANGLING;
+      this.moduleName = name;
+      return this;
+    }
+
+    @Override
+    public HierachyStep isAutomaticModule(boolean isAutomatic) {
+      this.isAutomaticModule = isAutomatic;
       return this;
     }
 
@@ -88,6 +99,7 @@ public class SootModuleInfo extends AbstractClass {
     builder.exports = sootClass.exportedPackages;
     builder.opens = sootClass.openedPackages;
     builder.services = sootClass.usedServices;
+    builder.moduleName = sootClass.name;
     return builder;
   }
 
@@ -97,8 +109,9 @@ public class SootModuleInfo extends AbstractClass {
     this.resolvingLevel = builder.resolvingLevel;
     this.moduleSignature = builder.classSource.getClassSignature();
     this.modifiers = builder.modifiers;
+    this.isAutomaticModule = builder.isAutomaticModule;
+    this.name = builder.moduleName;
     builder.view.addClass(this);
-
   }
 
   /**

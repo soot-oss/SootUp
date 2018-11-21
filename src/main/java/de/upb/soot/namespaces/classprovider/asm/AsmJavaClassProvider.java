@@ -5,10 +5,6 @@ import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.ISourceContent;
 import de.upb.soot.namespaces.classprovider.asm.modules.AsmModuleSourceContent;
 
-import java.nio.file.Path;
-
-import org.objectweb.asm.ClassVisitor;
-
 public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovider.IClassProvider {
 
   public AsmJavaClassProvider() {
@@ -39,39 +35,9 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
     ISourceContent classNode = null;
     // FIXME: maybe check here if module info file ... and create other ClassSource
     if (classSource.getClassSignature().isModuleInfo()) {
-      classNode = new AsmModuleSourceContent();
+      classNode = new AsmModuleSourceContent(classSource);
     } else {
-      classNode = new AsmClassSourceContent();
-    }
-
-    java.net.URI uri = classSource.getSourcePath().toUri();
-
-    try {
-      if (classSource.getSourcePath().getFileSystem().isOpen()) {
-        Path sourceFile = java.nio.file.Paths.get(uri);
-
-        org.objectweb.asm.ClassReader clsr
-            = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
-
-        clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
-      } else {
-        // a zip file system needs to be re-openend
-        // otherwise it crashes
-        // http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
-        java.util.Map<String, String> env = new java.util.HashMap<>();
-        env.put("create", "false");
-        try (java.nio.file.FileSystem zipfs = java.nio.file.FileSystems.newFileSystem(uri, env)) {
-          Path sourceFile = java.nio.file.Paths.get(uri);
-
-          org.objectweb.asm.ClassReader clsr
-              = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
-
-          clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
-        }
-      }
-
-    } catch (java.io.IOException e) {
-      e.printStackTrace();
+      classNode = new AsmClassSourceContent(classSource);
     }
 
     return classNode;

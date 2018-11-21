@@ -3,7 +3,9 @@ package de.upb.soot.buildactor;
 import akka.actor.AbstractLoggingActor;
 import akka.actor.Props;
 
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.IMethod;
+import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
@@ -16,7 +18,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
   private final IView view;
   private final AbstractClassSource classSource;
-  private de.upb.soot.core.SootClass sootClass;
+  private AbstractClass sootClass;
 
   public ClassBuilderActor(IView view, AbstractClassSource classSource) {
     this.view = view;
@@ -27,7 +29,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     return Props.create(ClassBuilderActor.class, view, classSource);
   }
 
-  public static Props props(de.upb.soot.core.SootClass sootClass, de.upb.soot.core.SootMethod sootMethod) {
+  public static Props props(de.upb.soot.core.AbstractClass sootClass, de.upb.soot.core.SootMethod sootMethod) {
     return Props.create(MethodBuilderActor.class, sootClass, sootMethod);
   }
 
@@ -47,10 +49,10 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     de.upb.soot.namespaces.classprovider.ISourceContent content = classProvider.getContent(classSource);
 
     // FIXME --- if module info ... dispatch
-    // actually I don't want if clauses. I want to  dispatch based on the type of the classSource?
+    // actually I don't want if clauses. I want to dispatch based on the type of the classSource?
 
     // FIXME: somewhere a soot class needs to be created or returned???
-    content.resolve(de.upb.soot.core.ResolvingLevel.SIGNATURES, view);
+    AbstractClass sootClass = content.resolve(ResolvingLevel.DANGLING, view);
 
     sender().tell(sootClass, this.getSelf());
 

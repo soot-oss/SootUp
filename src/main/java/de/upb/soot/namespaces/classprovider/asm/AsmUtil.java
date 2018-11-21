@@ -10,17 +10,56 @@ import de.upb.soot.jimple.common.type.LongType;
 import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.VoidType;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.tree.ClassNode;
+
 public final class AsmUtil {
 
   private AsmUtil() {
+  }
+
+  public static void initASMClassSource(AbstractClassSource classSource, ClassNode classNode) {
+    java.net.URI uri = classSource.getSourcePath().toUri();
+
+    try {
+      if (classSource.getSourcePath().getFileSystem().isOpen()) {
+        Path sourceFile = java.nio.file.Paths.get(uri);
+
+        org.objectweb.asm.ClassReader clsr
+            = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
+
+        clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
+      } else {
+        // a zip file system needs to be re-openend
+        // otherwise it crashes
+        // http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
+        java.util.Map<String, String> env = new java.util.HashMap<>();
+        env.put("create", "false");
+        try (java.nio.file.FileSystem zipfs = java.nio.file.FileSystems.newFileSystem(uri, env)) {
+          Path sourceFile = java.nio.file.Paths.get(uri);
+
+          org.objectweb.asm.ClassReader clsr
+              = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
+
+          clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
+        }
+      }
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
   }
 
   /**
@@ -133,8 +172,7 @@ public final class AsmUtil {
   // FIXME: double check optional here
   public static Optional<JavaClassSignature> resolveAsmNameToClassSignature(String asmClassName, IView view) {
     String excepetionFQName = toQualifiedName(asmClassName);
-    JavaClassSignature classSignature
-        = view.getSignatureFacotry().getClassSignature(excepetionFQName);
+    JavaClassSignature classSignature = view.getSignatureFacotry().getClassSignature(excepetionFQName);
     return Optional.ofNullable(classSignature);
   }
 }

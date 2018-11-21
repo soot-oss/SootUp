@@ -4,6 +4,7 @@ import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.views.IView;
+import de.upb.soot.views.JavaOnDemandView;
 
 /**
  * Bridges the process from bytecode representation to Soot IR (Jimple) representation
@@ -32,6 +33,12 @@ public class ViewBuilder {
       cs.getContent().resolve(ResolvingLevel.BODIES, result);
       // Populate view
     }
+    return result;
+  }
+
+  public IView buildOnDemand() {
+    // FIXME: why do we need a project for a view?
+    IView result = new JavaOnDemandView(null, namespace);
     return result;
   }
 }
