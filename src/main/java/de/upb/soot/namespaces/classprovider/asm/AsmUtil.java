@@ -172,7 +172,7 @@ public final class AsmUtil {
   // FIXME: double check optional here
   public static Optional<JavaClassSignature> resolveAsmNameToClassSignature(String asmClassName, IView view) {
     String excepetionFQName = toQualifiedName(asmClassName);
-    JavaClassSignature classSignature = view.getSignatureFacotry().getClassSignature(excepetionFQName);
+    JavaClassSignature classSignature = view.getSignatureFactory().getClassSignature(excepetionFQName);
     return Optional.ofNullable(classSignature);
   }
 }
