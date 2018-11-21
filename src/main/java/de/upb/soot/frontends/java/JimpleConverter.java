@@ -57,7 +57,6 @@ import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
 import soot.jimple.Stmt;
 import soot.jimple.internal.JimpleLocal;
-import soot.options.Options;
 import soot.util.Chain;
 
 /**
@@ -73,8 +72,6 @@ public class JimpleConverter {
 
   public JimpleConverter(List<de.upb.soot.core.SootClass> sootClasses) {
     this.fromClasses = sootClasses;
-    Options.v().set_ignore_resolving_levels(true);
-    Options.v().set_ignore_resolution_errors(true);
   }
 
   public soot.SootClass convertSootClass(de.upb.soot.core.SootClass fromClass) {
@@ -149,6 +146,9 @@ public class JimpleConverter {
     List<soot.SootClass> exceptions = new ArrayList<>();
     // TODO. add exceptions
     toMethod.setExceptions(exceptions);
+    // add source position into tag
+    toMethod.addTag(new DebuggingInformationTag(fromMethod.getDebugInfo()));
+
     // set Body
     if (fromMethod.hasActiveBody()) {
       soot.jimple.JimpleBody body = convertBody(toMethod, fromMethod.getActiveBody());
@@ -157,13 +157,12 @@ public class JimpleConverter {
         toClass.setResolvingLevel(soot.SootClass.BODIES);
       }
     }
-    // add source position into tag
-    toMethod.addTag(new DebuggingInformationTag(fromMethod.getDebugInfo()));
 
     return toMethod;
   }
 
   public soot.jimple.Stmt convertStmt(IStmt fromStmt) {
+
     // convert stmts
     Stmt toStmt = null;
     if (fromStmt instanceof JAssignStmt) {
@@ -234,7 +233,9 @@ public class JimpleConverter {
         toStmt = convertStmt(fromStmt);
       }
       if (toStmt != null) {
+        toStmt.addTag(new DebuggingInformationTag(fromMethod.getDebugInfo()));
         units.add(toStmt);
+        
       } else {
         System.out.println(fromStmt.getClass().toString());
       }
@@ -588,7 +589,7 @@ public class JimpleConverter {
         declaringClass = new SootClass(className);
         Scene.v().addClass(declaringClass);
       } else {
-        Scene.v().loadClassAndSupport(className);
+        declaringClass = Scene.v().forceResolve(className, soot.SootClass.SIGNATURES);
       }
     }
     declaringClass = Scene.v().getSootClass(className);
@@ -611,8 +612,7 @@ public class JimpleConverter {
   }
 
   private Stmt getTarget(IStmt key) {
-    if (key == null)
-     {
+    if (key == null) {
       // TODO. fix this
       return null;
 
