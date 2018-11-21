@@ -1,21 +1,6 @@
-/* Soot - a J*va Optimization Framework
- * Copyright (C) 1999 Patrick Lam
- * Copyright (C) 2004 Ondrej Lhotak
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this library; if not, write to the
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
- * Boston, MA 02111-1307, USA.
+/*
+ * @author Linghui Luo
+ * @version 1.0
  */
 
 /*
@@ -26,16 +11,22 @@
 
 package de.upb.soot.jimple.common.ref;
 
+import de.upb.soot.core.AbstractClass;
+import de.upb.soot.core.IField;
 import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class JInstanceFieldRef implements FieldRef {
 
@@ -44,42 +35,42 @@ public class JInstanceFieldRef implements FieldRef {
    */
   private static final long serialVersionUID = 2900174317359676686L;
 
+  private final FieldSignature fieldSig;
+  private final ValueBox baseBox;
+  private IView view;
+
   /**
    * Create a reference to a class' instance field.
-   * 
+   *
+   * @param view
+   *          the view
    * @param base
    *          the base value of the field
-   * @param field
-   *          the field
+   * @param fieldSig
+   *          the field sig
    */
-  public JInstanceFieldRef(Value base, SootField field) {
+  public JInstanceFieldRef(IView view, Value base, FieldSignature fieldSig) {
     ValueBox baseBox = Jimple.newLocalBox(base);
-
-    if (field.isStatic()) {
-      throw new RuntimeException("wrong static-ness");
-    }
     this.baseBox = baseBox;
-    this.field = field;
+    this.fieldSig = fieldSig;
+    this.view = view;
   }
 
   @Override
   public Object clone() {
-    return new JInstanceFieldRef(Jimple.cloneIfNecessary(getBase()), field);
+    return new JInstanceFieldRef(this.view, Jimple.cloneIfNecessary(getBase()), fieldSig);
   }
-
-  protected SootField field;
-  final ValueBox baseBox;
 
   @Override
   public String toString() {
-    return baseBox.getValue().toString() + "." + field.getSignature();
+    return baseBox.getValue().toString() + "." + fieldSig.toString();
   }
 
   @Override
   public void toString(IStmtPrinter up) {
     baseBox.toString(up);
     up.literal(".");
-    up.field(field);
+    up.fieldSignature(fieldSig);
   }
 
   public Value getBase() {
@@ -95,18 +86,13 @@ public class JInstanceFieldRef implements FieldRef {
   }
 
   @Override
-  public SootField getFieldRef() {
-    return field;
-  }
-
-  @Override
-  public void setFieldRef(SootField fieldRef) {
-    this.field = fieldRef;
-  }
-
-  @Override
-  public SootField getField() {
-    return field;
+  public Optional<SootField> getField() {
+    Optional<AbstractClass> declClass = view.getClass(fieldSig.declClassSignature);
+    if (declClass.isPresent()) {
+      Optional<? extends IField> f = declClass.get().getField(fieldSig);
+      return f.map(c -> (SootField) c);
+    }
+    return Optional.empty();
   }
 
   /**
@@ -124,7 +110,7 @@ public class JInstanceFieldRef implements FieldRef {
 
   @Override
   public Type getType() {
-    return field.getType();
+    return view.getType(fieldSig.typeSignature);
   }
 
   @Override
@@ -144,6 +130,16 @@ public class JInstanceFieldRef implements FieldRef {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return getField().equivHashCode() * 101 + baseBox.getValue().equivHashCode() + 17;
+    if (getField().isPresent()) {
+      return getField().get().equivHashCode() * 101 + baseBox.getValue().equivHashCode() + 17;
+    } else {
+      return 16;
+    }
   }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
+  }
+
 }

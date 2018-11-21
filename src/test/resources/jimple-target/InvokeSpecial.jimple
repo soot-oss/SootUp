@@ -1,0 +1,62 @@
+public class InvokeSpecial extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        InvokeSpecial r0;
+
+        r0 := @this: InvokeSpecial;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private int privateMethod()
+    {
+        InvokeSpecial r0;
+
+        r0 := @this: InvokeSpecial;
+
+        return 5;
+    }
+
+    public void specialInvokeInstanceInit()
+    {
+        InvokeSpecial r0;
+        java.util.ArrayList $r2;
+
+        r0 := @this: InvokeSpecial;
+
+        $r2 = new java.util.ArrayList;
+
+        specialinvoke $r2.<java.util.ArrayList: void <init>()>();
+
+        virtualinvoke $r2.<java.util.ArrayList: boolean add(java.lang.Object)>("item1");
+
+        return;
+    }
+
+    public void specialInvokePrivateMethod()
+    {
+        InvokeSpecial r0;
+
+        r0 := @this: InvokeSpecial;
+
+        specialinvoke r0.<InvokeSpecial: int privateMethod()>();
+
+        return;
+    }
+
+    public java.lang.String specialInvokeSupperClassMethod()
+    {
+        InvokeSpecial r0;
+        java.lang.String r1;
+
+        r0 := @this: InvokeSpecial;
+
+        r1 = virtualinvoke r0.<java.lang.Object: java.lang.String toString()>();
+
+        return r1;
+    }
+}

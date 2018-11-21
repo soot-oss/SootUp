@@ -79,4 +79,16 @@ public class JThrowStmt extends AbstractOpStmt {
     return false;
   }
 
+  public boolean equivTo(Object o) {
+    if (!(o instanceof JThrowStmt)) {
+      return false;
+    }
+    return super.equivTo((AbstractOpStmt) o);
+  }
+
+  @Override
+  public int equivHashCode() {
+    return super.equivHashCode();
+  }
+
 }

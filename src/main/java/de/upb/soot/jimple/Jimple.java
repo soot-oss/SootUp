@@ -24,7 +24,6 @@
 
 package de.upb.soot.jimple;
 
-import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.basic.ConditionExprBox;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.IdentityRefBox;
@@ -67,9 +66,11 @@ import de.upb.soot.jimple.common.expr.JSubExpr;
 import de.upb.soot.jimple.common.expr.JUshrExpr;
 import de.upb.soot.jimple.common.expr.JVirtualInvokeExpr;
 import de.upb.soot.jimple.common.expr.JXorExpr;
+import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
+import de.upb.soot.jimple.common.ref.JStaticFieldRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
@@ -89,6 +90,7 @@ import de.upb.soot.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
 
@@ -96,6 +98,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
 
 
 
@@ -602,13 +605,13 @@ public class Jimple {
   public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
       List<? extends IStmt> targets,
       IStmt defaultTarget) {
-    return null;
+    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
   }
 
   public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
       List<? extends IStmtBox> targets,
       IStmtBox defaultTarget) {
-    return null;
+    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
   }
 
   /**
@@ -619,10 +622,10 @@ public class Jimple {
   }
 
   /**
-   * Constructs a StaticField(SootField) grammar chunk.
+   * Constructs a JStaticFieldRef(FieldSignature) grammar chunk.
    */
-  public static SootField newStaticField(IView view, SootField f) {
-    return new SootField(view, f);
+  public static JStaticFieldRef newStaticFieldRef(IView view, FieldSignature f) {
+    return new JStaticFieldRef(view, f);
   }
 
   /**
@@ -640,10 +643,17 @@ public class Jimple {
   }
 
   /**
-   * Constructs a InstanceFieldRef(Local, SootFieldRef) grammar chunk.
+   * Constructs a InstanceFieldRef(Local, FieldSignature) grammar chunk.
    */
-  public static JInstanceFieldRef newInstanceFieldRef(Value base, SootField f) {
-    return new JInstanceFieldRef(base, f);
+  public static JInstanceFieldRef newInstanceFieldRef(IView view, Value base, FieldSignature f) {
+    return new JInstanceFieldRef(view, base, f);
+  }
+
+  /**
+   * Constructs a ArrayRef(Local, Immediate) grammar chunk.
+   */
+  public static JArrayRef newArrayRef(Value base, Value index) {
+    return new JArrayRef(base, index);
   }
 
   /**
@@ -684,7 +694,7 @@ public class Jimple {
   /**
    * Constructs a NewExpr(RefType) grammar chunk.
    */
-  public static Value newNewExpr(RefType type) {
+  public static JNewExpr newNewExpr(RefType type) {
     return new JNewExpr(type);
   }
 }

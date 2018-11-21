@@ -29,6 +29,9 @@ import de.upb.soot.jimple.common.type.NullType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.NullTypeSignature;
+
+import java.util.Comparator;
 
 public class NullConstant extends Constant {
   /**
@@ -37,10 +40,13 @@ public class NullConstant extends Constant {
   private static final long serialVersionUID = 8286431855238615958L;
   private static NullConstant nullconstant;
 
-  public NullConstant() {
+  private NullConstant() {
   }
 
   public static NullConstant getInstance() {
+    if (nullconstant == null) {
+      nullconstant = new NullConstant();
+    }
     return nullconstant;
   }
 
@@ -62,5 +68,16 @@ public class NullConstant extends Constant {
   @Override
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseNullConstant(this);
+  }
+
+  @Override
+  public String toString() {
+    return NullTypeSignature.NULL_TYPE_SIGNATURE.toString();
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

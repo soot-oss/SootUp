@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import de.upb.soot.namespaces.FileType;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class SignatureFactoryTest {
     JavaClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
     Path path = classSignature1.toPath(FileType.CLASS);
     // Class Signatures are unique but not their package
-    assertEquals(path.toString(), "java/lang/System.class");
+    assertEquals(path.toString(), "java" + File.separator + "lang" + File.separator + "System.class");
   }
 
   @Test

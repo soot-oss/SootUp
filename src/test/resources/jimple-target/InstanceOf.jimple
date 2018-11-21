@@ -1,0 +1,29 @@
+public class InstanceOf extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        InstanceOf r0;
+
+        r0 := @this: InstanceOf;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public boolean instanceOf(java.lang.Object)
+    {
+        InstanceOf r0;
+        java.lang.Object r1;
+        boolean $z0;
+
+        r0 := @this: InstanceOf;
+
+        r1 := @parameter0: java.lang.Object;
+
+        $z0 = r1 instanceof java.lang.String;
+
+        return $z0;
+    }
+}

@@ -36,7 +36,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   @Override
   public AbstractClass resolve(ResolvingLevel level, IView view) {
-    JavaClassSignature cs = view.getSignatureFacotry().getClassSignature(this.signature);
+    JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
     SootClass.SootClassBuilder builder = null;
     // FIXME: currently ugly because, the orignal class is always re-resolved but never copied...
     switch (level) {

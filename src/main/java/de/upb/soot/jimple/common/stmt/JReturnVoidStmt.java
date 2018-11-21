@@ -69,4 +69,18 @@ public class JReturnVoidStmt extends AbstractStmt {
     return false;
   }
 
+  @Override
+  public boolean equivTo(Object o) {
+    if (!(o instanceof JReturnVoidStmt)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int equivHashCode() {
+    // TODO: what to return?
+    return 42;
+  }
+
 }

@@ -34,7 +34,7 @@ public class IdentityRefBox extends AbstractValueBox {
   private static final long serialVersionUID = 4710321707012311318L;
 
   public IdentityRefBox(Value value) {
-    setValue(value);
+    super(value);
   }
 
   @Override

@@ -41,6 +41,8 @@ import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
+import java.util.Comparator;
+
 public class JNegExpr extends AbstractUnopExpr {
   /**
    * 
@@ -106,4 +108,10 @@ public class JNegExpr extends AbstractUnopExpr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNegExpr(this);
   }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
+  }
+
 }

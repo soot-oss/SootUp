@@ -20,11 +20,14 @@ public abstract class AbstractClass extends AbstractViewResident {
 
   protected final AbstractClassSource classSource;
   protected final Set<? extends IMethod> methods;
+  protected final Set<? extends IField> fields;
 
-  public AbstractClass(IView view, AbstractClassSource cs, Set<? extends IMethod> methods) {
+  public AbstractClass(IView view, AbstractClassSource cs, Set<? extends IMethod> methods, Set<? extends IField> fields) {
     super(view);
     this.methods = Collections.unmodifiableSet(methods);
+    this.fields = Collections.unmodifiableSet(fields);
     this.classSource = cs;
+
   }
 
   public AbstractClassSource getClassSource() {
@@ -41,5 +44,13 @@ public abstract class AbstractClass extends AbstractViewResident {
 
   public Collection<? extends IMethod> getMethods() {
     return methods;
+  }
+
+  public Optional<? extends IField> getField(ISignature signature) {
+    return fields.stream().filter(f -> f.getSignature().equals(signature)).findFirst();
+  }
+
+  public Collection<? extends IField> getFields() {
+    return fields;
   }
 }

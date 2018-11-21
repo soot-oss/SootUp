@@ -99,7 +99,7 @@ public interface IView {
    * 
    * @return
    */
-  SignatureFactory getSignatureFacotry();
+  SignatureFactory getSignatureFactory();
 
   /**
    * Return the {@link Options} of this view.

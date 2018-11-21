@@ -29,7 +29,7 @@ public class ViewBuilder {
     // e.g. by calling the ClassBuilder
     // compose View
 
-    for (AbstractClassSource cs : namespace.getClassSources(result.getSignatureFacotry())) {
+    for (AbstractClassSource cs : namespace.getClassSources(result.getSignatureFactory())) {
       cs.getContent().resolve(ResolvingLevel.BODIES, result);
       // Populate view
     }

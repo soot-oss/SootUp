@@ -7,6 +7,11 @@ import org.junit.experimental.categories.Category;
 
 import categories.Java8Test;
 
+/**
+ *
+ * @author Linghui Luo
+ *
+ */
 @Category(Java8Test.class)
 public class ExampleTest {
 
@@ -19,4 +24,5 @@ public class ExampleTest {
     String[] args = { srcDir, exclusionFilePath };
     Example.main(args);
   }
+
 }

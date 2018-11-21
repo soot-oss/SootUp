@@ -26,19 +26,14 @@
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.FieldRef;
-import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
-import java.util.List;
+import java.util.Comparator;
 
 public class JExitMonitorStmt extends AbstractOpStmt {
   /**
@@ -87,88 +82,21 @@ public class JExitMonitorStmt extends AbstractOpStmt {
     return false;
   }
 
-  @Override
-  public AbstractInvokeExpr getInvokeExpr() {
-    // TODO Auto-generated method stub
-    return null;
+  public boolean equivTo(Object o) {
+    if (!(o instanceof JExitMonitorStmt)) {
+      return false;
+    }
+    return super.equivTo((AbstractOpStmt) o);
   }
 
   @Override
-  public ValueBox getInvokeExprBox() {
-    // TODO Auto-generated method stub
-    return null;
+  public int equivHashCode() {
+    return super.equivHashCode();
   }
 
   @Override
-  public JArrayRef getArrayRef() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public ValueBox getArrayRefBox() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public FieldRef getFieldRef() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public ValueBox getFieldRefBox() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public List<ValueBox> getDefBoxes() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public List<IStmtBox> getStmtBoxes() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public List<IStmtBox> getBoxesPointingToThis() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public void addBoxPointingToThis(IStmtBox b) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void removeBoxPointingToThis(IStmtBox b) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void clearStmtBoxes() {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public List<ValueBox> getUseAndDefBoxes() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public void redirectJumpsToThisTo(IStmt newLocation) {
-    // TODO Auto-generated method stub
-
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

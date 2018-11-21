@@ -78,4 +78,17 @@ public class JReturnStmt extends AbstractOpStmt {
     return false;
   }
 
+  @Override
+  public boolean equivTo(Object o) {
+    if (!(o instanceof JReturnStmt)) {
+      return false;
+    }
+    return super.equivTo((AbstractOpStmt) o);
+  }
+
+  @Override
+  public int equivHashCode() {
+    return super.equivHashCode();
+  }
+
 }

@@ -41,6 +41,7 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,8 +60,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
    * Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox.
    */
   public JDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef,
-      int tag, List<? extends Value> methodArgs) {
+      MethodSignature methodRef, int tag, List<? extends Value> methodArgs) {
     super(view, methodRef, new ValueBox[methodArgs.size()]);
     if (!methodRef.toString().startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
       throw new IllegalArgumentException(
@@ -82,8 +82,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
    * Makes a parameterized call to JDynamicInvokeExpr method.
    */
   public JDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef,
-      List<? extends Value> methodArgs) {
+      MethodSignature methodRef, List<? extends Value> methodArgs) {
     /*
      * Here the static-handle is chosen as default value, because this works for Java.
      */
@@ -209,8 +208,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
-    up.literal(" \"" + method.name + "\" <"
-        + method.getSubSignature() + ">(");
+    up.literal(" \"" + method.name + "\" <" + method.getSubSignature() + ">(");
     if (argBoxes != null) {
       for (int i = 0; i < argBoxes.length; i++) {
         if (i != 0) {
@@ -259,4 +257,10 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   public int getHandleTag() {
     return tag;
   }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
+  }
+
 }

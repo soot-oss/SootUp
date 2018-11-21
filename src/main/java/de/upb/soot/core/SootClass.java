@@ -21,8 +21,6 @@ package de.upb.soot.core;
  * #L%
  */
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
@@ -33,6 +31,8 @@ import de.upb.soot.validation.MethodDeclarationValidator;
 import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.views.IView;
+
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -105,7 +105,7 @@ public class SootClass extends AbstractClass implements Serializable {
     private Position position;
     private EnumSet<Modifier> modifiers;
     private RefType refType;
-    private Set<SootField> fields;
+    private Set<? extends IField> fields;
     private Set<? extends IMethod> methods;
     private Set<JavaClassSignature> interfaces;
     private Optional<JavaClassSignature> superClass;
@@ -176,7 +176,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
   // FIXME: add missing statementss
   private SootClass(SootClassBuilder builder) {
-    super(builder.view, builder.classSource, builder.methods);
+    super(builder.view, builder.classSource, builder.methods, builder.fields);
     this.resolvingLevel = builder.resolvingLevel;
     this.classType = builder.classType;
     this.superClass = builder.superClass;
@@ -187,7 +187,6 @@ public class SootClass extends AbstractClass implements Serializable {
     this.outerClass = builder.outerClass;
     this.position = builder.position;
     this.modifiers = builder.modifiers;
-    this.fields = builder.fields;
     builder.view.addClass(this);
 
   }
@@ -203,7 +202,6 @@ public class SootClass extends AbstractClass implements Serializable {
   private final EnumSet<Modifier> modifiers;
   private final RefType refType;
   private final JavaClassSignature classSignature;
-  private final Set<SootField> fields;
   private final Set<JavaClassSignature> interfaces;
   private final Optional<JavaClassSignature> superClass;
   private final Optional<JavaClassSignature> outerClass;
@@ -220,7 +218,7 @@ public class SootClass extends AbstractClass implements Serializable {
   public SootClass(IView view, ResolvingLevel resolvingLevel, AbstractClassSource classSource, ClassType type,
       Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
       Set<SootField> fields, Set<SootMethod> methods, Position position, EnumSet<Modifier> modifiers) {
-    super(view, classSource, methods);
+    super(view, classSource, methods, fields);
     this.resolvingLevel = resolvingLevel;
     this.classType = type;
     this.superClass = superClass;
@@ -231,7 +229,6 @@ public class SootClass extends AbstractClass implements Serializable {
     this.outerClass = outerClass;
     this.position = position;
     this.modifiers = modifiers;
-    this.fields = Collections.unmodifiableSet(fields);
     view.addClass(this);
   }
 
@@ -295,14 +292,6 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Returns a backed Chain of fields.
-   */
-  public Collection<SootField> getFields() {
-    checkLevel(ResolvingLevel.SIGNATURES);
-    return fields == null ? new HashSet<>() : fields;
-  }
-
-  /**
    * Returns the field of this class with the given name and type. If the field cannot be found, an exception is thrown.
    */
   public SootField getField(String name, Type type) {
@@ -321,7 +310,8 @@ public class SootClass extends AbstractClass implements Serializable {
     if (fields == null) {
       return null;
     }
-    for (SootField field : fields) {
+    for (IField f : fields) {
+      SootField field = (SootField) f;
       if (field.getSignature().equals(name) && field.getType().equals(type)) {
         return field;
       }
@@ -350,10 +340,10 @@ public class SootClass extends AbstractClass implements Serializable {
     if (fields == null) {
       return null;
     }
-
     SootField foundField = null;
-    for (SootField field : fields) {
-      if (field.getSignature().equals(name)) {
+    for (IField f : fields) {
+      SootField field = (SootField) f;
+      if (field.getSignature().name.equals(name)) {
         if (foundField == null) {
           foundField = field;
         } else {
@@ -383,7 +373,8 @@ public class SootClass extends AbstractClass implements Serializable {
     if (fields == null) {
       return null;
     }
-    for (SootField field : fields) {
+    for (IField f : fields) {
+      SootField field = (SootField) f;
       if (field.getSubSignature().equals(subsignature)) {
         return field;
       }
@@ -456,24 +447,22 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the method with the given name. This method may throw an AmbiguousMethodException if there are more
-   * than one method with the given name. If no method with the given is found, null is returned.
+   * Attempts to retrieve the method with the given subSignature. This method may throw an AmbiguousMethodException if there
+   * are more than one method with the given subSignature. If no method with the given is found, null is returned.
    */
-  public SootMethod getMethodByNameUnsafe(String name) {
+  public SootMethod getMethodBySubSignature(String subSignature) {
     checkLevel(ResolvingLevel.SIGNATURES);
     SootMethod foundMethod = null;
-
     if (methods == null) {
       return null;
     }
-
     for (IMethod m : methods) {
       SootMethod method = (SootMethod) m;
-      if (method.getSignature().equals(name)) {
+      if (method.getSubSignature().toString().equals(subSignature)) {
         if (foundMethod == null) {
           foundMethod = method;
         } else {
-          throw new RuntimeException("ambiguous method: " + name + " in class " + this);
+          throw new RuntimeException("ambiguous method: " + subSignature + " in class " + this);
         }
       }
     }
@@ -485,7 +474,7 @@ public class SootClass extends AbstractClass implements Serializable {
    * than one method with the given name. If no method with the given is found, an exception is thrown as well.
    */
   public SootMethod getMethodByName(String name) {
-    SootMethod foundMethod = getMethodByNameUnsafe(name);
+    SootMethod foundMethod = getMethodBySubSignature(name);
     if (foundMethod == null) {
       throw new RuntimeException("couldn't find method " + name + "(*) in " + this);
     }
