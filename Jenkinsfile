@@ -94,6 +94,12 @@ pipeline {
 
 
 		stage('Report'){
+		     agent {
+                      docker {
+                        image 'maven:3-jdk-9-slim'
+                        args '-v $HOME/.m2:/root/.m2'
+                      }
+                    }
           steps {
                       unstash 'report1'
                       unstash 'report'
