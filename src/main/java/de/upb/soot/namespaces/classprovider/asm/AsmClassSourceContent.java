@@ -1,10 +1,13 @@
 package de.upb.soot.namespaces.classprovider.asm;
 
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.IMethod;
 import de.upb.soot.core.Modifier;
+import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
 
@@ -15,13 +18,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldNode;
 
 public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     implements de.upb.soot.namespaces.classprovider.ISourceContent {
 
+  private AbstractClassSource classSource;
+
+  public AsmClassSourceContent(AbstractClassSource classSource) {
+    super(Opcodes.ASM6);
+    this.classSource = classSource;
+    //FIXME: maybe delete class reading
+    AsmUtil.initASMClassSource(classSource, this);
+
+  }
+
   @Override
-  public void resolve(de.upb.soot.core.ResolvingLevel level, de.upb.soot.views.IView view) {
+  public AbstractClass resolve(ResolvingLevel level, IView view) {
     JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
     SootClass.SootClassBuilder builder = null;
     // FIXME: currently ugly because, the orignal class is always re-resolved but never copied...
@@ -42,26 +56,26 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         builder = (SootClass.SootClassBuilder) resolveBody(view, cs);
         break;
     }
-    builder.build();
-    // FIXME: should return the build sootclass
+
+    // FIXME: should return the build sootclass?
     // return builder.build();
 
     // everything is almost resolved at this tate
     // System.out.println(this.access);
     // System.out.println(this.methods);
     // create the soot class....
-    // FIXME: or a soot module ... what to do with a module
     // what to do with a module
 
+    return builder.build();
   }
 
   private SootClass.HierachyStep resolveDangling(IView view, JavaClassSignature cs) {
 
-    return SootClass.builder().dangling(view, null, null);
+    return SootClass.builder().dangling(view, this.classSource, null);
 
   }
 
-    private SootClass.SignatureStep resolveHierarchy(IView view, JavaClassSignature cs) {
+  private SootClass.SignatureStep resolveHierarchy(IView view, JavaClassSignature cs) {
     SootClass sootClass = (SootClass) view.getClass(cs).get();
     Set<JavaClassSignature> interfaces = new HashSet<>();
     Optional<JavaClassSignature> mySuperCl = null;
@@ -111,7 +125,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         String fieldName = fieldNode.name;
         EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
         Type fieldType = AsmUtil.toJimpleDesc(fieldNode.desc, view).get(0);
-        //FIXME: fieldname??
+        // FIXME: fieldname??
         SootField sootField = new SootField(view, null, null, null, modifiers);
         fields.add(sootField);
       }
@@ -156,7 +170,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     return bodyStep.bodies("dummy");
   }
 
-    @Override
+  @Override
   public org.objectweb.asm.MethodVisitor visitMethod(int access, String name, String desc, String signature,
       String[] exceptions) {
 

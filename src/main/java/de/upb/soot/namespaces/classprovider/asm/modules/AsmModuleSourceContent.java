@@ -4,7 +4,10 @@ import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.asmIDToSignature;
 import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.getModifiers;
 import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.resolveAsmNameToClassSignature;
 
+import de.upb.soot.core.AbstractClass;
+import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootModuleInfo;
+import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.asm.AsmUtil;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
@@ -12,6 +15,7 @@ import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ModuleExportNode;
 import org.objectweb.asm.tree.ModuleOpenNode;
 import org.objectweb.asm.tree.ModuleProvideNode;
@@ -20,11 +24,21 @@ import org.objectweb.asm.tree.ModuleRequireNode;
 public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
     implements de.upb.soot.namespaces.classprovider.ISourceContent {
 
+  private final AbstractClassSource classSource;
+
+  public AsmModuleSourceContent(AbstractClassSource classSource) {
+    super(Opcodes.ASM6);
+    this.classSource = classSource;
+
+    // FIXME: maybe delete class reading
+    AsmUtil.initASMClassSource(classSource, this);
+  }
+
   @Override
-  public void resolve(de.upb.soot.core.ResolvingLevel level, IView view) {
+  public AbstractClass resolve(ResolvingLevel level, IView view) {
     JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
     SootModuleInfo.SootModuleInfoBuilder builder = null;
-    if (module != null) {
+    if (module == null) {
       throw new IllegalArgumentException("This is not a module-info file");
     }
 
@@ -41,24 +55,23 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
       // lower steps, don't make sense for modules ?
 
       case SIGNATURES:
-        // builder = (SootClass.SootClassBuilder) resolveSignature(view, cs);
+        builder = (SootModuleInfo.SootModuleInfoBuilder) resolveSignature(view, cs);
         break;
 
       case BODIES:
-        // builder = (SootClass.SootClassBuilder) resolveBody(view, cs);
+        builder = (SootModuleInfo.SootModuleInfoBuilder) resolveBody(view, cs);
         break;
     }
-    builder.build();
-    // FIXME: should return the build sootclass
+
+    return builder.build();
 
   }
 
   private SootModuleInfo.HierachyStep resolveDangling(IView view, JavaClassSignature cs) {
     // sootClass.setModifiers(AsmUtil.getModifiers(access & ~org.objectweb.asm.Opcodes.ACC_SUPER));
-    return SootModuleInfo.builder().dangling(view, null, null);
+    return SootModuleInfo.builder().dangling(view, this.classSource, null, this.module.name);
 
   }
-
 
   private SootModuleInfo.Build resolveHierarchy(IView view, JavaClassSignature cs) {
     SootModuleInfo sootClass = (SootModuleInfo) view.getClass(cs).get();

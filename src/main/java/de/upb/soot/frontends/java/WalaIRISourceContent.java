@@ -1,5 +1,6 @@
 package de.upb.soot.frontends.java;
 
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.views.IView;
 
@@ -23,7 +24,7 @@ public class WalaIRISourceContent implements de.upb.soot.namespaces.classprovide
   }
 
   @Override
-  public void resolve(ResolvingLevel level, IView view) {
+  public AbstractClass resolve(ResolvingLevel level, IView view) {
     switch (level) {
       case HIERARCHY:
         break;
@@ -32,7 +33,8 @@ public class WalaIRISourceContent implements de.upb.soot.namespaces.classprovide
       case BODIES:
         break;
       default:
-        return;
+          return null;
     }
+      return null;
   }
 }
