@@ -29,7 +29,6 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractStmt;
-import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -111,10 +110,10 @@ public class JRetStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JReturnStmt)) {
+    if (!(o instanceof JRetStmt)) {
       return false;
     }
-    if (stmtAddressBox != ((JRetStmt) o).stmtAddressBox) {
+    if (!getStmtAddress().equivTo( ((JRetStmt) o).getStmtAddress() ) ) {
       return false;
     }
     return true;

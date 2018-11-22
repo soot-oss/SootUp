@@ -189,14 +189,14 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public int equivHashCode() {
-    int res = 7;
+    int res = super.equivHashCode();
     int prime = 31;
 
     for (IntConstant lv : lookupValues) {
       res = res * prime + lv.equivHashCode();
     }
 
-    return res + prime * super.equivHashCode();
+    return res;
   }
 
   @Override

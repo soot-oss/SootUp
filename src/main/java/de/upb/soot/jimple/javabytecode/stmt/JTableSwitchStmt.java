@@ -176,7 +176,8 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
       return false;
     }
 
-    if (lowIndex != ((JTableSwitchStmt) o).lowIndex || highIndex != ((JTableSwitchStmt) o).highIndex) {
+    JTableSwitchStmt tableSwitchStmt = (JTableSwitchStmt) o;
+    if (lowIndex != tableSwitchStmt.lowIndex || highIndex != tableSwitchStmt.highIndex) {
       return false;
     }
 

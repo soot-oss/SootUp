@@ -1,12 +1,9 @@
-package singleinstruction.stmt;
+package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.basic.ConditionExprBox;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.Expr;
 import de.upb.soot.jimple.common.expr.JEqExpr;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.stmt.JIfStmt;
-import de.upb.soot.jimple.common.stmt.JNopStmt;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

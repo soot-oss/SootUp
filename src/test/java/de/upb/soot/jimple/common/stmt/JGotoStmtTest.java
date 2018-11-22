@@ -1,11 +1,8 @@
-package singleinstruction.stmt;
+package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.JStmtBox;
 import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.stmt.JGotoStmt;
-import de.upb.soot.jimple.common.stmt.JThrowStmt;
 
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.signatures.DefaultSignatureFactory;
