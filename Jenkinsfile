@@ -59,7 +59,7 @@ pipeline {
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
-                stash includes: '/target/coverage-reports/**', name: 'reports2'
+                stash includes: '**/target/coverage-reports/*', name: 'reports2'
 
               }
             }
@@ -81,7 +81,7 @@ pipeline {
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
-                stash includes: '/target/coverage-reports/**', name: 'reports'
+                stash includes: '**/target/coverage-reports/*', name: 'reports'
 
 
               }
