@@ -26,4 +26,9 @@ public class DebuggingInformationTag implements Tag {
     return this.debugInfo;
 
   }
+
+  @Override
+  public String toString() {
+    return debugInfo.getCodeBodyPosition().toString();
+  }
 }

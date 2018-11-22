@@ -50,7 +50,7 @@ public class JimpleConverterTest {
     G.v().reset();
     Options.v().set_whole_program(true);
     Options.v().setPhaseOption("cg.spark", "on");
-
+    Options.v().set_print_tags_in_output(true);
     Scene.v().loadDynamicClasses();
     // load basic classes from soot
     Scene.v().loadBasicClasses();
@@ -58,8 +58,8 @@ public class JimpleConverterTest {
     soot.SootClass c = jimpleConverter.convertSootClass(klass);
     PrintWriter writer = new PrintWriter(System.out);
     soot.Printer.v().printTo(c, writer);
-    writer.flush();
-    writer.close();
+    // writer.flush();
+    // writer.close();
   }
 
   @Test

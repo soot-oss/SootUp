@@ -26,4 +26,13 @@ public class PositionTag implements Tag {
   public Position getPosition() {
     return this.stmtPos;
   }
+
+  @Override
+  public String toString() {
+    if (stmtPos != null) {
+      return stmtPos.toString();
+    } else {
+      return "No position info";
+    }
+  }
 }

@@ -11,8 +11,11 @@ import com.ibm.wala.cast.java.ipa.callgraph.JavaSourceAnalysisScope;
 import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
 import com.ibm.wala.cast.java.translator.jdt.ecj.ECJClassLoaderFactory;
 import com.ibm.wala.cast.loader.AstMethod;
+import com.ibm.wala.classLoader.ClassLoaderFactory;
+import com.ibm.wala.classLoader.ClassLoaderFactoryImpl;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.classLoader.Module;
 import com.ibm.wala.classLoader.SourceDirectoryTreeModule;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
@@ -26,8 +29,10 @@ import com.ibm.wala.util.warnings.Warnings;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -41,41 +46,81 @@ import java.util.jar.JarFile;
  */
 public class WalaClassLoader {
   private String sourceDirPath;
-  private String exclusionFilePath;
   private IClassHierarchy classHierarchy;
   private List<SootClass> sootClasses;
+  private AnalysisScope scope;
+  private ClassLoaderFactory factory;
 
-  public WalaClassLoader(String sourceDirPath, String exclusionFilePath) {
-    this.sourceDirPath = sourceDirPath;
-    this.exclusionFilePath = exclusionFilePath;
+  private WalaClassLoader() {
     // disable System.err messages generated from eclipse jdt
     System.setProperty("wala.jdt.quiet", "true");
-  }
-
-  /**
-   * Use WALA's JAVA source code front-end to build class hierachy.
-   */
-  private void buildClassHierachy() {
-    AnalysisScope scope = new JavaSourceAnalysisScope();
+    scope = new JavaSourceAnalysisScope();
     try {
       // add standard libraries to scope
       String[] stdlibs = WalaProperties.getJ2SEJarFiles();
       for (String stdlib : stdlibs) {
         scope.addToScope(ClassLoaderReference.Primordial, new JarFile(stdlib));
       }
-      // add the source directory
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public WalaClassLoader(String sourceDirPath) {
+    this(sourceDirPath, null);
+  }
+
+  /**
+   * Constructor used for loading classes from given source code path.
+   * 
+   * @param sourceDirPath
+   * @param exclusionFilePath
+   */
+  public WalaClassLoader(String sourceDirPath, String exclusionFilePath) {
+    this();
+    this.sourceDirPath = sourceDirPath;
+    try {
+      // add the source directory to scope
       scope.addToScope(JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(sourceDirPath)));
-      if (exclusionFilePath != null && !exclusionFilePath.isEmpty()) {
-        FileOfClasses classes;
-        classes = new FileOfClasses(new FileInputStream(new File(exclusionFilePath)));
-        scope.setExclusions(classes);
+      // set exclusions
+      if (exclusionFilePath != null) {
+        File exclusionFile = new File(exclusionFilePath);
+        if (exclusionFile.isFile()) {
+          FileOfClasses classes;
+          classes = new FileOfClasses(new FileInputStream(exclusionFile));
+          scope.setExclusions(classes);
+        }
       }
-      // build the class hierarchy
-      this.classHierarchy = ClassHierarchyFactory.make(scope, new ECJClassLoaderFactory(scope.getExclusions()));
-      Warnings.clear();
-    } catch (ClassHierarchyException e) {
+      
+      factory = new ECJClassLoaderFactory(scope.getExclusions());
+    } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Constructor used for LSP server.
+   * 
+   * @param moduleFiles
+   */
+  public WalaClassLoader(Collection<? extends Module> moduleFiles) {
+    this();
+    for (Module m : moduleFiles) {
+      scope.addToScope(scope.getApplicationLoader(), m);
+    }
+    factory = new ClassLoaderFactoryImpl(scope.getExclusions());
+  }
+
+  /**
+   * Use WALA's JAVA source code front-end to build class hierachy.
+   */
+  private void buildClassHierachy() {
+    try {
+      this.classHierarchy = ClassHierarchyFactory.make(scope, factory);
+      Warnings.clear();
+    } catch (ClassHierarchyException e) {
       e.printStackTrace();
     }
   }
@@ -150,7 +195,7 @@ public class WalaClassLoader {
         JavaClass c = (JavaClass) it.next();
         String cname = walaToSoot.convertClassNameFromWala(c.getName().toString());
         if (cname.equals(signature.declClassSignature.getFullyQualifiedName())) {
-          walaClass=c;
+          walaClass = c;
         }
       }
     }

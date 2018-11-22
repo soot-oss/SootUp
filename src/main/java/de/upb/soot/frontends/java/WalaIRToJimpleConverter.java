@@ -417,7 +417,9 @@ public class WalaIRToJimpleConverter {
         if (!sootMethod.isStatic()) {
           RefType thisType = view.getRefType(sootMethod.getDeclaringClassSignature());
           Local thisLocal = localGenerator.generateThisLocal(thisType);
-          stmts.add(Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType)));
+          IStmt stmt = Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType));
+          stmt.setPosition(debugInfo.getInstructionPosition(0));
+          stmts.add(stmt);
         }
 
         int startPara = 0;
@@ -429,7 +431,9 @@ public class WalaIRToJimpleConverter {
           TypeReference t = walaMethod.getParameterType(startPara);
           Type type = convertType(t);
           Local paraLocal = localGenerator.generateParameterLocal(type, startPara);
-          stmts.add(Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, startPara)));
+          IStmt stmt = Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, startPara));
+          stmt.setPosition(debugInfo.getInstructionPosition(0));
+          stmts.add(stmt);
         }
 
         // TODO 2. convert traps
@@ -458,6 +462,7 @@ public class WalaIRToJimpleConverter {
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
           IStmt ret = Jimple.newReturnVoidStmt();
           instConverter.setTarget(ret, -1);
+          ret.setPosition(debugInfo.getInstructionPosition(insts.length - 1));
           stmts.add(ret);
         }
         Body body = new Body(sootMethod, localGenerator.getLocals(), traps, stmts, bodyPos);
