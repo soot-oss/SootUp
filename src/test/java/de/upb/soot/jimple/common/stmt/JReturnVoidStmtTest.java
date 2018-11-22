@@ -1,11 +1,7 @@
-package singleinstruction.stmt;
+package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.common.constant.IntConstant;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.stmt.JNopStmt;
-import de.upb.soot.jimple.common.stmt.JReturnStmt;
 
-import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

@@ -1,4 +1,4 @@
-package de.upb.soot.jimple;
+package referencejimple;
 
 import de.upb.soot.Project;
 import de.upb.soot.core.SootClass;

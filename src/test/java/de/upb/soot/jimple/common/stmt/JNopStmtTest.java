@@ -1,10 +1,7 @@
-package singleinstruction.stmt;
+package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.ref.JParameterRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.stmt.JIdentityStmt;
-import de.upb.soot.jimple.common.stmt.JNopStmt;
 import de.upb.soot.jimple.common.type.IntType;
 
 import org.junit.Assert;

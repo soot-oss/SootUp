@@ -1,4 +1,4 @@
-package de.upb.soot.jimple;
+package de.upb.soot.jimple.common.ref;
 
 import static org.junit.Assert.assertEquals;
 
@@ -7,9 +7,8 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
+import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
-import de.upb.soot.jimple.common.ref.JStaticFieldRef;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.namespaces.classprovider.java.JavaClassSource;

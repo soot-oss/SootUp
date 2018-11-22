@@ -1,4 +1,4 @@
-package de.upb.soot.jimple.stmt;
+package referencejimple;
 
 import com.ibm.wala.cast.loader.AstMethod;
 import de.upb.soot.core.Body;
@@ -9,32 +9,24 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.JimpleInstructionsTestBase;
-import de.upb.soot.jimple.NoPositionInformation;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.namespaces.classprovider.IMethodSource;
 import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
 import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
-import de.upb.soot.util.printer.Printer;
-import de.upb.soot.views.IView;
-import org.jf.dexlib2.dexbacked.util.DebugInfo;
-import sun.reflect.generics.tree.ClassSignature;
 
-import java.io.File;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -133,7 +125,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
 
         Value value = IntConstant.getInstance( 42 );
-        stmts.add(Jimple.newAssignStmt( Jimple.newInstanceFieldRef( r0 , initField ) , value ));
+        stmts.add(Jimple.newAssignStmt( Jimple.newInstanceFieldRef( view, r0, (FieldSignature) initField.getSignature() ) , value ));
 
         stmts.add(Jimple.newReturnVoidStmt() );
 

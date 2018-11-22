@@ -1,4 +1,4 @@
-package singleinstruction.stmt;
+package de.upb.soot.jimple.common.stmt;
 
 import categories.Java8Test;
 import de.upb.soot.jimple.basic.Local;
@@ -6,16 +6,28 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.constant.LongConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.LongType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.util.Comparator;
+
 @Category(Java8Test.class)
 public class JAssignStmtTest {
+
+    Comparator c = new Comparator<IStmt>() {
+        @Override
+        public int compare(IStmt o1, IStmt o2) {
+            return o1.containsFieldRef() && o2.containsFieldRef() ? 1 : 0 ;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return false;
+        }
+    };
 
     @Test
     public void test(){
@@ -53,7 +65,8 @@ public class JAssignStmtTest {
         Assert.assertEquals("i2 = 42", fStmt.toString());
         Assert.assertEquals("$i0 = 42 + 33102", deepStmt.toString());
         
-        // TODO equivTo with comparator
+        // equivTo with comparator
+        Assert.assertTrue( lStmt.equivTo(deepStmt, c) );
 
     }
 

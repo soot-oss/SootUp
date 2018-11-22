@@ -74,17 +74,13 @@ public class JBreakpointStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JBreakpointStmt)) {
-      return false;
-    }
-    return false;
+    return o instanceof JBreakpointStmt;
   }
 
   @Override
   public int equivHashCode() {
     // TODO: implement more?
-
-    return 0;
+    return 42 + 1;
   }
 
   @Override

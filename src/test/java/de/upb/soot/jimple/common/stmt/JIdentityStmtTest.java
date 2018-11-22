@@ -1,11 +1,9 @@
-package singleinstruction.stmt;
+package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.signatures.DefaultSignatureFactory;
