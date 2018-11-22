@@ -47,6 +47,7 @@ pipeline {
               docker {
                 image 'maven:3-jdk-8-alpine'
                 args '-v $HOME/.m2:/root/.m2'
+
               }
             }
 
@@ -66,6 +67,7 @@ pipeline {
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
+                archiveArtifacts artifacts: 'target/coverage-reports/*', fingerprint: false
               }
             }
           }
@@ -95,6 +97,7 @@ pipeline {
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
+                archiveArtifacts artifacts: 'target/coverage-reports/*', fingerprint: false
               }
             }
           }
