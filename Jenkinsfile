@@ -53,21 +53,21 @@ pipeline {
 
             steps {
               sh 'mvn test -PJava8'
-              jacoco(   execPattern: '**/target/coverage-reports/jacoco-ut.exec',
-              classPattern: '**/classes',
-              sourcePattern: 'src/main/java',
-              exclusionPattern: 'src/test*',
-              changeBuildStatus: true,
-              minimumMethodCoverage: "50",
-              maximumMethodCoverage: "70",
-              deltaMethodCoverage: "10"
-              )
+
             }
 
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
-                archiveArtifacts artifacts: 'target/coverage-reports/*', fingerprint: false
+                jacoco(   execPattern: '**/target/coverage-reports/jacoco-ut.exec',
+                              classPattern: '**/classes',
+                              sourcePattern: 'src/main/java',
+                              exclusionPattern: 'src/test*',
+                              changeBuildStatus: true,
+                              minimumMethodCoverage: "50",
+                              maximumMethodCoverage: "70",
+                              deltaMethodCoverage: "10"
+                              )
               }
             }
           }
@@ -83,21 +83,21 @@ pipeline {
 
             steps {
               sh 'mvn test -PJava9'
-              jacoco(
-              execPattern: '**/target/coverage-reports/jacoco-ut.exec',
-              classPattern: '**/classes',
-              sourcePattern: 'src/main/java',
-              exclusionPattern: 'src/test*',
-              changeBuildStatus: true,
-              minimumMethodCoverage: "50",
-              maximumMethodCoverage: "70",
-              deltaMethodCoverage: "10"
-              )
+
             }
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
-                archiveArtifacts artifacts: 'target/coverage-reports/*', fingerprint: false
+                     jacoco(
+                              execPattern: '**/target/coverage-reports/jacoco-ut.exec',
+                              classPattern: '**/classes',
+                              sourcePattern: 'src/main/java',
+                              exclusionPattern: 'src/test*',
+                              changeBuildStatus: true,
+                              minimumMethodCoverage: "50",
+                              maximumMethodCoverage: "70",
+                              deltaMethodCoverage: "10"
+                              )
               }
             }
           }
