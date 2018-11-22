@@ -40,7 +40,7 @@ pipeline {
 
 	    stage('Test') {
         parallel {
-	  
+
           stage('Test JDK8'){
 
             agent {
@@ -59,21 +59,14 @@ pipeline {
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
-                jacoco(   execPattern: '**/target/coverage-reports/jacoco-ut.exec',
-                              classPattern: '**/classes',
-                              sourcePattern: 'src/main/java',
-                              exclusionPattern: 'src/test*',
-                              changeBuildStatus: true,
-                              minimumMethodCoverage: "50",
-                              maximumMethodCoverage: "70",
-                              deltaMethodCoverage: "10"
-                              )
+                stash includes: '/target/coverage-reports/**', name: 'reports2'
+
               }
             }
           }
 
 	        stage('Test JDK9'){
-  
+
             agent {
               docker {
                 image 'maven:3-jdk-9-slim'
@@ -88,16 +81,9 @@ pipeline {
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
-                     jacoco(
-                              execPattern: '**/target/coverage-reports/jacoco-ut.exec',
-                              classPattern: '**/classes',
-                              sourcePattern: 'src/main/java',
-                              exclusionPattern: 'src/test*',
-                              changeBuildStatus: true,
-                              minimumMethodCoverage: "50",
-                              maximumMethodCoverage: "70",
-                              deltaMethodCoverage: "10"
-                              )
+                stash includes: '/target/coverage-reports/**', name: 'reports'
+
+
               }
             }
           }
@@ -105,6 +91,25 @@ pipeline {
 
 	       }
 		}
+
+
+		stage('Report'){
+          steps {
+                      unstash 'report1'
+                      unstash 'report'
+
+        	             jacoco(   execPattern: '**/target/coverage-reports/jacoco-ut.exec',
+                                      classPattern: '**/classes',
+                                      sourcePattern: 'src/main/java',
+                                      exclusionPattern: 'src/test*',
+                                      changeBuildStatus: true,
+                                      minimumMethodCoverage: "50",
+                                      maximumMethodCoverage: "70",
+                                      deltaMethodCoverage: "10"
+                                      )
+        	        }
+        		}
+
 
 		stage('Deploy'){
 		    when {
