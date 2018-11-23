@@ -59,7 +59,7 @@ pipeline {
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
-                stash includes: '**/target/coverage-reports/*', name: 'reports2'
+                stash includes: '**/target/coverage-reports/*', name: 'reports1'
 
               }
             }
@@ -81,7 +81,7 @@ pipeline {
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
-                stash includes: '**/target/coverage-reports/*', name: 'reports'
+                stash includes: '**/target/coverage-reports/*', name: 'reports2'
 
 
               }
@@ -102,7 +102,7 @@ pipeline {
                     }
           steps {
                       unstash 'report1'
-                      unstash 'report'
+                      unstash 'report2'
 
         	             jacoco(   execPattern: '**/target/coverage-reports/jacoco-ut.exec',
                                       classPattern: '**/classes',
