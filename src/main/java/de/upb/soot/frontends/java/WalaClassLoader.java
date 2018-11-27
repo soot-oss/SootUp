@@ -108,9 +108,10 @@ public class WalaClassLoader {
   public WalaClassLoader(Collection<? extends Module> moduleFiles) {
     this();
     for (Module m : moduleFiles) {
-      scope.addToScope(scope.getApplicationLoader(), m);
+      scope.addToScope(JavaSourceAnalysisScope.SOURCE, m);
     }
-    factory = new ClassLoaderFactoryImpl(scope.getExclusions());
+    //factory = new ClassLoaderFactoryImpl(scope.getExclusions());
+    factory = new ECJClassLoaderFactory(scope.getExclusions());
   }
 
   /**
