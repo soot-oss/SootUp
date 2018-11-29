@@ -1,4 +1,4 @@
-package referencejimple;
+package de.upb.soot.jimple;
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 

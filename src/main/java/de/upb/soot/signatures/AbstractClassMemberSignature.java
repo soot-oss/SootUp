@@ -1,5 +1,6 @@
 package de.upb.soot.signatures;
 
+import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootClassMember;
 
 import com.google.common.base.Objects;
@@ -25,7 +26,7 @@ public abstract class AbstractClassMemberSignature implements ISignature {
   }
 
   public abstract String getSubSignature();
-  
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -34,6 +35,7 @@ public abstract class AbstractClassMemberSignature implements ISignature {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
+    // TODO: what is with MethodSignature?
     FieldSignature that = (FieldSignature) o;
     return Objects.equal(name, that.name) && Objects.equal(declClassSignature, that.declClassSignature)
         && Objects.equal(typeSignature, that.typeSignature);
@@ -45,8 +47,7 @@ public abstract class AbstractClassMemberSignature implements ISignature {
   }
 
   @Override
-  public String toString()
-  {
+  public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append('<');
     sb.append(declClassSignature.toString());

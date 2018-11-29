@@ -79,8 +79,7 @@ public class JBreakpointStmt extends AbstractStmt {
 
   @Override
   public int equivHashCode() {
-    // TODO: implement more?
-    return 42 + 1;
+    return 42+1;
   }
 
   @Override

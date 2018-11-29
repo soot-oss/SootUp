@@ -76,8 +76,6 @@ public class JNopStmt extends AbstractStmt {
 
   @Override
   public int equivHashCode() {
-    // TODO: what to return
     return 42;
   }
-
 }
