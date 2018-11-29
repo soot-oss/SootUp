@@ -225,15 +225,14 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       up.method(op.get());
     }
     up.literal("(");
-
-    for (int i = 0; i < bsmArgBoxes.length; i++) {
-      if (i != 0) {
+    final int len = bsmArgBoxes.length;
+    if( 0 < len ){
+      bsmArgBoxes[0].toString(up);
+      for (int i = 1; i < bsmArgBoxes.length; i++) {
         up.literal(", ");
+        bsmArgBoxes[i].toString(up);
       }
-
-      bsmArgBoxes[i].toString(up);
     }
-
     up.literal(")");
   }
 

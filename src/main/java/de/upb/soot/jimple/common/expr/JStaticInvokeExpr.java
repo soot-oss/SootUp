@@ -130,12 +130,13 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     up.literal("(");
 
     if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
+      final int len = argBoxes.length;
+      if ( 0 < len ) {
+        argBoxes[0].toString(up);
+        for (int i = 1; i < len; i++) {
           up.literal(", ");
+          argBoxes[i].toString(up);
         }
-
-        argBoxes[i].toString(up);
       }
     }
 
