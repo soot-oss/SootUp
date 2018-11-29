@@ -35,6 +35,7 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
@@ -115,6 +116,33 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
       list.addAll(element.getValue().getUseBoxes());
     }
     return list;
+  }
+
+
+  protected void argBoxesToString( StringBuffer buffer ) {
+    if (argBoxes != null) {
+      final int len = argBoxes.length;
+      if (0 < len) {
+        buffer.append(argBoxes[0].getValue().toString());
+        for (int i = 1; i < len; i++) {
+          buffer.append(", ");
+          buffer.append(argBoxes[i].getValue().toString());
+        }
+      }
+    }
+  }
+
+  protected void argBoxesToPrinter(IStmtPrinter up) {
+    if (argBoxes != null) {
+      final int len = argBoxes.length;
+      if (0 < len) {
+        argBoxes[0].toString(up);
+        for (int i = 1; i < argBoxes.length; i++) {
+          up.literal(", ");
+          argBoxes[i].toString(up);
+        }
+      }
+    }
   }
 
 }
