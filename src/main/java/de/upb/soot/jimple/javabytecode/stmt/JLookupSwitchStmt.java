@@ -173,18 +173,18 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
       return false;
     }
 
-    JLookupSwitchStmt lsw = (JLookupSwitchStmt) o;
-    if (lookupValues.size() != lsw.getLookupValues().size()) {
+    JLookupSwitchStmt lookupSwitchStmt = (JLookupSwitchStmt) o;
+    if (lookupValues.size() != lookupSwitchStmt.getLookupValues().size()) {
       return false;
     }
     Iterator<IntConstant> lvIterator = lookupValues.iterator();
-    for (IntConstant lvOther : lsw.getLookupValues()) {
+    for (IntConstant lvOther : lookupSwitchStmt.getLookupValues()) {
       if (!lvOther.equivTo(lvIterator.next())) {
         return false;
       }
     }
 
-    return super.equivTo((AbstractSwitchStmt) o);
+    return super.equivTo( lookupSwitchStmt );
   }
 
   @Override

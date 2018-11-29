@@ -181,7 +181,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
       return false;
     }
 
-    return super.equivTo((AbstractSwitchStmt) o);
+    return super.equivTo( tableSwitchStmt );
   }
 
   @Override
