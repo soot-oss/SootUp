@@ -74,7 +74,7 @@ public class JBreakpointStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    return o instanceof JBreakpointStmt;
+    return (o instanceof JBreakpointStmt);
   }
 
   @Override

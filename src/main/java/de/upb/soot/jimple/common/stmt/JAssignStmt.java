@@ -380,12 +380,10 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   @Override
   public boolean equivTo(Object o) {
-
     if (o instanceof JAssignStmt) {
       JAssignStmt jas = (JAssignStmt) o;
       return leftBox.getValue().equivTo(jas.leftBox.getValue()) && rightBox.getValue().equivTo(jas.rightBox.getValue());
     }
-
     return false;
   }
 

@@ -112,12 +112,7 @@ public class JInvokeStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-
-    if (!(o instanceof JInvokeStmt)) {
-      return false;
-    }
-
-    return getInvokeExpr().equivTo(((JInvokeStmt) o).getInvokeExpr());
+    return (o instanceof JInvokeStmt) && getInvokeExpr().equivTo(((JInvokeStmt) o).getInvokeExpr());
   }
 
   @Override

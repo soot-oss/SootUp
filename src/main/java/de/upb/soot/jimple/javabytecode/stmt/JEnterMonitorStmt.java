@@ -83,10 +83,7 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
   }
 
   public boolean equivTo(Object o) {
-    if (!(o instanceof JEnterMonitorStmt)) {
-      return false;
-    }
-    return super.equivTo((AbstractOpStmt) o);
+    return (o instanceof JEnterMonitorStmt) && super.equivTo((AbstractOpStmt) o);
   }
 
   @Override

@@ -80,10 +80,7 @@ public class JReturnStmt extends AbstractOpStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JReturnStmt)) {
-      return false;
-    }
-    return super.equivTo((AbstractOpStmt) o);
+    return (o instanceof JReturnStmt) && super.equivTo((AbstractOpStmt) o);
   }
 
   @Override

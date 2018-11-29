@@ -83,10 +83,7 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   }
 
   public boolean equivTo(Object o) {
-    if (!(o instanceof JExitMonitorStmt)) {
-      return false;
-    }
-    return super.equivTo((AbstractOpStmt) o);
+    return (o instanceof JExitMonitorStmt) && super.equivTo((AbstractOpStmt) o);
   }
 
   @Override
