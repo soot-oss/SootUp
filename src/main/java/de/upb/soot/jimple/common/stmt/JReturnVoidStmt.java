@@ -79,8 +79,7 @@ public class JReturnVoidStmt extends AbstractStmt {
 
   @Override
   public int equivHashCode() {
-    // TODO: what to return?
-    return 42;
+    return 42+2;
   }
 
 }
