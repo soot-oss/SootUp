@@ -115,7 +115,7 @@ public class WalaClassLoader {
   }
 
   /**
-   * Use WALA's JAVA source code front-end to build class hierachy.
+   * Use WALA's JAVA source code front-end to build class hierarchy.
    */
   private void buildClassHierachy() {
     try {
@@ -133,7 +133,11 @@ public class WalaClassLoader {
    */
   public List<SootClass> getSootClasses() {
     if (classHierarchy == null) {
-      buildClassHierachy();
+    	try {
+    		buildClassHierachy();
+    	} catch (Exception e) {
+    		assert false : e;
+    	}
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourceDirPath);
     Iterator<IClass> it = classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).iterateAllClasses();
