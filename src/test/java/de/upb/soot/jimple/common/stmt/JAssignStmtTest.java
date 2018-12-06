@@ -19,15 +19,10 @@ import categories.Java8Test;
 @Category(Java8Test.class)
 public class JAssignStmtTest {
 
-  Comparator c = new Comparator<IStmt>() {
+  Comparator comparator = new Comparator<IStmt>() {
     @Override
     public int compare(IStmt o1, IStmt o2) {
       return o1.containsFieldRef() && o2.containsFieldRef() ? 1 : 0;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      return false;
     }
   };
 
@@ -71,7 +66,7 @@ public class JAssignStmtTest {
     Assert.assertEquals("$i0 = 42 + 33102", deepStmt.toString());
 
     // equivTo with comparator
-    Assert.assertTrue(lStmt.equivTo(deepStmt, c));
+    Assert.assertTrue(lStmt.equivTo(deepStmt, comparator));
 
   }
 

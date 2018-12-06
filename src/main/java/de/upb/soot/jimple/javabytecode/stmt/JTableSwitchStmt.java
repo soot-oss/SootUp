@@ -43,6 +43,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
    * 
    */
   private static final long serialVersionUID = -4716844468557152732L;
+  // TODO: final -> immutability?
   int lowIndex;
   int highIndex;
 
