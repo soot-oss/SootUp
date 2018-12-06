@@ -27,8 +27,9 @@ public class JLookupSwitchStmtTest {
     ArrayList<IStmt> targets = new ArrayList<>();
 
     IStmt stmt = new JLookupSwitchStmt(IntConstant.getInstance(42), lookupValues, targets, new JNopStmt());
-    IStmt stmtDifferentKey= new JLookupSwitchStmt(IntConstant.getInstance(123), lookupValues, targets, new JNopStmt());
-    IStmt stmtDifferentDefault = new JLookupSwitchStmt(IntConstant.getInstance(42), lookupValues, targets, new JReturnStmt(IntConstant.getInstance(42)));
+    IStmt stmtDifferentKey = new JLookupSwitchStmt(IntConstant.getInstance(123), lookupValues, targets, new JNopStmt());
+    IStmt stmtDifferentDefault = new JLookupSwitchStmt(IntConstant.getInstance(42), lookupValues, targets,
+        new JReturnStmt(IntConstant.getInstance(42)));
 
     // toString
     assertEquals("lookupswitch(42) {     default: goto nop; }", stmt.toString());
@@ -39,20 +40,18 @@ public class JLookupSwitchStmtTest {
     lookupValues.add(IntConstant.getInstance(42));
     lookupValues.add(IntConstant.getInstance(33102));
 
-    IStmt stmtDifferentLookupAndTarget = new JLookupSwitchStmt(IntConstant.getInstance(123), lookupValues, targets, new JNopStmt());
+    IStmt stmtDifferentLookupAndTarget
+        = new JLookupSwitchStmt(IntConstant.getInstance(123), lookupValues, targets, new JNopStmt());
     assertEquals("lookupswitch(123) {     case 42: goto return;     case 33102: goto nop;     default: goto nop; }",
-            stmtDifferentLookupAndTarget.toString());
+        stmtDifferentLookupAndTarget.toString());
 
-
-
-      // equivTo
-    assertFalse(stmt.equivTo( this ));
+    // equivTo
+    assertFalse(stmt.equivTo(this));
     assertTrue(stmt.equivTo(stmt));
     assertFalse(stmt.equivTo(stmtDifferentLookupAndTarget));
-    assertFalse( stmt.equivTo(stmtDifferentDefault));
-    assertFalse( stmt.equivTo(stmtDifferentKey));
+    assertFalse(stmt.equivTo(stmtDifferentDefault));
+    assertFalse(stmt.equivTo(stmtDifferentKey));
 
   }
 
 }
-

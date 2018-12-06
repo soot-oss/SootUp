@@ -18,7 +18,7 @@ public class JReturnVoidStmtTest {
 
     // equivTo
     Assert.assertTrue(rStmt.equivTo(rStmt));
-    Assert.assertTrue(rStmt.equivTo(new JReturnVoidStmt() ));
+    Assert.assertTrue(rStmt.equivTo(new JReturnVoidStmt()));
     Assert.assertFalse(rStmt.equivTo(new JNopStmt()));
     Assert.assertFalse(rStmt.equivTo(new JReturnStmt(IntConstant.getInstance(3))));
 

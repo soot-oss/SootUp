@@ -22,10 +22,9 @@ public class JNopStmtTest {
     Assert.assertTrue(nop.equivTo(new JNopStmt()));
 
     Assert.assertFalse(nop
-            .equivTo(new JIdentityStmt(new Local("$i0", IntType.getInstance()), new JParameterRef(IntType.getInstance(), 123))));
+        .equivTo(new JIdentityStmt(new Local("$i0", IntType.getInstance()), new JParameterRef(IntType.getInstance(), 123))));
 
-
-    Assert.assertEquals("nop",nop.toString());
+    Assert.assertEquals("nop", nop.toString());
 
   }
 

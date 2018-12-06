@@ -6,6 +6,7 @@ import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.NoPositionInformation;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.StringConstant;
@@ -37,7 +38,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import categories.Java8Test;
-import de.upb.soot.jimple.NoPositionInformation;
 
 @Category(Java8Test.class)
 public class JInvokeStmtTest {
@@ -74,7 +74,6 @@ public class JInvokeStmtTest {
     Assert.assertFalse(staticInvokeStmt.equivTo(new JNopStmt()));
     Assert.assertTrue(staticInvokeStmt.equivTo(staticInvokeStmt));
 
-
     // JSpecialInvoke
     MethodSignature smethodSig = dsm.getMethodSignature("<init>", "java.lang.Object", "void", Arrays.asList());
     IStmt specialInvokeStmt = new JInvokeStmt(new JSpecialInvokeExpr(view,
@@ -86,8 +85,6 @@ public class JInvokeStmtTest {
     // equivTo
     Assert.assertFalse(specialInvokeStmt.equivTo(new JNopStmt()));
     Assert.assertTrue(specialInvokeStmt.equivTo(specialInvokeStmt));
-
-
 
     // JInterfaceInvoke
     MethodSignature imethodSig = dsm.getMethodSignature("remove", "java.util.Iterator", "void", Arrays.asList());
@@ -101,22 +98,24 @@ public class JInvokeStmtTest {
     Assert.assertFalse(interfaceInvokeStmt.equivTo(new JNopStmt()));
     Assert.assertTrue(interfaceInvokeStmt.equivTo(interfaceInvokeStmt));
 
-
     // JDynamicInvoke
-    MethodSignature dmethodSig = dsm.getMethodSignature("mylambda", SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME, "void", Arrays.asList() );
+    MethodSignature dmethodSig
+        = dsm.getMethodSignature("mylambda", SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME, "void", Arrays.asList());
     MethodSignature bootstrapMethodSig = dsm.getMethodSignature("run", "Runnable", "void", Arrays.asList());
     List<? extends Value> bootstrapArgs = Arrays.asList();
     List<? extends Value> methodArgs = Arrays.asList();
 
-    IStmt dynamicInvokeStmt = new JInvokeStmt(new JDynamicInvokeExpr(view, bootstrapMethodSig , bootstrapArgs ,dmethodSig, methodArgs));
+    IStmt dynamicInvokeStmt
+        = new JInvokeStmt(new JDynamicInvokeExpr(view, bootstrapMethodSig, bootstrapArgs, dmethodSig, methodArgs));
 
     // toString
-    Assert.assertEquals("dynamicinvoke \"<soot.dummy.InvokeDynamic: void mylambda()>\" <void mylambda()>() <Runnable: void run()>()", dynamicInvokeStmt.toString());
+    Assert.assertEquals(
+        "dynamicinvoke \"<soot.dummy.InvokeDynamic: void mylambda()>\" <void mylambda()>() <Runnable: void run()>()",
+        dynamicInvokeStmt.toString());
 
     // equivTo
     Assert.assertFalse(dynamicInvokeStmt.equivTo(new JNopStmt()));
     Assert.assertTrue(dynamicInvokeStmt.equivTo(dynamicInvokeStmt));
-
 
     // general
     Assert.assertFalse(staticInvokeStmt.equivTo(specialInvokeStmt));
