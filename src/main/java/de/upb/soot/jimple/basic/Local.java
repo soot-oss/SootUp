@@ -59,9 +59,8 @@ public class Local implements Value, Numberable, Immediate {
   public boolean equivTo(Object o) {
     if (o instanceof Local) {
       return this.equivHashCode() == ((Local) o).equivHashCode();
-    } else {
-      return false;
     }
+    return false;
   }
 
   @Override
@@ -136,8 +135,7 @@ public class Local implements Value, Numberable, Immediate {
   private int number = 0;
 
   @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
-    // TODO Auto-generated method stub
-    return false;
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 }
