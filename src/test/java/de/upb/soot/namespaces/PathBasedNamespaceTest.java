@@ -32,7 +32,9 @@ import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 
-/** @author Manuel Benz created on 06.06.18 */
+/**
+ * @author Manuel Benz created on 06.06.18
+ */
 public class PathBasedNamespaceTest extends AbstractNamespaceTest {
 
   @Test(expected = IllegalArgumentException.class)

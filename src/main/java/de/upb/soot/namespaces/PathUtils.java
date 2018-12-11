@@ -22,18 +22,11 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
-import de.upb.soot.signatures.ClassSignature;
-import de.upb.soot.signatures.SignatureFactory;
-
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * Common functionality useful to cope with {@link Path}s.
@@ -41,7 +34,6 @@ import org.apache.commons.io.FilenameUtils;
  * @author Manuel Benz created on 06.06.18
  */
 public class PathUtils {
-
 
   /**
    * Matches the given {@link Path} with the file extensions of the given {@link FileType}s.
