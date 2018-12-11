@@ -1,9 +1,9 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.namespaces.classprovider.ISourceContent;
+import de.upb.soot.namespaces.classprovider.asm.modules.AsmModuleSourceContent;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModuleDecoratorClassSignature;
 import de.upb.soot.signatures.ModuleSignature;
@@ -231,15 +231,24 @@ public class ModuleFinder {
 
   }
 
+  // FIXME: quikly parse the module name
+  private String parseModuleInfoClassFile(ISourceContent moduleInfo) {
+    if (moduleInfo instanceof AsmModuleSourceContent) {
+      return ((AsmModuleSourceContent) moduleInfo).module.name;
+    }
+    return "";
+  }
+
   private String getModuleName(AbstractClassSource moduleInfoSource) throws ClassResolvingException {
     // FIXME: somhow in need the module name from the source code ...
     // AbstractClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
-    AbstractClass moduleInfoClass = null;
-    if (!(moduleInfoClass instanceof SootModuleInfo)) {
+    ISourceContent moduleInfoClass = this.classProvider.getContent(moduleInfoSource);
+    if (!(moduleInfoClass instanceof AsmModuleSourceContent)) {
       throw new ClassResolvingException("Class is named module-info but does not reify to SootModuleInfo");
     }
+    // FIXME: here is no view or anything to resolve the content...??? Why do I need a view anyway?
 
-    String moduleName = ((SootModuleInfo) moduleInfoClass).getName();
+    String moduleName = parseModuleInfoClassFile(moduleInfoClass);
     createProperModuleSignature(moduleInfoSource, moduleName);
 
     return moduleName;
