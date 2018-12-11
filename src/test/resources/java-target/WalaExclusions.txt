@@ -1,0 +1,2 @@
+de\/upb\/soot\/basic\/lambdaExpressions\/.*
+de\/upb\/soot\/concrete\/lambdaExpressions\/.*

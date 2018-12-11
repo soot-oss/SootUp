@@ -1,0 +1,15 @@
+class A extends java.lang.Object
+{
+    protected int value;
+
+    void <init>()
+    {
+        A r0;
+
+        r0 := @this: A;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+}

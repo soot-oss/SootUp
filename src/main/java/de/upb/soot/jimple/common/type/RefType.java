@@ -22,78 +22,73 @@
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
+
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.Scene;
-import de.upb.soot.SootResolver;
+import de.upb.soot.core.IViewResident;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.CommonClassSignatures;
+import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.views.IView;
+import de.upb.soot.views.JavaView;
 
 import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A class that models Java's reference types. RefTypes are parameterized by a class name. Two RefType are equal iff they are
- * Parameterized by the same class name as a String.
- * 
- * Modified by @author Linghui Luo on 25.07.2018
+ * Parameterized by the same class name as a String. Modified by @author Linghui Luo on 25.07.2018
  */
 @SuppressWarnings("serial")
-public class RefType extends RefLikeType implements Comparable<RefType> {
+public class RefType extends RefLikeType implements IViewResident, Comparable<RefType> {
 
-  /** the class name that parameterizes this RefType */
-  private String className;
+  /** the class name that parameterizes this RefType. */
+  private final TypeSignature typeSignature;
   private volatile SootClass sootClass;
   private AnySubType anySubType;
-  /**
-   * a static map to store the RefType of each class according to its name. RefType of each class should just have one
-   * instance.
-   */
-  private static Map<String, RefType> nameToClass = new HashMap<String, RefType>();
+  private static IView view;
 
   /**
-   * Create a RefType for a class.
+   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in
+   * {@link JavaView}.
    * 
    * @param className
    *          The name of the class used to parameterize the created RefType.
    * @return a RefType for the given class name.
    */
   public static RefType getInstance(String className) {
-    RefType rt = nameToClass.get(className);
-    if (rt == null) {
-      rt = new RefType(className);
-      nameToClass.put(className, rt);
+    if (view == null) {
+      throw new NullPointerException("View is not set for RefType");
     }
-    return rt;
+    return view.getRefType(view.getSignatureFactory().getTypeSignature(className));
   }
 
   /**
-   * Create a RefType for a class.
+   * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in
+   * {@link JavaView}.
    * 
    * @param c
    *          A SootClass for which to create a RefType.
-   * @return a RefType for the given SootClass..
+   * @return a RefType for the given SootClass.
    */
   public static RefType getInstance(SootClass c) {
-    return getInstance(c.getName());
+    return getInstance(c.getSignature().toString());
   }
 
-  private RefType(String className) {
-    if (className.startsWith("[")) {
-      throw new RuntimeException("Attempt to create RefType whose name starts with [ --> " + className);
-    }
-    if (className.indexOf("/") >= 0) {
-      throw new RuntimeException("Attempt to create RefType containing a / --> " + className);
-    }
-    if (className.indexOf(";") >= 0) {
-      throw new RuntimeException("Attempt to create RefType containing a ; --> " + className);
-    }
-    this.className = className;
+  /**
+   * Create a RefType instance for the given view.
+   * 
+   * @param view
+   * @param typeSignature
+   */
+  public RefType(IView view, TypeSignature typeSignature) {
+    RefType.view = view;
+    this.typeSignature = typeSignature;
   }
 
-  public String getClassName() {
-    return className;
+  public TypeSignature getTypeSignature() {
+    return typeSignature;
   }
 
   @Override
@@ -101,24 +96,8 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
     return this.toString().compareTo(t.toString());
   }
 
-  /**
-   * Get the SootClass object corresponding to this RefType.
-   * 
-   * @return the corresponding SootClass
-   */
-  public SootClass getSootClass() {
-    if (sootClass == null) {
-      sootClass = SootResolver.getInstance().makeClassRef(className);
-    }
-    return sootClass;
-  }
-
   public boolean hasSootClass() {
     return sootClass != null;
-  }
-
-  public void setClassName(String className) {
-    this.className = className;
   }
 
   /**
@@ -139,12 +118,12 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
    */
   @Override
   public boolean equals(Object t) {
-    return ((t instanceof RefType) && className.equals(((RefType) t).className));
+    return ((t instanceof RefType) && typeSignature.equals(((RefType) t).typeSignature));
   }
 
   @Override
   public String toString() {
-    return className;
+    return typeSignature.toString();
   }
 
   /**
@@ -152,17 +131,17 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
    */
   @Override
   public String toQuotedString() {
-    return Scene.getInstance().quotedNameOf(className);
+    return this.getView().quotedNameOf(typeSignature.toString());
   }
 
   @Override
   public int hashCode() {
-    return className.hashCode();
+    return typeSignature.hashCode();
   }
 
   /** Returns the least common superclass of this type and other. */
   @Override
-  public Type merge(Type other, Scene cm) {
+  public Type merge(Type other) {
     if (other.equals(UnknownType.getInstance()) || this.equals(other)) {
       return this;
     }
@@ -173,10 +152,14 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
 
     {
       // Return least common superclass
+      // TODO: This is all highly suspicious. FQCNs should be resolved there through a SignatureFactory.
+      SignatureFactory factory = this.getView().getSignatureFactory();
+      SootClass thisClass
+          = (SootClass) this.getView().getClass(factory.getClassSignature(this.typeSignature.toString())).get();
+      SootClass otherClass
+          = (SootClass) this.getView().getClass(factory.getClassSignature(((RefType) other).typeSignature.toString())).get();
 
-      SootClass thisClass = cm.getSootClass(this.className);
-      SootClass otherClass = cm.getSootClass(((RefType) other).className);
-      SootClass javalangObject = cm.getObjectType().getSootClass();
+      SootClass javalangObject = (SootClass) this.getView().getClass(CommonClassSignatures.JavaLangObject).get();
 
       ArrayDeque<SootClass> thisHierarchy = new ArrayDeque<>();
       ArrayDeque<SootClass> otherHierarchy = new ArrayDeque<>();
@@ -193,8 +176,9 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
             break;
           }
 
-          sootClass = sootClass.getSuperclassUnsafe();
-          if (sootClass == null) {
+          if (sootClass.getSuperclass().isPresent()) {
+            sootClass = sootClass.getSuperclass().get();
+          } else {
             sootClass = javalangObject;
           }
         }
@@ -211,14 +195,13 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
           if (sootClass == javalangObject) {
             break;
           }
-
-          sootClass = sootClass.getSuperclassUnsafe();
-          if (sootClass == null) {
+          if (sootClass.getSuperclass().isPresent()) {
+            sootClass = sootClass.getSuperclass().get();
+          } else {
             sootClass = javalangObject;
           }
         }
       }
-
       // Find least common superclass
       {
         SootClass commonClass = null;
@@ -241,8 +224,8 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
 
   @Override
   public Type getArrayElementType() {
-    if (className.equals("java.lang.Object") || className.equals("java.io.Serializable")
-        || className.equals("java.lang.Cloneable")) {
+    if (typeSignature.equals("java.lang.Object") || typeSignature.equals("java.io.Serializable")
+        || typeSignature.equals("java.lang.Cloneable")) {
       return RefType.getInstance("java.lang.Object");
     }
     throw new RuntimeException("Attempt to get array base type of a non-array");
@@ -265,6 +248,11 @@ public class RefType extends RefLikeType implements Comparable<RefType> {
   public void accept(IVisitor sw) {
     // TODO Auto-generated method stub
 
+  }
+
+  @Override
+  public IView getView() {
+    return view;
   }
 
 }

@@ -1,0 +1,188 @@
+public class javaonepointfive.Varargs extends java.lang.Object
+{
+
+    public transient void <init>(int[])
+    {
+        javaonepointfive.Varargs r0;
+        int[] r1;
+        int $i0, $i1;
+        java.io.PrintStream $r2;
+        boolean $z0;
+
+        r0 := @this: javaonepointfive.Varargs;
+
+        r1 := @parameter0: int[];
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $i1 = r1[0];
+
+        $i0 = r1[1];
+
+        if $i1 != $i0 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        virtualinvoke $r2.<java.io.PrintStream: void println(boolean)>($z0);
+
+        return;
+    }
+
+    public void <init>()
+    {
+        javaonepointfive.Varargs r0;
+        int[] $r1;
+
+        r0 := @this: javaonepointfive.Varargs;
+
+        $r1 = newarray (int)[2];
+
+        $r1[0] = 1;
+
+        $r1[1] = 1;
+
+        specialinvoke r0.<javaonepointfive.Varargs: void <init>(int[])>($r1);
+
+        return;
+    }
+
+    public static transient void varargs(int, int, java.lang.Object[])
+    {
+        int i0, i1, $i2, i3;
+        java.lang.Object[] r0;
+        java.io.PrintStream $r1, $r2, $r5;
+        javaonepointfive.Varargs $r3;
+        java.lang.Object $r4;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        r0 := @parameter2: java.lang.Object[];
+
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(i0);
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(i1);
+
+        i3 = 0;
+
+     label1:
+        $i2 = lengthof r0;
+
+        if i3 >= $i2 goto label2;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $r4 = r0[i3];
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.Object)>($r4);
+
+        i3 = i3 + 1;
+
+        goto label1;
+
+     label2:
+        $r3 = new javaonepointfive.Varargs;
+
+        specialinvoke $r3.<javaonepointfive.Varargs: void <init>()>();
+
+        return;
+    }
+
+    public static void varargs(int, int, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+    {
+        int i0, i1;
+        java.lang.String r0, r1, r2, r3;
+        java.io.PrintStream $r4;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        r0 := @parameter2: java.lang.String;
+
+        r1 := @parameter3: java.lang.String;
+
+        r2 := @parameter4: java.lang.String;
+
+        r3 := @parameter5: java.lang.String;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("gotcha!");
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0, $r1, $r3, $r4;
+        java.lang.Object[] $r2, $r5, $r6, $r7, $r8;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = newarray (java.lang.String)[2];
+
+        $r1[0] = "hello";
+
+        $r1[1] = "world";
+
+        staticinvoke <javaonepointfive.Varargs: void varargs(int,int,java.lang.Object[])>(2, 3, $r1);
+
+        $r2 = newarray (java.lang.Object)[1];
+
+        $r3 = newarray (java.lang.String)[2];
+
+        $r3[0] = "hello";
+
+        $r3[1] = "world";
+
+        $r2[0] = $r3;
+
+        staticinvoke <javaonepointfive.Varargs: void varargs(int,int,java.lang.Object[])>(2, 3, $r2);
+
+        $r4 = newarray (java.lang.String)[2];
+
+        $r4[0] = "hello";
+
+        $r4[1] = "world";
+
+        $r5 = (java.lang.Object[]) $r4;
+
+        staticinvoke <javaonepointfive.Varargs: void varargs(int,int,java.lang.Object[])>(2, 3, $r5);
+
+        $r6 = newarray (java.lang.Object)[0];
+
+        staticinvoke <javaonepointfive.Varargs: void varargs(int,int,java.lang.Object[])>(2, 3, $r6);
+
+        $r7 = newarray (java.lang.Object)[1];
+
+        $r7[0] = "hi";
+
+        staticinvoke <javaonepointfive.Varargs: void varargs(int,int,java.lang.Object[])>(2, 3, $r7);
+
+        $r8 = newarray (java.lang.Object)[2];
+
+        $r8[0] = "hello";
+
+        $r8[1] = "there";
+
+        staticinvoke <javaonepointfive.Varargs: void varargs(int,int,java.lang.Object[])>(2, 3, $r8);
+
+        staticinvoke <javaonepointfive.Varargs: void varargs(int,int,java.lang.String,java.lang.String,java.lang.String,java.lang.String)>(4, 5, "coucou", "monde", "shalom", "\'olam");
+
+        return;
+    }
+}

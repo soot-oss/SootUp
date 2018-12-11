@@ -1,0 +1,114 @@
+public class Simple1 extends java.lang.Object
+{
+    private int value;
+    private final float fval;
+    private float fval1;
+
+    public void <init>(int)
+    {
+        Simple1 r0;
+        int i0;
+
+        r0 := @this: Simple1;
+
+        i0 := @parameter0: int;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<Simple1: float fval> = 3.14F;
+
+        r0.<Simple1: float fval1> = 3.2F;
+
+        r0.<Simple1: int value> = i0;
+
+        return;
+    }
+
+    public void <init>()
+    {
+        Simple1 r0;
+
+        r0 := @this: Simple1;
+
+        specialinvoke r0.<Simple1: void <init>(int)>(0);
+
+        return;
+    }
+
+    public static void doStuff(int)
+    {
+        int i0, i2;
+
+        i0 := @parameter0: int;
+
+        i2 = 0;
+
+     label1:
+        if i2 >= i0 goto label2;
+
+        i2 = i2 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        Simple1 $r1;
+        int i0, i1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        i0 = 0;
+
+        i1 = 0;
+
+     label1:
+        if i1 >= 10 goto label2;
+
+        i0 = i0 + i1;
+
+        i1 = i1 + 1;
+
+        goto label1;
+
+     label2:
+        staticinvoke <Simple1: void doStuff(int)>(i0);
+
+        $r1 = new Simple1;
+
+        specialinvoke $r1.<Simple1: void <init>()>();
+
+        virtualinvoke $r1.<Simple1: void instanceMethod1()>();
+
+        return;
+    }
+
+    public void instanceMethod1()
+    {
+        Simple1 r0;
+
+        r0 := @this: Simple1;
+
+        virtualinvoke r0.<Simple1: float instanceMethod2()>();
+
+        return;
+    }
+
+    public float instanceMethod2()
+    {
+        Simple1 r0;
+        float $f0, $f1;
+
+        r0 := @this: Simple1;
+
+        $f0 = r0.<Simple1: float fval1>;
+
+        $f1 = 3.14F * $f0;
+
+        return $f1;
+    }
+}

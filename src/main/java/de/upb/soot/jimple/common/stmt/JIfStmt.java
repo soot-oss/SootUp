@@ -25,33 +25,38 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class JIfStmt extends AbstractStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -5625186075843518011L;
   final ValueBox conditionBox;
-  final StmtBox targetBox;
+  final IStmtBox targetBox;
 
-  final List<StmtBox> targetBoxes;
+  final List<IStmtBox> targetBoxes;
 
-  public JIfStmt(Value condition, Stmt target) {
-    this(condition, Jimple.getInstance().newStmtBox(target));
+  public JIfStmt(Value condition, IStmt target) {
+    this(condition, Jimple.newStmtBox(target));
   }
 
-  public JIfStmt(Value condition, StmtBox target) {
-    this(Jimple.getInstance().newConditionExprBox(condition), target);
+  public JIfStmt(Value condition, IStmtBox target) {
+    this(Jimple.newConditionExprBox(condition), target);
   }
 
-  protected JIfStmt(ValueBox conditionBox, StmtBox targetBox) {
+  protected JIfStmt(ValueBox conditionBox, IStmtBox targetBox) {
     this.conditionBox = conditionBox;
     this.targetBox = targetBox;
 
@@ -59,13 +64,13 @@ public class JIfStmt extends AbstractStmt {
   }
 
   @Override
-  public Object clone() {
+  public JIfStmt clone() {
     return new JIfStmt(Jimple.cloneIfNecessary(getCondition()), getTarget());
   }
 
   @Override
   public String toString() {
-    Stmt t = getTarget();
+    IStmt t = getTarget();
     String target = "(branch)";
     if (!t.branches()) {
       target = t.toString();
@@ -74,7 +79,7 @@ public class JIfStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.IF);
     up.literal(" ");
     conditionBox.toString(up);
@@ -96,15 +101,15 @@ public class JIfStmt extends AbstractStmt {
     return conditionBox;
   }
 
-  public Stmt getTarget() {
+  public IStmt getTarget() {
     return targetBox.getStmt();
   }
 
-  public void setTarget(Stmt target) {
+  public void setTarget(IStmt target) {
     targetBox.setStmt(target);
   }
 
-  public StmtBox getTargetBox() {
+  public IStmtBox getTargetBox() {
     return targetBox;
   }
 
@@ -119,7 +124,7 @@ public class JIfStmt extends AbstractStmt {
   }
 
   @Override
-  public final List<StmtBox> getUnitBoxes() {
+  public final List<IStmtBox> getStmtBoxes() {
     return targetBoxes;
   }
 
@@ -136,6 +141,21 @@ public class JIfStmt extends AbstractStmt {
   @Override
   public boolean branches() {
     return true;
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+
+    if (!(o instanceof JIfStmt)) {
+      return false;
+    }
+    JIfStmt ifStmt = (JIfStmt) o;
+    return ifStmt.getCondition().equivTo(getCondition()) && ifStmt.getTarget().equivTo(getTarget());
+  }
+
+  @Override
+  public int equivHashCode() {
+    return conditionBox.getValue().equivHashCode() + 31 * targetBox.getStmt().equivHashCode();
   }
 
 }

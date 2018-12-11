@@ -34,6 +34,11 @@ package de.upb.soot.jimple.common.constant;
 public abstract class RealConstant extends NumericConstant {
 
   /**
+   * 
+   */
+  private static final long serialVersionUID = 2653018621773414519L;
+
+  /**
    * Performs the indicated floating point comparison. For {@code NaN} comparisons {@code -1} is returned.
    *
    * @param constant

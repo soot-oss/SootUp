@@ -1,0 +1,20 @@
+abstract class PrimitiveWrapper extends java.lang.Object
+{
+
+    void <init>()
+    {
+        PrimitiveWrapper r0;
+
+        r0 := @this: PrimitiveWrapper;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public abstract void setIntValue(int);
+
+    public abstract int intValue();
+
+    public abstract boolean equals(java.lang.Object);
+}

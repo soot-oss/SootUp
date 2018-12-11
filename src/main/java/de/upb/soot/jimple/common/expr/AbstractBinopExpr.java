@@ -27,12 +27,17 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-@SuppressWarnings("serial")
 public abstract class AbstractBinopExpr implements Expr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -4967924464687577438L;
   protected ValueBox op1Box;
   protected ValueBox op2Box;
 
@@ -82,6 +87,11 @@ public abstract class AbstractBinopExpr implements Expr {
     return false;
   }
 
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
+  }
+
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
@@ -102,4 +112,12 @@ public abstract class AbstractBinopExpr implements Expr {
     String rightOp = op2.toString();
     return leftOp + getSymbol() + rightOp;
   }
+
+  @Override
+  public void toString(IStmtPrinter up) {
+    op1Box.toString(up);
+    up.literal(getSymbol());
+    op2Box.toString(up);
+  }
+
 }

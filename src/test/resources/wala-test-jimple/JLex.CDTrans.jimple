@@ -1,0 +1,45 @@
+class JLex.CDTrans extends java.lang.Object
+{
+    int[] m_dtrans;
+    JLex.CAccept m_accept;
+    int m_anchor;
+    int m_label;
+    static final int F;
+
+    void <init>(int, JLex.CSpec)
+    {
+        JLex.CDTrans r0;
+        int i0, $i1;
+        JLex.CSpec r1;
+        int[] $r2;
+
+        r0 := @this: JLex.CDTrans;
+
+        i0 := @parameter0: int;
+
+        r1 := @parameter1: JLex.CSpec;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $i1 = r1.<JLex.CSpec: int m_dtrans_ncols>;
+
+        $r2 = newarray (int)[$i1];
+
+        r0.<JLex.CDTrans: int[] m_dtrans> = $r2;
+
+        r0.<JLex.CDTrans: JLex.CAccept m_accept> = null;
+
+        r0.<JLex.CDTrans: int m_anchor> = 0;
+
+        r0.<JLex.CDTrans: int m_label> = i0;
+
+        return;
+    }
+
+    public static void <clinit>()
+    {
+        <JLex.CDTrans: int F> = -1;
+
+        return;
+    }
+}

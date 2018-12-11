@@ -1,0 +1,56 @@
+public class bugfixes.VarDeclInSwitch extends java.lang.Object
+{
+    static int y;
+
+    public void <init>()
+    {
+        bugfixes.VarDeclInSwitch r0;
+
+        r0 := @this: bugfixes.VarDeclInSwitch;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        java.io.PrintStream $r1, $r2;
+        int i1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        i1 = 5 + 5;
+
+        lookupswitch(i1)
+        {
+            case 5: goto label1;
+            case 10: goto label2;
+            default: goto label3;
+        };
+
+     label1:
+        goto label4;
+
+     label2:
+        $r1 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r1.<java.io.PrintStream: void println(int)>(6);
+
+     label3:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(int)>(7);
+
+     label4:
+        return;
+    }
+
+    static void <clinit>()
+    {
+        <bugfixes.VarDeclInSwitch: int y> = 7;
+
+        return;
+    }
+}

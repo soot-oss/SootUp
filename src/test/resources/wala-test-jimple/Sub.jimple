@@ -1,0 +1,14 @@
+class Sub extends InnerClassSuper
+{
+
+    void <init>()
+    {
+        Sub r0;
+
+        r0 := @this: Sub;
+
+        specialinvoke r0.<InnerClassSuper: void <init>()>();
+
+        return;
+    }
+}

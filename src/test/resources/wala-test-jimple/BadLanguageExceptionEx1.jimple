@@ -1,0 +1,14 @@
+class BadLanguageExceptionEx1 extends java.lang.Exception
+{
+
+    public void <init>()
+    {
+        BadLanguageExceptionEx1 r0;
+
+        r0 := @this: BadLanguageExceptionEx1;
+
+        specialinvoke r0.<java.lang.Exception: void <init>(java.lang.String)>("Try using a real language, like Perl");
+
+        return;
+    }
+}

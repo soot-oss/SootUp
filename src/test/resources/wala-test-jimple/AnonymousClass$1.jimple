@@ -1,0 +1,54 @@
+final class AnonymousClass$1 extends java.lang.Object implements AnonymousClass$Foo
+{
+    int value;
+    final java.lang.Integer val$base;
+
+    void <init>(java.lang.Integer)
+    {
+        AnonymousClass$1 r0;
+        java.lang.Integer r1;
+
+        r0 := @this: AnonymousClass$1;
+
+        r1 := @parameter0: java.lang.Integer;
+
+        r0.<AnonymousClass$1: java.lang.Integer val$base> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<AnonymousClass$1: int value> = 3;
+
+        return;
+    }
+
+    public int getValue()
+    {
+        AnonymousClass$1 r0;
+        int $i0;
+
+        r0 := @this: AnonymousClass$1;
+
+        $i0 = r0.<AnonymousClass$1: int value>;
+
+        return $i0;
+    }
+
+    public int getValueBase()
+    {
+        AnonymousClass$1 r0;
+        java.lang.Integer $r1;
+        int $i0, $i1, $i2;
+
+        r0 := @this: AnonymousClass$1;
+
+        $i0 = r0.<AnonymousClass$1: int value>;
+
+        $r1 = r0.<AnonymousClass$1: java.lang.Integer val$base>;
+
+        $i1 = virtualinvoke $r1.<java.lang.Integer: int intValue()>();
+
+        $i2 = $i0 - $i1;
+
+        return $i2;
+    }
+}

@@ -1,0 +1,88 @@
+public class foo.QualifiedNames extends java.lang.Object
+{
+    static int field;
+    int x;
+
+    public void <init>(int)
+    {
+        foo.QualifiedNames r0;
+        int i0;
+
+        r0 := @this: foo.QualifiedNames;
+
+        i0 := @parameter0: int;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<foo.QualifiedNames: int x> = i0;
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        foo.QualifiedNames $r2;
+        int $i0;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r2 = new foo.QualifiedNames;
+
+        specialinvoke $r2.<foo.QualifiedNames: void <init>(int)>(5);
+
+        $i0 = $r2.<foo.QualifiedNames: int x>;
+
+        return;
+    }
+
+    public void test()
+    {
+        foo.QualifiedNames r0;
+        int $i1, $i2, $i3;
+
+        r0 := @this: foo.QualifiedNames;
+
+        <foo.QualifiedNames: int field> = 5;
+
+        $i2 = <foo.QualifiedNames: int field>;
+
+        $i1 = <foo.QualifiedNames: int field>;
+
+        $i3 = $i2 + $i1;
+
+        <foo.QualifiedNames: int field> = $i3;
+
+        r0.<foo.QualifiedNames: int x> = 6;
+
+        <foo.QualifiedNames: int field> = 6;
+
+        r0.<foo.QualifiedNames: int x> = 6;
+
+        <foo.QualifiedNames: int field> = 6;
+
+        r0.<foo.QualifiedNames: int x> = 7;
+
+        staticinvoke <foo.QualifiedNames: void empty()>();
+
+        virtualinvoke r0.<foo.QualifiedNames: void emptyInstance()>();
+
+        virtualinvoke r0.<foo.QualifiedNames: void emptyInstance()>();
+
+        return;
+    }
+
+    public static void empty()
+    {
+        return;
+    }
+
+    public void emptyInstance()
+    {
+        foo.QualifiedNames r0;
+
+        r0 := @this: foo.QualifiedNames;
+
+        return;
+    }
+}

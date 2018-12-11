@@ -25,11 +25,24 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.Type;
 
-@SuppressWarnings("serial")
 public abstract class AbstractIntBinopExpr extends AbstractBinopExpr {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -927690467615962201L;
+
+  AbstractIntBinopExpr(Value op1, Value op2) {
+    this.op1Box = Jimple.newArgBox(op1);
+    this.op2Box = Jimple.newArgBox(op2);
+  }
+
+  @Override
   public Type getType() {
     return IntType.getInstance();
   }

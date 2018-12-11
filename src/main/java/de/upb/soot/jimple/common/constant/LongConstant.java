@@ -30,7 +30,13 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.Comparator;
+
 public class LongConstant extends ArithmeticConstant {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -3227009524415387793L;
   public final long value;
 
   private LongConstant(long value) {
@@ -220,7 +226,14 @@ public class LongConstant extends ArithmeticConstant {
     return LongType.getInstance();
   }
 
+  @Override
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseLongConstant(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

@@ -1,0 +1,1756 @@
+class JLex.CMinimize extends java.lang.Object
+{
+    JLex.CSpec m_spec;
+    java.util.Vector m_group;
+    int[] m_ingroup;
+
+    void <init>()
+    {
+        JLex.CMinimize r0;
+
+        r0 := @this: JLex.CMinimize;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        specialinvoke r0.<JLex.CMinimize: void reset()>();
+
+        return;
+    }
+
+    private void reset()
+    {
+        JLex.CMinimize r0;
+
+        r0 := @this: JLex.CMinimize;
+
+        r0.<JLex.CMinimize: JLex.CSpec m_spec> = null;
+
+        r0.<JLex.CMinimize: java.util.Vector m_group> = null;
+
+        r0.<JLex.CMinimize: int[] m_ingroup> = null;
+
+        return;
+    }
+
+    private void set(JLex.CSpec)
+    {
+        JLex.CMinimize r0;
+        JLex.CSpec r1;
+        boolean $z0;
+
+        r0 := @this: JLex.CMinimize;
+
+        r1 := @parameter0: JLex.CSpec;
+
+        if null == r1 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z0);
+
+        r0.<JLex.CMinimize: JLex.CSpec m_spec> = r1;
+
+        r0.<JLex.CMinimize: java.util.Vector m_group> = null;
+
+        r0.<JLex.CMinimize: int[] m_ingroup> = null;
+
+        return;
+    }
+
+    void min_dfa(JLex.CSpec)
+    {
+        JLex.CMinimize r0;
+        JLex.CSpec r1;
+
+        r0 := @this: JLex.CMinimize;
+
+        r1 := @parameter0: JLex.CSpec;
+
+        specialinvoke r0.<JLex.CMinimize: void set(JLex.CSpec)>(r1);
+
+        specialinvoke r0.<JLex.CMinimize: void minimize()>();
+
+        specialinvoke r0.<JLex.CMinimize: void reduce()>();
+
+        specialinvoke r0.<JLex.CMinimize: void reset()>();
+
+        return;
+    }
+
+    private void col_copy(int, int)
+    {
+        JLex.CMinimize r0;
+        int i0, i1, i2, $i3, i4;
+        JLex.CDTrans r1;
+        JLex.CSpec $r2, $r4;
+        java.util.Vector $r3, $r5;
+        java.lang.Object $r6;
+        int[] $r7, $r8;
+
+        r0 := @this: JLex.CMinimize;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        $r2 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r3 = $r2.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        i2 = virtualinvoke $r3.<java.util.Vector: int size()>();
+
+        i4 = 0;
+
+     label1:
+        if i4 >= i2 goto label2;
+
+        $r4 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r5 = $r4.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        $r6 = virtualinvoke $r5.<java.util.Vector: java.lang.Object elementAt(int)>(i4);
+
+        r1 = (JLex.CDTrans) $r6;
+
+        $r8 = r1.<JLex.CDTrans: int[] m_dtrans>;
+
+        $r7 = r1.<JLex.CDTrans: int[] m_dtrans>;
+
+        $i3 = $r7[i1];
+
+        $r8[i0] = $i3;
+
+        i4 = i4 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void trunc_col()
+    {
+        JLex.CMinimize r0;
+        int i0, $i1, $i2, i3;
+        JLex.CDTrans r1;
+        int[] r2, $r9;
+        JLex.CSpec $r3, $r5, $r6;
+        java.util.Vector $r4, $r7;
+        java.lang.Object $r8;
+
+        r0 := @this: JLex.CMinimize;
+
+        $r3 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r4 = $r3.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        i0 = virtualinvoke $r4.<java.util.Vector: int size()>();
+
+        i3 = 0;
+
+     label1:
+        if i3 >= i0 goto label2;
+
+        $r5 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $i1 = $r5.<JLex.CSpec: int m_dtrans_ncols>;
+
+        r2 = newarray (int)[$i1];
+
+        $r6 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r7 = $r6.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        $r8 = virtualinvoke $r7.<java.util.Vector: java.lang.Object elementAt(int)>(i3);
+
+        r1 = (JLex.CDTrans) $r8;
+
+        $r9 = r1.<JLex.CDTrans: int[] m_dtrans>;
+
+        $i2 = lengthof r2;
+
+        staticinvoke <java.lang.System: void arraycopy(java.lang.Object,int,java.lang.Object,int,int)>($r9, 0, r2, 0, $i2);
+
+        r1.<JLex.CDTrans: int[] m_dtrans> = r2;
+
+        i3 = i3 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void row_copy(int, int)
+    {
+        JLex.CMinimize r0;
+        int i0, i1;
+        JLex.CDTrans r1;
+        JLex.CSpec $r2, $r5;
+        java.util.Vector $r3, $r6;
+        java.lang.Object $r4;
+
+        r0 := @this: JLex.CMinimize;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        $r2 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r3 = $r2.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        $r4 = virtualinvoke $r3.<java.util.Vector: java.lang.Object elementAt(int)>(i1);
+
+        r1 = (JLex.CDTrans) $r4;
+
+        $r5 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r6 = $r5.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        virtualinvoke $r6.<java.util.Vector: void setElementAt(java.lang.Object,int)>(r1, i0);
+
+        return;
+    }
+
+    private boolean col_equiv(int, int)
+    {
+        JLex.CMinimize r0;
+        int i0, i1, i2, $i3, $i4, i5;
+        JLex.CDTrans r1;
+        JLex.CSpec $r2, $r4;
+        java.util.Vector $r3, $r5;
+        java.lang.Object $r6;
+        int[] $r7, $r8;
+
+        r0 := @this: JLex.CMinimize;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        $r2 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r3 = $r2.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        i2 = virtualinvoke $r3.<java.util.Vector: int size()>();
+
+        i5 = 0;
+
+     label1:
+        if i5 >= i2 goto label3;
+
+        $r4 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r5 = $r4.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        $r6 = virtualinvoke $r5.<java.util.Vector: java.lang.Object elementAt(int)>(i5);
+
+        r1 = (JLex.CDTrans) $r6;
+
+        $r7 = r1.<JLex.CDTrans: int[] m_dtrans>;
+
+        $i4 = $r7[i0];
+
+        $r8 = r1.<JLex.CDTrans: int[] m_dtrans>;
+
+        $i3 = $r8[i1];
+
+        if $i4 == $i3 goto label2;
+
+        return 0;
+
+     label2:
+        i5 = i5 + 1;
+
+        goto label1;
+
+     label3:
+        return 1;
+    }
+
+    private boolean row_equiv(int, int)
+    {
+        JLex.CMinimize r0;
+        int i0, i1, $i2, $i3, $i4, i5;
+        JLex.CDTrans r1, r2;
+        JLex.CSpec $r3, $r6, $r9;
+        java.util.Vector $r4, $r7;
+        java.lang.Object $r5, $r8;
+        int[] $r10, $r11;
+
+        r0 := @this: JLex.CMinimize;
+
+        i0 := @parameter0: int;
+
+        i1 := @parameter1: int;
+
+        $r3 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r4 = $r3.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        $r5 = virtualinvoke $r4.<java.util.Vector: java.lang.Object elementAt(int)>(i0);
+
+        r1 = (JLex.CDTrans) $r5;
+
+        $r6 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r7 = $r6.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        $r8 = virtualinvoke $r7.<java.util.Vector: java.lang.Object elementAt(int)>(i1);
+
+        r2 = (JLex.CDTrans) $r8;
+
+        i5 = 0;
+
+     label1:
+        $r9 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $i2 = $r9.<JLex.CSpec: int m_dtrans_ncols>;
+
+        if i5 >= $i2 goto label3;
+
+        $r10 = r1.<JLex.CDTrans: int[] m_dtrans>;
+
+        $i4 = $r10[i5];
+
+        $r11 = r2.<JLex.CDTrans: int[] m_dtrans>;
+
+        $i3 = $r11[i5];
+
+        if $i4 == $i3 goto label2;
+
+        return 0;
+
+     label2:
+        i5 = i5 + 1;
+
+        goto label1;
+
+     label3:
+        return 1;
+    }
+
+    private void reduce()
+    {
+        JLex.CMinimize r0;
+        int i0, i1, $i2, $i3, $i4, $i5, $i6, $i7, $i8, $i9, $i10, $i11, $i12, $i13, $i14, $i15, i16, i17, i18, i19, i20, i21, $i22, i23, i24, i25, i26, i27, i28, i29, i30, i31, i32, i33;
+        JLex.CDTrans r2;
+        JLex.SparseBitSet $r3;
+        JLex.CSpec $r4, $r7, $r9, $r10, $r12, $r13, $r14, $r15, $r16, $r18, $r20, $r22, $r24, $r25, $r26, $r29, $r30, $r32, $r34, $r36, $r38, $r40, $r42, $r44, $r46, $r48, $r50, $r52, $r54, $r56, $r59, $r62, $r64;
+        java.util.Vector $r5, $r8, $r27, $r39, $r57, $r61;
+        int[] $r6, $r11, $r17, $r19, $r21, $r23, $r28, $r31, $r33, $r35, $r37, $r41, $r43, $r45, $r47, $r49, $r51, $r53, $r55, $r63;
+        boolean $z0, $z1, $z2, $z3, $z4, $z5, $z6, $z7, $z8, $z9, $z10, $z11, $z12, $z13, $z14, $z15;
+        java.lang.Object $r58;
+        JLex.CAccept $r60;
+
+        r0 := @this: JLex.CMinimize;
+
+        $r3 = new JLex.SparseBitSet;
+
+        specialinvoke $r3.<JLex.SparseBitSet: void <init>()>();
+
+        $r4 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r5 = $r4.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        i1 = virtualinvoke $r5.<java.util.Vector: int size()>();
+
+        $r7 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r6 = newarray (int)[i1];
+
+        $r7.<JLex.CSpec: int[] m_anchor_array> = $r6;
+
+        $r9 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r8 = new java.util.Vector;
+
+        specialinvoke $r8.<java.util.Vector: void <init>()>();
+
+        $r9.<JLex.CSpec: java.util.Vector m_accept_vector> = $r8;
+
+        i16 = 0;
+
+     label01:
+        if i16 >= i1 goto label02;
+
+        $r56 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r57 = $r56.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        $r58 = virtualinvoke $r57.<java.util.Vector: java.lang.Object elementAt(int)>(i16);
+
+        r2 = (JLex.CDTrans) $r58;
+
+        $r59 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r61 = $r59.<JLex.CSpec: java.util.Vector m_accept_vector>;
+
+        $r60 = r2.<JLex.CDTrans: JLex.CAccept m_accept>;
+
+        virtualinvoke $r61.<java.util.Vector: void addElement(java.lang.Object)>($r60);
+
+        $r62 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r63 = $r62.<JLex.CSpec: int[] m_anchor_array>;
+
+        $i15 = r2.<JLex.CDTrans: int m_anchor>;
+
+        $r63[i16] = $i15;
+
+        r2.<JLex.CDTrans: JLex.CAccept m_accept> = null;
+
+        i16 = i16 + 1;
+
+        goto label01;
+
+     label02:
+        $r12 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r10 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $i2 = $r10.<JLex.CSpec: int m_dtrans_ncols>;
+
+        $r11 = newarray (int)[$i2];
+
+        $r12.<JLex.CSpec: int[] m_col_map> = $r11;
+
+        i17 = 0;
+
+     label03:
+        $r13 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $i3 = $r13.<JLex.CSpec: int m_dtrans_ncols>;
+
+        if i17 >= $i3 goto label04;
+
+        $r54 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r55 = $r54.<JLex.CSpec: int[] m_col_map>;
+
+        $r55[i17] = -1;
+
+        i17 = i17 + 1;
+
+        goto label03;
+
+     label04:
+        i18 = 0;
+
+     label05:
+        i19 = 0;
+
+     label06:
+        if i19 >= i18 goto label09;
+
+        $r52 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r53 = $r52.<JLex.CSpec: int[] m_col_map>;
+
+        $i14 = $r53[i19];
+
+        if -1 == $i14 goto label07;
+
+        $z6 = 1;
+
+        goto label08;
+
+     label07:
+        $z6 = 0;
+
+     label08:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z6);
+
+        i19 = i19 + 1;
+
+        goto label06;
+
+     label09:
+        i20 = i18;
+
+     label10:
+        $r14 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $i4 = $r14.<JLex.CSpec: int m_dtrans_ncols>;
+
+        if i20 >= $i4 goto label12;
+
+        $r50 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r51 = $r50.<JLex.CSpec: int[] m_col_map>;
+
+        $i13 = $r51[i20];
+
+        if -1 != $i13 goto label11;
+
+        goto label12;
+
+     label11:
+        i20 = i20 + 1;
+
+        goto label10;
+
+     label12:
+        $r15 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $i5 = $r15.<JLex.CSpec: int m_dtrans_ncols>;
+
+        if i20 < $i5 goto label13;
+
+        goto label21;
+
+     label13:
+        $z0 = virtualinvoke $r3.<JLex.SparseBitSet: boolean get(int)>(i20);
+
+        if 0 != $z0 goto label14;
+
+        $z7 = 1;
+
+        goto label15;
+
+     label14:
+        $z7 = 0;
+
+     label15:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z7);
+
+        $r16 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r17 = $r16.<JLex.CSpec: int[] m_col_map>;
+
+        $i6 = $r17[i20];
+
+        if -1 != $i6 goto label16;
+
+        $z8 = 1;
+
+        goto label17;
+
+     label16:
+        $z8 = 0;
+
+     label17:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z8);
+
+        virtualinvoke $r3.<JLex.SparseBitSet: void set(int)>(i20);
+
+        $r18 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r19 = $r18.<JLex.CSpec: int[] m_col_map>;
+
+        $r19[i20] = i18;
+
+        i21 = i20 + 1;
+
+     label18:
+        $r64 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $i22 = $r64.<JLex.CSpec: int m_dtrans_ncols>;
+
+        if i21 >= $i22 goto label20;
+
+        $r20 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r21 = $r20.<JLex.CSpec: int[] m_col_map>;
+
+        $i7 = $r21[i21];
+
+        if -1 != $i7 goto label19;
+
+        $z1 = specialinvoke r0.<JLex.CMinimize: boolean col_equiv(int,int)>(i20, i21);
+
+        if 1 != $z1 goto label19;
+
+        $r22 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r23 = $r22.<JLex.CSpec: int[] m_col_map>;
+
+        $r23[i21] = i18;
+
+     label19:
+        i21 = i21 + 1;
+
+        goto label18;
+
+     label20:
+        i18 = i18 + 1;
+
+        goto label05;
+
+     label21:
+        i23 = 0;
+
+        i24 = 0;
+
+     label22:
+        $r24 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $i8 = $r24.<JLex.CSpec: int m_dtrans_ncols>;
+
+        if i24 >= $i8 goto label27;
+
+        $z5 = virtualinvoke $r3.<JLex.SparseBitSet: boolean get(int)>(i24);
+
+        if $z5 == 0 goto label26;
+
+        i23 = i23 + 1;
+
+        virtualinvoke $r3.<JLex.SparseBitSet: void clear(int)>(i24);
+
+        $r48 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r49 = $r48.<JLex.CSpec: int[] m_col_map>;
+
+        i25 = $r49[i24];
+
+        if i25 > i24 goto label23;
+
+        $z9 = 1;
+
+        goto label24;
+
+     label23:
+        $z9 = 0;
+
+     label24:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z9);
+
+        if i25 != i24 goto label25;
+
+        goto label26;
+
+     label25:
+        specialinvoke r0.<JLex.CMinimize: void col_copy(int,int)>(i25, i24);
+
+     label26:
+        i24 = i24 + 1;
+
+        goto label22;
+
+     label27:
+        $r25 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r25.<JLex.CSpec: int m_dtrans_ncols> = i18;
+
+        specialinvoke r0.<JLex.CMinimize: void trunc_col()>();
+
+        if i23 != i18 goto label28;
+
+        $z10 = 1;
+
+        goto label29;
+
+     label28:
+        $z10 = 0;
+
+     label29:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z10);
+
+        $r26 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r27 = $r26.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        i0 = virtualinvoke $r27.<java.util.Vector: int size()>();
+
+        $r29 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r28 = newarray (int)[i0];
+
+        $r29.<JLex.CSpec: int[] m_row_map> = $r28;
+
+        i26 = 0;
+
+     label30:
+        if i26 >= i0 goto label31;
+
+        $r46 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r47 = $r46.<JLex.CSpec: int[] m_row_map>;
+
+        $r47[i26] = -1;
+
+        i26 = i26 + 1;
+
+        goto label30;
+
+     label31:
+        i27 = 0;
+
+     label32:
+        i28 = 0;
+
+     label33:
+        if i28 >= i27 goto label36;
+
+        $r44 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r45 = $r44.<JLex.CSpec: int[] m_row_map>;
+
+        $i12 = $r45[i28];
+
+        if -1 == $i12 goto label34;
+
+        $z11 = 1;
+
+        goto label35;
+
+     label34:
+        $z11 = 0;
+
+     label35:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z11);
+
+        i28 = i28 + 1;
+
+        goto label33;
+
+     label36:
+        i29 = i27;
+
+     label37:
+        if i29 >= i0 goto label39;
+
+        $r42 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r43 = $r42.<JLex.CSpec: int[] m_row_map>;
+
+        $i11 = $r43[i29];
+
+        if -1 != $i11 goto label38;
+
+        goto label39;
+
+     label38:
+        i29 = i29 + 1;
+
+        goto label37;
+
+     label39:
+        if i29 < i0 goto label40;
+
+        goto label48;
+
+     label40:
+        $z2 = virtualinvoke $r3.<JLex.SparseBitSet: boolean get(int)>(i29);
+
+        if 0 != $z2 goto label41;
+
+        $z12 = 1;
+
+        goto label42;
+
+     label41:
+        $z12 = 0;
+
+     label42:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z12);
+
+        $r30 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r31 = $r30.<JLex.CSpec: int[] m_row_map>;
+
+        $i9 = $r31[i29];
+
+        if -1 != $i9 goto label43;
+
+        $z13 = 1;
+
+        goto label44;
+
+     label43:
+        $z13 = 0;
+
+     label44:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z13);
+
+        virtualinvoke $r3.<JLex.SparseBitSet: void set(int)>(i29);
+
+        $r32 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r33 = $r32.<JLex.CSpec: int[] m_row_map>;
+
+        $r33[i29] = i27;
+
+        i30 = i29 + 1;
+
+     label45:
+        if i30 >= i0 goto label47;
+
+        $r34 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r35 = $r34.<JLex.CSpec: int[] m_row_map>;
+
+        $i10 = $r35[i30];
+
+        if -1 != $i10 goto label46;
+
+        $z3 = specialinvoke r0.<JLex.CMinimize: boolean row_equiv(int,int)>(i29, i30);
+
+        if 1 != $z3 goto label46;
+
+        $r36 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r37 = $r36.<JLex.CSpec: int[] m_row_map>;
+
+        $r37[i30] = i27;
+
+     label46:
+        i30 = i30 + 1;
+
+        goto label45;
+
+     label47:
+        i27 = i27 + 1;
+
+        goto label32;
+
+     label48:
+        i31 = 0;
+
+        i32 = 0;
+
+     label49:
+        if i32 >= i0 goto label54;
+
+        $z4 = virtualinvoke $r3.<JLex.SparseBitSet: boolean get(int)>(i32);
+
+        if $z4 == 0 goto label53;
+
+        i31 = i31 + 1;
+
+        virtualinvoke $r3.<JLex.SparseBitSet: void clear(int)>(i32);
+
+        $r40 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r41 = $r40.<JLex.CSpec: int[] m_row_map>;
+
+        i33 = $r41[i32];
+
+        if i33 > i32 goto label50;
+
+        $z14 = 1;
+
+        goto label51;
+
+     label50:
+        $z14 = 0;
+
+     label51:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z14);
+
+        if i33 != i32 goto label52;
+
+        goto label53;
+
+     label52:
+        specialinvoke r0.<JLex.CMinimize: void row_copy(int,int)>(i33, i32);
+
+     label53:
+        i32 = i32 + 1;
+
+        goto label49;
+
+     label54:
+        $r38 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r39 = $r38.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        virtualinvoke $r39.<java.util.Vector: void setSize(int)>(i27);
+
+        if i31 != i27 goto label55;
+
+        $z15 = 1;
+
+        goto label56;
+
+     label55:
+        $z15 = 0;
+
+     label56:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z15);
+
+        return;
+    }
+
+    private void fix_dtrans()
+    {
+        JLex.CMinimize r0;
+        java.util.Vector r2, $r4, $r7, $r9;
+        JLex.CDTrans r3;
+        JLex.CSpec $r5, $r8, $r12, $r17, $r19, $r20;
+        int[] $r6, $r13, $r14, $r15, $r16, $r18, $r21, $r22, $r23;
+        java.lang.Object $r10, $r11;
+        int $i0, $i1, $i2, $i3, $i4, $i5, $i6, i7, i8, i9, i10, i11;
+
+        r0 := @this: JLex.CMinimize;
+
+        $r4 = new java.util.Vector;
+
+        specialinvoke $r4.<java.util.Vector: void <init>()>();
+
+        $r5 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r6 = $r5.<JLex.CSpec: int[] m_state_dtrans>;
+
+        i7 = lengthof $r6;
+
+        i8 = 0;
+
+     label1:
+        if i8 >= i7 goto label3;
+
+        $r17 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r18 = $r17.<JLex.CSpec: int[] m_state_dtrans>;
+
+        $i4 = $r18[i8];
+
+        if -1 == $i4 goto label2;
+
+        $r19 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r23 = $r19.<JLex.CSpec: int[] m_state_dtrans>;
+
+        $r22 = r0.<JLex.CMinimize: int[] m_ingroup>;
+
+        $r20 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r21 = $r20.<JLex.CSpec: int[] m_state_dtrans>;
+
+        $i5 = $r21[i8];
+
+        $i6 = $r22[$i5];
+
+        $r23[i8] = $i6;
+
+     label2:
+        i8 = i8 + 1;
+
+        goto label1;
+
+     label3:
+        $r7 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        i9 = virtualinvoke $r7.<java.util.Vector: int size()>();
+
+        i10 = 0;
+
+     label4:
+        if i10 >= i9 goto label8;
+
+        $r9 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $r10 = virtualinvoke $r9.<java.util.Vector: java.lang.Object elementAt(int)>(i10);
+
+        r2 = (java.util.Vector) $r10;
+
+        $r11 = virtualinvoke r2.<java.util.Vector: java.lang.Object elementAt(int)>(0);
+
+        r3 = (JLex.CDTrans) $r11;
+
+        virtualinvoke $r4.<java.util.Vector: void addElement(java.lang.Object)>(r3);
+
+        i11 = 0;
+
+     label5:
+        $r12 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $i0 = $r12.<JLex.CSpec: int m_dtrans_ncols>;
+
+        if i11 >= $i0 goto label7;
+
+        $r13 = r3.<JLex.CDTrans: int[] m_dtrans>;
+
+        $i1 = $r13[i11];
+
+        if -1 == $i1 goto label6;
+
+        $r16 = r3.<JLex.CDTrans: int[] m_dtrans>;
+
+        $r15 = r0.<JLex.CMinimize: int[] m_ingroup>;
+
+        $r14 = r3.<JLex.CDTrans: int[] m_dtrans>;
+
+        $i2 = $r14[i11];
+
+        $i3 = $r15[$i2];
+
+        $r16[i11] = $i3;
+
+     label6:
+        i11 = i11 + 1;
+
+        goto label5;
+
+     label7:
+        i10 = i10 + 1;
+
+        goto label4;
+
+     label8:
+        r0.<JLex.CMinimize: java.util.Vector m_group> = null;
+
+        $r8 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r8.<JLex.CSpec: java.util.Vector m_dtrans_vector> = $r4;
+
+        return;
+    }
+
+    private void minimize()
+    {
+        JLex.CMinimize r0;
+        java.util.Vector r1, $r5, $r8, $r13, $r14, $r16, $r22, $r24, $r25, $r27, $r29;
+        JLex.CDTrans r3, r4;
+        int i0, i1, $i2, $i3, $i4, $i5, $i6, $i7, $i8, $i9, $i10, $i11, $i12, $i13, $i14, $i15, $i16, i17, i18, i19, i20, i21, i22;
+        java.lang.StringBuilder $r6, $r9, $r10;
+        java.io.PrintStream $r7;
+        java.lang.String $r11;
+        JLex.CSpec $r12, $r19;
+        boolean $z0, $z1, $z2, $z3, $z4, $z5, $z6, $z7, z8, $z9, $z10, $z11, $z12, $z13, $z14, $z15, $z16, $z17, $z18;
+        java.lang.Object $r15, $r17, $r18, $r32;
+        int[] $r20, $r21, $r23, $r26, $r28, $r30, $r31;
+
+        r0 := @this: JLex.CMinimize;
+
+        specialinvoke r0.<JLex.CMinimize: void init_groups()>();
+
+        $r5 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        i17 = virtualinvoke $r5.<java.util.Vector: int size()>();
+
+        i18 = i17 - 1;
+
+     label01:
+        if i18 == i17 goto label33;
+
+        i18 = i17;
+
+        $r13 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $i3 = virtualinvoke $r13.<java.util.Vector: int size()>();
+
+        if $i3 != i17 goto label02;
+
+        $z7 = 1;
+
+        goto label03;
+
+     label02:
+        $z7 = 0;
+
+     label03:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z7);
+
+        i19 = 0;
+
+     label04:
+        if i19 >= i17 goto label01;
+
+        $r14 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $r15 = virtualinvoke $r14.<java.util.Vector: java.lang.Object elementAt(int)>(i19);
+
+        r1 = (java.util.Vector) $r15;
+
+        i20 = virtualinvoke r1.<java.util.Vector: int size()>();
+
+        if i20 > 1 goto label05;
+
+        goto label32;
+
+     label05:
+        $r16 = new java.util.Vector;
+
+        specialinvoke $r16.<java.util.Vector: void <init>()>();
+
+        z8 = 0;
+
+        $r17 = virtualinvoke r1.<java.util.Vector: java.lang.Object elementAt(int)>(0);
+
+        r4 = (JLex.CDTrans) $r17;
+
+        i21 = 1;
+
+     label06:
+        if i21 >= i20 goto label32;
+
+        $r18 = virtualinvoke r1.<java.util.Vector: java.lang.Object elementAt(int)>(i21);
+
+        r3 = (JLex.CDTrans) $r18;
+
+        i22 = 0;
+
+     label07:
+        $r19 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $i4 = $r19.<JLex.CSpec: int m_dtrans_ncols>;
+
+        if i22 >= $i4 goto label31;
+
+        $r20 = r4.<JLex.CDTrans: int[] m_dtrans>;
+
+        i0 = $r20[i22];
+
+        $r21 = r3.<JLex.CDTrans: int[] m_dtrans>;
+
+        i1 = $r21[i22];
+
+        if i0 == i1 goto label30;
+
+        if i0 == -1 goto label08;
+
+        if i1 == -1 goto label08;
+
+        $r30 = r0.<JLex.CMinimize: int[] m_ingroup>;
+
+        $i16 = $r30[i1];
+
+        $r31 = r0.<JLex.CMinimize: int[] m_ingroup>;
+
+        $i15 = $r31[i0];
+
+        if $i16 == $i15 goto label30;
+
+     label08:
+        $r32 = virtualinvoke r1.<java.util.Vector: java.lang.Object elementAt(int)>(i21);
+
+        if $r32 != r3 goto label09;
+
+        $z9 = 1;
+
+        goto label10;
+
+     label09:
+        $z9 = 0;
+
+     label10:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z9);
+
+        virtualinvoke r1.<java.util.Vector: void removeElementAt(int)>(i21);
+
+        i21 = i21 + -1;
+
+        i20 = i20 + -1;
+
+        virtualinvoke $r16.<java.util.Vector: void addElement(java.lang.Object)>(r3);
+
+        if 0 != z8 goto label11;
+
+        z8 = 1;
+
+        i17 = i17 + 1;
+
+        $r29 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        virtualinvoke $r29.<java.util.Vector: void addElement(java.lang.Object)>($r16);
+
+     label11:
+        $r23 = r0.<JLex.CMinimize: int[] m_ingroup>;
+
+        $i5 = r3.<JLex.CDTrans: int m_label>;
+
+        $r22 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $i6 = virtualinvoke $r22.<java.util.Vector: int size()>();
+
+        $i7 = $i6 - 1;
+
+        $r23[$i5] = $i7;
+
+        $r24 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $z1 = virtualinvoke $r24.<java.util.Vector: boolean contains(java.lang.Object)>($r16);
+
+        if $z1 != 1 goto label12;
+
+        $z10 = 1;
+
+        goto label13;
+
+     label12:
+        $z10 = 0;
+
+     label13:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z10);
+
+        $r25 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $z2 = virtualinvoke $r25.<java.util.Vector: boolean contains(java.lang.Object)>(r1);
+
+        if $z2 != 1 goto label14;
+
+        $z11 = 1;
+
+        goto label15;
+
+     label14:
+        $z11 = 0;
+
+     label15:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z11);
+
+        $z3 = virtualinvoke r1.<java.util.Vector: boolean contains(java.lang.Object)>(r4);
+
+        if $z3 != 1 goto label16;
+
+        $z12 = 1;
+
+        goto label17;
+
+     label16:
+        $z12 = 0;
+
+     label17:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z12);
+
+        $z4 = virtualinvoke r1.<java.util.Vector: boolean contains(java.lang.Object)>(r3);
+
+        if $z4 != 0 goto label18;
+
+        $z13 = 1;
+
+        goto label19;
+
+     label18:
+        $z13 = 0;
+
+     label19:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z13);
+
+        $z5 = virtualinvoke $r16.<java.util.Vector: boolean contains(java.lang.Object)>(r4);
+
+        if $z5 != 0 goto label20;
+
+        $z14 = 1;
+
+        goto label21;
+
+     label20:
+        $z14 = 0;
+
+     label21:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z14);
+
+        $z6 = virtualinvoke $r16.<java.util.Vector: boolean contains(java.lang.Object)>(r3);
+
+        if $z6 != 1 goto label22;
+
+        $z15 = 1;
+
+        goto label23;
+
+     label22:
+        $z15 = 0;
+
+     label23:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z15);
+
+        $i8 = virtualinvoke r1.<java.util.Vector: int size()>();
+
+        if $i8 != i20 goto label24;
+
+        $z16 = 1;
+
+        goto label25;
+
+     label24:
+        $z16 = 0;
+
+     label25:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z16);
+
+        $r26 = r0.<JLex.CMinimize: int[] m_ingroup>;
+
+        $i9 = r4.<JLex.CDTrans: int m_label>;
+
+        $i10 = $r26[$i9];
+
+        if i19 != $i10 goto label26;
+
+        $z17 = 1;
+
+        goto label27;
+
+     label26:
+        $z17 = 0;
+
+     label27:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z17);
+
+        $r27 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $i11 = virtualinvoke $r27.<java.util.Vector: int size()>();
+
+        $i14 = $i11 - 1;
+
+        $r28 = r0.<JLex.CMinimize: int[] m_ingroup>;
+
+        $i12 = r3.<JLex.CDTrans: int m_label>;
+
+        $i13 = $r28[$i12];
+
+        if $i14 != $i13 goto label28;
+
+        $z18 = 1;
+
+        goto label29;
+
+     label28:
+        $z18 = 0;
+
+     label29:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z18);
+
+        goto label31;
+
+     label30:
+        i22 = i22 + 1;
+
+        goto label07;
+
+     label31:
+        i21 = i21 + 1;
+
+        goto label06;
+
+     label32:
+        i19 = i19 + 1;
+
+        goto label04;
+
+     label33:
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        $r6 = new java.lang.StringBuilder;
+
+        specialinvoke $r6.<java.lang.StringBuilder: void <init>()>();
+
+        $r8 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $i2 = virtualinvoke $r8.<java.util.Vector: int size()>();
+
+        $r9 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i2);
+
+        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" states after removal of redundant states.");
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>($r11);
+
+        $r12 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $z0 = $r12.<JLex.CSpec: boolean m_verbose>;
+
+        if $z0 == 0 goto label34;
+
+     label34:
+        specialinvoke r0.<JLex.CMinimize: void fix_dtrans()>();
+
+        return;
+    }
+
+    private void init_groups()
+    {
+        JLex.CMinimize r0;
+        int i0, i1, $i2, $i3, $i4, $i5, $i6, $i7, i8, i9, i10, i11;
+        JLex.CDTrans r1, r2, r3;
+        java.util.Vector $r4, $r6, $r10, $r12, $r13, $r14, $r16, $r17, r27;
+        JLex.CSpec $r5, $r8, $r9;
+        int[] $r7, $r15, $r22, $r23;
+        boolean $z0, z1, $z2, $z3, $z4, $z5, $z6, $z7, $z8, $z9;
+        java.lang.Object $r11, $r18, $r19, $r24;
+        JLex.CAccept $r20, $r21, $r25, $r26;
+
+        r0 := @this: JLex.CMinimize;
+
+        $r4 = new java.util.Vector;
+
+        specialinvoke $r4.<java.util.Vector: void <init>()>();
+
+        r0.<JLex.CMinimize: java.util.Vector m_group> = $r4;
+
+        i8 = 0;
+
+        $r5 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r6 = $r5.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        i0 = virtualinvoke $r6.<java.util.Vector: int size()>();
+
+        $r7 = newarray (int)[i0];
+
+        r0.<JLex.CMinimize: int[] m_ingroup> = $r7;
+
+        i9 = 0;
+
+     label01:
+        if i9 >= i0 goto label22;
+
+        z1 = 0;
+
+        $r9 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r10 = $r9.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        $r11 = virtualinvoke $r10.<java.util.Vector: java.lang.Object elementAt(int)>(i9);
+
+        r1 = (JLex.CDTrans) $r11;
+
+        $i2 = r1.<JLex.CDTrans: int m_label>;
+
+        if i9 != $i2 goto label02;
+
+        $z2 = 1;
+
+        goto label03;
+
+     label02:
+        $z2 = 0;
+
+     label03:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z2);
+
+        $z3 = 1;
+
+        goto label04;
+
+     label04:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z3);
+
+        $r12 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $i3 = virtualinvoke $r12.<java.util.Vector: int size()>();
+
+        if i8 != $i3 goto label05;
+
+        $z4 = 1;
+
+        goto label06;
+
+     label05:
+        $z4 = 0;
+
+     label06:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z4);
+
+        i10 = 0;
+
+     label07:
+        if i10 >= i8 goto label20;
+
+        $r17 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $r18 = virtualinvoke $r17.<java.util.Vector: java.lang.Object elementAt(int)>(i10);
+
+        r27 = (java.util.Vector) $r18;
+
+        $z5 = 1;
+
+        goto label08;
+
+     label08:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z5);
+
+        $i5 = virtualinvoke r27.<java.util.Vector: int size()>();
+
+        if 0 >= $i5 goto label09;
+
+        $z6 = 1;
+
+        goto label10;
+
+     label09:
+        $z6 = 0;
+
+     label10:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z6);
+
+        $r19 = virtualinvoke r27.<java.util.Vector: java.lang.Object elementAt(int)>(0);
+
+        r2 = (JLex.CDTrans) $r19;
+
+        i1 = virtualinvoke r27.<java.util.Vector: int size()>();
+
+        if 0 >= i1 goto label11;
+
+        $z7 = 1;
+
+        goto label12;
+
+     label11:
+        $z7 = 0;
+
+     label12:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z7);
+
+        i11 = 1;
+
+     label13:
+        if i11 >= i1 goto label16;
+
+        $r24 = virtualinvoke r27.<java.util.Vector: java.lang.Object elementAt(int)>(i11);
+
+        r3 = (JLex.CDTrans) $r24;
+
+        $r26 = r3.<JLex.CDTrans: JLex.CAccept m_accept>;
+
+        $r25 = r2.<JLex.CDTrans: JLex.CAccept m_accept>;
+
+        if $r26 != $r25 goto label14;
+
+        $z8 = 1;
+
+        goto label15;
+
+     label14:
+        $z8 = 0;
+
+     label15:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z8);
+
+        i11 = i11 + 1;
+
+        goto label13;
+
+     label16:
+        $r21 = r2.<JLex.CDTrans: JLex.CAccept m_accept>;
+
+        $r20 = r1.<JLex.CDTrans: JLex.CAccept m_accept>;
+
+        if $r21 != $r20 goto label19;
+
+        virtualinvoke r27.<java.util.Vector: void addElement(java.lang.Object)>(r1);
+
+        $r22 = r0.<JLex.CMinimize: int[] m_ingroup>;
+
+        $r22[i9] = i10;
+
+        z1 = 1;
+
+        $r23 = r0.<JLex.CMinimize: int[] m_ingroup>;
+
+        $i6 = r1.<JLex.CDTrans: int m_label>;
+
+        $i7 = $r23[$i6];
+
+        if i10 != $i7 goto label17;
+
+        $z9 = 1;
+
+        goto label18;
+
+     label17:
+        $z9 = 0;
+
+     label18:
+        staticinvoke <JLex.CUtility: void ASSERT(boolean)>($z9);
+
+        goto label20;
+
+     label19:
+        i10 = i10 + 1;
+
+        goto label07;
+
+     label20:
+        if 0 != z1 goto label21;
+
+        $r13 = new java.util.Vector;
+
+        specialinvoke $r13.<java.util.Vector: void <init>()>();
+
+        virtualinvoke $r13.<java.util.Vector: void addElement(java.lang.Object)>(r1);
+
+        $r15 = r0.<JLex.CMinimize: int[] m_ingroup>;
+
+        $r14 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $i4 = virtualinvoke $r14.<java.util.Vector: int size()>();
+
+        $r15[i9] = $i4;
+
+        $r16 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        virtualinvoke $r16.<java.util.Vector: void addElement(java.lang.Object)>($r13);
+
+        i8 = i8 + 1;
+
+     label21:
+        i9 = i9 + 1;
+
+        goto label01;
+
+     label22:
+        $r8 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $z0 = $r8.<JLex.CSpec: boolean m_verbose>;
+
+        if $z0 == 0 goto label23;
+
+     label23:
+        return;
+    }
+
+    private void pset(java.util.Vector)
+    {
+        JLex.CMinimize r0;
+        java.util.Vector r1;
+        int i0, $i1, i2;
+        JLex.CDTrans r2;
+        java.lang.Object $r3;
+        java.lang.StringBuilder $r4, $r6, $r7;
+        java.io.PrintStream $r5;
+        java.lang.String $r8;
+
+        r0 := @this: JLex.CMinimize;
+
+        r1 := @parameter0: java.util.Vector;
+
+        i0 = virtualinvoke r1.<java.util.Vector: int size()>();
+
+        i2 = 0;
+
+     label1:
+        if i2 >= i0 goto label2;
+
+        $r3 = virtualinvoke r1.<java.util.Vector: java.lang.Object elementAt(int)>(i2);
+
+        r2 = (JLex.CDTrans) $r3;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        $r4 = new java.lang.StringBuilder;
+
+        specialinvoke $r4.<java.lang.StringBuilder: void <init>()>();
+
+        $i1 = r2.<JLex.CDTrans: int m_label>;
+
+        $r6 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i1);
+
+        $r7 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" ");
+
+        $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r5.<java.io.PrintStream: void print(java.lang.String)>($r8);
+
+        i2 = i2 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void pgroups()
+    {
+        JLex.CMinimize r0;
+        int i0, i1, $i2, i3, i4;
+        java.util.Vector $r1, $r4, $r19, $r21;
+        java.io.PrintStream $r2, $r6, $r14, $r22, $r23;
+        JLex.CSpec $r3;
+        java.lang.StringBuilder $r5, $r7, $r8, $r9, $r11, $r13, $r15, $r16, $r17;
+        int[] $r10;
+        java.lang.String $r12, $r18;
+        java.lang.Object $r20;
+
+        r0 := @this: JLex.CMinimize;
+
+        $r1 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        i1 = virtualinvoke $r1.<java.util.Vector: int size()>();
+
+        i3 = 0;
+
+     label1:
+        if i3 >= i1 goto label2;
+
+        $r14 = <java.lang.System: java.io.PrintStream out>;
+
+        $r13 = new java.lang.StringBuilder;
+
+        specialinvoke $r13.<java.lang.StringBuilder: void <init>()>();
+
+        $r15 = virtualinvoke $r13.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\tGroup ");
+
+        $r16 = virtualinvoke $r15.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i3);
+
+        $r17 = virtualinvoke $r16.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" {");
+
+        $r18 = virtualinvoke $r17.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r14.<java.io.PrintStream: void print(java.lang.String)>($r18);
+
+        $r19 = r0.<JLex.CMinimize: java.util.Vector m_group>;
+
+        $r20 = virtualinvoke $r19.<java.util.Vector: java.lang.Object elementAt(int)>(i3);
+
+        $r21 = (java.util.Vector) $r20;
+
+        specialinvoke r0.<JLex.CMinimize: void pset(java.util.Vector)>($r21);
+
+        $r22 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r22.<java.io.PrintStream: void println(java.lang.String)>("}");
+
+        $r23 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r23.<java.io.PrintStream: void println()>();
+
+        i3 = i3 + 1;
+
+        goto label1;
+
+     label2:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println()>();
+
+        $r3 = r0.<JLex.CMinimize: JLex.CSpec m_spec>;
+
+        $r4 = $r3.<JLex.CSpec: java.util.Vector m_dtrans_vector>;
+
+        i0 = virtualinvoke $r4.<java.util.Vector: int size()>();
+
+        i4 = 0;
+
+     label3:
+        if i4 >= i0 goto label4;
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        $r5 = new java.lang.StringBuilder;
+
+        specialinvoke $r5.<java.lang.StringBuilder: void <init>()>();
+
+        $r7 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("\tstate ");
+
+        $r8 = virtualinvoke $r7.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i4);
+
+        $r9 = virtualinvoke $r8.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" is in group ");
+
+        $r10 = r0.<JLex.CMinimize: int[] m_ingroup>;
+
+        $i2 = $r10[i4];
+
+        $r11 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>($i2);
+
+        $r12 = virtualinvoke $r11.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>($r12);
+
+        i4 = i4 + 1;
+
+        goto label3;
+
+     label4:
+        return;
+    }
+}

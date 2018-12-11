@@ -1,0 +1,33 @@
+class javaonepointfive.Bet extends javaonepointfive.Alef
+{
+
+    void <init>()
+    {
+        javaonepointfive.Bet r0;
+
+        r0 := @this: javaonepointfive.Bet;
+
+        specialinvoke r0.<javaonepointfive.Alef: void <init>()>();
+
+        return;
+    }
+
+    void foo(java.lang.String, java.lang.String)
+    {
+        javaonepointfive.Bet r0;
+        java.lang.String r1, r2;
+        java.io.PrintStream $r3;
+
+        r0 := @this: javaonepointfive.Bet;
+
+        r1 := @parameter0: java.lang.String;
+
+        r2 := @parameter1: java.lang.String;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("non-varargs overrides varargs");
+
+        return;
+    }
+}

@@ -1,0 +1,38 @@
+public class alreadywalaunittests.InnerClassSuperA extends java.lang.Object
+{
+    int x;
+
+    public void <init>()
+    {
+        alreadywalaunittests.InnerClassSuperA r0;
+
+        r0 := @this: alreadywalaunittests.InnerClassSuperA;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<alreadywalaunittests.InnerClassSuperA: int x> = 5;
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        alreadywalaunittests.Sub$SubInner $r1;
+        alreadywalaunittests.Sub $r2;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new alreadywalaunittests.Sub$SubInner;
+
+        $r2 = new alreadywalaunittests.Sub;
+
+        specialinvoke $r2.<alreadywalaunittests.Sub: void <init>()>();
+
+        virtualinvoke $r2.<java.lang.Object: java.lang.Class getClass()>();
+
+        specialinvoke $r1.<alreadywalaunittests.Sub$SubInner: void <init>(alreadywalaunittests.Sub)>($r2);
+
+        return;
+    }
+}

@@ -1,0 +1,33 @@
+public class p.NonPrimaryTopLevel extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        p.NonPrimaryTopLevel r0;
+
+        r0 := @this: p.NonPrimaryTopLevel;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        p.NonPrimaryTopLevel $r3;
+        p.Foo $r4;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r3 = new p.NonPrimaryTopLevel;
+
+        specialinvoke $r3.<p.NonPrimaryTopLevel: void <init>()>();
+
+        $r4 = new p.Foo;
+
+        specialinvoke $r4.<p.Foo: void <init>()>();
+
+        return;
+    }
+}

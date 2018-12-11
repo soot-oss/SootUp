@@ -25,17 +25,22 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JNopStmt extends AbstractStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -614576667391055548L;
+
   public JNopStmt() {
   }
 
   @Override
-  public Object clone() {
+  public JNopStmt clone() {
     return new JNopStmt();
   }
 
@@ -45,7 +50,7 @@ public class JNopStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.NOP);
   }
 
@@ -62,6 +67,17 @@ public class JNopStmt extends AbstractStmt {
   @Override
   public boolean branches() {
     return false;
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    return o instanceof JNopStmt;
+  }
+
+  @Override
+  public int equivHashCode() {
+    // TODO: what to return
+    return 42;
   }
 
 }

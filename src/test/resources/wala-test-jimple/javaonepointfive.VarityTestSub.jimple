@@ -1,0 +1,26 @@
+class javaonepointfive.VarityTestSub extends javaonepointfive.VarityTestSuper
+{
+
+    void <init>()
+    {
+        javaonepointfive.VarityTestSub r0;
+
+        r0 := @this: javaonepointfive.VarityTestSub;
+
+        specialinvoke r0.<javaonepointfive.VarityTestSuper: void <init>()>();
+
+        return;
+    }
+
+    transient void bar(java.lang.String[])
+    {
+        javaonepointfive.VarityTestSub r0;
+        java.lang.String[] r1;
+
+        r0 := @this: javaonepointfive.VarityTestSub;
+
+        r1 := @parameter0: java.lang.String[];
+
+        return;
+    }
+}

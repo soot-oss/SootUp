@@ -1,0 +1,82 @@
+public class javaonepointfive.MoreOverriddenGenerics extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.MoreOverriddenGenerics r0;
+
+        r0 := @this: javaonepointfive.MoreOverriddenGenerics;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.MoreOverriddenGenerics r0;
+        java.lang.String r1;
+        javaonepointfive.MoreOverriddenGenerics$Super $r4;
+        java.lang.Object $r5, $r8, $r10;
+        java.io.PrintStream $r6, $r11;
+        javaonepointfive.MoreOverriddenGenerics$Sub $r7;
+        javaonepointfive.MoreOverriddenGenerics$SubSub $r9;
+        java.lang.Number r13, r17;
+
+        r0 := @this: javaonepointfive.MoreOverriddenGenerics;
+
+        $r4 = new javaonepointfive.MoreOverriddenGenerics$Super;
+
+        specialinvoke $r4.<javaonepointfive.MoreOverriddenGenerics$Super: void <init>(javaonepointfive.MoreOverriddenGenerics)>(r0);
+
+        $r5 = virtualinvoke $r4.<javaonepointfive.MoreOverriddenGenerics$Super: java.lang.Object get()>();
+
+        r1 = (java.lang.String) $r5;
+
+        $r6 = <java.lang.System: java.io.PrintStream err>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>(r1);
+
+        $r7 = new javaonepointfive.MoreOverriddenGenerics$Sub;
+
+        specialinvoke $r7.<javaonepointfive.MoreOverriddenGenerics$Sub: void <init>(javaonepointfive.MoreOverriddenGenerics)>(r0);
+
+        $r8 = virtualinvoke $r7.<javaonepointfive.MoreOverriddenGenerics$Super: java.lang.Object get()>();
+
+        r13 = (java.lang.Number) $r8;
+
+        $r9 = new javaonepointfive.MoreOverriddenGenerics$SubSub;
+
+        specialinvoke $r9.<javaonepointfive.MoreOverriddenGenerics$SubSub: void <init>(javaonepointfive.MoreOverriddenGenerics)>(r0);
+
+        virtualinvoke $r9.<javaonepointfive.MoreOverriddenGenerics$SubSub: java.lang.Long get()>();
+
+        virtualinvoke $r9.<javaonepointfive.MoreOverriddenGenerics$Sub: java.lang.Number get()>();
+
+        $r10 = virtualinvoke $r9.<javaonepointfive.MoreOverriddenGenerics$Super: java.lang.Object get()>();
+
+        r17 = (java.lang.Number) $r10;
+
+        $r11 = <java.lang.System: java.io.PrintStream err>;
+
+        virtualinvoke $r11.<java.io.PrintStream: void println(java.lang.Object)>(r17);
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.MoreOverriddenGenerics $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.MoreOverriddenGenerics;
+
+        specialinvoke $r1.<javaonepointfive.MoreOverriddenGenerics: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.MoreOverriddenGenerics: void doit()>();
+
+        return;
+    }
+}

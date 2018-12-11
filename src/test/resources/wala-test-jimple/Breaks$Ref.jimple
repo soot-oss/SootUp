@@ -1,0 +1,49 @@
+class Breaks$Ref extends java.lang.Object
+{
+    java.lang.String[] classes;
+
+    java.lang.String[] getClasses()
+    {
+        Breaks$Ref r0;
+        java.lang.String[] $r1;
+
+        r0 := @this: Breaks$Ref;
+
+        $r1 = r0.<Breaks$Ref: java.lang.String[] classes>;
+
+        return $r1;
+    }
+
+    private void <init>(java.lang.String[])
+    {
+        Breaks$Ref r0;
+        java.lang.String[] r1;
+
+        r0 := @this: Breaks$Ref;
+
+        r1 := @parameter0: java.lang.String[];
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<Breaks$Ref: java.lang.String[] classes> = r1;
+
+        return;
+    }
+
+    void <init>(java.lang.String[], Breaks$1)
+    {
+        Breaks$Ref r0;
+        java.lang.String[] r1;
+        Breaks$1 r2;
+
+        r0 := @this: Breaks$Ref;
+
+        r1 := @parameter0: java.lang.String[];
+
+        r2 := @parameter1: Breaks$1;
+
+        specialinvoke r0.<Breaks$Ref: void <init>(java.lang.String[])>(r1);
+
+        return;
+    }
+}

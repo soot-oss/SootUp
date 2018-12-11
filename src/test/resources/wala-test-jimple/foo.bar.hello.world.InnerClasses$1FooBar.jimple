@@ -1,0 +1,29 @@
+class foo.bar.hello.world.InnerClasses$1FooBar extends java.lang.Object
+{
+    final foo.bar.hello.world.InnerClasses this$0;
+
+    void <init>(foo.bar.hello.world.InnerClasses)
+    {
+        foo.bar.hello.world.InnerClasses$1FooBar r0;
+        foo.bar.hello.world.InnerClasses r1;
+
+        r0 := @this: foo.bar.hello.world.InnerClasses$1FooBar;
+
+        r1 := @parameter0: foo.bar.hello.world.InnerClasses;
+
+        r0.<foo.bar.hello.world.InnerClasses$1FooBar: foo.bar.hello.world.InnerClasses this$0> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public int hashCode()
+    {
+        foo.bar.hello.world.InnerClasses$1FooBar r0;
+
+        r0 := @this: foo.bar.hello.world.InnerClasses$1FooBar;
+
+        return 54;
+    }
+}

@@ -32,11 +32,13 @@ import java.util.Map;
  *
  * @author Andreas Dann
  */
-public class ModuleSignatureFactory extends SignatureFactory {
+public class ModuleSignatureFactory extends DefaultSignatureFactory {
 
-  protected final Map<String, ModuleSignature> modules = new HashMap<>();
+  public static final JavaClassSignature MODULE_INFO_CLASS = new JavaClassSignature("module-info", PackageSignature.DEFAULT_PACKAGE);
 
-  protected ModuleSignatureFactory() {
+  private static final Map<String, ModuleSignature> modules = new HashMap<>();
+
+  static {
     /*
      * Represents the unnamed module in Java's module system. Every type that is not defined in any known module but loaded
      * from the classpath is associated with this unnamed module, so as to ensure that every type is associated with a
@@ -45,6 +47,14 @@ public class ModuleSignatureFactory extends SignatureFactory {
      * <p>{@link ModuleSignature#UNNAMED_MODULE}
      */
     modules.put(ModuleSignature.UNNAMED_MODULE.moduleName, ModuleSignature.UNNAMED_MODULE);
+  }
+
+  /**
+   * FIXME: Check with mbenz if it is easer (and makes more sense), to make a module signature a decorator for a class
+   * signature..., IMHO: easier Factory to create module signatures.
+   */
+  public ModuleSignatureFactory() {
+
   }
 
   /**
@@ -59,7 +69,7 @@ public class ModuleSignatureFactory extends SignatureFactory {
    * @throws NullPointerException
    *           if the given module name is null. Use the empty string to denote the unnamed module.
    */
-  public ModuleSignature getModuleSignature(final String moduleName) {
+  public static ModuleSignature getModuleSignature(final String moduleName) {
     Preconditions.checkNotNull(moduleName);
     ModuleSignature moduleSignature = modules.get(moduleName);
     if (moduleSignature == null) {
@@ -102,7 +112,7 @@ public class ModuleSignatureFactory extends SignatureFactory {
   }
 
   @Override
-  public ClassSignature getClassSignature(final String className, final String packageName) {
+  public JavaClassSignature getClassSignature(final String className, final String packageName) {
     return getClassSignature(className, packageName, ModuleSignature.UNNAMED_MODULE.moduleName);
   }
 
@@ -121,8 +131,9 @@ public class ModuleSignatureFactory extends SignatureFactory {
    *           if the given module name or package name is null. Use the empty string to denote the unnamed module or the
    *           default package.
    */
-  public ClassSignature getClassSignature(final String className, final String packageName, final String moduleName) {
+  public JavaClassSignature getClassSignature(final String className, final String packageName, final String moduleName) {
     PackageSignature packageSignature = getPackageSignature(packageName, moduleName);
-    return new ClassSignature(className, packageSignature);
+    return new JavaClassSignature(className, packageSignature);
   }
+
 }

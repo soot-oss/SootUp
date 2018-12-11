@@ -1,0 +1,5 @@
+interface  IFoo extends java.lang.Object
+{
+
+    public abstract char getValue();
+}

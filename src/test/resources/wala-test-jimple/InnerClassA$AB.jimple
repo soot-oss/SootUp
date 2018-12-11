@@ -1,0 +1,50 @@
+class InnerClassA$AB extends java.lang.Object
+{
+    final InnerClassA this$0;
+
+    void <init>(InnerClassA)
+    {
+        InnerClassA$AB r0;
+        InnerClassA r1;
+
+        r0 := @this: InnerClassA$AB;
+
+        r1 := @parameter0: InnerClassA;
+
+        r0.<InnerClassA$AB: InnerClassA this$0> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public int getA_X_from_AB()
+    {
+        InnerClassA$AB r0;
+        InnerClassA $r1;
+        int $i0;
+
+        r0 := @this: InnerClassA$AB;
+
+        $r1 = r0.<InnerClassA$AB: InnerClassA this$0>;
+
+        $i0 = $r1.<InnerClassA: int a_x>;
+
+        return $i0;
+    }
+
+    public int getA_X_thru_AB()
+    {
+        InnerClassA$AB r0;
+        InnerClassA $r1;
+        int $i0;
+
+        r0 := @this: InnerClassA$AB;
+
+        $r1 = r0.<InnerClassA$AB: InnerClassA this$0>;
+
+        $i0 = virtualinvoke $r1.<InnerClassA: int getA_X()>();
+
+        return $i0;
+    }
+}

@@ -1,8 +1,7 @@
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.Scene;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -46,29 +45,30 @@ public class AbstractTrap implements Trap, Serializable {
   protected transient SootClass exception;
 
   /** The first unit being trapped. */
-  protected StmtBox beginStmtBox;
+  protected IStmtBox beginStmtBox;
 
   /** The unit just before the last unit being trapped. */
-  protected StmtBox endStmtBox;
+  protected IStmtBox endStmtBox;
 
   /** The unit to which execution flows after the caught exception is triggered. */
-  protected StmtBox handlerStmtBox;
+  protected IStmtBox handlerStmtBox;
 
   /** The list of unitBoxes referred to in this Trap (begin, end and handler. */
-  protected List<StmtBox> unitBoxes;
+  protected List<IStmtBox> unitBoxes;
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
-    exception = Scene.getInstance().getSootClass((String) in.readObject());
+    //TODO: Use of FQDNs in implementations should be discouraged. They need to be parsed through a SignatureFactory object.
+    exception = null; // this.getView().getSootClass((String) in.readObject());
   }
 
   private void writeObject(ObjectOutputStream out) throws IOException {
     out.defaultWriteObject();
-    out.writeObject(exception.getName());
+    out.writeObject(exception.getSignature().getFullyQualifiedName());
   }
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
-  protected AbstractTrap(SootClass exception, StmtBox beginStmtBox, StmtBox endStmtBox, StmtBox handlerStmtBox) {
+  protected AbstractTrap(SootClass exception, IStmtBox beginStmtBox, IStmtBox endStmtBox, IStmtBox handlerStmtBox) {
     this.exception = exception;
     this.beginStmtBox = beginStmtBox;
     this.endStmtBox = endStmtBox;
@@ -76,55 +76,59 @@ public class AbstractTrap implements Trap, Serializable {
     this.unitBoxes = Collections.unmodifiableList(Arrays.asList(beginStmtBox, endStmtBox, handlerStmtBox));
   }
 
-  public Stmt getBeginStmt() {
+  @Override
+  public IStmt getBeginStmt() {
     return beginStmtBox.getStmt();
   }
 
-  public Stmt getEndStmt() {
+  @Override
+  public IStmt getEndStmt() {
     return endStmtBox.getStmt();
   }
 
-  public Stmt getHandlerStmt() {
+  @Override
+  public IStmt getHandlerStmt() {
     return handlerStmtBox.getStmt();
   }
 
-  public StmtBox getHandlerStmtBox() {
+  public IStmtBox getHandlerStmtBox() {
     return handlerStmtBox;
   }
 
-  public StmtBox getBeginStmtBox() {
+  public IStmtBox getBeginStmtBox() {
     return beginStmtBox;
   }
 
-  public StmtBox getEndStmtBox() {
+  public IStmtBox getEndStmtBox() {
     return endStmtBox;
   }
 
   @Override
-  public List<StmtBox> getStmtBoxes() {
+  public List<IStmtBox> getStmtBoxes() {
     return unitBoxes;
   }
 
   @Override
   public void clearStmtBoxes() {
-    for (StmtBox box : getStmtBoxes()) {
+    for (IStmtBox box : getStmtBoxes()) {
       box.setStmt(null);
     }
   }
 
+  @Override
   public SootClass getException() {
     return exception;
   }
 
-  public void setBeginStmt(Stmt beginStmt) {
+  public void setBeginStmt(IStmt beginStmt) {
     beginStmtBox.setStmt(beginStmt);
   }
 
-  public void setEndStmt(Stmt endStmt) {
+  public void setEndStmt(IStmt endStmt) {
     endStmtBox.setStmt(endStmt);
   }
 
-  public void setHandlerStmt(Stmt handlerStmt) {
+  public void setHandlerStmt(IStmt handlerStmt) {
     handlerStmtBox.setStmt(handlerStmt);
   }
 

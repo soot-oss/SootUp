@@ -1,0 +1,93 @@
+public class javaonepointfive.NotSoSimpleEnums extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.NotSoSimpleEnums r0;
+
+        r0 := @this: javaonepointfive.NotSoSimpleEnums;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    private void doit(javaonepointfive.NotSoSimpleEnums$Direction)
+    {
+        javaonepointfive.NotSoSimpleEnums r0;
+        javaonepointfive.NotSoSimpleEnums$Direction r1, $r7, $r9;
+        java.lang.StringBuilder $r2, $r5, $r6, $r10;
+        java.io.PrintStream $r3;
+        java.lang.String $r4, $r8, $r11;
+
+        r0 := @this: javaonepointfive.NotSoSimpleEnums;
+
+        r1 := @parameter0: javaonepointfive.NotSoSimpleEnums$Direction;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        $r2 = new java.lang.StringBuilder;
+
+        specialinvoke $r2.<java.lang.StringBuilder: void <init>()>();
+
+        $r4 = virtualinvoke r1.<javaonepointfive.NotSoSimpleEnums$Direction: java.lang.String getTranslation()>();
+
+        $r5 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r4);
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" ");
+
+        $r7 = virtualinvoke r1.<javaonepointfive.NotSoSimpleEnums$Direction: javaonepointfive.NotSoSimpleEnums$Direction getOpposite()>();
+
+        $r8 = virtualinvoke $r7.<javaonepointfive.NotSoSimpleEnums$Direction: java.lang.String toString()>();
+
+        $r9 = staticinvoke <javaonepointfive.NotSoSimpleEnums$Direction: javaonepointfive.NotSoSimpleEnums$Direction valueOf(java.lang.String)>($r8);
+
+        $r10 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.Object)>($r9);
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>($r11);
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.NotSoSimpleEnums$Direction[] r1;
+        int i0, i1;
+        javaonepointfive.NotSoSimpleEnums$Direction r2;
+        java.io.PrintStream $r3;
+        javaonepointfive.NotSoSimpleEnums $r4;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("never eat shredded wheat");
+
+        r1 = staticinvoke <javaonepointfive.NotSoSimpleEnums$Direction: javaonepointfive.NotSoSimpleEnums$Direction[] values()>();
+
+        i0 = lengthof r1;
+
+        i1 = 0;
+
+     label1:
+        if i1 >= i0 goto label2;
+
+        r2 = r1[i1];
+
+        $r4 = new javaonepointfive.NotSoSimpleEnums;
+
+        specialinvoke $r4.<javaonepointfive.NotSoSimpleEnums: void <init>()>();
+
+        specialinvoke $r4.<javaonepointfive.NotSoSimpleEnums: void doit(javaonepointfive.NotSoSimpleEnums$Direction)>(r2);
+
+        i1 = i1 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+}

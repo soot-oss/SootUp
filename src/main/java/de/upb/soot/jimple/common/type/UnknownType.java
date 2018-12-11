@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.Scene;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -37,6 +36,11 @@ public class UnknownType extends Type {
 
   private static UnknownType instance;
 
+  /**
+   * Get the UnknownType instance.
+   * 
+   * @return the UnknownType instance.
+   */
   public static UnknownType getInstance() {
     if (instance == null) {
       instance = new UnknownType();
@@ -66,7 +70,7 @@ public class UnknownType extends Type {
 
   /** Returns the least common superclass of this type and other. */
   @Override
-  public Type merge(Type other, Scene cm) {
+  public Type merge(Type other) {
     if (other instanceof RefType) {
       return other;
     }

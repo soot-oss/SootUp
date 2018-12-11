@@ -28,11 +28,8 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.core.SootField;
 
+import java.util.Optional;
+
 public interface FieldRef extends ConcreteRef {
-  public SootFieldRef getFieldRef();
-
-  public void setFieldRef(SootFieldRef sfr);
-
-  public SootField getField();
-
+  public Optional<SootField> getField();
 }

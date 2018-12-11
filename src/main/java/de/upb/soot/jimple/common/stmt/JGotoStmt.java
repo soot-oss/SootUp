@@ -25,36 +25,40 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
 import java.util.List;
 
 public class JGotoStmt extends AbstractStmt {
-  final StmtBox targetBox;
-  final List<StmtBox> targetBoxes;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -7771670610404109177L;
+  final IStmtBox targetBox;
+  final List<IStmtBox> targetBoxes;
 
-  public JGotoStmt(Stmt target) {
-    this(Jimple.getInstance().newStmtBox(target));
+  public JGotoStmt(IStmt target) {
+    this(Jimple.newStmtBox(target));
   }
 
-  public JGotoStmt(StmtBox box) {
+  public JGotoStmt(IStmtBox box) {
     targetBox = box;
     targetBoxes = Collections.singletonList(box);
   }
 
   @Override
-  public Object clone() {
+  public JGotoStmt clone() {
     return new JGotoStmt(getTarget());
   }
 
   @Override
   public String toString() {
-    Stmt t = getTarget();
+    IStmt t = getTarget();
     String target = "(branch)";
     if (!t.branches()) {
       target = t.toString();
@@ -63,26 +67,26 @@ public class JGotoStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.GOTO);
     up.literal(" ");
     targetBox.toString(up);
   }
 
-  public Stmt getTarget() {
+  public IStmt getTarget() {
     return targetBox.getStmt();
   }
 
-  public void setTarget(Stmt target) {
+  public void setTarget(IStmt target) {
     targetBox.setStmt(target);
   }
 
-  public StmtBox getTargetBox() {
+  public IStmtBox getTargetBox() {
     return targetBox;
   }
 
   @Override
-  public List<StmtBox> getUnitBoxes() {
+  public List<IStmtBox> getStmtBoxes() {
     return targetBoxes;
   }
 
@@ -99,6 +103,27 @@ public class JGotoStmt extends AbstractStmt {
   @Override
   public boolean branches() {
     return true;
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (!(o instanceof JGotoStmt) || !targetBox.getStmt().equivTo(((JGotoStmt) o).targetBox.getStmt())) {
+      return false;
+    }
+    /*
+     * JGotoStmt gotoStmt = (JGotoStmt) o; List<IStmtBox> gotoStmtBoxes = gotoStmt.getStmtBoxes(); if( gotoStmtBoxes.size()
+     * != targetBoxes.size() ){ return false; } if( gotoStmt.equivHashCode() != equivHashCode()){ return false; }
+     */
+    return true;
+  }
+
+  @Override
+  public int equivHashCode() {
+    /*
+     * int res = 7; int prime = 31; for(IStmtBox box : targetBoxes){ res += prime * box.getStmt().equivHashCode(); } return
+     * res + prime * targetBox.getStmt().equivHashCode();
+     */
+    return targetBox.getStmt().equivHashCode();
   }
 
 }

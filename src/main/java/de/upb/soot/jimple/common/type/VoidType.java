@@ -27,6 +27,7 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.VoidTypeSignature;
 
 /** Represents the Java void type. */
 @SuppressWarnings("serial")
@@ -34,7 +35,12 @@ public class VoidType extends Type {
 
   private static VoidType instance;
 
-  public static VoidType v() {
+  /**
+   * Get the VoidType instance.
+   * 
+   * @return the VoidType instance.
+   */
+  public static VoidType getInstance() {
     if (instance == null) {
       instance = new VoidType();
     }
@@ -53,7 +59,7 @@ public class VoidType extends Type {
 
   @Override
   public String toString() {
-    return "void";
+    return VoidTypeSignature.VOID_TYPE_SIGNATURE.toString();
   }
 
   @Override

@@ -40,6 +40,11 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.Comparator;
+
+import soot.util.StringTools;
+
+@SuppressWarnings("serial")
 public class ClassConstant extends Constant {
   public final String value;
 
@@ -63,7 +68,7 @@ public class ClassConstant extends Constant {
 
   private static String sootTypeToString(Type tp) {
     if (tp instanceof RefType) {
-      return "L" + ((RefType) tp).getClassName().replaceAll("\\.", "/") + ";";
+      return "L" + ((RefType) tp).getTypeSignature().toString().replaceAll("\\.", "/") + ";";
     } else if (tp instanceof ArrayType) {
       ArrayType at = (ArrayType) tp;
       return "[" + sootTypeToString(at.getElementType());
@@ -164,7 +169,19 @@ public class ClassConstant extends Constant {
     return RefType.getInstance("java.lang.Class");
   }
 
+  @Override
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseClassConstant(this);
+  }
+
+  @Override
+  public String toString() {
+    return "class " + StringTools.getQuotedStringOf(value);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

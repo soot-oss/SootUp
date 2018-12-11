@@ -27,6 +27,7 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
 
 /**
  * Soot representation of the Java built-in type 'float'. Implemented as a singleton.
@@ -36,6 +37,11 @@ public class FloatType extends PrimType {
 
   private static FloatType instance;
 
+  /**
+   * Get the FloatType instance.
+   * 
+   * @return the FloatType instance.
+   */
   public static FloatType getInstance() {
     if (instance == null) {
       instance = new FloatType();
@@ -55,7 +61,7 @@ public class FloatType extends PrimType {
 
   @Override
   public String toString() {
-    return "float";
+    return PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE.toString();
   }
 
   @Override

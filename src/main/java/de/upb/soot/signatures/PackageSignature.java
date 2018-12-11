@@ -39,7 +39,7 @@ public class PackageSignature {
 
   /**
    * Internal: Constructs a Package Signature of a Java package. Instances should only be created by a
-   * {@link SignatureFactory}
+   * {@link DefaultSignatureFactory}
    *
    * @param packageName
    *          the package's name

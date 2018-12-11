@@ -27,6 +27,7 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
 
 /**
  * Soot representation of the Java built-in type 'byte'. Implemented as a singleton.
@@ -36,6 +37,11 @@ public class ByteType extends PrimType {
 
   private static ByteType instance;
 
+  /**
+   * Get the ByteType instance.
+   * 
+   * @return the ByteType instance.
+   */
   public static ByteType getInstance() {
     if (instance == null) {
       instance = new ByteType();
@@ -55,7 +61,7 @@ public class ByteType extends PrimType {
 
   @Override
   public String toString() {
-    return "byte";
+    return PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE.toString();
   }
 
   @Override

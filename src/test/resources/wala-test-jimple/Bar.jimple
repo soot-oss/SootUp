@@ -1,0 +1,34 @@
+class Bar extends java.lang.Object
+{
+    private final char fChar;
+
+    private void <init>(char)
+    {
+        Bar r0;
+        char c0;
+
+        r0 := @this: Bar;
+
+        c0 := @parameter0: char;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<Bar: char fChar> = c0;
+
+        return;
+    }
+
+    public static Bar create(char)
+    {
+        char c0;
+        Bar $r0;
+
+        c0 := @parameter0: char;
+
+        $r0 = new Bar;
+
+        specialinvoke $r0.<Bar: void <init>(char)>(c0);
+
+        return $r0;
+    }
+}

@@ -1,0 +1,94 @@
+public class MiniaturSliceBug extends java.lang.Object
+{
+    static final boolean $assertionsDisabled;
+
+    public void <init>()
+    {
+        MiniaturSliceBug r0;
+
+        r0 := @this: MiniaturSliceBug;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public void validNonDispatchedCall(IntWrapper)
+    {
+        MiniaturSliceBug r0;
+        IntWrapper r1;
+        boolean $z0;
+        int $i0;
+        java.lang.AssertionError $r2;
+
+        r0 := @this: MiniaturSliceBug;
+
+        r1 := @parameter0: IntWrapper;
+
+        virtualinvoke r1.<IntWrapper: void setIntValue(int)>(3);
+
+        $z0 = <MiniaturSliceBug: boolean $assertionsDisabled>;
+
+        if $z0 != 0 goto label1;
+
+        $i0 = virtualinvoke r1.<IntWrapper: int intValue()>();
+
+        if $i0 == 3 goto label1;
+
+        $r2 = new java.lang.AssertionError;
+
+        specialinvoke $r2.<java.lang.AssertionError: void <init>()>();
+
+        throw $r2;
+
+     label1:
+        virtualinvoke r1.<IntWrapper: boolean equals(java.lang.Object)>(r1);
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        MiniaturSliceBug $r1;
+        IntWrapper $r2;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new MiniaturSliceBug;
+
+        specialinvoke $r1.<MiniaturSliceBug: void <init>()>();
+
+        $r2 = new IntWrapper;
+
+        specialinvoke $r2.<IntWrapper: void <init>(int)>(-1);
+
+        virtualinvoke $r1.<MiniaturSliceBug: void validNonDispatchedCall(IntWrapper)>($r2);
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        java.lang.Class $r0;
+        boolean $z0, $z1;
+
+        $r0 = class "LMiniaturSliceBug;";
+
+        $z0 = virtualinvoke $r0.<java.lang.Class: boolean desiredAssertionStatus()>();
+
+        if $z0 != 0 goto label1;
+
+        $z1 = 1;
+
+        goto label2;
+
+     label1:
+        $z1 = 0;
+
+     label2:
+        <MiniaturSliceBug: boolean $assertionsDisabled> = $z1;
+
+        return;
+    }
+}

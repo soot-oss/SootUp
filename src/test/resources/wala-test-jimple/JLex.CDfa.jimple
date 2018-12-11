@@ -1,0 +1,38 @@
+class JLex.CDfa extends java.lang.Object
+{
+    int m_group;
+    boolean m_mark;
+    JLex.CAccept m_accept;
+    int m_anchor;
+    java.util.Vector m_nfa_set;
+    JLex.SparseBitSet m_nfa_bit;
+    int m_label;
+
+    void <init>(int)
+    {
+        JLex.CDfa r0;
+        int i0;
+
+        r0 := @this: JLex.CDfa;
+
+        i0 := @parameter0: int;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<JLex.CDfa: int m_group> = 0;
+
+        r0.<JLex.CDfa: boolean m_mark> = 0;
+
+        r0.<JLex.CDfa: JLex.CAccept m_accept> = null;
+
+        r0.<JLex.CDfa: int m_anchor> = 0;
+
+        r0.<JLex.CDfa: java.util.Vector m_nfa_set> = null;
+
+        r0.<JLex.CDfa: JLex.SparseBitSet m_nfa_bit> = null;
+
+        r0.<JLex.CDfa: int m_label> = i0;
+
+        return;
+    }
+}

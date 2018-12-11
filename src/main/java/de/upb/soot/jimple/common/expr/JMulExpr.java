@@ -25,13 +25,17 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JMulExpr extends AbstractJimpleFloatBinopExpr {
+public class JMulExpr extends AbstractFloatBinopExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 4239500276632139025L;
+
   public JMulExpr(Value op1, Value op2) {
     super(op1, op2);
   }
@@ -51,9 +55,4 @@ public class JMulExpr extends AbstractJimpleFloatBinopExpr {
     return new JMulExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
 
-  @Override
-  public void toString(StmtPrinter up) {
-    // TODO Auto-generated method stub
-
-  }
 }

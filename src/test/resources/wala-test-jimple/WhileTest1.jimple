@@ -1,0 +1,86 @@
+public class WhileTest1 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        WhileTest1 r0;
+
+        r0 := @this: WhileTest1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        WhileTest1 $r2;
+        int $i0, $i1, i2, i3;
+        boolean z0, $z1, $z2;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r2 = new WhileTest1;
+
+        specialinvoke $r2.<WhileTest1: void <init>()>();
+
+        i2 = 235834;
+
+        z0 = 0;
+
+     label1:
+        if z0 != 0 goto label4;
+
+        i3 = i2 + 3;
+
+        i2 = i3 ^ -1431677611;
+
+        $i1 = i2 & 4680;
+
+        if $i1 == 0 goto label2;
+
+        $z1 = 1;
+
+        goto label3;
+
+     label2:
+        $z1 = 0;
+
+     label3:
+        z0 = $z1;
+
+        goto label1;
+
+     label4:
+        if z0 != 0 goto label8;
+
+        i2 = i2 + 3;
+
+        if i2 >= 7 goto label5;
+
+        goto label4;
+
+     label5:
+        i2 = i2 ^ -1431677611;
+
+        $i0 = i2 & 4680;
+
+        if $i0 == 0 goto label6;
+
+        $z2 = 1;
+
+        goto label7;
+
+     label6:
+        $z2 = 0;
+
+     label7:
+        z0 = $z2;
+
+        goto label4;
+
+     label8:
+        return;
+    }
+}

@@ -1,0 +1,56 @@
+public class WelcomeInitializers extends java.lang.Object
+{
+    int x;
+    int y;
+    static int sX;
+    static int sY;
+
+    public void <init>()
+    {
+        WelcomeInitializers r0;
+
+        r0 := @this: WelcomeInitializers;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<WelcomeInitializers: int y> = 6;
+
+        r0.<WelcomeInitializers: int x> = 1;
+
+        return;
+    }
+
+    public void hey()
+    {
+        WelcomeInitializers r0;
+
+        r0 := @this: WelcomeInitializers;
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        WelcomeInitializers $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new WelcomeInitializers;
+
+        specialinvoke $r1.<WelcomeInitializers: void <init>()>();
+
+        virtualinvoke $r1.<WelcomeInitializers: void hey()>();
+
+        return;
+    }
+
+    static void <clinit>()
+    {
+        <WelcomeInitializers: int sY> = 6;
+
+        <WelcomeInitializers: int sX> = 3;
+
+        return;
+    }
+}

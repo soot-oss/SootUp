@@ -27,16 +27,105 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
-public class JCastExpr extends AbstractCastExpr {
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class JCastExpr implements Expr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -3186041329205869260L;
+  private final ValueBox opBox;
+  private Type type;
+
   public JCastExpr(Value op, Type type) {
-    super(Jimple.getInstance().newImmediateBox(op), type);
+    this.opBox = Jimple.newImmediateBox(op);
+    this.type = type;
   }
 
   @Override
   public Object clone() {
     return new JCastExpr(Jimple.cloneIfNecessary(getOp()), type);
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof JCastExpr) {
+      JCastExpr ace = (JCastExpr) o;
+      return opBox.getValue().equivTo(ace.opBox.getValue()) && type.equals(ace.type);
+    }
+    return false;
+  }
+
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return opBox.getValue().equivHashCode() * 101 + type.hashCode() + 17;
+  }
+
+  @Override
+  public String toString() {
+    return "(" + type.toString() + ") " + opBox.getValue().toString();
+  }
+
+  @Override
+  public void toString(IStmtPrinter up) {
+    up.literal("(");
+    up.type(type);
+    up.literal(") ");
+    opBox.toString(up);
+  }
+
+  public Value getOp() {
+    return opBox.getValue();
+  }
+
+  public void setOp(Value op) {
+    opBox.setValue(op);
+  }
+
+  public ValueBox getOpBox() {
+    return opBox;
+  }
+
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+    List<ValueBox> list = new ArrayList<ValueBox>();
+
+    list.addAll(opBox.getValue().getUseBoxes());
+    list.add(opBox);
+
+    return list;
+  }
+
+  public Type getCastType() {
+    return type;
+  }
+
+  public void setCastType(Type castType) {
+    this.type = castType;
+  }
+
+  @Override
+  public Type getType() {
+    return type;
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseCastExpr(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

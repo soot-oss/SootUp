@@ -25,13 +25,17 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.jimple.AbstractValueBox;
-
 public class ImmediateBox extends AbstractValueBox {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 3668742132688653821L;
+
   public ImmediateBox(Value value) {
-    setValue(value);
+    super(value);
   }
 
+  @Override
   public boolean canContainValue(Value value) {
     return value instanceof Immediate;
   }

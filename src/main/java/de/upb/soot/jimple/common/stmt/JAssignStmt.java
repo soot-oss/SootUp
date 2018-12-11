@@ -11,34 +11,42 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.RValueBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Immediate;
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.RValueBox;
 import de.upb.soot.jimple.basic.StmtBoxOwner;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.basic.VariableBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class JAssignStmt.
  */
 public class JAssignStmt extends AbstractDefinitionStmt {
 
   /**
+   * 
+   */
+  private static final long serialVersionUID = -4560269896679815285L;
+
+  /**
    * The Class LinkedVariableBox.
    */
   private static class LinkedVariableBox extends VariableBox {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -249895672780916220L;
     /** The other box. */
     ValueBox otherBox = null;
 
@@ -207,7 +215,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   /* added by Feng */
   @Override
   public boolean containsArrayRef() {
-    return ((getLeftOp() instanceof ArrayRef) || (getRightOp() instanceof ArrayRef));
+    return ((getLeftOp() instanceof JArrayRef) || (getRightOp() instanceof JArrayRef));
   }
 
   /*
@@ -216,15 +224,15 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getArrayRef()
    */
   @Override
-  public ArrayRef getArrayRef() {
+  public JArrayRef getArrayRef() {
     if (!containsArrayRef()) {
       throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
     }
 
-    if (leftBox.getValue() instanceof ArrayRef) {
-      return (ArrayRef) leftBox.getValue();
+    if (leftBox.getValue() instanceof JArrayRef) {
+      return (JArrayRef) leftBox.getValue();
     } else {
-      return (ArrayRef) rightBox.getValue();
+      return (JArrayRef) rightBox.getValue();
     }
   }
 
@@ -239,7 +247,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getArrayRefBox() called with no ArrayRef present!");
     }
 
-    if (leftBox.getValue() instanceof ArrayRef) {
+    if (leftBox.getValue() instanceof JArrayRef) {
       return leftBox;
     } else {
       return rightBox;
@@ -298,14 +306,14 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getUnitBoxes()
    */
   @Override
-  public List<StmtBox> getUnitBoxes() {
+  public List<IStmtBox> getStmtBoxes() {
     // handle possible PhiExpr's
     Value rvalue = rightBox.getValue();
     if (rvalue instanceof StmtBoxOwner) {
       return ((StmtBoxOwner) rvalue).getStmtBoxes();
     }
 
-    return super.getUnitBoxes();
+    return super.getStmtBoxes();
   }
 
   /*
@@ -324,7 +332,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @see de.upb.soot.jimple.common.stmt.Stmt#toString(de.upb.soot.StmtPrinter)
    */
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     leftBox.toString(up);
     up.literal(" = ");
     rightBox.toString(up);
@@ -336,7 +344,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#clone()
    */
   @Override
-  public Object clone() {
+  public JAssignStmt clone() {
     return new JAssignStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()));
   }
 
@@ -368,6 +376,22 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   @Override
   public void accept(IVisitor sw) {
     ((IStmtVisitor) sw).caseAssignStmt(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+
+    if (o instanceof JAssignStmt) {
+      JAssignStmt jas = (JAssignStmt) o;
+      return leftBox.getValue().equivTo(jas.leftBox.getValue()) && rightBox.getValue().equivTo(jas.rightBox.getValue());
+    }
+
+    return false;
+  }
+
+  @Override
+  public int equivHashCode() {
+    return leftBox.getValue().equivHashCode() + 31 * rightBox.getValue().equivHashCode();
   }
 
 }

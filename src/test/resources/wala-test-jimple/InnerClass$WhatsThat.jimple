@@ -1,0 +1,28 @@
+class InnerClass$WhatsThat extends java.lang.Object
+{
+    private int otherValue;
+    final InnerClass this$0;
+
+    void <init>(InnerClass)
+    {
+        InnerClass$WhatsThat r0;
+        InnerClass r1;
+        int $i0;
+
+        r0 := @this: InnerClass$WhatsThat;
+
+        r1 := @parameter0: InnerClass;
+
+        r0.<InnerClass$WhatsThat: InnerClass this$0> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<InnerClass$WhatsThat: int otherValue> = 3;
+
+        $i0 = r0.<InnerClass$WhatsThat: int otherValue>;
+
+        virtualinvoke r1.<InnerClass: int fromInner2(int)>($i0);
+
+        return;
+    }
+}

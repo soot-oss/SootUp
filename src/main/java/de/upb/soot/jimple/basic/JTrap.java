@@ -27,16 +27,21 @@ package de.upb.soot.jimple.basic;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
 
 public class JTrap extends AbstractTrap {
 
-  public JTrap(SootClass exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
-    super(exception, Jimple.getInstance().newStmtBox(beginStmt), Jimple.getInstance().newStmtBox(endStmt),
-        Jimple.getInstance().newStmtBox(handlerStmt));
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -1514595956359087470L;
+
+  public JTrap(SootClass exception, IStmt beginStmt, IStmt endStmt, IStmt handlerStmt) {
+    super(exception, Jimple.newStmtBox(beginStmt), Jimple.newStmtBox(endStmt),
+        Jimple.newStmtBox(handlerStmt));
   }
 
-  public JTrap(SootClass exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
+  public JTrap(SootClass exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
     super(exception, beginStmt, endStmt, handlerStmt);
   }
 

@@ -27,15 +27,135 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
-public class JNewArrayExpr extends AbstractNewArrayExpr {
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class JNewArrayExpr implements Expr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 4481534412297120257L;
+  private Type baseType;
+  private final ValueBox sizeBox;
+
   public JNewArrayExpr(Type type, Value size) {
-    super(type, Jimple.getInstance().newImmediateBox(size));
+    this.baseType = type;
+    this.sizeBox = Jimple.newImmediateBox(size);
   }
 
   @Override
   public Object clone() {
     return new JNewArrayExpr(getBaseType(), Jimple.cloneIfNecessary(getSize()));
   }
+
+  /**
+   * Returns a value of sizeBox if o is an instance of AbstractNewArrayExpr, else returns false.
+   */
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof JNewArrayExpr) {
+      JNewArrayExpr ae = (JNewArrayExpr) o;
+      return sizeBox.getValue().equivTo(ae.sizeBox.getValue()) && baseType.equals(ae.baseType);
+    }
+    return false;
+  }
+
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return sizeBox.getValue().equivHashCode() * 101 + baseType.hashCode() * 17;
+  }
+
+  @Override
+  public String toString() {
+    StringBuffer buffer = new StringBuffer();
+
+    buffer.append(Jimple.NEWARRAY + " (" + getBaseTypeString() + ")");
+    buffer.append("[" + sizeBox.getValue().toString() + "]");
+
+    return buffer.toString();
+  }
+
+  /**
+   * Converts a parameter of type StmtPrinter to a string literal.
+   */
+  @Override
+  public void toString(IStmtPrinter up) {
+    up.literal(Jimple.NEWARRAY);
+    up.literal(" ");
+    up.literal("(");
+    up.type(baseType);
+    up.literal(")");
+    up.literal("[");
+    sizeBox.toString(up);
+    up.literal("]");
+  }
+
+  private String getBaseTypeString() {
+    return baseType.toString();
+  }
+
+  public Type getBaseType() {
+    return baseType;
+  }
+
+  public void setBaseType(Type type) {
+    baseType = type;
+  }
+
+  public ValueBox getSizeBox() {
+    return sizeBox;
+  }
+
+  public Value getSize() {
+    return sizeBox.getValue();
+  }
+
+  public void setSize(Value size) {
+    sizeBox.setValue(size);
+  }
+
+  /**
+   * Returns a list of type ValueBox, contains a list of values of sizeBox.
+   */
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
+
+    useBoxes.addAll(sizeBox.getValue().getUseBoxes());
+    useBoxes.add(sizeBox);
+
+    return useBoxes;
+  }
+
+  /**
+   * Returns an instance of ArrayType().
+   */
+  @Override
+  public Type getType() {
+    if (baseType instanceof ArrayType) {
+      return ArrayType.getInstance(((ArrayType) baseType).baseType, ((ArrayType) baseType).numDimensions + 1);
+    } else {
+      return ArrayType.getInstance(baseType, 1);
+    }
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseNewArrayExpr(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
+  }
+
 }

@@ -25,21 +25,30 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.basic.StmtBox;
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.ArrayRef;
 import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
-public abstract class AbstractStmt implements Stmt {
+public abstract class AbstractStmt implements IStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 8029583017798662173L;
+  private Position position;
+
   /** Returns a deep clone of this object. */
   @Override
-  public abstract Object clone();
+  public abstract AbstractStmt clone();
 
   /**
    * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically updated as the structure
@@ -64,16 +73,16 @@ public abstract class AbstractStmt implements Stmt {
    * dynamically updated as the structure changes.
    */
   @Override
-  public List<StmtBox> getUnitBoxes() {
+  public List<IStmtBox> getStmtBoxes() {
     return Collections.emptyList();
   }
 
   /** List of UnitBoxes pointing to this Unit. */
-  List<StmtBox> boxesPointingToThis = null;
+  List<IStmtBox> boxesPointingToThis = null;
 
   /** Returns a list of Boxes pointing to this Unit. */
   @Override
-  public List<StmtBox> getBoxesPointingToThis() {
+  public List<IStmtBox> getBoxesPointingToThis() {
     if (boxesPointingToThis == null) {
       return Collections.emptyList();
     }
@@ -81,23 +90,23 @@ public abstract class AbstractStmt implements Stmt {
   }
 
   @Override
-  public void addBoxPointingToThis(StmtBox b) {
+  public void addBoxPointingToThis(IStmtBox b) {
     if (boxesPointingToThis == null) {
-      boxesPointingToThis = new ArrayList<StmtBox>();
+      boxesPointingToThis = new ArrayList<IStmtBox>();
     }
     boxesPointingToThis.add(b);
   }
 
   @Override
-  public void removeBoxPointingToThis(StmtBox b) {
+  public void removeBoxPointingToThis(IStmtBox b) {
     if (boxesPointingToThis != null) {
       boxesPointingToThis.remove(b);
     }
   }
 
   @Override
-  public void clearUnitBoxes() {
-    for (StmtBox ub : getUnitBoxes()) {
+  public void clearStmtBoxes() {
+    for (IStmtBox ub : getStmtBoxes()) {
       ub.setStmt(null);
     }
   }
@@ -127,14 +136,14 @@ public abstract class AbstractStmt implements Stmt {
   }
 
   @Override
-  public void redirectJumpsToThisTo(Stmt newLocation) {
-    List<StmtBox> boxesPointing = getBoxesPointingToThis();
+  public void redirectJumpsToThisTo(IStmt newLocation) {
+    List<IStmtBox> boxesPointing = getBoxesPointingToThis();
 
-    StmtBox[] boxes = boxesPointing.toArray(new StmtBox[boxesPointing.size()]);
+    IStmtBox[] boxes = boxesPointing.toArray(new IStmtBox[boxesPointing.size()]);
     // important to change this to an array to have a static copy
 
-    for (StmtBox element : boxes) {
-      StmtBox box = element;
+    for (IStmtBox element : boxes) {
+      IStmtBox box = element;
 
       if (box.getStmt() != this) {
         throw new RuntimeException("Something weird's happening");
@@ -168,7 +177,7 @@ public abstract class AbstractStmt implements Stmt {
   }
 
   @Override
-  public ArrayRef getArrayRef() {
+  public JArrayRef getArrayRef() {
     throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
   }
 
@@ -190,6 +199,20 @@ public abstract class AbstractStmt implements Stmt {
   @Override
   public ValueBox getFieldRefBox() {
     throw new RuntimeException("getFieldRefBox() called with no FieldRef present!");
+  }
+
+  @Override
+  public void setPosition(Position position) {
+    this.position = position;
+  }
+
+  public Position getPosition() {
+    return position;
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

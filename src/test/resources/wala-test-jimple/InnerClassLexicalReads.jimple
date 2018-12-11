@@ -1,0 +1,63 @@
+public class InnerClassLexicalReads extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        InnerClassLexicalReads r0;
+
+        r0 := @this: InnerClassLexicalReads;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static IntConstant makeIntConstant(int)
+    {
+        int i0, i1;
+        InnerClassLexicalReads$1 $r0;
+
+        i0 := @parameter0: int;
+
+        i1 = i0 * i0;
+
+        $r0 = new InnerClassLexicalReads$1;
+
+        specialinvoke $r0.<InnerClassLexicalReads$1: void <init>(int)>(i1);
+
+        return $r0;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        int i1, i2, $i3;
+        IntConstant r2;
+        InnerClassLexicalReads $r3;
+        java.io.PrintStream $r4, $r5;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r3 = new InnerClassLexicalReads;
+
+        specialinvoke $r3.<InnerClassLexicalReads: void <init>()>();
+
+        i1 = 5 * 5;
+
+        r2 = staticinvoke <InnerClassLexicalReads: IntConstant makeIntConstant(int)>(i1);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $i3 = interfaceinvoke r2.<IntConstant: int getConstant()>();
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i3);
+
+        i2 = interfaceinvoke r2.<IntConstant: int getConstant()>();
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(int)>(i2);
+
+        return;
+    }
+}

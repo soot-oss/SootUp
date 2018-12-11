@@ -1,0 +1,164 @@
+public class javaonepointfive.EnumSwitch extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.EnumSwitch r0;
+
+        r0 := @this: javaonepointfive.EnumSwitch;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.EnumSwitch$Palo[] r1;
+        int i0, i1;
+        javaonepointfive.EnumSwitch$Palo r2;
+        javaonepointfive.EnumSwitch $r3;
+
+        r0 := @parameter0: java.lang.String[];
+
+        r1 = staticinvoke <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo[] values()>();
+
+        i0 = lengthof r1;
+
+        i1 = 0;
+
+     label1:
+        if i1 >= i0 goto label2;
+
+        r2 = r1[i1];
+
+        $r3 = new javaonepointfive.EnumSwitch;
+
+        specialinvoke $r3.<javaonepointfive.EnumSwitch: void <init>()>();
+
+        specialinvoke $r3.<javaonepointfive.EnumSwitch: void doit(javaonepointfive.EnumSwitch$Palo)>(r2);
+
+        i1 = i1 + 1;
+
+        goto label1;
+
+     label2:
+        return;
+    }
+
+    private void doit(javaonepointfive.EnumSwitch$Palo)
+    {
+        javaonepointfive.EnumSwitch r0;
+        javaonepointfive.EnumSwitch$Palo r1, $r14;
+        int[] $r2;
+        int $i1, $i2, $i3, $i4, $i5, i6, i7, i8;
+        java.io.PrintStream $r3, $r4, $r5, $r6, $r7, $r8, $r9, $r10, $r11, $r12;
+        java.lang.String $r13;
+
+        r0 := @this: javaonepointfive.EnumSwitch;
+
+        r1 := @parameter0: javaonepointfive.EnumSwitch$Palo;
+
+        i6 = 3;
+
+        i7 = 2;
+
+        $r2 = <javaonepointfive.EnumSwitch$1: int[] $SwitchMap$javaonepointfive$EnumSwitch$Palo>;
+
+        $i1 = virtualinvoke r1.<javaonepointfive.EnumSwitch$Palo: int ordinal()>();
+
+        $i2 = $r2[$i1];
+
+        tableswitch($i2)
+        {
+            case 1: goto label1;
+            case 2: goto label2;
+            case 3: goto label3;
+            case 4: goto label4;
+            default: goto label5;
+        };
+
+     label1:
+        i8 = 5 - 3;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("gold");
+
+        goto label6;
+
+     label2:
+        i8 = 5 * 5;
+
+        i6 = 3 + 3;
+
+        $r6 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>("cups");
+
+        goto label6;
+
+     label3:
+        i8 = 2 + 2;
+
+        i6 = 6;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("swords");
+
+        goto label6;
+
+     label4:
+        $i3 = 5 / 3;
+
+        i8 = $i3 + 2;
+
+        i7 = 5 + 3;
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>("clubs");
+
+        goto label6;
+
+     label5:
+        $i4 = 5 + 5;
+
+        $i5 = $i4 + 5;
+
+        i8 = $i5 + 5;
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>("baraja inglesa");
+
+     label6:
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(int)>(5);
+
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(int)>(i6);
+
+        $r10 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r10.<java.io.PrintStream: void println(int)>(i7);
+
+        $r11 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r11.<java.io.PrintStream: void println(int)>(i8);
+
+        $r12 = <java.lang.System: java.io.PrintStream out>;
+
+        $r13 = virtualinvoke r1.<javaonepointfive.EnumSwitch$Palo: java.lang.String toString()>();
+
+        $r14 = staticinvoke <javaonepointfive.EnumSwitch$Palo: javaonepointfive.EnumSwitch$Palo valueOf(java.lang.String)>($r13);
+
+        virtualinvoke $r12.<java.io.PrintStream: void println(java.lang.Object)>($r14);
+
+        return;
+    }
+}

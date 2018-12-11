@@ -1,0 +1,40 @@
+class Derived extends Base
+{
+
+    void <init>()
+    {
+        Derived r0;
+
+        r0 := @this: Derived;
+
+        specialinvoke r0.<Base: void <init>()>();
+
+        return;
+    }
+
+    public void foo()
+    {
+        Derived r0;
+
+        r0 := @this: Derived;
+
+        specialinvoke r0.<Base: void foo()>();
+
+        return;
+    }
+
+    public java.lang.String bar(int)
+    {
+        Derived r0;
+        int i0;
+        java.lang.String $r1;
+
+        r0 := @this: Derived;
+
+        i0 := @parameter0: int;
+
+        $r1 = staticinvoke <java.lang.Integer: java.lang.String toHexString(int)>(i0);
+
+        return $r1;
+    }
+}

@@ -1,0 +1,53 @@
+class javaonepointfive.MyGeneric extends java.lang.Object
+{
+    java.lang.Object a;
+    javaonepointfive.IGeneric b;
+
+    public void <init>(java.lang.Object, javaonepointfive.IGeneric)
+    {
+        javaonepointfive.MyGeneric r0;
+        java.lang.Object r1;
+        javaonepointfive.IGeneric r2;
+
+        r0 := @this: javaonepointfive.MyGeneric;
+
+        r1 := @parameter0: java.lang.Object;
+
+        r2 := @parameter1: javaonepointfive.IGeneric;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<javaonepointfive.MyGeneric: java.lang.Object a> = r1;
+
+        r0.<javaonepointfive.MyGeneric: javaonepointfive.IGeneric b> = r2;
+
+        return;
+    }
+
+    public java.lang.Object doFoo()
+    {
+        javaonepointfive.MyGeneric r0;
+        javaonepointfive.IGeneric $r1;
+        java.lang.Object $r2;
+
+        r0 := @this: javaonepointfive.MyGeneric;
+
+        $r1 = r0.<javaonepointfive.MyGeneric: javaonepointfive.IGeneric b>;
+
+        $r2 = interfaceinvoke $r1.<javaonepointfive.IGeneric: java.lang.Object foo()>();
+
+        return $r2;
+    }
+
+    public javaonepointfive.IGeneric getB()
+    {
+        javaonepointfive.MyGeneric r0;
+        javaonepointfive.IGeneric $r1;
+
+        r0 := @this: javaonepointfive.MyGeneric;
+
+        $r1 = r0.<javaonepointfive.MyGeneric: javaonepointfive.IGeneric b>;
+
+        return $r1;
+    }
+}

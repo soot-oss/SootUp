@@ -1,0 +1,101 @@
+public class javaonepointfive.SimpleEnums2 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.SimpleEnums2 r0;
+
+        r0 := @this: javaonepointfive.SimpleEnums2;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.SimpleEnums2 $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.SimpleEnums2;
+
+        specialinvoke $r1.<javaonepointfive.SimpleEnums2: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.SimpleEnums2: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.SimpleEnums2 r0;
+        javaonepointfive.SimpleEnums2$Direction r1, r2, r3, r4, $r6, $r8, $r10, $r12;
+        java.io.PrintStream $r5, $r7, $r9, $r11, $r13, $r15, $r16, $r18, $r20;
+        java.lang.Enum $r14;
+        javaonepointfive.SimpleEnums2$Direction[] $r17, $r19;
+
+        r0 := @this: javaonepointfive.SimpleEnums2;
+
+        $r5 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.String)>("never eat shredded wheat");
+
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        $r6 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction NORTH>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.Object)>($r6);
+
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        $r8 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction EAST>;
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(java.lang.Object)>($r8);
+
+        $r11 = <java.lang.System: java.io.PrintStream out>;
+
+        $r10 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction SOUTH>;
+
+        virtualinvoke $r11.<java.io.PrintStream: void println(java.lang.Object)>($r10);
+
+        $r13 = <java.lang.System: java.io.PrintStream out>;
+
+        $r12 = <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction WEST>;
+
+        virtualinvoke $r13.<java.io.PrintStream: void println(java.lang.Object)>($r12);
+
+        $r14 = staticinvoke <java.lang.Enum: java.lang.Enum valueOf(java.lang.Class,java.lang.String)>(class "Ljavaonepointfive/SimpleEnums2$Direction;", "NORTH");
+
+        r1 = (javaonepointfive.SimpleEnums2$Direction) $r14;
+
+        r2 = staticinvoke <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction valueOf(java.lang.String)>("NORTH");
+
+        $r15 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r15.<java.io.PrintStream: void println(java.lang.Object)>(r1);
+
+        $r16 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r16.<java.io.PrintStream: void println(java.lang.Object)>(r2);
+
+        $r17 = staticinvoke <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction[] values()>();
+
+        r3 = $r17[0];
+
+        $r18 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r18.<java.io.PrintStream: void println(java.lang.Object)>(r3);
+
+        $r19 = staticinvoke <javaonepointfive.SimpleEnums2$Direction: javaonepointfive.SimpleEnums2$Direction[] myValues()>();
+
+        r4 = $r19[0];
+
+        $r20 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r20.<java.io.PrintStream: void println(java.lang.Object)>(r4);
+
+        return;
+    }
+}

@@ -1,0 +1,33 @@
+class javaonepointfive.Alpha extends java.lang.Object
+{
+
+    void <init>()
+    {
+        javaonepointfive.Alpha r0;
+
+        r0 := @this: javaonepointfive.Alpha;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    void foo(java.lang.String, java.lang.String)
+    {
+        javaonepointfive.Alpha r0;
+        java.lang.String r1, r2;
+        java.io.PrintStream $r3;
+
+        r0 := @this: javaonepointfive.Alpha;
+
+        r1 := @parameter0: java.lang.String;
+
+        r2 := @parameter1: java.lang.String;
+
+        $r3 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.String)>("non-varargs not overridden");
+
+        return;
+    }
+}

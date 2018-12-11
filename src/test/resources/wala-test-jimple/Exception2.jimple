@@ -1,0 +1,226 @@
+public final class Exception2 extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        Exception2 r0;
+
+        r0 := @this: Exception2;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        Exception2 $r3;
+        java.io.FileInputStream $r4, r23;
+        java.lang.String $r5, $r7, $r17;
+        java.io.FileOutputStream $r6, r24;
+        int $i0;
+        java.io.IOException $r8, $r9, $r11, $r14, $r18, $r19, $r20, $r21, $r22;
+        java.lang.Throwable $r10;
+        java.io.FileNotFoundException $r12;
+        java.io.PrintStream $r13, $r15, $r16;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r3 = new Exception2;
+
+        specialinvoke $r3.<Exception2: void <init>()>();
+
+        r23 = null;
+
+        r24 = null;
+
+     label01:
+        $r4 = new java.io.FileInputStream;
+
+        $r5 = r0[0];
+
+        specialinvoke $r4.<java.io.FileInputStream: void <init>(java.lang.String)>($r5);
+
+        r23 = $r4;
+
+        $r6 = new java.io.FileOutputStream;
+
+        $r7 = r0[1];
+
+        specialinvoke $r6.<java.io.FileOutputStream: void <init>(java.lang.String)>($r7);
+
+        r24 = $r6;
+
+     label02:
+        $i0 = virtualinvoke $r4.<java.io.FileInputStream: int read()>();
+
+        if $i0 == -1 goto label03;
+
+        virtualinvoke $r6.<java.io.FileOutputStream: void write(int)>($i0);
+
+        goto label02;
+
+     label03:
+        if $r4 == null goto label07;
+
+     label04:
+        virtualinvoke $r4.<java.io.FileInputStream: void close()>();
+
+     label05:
+        goto label07;
+
+     label06:
+        $r18 := @caughtexception;
+
+        staticinvoke <java.lang.System: void exit(int)>(-1);
+
+     label07:
+        if $r6 == null goto label39;
+
+     label08:
+        virtualinvoke $r6.<java.io.FileOutputStream: void close()>();
+
+     label09:
+        goto label39;
+
+     label10:
+        $r8 := @caughtexception;
+
+        staticinvoke <java.lang.System: void exit(int)>(-1);
+
+        goto label39;
+
+     label11:
+        $r12 := @caughtexception;
+
+        $r13 = <java.lang.System: java.io.PrintStream err>;
+
+        virtualinvoke $r13.<java.io.PrintStream: void println(java.lang.String)>("File not found");
+
+     label12:
+        if r23 == null goto label16;
+
+     label13:
+        virtualinvoke r23.<java.io.FileInputStream: void close()>();
+
+     label14:
+        goto label16;
+
+     label15:
+        $r11 := @caughtexception;
+
+        staticinvoke <java.lang.System: void exit(int)>(-1);
+
+     label16:
+        if r24 == null goto label39;
+
+     label17:
+        virtualinvoke r24.<java.io.FileOutputStream: void close()>();
+
+     label18:
+        goto label39;
+
+     label19:
+        $r22 := @caughtexception;
+
+        staticinvoke <java.lang.System: void exit(int)>(-1);
+
+        goto label39;
+
+     label20:
+        $r14 := @caughtexception;
+
+        $r15 = <java.lang.System: java.io.PrintStream err>;
+
+        virtualinvoke $r15.<java.io.PrintStream: void print(java.lang.String)>("I/O problem ");
+
+        $r16 = <java.lang.System: java.io.PrintStream err>;
+
+        $r17 = virtualinvoke $r14.<java.io.IOException: java.lang.String getMessage()>();
+
+        virtualinvoke $r16.<java.io.PrintStream: void println(java.lang.String)>($r17);
+
+     label21:
+        if r23 == null goto label25;
+
+     label22:
+        virtualinvoke r23.<java.io.FileInputStream: void close()>();
+
+     label23:
+        goto label25;
+
+     label24:
+        $r20 := @caughtexception;
+
+        staticinvoke <java.lang.System: void exit(int)>(-1);
+
+     label25:
+        if r24 == null goto label39;
+
+     label26:
+        virtualinvoke r24.<java.io.FileOutputStream: void close()>();
+
+     label27:
+        goto label39;
+
+     label28:
+        $r21 := @caughtexception;
+
+        staticinvoke <java.lang.System: void exit(int)>(-1);
+
+        goto label39;
+
+     label29:
+        $r10 := @caughtexception;
+
+     label30:
+        if r23 == null goto label34;
+
+     label31:
+        virtualinvoke r23.<java.io.FileInputStream: void close()>();
+
+     label32:
+        goto label34;
+
+     label33:
+        $r19 := @caughtexception;
+
+        staticinvoke <java.lang.System: void exit(int)>(-1);
+
+     label34:
+        if r24 == null goto label38;
+
+     label35:
+        virtualinvoke r24.<java.io.FileOutputStream: void close()>();
+
+     label36:
+        goto label38;
+
+     label37:
+        $r9 := @caughtexception;
+
+        staticinvoke <java.lang.System: void exit(int)>(-1);
+
+     label38:
+        throw $r10;
+
+     label39:
+        return;
+
+        catch java.io.IOException from label04 to label05 with label06;
+        catch java.io.IOException from label08 to label09 with label10;
+        catch java.io.FileNotFoundException from label01 to label03 with label11;
+        catch java.io.IOException from label13 to label14 with label15;
+        catch java.io.IOException from label17 to label18 with label19;
+        catch java.io.IOException from label01 to label03 with label20;
+        catch java.io.IOException from label22 to label23 with label24;
+        catch java.io.IOException from label26 to label27 with label28;
+        catch java.lang.Throwable from label01 to label03 with label29;
+        catch java.lang.Throwable from label11 to label12 with label29;
+        catch java.lang.Throwable from label20 to label21 with label29;
+        catch java.io.IOException from label31 to label32 with label33;
+        catch java.io.IOException from label35 to label36 with label37;
+        catch java.lang.Throwable from label29 to label30 with label29;
+    }
+}

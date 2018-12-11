@@ -30,11 +30,17 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.Comparator;
+
 /**
  * Floating point constant with single precision.
  */
 public class FloatConstant extends RealConstant {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1743530246829003090L;
   public final float value;
 
   private FloatConstant(float value) {
@@ -189,6 +195,12 @@ public class FloatConstant extends RealConstant {
     if (!(constant instanceof FloatConstant)) {
       throw new IllegalArgumentException("FloatConstant expected");
     }
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 
 }

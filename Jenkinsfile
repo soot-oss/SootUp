@@ -1,38 +1,106 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3-alpine'
-            args '-v $HOME/.m2:/root/.m2'
-        }
-    }
+    agent none
+
     stages {
 
         stage('Build') {
-            steps {
+          parallel{
+            stage('Build with JDK8'){
+
+              agent {
+                docker {
+                  image 'maven:3-jdk-8-alpine'
+                  args '-v $HOME/.m2:/root/.m2'
+                }
+              }
+
+              steps {
                 sh 'mvn clean compile'
+              }
+
             }
+
+
+            stage('Build with JDK9'){
+
+              agent {
+                docker {
+                  image 'maven:3-jdk-9-slim'
+                  args '-v $HOME/.m2:/root/.m2'
+                }
+              }
+
+              steps {
+                sh 'mvn clean compile'
+              }
+
+            }
+          }
         }
 
 	    stage('Test') {
-	        steps {
-	            sh 'mvn test'
-                jacoco(
-                    execPattern: '**/target/coverage-reports/jacoco-ut.exec',
-                    classPattern: '**/classes',
-                    sourcePattern: 'src/main/java',
-                    exclusionPattern: 'src/test*',
-                    changeBuildStatus: true,
-                    minimumMethodCoverage: "50",
-                    maximumMethodCoverage: "70",
-                    deltaMethodCoverage: "10"
-                )
-	        }
+        parallel {
+	  
+          stage('Test JDK8'){
 
-	        post {
-			    always {
-			    	junit 'target/surefire-reports/**/*.xml'
-			    }
-			}
+            agent {
+              docker {
+                image 'maven:3-jdk-8-alpine'
+                args '-v $HOME/.m2:/root/.m2'
+              }
+            }
+
+            steps {
+              sh 'mvn test -PJava8'
+              jacoco(   execPattern: '**/target/coverage-reports/jacoco-ut.exec',
+              classPattern: '**/classes',
+              sourcePattern: 'src/main/java',
+              exclusionPattern: 'src/test*',
+              changeBuildStatus: true,
+              minimumMethodCoverage: "50",
+              maximumMethodCoverage: "70",
+              deltaMethodCoverage: "10"
+              )
+            }
+
+            post {
+              always {
+                junit 'target/surefire-reports/**/*.xml'
+              }
+            }
+          }
+
+	        stage('Test JDK9'){
+  
+            agent {
+              docker {
+                image 'maven:3-jdk-9-slim'
+                args '-v $HOME/.m2:/root/.m2'
+              }
+            }
+
+            steps {
+              sh 'mvn test -PJava9'
+              jacoco(
+              execPattern: '**/target/coverage-reports/jacoco-ut.exec',
+              classPattern: '**/classes',
+              sourcePattern: 'src/main/java',
+              exclusionPattern: 'src/test*',
+              changeBuildStatus: true,
+              minimumMethodCoverage: "50",
+              maximumMethodCoverage: "70",
+              deltaMethodCoverage: "10"
+              )
+            }
+            post {
+              always {
+                junit 'target/surefire-reports/**/*.xml'
+              }
+            }
+          }
+
+
+	       }
 		}
 
 		stage('Deploy'){

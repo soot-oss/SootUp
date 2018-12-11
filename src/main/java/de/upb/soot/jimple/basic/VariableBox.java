@@ -25,12 +25,16 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.jimple.AbstractValueBox;
 import de.upb.soot.jimple.common.ref.ConcreteRef;
 
 public class VariableBox extends AbstractValueBox {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 9045705549481103168L;
+
   public VariableBox(Value value) {
-    setValue(value);
+    super(value);
   }
 
   @Override

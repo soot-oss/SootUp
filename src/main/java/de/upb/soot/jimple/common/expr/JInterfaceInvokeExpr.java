@@ -26,45 +26,108 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.core.AbstractClass;
+import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
-public class JInterfaceInvokeExpr extends AbstractInterfaceInvokeExpr {
+public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 7458533916011927970L;
+
   /**
    * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array argBoxes.
    */
-  public JInterfaceInvokeExpr(Value base, SootMethodRef methodRef, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), methodRef, new ValueBox[args.size()]);
+  public JInterfaceInvokeExpr(IView view, Value base, MethodSignature method, List<? extends Value> args) {
+    super(view, Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
 
     // Check that the method's class is resolved enough
     // CheckLevel returns without doing anything because we can be not 'done' resolving
-    methodRef.declaringClass().checkLevelIgnoreResolving(SootClass.HIERARCHY);
-    // now check if the class is valid
-    if (!methodRef.declaringClass().isInterface() && !methodRef.declaringClass().isPhantom()) {
-      throw new RuntimeException("Trying to create interface invoke expression for non-interface type: "
-          + methodRef.declaringClass() + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
+    Optional<AbstractClass> declaringClass = view.getClass(method.declClassSignature);
+    if (declaringClass.isPresent()) {
+      SootClass cls = (SootClass) declaringClass.get();
+      cls.checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
+      // now check if the class is valid
+      if (!cls.isInterface() && !cls.isPhantomClass()) {
+        throw new RuntimeException("Trying to create interface invoke expression for non-interface type: " + cls
+            + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
+      }
     }
-
     for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.getInstance().newImmediateBox(args.get(i));
+      this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
   }
 
   @Override
   public Object clone() {
     List<Value> argList = new ArrayList<Value>(getArgCount());
-
     for (int i = 0; i < getArgCount(); i++) {
       argList.add(i, Jimple.cloneIfNecessary(getArg(i)));
     }
+    return new JInterfaceInvokeExpr(this.getView(), Jimple.cloneIfNecessary(getBase()), method, argList);
+  }
 
-    return new JInterfaceInvokeExpr(Jimple.cloneIfNecessary(getBase()), methodRef, argList);
+  @Override
+  public String toString() {
+    StringBuffer buffer = new StringBuffer();
+    buffer.append(Jimple.INTERFACEINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
+
+    if (argBoxes != null) {
+      for (int i = 0; i < argBoxes.length; i++) {
+        if (i != 0) {
+          buffer.append(", ");
+        }
+
+        buffer.append(argBoxes[i].getValue().toString());
+      }
+    }
+
+    buffer.append(")");
+
+    return buffer.toString();
+  }
+
+  /**
+   * Converts a parameter of type StmtPrinter to a string literal.
+   */
+  @Override
+  public void toString(IStmtPrinter up) {
+
+    up.literal(Jimple.INTERFACEINVOKE);
+
+    up.literal(" ");
+    baseBox.toString(up);
+    up.literal(".");
+    up.methodSignature(method);
+    up.literal("(");
+
+    if (argBoxes != null) {
+      final int len = argBoxes.length;
+      for (int i = 0; i < len; i++) {
+        if (i != 0) {
+          up.literal(", ");
+        }
+        argBoxes[i].toString(up);
+      }
+    }
+    up.literal(")");
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

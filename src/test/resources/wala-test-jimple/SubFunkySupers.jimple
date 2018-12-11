@@ -1,0 +1,67 @@
+class SubFunkySupers extends FunkySupers
+{
+
+    void <init>()
+    {
+        SubFunkySupers r0;
+
+        r0 := @this: SubFunkySupers;
+
+        specialinvoke r0.<FunkySupers: void <init>()>();
+
+        return;
+    }
+
+    int funky(FunkySupers)
+    {
+        SubFunkySupers r0;
+        FunkySupers r1;
+
+        r0 := @this: SubFunkySupers;
+
+        r1 := @parameter0: FunkySupers;
+
+        staticinvoke <SubFunkySupers: int access$001(SubFunkySupers,FunkySupers)>(r0, r1);
+
+        virtualinvoke r0.<SubFunkySupers: int funky(FunkySupers)>(r1);
+
+        r0.<SubFunkySupers: int y> = 7;
+
+        staticinvoke <SubFunkySupers: int access$103(SubFunkySupers,int)>(r0, 7);
+
+        r0.<FunkySupers: int y> = 7;
+
+        specialinvoke r0.<FunkySupers: int funky(FunkySupers)>(r1);
+
+        return 6;
+    }
+
+    static int access$001(SubFunkySupers, FunkySupers)
+    {
+        SubFunkySupers r0;
+        FunkySupers r1;
+        int $i0;
+
+        r0 := @parameter0: SubFunkySupers;
+
+        r1 := @parameter1: FunkySupers;
+
+        $i0 = specialinvoke r0.<FunkySupers: int funky(FunkySupers)>(r1);
+
+        return $i0;
+    }
+
+    static int access$103(SubFunkySupers, int)
+    {
+        SubFunkySupers r0;
+        int i0;
+
+        r0 := @parameter0: SubFunkySupers;
+
+        i0 := @parameter1: int;
+
+        r0.<FunkySupers: int y> = i0;
+
+        return i0;
+    }
+}

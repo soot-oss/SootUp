@@ -26,36 +26,45 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.core.AbstractClass;
+import de.upb.soot.core.AbstractViewResident;
+import de.upb.soot.core.IMethod;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-@SuppressWarnings("serial")
-public abstract class AbstractInvokeExpr implements Expr {
-  protected SootMethodRef methodRef;
+public abstract class AbstractInvokeExpr extends AbstractViewResident implements Expr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1796920588315752175L;
+  protected MethodSignature method;
   protected final ValueBox[] argBoxes;
 
-  protected AbstractInvokeExpr(SootMethodRef methodRef, ValueBox[] argBoxes) {
-    this.methodRef = methodRef;
+  protected AbstractInvokeExpr(IView view, MethodSignature method, ValueBox[] argBoxes) {
+    super(view);
+    this.method = method;
     this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
   }
 
-  public void setMethodRef(SootMethodRef methodRef) {
-    this.methodRef = methodRef;
-  }
-
-  public SootMethodRef getMethodRef() {
-    return methodRef;
-  }
-
-  public SootMethod getMethod() {
-    return methodRef.resolve();
+  public Optional<SootMethod> getMethod() {
+    JavaClassSignature signature = method.declClassSignature;
+    Optional<AbstractClass> op = this.getView().getClass(signature);
+    if (op.isPresent()) {
+      AbstractClass klass = op.get();
+      Optional<? extends IMethod> m = klass.getMethod(method);
+      return m.map(c -> (SootMethod) c);
+    }
+    return Optional.empty();
   }
 
   @Override
@@ -92,7 +101,7 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   @Override
   public Type getType() {
-    return methodRef.returnType();
+    return this.getView().getType(method.typeSignature);
   }
 
   @Override
@@ -100,14 +109,11 @@ public abstract class AbstractInvokeExpr implements Expr {
     if (argBoxes == null) {
       return Collections.emptyList();
     }
-
     List<ValueBox> list = new ArrayList<ValueBox>();
     Collections.addAll(list, argBoxes);
-
     for (ValueBox element : argBoxes) {
       list.addAll(element.getValue().getUseBoxes());
     }
-
     return list;
   }
 

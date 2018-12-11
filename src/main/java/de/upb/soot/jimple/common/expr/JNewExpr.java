@@ -25,9 +25,25 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
-public class JNewExpr extends AbstractNewExpr {
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+public class JNewExpr implements Expr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 2039425094688972405L;
+  private RefType type;
+
   public JNewExpr(RefType type) {
     this.type = type;
   }
@@ -35,6 +51,61 @@ public class JNewExpr extends AbstractNewExpr {
   @Override
   public Object clone() {
     return new JNewExpr(type);
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof JNewExpr) {
+      JNewExpr ae = (JNewExpr) o;
+      return type.equals(ae.type);
+    }
+    return false;
+  }
+
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return type.hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return Jimple.NEW + " " + type.toString();
+  }
+
+  @Override
+  public void toString(IStmtPrinter up) {
+    up.literal(Jimple.NEW);
+    up.literal(" ");
+    up.type(type);
+  }
+
+  public RefType getBaseType() {
+    return type;
+  }
+
+  public void setBaseType(RefType type) {
+    this.type = type;
+  }
+
+  @Override
+  public Type getType() {
+    return type;
+  }
+
+  @Override
+  public List<ValueBox> getUseBoxes() {
+    return Collections.emptyList();
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseNewExpr(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.type.IntType;
@@ -35,7 +34,12 @@ import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-public class JUshrExpr extends AbstractJimpleIntLongBinopExpr {
+public class JUshrExpr extends AbstractIntLongBinopExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 8586157170212695006L;
+
   public JUshrExpr(Value op1, Value op2) {
     super(op1, op2);
   }
@@ -74,9 +78,4 @@ public class JUshrExpr extends AbstractJimpleIntLongBinopExpr {
     return new JUshrExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
 
-  @Override
-  public void toString(StmtPrinter up) {
-    // TODO Auto-generated method stub
-
-  }
 }

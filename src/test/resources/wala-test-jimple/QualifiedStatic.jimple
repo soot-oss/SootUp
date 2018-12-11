@@ -1,0 +1,36 @@
+public class QualifiedStatic extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        QualifiedStatic r0;
+
+        r0 := @this: QualifiedStatic;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        int i0;
+        QualifiedStatic $r3;
+        FooQ $r4;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r3 = new QualifiedStatic;
+
+        specialinvoke $r3.<QualifiedStatic: void <init>()>();
+
+        $r4 = new FooQ;
+
+        specialinvoke $r4.<FooQ: void <init>()>();
+
+        i0 = <FooQ: int value>;
+
+        return;
+    }
+}

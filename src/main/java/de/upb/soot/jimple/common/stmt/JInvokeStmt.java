@@ -25,22 +25,26 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JInvokeStmt extends AbstractStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 3929309661335452051L;
   final ValueBox invokeExprBox;
 
   public JInvokeStmt(Value c) {
-    this(Jimple.getInstance().newInvokeExprBox(c));
+    this(Jimple.newInvokeExprBox(c));
   }
 
   protected JInvokeStmt(ValueBox invokeExprBox) {
@@ -48,7 +52,7 @@ public class JInvokeStmt extends AbstractStmt {
   }
 
   @Override
-  public Object clone() {
+  public JInvokeStmt clone() {
     return new JInvokeStmt(Jimple.cloneIfNecessary(getInvokeExpr()));
   }
 
@@ -63,7 +67,7 @@ public class JInvokeStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     invokeExprBox.toString(up);
   }
 
@@ -104,6 +108,21 @@ public class JInvokeStmt extends AbstractStmt {
   @Override
   public boolean branches() {
     return false;
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+
+    if (!(o instanceof JInvokeStmt)) {
+      return false;
+    }
+
+    return getInvokeExpr().equivTo(((JInvokeStmt) o).getInvokeExpr());
+  }
+
+  @Override
+  public int equivHashCode() {
+    return invokeExprBox.getValue().equivHashCode();
   }
 
 }

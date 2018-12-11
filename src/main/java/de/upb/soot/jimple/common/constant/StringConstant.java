@@ -30,7 +30,15 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
+import java.util.Comparator;
+
+import soot.util.StringTools;
+
 public class StringConstant extends Constant {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -1247456329894136483L;
   public final String value;
 
   private StringConstant(String s) {
@@ -53,11 +61,24 @@ public class StringConstant extends Constant {
     return value.hashCode();
   }
 
+  @Override
   public Type getType() {
     return RefType.getInstance("java.lang.String");
   }
 
+  @Override
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseStringConstant(this);
+  }
+
+  @Override
+  public String toString() {
+    return StringTools.getQuotedStringOf(value);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

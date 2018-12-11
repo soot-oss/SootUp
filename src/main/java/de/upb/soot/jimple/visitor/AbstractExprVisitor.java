@@ -25,19 +25,10 @@
 
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.common.expr.AbstractCastExpr;
-import de.upb.soot.jimple.common.expr.AbstractInstanceOfExpr;
-import de.upb.soot.jimple.common.expr.AbstractInterfaceInvokeExpr;
-import de.upb.soot.jimple.common.expr.AbstractLengthExpr;
-import de.upb.soot.jimple.common.expr.AbstractNegExpr;
-import de.upb.soot.jimple.common.expr.AbstractNewArrayExpr;
-import de.upb.soot.jimple.common.expr.AbstractNewExpr;
-import de.upb.soot.jimple.common.expr.AbstractNewMultiArrayExpr;
-import de.upb.soot.jimple.common.expr.AbstractSpecialInvokeExpr;
-import de.upb.soot.jimple.common.expr.AbstractStaticInvokeExpr;
-import de.upb.soot.jimple.common.expr.AbstractVirtualInvokeExpr;
+import de.upb.soot.jimple.common.expr.AbstractInstanceInvokeExpr;
 import de.upb.soot.jimple.common.expr.JAddExpr;
 import de.upb.soot.jimple.common.expr.JAndExpr;
+import de.upb.soot.jimple.common.expr.JCastExpr;
 import de.upb.soot.jimple.common.expr.JCmpExpr;
 import de.upb.soot.jimple.common.expr.JCmpgExpr;
 import de.upb.soot.jimple.common.expr.JCmplExpr;
@@ -46,14 +37,21 @@ import de.upb.soot.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.soot.jimple.common.expr.JEqExpr;
 import de.upb.soot.jimple.common.expr.JGeExpr;
 import de.upb.soot.jimple.common.expr.JGtExpr;
+import de.upb.soot.jimple.common.expr.JInstanceOfExpr;
 import de.upb.soot.jimple.common.expr.JLeExpr;
+import de.upb.soot.jimple.common.expr.JLengthExpr;
 import de.upb.soot.jimple.common.expr.JLtExpr;
 import de.upb.soot.jimple.common.expr.JMulExpr;
 import de.upb.soot.jimple.common.expr.JNeExpr;
+import de.upb.soot.jimple.common.expr.JNegExpr;
+import de.upb.soot.jimple.common.expr.JNewArrayExpr;
+import de.upb.soot.jimple.common.expr.JNewExpr;
+import de.upb.soot.jimple.common.expr.JNewMultiArrayExpr;
 import de.upb.soot.jimple.common.expr.JOrExpr;
 import de.upb.soot.jimple.common.expr.JRemExpr;
 import de.upb.soot.jimple.common.expr.JShlExpr;
 import de.upb.soot.jimple.common.expr.JShrExpr;
+import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.soot.jimple.common.expr.JSubExpr;
 import de.upb.soot.jimple.common.expr.JUshrExpr;
 import de.upb.soot.jimple.common.expr.JXorExpr;
@@ -162,22 +160,12 @@ public abstract class AbstractExprVisitor implements IExprVisitor {
   }
 
   @Override
-  public void caseInterfaceInvokeExpr(AbstractInterfaceInvokeExpr v) {
+  public void caseStaticInvokeExpr(JStaticInvokeExpr v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseSpecialInvokeExpr(AbstractSpecialInvokeExpr v) {
-    defaultCase(v);
-  }
-
-  @Override
-  public void caseStaticInvokeExpr(AbstractStaticInvokeExpr v) {
-    defaultCase(v);
-  }
-
-  @Override
-  public void caseVirtualInvokeExpr(AbstractVirtualInvokeExpr v) {
+  public void caseInstanceInvokeExpr(AbstractInstanceInvokeExpr v) {
     defaultCase(v);
   }
 
@@ -187,37 +175,37 @@ public abstract class AbstractExprVisitor implements IExprVisitor {
   }
 
   @Override
-  public void caseCastExpr(AbstractCastExpr v) {
+  public void caseCastExpr(JCastExpr v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseInstanceOfExpr(AbstractInstanceOfExpr v) {
+  public void caseInstanceOfExpr(JInstanceOfExpr v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseNewArrayExpr(AbstractNewArrayExpr v) {
+  public void caseNewArrayExpr(JNewArrayExpr v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseNewMultiArrayExpr(AbstractNewMultiArrayExpr v) {
+  public void caseNewMultiArrayExpr(JNewMultiArrayExpr v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseNewExpr(AbstractNewExpr v) {
+  public void caseNewExpr(JNewExpr v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseLengthExpr(AbstractLengthExpr v) {
+  public void caseLengthExpr(JLengthExpr v) {
     defaultCase(v);
   }
 
   @Override
-  public void caseNegExpr(AbstractNegExpr v) {
+  public void caseNegExpr(JNegExpr v) {
     defaultCase(v);
   }
 

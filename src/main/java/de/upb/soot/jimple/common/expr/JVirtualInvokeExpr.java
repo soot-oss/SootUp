@@ -26,46 +26,85 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.Options;
-import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class JVirtualInvokeExpr extends AbstractVirtualInvokeExpr {
+public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 8767212132509253058L;
+
   /**
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
-  public JVirtualInvokeExpr(Value base, SootMethodRef methodRef, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), methodRef, new ValueBox[args.size()]);
-
-    if (!Options.getInstance().ignore_resolution_errors()) {
-      // Check that the method's class is resolved enough
-      methodRef.declaringClass().checkLevelIgnoreResolving(SootClass.HIERARCHY);
-      // now check if the class is valid
-      if (methodRef.declaringClass().isInterface()) {
-        SootClass sc = methodRef.declaringClass();
-      }
-    }
-
+  public JVirtualInvokeExpr(IView view, Value base, MethodSignature method, List<? extends Value> args) {
+    super(view, Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
     for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.getInstance().newImmediateBox(args.get(i));
+      this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
   }
 
   @Override
   public Object clone() {
     ArrayList<Value> clonedArgs = new ArrayList<Value>(getArgCount());
-
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
+    return new JVirtualInvokeExpr(this.getView(), getBase(), method, clonedArgs);
+  }
 
-    return new JVirtualInvokeExpr(getBase(), methodRef, clonedArgs);
+  @Override
+  public String toString() {
+    StringBuffer buffer = new StringBuffer();
+    buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
+    if (argBoxes != null) {
+      for (int i = 0; i < argBoxes.length; i++) {
+        if (i != 0) {
+          buffer.append(", ");
+        }
+
+        buffer.append(argBoxes[i].getValue().toString());
+      }
+    }
+    buffer.append(")");
+    return buffer.toString();
+  }
+
+  /**
+   * Converts a parameter of type StmtPrinter to a string literal.
+   */
+  @Override
+  public void toString(IStmtPrinter up) {
+    up.literal(Jimple.VIRTUALINVOKE);
+    up.literal(" ");
+    baseBox.toString(up);
+    up.literal(".");
+    up.methodSignature(method);
+    up.literal("(");
+    if (argBoxes != null) {
+      final int len = argBoxes.length;
+      for (int i = 0; i < len; i++) {
+        if (i != 0) {
+          up.literal(", ");
+        }
+        argBoxes[i].toString(up);
+      }
+    }
+    up.literal(")");
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

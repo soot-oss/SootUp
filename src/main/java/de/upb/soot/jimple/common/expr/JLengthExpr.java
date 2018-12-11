@@ -27,15 +27,68 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
-public class JLengthExpr extends AbstractLengthExpr {
+import java.util.Comparator;
+
+public class JLengthExpr extends AbstractUnopExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 8028538963970159045L;
+
   public JLengthExpr(Value op) {
-    super(Jimple.getInstance().newImmediateBox(op));
+    super(Jimple.newImmediateBox(op));
   }
 
   @Override
   public Object clone() {
     return new JLengthExpr(Jimple.cloneIfNecessary(getOp()));
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof JLengthExpr) {
+      return opBox.getValue().equivTo(((JLengthExpr) o).opBox.getValue());
+    }
+    return false;
+  }
+
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return opBox.getValue().equivHashCode();
+  }
+
+  @Override
+  public String toString() {
+    return Jimple.LENGTHOF + " " + opBox.getValue().toString();
+  }
+
+  @Override
+  public void toString(IStmtPrinter up) {
+    up.literal(Jimple.LENGTHOF);
+    up.literal(" ");
+    opBox.toString(up);
+  }
+
+  @Override
+  public Type getType() {
+    return IntType.getInstance();
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseLengthExpr(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

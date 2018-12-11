@@ -1,0 +1,20 @@
+class JLex.CAcceptAnchor extends java.lang.Object
+{
+    JLex.CAccept m_accept;
+    int m_anchor;
+
+    void <init>()
+    {
+        JLex.CAcceptAnchor r0;
+
+        r0 := @this: JLex.CAcceptAnchor;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<JLex.CAcceptAnchor: JLex.CAccept m_accept> = null;
+
+        r0.<JLex.CAcceptAnchor: int m_anchor> = 0;
+
+        return;
+    }
+}

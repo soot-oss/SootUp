@@ -25,14 +25,30 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.visitor.IExprVisitor;
+import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
-public class JInstanceOfExpr extends AbstractInstanceOfExpr {
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class JInstanceOfExpr implements Expr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -3584505247110961970L;
+  private final ValueBox opBox;
+  private Type checkType;
+
   public JInstanceOfExpr(Value op, Type checkType) {
-    super(Jimple.getInstance().newImmediateBox(op), checkType);
+    this.opBox = Jimple.newImmediateBox(op);
+    this.checkType = checkType;
   }
 
   @Override
@@ -41,9 +57,77 @@ public class JInstanceOfExpr extends AbstractInstanceOfExpr {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
-    // TODO Auto-generated method stub
+  public String toString() {
+    return opBox.getValue().toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
+  }
 
+  @Override
+  public void toString(IStmtPrinter up) {
+    opBox.toString(up);
+    up.literal(" ");
+    up.literal(Jimple.INSTANCEOF);
+    up.literal(" ");
+    up.literal(checkType.toString());
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (o instanceof JInstanceOfExpr) {
+      JInstanceOfExpr aie = (JInstanceOfExpr) o;
+      return opBox.getValue().equivTo(aie.opBox.getValue()) && checkType.equals(aie.checkType);
+    }
+    return false;
+  }
+
+  /** Returns a hash code for this object, consistent with structural equality. */
+  @Override
+  public int equivHashCode() {
+    return opBox.getValue().equivHashCode() * 101 + checkType.hashCode() * 17;
+  }
+
+  public Value getOp() {
+    return opBox.getValue();
+  }
+
+  public void setOp(Value op) {
+    opBox.setValue(op);
+  }
+
+  public ValueBox getOpBox() {
+    return opBox;
+  }
+
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+    List<ValueBox> list = new ArrayList<ValueBox>();
+
+    list.addAll(opBox.getValue().getUseBoxes());
+    list.add(opBox);
+
+    return list;
+  }
+
+  @Override
+  public Type getType() {
+    return BooleanType.getInstance();
+  }
+
+  public Type getCheckType() {
+    return checkType;
+  }
+
+  public void setCheckType(Type checkType) {
+    this.checkType = checkType;
+  }
+
+  @Override
+  public void accept(IVisitor sw) {
+    ((IExprVisitor) sw).caseInstanceOfExpr(this);
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
   }
 
 }

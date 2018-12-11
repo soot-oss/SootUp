@@ -1,0 +1,94 @@
+public class javaonepointfive.AnonymousGenerics extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.AnonymousGenerics r0;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.AnonymousGenerics $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.AnonymousGenerics;
+
+        specialinvoke $r1.<javaonepointfive.AnonymousGenerics: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.AnonymousGenerics: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.AnonymousGenerics r0;
+        javaonepointfive.AnonymousGenerics$1 $r3;
+        java.io.PrintStream $r4, $r8, $r11, $r14;
+        java.lang.Object $r5, $r10, $r13;
+        java.lang.String $r6, $r9, r19, r20;
+        javaonepointfive.AnonymousGenerics$StrTripler $r7, $r12;
+
+        r0 := @this: javaonepointfive.AnonymousGenerics;
+
+        $r3 = new javaonepointfive.AnonymousGenerics$1;
+
+        specialinvoke $r3.<javaonepointfive.AnonymousGenerics$1: void <init>(javaonepointfive.AnonymousGenerics)>(r0);
+
+        $r4 = <java.lang.System: java.io.PrintStream out>;
+
+        $r5 = interfaceinvoke $r3.<javaonepointfive.AnonymousGenerics$Ops: java.lang.Object unary(java.lang.Object)>("hi");
+
+        $r6 = (java.lang.String) $r5;
+
+        virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.String)>($r6);
+
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        $r7 = new javaonepointfive.AnonymousGenerics$StrTripler;
+
+        specialinvoke $r7.<javaonepointfive.AnonymousGenerics$StrTripler: void <init>()>();
+
+        $r9 = virtualinvoke $r7.<javaonepointfive.AnonymousGenerics$StrTripler: java.lang.String unary(java.lang.String)>("hi");
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>($r9);
+
+        $r10 = interfaceinvoke $r3.<javaonepointfive.AnonymousGenerics$Ops: java.lang.Object nullary()>();
+
+        r19 = (java.lang.String) $r10;
+
+        $r11 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r11.<java.io.PrintStream: void println(java.lang.String)>(r19);
+
+        $r12 = new javaonepointfive.AnonymousGenerics$StrTripler;
+
+        specialinvoke $r12.<javaonepointfive.AnonymousGenerics$StrTripler: void <init>()>();
+
+        $r13 = interfaceinvoke $r12.<javaonepointfive.AnonymousGenerics$Ops: java.lang.Object nullary()>();
+
+        r20 = (java.lang.String) $r13;
+
+        $r14 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r14.<java.io.PrintStream: void println(java.lang.String)>(r20);
+
+        interfaceinvoke $r12.<javaonepointfive.AnonymousGenerics$Ops: java.lang.Object unary(java.lang.Object)>("whatever");
+
+        interfaceinvoke $r12.<javaonepointfive.AnonymousGenerics$Ops: java.lang.Object nullary()>();
+
+        interfaceinvoke $r3.<javaonepointfive.AnonymousGenerics$Ops: java.lang.Object unary(java.lang.Object)>("whatever");
+
+        interfaceinvoke $r3.<javaonepointfive.AnonymousGenerics$Ops: java.lang.Object nullary()>();
+
+        return;
+    }
+}

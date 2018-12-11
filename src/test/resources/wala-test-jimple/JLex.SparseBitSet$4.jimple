@@ -1,0 +1,153 @@
+class JLex.SparseBitSet$4 extends java.lang.Object implements java.util.Enumeration
+{
+    int idx;
+    int bit;
+    final JLex.SparseBitSet this$0;
+
+    void <init>(JLex.SparseBitSet)
+    {
+        JLex.SparseBitSet$4 r0;
+        JLex.SparseBitSet r1;
+
+        r0 := @this: JLex.SparseBitSet$4;
+
+        r1 := @parameter0: JLex.SparseBitSet;
+
+        r0.<JLex.SparseBitSet$4: JLex.SparseBitSet this$0> = r1;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<JLex.SparseBitSet$4: int idx> = -1;
+
+        r0.<JLex.SparseBitSet$4: int bit> = 64;
+
+        specialinvoke r0.<JLex.SparseBitSet$4: void advance()>();
+
+        return;
+    }
+
+    public boolean hasMoreElements()
+    {
+        JLex.SparseBitSet$4 r0;
+        JLex.SparseBitSet $r1;
+        int $i0, $i1;
+        boolean $z0;
+
+        r0 := @this: JLex.SparseBitSet$4;
+
+        $i1 = r0.<JLex.SparseBitSet$4: int idx>;
+
+        $r1 = r0.<JLex.SparseBitSet$4: JLex.SparseBitSet this$0>;
+
+        $i0 = $r1.<JLex.SparseBitSet: int size>;
+
+        if $i1 >= $i0 goto label1;
+
+        $z0 = 1;
+
+        goto label2;
+
+     label1:
+        $z0 = 0;
+
+     label2:
+        return $z0;
+    }
+
+    public java.lang.Object nextElement()
+    {
+        JLex.SparseBitSet$4 r0;
+        int i0, $i1, $i2, $i3, $i4;
+        JLex.SparseBitSet $r1;
+        int[] $r2;
+        java.lang.Integer $r3;
+
+        r0 := @this: JLex.SparseBitSet$4;
+
+        $i4 = r0.<JLex.SparseBitSet$4: int bit>;
+
+        $r1 = r0.<JLex.SparseBitSet$4: JLex.SparseBitSet this$0>;
+
+        $r2 = $r1.<JLex.SparseBitSet: int[] offs>;
+
+        $i1 = r0.<JLex.SparseBitSet$4: int idx>;
+
+        $i2 = $r2[$i1];
+
+        $i3 = $i2 << 6;
+
+        i0 = $i4 + $i3;
+
+        specialinvoke r0.<JLex.SparseBitSet$4: void advance()>();
+
+        $r3 = new java.lang.Integer;
+
+        specialinvoke $r3.<java.lang.Integer: void <init>(int)>(i0);
+
+        return $r3;
+    }
+
+    private void advance()
+    {
+        JLex.SparseBitSet$4 r0;
+        JLex.SparseBitSet $r1, $r2;
+        int $i0, $i1, $i2, $i3, $i4, $i5, $i6, $i7;
+        long[] $r3;
+        long $l8, $l9, $l10;
+        byte $b11;
+
+        r0 := @this: JLex.SparseBitSet$4;
+
+     label1:
+        $i1 = r0.<JLex.SparseBitSet$4: int idx>;
+
+        $r1 = r0.<JLex.SparseBitSet$4: JLex.SparseBitSet this$0>;
+
+        $i0 = $r1.<JLex.SparseBitSet: int size>;
+
+        if $i1 >= $i0 goto label4;
+
+     label2:
+        $i2 = r0.<JLex.SparseBitSet$4: int bit>;
+
+        $i3 = $i2 + 1;
+
+        r0.<JLex.SparseBitSet$4: int bit> = $i3;
+
+        if $i3 >= 64 goto label3;
+
+        $r2 = r0.<JLex.SparseBitSet$4: JLex.SparseBitSet this$0>;
+
+        $r3 = $r2.<JLex.SparseBitSet: long[] bits>;
+
+        $i6 = r0.<JLex.SparseBitSet$4: int idx>;
+
+        $l9 = $r3[$i6];
+
+        $i7 = r0.<JLex.SparseBitSet$4: int bit>;
+
+        $l8 = 1L << $i7;
+
+        $l10 = $l9 & $l8;
+
+        $b11 = 0L cmp $l10;
+
+        if $b11 == 0 goto label2;
+
+        return;
+
+     label3:
+        $i4 = r0.<JLex.SparseBitSet$4: int idx>;
+
+        $i5 = $i4 + 1;
+
+        r0.<JLex.SparseBitSet$4: int idx> = $i5;
+
+        r0.<JLex.SparseBitSet$4: int bit> = -1;
+
+        goto label1;
+
+     label4:
+        return;
+    }
+}

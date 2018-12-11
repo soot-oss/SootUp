@@ -30,20 +30,28 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.ImmediateBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.ref.SootMethodRef;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
-public class JSpecialInvokeExpr extends AbstractSpecialInvokeExpr {
+public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 9170581307891035087L;
+
   /**
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
-  public JSpecialInvokeExpr(Local base, SootMethodRef methodRef, List<? extends Value> args) {
-    super(Jimple.getInstance().newLocalBox(base), methodRef, new ImmediateBox[args.size()]);
+  public JSpecialInvokeExpr(IView view, Local base, MethodSignature method, List<? extends Value> args) {
+    super(view, Jimple.newLocalBox(base), method, new ImmediateBox[args.size()]);
 
     for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.getInstance().newImmediateBox(args.get(i));
+      this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
   }
 
@@ -55,6 +63,57 @@ public class JSpecialInvokeExpr extends AbstractSpecialInvokeExpr {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JSpecialInvokeExpr((Local) getBase(), methodRef, clonedArgs);
+    return new JSpecialInvokeExpr(this.getView(), (Local) getBase(), method, clonedArgs);
   }
+
+  @Override
+  public String toString() {
+    StringBuffer buffer = new StringBuffer();
+    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
+
+    if (argBoxes != null) {
+      for (int i = 0; i < argBoxes.length; i++) {
+        if (i != 0) {
+          buffer.append(", ");
+        }
+
+        buffer.append(argBoxes[i].getValue().toString());
+      }
+    }
+
+    buffer.append(")");
+
+    return buffer.toString();
+  }
+
+  /**
+   * Converts a parameter of type StmtPrinter to a string literal.
+   */
+  @Override
+  public void toString(IStmtPrinter up) {
+
+    up.literal(Jimple.SPECIALINVOKE);
+    up.literal(" ");
+    baseBox.toString(up);
+    up.literal(".");
+    up.methodSignature(method);
+    up.literal("(");
+
+    if (argBoxes != null) {
+      final int len = argBoxes.length;
+      for (int i = 0; i < len; i++) {
+        if (i != 0) {
+          up.literal(", ");
+        }
+        argBoxes[i].toString(up);
+      }
+    }
+    up.literal(")");
+  }
+
+  @Override
+  public boolean equivTo(Object o, Comparator comparator) {
+    return comparator.compare(this, o) == 0;
+  }
+
 }

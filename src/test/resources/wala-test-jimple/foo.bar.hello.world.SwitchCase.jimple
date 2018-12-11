@@ -1,0 +1,84 @@
+public class foo.bar.hello.world.SwitchCase extends java.lang.Object
+{
+    public static final int X;
+
+    public void <init>()
+    {
+        foo.bar.hello.world.SwitchCase r0;
+
+        r0 := @this: foo.bar.hello.world.SwitchCase;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        java.lang.StringBuilder $r1, $r3, $r4, $r5;
+        java.io.PrintStream $r2, $r7, $r8, $r9;
+        java.lang.String $r6;
+
+        r0 := @parameter0: java.lang.String[];
+
+        lookupswitch(15)
+        {
+            case 0: goto label1;
+            case 2: goto label2;
+            case 4: goto label4;
+            case 10: goto label3;
+            case 32: goto label1;
+            default: goto label5;
+        };
+
+     label1:
+        $r8 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r8.<java.io.PrintStream: void println(java.lang.String)>("escucha");
+
+     label2:
+        $r7 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r7.<java.io.PrintStream: void println(java.lang.String)>("ve");
+
+        goto label6;
+
+     label3:
+        goto label6;
+
+     label4:
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        $r1 = new java.lang.StringBuilder;
+
+        specialinvoke $r1.<java.lang.StringBuilder: void <init>()>();
+
+        $r3 = virtualinvoke $r1.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("es un charm la vez ");
+
+        $r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(3);
+
+        $r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("a");
+
+        $r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r6);
+
+        goto label6;
+
+     label5:
+        $r9 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r9.<java.io.PrintStream: void println(java.lang.String)>("default");
+
+     label6:
+        return;
+    }
+
+    public static void <clinit>()
+    {
+        <foo.bar.hello.world.SwitchCase: int X> = 10;
+
+        return;
+    }
+}

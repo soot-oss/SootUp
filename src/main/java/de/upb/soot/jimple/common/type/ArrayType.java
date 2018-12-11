@@ -25,9 +25,9 @@
 
 package de.upb.soot.jimple.common.type;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 /**
  * A class that models Java's array types. ArrayTypes are parameterized by a Type and and an integer representing the array's
@@ -39,15 +39,13 @@ import de.upb.soot.jimple.visitor.IVisitor;
 @SuppressWarnings("serial")
 public class ArrayType extends RefLikeType {
   /**
-   * baseType can be any type except for an array type, null and void
-   *
-   * What is the base type of the array? That is, for an array of type A[][][], how do I find out what the A is? The accepted
-   * way of doing this has always been to look at the public field baseType in ArrayType, ever since the very beginning of
-   * Soot.
+   * baseType can be any type except for an array type, null and void. What is the base type of the array? That is, for an
+   * array of type A[][][], how do I find out what the A is? The accepted way of doing this has always been to look at the
+   * public field baseType in ArrayType, ever since the very beginning of Soot.
    */
   public final Type baseType;
 
-  /** dimension count for the array type */
+  /** dimension count for the array type. */
   public final int numDimensions;
 
   private ArrayType(Type baseType, int numDimensions) {
@@ -102,9 +100,14 @@ public class ArrayType extends RefLikeType {
     return t == this;
   }
 
-  public void toString(StmtPrinter up) {
+  /**
+   * Print the signature of this ArrayType with given StmtPrinter.
+   * 
+   * @param up
+   *          a IStmtPrinter object
+   */
+  public void toString(IStmtPrinter up) {
     up.type(baseType);
-
     for (int i = 0; i < numDimensions; i++) {
       up.literal("[]");
     }
@@ -129,20 +132,17 @@ public class ArrayType extends RefLikeType {
     StringBuilder buffer = new StringBuilder();
 
     buffer.append(baseType.toQuotedString());
-
     for (int i = 0; i < numDimensions; i++) {
-          buffer.append("[]");
-        }
+      buffer.append("[]");
+    }
 
     return buffer.toString();
   }
-
 
   @Override
   public int hashCode() {
     return baseType.hashCode() + 0x432E0341 * numDimensions;
   }
-
 
   /**
    * If I have a variable x of declared type t, what is a good declared type for the expression ((Object[]) x)[i]? The
@@ -164,7 +164,7 @@ public class ArrayType extends RefLikeType {
       return ArrayType.getInstance(baseType, numDimensions - 1);
     } else {
       return baseType;
-  }
+    }
   }
 
   @Override

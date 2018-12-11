@@ -25,7 +25,7 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 
@@ -35,36 +35,41 @@ import java.util.List;
 
 public abstract class AbstractSwitchStmt extends AbstractStmt {
 
-  protected final StmtBox defaultTargetBox;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -828246813006451813L;
+
+  protected final IStmtBox defaultTargetBox;
 
   protected final ValueBox keyBox;
 
-  protected final List<StmtBox> stmtBoxes;
+  protected final List<IStmtBox> stmtBoxes;
 
-  protected final StmtBox[] targetBoxes;
+  protected final IStmtBox[] targetBoxes;
 
-  protected AbstractSwitchStmt(ValueBox keyBox, StmtBox defaultTargetBox, StmtBox... targetBoxes) {
+  protected AbstractSwitchStmt(ValueBox keyBox, IStmtBox defaultTargetBox, IStmtBox... targetBoxes) {
     this.keyBox = keyBox;
     this.defaultTargetBox = defaultTargetBox;
     this.targetBoxes = targetBoxes;
 
     // Build up stmtBoxes
-    List<StmtBox> list = new ArrayList<StmtBox>();
+    List<IStmtBox> list = new ArrayList<IStmtBox>();
     stmtBoxes = Collections.unmodifiableList(list);
 
     Collections.addAll(list, targetBoxes);
     list.add(defaultTargetBox);
   }
 
-  public final Stmt getDefaultTarget() {
+  public final IStmt getDefaultTarget() {
     return defaultTargetBox.getStmt();
   }
 
-  public final void setDefaultTarget(Stmt defaultTarget) {
+  public final void setDefaultTarget(IStmt defaultTarget) {
     defaultTargetBox.setStmt(defaultTarget);
   }
 
-  public final StmtBox getDefaultTargetBox() {
+  public final IStmtBox getDefaultTargetBox() {
     return defaultTargetBox;
   }
 
@@ -94,25 +99,25 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return targetBoxes.length;
   }
 
-  public final Stmt getTarget(int index) {
+  public final IStmt getTarget(int index) {
     return targetBoxes[index].getStmt();
   }
 
-  public final StmtBox getTargetBox(int index) {
+  public final IStmtBox getTargetBox(int index) {
     return targetBoxes[index];
   }
 
-  public final void setTarget(int index, Stmt target) {
+  public final void setTarget(int index, IStmt target) {
     targetBoxes[index].setStmt(target);
   }
 
   /**
    * Returns a list targets of type Stmt.
    */
-  public final List<Stmt> getTargets() {
-    List<Stmt> targets = new ArrayList<Stmt>();
+  public final List<IStmt> getTargets() {
+    List<IStmt> targets = new ArrayList<IStmt>();
 
-    for (StmtBox element : targetBoxes) {
+    for (IStmtBox element : targetBoxes) {
       targets.add(element.getStmt());
     }
 
@@ -121,9 +126,11 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   /**
    * Sets the setStmt box for targetBoxes array.
-   * @param targets A list of type Stmt.
+   * 
+   * @param targets
+   *          A list of type Stmt.
    */
-  public final void setTargets(List<? extends Stmt> targets) {
+  public final void setTargets(List<? extends IStmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
       targetBoxes[i].setStmt(targets.get(i));
     }
@@ -131,16 +138,18 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   /**
    * Sets the setStmt box for targetBoxes array.
-   * @param targets An array of type Stmt.
+   * 
+   * @param targets
+   *          An array of type Stmt.
    */
-  public final void setTargets(Stmt[] targets) {
+  public final void setTargets(IStmt[] targets) {
     for (int i = 0; i < targets.length; i++) {
       targetBoxes[i].setStmt(targets[i]);
     }
   }
 
   @Override
-  public final List<StmtBox> getUnitBoxes() {
+  public final List<IStmtBox> getStmtBoxes() {
     return stmtBoxes;
   }
 
@@ -153,4 +162,34 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   public final boolean branches() {
     return true;
   }
+
+  protected boolean equivTo(AbstractSwitchStmt o) {
+    if (keyBox != o.keyBox || defaultTargetBox != o.defaultTargetBox) {
+      return false;
+    }
+
+    if (targetBoxes.length != targetBoxes.length) {
+      return false;
+    }
+    int i = 0;
+    for (IStmtBox boxOther : o.targetBoxes) {
+      if (!boxOther.getStmt().equivTo(targetBoxes[i++].getStmt())) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  public int equivHashCode() {
+    int prime = 31;
+    int res = defaultTargetBox.getStmt().equivHashCode() + prime * keyBox.getValue().equivHashCode();
+
+    for (IStmtBox lv : targetBoxes) {
+      res = prime * res + lv.getStmt().equivHashCode();
+    }
+
+    return res;
+  }
+
 }

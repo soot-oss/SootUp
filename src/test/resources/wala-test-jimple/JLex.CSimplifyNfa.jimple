@@ -1,0 +1,352 @@
+class JLex.CSimplifyNfa extends java.lang.Object
+{
+    private int[] ccls;
+    private int original_charset_size;
+    private int mapped_charset_size;
+
+    void <init>()
+    {
+        JLex.CSimplifyNfa r0;
+
+        r0 := @this: JLex.CSimplifyNfa;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    void simplify(JLex.CSpec)
+    {
+        JLex.CSimplifyNfa r0;
+        JLex.CSpec r1;
+        java.util.Enumeration r2;
+        JLex.CNfa r3;
+        java.util.Vector $r5;
+        int[] $r6, $r8, $r10;
+        int $i0, $i1, $i2, $i3, $i4, $i5;
+        java.lang.Object $r7;
+        JLex.CSet $r9, $r11;
+        boolean $z0;
+
+        r0 := @this: JLex.CSimplifyNfa;
+
+        r1 := @parameter0: JLex.CSpec;
+
+        specialinvoke r0.<JLex.CSimplifyNfa: void computeClasses(JLex.CSpec)>(r1);
+
+        $r5 = r1.<JLex.CSpec: java.util.Vector m_nfa_states>;
+
+        r2 = virtualinvoke $r5.<java.util.Vector: java.util.Enumeration elements()>();
+
+     label1:
+        $z0 = interfaceinvoke r2.<java.util.Enumeration: boolean hasMoreElements()>();
+
+        if $z0 == 0 goto label5;
+
+        $r7 = interfaceinvoke r2.<java.util.Enumeration: java.lang.Object nextElement()>();
+
+        r3 = (JLex.CNfa) $r7;
+
+        $i1 = r3.<JLex.CNfa: int m_edge>;
+
+        if $i1 == -2 goto label1;
+
+        $i2 = r3.<JLex.CNfa: int m_edge>;
+
+        if $i2 != -3 goto label2;
+
+        goto label1;
+
+     label2:
+        $i3 = r3.<JLex.CNfa: int m_edge>;
+
+        if $i3 != -1 goto label3;
+
+        $r9 = new JLex.CSet;
+
+        specialinvoke $r9.<JLex.CSet: void <init>()>();
+
+        $r11 = r3.<JLex.CNfa: JLex.CSet m_set>;
+
+        $r10 = r0.<JLex.CSimplifyNfa: int[] ccls>;
+
+        virtualinvoke $r9.<JLex.CSet: void map(JLex.CSet,int[])>($r11, $r10);
+
+        r3.<JLex.CNfa: JLex.CSet m_set> = $r9;
+
+        goto label4;
+
+     label3:
+        $r8 = r0.<JLex.CSimplifyNfa: int[] ccls>;
+
+        $i4 = r3.<JLex.CNfa: int m_edge>;
+
+        $i5 = $r8[$i4];
+
+        r3.<JLex.CNfa: int m_edge> = $i5;
+
+     label4:
+        goto label1;
+
+     label5:
+        $r6 = r0.<JLex.CSimplifyNfa: int[] ccls>;
+
+        r1.<JLex.CSpec: int[] m_ccls_map> = $r6;
+
+        $i0 = r0.<JLex.CSimplifyNfa: int mapped_charset_size>;
+
+        r1.<JLex.CSpec: int m_dtrans_ncols> = $i0;
+
+        return;
+    }
+
+    private void computeClasses(JLex.CSpec)
+    {
+        JLex.CSimplifyNfa r0;
+        JLex.CSpec r1;
+        java.util.Enumeration r5;
+        JLex.CNfa r6;
+        int $i0, $i1, $i2, $i3, $i4, $i5, $i6, $i7, $i8, $i9, $i10, $i11, $i12, $i13, $i14, $i15, $i16, $i17, i18, i19, i20;
+        int[] $r8, $r22, $r24, $r25, $r27, $r28, $r34, $r35;
+        JLex.SparseBitSet $r9, $r10;
+        java.util.Hashtable $r11;
+        java.io.PrintStream $r12, $r14, $r16, $r23;
+        java.util.Vector $r13;
+        java.lang.StringBuilder $r15, $r17, $r18, $r19;
+        java.lang.String $r20, $r37;
+        java.lang.Object $r21, $r29;
+        boolean $z0, $z1, $z2, $z3, $z4;
+        java.lang.Integer $r26, $r30, $r31;
+        JLex.CSet $r33, $r36;
+
+        r0 := @this: JLex.CSimplifyNfa;
+
+        r1 := @parameter0: JLex.CSpec;
+
+        $i0 = r1.<JLex.CSpec: int m_dtrans_ncols>;
+
+        r0.<JLex.CSimplifyNfa: int original_charset_size> = $i0;
+
+        $i1 = r0.<JLex.CSimplifyNfa: int original_charset_size>;
+
+        $r8 = newarray (int)[$i1];
+
+        r0.<JLex.CSimplifyNfa: int[] ccls> = $r8;
+
+        i18 = 1;
+
+        $r9 = new JLex.SparseBitSet;
+
+        specialinvoke $r9.<JLex.SparseBitSet: void <init>()>();
+
+        $r10 = new JLex.SparseBitSet;
+
+        specialinvoke $r10.<JLex.SparseBitSet: void <init>()>();
+
+        $r11 = new java.util.Hashtable;
+
+        specialinvoke $r11.<java.util.Hashtable: void <init>()>();
+
+        $r12 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r12.<java.io.PrintStream: void print(java.lang.String)>("Working on character classes.");
+
+        $r13 = r1.<JLex.CSpec: java.util.Vector m_nfa_states>;
+
+        r5 = virtualinvoke $r13.<java.util.Vector: java.util.Enumeration elements()>();
+
+     label01:
+        $z4 = interfaceinvoke r5.<java.util.Enumeration: boolean hasMoreElements()>();
+
+        if $z4 == 0 goto label16;
+
+        $r21 = interfaceinvoke r5.<java.util.Enumeration: java.lang.Object nextElement()>();
+
+        r6 = (JLex.CNfa) $r21;
+
+        $i2 = r6.<JLex.CNfa: int m_edge>;
+
+        if $i2 == -2 goto label01;
+
+        $i3 = r6.<JLex.CNfa: int m_edge>;
+
+        if $i3 != -3 goto label02;
+
+        goto label01;
+
+     label02:
+        virtualinvoke $r9.<JLex.SparseBitSet: void clearAll()>();
+
+        virtualinvoke $r10.<JLex.SparseBitSet: void clearAll()>();
+
+        i19 = 0;
+
+     label03:
+        $r22 = r0.<JLex.CSimplifyNfa: int[] ccls>;
+
+        $i4 = lengthof $r22;
+
+        if i19 >= $i4 goto label07;
+
+        $i14 = r6.<JLex.CNfa: int m_edge>;
+
+        if $i14 == i19 goto label04;
+
+        $i16 = r6.<JLex.CNfa: int m_edge>;
+
+        if $i16 != -1 goto label05;
+
+        $r36 = r6.<JLex.CNfa: JLex.CSet m_set>;
+
+        $z3 = virtualinvoke $r36.<JLex.CSet: boolean contains(int)>(i19);
+
+        if $z3 == 0 goto label05;
+
+     label04:
+        $r34 = r0.<JLex.CSimplifyNfa: int[] ccls>;
+
+        $i15 = $r34[i19];
+
+        virtualinvoke $r9.<JLex.SparseBitSet: void set(int)>($i15);
+
+        goto label06;
+
+     label05:
+        $r35 = r0.<JLex.CSimplifyNfa: int[] ccls>;
+
+        $i17 = $r35[i19];
+
+        virtualinvoke $r10.<JLex.SparseBitSet: void set(int)>($i17);
+
+     label06:
+        i19 = i19 + 1;
+
+        goto label03;
+
+     label07:
+        virtualinvoke $r9.<JLex.SparseBitSet: void and(JLex.SparseBitSet)>($r10);
+
+        $r23 = <java.lang.System: java.io.PrintStream out>;
+
+        $i5 = virtualinvoke $r9.<JLex.SparseBitSet: int size()>();
+
+        if $i5 != 0 goto label08;
+
+        $r37 = ".";
+
+        goto label09;
+
+     label08:
+        $r37 = ":";
+
+     label09:
+        virtualinvoke $r23.<java.io.PrintStream: void print(java.lang.String)>($r37);
+
+        $i6 = virtualinvoke $r9.<JLex.SparseBitSet: int size()>();
+
+        if $i6 != 0 goto label10;
+
+        goto label01;
+
+     label10:
+        virtualinvoke $r11.<java.util.Hashtable: void clear()>();
+
+        i20 = 0;
+
+     label11:
+        $r24 = r0.<JLex.CSimplifyNfa: int[] ccls>;
+
+        $i7 = lengthof $r24;
+
+        if i20 >= $i7 goto label15;
+
+        $r25 = r0.<JLex.CSimplifyNfa: int[] ccls>;
+
+        $i8 = $r25[i20];
+
+        $z0 = virtualinvoke $r9.<JLex.SparseBitSet: boolean get(int)>($i8);
+
+        if $z0 == 0 goto label14;
+
+        $i9 = r6.<JLex.CNfa: int m_edge>;
+
+        if $i9 == i20 goto label12;
+
+        $i13 = r6.<JLex.CNfa: int m_edge>;
+
+        if $i13 != -1 goto label14;
+
+        $r33 = r6.<JLex.CNfa: JLex.CSet m_set>;
+
+        $z2 = virtualinvoke $r33.<JLex.CSet: boolean contains(int)>(i20);
+
+        if $z2 == 0 goto label14;
+
+     label12:
+        $r26 = new java.lang.Integer;
+
+        $r27 = r0.<JLex.CSimplifyNfa: int[] ccls>;
+
+        $i10 = $r27[i20];
+
+        specialinvoke $r26.<java.lang.Integer: void <init>(int)>($i10);
+
+        $z1 = virtualinvoke $r11.<java.util.Hashtable: boolean containsKey(java.lang.Object)>($r26);
+
+        if $z1 != 0 goto label13;
+
+        $r31 = new java.lang.Integer;
+
+        $i12 = i18;
+
+        i18 = i18 + 1;
+
+        specialinvoke $r31.<java.lang.Integer: void <init>(int)>($i12);
+
+        virtualinvoke $r11.<java.util.Hashtable: java.lang.Object put(java.lang.Object,java.lang.Object)>($r26, $r31);
+
+     label13:
+        $r28 = r0.<JLex.CSimplifyNfa: int[] ccls>;
+
+        $r29 = virtualinvoke $r11.<java.util.Hashtable: java.lang.Object get(java.lang.Object)>($r26);
+
+        $r30 = (java.lang.Integer) $r29;
+
+        $i11 = virtualinvoke $r30.<java.lang.Integer: int intValue()>();
+
+        $r28[i20] = $i11;
+
+     label14:
+        i20 = i20 + 1;
+
+        goto label11;
+
+     label15:
+        goto label01;
+
+     label16:
+        $r14 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r14.<java.io.PrintStream: void println()>();
+
+        $r16 = <java.lang.System: java.io.PrintStream out>;
+
+        $r15 = new java.lang.StringBuilder;
+
+        specialinvoke $r15.<java.lang.StringBuilder: void <init>()>();
+
+        $r17 = virtualinvoke $r15.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("NFA has ");
+
+        $r18 = virtualinvoke $r17.<java.lang.StringBuilder: java.lang.StringBuilder append(int)>(i18);
+
+        $r19 = virtualinvoke $r18.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(" distinct character classes.");
+
+        $r20 = virtualinvoke $r19.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r16.<java.io.PrintStream: void println(java.lang.String)>($r20);
+
+        r0.<JLex.CSimplifyNfa: int mapped_charset_size> = i18;
+
+        return;
+    }
+}

@@ -25,17 +25,22 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JIdentityStmt extends AbstractDefinitionStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -6269380950007213506L;
+
   public JIdentityStmt(Value local, Value identityValue) {
-    this(Jimple.getInstance().newLocalBox(local), Jimple.getInstance().newIdentityRefBox(identityValue));
+    this(Jimple.newLocalBox(local), Jimple.newIdentityRefBox(identityValue));
   }
 
   protected JIdentityStmt(ValueBox localBox, ValueBox identityValueBox) {
@@ -43,7 +48,7 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   }
 
   @Override
-  public Object clone() {
+  public JIdentityStmt clone() {
     return new JIdentityStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()));
   }
 
@@ -53,7 +58,7 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     leftBox.toString(up);
     up.literal(" := ");
     rightBox.toString(up);
@@ -73,18 +78,27 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   }
 
   public Type getType() {
-    // TODO Auto-generated method stub
-    return null;
+    return leftBox.getValue().getType();
   }
 
+  @Override
   public boolean equivTo(Object o) {
-    // TODO Auto-generated method stub
-    return false;
+    if (!(o instanceof JIdentityStmt)) {
+      return false;
+    }
+
+    JIdentityStmt identityStmt = (JIdentityStmt) o;
+    if (!(leftBox.getValue().equivTo(identityStmt.leftBox.getValue())
+        && rightBox.getValue().equivTo(identityStmt.rightBox.getValue()))) {
+      return false;
+    }
+
+    return true;
   }
 
+  @Override
   public int equivHashCode() {
-    // TODO Auto-generated method stub
-    return 0;
+    return leftBox.getValue().equivHashCode() + 31 * rightBox.getValue().equivHashCode();
   }
 
 }

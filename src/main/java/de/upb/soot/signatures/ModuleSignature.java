@@ -25,7 +25,7 @@ package de.upb.soot.signatures;
 import com.google.common.base.Objects;
 
 /** Represents a Java 9 module. */
-public class ModuleSignature {
+public class ModuleSignature implements ISignature {
   /**
    * The unnamed module. If a request is made to load a type whose package is not defined in any module then the module
    * system load it from the classpath. To ensure that every type is associated with a module, the type is associated with
@@ -38,7 +38,7 @@ public class ModuleSignature {
   public final String moduleName;
 
   /**
-   * Construct Module Signature of a Java 9 module. Instances should only be created a {@link SignatureFactory}
+   * Construct Module Signature of a Java 9 module. Instances should only be created a {@link DefaultSignatureFactory}
    *
    * @param moduleName
    *          module's name

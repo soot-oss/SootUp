@@ -1,0 +1,68 @@
+public class javaonepointfive.GenericArrays extends java.lang.Object
+{
+
+    public void <init>()
+    {
+        javaonepointfive.GenericArrays r0;
+
+        r0 := @this: javaonepointfive.GenericArrays;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0;
+        javaonepointfive.GenericArrays $r1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r1 = new javaonepointfive.GenericArrays;
+
+        specialinvoke $r1.<javaonepointfive.GenericArrays: void <init>()>();
+
+        specialinvoke $r1.<javaonepointfive.GenericArrays: void doit()>();
+
+        return;
+    }
+
+    private void doit()
+    {
+        javaonepointfive.GenericArrays r0;
+        java.util.List[] r1;
+        java.lang.Object[] r3, $r6;
+        java.lang.String r5;
+        java.util.ArrayList $r7;
+        java.lang.Integer $r8;
+        java.util.List $r9;
+        java.lang.Object $r10;
+
+        r0 := @this: javaonepointfive.GenericArrays;
+
+        r1 = newarray (java.util.List)[10];
+
+        $r6 = (java.lang.Object[]) r1;
+
+        r3 = (java.lang.Object[]) $r6;
+
+        $r7 = new java.util.ArrayList;
+
+        specialinvoke $r7.<java.util.ArrayList: void <init>()>();
+
+        $r8 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(3);
+
+        interfaceinvoke $r7.<java.util.List: boolean add(java.lang.Object)>($r8);
+
+        r3[1] = $r7;
+
+        $r9 = r1[1];
+
+        $r10 = interfaceinvoke $r9.<java.util.List: java.lang.Object get(int)>(0);
+
+        r5 = (java.lang.String) $r10;
+
+        return;
+    }
+}

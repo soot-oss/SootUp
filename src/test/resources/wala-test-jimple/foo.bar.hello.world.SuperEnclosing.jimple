@@ -1,0 +1,20 @@
+class foo.bar.hello.world.SuperEnclosing extends java.lang.Object
+{
+    int seVar;
+    int seVar2;
+
+    void <init>()
+    {
+        foo.bar.hello.world.SuperEnclosing r0;
+
+        r0 := @this: foo.bar.hello.world.SuperEnclosing;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        r0.<foo.bar.hello.world.SuperEnclosing: int seVar> = 6;
+
+        r0.<foo.bar.hello.world.SuperEnclosing: int seVar2> = 10;
+
+        return;
+    }
+}

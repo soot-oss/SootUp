@@ -27,6 +27,7 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
 
 /**
  * Soot representation of the Java built-in type 'int'. Implemented as a singleton.
@@ -36,6 +37,11 @@ public class IntType extends PrimType {
 
   private static IntType instance;
 
+  /**
+   * Get the IntType instance.
+   * 
+   * @return the IntType instance.
+   */
   public static IntType getInstance() {
     if (instance == null) {
       instance = new IntType();
@@ -63,7 +69,7 @@ public class IntType extends PrimType {
 
   @Override
   public String toString() {
-    return "int";
+    return PrimitiveTypeSignature.INT_TYPE_SIGNATURE.toString();
   }
 
   @Override

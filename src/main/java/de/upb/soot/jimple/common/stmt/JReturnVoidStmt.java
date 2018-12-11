@@ -25,17 +25,22 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.StmtPrinter;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JReturnVoidStmt extends AbstractStmt {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 6620261205233720627L;
+
   public JReturnVoidStmt() {
   }
 
   @Override
-  public Object clone() {
+  public JReturnVoidStmt clone() {
     return new JReturnVoidStmt();
   }
 
@@ -45,7 +50,7 @@ public class JReturnVoidStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(StmtPrinter up) {
+  public void toString(IStmtPrinter up) {
     up.literal(Jimple.RETURN);
   }
 
@@ -62,6 +67,20 @@ public class JReturnVoidStmt extends AbstractStmt {
   @Override
   public boolean branches() {
     return false;
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    if (!(o instanceof JReturnVoidStmt)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int equivHashCode() {
+    // TODO: what to return?
+    return 42;
   }
 
 }

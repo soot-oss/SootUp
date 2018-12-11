@@ -1,0 +1,318 @@
+public class javaonepointfive.BasicsGenerics extends java.lang.Object
+{
+    static java.util.ArrayList strs;
+    static java.util.ArrayList ints;
+
+    public void <init>()
+    {
+        javaonepointfive.BasicsGenerics r0;
+        java.util.ArrayList $r1;
+
+        r0 := @this: javaonepointfive.BasicsGenerics;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r1 = <javaonepointfive.BasicsGenerics: java.util.ArrayList strs>;
+
+        virtualinvoke $r1.<java.util.ArrayList: boolean add(java.lang.Object)>("Coucou, monde!");
+
+        return;
+    }
+
+    public void <init>(java.lang.String)
+    {
+        javaonepointfive.BasicsGenerics r0;
+        java.lang.String r1;
+        java.util.ArrayList $r2;
+
+        r0 := @this: javaonepointfive.BasicsGenerics;
+
+        r1 := @parameter0: java.lang.String;
+
+        specialinvoke r0.<java.lang.Object: void <init>()>();
+
+        $r2 = <javaonepointfive.BasicsGenerics: java.util.ArrayList strs>;
+
+        virtualinvoke $r2.<java.util.ArrayList: boolean add(java.lang.Object)>(r1);
+
+        return;
+    }
+
+    public static void main(java.lang.String[])
+    {
+        java.lang.String[] r0, r53;
+        java.lang.String r2, r4, r5, r6, $r12, $r28, $r34, $r40, r48, r50, r52;
+        javaonepointfive.BasicsGenerics $r7, $r8;
+        java.lang.StringBuilder $r9, $r10, $r11, $r24, $r26, $r27, $r30, $r32, $r33, $r36, $r38, $r39;
+        java.io.PrintStream $r13, $r14, $r22, $r25, $r31, $r37, $r42;
+        java.util.ArrayList $r15, $r16, $r18, $r19, $r20, $r21, r46;
+        java.lang.Integer $r17;
+        boolean $z2, $z3, $z4, $z5, $z6;
+        java.lang.Object $r23, $r29, $r35, $r41;
+        java.util.Iterator r44, r45, r47, r49, r51;
+        int i0, i1;
+
+        r0 := @parameter0: java.lang.String[];
+
+        $r7 = new javaonepointfive.BasicsGenerics;
+
+        specialinvoke $r7.<javaonepointfive.BasicsGenerics: void <init>()>();
+
+        r2 = virtualinvoke $r7.<javaonepointfive.BasicsGenerics: java.lang.String part1()>();
+
+        $r8 = new javaonepointfive.BasicsGenerics;
+
+        $r9 = new java.lang.StringBuilder;
+
+        specialinvoke $r9.<java.lang.StringBuilder: void <init>()>();
+
+        $r10 = virtualinvoke $r9.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("ciao ");
+
+        $r11 = virtualinvoke $r10.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("mondo");
+
+        $r12 = virtualinvoke $r11.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        specialinvoke $r8.<javaonepointfive.BasicsGenerics: void <init>(java.lang.String)>($r12);
+
+        r4 = virtualinvoke $r8.<javaonepointfive.BasicsGenerics: java.lang.String part2()>();
+
+        $r13 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r13.<java.io.PrintStream: void println(java.lang.String)>(r2);
+
+        $r14 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r14.<java.io.PrintStream: void println(java.lang.String)>(r4);
+
+        $r15 = <javaonepointfive.BasicsGenerics: java.util.ArrayList strs>;
+
+        virtualinvoke $r15.<java.util.ArrayList: boolean add(java.lang.Object)>("hello");
+
+        $r16 = <javaonepointfive.BasicsGenerics: java.util.ArrayList ints>;
+
+        $r17 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(3);
+
+        virtualinvoke $r16.<java.util.ArrayList: boolean add(java.lang.Object)>($r17);
+
+        $r18 = <javaonepointfive.BasicsGenerics: java.util.ArrayList ints>;
+
+        r44 = interfaceinvoke $r18.<java.lang.Iterable: java.util.Iterator iterator()>();
+
+     label01:
+        $z2 = interfaceinvoke r44.<java.util.Iterator: boolean hasNext()>();
+
+        if $z2 == 0 goto label02;
+
+        interfaceinvoke r44.<java.util.Iterator: java.lang.Object next()>();
+
+        goto label01;
+
+     label02:
+        $r19 = <javaonepointfive.BasicsGenerics: java.util.ArrayList strs>;
+
+        r45 = virtualinvoke $r19.<java.util.ArrayList: java.util.Iterator iterator()>();
+
+     label03:
+        $z3 = interfaceinvoke r45.<java.util.Iterator: boolean hasNext()>();
+
+        if $z3 == 0 goto label04;
+
+        $r41 = interfaceinvoke r45.<java.util.Iterator: java.lang.Object next()>();
+
+        r5 = (java.lang.String) $r41;
+
+        $r42 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r42.<java.io.PrintStream: void println(java.lang.String)>(r5);
+
+        goto label03;
+
+     label04:
+        r46 = <javaonepointfive.BasicsGenerics: java.util.ArrayList strs>;
+
+        r47 = interfaceinvoke r46.<java.lang.Iterable: java.util.Iterator iterator()>();
+
+     label05:
+        $z4 = interfaceinvoke r47.<java.util.Iterator: boolean hasNext()>();
+
+        if $z4 == 0 goto label06;
+
+        $r35 = interfaceinvoke r47.<java.util.Iterator: java.lang.Object next()>();
+
+        r48 = (java.lang.String) $r35;
+
+        $r37 = <java.lang.System: java.io.PrintStream out>;
+
+        $r36 = new java.lang.StringBuilder;
+
+        specialinvoke $r36.<java.lang.StringBuilder: void <init>()>();
+
+        $r38 = virtualinvoke $r36.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("la vida pasaba y sentia ");
+
+        $r39 = virtualinvoke $r38.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r48);
+
+        $r40 = virtualinvoke $r39.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r37.<java.io.PrintStream: void println(java.lang.String)>($r40);
+
+        goto label05;
+
+     label06:
+        $r20 = <javaonepointfive.BasicsGenerics: java.util.ArrayList strs>;
+
+        r49 = virtualinvoke $r20.<java.util.ArrayList: java.util.Iterator iterator()>();
+
+     label07:
+        $z5 = interfaceinvoke r49.<java.util.Iterator: boolean hasNext()>();
+
+        if $z5 == 0 goto label08;
+
+        $r29 = interfaceinvoke r49.<java.util.Iterator: java.lang.Object next()>();
+
+        r50 = (java.lang.String) $r29;
+
+        $r31 = <java.lang.System: java.io.PrintStream out>;
+
+        $r30 = new java.lang.StringBuilder;
+
+        specialinvoke $r30.<java.lang.StringBuilder: void <init>()>();
+
+        $r32 = virtualinvoke $r30.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("la vida pasaba y sentia ");
+
+        $r33 = virtualinvoke $r32.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r50);
+
+        $r34 = virtualinvoke $r33.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r31.<java.io.PrintStream: void println(java.lang.String)>($r34);
+
+        goto label07;
+
+     label08:
+        $r21 = <javaonepointfive.BasicsGenerics: java.util.ArrayList strs>;
+
+        r51 = virtualinvoke $r21.<java.util.ArrayList: java.util.Iterator iterator()>();
+
+     label09:
+        $z6 = interfaceinvoke r51.<java.util.Iterator: boolean hasNext()>();
+
+        if $z6 == 0 goto label10;
+
+        $r23 = interfaceinvoke r51.<java.util.Iterator: java.lang.Object next()>();
+
+        r52 = (java.lang.String) $r23;
+
+        $r25 = <java.lang.System: java.io.PrintStream out>;
+
+        $r24 = new java.lang.StringBuilder;
+
+        specialinvoke $r24.<java.lang.StringBuilder: void <init>()>();
+
+        $r26 = virtualinvoke $r24.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>("la vida pasaba y sentia ");
+
+        $r27 = virtualinvoke $r26.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(r52);
+
+        $r28 = virtualinvoke $r27.<java.lang.StringBuilder: java.lang.String toString()>();
+
+        virtualinvoke $r25.<java.io.PrintStream: void println(java.lang.String)>($r28);
+
+        goto label09;
+
+     label10:
+        r53 = staticinvoke <javaonepointfive.BasicsGenerics: java.lang.String[] makeArray()>();
+
+        i0 = lengthof r53;
+
+        i1 = 0;
+
+     label11:
+        if i1 >= i0 goto label12;
+
+        r6 = r53[i1];
+
+        $r22 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r22.<java.io.PrintStream: void println(java.lang.String)>(r6);
+
+        i1 = i1 + 1;
+
+        goto label11;
+
+     label12:
+        return;
+    }
+
+    public static java.lang.String[] makeArray()
+    {
+        java.lang.String[] $r1;
+        java.io.PrintStream $r2;
+
+        $r1 = newarray (java.lang.String)[3];
+
+        $r1[0] = "hey";
+
+        $r1[1] = "whats";
+
+        $r1[2] = "up";
+
+        $r2 = <java.lang.System: java.io.PrintStream out>;
+
+        virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>("give a hoot");
+
+        return $r1;
+    }
+
+    public java.lang.String part1()
+    {
+        javaonepointfive.BasicsGenerics r0;
+        java.util.ArrayList $r1;
+        java.lang.Object $r2;
+        java.lang.String $r3;
+
+        r0 := @this: javaonepointfive.BasicsGenerics;
+
+        $r1 = <javaonepointfive.BasicsGenerics: java.util.ArrayList strs>;
+
+        $r2 = virtualinvoke $r1.<java.util.ArrayList: java.lang.Object get(int)>(0);
+
+        $r3 = (java.lang.String) $r2;
+
+        return $r3;
+    }
+
+    public java.lang.String part2()
+    {
+        javaonepointfive.BasicsGenerics r0;
+        java.util.ArrayList $r1;
+        java.lang.Object $r2;
+        java.lang.String $r3;
+
+        r0 := @this: javaonepointfive.BasicsGenerics;
+
+        $r1 = <javaonepointfive.BasicsGenerics: java.util.ArrayList strs>;
+
+        $r2 = virtualinvoke $r1.<java.util.ArrayList: java.lang.Object get(int)>(0);
+
+        $r3 = (java.lang.String) $r2;
+
+        return $r3;
+    }
+
+    static void <clinit>()
+    {
+        java.util.ArrayList $r0, $r1;
+
+        $r0 = new java.util.ArrayList;
+
+        specialinvoke $r0.<java.util.ArrayList: void <init>()>();
+
+        <javaonepointfive.BasicsGenerics: java.util.ArrayList strs> = $r0;
+
+        $r1 = new java.util.ArrayList;
+
+        specialinvoke $r1.<java.util.ArrayList: void <init>()>();
+
+        <javaonepointfive.BasicsGenerics: java.util.ArrayList ints> = $r1;
+
+        return;
+    }
+}
