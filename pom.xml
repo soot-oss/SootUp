@@ -128,8 +128,8 @@
 						</goals>
 						<configuration>
 							<reportFile>${project.reporting.outputDirectory}/jacoco-ut/jacoco.csv</reportFile>
-							<passing>70</passing>
-							<!-- Legal values: instruction, branch, line, method. Optional, default 
+							<!-- <passing>70</passing>
+							 Legal values: instruction, branch, line, method. Optional, default
 								instruction. -->
 							<metric>method</metric>
 						</configuration>
