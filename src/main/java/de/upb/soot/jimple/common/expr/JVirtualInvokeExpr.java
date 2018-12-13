@@ -65,17 +65,11 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
-    buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          buffer.append(", ");
-        }
 
-        buffer.append(argBoxes[i].getValue().toString());
-      }
-    }
+    buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
+    argBoxesToString(buffer);
     buffer.append(")");
+
     return buffer.toString();
   }
 
@@ -90,15 +84,9 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(".");
     up.methodSignature(method);
     up.literal("(");
-    if (argBoxes != null) {
-      final int len = argBoxes.length;
-      for (int i = 0; i < len; i++) {
-        if (i != 0) {
-          up.literal(", ");
-        }
-        argBoxes[i].toString(up);
-      }
-    }
+
+    argBoxesToPrinter(up);
+
     up.literal(")");
   }
 

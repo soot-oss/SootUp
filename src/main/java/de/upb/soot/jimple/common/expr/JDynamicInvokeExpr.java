@@ -180,25 +180,18 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     buffer.append(method.getSubSignature());
     buffer.append(">(");
 
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          buffer.append(", ");
-        }
-
-        buffer.append(argBoxes[i].getValue().toString());
-      }
-    }
+    argBoxesToString(buffer);
 
     buffer.append(") ");
     buffer.append(bsm);
     buffer.append("(");
-    for (int i = 0; i < bsmArgBoxes.length; i++) {
-      if (i != 0) {
+    final int len = bsmArgBoxes.length;
+    if (0 < len) {
+      buffer.append(bsmArgBoxes[0].getValue().toString());
+      for (int i = 1; i < len; i++) {
         buffer.append(", ");
+        buffer.append(bsmArgBoxes[i].getValue().toString());
       }
-
-      buffer.append(bsmArgBoxes[i].getValue().toString());
     }
     buffer.append(")");
 
@@ -209,15 +202,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
     up.literal(" \"" + method.name + "\" <" + method.getSubSignature() + ">(");
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          up.literal(", ");
-        }
 
-        argBoxes[i].toString(up);
-      }
-    }
+    argBoxesToPrinter(up);
 
     up.literal(") ");
     Optional<SootMethod> op = getBootstrapMethod();
@@ -225,15 +211,14 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       up.method(op.get());
     }
     up.literal("(");
-
-    for (int i = 0; i < bsmArgBoxes.length; i++) {
-      if (i != 0) {
+    final int len = bsmArgBoxes.length;
+    if (0 < len) {
+      bsmArgBoxes[0].toString(up);
+      for (int i = 1; i < len; i++) {
         up.literal(", ");
+        bsmArgBoxes[i].toString(up);
       }
-
-      bsmArgBoxes[i].toString(up);
     }
-
     up.literal(")");
   }
 
