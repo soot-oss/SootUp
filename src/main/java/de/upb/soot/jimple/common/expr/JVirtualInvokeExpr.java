@@ -62,17 +62,17 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     return new JVirtualInvokeExpr(this.getView(), getBase(), method, clonedArgs);
   }
 
-   @Override
-    public boolean equivTo(Object o) {
-        return equivTo(o, JimpleComparator.getInstance());
-    }
+  @Override
+  public boolean equivTo(Object o) {
+    return equivTo(o, JimpleComparator.getInstance());
+  }
 
-    @Override
-    public boolean equivTo(Object o, JimpleComparator comparator) {
-      return comparator.caseVirtualInvokeExpr(this, o);
-    }
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseVirtualInvokeExpr(this, o);
+  }
 
-    @Override
+  @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
     buffer.append(Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");

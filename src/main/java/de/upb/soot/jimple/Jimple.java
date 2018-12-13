@@ -99,9 +99,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-
-
-
 /**
  * The Jimple class contains all the constructors for the components of the Jimple grammar for the Jimple body. <br>
  * <br>
@@ -423,8 +420,7 @@ public class Jimple {
    * grammar chunk.
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef, List<? extends Value> args) {
+      List<? extends Value> bootstrapArgs, MethodSignature methodRef, List<? extends Value> args) {
     return new JDynamicInvokeExpr(view, bootstrapMethodRef, bootstrapArgs, methodRef, args);
   }
 
@@ -433,8 +429,7 @@ public class Jimple {
    * grammar chunk.
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef, int tag, List<? extends Value> args) {
+      List<? extends Value> bootstrapArgs, MethodSignature methodRef, int tag, List<? extends Value> args) {
     return new JDynamicInvokeExpr(view, bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
 
@@ -603,14 +598,12 @@ public class Jimple {
    * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
    */
   public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
-      List<? extends IStmt> targets,
-      IStmt defaultTarget) {
+      List<? extends IStmt> targets, IStmt defaultTarget) {
     return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
   }
 
   public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
-      List<? extends IStmtBox> targets,
-      IStmtBox defaultTarget) {
+      List<? extends IStmtBox> targets, IStmtBox defaultTarget) {
     return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
   }
 

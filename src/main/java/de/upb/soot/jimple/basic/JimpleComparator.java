@@ -1,3 +1,25 @@
+/*-
+ * #%L
+ * Soot
+ * %%
+ * Copyright (C) 213.12.2018 Markus Schmidt
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.common.constant.Constant;
@@ -43,6 +65,9 @@ import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 import java.util.Iterator;
 
 /**
+ *
+ * This class holds the equivalence Code for the individual equivTo() methods.
+ * It's the base class you want to extend if your needs need adjustments for checking Equivalence.
  *
  * @author Markus Schmidt
  *
@@ -300,7 +325,6 @@ public class JimpleComparator {
   }
 
   protected boolean caseAbstractInstanceInvokeExpr(AbstractInstanceInvokeExpr obj, Object o) {
-    // TODO: implement equiv in jvirtualinvoke jstaticinvoke jspecial jinterfaceinvoke jdynamicinvoke
     if (!(o instanceof AbstractInstanceInvokeExpr)) {
       return false;
     }
@@ -317,28 +341,26 @@ public class JimpleComparator {
     return true;
   }
 
-
   public boolean caseInterfaceInvokeExpr(JInterfaceInvokeExpr obj, Object o) {
-    if(!(o instanceof JInterfaceInvokeExpr)){
+    if (!(o instanceof JInterfaceInvokeExpr)) {
       return false;
     }
     return caseAbstractInstanceInvokeExpr(obj, o);
   }
 
   public boolean caseSpecialInvokeExpr(JSpecialInvokeExpr obj, Object o) {
-    if(!(o instanceof JSpecialInvokeExpr)){
+    if (!(o instanceof JSpecialInvokeExpr)) {
       return false;
     }
     return caseAbstractInstanceInvokeExpr(obj, o);
   }
 
   public boolean caseVirtualInvokeExpr(JVirtualInvokeExpr obj, Object o) {
-    if(!(o instanceof JVirtualInvokeExpr)){
+    if (!(o instanceof JVirtualInvokeExpr)) {
       return false;
     }
     return caseAbstractInstanceInvokeExpr(obj, o);
   }
-
 
   public boolean caseArrayRef(JArrayRef obj, Object o) {
     if (!(o instanceof JArrayRef)) {

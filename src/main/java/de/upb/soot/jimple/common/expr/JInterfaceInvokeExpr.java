@@ -79,15 +79,15 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     return new JInterfaceInvokeExpr(this.getView(), Jimple.cloneIfNecessary(getBase()), method, argList);
   }
 
-    @Override
-    public boolean equivTo(Object o) {
-        return JimpleComparator.getInstance().caseInterfaceInvokeExpr(this, o);
-    }
+  @Override
+  public boolean equivTo(Object o) {
+    return JimpleComparator.getInstance().caseInterfaceInvokeExpr(this, o);
+  }
 
-    @Override
-    public boolean equivTo(Object o, JimpleComparator comparator) {
-        return comparator.caseInterfaceInvokeExpr(this, o);
-    }
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseInterfaceInvokeExpr(this, o);
+  }
 
   @Override
   public String toString() {

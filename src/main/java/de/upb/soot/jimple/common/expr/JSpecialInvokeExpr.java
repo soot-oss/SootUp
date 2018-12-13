@@ -66,19 +66,17 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
     return new JSpecialInvokeExpr(this.getView(), (Local) getBase(), method, clonedArgs);
   }
 
+  @Override
+  public boolean equivTo(Object o) {
+    return equivTo(o, JimpleComparator.getInstance());
+  }
 
-    @Override
-    public boolean equivTo(Object o) {
-        return equivTo(o, JimpleComparator.getInstance());
-    }
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseSpecialInvokeExpr(this, o);
+  }
 
-    @Override
-    public boolean equivTo(Object o, JimpleComparator comparator) {
-        return comparator.caseSpecialInvokeExpr(this, o);
-    }
-
-
-    @Override
+  @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
     buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
