@@ -27,6 +27,7 @@ package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
@@ -35,7 +36,6 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
-import java.util.Comparator;
 import java.util.List;
 
 public class JTableSwitchStmt extends AbstractSwitchStmt {
@@ -173,16 +173,12 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JTableSwitchStmt)) {
-      return false;
-    }
+    return JimpleComparator.getInstance().caseTableSwitchStmt(this, o);
+  }
 
-    JTableSwitchStmt tableSwitchStmt = (JTableSwitchStmt) o;
-    if (lowIndex != tableSwitchStmt.lowIndex || highIndex != tableSwitchStmt.highIndex) {
-      return false;
-    }
-
-    return super.equivTo( tableSwitchStmt );
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseTableSwitchStmt(this, o);
   }
 
   @Override
@@ -192,11 +188,6 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     ret = prime * ret + highIndex;
     ret = prime * ret + super.equivHashCode();
     return ret;
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

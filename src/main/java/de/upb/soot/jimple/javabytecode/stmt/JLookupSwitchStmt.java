@@ -27,6 +27,7 @@ package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.IntConstant;
@@ -38,8 +39,6 @@ import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 public class JLookupSwitchStmt extends AbstractSwitchStmt {
@@ -154,6 +153,10 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     lookupValues.set(index, IntConstant.getInstance(value));
   }
 
+  public int getLookupValueCount() {
+    return lookupValues.size();
+  }
+
   public int getLookupValue(int index) {
     return lookupValues.get(index).value;
   }
@@ -169,22 +172,12 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JLookupSwitchStmt)) {
-      return false;
-    }
+    return JimpleComparator.getInstance().caseLookupSwitchStmt(this, o);
+  }
 
-    JLookupSwitchStmt lookupSwitchStmt = (JLookupSwitchStmt) o;
-    if (lookupValues.size() != lookupSwitchStmt.getLookupValues().size()) {
-      return false;
-    }
-    Iterator<IntConstant> lvIterator = lookupValues.iterator();
-    for (IntConstant lvOther : lookupSwitchStmt.getLookupValues()) {
-      if (!lvOther.equivTo(lvIterator.next())) {
-        return false;
-      }
-    }
-
-    return super.equivTo( lookupSwitchStmt );
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseLookupSwitchStmt(this, o);
   }
 
   @Override
@@ -199,8 +192,4 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     return res;
   }
 
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
-  }
 }

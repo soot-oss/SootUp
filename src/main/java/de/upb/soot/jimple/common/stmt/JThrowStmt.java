@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
@@ -80,7 +81,12 @@ public class JThrowStmt extends AbstractOpStmt {
   }
 
   public boolean equivTo(Object o) {
-    return (o instanceof JThrowStmt) && super.equivTo((AbstractOpStmt) o);
+    return JimpleComparator.getInstance().caseThrowStmt(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseThrowStmt(this, o);
   }
 
   @Override

@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -37,7 +38,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class JArrayRef implements ConcreteRef {
@@ -64,10 +64,12 @@ public class JArrayRef implements ConcreteRef {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JArrayRef) {
-      return (getBase().equivTo(((JArrayRef) o).getBase()) && getIndex().equivTo(((JArrayRef) o).getIndex()));
-    }
-    return false;
+    return JimpleComparator.getInstance().caseArrayRef(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseArrayRef(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -158,11 +160,6 @@ public class JArrayRef implements ConcreteRef {
   @Override
   public void accept(IVisitor sw) {
     // TODO
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

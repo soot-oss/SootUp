@@ -57,10 +57,12 @@ public class Local implements Value, Numberable, Immediate {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof Local) {
-      return this.equivHashCode() == ((Local) o).equivHashCode();
-    }
-    return false;
+    return equivTo(o, JimpleComparator.getInstance() );
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseLocal(this, o);
   }
 
   @Override
@@ -134,8 +136,4 @@ public class Local implements Value, Numberable, Immediate {
 
   private int number = 0;
 
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
-  }
 }

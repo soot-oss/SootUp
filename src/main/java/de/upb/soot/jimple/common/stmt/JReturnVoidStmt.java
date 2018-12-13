@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -71,12 +72,17 @@ public class JReturnVoidStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    return (o instanceof JReturnVoidStmt);
+    return JimpleComparator.getInstance().caseReturnVoidStmt(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseReturnVoidStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
-    return 42+2;
+    return 42 + 2;
   }
 
 }

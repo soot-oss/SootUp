@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.ArrayType;
@@ -36,7 +37,6 @@ import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class JNewMultiArrayExpr implements Expr {
@@ -77,14 +77,12 @@ public class JNewMultiArrayExpr implements Expr {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JNewMultiArrayExpr) {
-      JNewMultiArrayExpr ae = (JNewMultiArrayExpr) o;
-      if (!baseType.equals(ae.baseType) || sizeBoxes.length != ae.sizeBoxes.length) {
-        return false;
-      }
-      return true;
-    }
-    return false;
+    return JimpleComparator.getInstance().caseNewMultiArrayExpr(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseNewMultiArrayExpr(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -188,11 +186,6 @@ public class JNewMultiArrayExpr implements Expr {
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNewMultiArrayExpr(this);
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

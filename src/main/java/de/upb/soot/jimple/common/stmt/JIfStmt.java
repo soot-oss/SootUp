@@ -27,6 +27,7 @@ package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
@@ -144,12 +145,12 @@ public class JIfStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
+    return JimpleComparator.getInstance().caseIfStmt(this, o);
+  }
 
-    if (!(o instanceof JIfStmt)) {
-      return false;
-    }
-    JIfStmt ifStmt = (JIfStmt) o;
-    return ifStmt.getCondition().equivTo(getCondition()) && ifStmt.getTarget().equivTo(getTarget());
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseIfStmt(this, o);
   }
 
   @Override

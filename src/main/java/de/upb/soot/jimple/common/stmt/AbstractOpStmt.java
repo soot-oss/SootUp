@@ -65,10 +65,6 @@ public abstract class AbstractOpStmt extends AbstractStmt {
     return list;
   }
 
-  protected boolean equivTo(AbstractOpStmt o) {
-    return opBox.getValue().equivTo(o.getOp());
-  }
-
   public int equivHashCode() {
     return opBox.getValue().equivHashCode();
   }

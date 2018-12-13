@@ -15,6 +15,7 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.IField;
 import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
@@ -24,7 +25,6 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -120,11 +120,12 @@ public class JInstanceFieldRef implements FieldRef {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JInstanceFieldRef) {
-      JInstanceFieldRef fr = (JInstanceFieldRef) o;
-      return fr.getField().equals(getField()) && fr.baseBox.getValue().equivTo(baseBox.getValue());
-    }
-    return false;
+    return JimpleComparator.getInstance().caseInstanceFieldRef(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseInstanceFieldRef(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -135,11 +136,6 @@ public class JInstanceFieldRef implements FieldRef {
     } else {
       return 16;
     }
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

@@ -27,6 +27,7 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
@@ -36,7 +37,6 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class JStaticInvokeExpr extends AbstractInvokeExpr {
@@ -72,22 +72,12 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
    */
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JStaticInvokeExpr) {
-      JStaticInvokeExpr ie = (JStaticInvokeExpr) o;
-      if (!(getMethod().equals(ie.getMethod())
-          && (argBoxes == null ? 0 : argBoxes.length) == (ie.argBoxes == null ? 0 : ie.argBoxes.length))) {
-        return false;
-      }
-      if (argBoxes != null) {
-        for (int i = 0; i < argBoxes.length; i++) {
-          if (!(argBoxes[i]).getValue().equivTo(ie.argBoxes[i].getValue())) {
-            return false;
-          }
-        }
-      }
-      return true;
-    }
-    return false;
+    return JimpleComparator.getInstance().caseStaticInvokeExpr(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseStaticInvokeExpr(this, o);
   }
 
   /**
@@ -145,11 +135,6 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseStaticInvokeExpr(this);
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

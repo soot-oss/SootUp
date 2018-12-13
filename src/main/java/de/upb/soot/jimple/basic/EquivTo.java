@@ -51,5 +51,5 @@ public interface EquivTo {
    * @param comparator
    * @return
    */
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator);
+  public boolean equivTo(Object o, JimpleComparator comparator);
 }

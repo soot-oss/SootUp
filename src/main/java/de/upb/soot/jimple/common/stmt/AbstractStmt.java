@@ -36,7 +36,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractStmt implements IStmt {
@@ -208,11 +207,6 @@ public abstract class AbstractStmt implements IStmt {
 
   public Position getPosition() {
     return position;
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

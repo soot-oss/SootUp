@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractStmt;
@@ -34,7 +35,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class JRetStmt extends AbstractStmt {
@@ -111,17 +111,18 @@ public class JRetStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    return (o instanceof JRetStmt) && getStmtAddress().equivTo( ((JRetStmt) o).getStmtAddress() );
+    return JimpleComparator.getInstance().caseRetStmt(this, o);
+
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseRetStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
     return stmtAddressBox.getValue().equivHashCode();
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

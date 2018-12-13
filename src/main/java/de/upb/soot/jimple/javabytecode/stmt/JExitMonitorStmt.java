@@ -26,14 +26,13 @@
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.Comparator;
 
 public class JExitMonitorStmt extends AbstractOpStmt {
   /**
@@ -83,17 +82,17 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   }
 
   public boolean equivTo(Object o) {
-    return (o instanceof JExitMonitorStmt) && super.equivTo((AbstractOpStmt) o);
+    return JimpleComparator.getInstance().caseExitMonitorStmt(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseExitMonitorStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
     return super.equivHashCode();
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

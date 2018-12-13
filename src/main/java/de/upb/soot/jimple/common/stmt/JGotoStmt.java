@@ -27,6 +27,7 @@ package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -107,7 +108,13 @@ public class JGotoStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    return (o instanceof JGotoStmt) && targetBox.getStmt().equivTo(((JGotoStmt) o).targetBox.getStmt());
+    return JimpleComparator.getInstance().caseGotoStmt(this, o);
+
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseGotoStmt(this, o);
   }
 
   @Override

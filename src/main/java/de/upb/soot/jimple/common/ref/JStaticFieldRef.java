@@ -3,6 +3,7 @@ package de.upb.soot.jimple.common.ref;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.IField;
 import de.upb.soot.core.SootField;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
@@ -11,7 +12,6 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,11 +60,12 @@ public class JStaticFieldRef implements FieldRef {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JStaticFieldRef) {
-      return ((JStaticFieldRef) o).getField().equals(getField());
-    }
+    return JimpleComparator.getInstance().caseStaticFieldRef(this, o);
+  }
 
-    return false;
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseStaticFieldRef(this, o);
   }
 
   @Override
@@ -84,11 +85,6 @@ public class JStaticFieldRef implements FieldRef {
   @Override
   public void accept(IVisitor v) {
     // TODO Auto-generated method stub
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

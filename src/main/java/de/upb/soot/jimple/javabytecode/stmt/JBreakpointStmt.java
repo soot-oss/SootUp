@@ -26,12 +26,11 @@
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.Comparator;
 
 public class JBreakpointStmt extends AbstractStmt {
   /**
@@ -74,17 +73,17 @@ public class JBreakpointStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    return (o instanceof JBreakpointStmt);
+    return JimpleComparator.getInstance().caseBreakpointStmt(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseBreakpointStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
-    return 42+1;
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
+    return 42 + 1;
   }
 
 }
