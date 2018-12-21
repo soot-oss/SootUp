@@ -9,7 +9,23 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.Constant;
+import de.upb.soot.jimple.common.constant.DoubleConstant;
+import de.upb.soot.jimple.common.constant.FloatConstant;
+import de.upb.soot.jimple.common.constant.IntConstant;
+import de.upb.soot.jimple.common.constant.LongConstant;
+import de.upb.soot.jimple.common.constant.NullConstant;
+import de.upb.soot.jimple.common.expr.AbstractBinopExpr;
+import de.upb.soot.jimple.common.expr.AbstractUnopExpr;
+import de.upb.soot.jimple.common.expr.JCastExpr;
 import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.type.BooleanType;
+import de.upb.soot.jimple.common.type.ByteType;
+import de.upb.soot.jimple.common.type.CharType;
+import de.upb.soot.jimple.common.type.DoubleType;
+import de.upb.soot.jimple.common.type.FloatType;
+import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.LongType;
+import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.signatures.MethodSignature;
@@ -62,6 +78,9 @@ import static org.objectweb.asm.tree.AbstractInsnNode.MULTIANEWARRAY_INSN;
 import static org.objectweb.asm.tree.AbstractInsnNode.TABLESWITCH_INSN;
 import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
 import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
+
+
+//FIXME: integrate the bugfix from soot java9 concerning bootstrap method parameter ordering
 
 public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     implements de.upb.soot.namespaces.classprovider.IMethodSource {
@@ -495,15 +514,15 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     if (out == null) {
       Value v;
       if (op == ACONST_NULL) {
-        v = NullConstant.v();
+        v = NullConstant.getInstance();
       } else if (op >= ICONST_M1 && op <= ICONST_5) {
-        v = IntConstant.v(op - ICONST_0);
+        v = IntConstant.getInstance(op - ICONST_0);
       } else if (op == LCONST_0 || op == LCONST_1) {
-        v = LongConstant.v(op - LCONST_0);
+        v = LongConstant.getInstance(op - LCONST_0);
       } else if (op >= FCONST_0 && op <= FCONST_2) {
-        v = FloatConstant.v(op - FCONST_0);
+        v = FloatConstant.getInstance(op - FCONST_0);
       } else if (op == DCONST_0 || op == DCONST_1) {
-        v = DoubleConstant.v(op - DCONST_0);
+        v = DoubleConstant.getInstance(op - DCONST_0);
       } else {
         throw new AssertionError("Unknown constant opcode: " + op);
       }
@@ -674,7 +693,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
       Operand op1 = dword ? popImmediateDual() : popImmediate();
       Value v1 = op1.stackOrValue();
       Value v2 = op2.stackOrValue();
-      BinopExpr binop;
+      AbstractBinopExpr binop;
       if (op >= IADD && op <= DADD) {
         binop = Jimple.v().newAddExpr(v1, v2);
       } else if (op >= ISUB && op <= DSUB) {
@@ -740,7 +759,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     if (out == null) {
       Operand op1 = dword ? popImmediateDual() : popImmediate();
       Value v1 = op1.stackOrValue();
-      UnopExpr unop;
+      AbstractUnopExpr unop;
       if (op >= INEG && op <= DNEG) {
         unop = Jimple.v().newNegExpr(v1);
       } else if (op == ARRAYLENGTH) {
@@ -774,24 +793,24 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     if (out == null) {
       Type totype;
       if (op == I2L || op == F2L || op == D2L) {
-        totype = LongType.v();
+        totype = LongType.getInstance();
       } else if (op == L2I || op == F2I || op == D2I) {
-        totype = IntType.v();
+        totype = IntType.getInstance();
       } else if (op == I2F || op == L2F || op == D2F) {
-        totype = FloatType.v();
+        totype = FloatType.getInstance();
       } else if (op == I2D || op == L2D || op == F2D) {
-        totype = DoubleType.v();
+        totype = DoubleType.getInstance();
       } else if (op == I2B) {
-        totype = ByteType.v();
+        totype = ByteType.getInstance();
       } else if (op == I2S) {
-        totype = ShortType.v();
+        totype = ShortType.getInstance();
       } else if (op == I2C) {
-        totype = CharType.v();
+        totype = CharType.getInstance();
       } else {
         throw new AssertionError("Unknonw prim cast op: " + op);
       }
       Operand val = fromd ? popImmediateDual() : popImmediate();
-      CastExpr cast = Jimple.v().newCastExpr(val.stackOrValue(), totype);
+      JCastExpr cast = Jimple.v().newCastExpr(val.stackOrValue(), totype);
       opr = new Operand(insn, cast);
       val.addBox(cast.getOpBox());
       frame.in(val);
@@ -874,7 +893,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
       Operand opr;
       if (!units.containsKey(insn)) {
         opr = popImmediate();
-        ThrowStmt ts = Jimple.v().newThrowStmt(opr.stackOrValue());
+        JThrowStmt ts = Jimple.v().newThrowStmt(opr.stackOrValue());
         opr.addBox(ts.getOpBox());
         frame.in(opr);
         frame.out(opr);
@@ -913,33 +932,33 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     if (out == null) {
       Value v;
       if (op == BIPUSH || op == SIPUSH) {
-        v = IntConstant.v(insn.operand);
+        v = IntConstant.getInstance(insn.operand);
       } else {
         Type type;
         switch (insn.operand) {
           case T_BOOLEAN:
-            type = BooleanType.v();
+            type = BooleanType.getInstance();
             break;
           case T_CHAR:
-            type = CharType.v();
+            type = CharType.getInstance();
             break;
           case T_FLOAT:
-            type = FloatType.v();
+            type = FloatType.getInstance();
             break;
           case T_DOUBLE:
-            type = DoubleType.v();
+            type = DoubleType.getInstance();
             break;
           case T_BYTE:
-            type = ByteType.v();
+            type = ByteType.getInstance();
             break;
           case T_SHORT:
-            type = ShortType.v();
+            type = ShortType.getInstance();
             break;
           case T_INT:
-            type = IntType.v();
+            type = IntType.getInstance();
             break;
           case T_LONG:
-            type = LongType.v();
+            type = LongType.getInstance();
             break;
           default:
             throw new AssertionError("Unknown NEWARRAY type!");
