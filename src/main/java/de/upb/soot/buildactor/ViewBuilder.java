@@ -2,7 +2,7 @@ package de.upb.soot.buildactor;
 
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaOnDemandView;
 
@@ -29,7 +29,7 @@ public class ViewBuilder {
     // e.g. by calling the ClassBuilder
     // compose View
 
-    for (AbstractClassSource cs : namespace.getClassSources(result.getSignatureFactory())) {
+    for (ClassSource cs : namespace.getClassSources(result.getSignatureFactory())) {
       cs.getContent().resolve(ResolvingLevel.BODIES, result);
       // Populate view
     }

@@ -29,7 +29,7 @@ import de.upb.soot.signatures.MethodSignature;
 
 /** A class which knows how to produce Body's for SootMethods. */
 
-public interface IMethodSource {
+public interface IMethodSourceContent {
   /** Returns a filled-out body for the given SootMethod. */
   public Body getBody(SootMethod m);
   public MethodSignature getSignature();

@@ -12,7 +12,7 @@ import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
@@ -46,7 +46,7 @@ public class JFieldRefTest {
         = new SootField(view, declaringClassSignature, fieldSig, fact.getTypeSignature("int"), EnumSet.of(Modifier.FINAL));
 
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
-        new JavaClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application,
+        new ClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application,
         Optional.empty(), Collections.emptySet(), Optional.empty(), Collections.singleton(field), Collections.emptySet(),
         null,
         EnumSet.of(Modifier.PUBLIC));
@@ -66,7 +66,7 @@ public class JFieldRefTest {
     SootField field
         = new SootField(view, declaringClassSignature, fieldSig, fact.getTypeSignature("int"), EnumSet.of(Modifier.FINAL));
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
-        new JavaClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application,
+        new ClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application,
         Optional.empty(), Collections.emptySet(), Optional.empty(), Collections.singleton(field), Collections.emptySet(),
         null, EnumSet.of(Modifier.PUBLIC));
     Local base = new Local("obj", RefType.getInstance(mainClass));

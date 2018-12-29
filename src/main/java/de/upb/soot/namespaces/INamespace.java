@@ -23,7 +23,7 @@ package de.upb.soot.namespaces;
  */
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
@@ -48,7 +48,7 @@ public interface INamespace {
    * @param signature The signature of the class to be found.
    * @return The source entry for that class.
    */
-  Optional<AbstractClassSource> getClassSource(JavaClassSignature signature);
+  Optional<ClassSource> getClassSource(JavaClassSignature signature);
 
   /**
    * The class provider attached to this namespace.
@@ -56,5 +56,5 @@ public interface INamespace {
    */
   IClassProvider getClassProvider();
 
-  Collection<AbstractClassSource> getClassSources(SignatureFactory factory);
+  Collection<ClassSource> getClassSources(SignatureFactory factory);
 }

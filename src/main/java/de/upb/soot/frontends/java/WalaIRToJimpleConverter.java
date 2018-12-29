@@ -31,8 +31,7 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
@@ -95,7 +94,7 @@ public class WalaIRToJimpleConverter {
    * @return A SootClass converted from walaClass
    */
   public SootClass convertClass(AstClass walaClass) {
-    AbstractClassSource classSource = createClassSource(walaClass);
+    ClassSource classSource = createClassSource(walaClass);
     JavaClassSignature classSig = classSource.getClassSignature();
     // get super class
     IClass sc = walaClass.getSuperclass();
@@ -168,13 +167,13 @@ public class WalaIRToJimpleConverter {
    * @param walaClass
    * @return
    */
-  public AbstractClassSource createClassSource(AstClass walaClass) {
+  public ClassSource createClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassSignature classSignature = new DefaultSignatureFactory() {
     }.getClassSignature(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
-    return new JavaClassSource(srcNamespace, sourcePath, classSignature);
+    return new ClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   /**
@@ -243,7 +242,7 @@ public class WalaIRToJimpleConverter {
     DebuggingInformation debugInfo = walaMethod.debugInfo();
     MethodSignature methodSig = this.view.getSignatureFactory().getMethodSignature(walaMethod.getName().toString(), classSig,
         returnType.toString(), sigs);
-    WalaIRMethodSource methodSource = new WalaIRMethodSource(methodSig);
+    WalaIRMethodSourceContent methodSource = new WalaIRMethodSourceContent(methodSig);
     SootMethod sootMethod = new SootMethod(view, classSig, methodSource, paraTypes,
         this.view.getSignatureFactory().getTypeSignature(returnType.toString()), modifiers, thrownExceptions, debugInfo);
     // create and set active body of the SootMethod
@@ -412,7 +411,7 @@ public class WalaIRToJimpleConverter {
         DebuggingInformation debugInfo = walaMethod.debugInfo();
         Position bodyPos = debugInfo.getCodeBodyPosition();
 
-        /* Look AsmMethodSource.getBody, see AsmMethodSource.emitLocals(); */
+        /* Look AsmMethodSourceContent.getBody, see AsmMethodSourceContent.emitLocals(); */
 
         if (!sootMethod.isStatic()) {
           RefType thisType = view.getRefType(sootMethod.getDeclaringClassSignature());

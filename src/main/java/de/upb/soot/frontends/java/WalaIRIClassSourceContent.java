@@ -2,6 +2,7 @@ package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
+import de.upb.soot.namespaces.classprovider.IClassSourceContent;
 import de.upb.soot.views.IView;
 
 import com.ibm.wala.cast.loader.AstClass;
@@ -14,11 +15,11 @@ import com.ibm.wala.cast.loader.AstClass;
  * @author Ben Hermann
  *
  */
-public class WalaIRISourceContent implements de.upb.soot.namespaces.classprovider.ISourceContent {
+public class WalaIRIClassSourceContent implements IClassSourceContent {
   private AstClass source;
   private WalaIRToJimpleConverter converter;
 
-  public WalaIRISourceContent(AstClass source, WalaIRToJimpleConverter converter) {
+  public WalaIRIClassSourceContent(AstClass source, WalaIRToJimpleConverter converter) {
     this.source = source;
     this.converter = converter;
   }

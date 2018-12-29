@@ -22,7 +22,7 @@ package de.upb.soot.core;
  */
 
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.namespaces.classprovider.IMethodSource;
+import de.upb.soot.namespaces.classprovider.IMethodSourceContent;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
@@ -69,13 +69,13 @@ public class SootMethod extends SootClassMember implements IMethod {
   protected final Body activeBody;
 
   /** Tells this method how to find out where its body lives. */
-  private final IMethodSource methodSource;
+  private final IMethodSourceContent methodSource;
 
   /**
    * Constructs a SootMethod object with the given attributes. It contains no active body.
    */
-  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSource source, List<TypeSignature> parameterTypes,
-      TypeSignature returnType, EnumSet<Modifier> modifiers, DebuggingInformation debugInfo) {
+  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSourceContent source, List<TypeSignature> parameterTypes,
+                    TypeSignature returnType, EnumSet<Modifier> modifiers, DebuggingInformation debugInfo) {
     this(view, declaringClass, source, parameterTypes, returnType, modifiers, Collections.<JavaClassSignature>emptyList(),
         debugInfo);
   }
@@ -83,9 +83,9 @@ public class SootMethod extends SootClassMember implements IMethod {
   /**
    * Constructs a SootMethod object with the given attributes.
    */
-  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSource source, List<TypeSignature> parameterTypes,
-      TypeSignature returnType, EnumSet<Modifier> modifiers, List<JavaClassSignature> thrownExceptions,
-      DebuggingInformation debugInfo) {
+  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSourceContent source, List<TypeSignature> parameterTypes,
+                    TypeSignature returnType, EnumSet<Modifier> modifiers, List<JavaClassSignature> thrownExceptions,
+                    DebuggingInformation debugInfo) {
     super(view, declaringClass, source.getSignature(), returnType, modifiers);
     this.methodSource = source;
     this.parameterTypes = Collections.unmodifiableList(parameterTypes);

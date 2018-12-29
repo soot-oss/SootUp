@@ -1,6 +1,6 @@
 package de.upb.soot.core;
 
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.views.IView;
 
@@ -18,11 +18,11 @@ import java.util.Set;
  */
 public abstract class AbstractClass extends AbstractViewResident {
 
-  protected final AbstractClassSource classSource;
+  protected final ClassSource classSource;
   protected final Set<? extends IMethod> methods;
   protected final Set<? extends IField> fields;
 
-  public AbstractClass(IView view, AbstractClassSource cs, Set<? extends IMethod> methods, Set<? extends IField> fields) {
+  public AbstractClass(IView view, ClassSource cs, Set<? extends IMethod> methods, Set<? extends IField> fields) {
     super(view);
     this.methods = Collections.unmodifiableSet(methods);
     this.fields = Collections.unmodifiableSet(fields);
@@ -30,7 +30,7 @@ public abstract class AbstractClass extends AbstractViewResident {
 
   }
 
-  public AbstractClassSource getClassSource() {
+  public ClassSource getClassSource() {
     return classSource;
   }
 

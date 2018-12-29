@@ -24,7 +24,7 @@ package de.upb.soot.namespaces;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
@@ -130,10 +130,10 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Collection<AbstractClassSource> getClassSources(SignatureFactory factory) {
+  public Collection<ClassSource> getClassSources(SignatureFactory factory) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
-    Set<AbstractClassSource> found = new HashSet<>();
+    Set<ClassSource> found = new HashSet<>();
     for (AbstractNamespace ns : cpEntries) {
       found.addAll(ns.getClassSources(factory));
     }
@@ -141,9 +141,9 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Optional<AbstractClassSource> getClassSource(JavaClassSignature signature) {
+  public Optional<ClassSource> getClassSource(JavaClassSignature signature) {
     for (AbstractNamespace ns : cpEntries) {
-      final Optional<AbstractClassSource> classSource = ns.getClassSource(signature);
+      final Optional<ClassSource> classSource = ns.getClassSource(signature);
       if (classSource.isPresent()) {
         return classSource;
       }

@@ -2,14 +2,14 @@ package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.namespaces.classprovider.IMethodSource;
+import de.upb.soot.namespaces.classprovider.IMethodSourceContent;
 import de.upb.soot.signatures.MethodSignature;
 
-public class WalaIRMethodSource implements IMethodSource {
+public class WalaIRMethodSourceContent implements IMethodSourceContent {
 
   private MethodSignature methodSignature;
 
-  public WalaIRMethodSource(MethodSignature methodSignature) {
+  public WalaIRMethodSourceContent(MethodSignature methodSignature) {
     this.methodSignature = methodSignature;
   }
 

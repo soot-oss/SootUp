@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 /*-
  * #%L
  * Soot
@@ -79,5 +79,5 @@ public abstract class AbstractNamespace implements INamespace {
   }
 
   @Override
-  public abstract Optional<AbstractClassSource> getClassSource(JavaClassSignature classSignature);
+  public abstract Optional<ClassSource> getClassSource(JavaClassSignature classSignature);
 }

@@ -7,9 +7,12 @@ import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.IClassSourceContent;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.FieldNode;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -18,20 +21,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.FieldNode;
+public class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
+    implements IClassSourceContent {
 
-public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
-    implements de.upb.soot.namespaces.classprovider.ISourceContent {
+  private ClassSource classSource;
 
-  private AbstractClassSource classSource;
-
-  public AsmClassSourceContent(AbstractClassSource classSource) {
+  public AsmClassClassSourceContent(ClassSource classSource) {
     super(Opcodes.ASM6);
     this.classSource = classSource;
-    //FIXME: maybe delete class reading
+    // FIXME: maybe delete class reading
     AsmUtil.initASMClassSource(classSource, this);
-
   }
 
   @Override
@@ -72,7 +71,6 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
   private SootClass.HierachyStep resolveDangling(IView view, JavaClassSignature cs) {
 
     return SootClass.builder().dangling(view, this.classSource, null);
-
   }
 
   private SootClass.SignatureStep resolveHierarchy(IView view, JavaClassSignature cs) {
@@ -90,14 +88,16 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     {
       // add super class
 
-      Optional<JavaClassSignature> superClass = AsmUtil.resolveAsmNameToClassSignature(superName, view);
+      Optional<JavaClassSignature> superClass =
+          AsmUtil.resolveAsmNameToClassSignature(superName, view);
       if (superClass.isPresent()) {
         mySuperCl = superClass;
       }
     }
     {
       // add the interfaces
-      Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(this.interfaces, view);
+      Iterable<Optional<JavaClassSignature>> optionals =
+          AsmUtil.asmIDToSignature(this.interfaces, view);
       for (Optional<JavaClassSignature> interfaceClass : optionals) {
 
         if (interfaceClass.isPresent()) {
@@ -120,6 +120,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     }
 
     {
+      // FIXME: add support for annoation
       // add the fields
       for (FieldNode fieldNode : this.fields) {
         String fieldName = fieldNode.name;
@@ -129,7 +130,6 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         SootField sootField = new SootField(view, null, null, null, modifiers);
         fields.add(sootField);
       }
-
     }
 
     { // add methods
@@ -140,7 +140,8 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         List<Type> sigTypes = AsmUtil.toJimpleDesc(methodSource.desc, view);
         Type retType = sigTypes.remove(sigTypes.size() - 1);
         List<JavaClassSignature> exceptions = new ArrayList<>();
-        Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(methodSource.exceptions, view);
+        Iterable<Optional<JavaClassSignature>> optionals =
+            AsmUtil.asmIDToSignature(methodSource.exceptions, view);
 
         for (Optional<JavaClassSignature> excepetionClass : optionals) {
 
@@ -149,8 +150,8 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
           }
         }
 
-        de.upb.soot.core.SootMethod sootMethod
-            = new de.upb.soot.core.SootMethod(view, null, null, null, null, modifiers, null, null);
+        de.upb.soot.core.SootMethod sootMethod =
+            new de.upb.soot.core.SootMethod(view, null, null, null, null, modifiers, null, null);
         // sootClass.addMethod(sootMethod);
         methods.add(sootMethod);
       }
@@ -171,11 +172,11 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
   }
 
   @Override
-  public org.objectweb.asm.MethodVisitor visitMethod(int access, String name, String desc, String signature,
-      String[] exceptions) {
+  public org.objectweb.asm.MethodVisitor visitMethod(
+      int access, String name, String desc, String signature, String[] exceptions) {
 
-    de.upb.soot.namespaces.classprovider.asm.AsmMethodSource mn
-        = new AsmMethodSource(null, access, name, desc, signature, exceptions);
+    AsmMethodSourceContent mn =
+        new AsmMethodSourceContent(access, name, desc, signature, exceptions);
     methods.add(mn);
     return mn;
   }

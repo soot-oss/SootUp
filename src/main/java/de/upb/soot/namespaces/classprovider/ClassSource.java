@@ -21,7 +21,7 @@ import java.nio.file.Path;
  * @author Linghui Luo
  *
  **/
-public abstract class AbstractClassSource {
+public class ClassSource {
   private final INamespace srcNamespace;
   // TODO: AD unfortunately I need to change it in the ModuleFinder, since I only know a module's name after resolving its
   // module-info.class
@@ -29,21 +29,21 @@ public abstract class AbstractClassSource {
   private final Path sourcePath;
 
   /**
-   * Creates and a {@link AbstractClassSource} for a specific source file. The file should be passed as {@link Path} and can be
+   * Creates and a {@link ClassSource} for a specific source file. The file should be passed as {@link Path} and can be
    * located in an arbitrary {@link java.nio.file.FileSystem}. Implementations should use
    * {@link java.nio.file.Files#newInputStream(Path, OpenOption...)} to access the file.
    *
    * @param srcNamespace
    *          The {@link INamespace} that holds the given file
    * @param sourcePath
-   *          Path to the source file of the to-be-created {@link AbstractClassSource}. The given path has to exist and requires to
+   *          Path to the source file of the to-be-created {@link ClassSource}. The given path has to exist and requires to
    *          be handled by this {@link IClassProvider}. Implementations might double check this if wanted.
    * @param classSignature
    *          the signature that has been used to resolve this class
-   * @return A not yet resolved {@link AbstractClassSource}, backed up by the given file A not yet resolved {@link AbstractClassSource},
+   * @return A not yet resolved {@link ClassSource}, backed up by the given file A not yet resolved {@link ClassSource},
    *         backed up by the given file
    */
-  public AbstractClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {
+  public ClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {
     checkNotNull(srcNamespace);
     this.srcNamespace = srcNamespace;
     this.classSignature = classSignature;
@@ -63,7 +63,7 @@ public abstract class AbstractClassSource {
    * 
    * @return
    */
-  public de.upb.soot.namespaces.classprovider.ISourceContent getContent() {
+  public IClassSourceContent getContent() {
     // TODO: Find a better common supertype for this.
     return srcNamespace.getClassProvider().getContent(this);
   }
@@ -91,7 +91,7 @@ public abstract class AbstractClassSource {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AbstractClassSource that = (AbstractClassSource) o;
+    ClassSource that = (ClassSource) o;
     return Objects.equal(srcNamespace, that.srcNamespace) && Objects.equal(sourcePath, that.sourcePath);
   }
 

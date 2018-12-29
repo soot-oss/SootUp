@@ -1,9 +1,9 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
-import de.upb.soot.namespaces.classprovider.ISourceContent;
-import de.upb.soot.namespaces.classprovider.asm.modules.AsmModuleSourceContent;
+import de.upb.soot.namespaces.classprovider.IClassSourceContent;
+import de.upb.soot.namespaces.classprovider.asm.modules.AsmModuleClassSourceContent;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModuleDecoratorClassSignature;
 import de.upb.soot.signatures.ModuleSignature;
@@ -171,9 +171,9 @@ public class ModuleFinder {
       return;
     }
     // get the module's name out of this module-info file
-    Optional<AbstractClassSource> moduleInfoClassSource = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
+    Optional<ClassSource> moduleInfoClassSource = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
     if (moduleInfoClassSource.isPresent()) {
-      AbstractClassSource moduleInfoSource = moduleInfoClassSource.get();
+      ClassSource moduleInfoSource = moduleInfoClassSource.get();
       // get the module name
       String moduleName = this.getModuleName(moduleInfoSource);
       this.moduleNamespace.put(moduleName, namespace);
@@ -190,7 +190,7 @@ public class ModuleFinder {
    */
   private void buildModuleForJar(Path jar) {
     PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(jar);
-    Optional<AbstractClassSource> moduleInfoFile = null;
+    Optional<ClassSource> moduleInfoFile = null;
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");
       Path mi = archiveRoot
@@ -207,7 +207,7 @@ public class ModuleFinder {
       e.printStackTrace();
     }
     if (moduleInfoFile != null && moduleInfoFile.isPresent()) {
-      AbstractClassSource moduleInfoSource = moduleInfoFile.get();
+      ClassSource moduleInfoSource = moduleInfoFile.get();
       // get the module name
       String moduleName = null;
       try {
@@ -232,18 +232,18 @@ public class ModuleFinder {
   }
 
   // FIXME: quikly parse the module name
-  private String parseModuleInfoClassFile(ISourceContent moduleInfo) {
-    if (moduleInfo instanceof AsmModuleSourceContent) {
-      return ((AsmModuleSourceContent) moduleInfo).module.name;
+  private String parseModuleInfoClassFile(IClassSourceContent moduleInfo) {
+    if (moduleInfo instanceof AsmModuleClassSourceContent) {
+      return ((AsmModuleClassSourceContent) moduleInfo).module.name;
     }
     return "";
   }
 
-  private String getModuleName(AbstractClassSource moduleInfoSource) throws ClassResolvingException {
+  private String getModuleName(ClassSource moduleInfoSource) throws ClassResolvingException {
     // FIXME: somhow in need the module name from the source code ...
     // AbstractClass moduleInfoClass = this.classProvider.reify(moduleInfoSource);
-    ISourceContent moduleInfoClass = this.classProvider.getContent(moduleInfoSource);
-    if (!(moduleInfoClass instanceof AsmModuleSourceContent)) {
+    IClassSourceContent moduleInfoClass = this.classProvider.getContent(moduleInfoSource);
+    if (!(moduleInfoClass instanceof AsmModuleClassSourceContent)) {
       throw new ClassResolvingException("Class is named module-info but does not reify to SootModuleInfo");
     }
     // FIXME: here is no view or anything to resolve the content...??? Why do I need a view anyway?
@@ -254,7 +254,7 @@ public class ModuleFinder {
     return moduleName;
   }
 
-  private void createProperModuleSignature(AbstractClassSource moduleInfoSource, String moduleName) {
+  private void createProperModuleSignature(ClassSource moduleInfoSource, String moduleName) {
     // create proper moduleInfoSignature
     // add the module name, which was unknown before
     // moduleInfoSource.setClassSignature();

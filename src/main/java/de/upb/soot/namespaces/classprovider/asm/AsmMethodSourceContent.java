@@ -28,6 +28,7 @@ import de.upb.soot.jimple.common.type.LongType;
 import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
+import de.upb.soot.namespaces.classprovider.IMethodSourceContent;
 import de.upb.soot.signatures.MethodSignature;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -80,10 +81,13 @@ import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
 import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
 
 
+//FIXME: use newest version from old soot with support for lambda!!!
+
+
 //FIXME: integrate the bugfix from soot java9 concerning bootstrap method parameter ordering
 
-public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
-    implements de.upb.soot.namespaces.classprovider.IMethodSource {
+public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
+    implements IMethodSourceContent {
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
 
@@ -105,14 +109,13 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
 
   private final CastAndReturnInliner castAndReturnInliner = new CastAndReturnInliner();
 
-  public AsmMethodSource(
-      org.objectweb.asm.MethodVisitor mv,
+  public AsmMethodSourceContent(
       int access,
       String name,
       String desc,
       String signature,
       String[] exceptions) {
-    super(mv, access, name, desc, signature, exceptions);
+    super(null, access, name, desc, signature, exceptions);
   }
 
   @Override
@@ -166,6 +169,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     castAndReturnInliner.transform(jb);
 
     try {
+      // TODO(Andreas): I will implement all the body phases soon...no problemo! :)
       PackManager.v().getPack("jb").apply(jb);
     } catch (Throwable t) {
       throw new RuntimeException("Failed to apply jb to " + m, t);

@@ -3,7 +3,7 @@ package de.upb.soot.views;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.JavaClassSignature;
 
@@ -38,7 +38,7 @@ public class JavaOnDemandView extends JavaView {
     if (!foundClasss.isPresent()) {
 
       // query the namespace for the class source
-      Optional<AbstractClassSource> source = namespace.getClassSource((JavaClassSignature) signature);
+      Optional<ClassSource> source = namespace.getClassSource((JavaClassSignature) signature);
       if (source.isPresent()) {
         // resolve it ...
         Optional<AbstractClass> resolvedClass = null;

@@ -23,7 +23,7 @@ package de.upb.soot.core;
 
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.validation.ClassFlagsValidator;
 import de.upb.soot.validation.ClassValidator;
@@ -79,7 +79,7 @@ public class SootClass extends AbstractClass implements Serializable {
    * the soot class Therefore, a different Interface is returned after each step.. (therby order is enforced)
    */
   public interface DanglingStep extends Build {
-    HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType);
+    HierachyStep dangling(IView view, ClassSource source, ClassType classType);
   }
 
   public interface HierachyStep extends Build {
@@ -110,14 +110,14 @@ public class SootClass extends AbstractClass implements Serializable {
     private Set<JavaClassSignature> interfaces;
     private Optional<JavaClassSignature> superClass;
     private Optional<JavaClassSignature> outerClass;
-    private AbstractClassSource classSource;
+    private ClassSource classSource;
     private IView view;
 
     public SootClassBuilder() {
     }
 
     @Override
-    public HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType) {
+    public HierachyStep dangling(IView view, ClassSource source, ClassType classType) {
       this.view = view;
       this.classSource = source;
       this.classType = classType;
@@ -208,16 +208,16 @@ public class SootClass extends AbstractClass implements Serializable {
 
   public final static String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
-  public SootClass(IView view, ResolvingLevel resolvingLevel, AbstractClassSource classSource, ClassType type,
-      Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
-      Position position, EnumSet<Modifier> modifiers) {
+  public SootClass(IView view, ResolvingLevel resolvingLevel, ClassSource classSource, ClassType type,
+                   Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
+                   Position position, EnumSet<Modifier> modifiers) {
     this(view, resolvingLevel, classSource, type, superClass, interfaces, outerClass, new HashSet<>(), new HashSet<>(),
         position, modifiers);
   }
 
-  public SootClass(IView view, ResolvingLevel resolvingLevel, AbstractClassSource classSource, ClassType type,
-      Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
-      Set<SootField> fields, Set<SootMethod> methods, Position position, EnumSet<Modifier> modifiers) {
+  public SootClass(IView view, ResolvingLevel resolvingLevel, ClassSource classSource, ClassType type,
+                   Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
+                   Set<SootField> fields, Set<SootMethod> methods, Position position, EnumSet<Modifier> modifiers) {
     super(view, classSource, methods, fields);
     this.resolvingLevel = resolvingLevel;
     this.classType = type;
@@ -741,7 +741,7 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   @Override
-  public AbstractClassSource getClassSource() {
+  public ClassSource getClassSource() {
     return classSource;
   }
 

@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModulePackageSignature;
@@ -37,14 +37,14 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Optional<AbstractClassSource> getClassSource(JavaClassSignature signature) {
+  public Optional<ClassSource> getClassSource(JavaClassSignature signature) {
     if (signature.packageSignature instanceof ModulePackageSignature) {
       return this.getClassSourceInternalForModule(signature);
     }
     return this.getClassSourceInternalForClassPath(signature);
   }
 
-  private Optional<AbstractClassSource> getClassSourceInternalForClassPath(JavaClassSignature classSignature) {
+  private Optional<ClassSource> getClassSourceInternalForClassPath(JavaClassSignature classSignature) {
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path moduleRoot = theFileSystem.getPath("modules");
@@ -68,7 +68,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   }
 
-  private Optional<AbstractClassSource> getClassSourceInternalForModule(JavaClassSignature classSignature) {
+  private Optional<ClassSource> getClassSourceInternalForModule(JavaClassSignature classSignature) {
     Preconditions.checkArgument(classSignature.packageSignature instanceof ModulePackageSignature);
 
     ModulePackageSignature modulePackageSignature = (ModulePackageSignature) classSignature.packageSignature;
@@ -88,14 +88,14 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   // get the factory, which I should use the create the correspond class signatures
   @Override
-  public Collection<AbstractClassSource> getClassSources(SignatureFactory factory) {
+  public Collection<ClassSource> getClassSources(SignatureFactory factory) {
 
     final Path archiveRoot = theFileSystem.getPath("modules");
     return walkDirectory(archiveRoot, factory);
 
   }
 
-  protected Collection<AbstractClassSource> walkDirectory(Path dirPath, SignatureFactory factory) {
+  protected Collection<ClassSource> walkDirectory(Path dirPath, SignatureFactory factory) {
 
     final FileType handledFileType = classProvider.getHandledFileType();
     try {

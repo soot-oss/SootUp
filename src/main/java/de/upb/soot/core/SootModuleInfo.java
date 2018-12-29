@@ -1,6 +1,6 @@
 package de.upb.soot.core;
 
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
@@ -20,7 +20,7 @@ public class SootModuleInfo extends AbstractClass {
    * the soot class Therefore, a different Interface is returned after each step.. (therby order is enforced)
    */
   public interface DanglingStep extends Build {
-    HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType, String moduleName);
+    HierachyStep dangling(IView view, ClassSource source, ClassType classType, String moduleName);
 
     HierachyStep isAutomaticModule(boolean isAutomatic);
   }
@@ -38,7 +38,7 @@ public class SootModuleInfo extends AbstractClass {
     private ResolvingLevel resolvingLevel;
     private ClassType classType;
     private EnumSet<Modifier> modifiers;
-    private AbstractClassSource classSource;
+    private ClassSource classSource;
     private IView view;
     private Collection<ModuleReference> requires;
     private Collection<PackageReference> exports;
@@ -51,7 +51,7 @@ public class SootModuleInfo extends AbstractClass {
     }
 
     @Override
-    public HierachyStep dangling(IView view, AbstractClassSource source, ClassType classType, String name) {
+    public HierachyStep dangling(IView view, ClassSource source, ClassType classType, String name) {
       this.view = view;
       this.classSource = source;
       this.classType = classType;
@@ -123,7 +123,7 @@ public class SootModuleInfo extends AbstractClass {
 
     private JavaClassSignature moduleInfo;
     private EnumSet<Modifier> modifiers;
-    private AbstractClassSource classSource;
+    private ClassSource classSource;
 
     public ModuleReference(JavaClassSignature moduleInfo, EnumSet<Modifier> accessModifier) {
       this.moduleInfo = moduleInfo;
@@ -188,8 +188,8 @@ public class SootModuleInfo extends AbstractClass {
    * @param resolvingLevel
    */
 
-  public SootModuleInfo(IView view, AbstractClassSource cs, JavaClassSignature moduleSignature, EnumSet<Modifier> access,
-      String version, ResolvingLevel resolvingLevel) {
+  public SootModuleInfo(IView view, ClassSource cs, JavaClassSignature moduleSignature, EnumSet<Modifier> access,
+                        String version, ResolvingLevel resolvingLevel) {
     super(view, cs, Collections.emptySet(), Collections.emptySet());
     this.moduleSignature = moduleSignature;
     this.resolvingLevel = resolvingLevel;

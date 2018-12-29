@@ -1,9 +1,9 @@
 package de.upb.soot.namespaces.classprovider.asm;
 
 import de.upb.soot.namespaces.FileType;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.namespaces.classprovider.ISourceContent;
-import de.upb.soot.namespaces.classprovider.asm.modules.AsmModuleSourceContent;
+import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.IClassSourceContent;
+import de.upb.soot.namespaces.classprovider.asm.modules.AsmModuleClassSourceContent;
 
 public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovider.IClassProvider {
 
@@ -11,10 +11,10 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
   }
 
   @Override
-  public de.upb.soot.namespaces.classprovider.AbstractClassSource createClassSource(
+  public ClassSource createClassSource(
       de.upb.soot.namespaces.INamespace srcNamespace, java.nio.file.Path sourcePath,
       de.upb.soot.signatures.JavaClassSignature classSignature) {
-    return new de.upb.soot.namespaces.classprovider.asm.AsmClassSource(srcNamespace, sourcePath, classSignature);
+    return new ClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   @Override
@@ -30,14 +30,14 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
    * @return A representation of the class file.
    */
   @Override
-  public de.upb.soot.namespaces.classprovider.ISourceContent getContent(AbstractClassSource classSource) {
+  public IClassSourceContent getContent(ClassSource classSource) {
 
-    ISourceContent classNode = null;
+    IClassSourceContent classNode = null;
     // FIXME: maybe check here if module info file ... and create other ClassSource
     if (classSource.getClassSignature().isModuleInfo()) {
-      classNode = new AsmModuleSourceContent(classSource);
+      classNode = new AsmModuleClassSourceContent(classSource);
     } else {
-      classNode = new AsmClassSourceContent(classSource);
+      classNode = new AsmClassClassSourceContent(classSource);
     }
 
     return classNode;

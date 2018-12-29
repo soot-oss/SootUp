@@ -10,7 +10,7 @@ import de.upb.soot.jimple.common.type.LongType;
 import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.VoidType;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
 
@@ -29,7 +29,7 @@ public final class AsmUtil {
   private AsmUtil() {
   }
 
-  public static void initASMClassSource(AbstractClassSource classSource, ClassNode classNode) {
+  public static void initASMClassSource(ClassSource classSource, ClassNode classNode) {
     java.net.URI uri = classSource.getSourcePath().toUri();
 
     try {

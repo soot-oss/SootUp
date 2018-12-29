@@ -7,7 +7,8 @@ import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.resolveAsmNameToC
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootModuleInfo;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.IClassSourceContent;
 import de.upb.soot.namespaces.classprovider.asm.AsmUtil;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
@@ -21,12 +22,12 @@ import org.objectweb.asm.tree.ModuleOpenNode;
 import org.objectweb.asm.tree.ModuleProvideNode;
 import org.objectweb.asm.tree.ModuleRequireNode;
 
-public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
-    implements de.upb.soot.namespaces.classprovider.ISourceContent {
+public class AsmModuleClassSourceContent extends org.objectweb.asm.tree.ClassNode
+    implements IClassSourceContent {
 
-  private final AbstractClassSource classSource;
+  private final ClassSource classSource;
 
-  public AsmModuleSourceContent(AbstractClassSource classSource) {
+  public AsmModuleClassSourceContent(ClassSource classSource) {
     super(Opcodes.ASM6);
     this.classSource = classSource;
 

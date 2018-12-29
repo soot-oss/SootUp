@@ -1,6 +1,5 @@
 package de.upb.soot.namespaces.classprovider;
 
-import de.upb.soot.core.AbstractClass;
 /*-
  * #%L
  * Soot
@@ -30,14 +29,14 @@ import de.upb.soot.signatures.JavaClassSignature;
 import java.nio.file.Path;
 
 /**
- * Responsible for creating {@link AbstractClassSource}es based on the handled file type (.class, .jimple, .java, .dex, etc).
+ * Responsible for creating {@link ClassSource}es based on the handled file type (.class, .jimple, .java, .dex, etc).
  *
  * @author Manuel Benz created on 22.05.18
  */
 public interface IClassProvider {
 
 
-  AbstractClassSource createClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature);
+  ClassSource createClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature);
 
   /**
    * Returns the file type that is handled by this provider, e.g. class, jimple, java
@@ -51,7 +50,7 @@ public interface IClassProvider {
    * 
    * @return
    */
-  de.upb.soot.namespaces.classprovider.ISourceContent getContent(AbstractClassSource classSource);
+  IClassSourceContent getContent(ClassSource classSource);
 
 
 }

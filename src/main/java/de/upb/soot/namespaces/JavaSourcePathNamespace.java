@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
@@ -28,13 +28,13 @@ public class JavaSourcePathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Collection<AbstractClassSource> getClassSources(SignatureFactory factory) {
+  public Collection<ClassSource> getClassSources(SignatureFactory factory) {
     // TODO Auto-generated method stub
     return null;
   }
 
   @Override
-  public Optional<AbstractClassSource> getClassSource(JavaClassSignature classSignature) {
+  public Optional<ClassSource> getClassSource(JavaClassSignature classSignature) {
     // TODO Auto-generated method stub
     return null;
   }

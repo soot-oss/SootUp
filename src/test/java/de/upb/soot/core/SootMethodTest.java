@@ -2,14 +2,13 @@ package de.upb.soot.core;
 
 import static org.junit.Assert.assertEquals;
 
-import de.upb.soot.frontends.java.WalaIRMethodSource;
+import de.upb.soot.frontends.java.WalaIRMethodSourceContent;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 
@@ -48,7 +47,7 @@ public class SootMethodTest {
     assertEquals(2, body.getLocalCount());
 
     SootMethod dummyMainMethod
-        = new SootMethod(view, null, new WalaIRMethodSource(view.getSignatureFactory().getMethodSignature("main",
+        = new SootMethod(view, null, new WalaIRMethodSourceContent(view.getSignatureFactory().getMethodSignature("main",
             "dummyMain", "void", Collections.emptyList())), Collections.emptyList(),
             view.getSignatureFactory().getTypeSignature("void"),
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), Collections.emptyList(), null);

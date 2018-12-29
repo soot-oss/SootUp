@@ -7,8 +7,9 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.IMethod;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.namespaces.classprovider.IClassSourceContent;
 import de.upb.soot.views.IView;
 
 public class ClassBuilderActor extends AbstractLoggingActor {
@@ -17,15 +18,15 @@ public class ClassBuilderActor extends AbstractLoggingActor {
   }
 
   private final IView view;
-  private final AbstractClassSource classSource;
+  private final ClassSource classSource;
   private AbstractClass sootClass;
 
-  public ClassBuilderActor(IView view, AbstractClassSource classSource) {
+  public ClassBuilderActor(IView view, ClassSource classSource) {
     this.view = view;
     this.classSource = classSource;
   }
 
-  public static Props props(IView view, AbstractClassSource classSource) {
+  public static Props props(IView view, ClassSource classSource) {
     return Props.create(ClassBuilderActor.class, view, classSource);
   }
 
@@ -46,7 +47,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     log().info("Start reifying for [{}].", classSource.getClassSignature().toString());
     // FIXME: new content
     IClassProvider classProvider = classSource.getClassProvider();
-    de.upb.soot.namespaces.classprovider.ISourceContent content = classProvider.getContent(classSource);
+    IClassSourceContent content = classProvider.getContent(classSource);
 
     // FIXME --- if module info ... dispatch
     // actually I don't want if clauses. I want to dispatch based on the type of the classSource?
