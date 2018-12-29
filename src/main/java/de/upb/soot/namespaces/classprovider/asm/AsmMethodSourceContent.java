@@ -91,6 +91,13 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
 
+  private static final String METAFACTORY_SIGNATURE = "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
+          + "metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType," + ""
+          + "java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>";
+  private static final String ALT_METAFACTORY_SIGNATURE = "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
+          + "altMetafactory(java.lang.invoke.MethodHandles$Lookup,"
+          + "java.lang.String,java.lang.invoke.MethodType,java.lang.Object[])>";
+
   /* -state fields- */
   private int nextLocal;
   private Map<Integer, Local> locals;
@@ -306,7 +313,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
   @SuppressWarnings("unused")
   private Operand popLocal(Type t) {
-    return soot.asm.AsmUtil.isDWord(t) ? popLocalDual() : popLocal();
+    return AsmUtil.isDWord(t) ? popLocalDual() : popLocal();
   }
 
   private Operand popImmediate() {
@@ -1240,7 +1247,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       }
       returnType = expr.getMethodRef().getReturnType();
     }
-    if (soot.asm.AsmUtil.isDWord(returnType)) {
+    if (AsmUtil.isDWord(returnType)) {
       pushDual(opr);
     } else if (!(returnType instanceof VoidType)) {
       push(opr);
@@ -1291,15 +1298,29 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       }
       returnType = types[types.length - 1];
 
-      // we always model invokeDynamic method refs as static method references
-      // of methods on the type SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME
-      SootMethodRef methodRef =
-          Scene.v().makeMethodRef(bclass, insn.name, parameterTypes, returnType, true);
+      SootMethodRef bootstrap_model = null;
 
-      DynamicInvokeExpr indy =
-          Jimple.v()
-              .newDynamicInvokeExpr(
-                  bsmMethodRef, bsmMethodArgs, methodRef, insn.bsm.getTag(), methodArgs);
+      if (PhaseOptions.getBoolean(PhaseOptions.v().getPhaseOptions("jb"), "model-lambdametafactory")) {
+        String bsmMethodRefStr = bsmMethodRef.toString();
+        if (bsmMethodRefStr.equals(METAFACTORY_SIGNATURE) || bsmMethodRefStr.equals(ALT_METAFACTORY_SIGNATURE)) {
+          SootClass enclosingClass = body.getMethod().getDeclaringClass();
+          bootstrap_model
+                  = LambdaMetaFactory.v().makeLambdaHelper(bsmMethodArgs, insn.bsm.getTag(), insn.name, types, enclosingClass);
+        }
+      }
+
+      InvokeExpr indy;
+
+      if (bootstrap_model != null) {
+        indy = Jimple.v().newStaticInvokeExpr(bootstrap_model, methodArgs);
+      } else {
+        // if not mimicking the LambdaMetaFactory, we model invokeDynamic method refs as static method references
+        // of methods on the type SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME
+        SootMethodRef methodRef = Scene.v().makeMethodRef(bclass, insn.name, parameterTypes, returnType, true);
+
+        indy = Jimple.v().newDynamicInvokeExpr(bsmMethodRef, bsmMethodArgs, methodRef, insn.bsm.getTag(), methodArgs);
+      }
+
       if (boxes != null) {
         for (int i = 0; i < types.length - 1; i++) {
           boxes[i] = indy.getArgBox(i);
@@ -1334,7 +1355,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       }
       returnType = expr.getMethodRef().getReturnType();
     }
-    if (soot.asm.AsmUtil.isDWord(returnType)) {
+    if (AsmUtil.isDWord(returnType)) {
       pushDual(opr);
     } else if (!(returnType instanceof VoidType)) {
       push(opr);
