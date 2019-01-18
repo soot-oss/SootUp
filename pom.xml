@@ -5,7 +5,7 @@
 	<groupId>de.upb</groupId>
 	<artifactId>Soot</artifactId>
 	<packaging>jar</packaging>
-	<version>4.0-SNAPSHOT</version>
+	<version>4.0.0-SNAPSHOT</version>
 	<name>Soot</name>
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -144,13 +144,13 @@
                     </roots>
                 </configuration>
                 <executions>
-                    <execution>
+                    <!--execution>
                         <id>license-check</id>
                         <goals>
                             <goal>check-file-header</goal>
                         </goals>
                         <phase>verify</phase>
-                    </execution>
+                    </execution-->
                 </executions>
             </plugin>
 		</plugins>
