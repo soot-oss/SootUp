@@ -2,11 +2,14 @@ package de.upb.soot;
 
 /**
  * Class for different soot options.
- * 
- * @author Linghui Luo
  *
+ * @author Linghui Luo
  */
 public class Options {
+
+  public static boolean keep_line_number() {
+    return true;
+  }
 
   public boolean ignore_resolution_errors() {
     // TODO Auto-generated method stub
