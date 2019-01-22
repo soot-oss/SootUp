@@ -141,6 +141,15 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
   private Body body;
   private int lastLineNumber = -1;
 
+
+  /***
+   * Hibnt in InstructionConverter convertInvokeInstruction()
+   * ling creates string for method and types and stores/replaces the methodref
+   * with a MethodSignature (for the method to call)
+   * and then creates the invoke Instruction Jimple.newStaticInvokeExpr
+   *
+   */
+
   /* -const fields- */
 
   private final Set<LabelNode> inlineExceptionLabels = new HashSet<LabelNode>();
