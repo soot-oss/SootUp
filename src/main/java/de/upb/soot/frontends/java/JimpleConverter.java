@@ -1,5 +1,13 @@
 package de.upb.soot.frontends.java;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import de.upb.soot.core.Body;
 import de.upb.soot.core.IField;
 import de.upb.soot.core.IMethod;
@@ -32,16 +40,7 @@ import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import soot.FastHierarchy;
 import soot.Local;
 import soot.PatchingChain;
 import soot.RefType;
@@ -93,7 +92,7 @@ public class JimpleConverter {
     if (fromClass.hasSuperclass()) {
       Optional<de.upb.soot.core.SootClass> superClass = fromClass.getSuperclass();
       soot.SootClass s = getSootClass(superClass, fromClass.getSuperclassSignature());
-      toClass.setSuperclass(s);
+      toClass.setSuperclass(s); 
     }
     if (fromClass.hasOuterClass()) {
       Optional<de.upb.soot.core.SootClass> outClass = fromClass.getOuterClass();
@@ -671,5 +670,6 @@ public class JimpleConverter {
     for (de.upb.soot.core.SootClass sootClass : fromClasses) {
       this.convertSootClass(sootClass);
     }
+    Scene.v().setFastHierarchy(new FastHierarchy());
   }
 }

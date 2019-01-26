@@ -1,18 +1,21 @@
 package de.upb.soot.frontends.java;
 
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.TypeSignature;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.jar.JarFile;
 
 import com.ibm.wala.cast.java.ipa.callgraph.JavaSourceAnalysisScope;
 import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
 import com.ibm.wala.cast.java.translator.jdt.ecj.ECJClassLoaderFactory;
 import com.ibm.wala.cast.loader.AstMethod;
 import com.ibm.wala.classLoader.ClassLoaderFactory;
-import com.ibm.wala.classLoader.ClassLoaderFactoryImpl;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.Module;
@@ -27,16 +30,12 @@ import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.jar.JarFile;
+import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 /**
  * This class loads java source code using WALA's java source code front-end.
@@ -51,7 +50,7 @@ public class WalaClassLoader {
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
 
-  private WalaClassLoader() {
+  private void addScopesForJava() {
     // disable System.err messages generated from eclipse jdt
     System.setProperty("wala.jdt.quiet", "true");
     scope = new JavaSourceAnalysisScope();
@@ -70,6 +69,24 @@ public class WalaClassLoader {
     this(sourceDirPath, null);
   }
 
+  public WalaClassLoader(String sourceDirPath, String androidJar,boolean android)
+  {
+    // disable System.err messages generated from eclipse jdt
+    System.setProperty("wala.jdt.quiet", "true");
+    scope = new JavaSourceAnalysisScope();
+    this.sourceDirPath = sourceDirPath;
+    try {
+      String[] stdlibs = WalaProperties.getJ2SEJarFiles();
+      for (String stdlib : stdlibs) {
+        scope.addToScope(ClassLoaderReference.Primordial, new JarFile(stdlib));
+      }
+      scope.addToScope(ClassLoaderReference.Primordial,new JarFile(androidJar));
+      scope.addToScope(JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(sourceDirPath)));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    factory = new ECJClassLoaderFactory(scope.getExclusions());
+  }
   /**
    * Constructor used for loading classes from given source code path.
    * 
@@ -77,7 +94,7 @@ public class WalaClassLoader {
    * @param exclusionFilePath
    */
   public WalaClassLoader(String sourceDirPath, String exclusionFilePath) {
-    this();
+    addScopesForJava();
     this.sourceDirPath = sourceDirPath;
     try {
       // add the source directory to scope
@@ -91,7 +108,7 @@ public class WalaClassLoader {
           scope.setExclusions(classes);
         }
       }
-      
+
       factory = new ECJClassLoaderFactory(scope.getExclusions());
     } catch (FileNotFoundException e) {
       e.printStackTrace();
@@ -106,11 +123,11 @@ public class WalaClassLoader {
    * @param moduleFiles
    */
   public WalaClassLoader(Collection<? extends Module> moduleFiles) {
-    this();
+    addScopesForJava();
     for (Module m : moduleFiles) {
       scope.addToScope(JavaSourceAnalysisScope.SOURCE, m);
     }
-    //factory = new ClassLoaderFactoryImpl(scope.getExclusions());
+    // factory = new ClassLoaderFactoryImpl(scope.getExclusions());
     factory = new ECJClassLoaderFactory(scope.getExclusions());
   }
 
@@ -133,11 +150,11 @@ public class WalaClassLoader {
    */
   public List<SootClass> getSootClasses() {
     if (classHierarchy == null) {
-    	try {
-    		buildClassHierachy();
-    	} catch (Exception e) {
-    		assert false : e;
-    	}
+      try {
+        buildClassHierachy();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourceDirPath);
     Iterator<IClass> it = classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).iterateAllClasses();
