@@ -54,6 +54,7 @@ import de.upb.soot.jimple.common.type.DoubleType;
 import de.upb.soot.jimple.common.type.FloatType;
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.LongType;
+import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
@@ -161,15 +162,14 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
   }
 
   @Override
-  public de.upb.soot.core.Body getBody(de.upb.soot.core.SootMethod m) {
+  public de.upb.soot.core.Body getBody(de.upb.soot.core.SootMethod sootmethod) {
 
-    if (!m.isConcrete()) {
+    if (!sootmethod.isConcrete()) {
       return null;
     }
-    SootMethod sootMethod = m;
-    List<Local> bodyLocals = null;
-    List<Trap> bodyTraps = null;
-    List<IStmt> bodyStmts = null;
+    List<Local> bodyLocals = new ArrayList<>();
+    List<Trap> bodyTraps = new ArrayList<>();
+    List<IStmt> bodyStmts = new ArrayList<>();
     // FIXME: add real line number of the method
     CAstSourcePositionMap.Position bodyPos = null;
 
@@ -184,19 +184,19 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
     /* retrieve all trap handlers */
     for (TryCatchBlockNode tc : tryCatchBlocks) {
-      trapHandlers.put(tc.handler, Jimple.v().newStmtBox(null));
+      trapHandlers.put(tc.handler, Jimple.newStmtBox(null));
     }
     /* convert instructions */
     try {
       convert();
     } catch (Throwable t) {
-      throw new RuntimeException("Failed to convert " + m, t);
+      throw new RuntimeException("Failed to convert " + sootmethod, t);
     }
 
     /* build body (add units, locals, traps, etc.) */
-    emitLocals();
-    bodyTraps = emitTraps();
-    emitUnits();
+    emitLocals(sootmethod, bodyLocals, bodyStmts);
+    emitTraps(bodyTraps);
+    emitUnits(bodyStmts);
 
     /* clean up */
     locals = null;
@@ -217,10 +217,10 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     try {
       //      PackManager.v().getPack("jb").apply(jb);
     } catch (Throwable t) {
-      throw new RuntimeException("Failed to apply jb to " + m, t);
+      throw new RuntimeException("Failed to apply jb to " + sootmethod, t);
     }
 
-    Body jb = new Body(m, bodyLocals, bodyTraps, bodyStmts, bodyPos);
+    Body jb = new Body(sootmethod, bodyLocals, bodyTraps, bodyStmts, bodyPos);
 
     return jb;
   }
@@ -383,6 +383,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
   void setUnit(AbstractInsnNode insn, IStmt u) {
     // FIXME: re-add linenumber keep
+    // ASM LineNumberNode
     //    if (Options.keep_line_number() && lastLineNumber >= 0) {
     //      Tag lineTag = u.getTag("LineNumberTag");
     //      if (lineTag == null) {
@@ -409,7 +410,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
   Local newStackLocal() {
     Integer idx = nextLocal++;
-    Local l = Jimple.newLocal("$stack" + idx, UnknownType.v());
+    Local l = Jimple.newLocal("$stack" + idx, UnknownType.getInstance());
     locals.put(idx, l);
     return l;
   }
@@ -1077,21 +1078,21 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
         frame.in(val, val1);
       } else {
         if (op == IFEQ) {
-          cond = Jimple.newEqExpr(v, IntConstant.v(0));
+          cond = Jimple.newEqExpr(v, IntConstant.getInstance(0));
         } else if (op == IFNE) {
-          cond = Jimple.newNeExpr(v, IntConstant.v(0));
+          cond = Jimple.newNeExpr(v, IntConstant.getInstance(0));
         } else if (op == IFLT) {
-          cond = Jimple.newLtExpr(v, IntConstant.v(0));
+          cond = Jimple.newLtExpr(v, IntConstant.getInstance(0));
         } else if (op == IFGE) {
-          cond = Jimple.newGeExpr(v, IntConstant.v(0));
+          cond = Jimple.newGeExpr(v, IntConstant.getInstance(0));
         } else if (op == IFGT) {
-          cond = Jimple.newGtExpr(v, IntConstant.v(0));
+          cond = Jimple.newGtExpr(v, IntConstant.getInstance(0));
         } else if (op == IFLE) {
-          cond = Jimple.newLeExpr(v, IntConstant.v(0));
+          cond = Jimple.newLeExpr(v, IntConstant.getInstance(0));
         } else if (op == IFNULL) {
-          cond = Jimple.newEqExpr(v, NullConstant.v());
+          cond = Jimple.newEqExpr(v, NullConstant.getInstance());
         } else if (op == IFNONNULL) {
-          cond = Jimple.newNeExpr(v, NullConstant.v());
+          cond = Jimple.newNeExpr(v, NullConstant.getInstance());
         } else {
           throw new AssertionError("Unknown if op: " + op);
         }
@@ -1641,7 +1642,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
   /* Conversion */
 
-  //FIXME: is it reasonable to get rid of it?
+  // FIXME: is it reasonable to get rid of it?
   private final class Edge {
     /* edge endpoint */
     final AbstractInsnNode insn;
@@ -1836,11 +1837,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     return false;
   }
 
-  private void emitLocals() {
-    Body jb = body;
-    SootMethod m = jb.getMethod();
-    Collection<Local> jbl = jb.getLocals();
-    Collection<IStmt> jbu = jb.getStmts();
+  private void emitLocals(SootMethod m, Collection<Local> jbl, Collection<IStmt> jbu) {
     int iloc = 0;
     if (!m.isStatic()) {
       Local l = getLocal(iloc++);
@@ -1862,11 +1859,10 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     }
   }
 
-  private List<Trap> emitTraps() {
-    List<Trap> traps = new ArrayList<>();
+  private void emitTraps(Collection<Trap> traps) {
     SootClass throwable = Scene.v().getSootClass("java.lang.Throwable");
     Map<LabelNode, Iterator<IStmtBox>> handlers =
-        new HashMap<LabelNode, Iterator<IStmtBox>>(tryCatchBlocks.size());
+        new HashMap<LabelNode, Iterator<UnitBox>>(tryCatchBlocks.size());
     for (TryCatchBlockNode tc : tryCatchBlocks) {
       IStmtBox start = Jimple.newStmtBox(null);
       IStmtBox end = Jimple.newStmtBox(null);
@@ -1883,20 +1879,19 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       labels.put(tc.start, start);
       labels.put(tc.end, end);
     }
-    return traps;
   }
 
-  private void emitUnits(IStmt u) {
+  private void emitUnits(List<IStmt> bodyStmts, IStmt u) {
     if (u instanceof UnitContainer) {
       for (IStmt uu : ((UnitContainer) u).units) {
-        emitUnits(uu);
+        emitUnits(bodyStmts, uu);
       }
     } else {
-      body.getStmts().add(u);
+      bodyStmts.add(u);
     }
   }
 
-  private void emitUnits() {
+  private void emitUnits(List<IStmt> bodyStmts) {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> labls = new ArrayDeque<LabelNode>();
 
@@ -1913,7 +1908,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
         continue;
       }
 
-      emitUnits(u);
+      emitUnits(bodyStmts, u);
 
       // If this is an exception handler, register the starting IStmt for it
       {
@@ -1951,7 +1946,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     // Emit the inline exception handlers
     for (LabelNode ln : this.inlineExceptionHandlers.keySet()) {
       IStmt handler = this.inlineExceptionHandlers.get(ln);
-      emitUnits(handler);
+      emitUnits(bodyStmts, handler);
 
       Collection<IStmtBox> traps = trapHandlers.get(ln);
       for (IStmtBox ub : traps) {
@@ -1961,7 +1956,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       // We need to jump to the original implementation
       IStmt targetUnit = units.get(ln);
       JGotoStmt gotoImpl = Jimple.newGotoStmt(targetUnit);
-      body.getStmts().add(gotoImpl);
+      bodyStmts.add(gotoImpl);
     }
 
     /* set remaining labels & boxes to last IStmt of chain */
@@ -1969,7 +1964,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       return;
     }
     IStmt end = Jimple.newNopStmt();
-    body.getStmts().add(end);
+    bodyStmts.add(end);
     while (!labls.isEmpty()) {
       LabelNode ln = labls.poll();
       Collection<IStmtBox> boxes = labels.get(ln);
