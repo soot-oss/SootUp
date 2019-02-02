@@ -30,10 +30,61 @@ import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import org.objectweb.asm.Opcodes;
 
 import java.util.Comparator;
 
 public class MethodHandle extends Constant {
+  public static enum Kind {
+    REF_GET_FIELD(Opcodes.H_GETFIELD, "REF_GET_FIELD"),
+    REF_GET_FIELD_STATIC(Opcodes.H_GETSTATIC, "REF_GET_FIELD_STATIC"),
+    REF_PUT_FIELD(Opcodes.H_PUTFIELD, "REF_PUT_FIELD"),
+    REF_PUT_FIELD_STATIC(Opcodes.H_PUTSTATIC, "REF_PUT_FIELD_STATIC"),
+    REF_INVOKE_VIRTUAL(Opcodes.H_INVOKEVIRTUAL, "REF_INVOKE_VIRTUAL"),
+    REF_INVOKE_STATIC(Opcodes.H_INVOKESTATIC, "REF_INVOKE_STATIC"),
+    REF_INVOKE_SPECIAL(Opcodes.H_INVOKESPECIAL, "REF_INVOKE_SPECIAL"),
+    REF_INVOKE_CONSTRUCTOR(Opcodes.H_NEWINVOKESPECIAL, "REF_INVOKE_CONSTRUCTOR"),
+    REF_INVOKE_INTERFACE(Opcodes.H_INVOKEINTERFACE, "REF_INVOKE_INTERFACE");
+
+    private final int val;
+    private final String valStr;
+
+    private Kind(int val, String valStr) {
+      this.val = val;
+      this.valStr = valStr;
+    }
+
+    @Override
+    public String toString() {
+      return valStr;
+    }
+
+    public int getValue() {
+      return val;
+    }
+
+    public static Kind getKind(int kind) {
+      for (Kind k : Kind.values()) {
+        if (k.getValue() == kind) {
+          return k;
+        }
+      }
+      throw new RuntimeException("Error: No method handle kind for value '" + kind + "'.");
+    }
+
+    public static Kind getKind(String kind) {
+      for (Kind k : Kind.values()) {
+        if (k.toString().equals(kind)) {
+          return k;
+        }
+      }
+      throw new RuntimeException("Error: No method handle kind for value '" + kind + "'.");
+    }
+
+  }
+
+
+
   /**
    * 
    */

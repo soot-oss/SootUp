@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces.classprovider.asm;
+package de.upb.soot.frontends.asm;
 
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.IMethod;
@@ -55,15 +55,6 @@ public class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
         builder = (SootClass.SootClassBuilder) resolveBody(view, cs);
         break;
     }
-
-    // FIXME: should return the build sootclass?
-    // return builder.build();
-
-    // everything is almost resolved at this tate
-    // System.out.println(this.access);
-    // System.out.println(this.methods);
-    // create the soot class....
-    // what to do with a module
 
     return builder.build();
   }
@@ -143,10 +134,10 @@ public class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
         Iterable<Optional<JavaClassSignature>> optionals =
             AsmUtil.asmIDToSignature(methodSource.exceptions, view);
 
-        for (Optional<JavaClassSignature> excepetionClass : optionals) {
+        for (Optional<JavaClassSignature> exceptionClass : optionals) {
 
-          if (excepetionClass.isPresent()) {
-            exceptions.add(excepetionClass.get());
+          if (exceptionClass.isPresent()) {
+            exceptions.add(exceptionClass.get());
           }
         }
 

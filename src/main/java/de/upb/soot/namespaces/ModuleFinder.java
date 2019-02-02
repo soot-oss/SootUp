@@ -3,7 +3,7 @@ package de.upb.soot.namespaces;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.namespaces.classprovider.IClassSourceContent;
-import de.upb.soot.namespaces.classprovider.asm.modules.AsmModuleClassSourceContent;
+import de.upb.soot.frontends.asm.modules.AsmModuleClassSourceContent;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModuleDecoratorClassSignature;
 import de.upb.soot.signatures.ModuleSignature;

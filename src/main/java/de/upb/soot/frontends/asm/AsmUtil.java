@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces.classprovider.asm;
+package de.upb.soot.frontends.asm;
 
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
@@ -13,6 +13,8 @@ import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.tree.ClassNode;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -21,13 +23,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.tree.ClassNode;
-
 public final class AsmUtil {
 
-  private AsmUtil() {
-  }
+  private AsmUtil() {}
 
   public static void initASMClassSource(ClassSource classSource, ClassNode classNode) {
     java.net.URI uri = classSource.getSourcePath().toUri();
@@ -36,8 +34,8 @@ public final class AsmUtil {
       if (classSource.getSourcePath().getFileSystem().isOpen()) {
         Path sourceFile = java.nio.file.Paths.get(uri);
 
-        org.objectweb.asm.ClassReader clsr
-            = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
+        org.objectweb.asm.ClassReader clsr =
+            new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
 
         clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
       } else {
@@ -49,8 +47,8 @@ public final class AsmUtil {
         try (java.nio.file.FileSystem zipfs = java.nio.file.FileSystems.newFileSystem(uri, env)) {
           Path sourceFile = java.nio.file.Paths.get(uri);
 
-          org.objectweb.asm.ClassReader clsr
-              = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
+          org.objectweb.asm.ClassReader clsr =
+              new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
 
           clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
         }
@@ -59,14 +57,22 @@ public final class AsmUtil {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
 
+  /**
+   * Determines if a type is a dword type.
+   *
+   * @param type the type to check.
+   * @return {@code true} if its a dword type.
+   */
+  public static boolean isDWord(Type type) {
+    return type instanceof LongType || type instanceof DoubleType;
   }
 
   /**
    * Converts an internal class name to a fully qualified name.
    *
-   * @param internal
-   *          internal name.
+   * @param internal internal name.
    * @return fully qualified name.
    */
   public static String toQualifiedName(String internal) {
@@ -74,7 +80,8 @@ public final class AsmUtil {
   }
 
   public static java.util.EnumSet<de.upb.soot.core.Modifier> getModifiers(int access) {
-    java.util.EnumSet<de.upb.soot.core.Modifier> modifierEnumSet = java.util.EnumSet.noneOf(de.upb.soot.core.Modifier.class);
+    java.util.EnumSet<de.upb.soot.core.Modifier> modifierEnumSet =
+        java.util.EnumSet.noneOf(de.upb.soot.core.Modifier.class);
 
     // add all modifiers for which (access & ABSTRACT) =! 0
     for (de.upb.soot.core.Modifier modifier : de.upb.soot.core.Modifier.values()) {
@@ -93,20 +100,22 @@ public final class AsmUtil {
 
   // FIXME: migrated from old soot
   /**
-   * Converts a method signature to a list of types, with the last entry in the returned list denoting the return type.
+   * Converts a method signature to a list of types, with the last entry in the returned list
+   * denoting the return type.
    *
-   * @param desc
-   *          method signature.
+   * @param desc method signature.
    * @return list of types.
    */
   public static List<Type> toJimpleDesc(String desc, IView view) {
     ArrayList<Type> types = new ArrayList<>(2);
     int len = desc.length();
     int idx = 0;
-    all: while (idx != len) {
+    all:
+    while (idx != len) {
       int nrDims = 0;
       Type baseType = null;
-      this_type: while (idx != len) {
+      this_type:
+      while (idx != len) {
         char c = desc.charAt(idx++);
         switch (c) {
           case '(':
@@ -144,11 +153,12 @@ public final class AsmUtil {
             break this_type;
           case 'L':
             int begin = idx;
-            while (desc.charAt(++idx) != ';') {
-              ;
+            while (desc.charAt(++idx) != ';') {;
             }
             String cls = desc.substring(begin, idx++);
-            baseType = view.getRefType(view.getSignatureFactory().getTypeSignature((AsmUtil.toQualifiedName(cls))));
+            baseType =
+                view.getRefType(
+                    view.getSignatureFactory().getTypeSignature((AsmUtil.toQualifiedName(cls))));
             break this_type;
           default:
             throw new AssertionError("Unknown type: " + c);
@@ -161,18 +171,22 @@ public final class AsmUtil {
     return types;
   }
 
-  public static Iterable<Optional<JavaClassSignature>> asmIDToSignature(Iterable<String> modules, IView view) {
+  public static Iterable<Optional<JavaClassSignature>> asmIDToSignature(
+      Iterable<String> modules, IView view) {
     if (modules == null) {
       return java.util.Collections.emptyList();
     }
-    return StreamSupport.stream(modules.spliterator(), false).map(p -> resolveAsmNameToClassSignature(p, view))
+    return StreamSupport.stream(modules.spliterator(), false)
+        .map(p -> resolveAsmNameToClassSignature(p, view))
         .collect(java.util.stream.Collectors.toList());
   }
 
   // FIXME: double check optional here
-  public static Optional<JavaClassSignature> resolveAsmNameToClassSignature(String asmClassName, IView view) {
+  public static Optional<JavaClassSignature> resolveAsmNameToClassSignature(
+      String asmClassName, IView view) {
     String excepetionFQName = toQualifiedName(asmClassName);
-    JavaClassSignature classSignature = view.getSignatureFactory().getClassSignature(excepetionFQName);
+    JavaClassSignature classSignature =
+        view.getSignatureFactory().getClassSignature(excepetionFQName);
     return Optional.ofNullable(classSignature);
   }
 }

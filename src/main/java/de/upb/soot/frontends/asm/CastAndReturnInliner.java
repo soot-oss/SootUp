@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces.classprovider.asm;
+package de.upb.soot.frontends.asm;
 
 /*-
  * #%L

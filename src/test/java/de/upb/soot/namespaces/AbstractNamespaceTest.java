@@ -1,7 +1,7 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
+import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 

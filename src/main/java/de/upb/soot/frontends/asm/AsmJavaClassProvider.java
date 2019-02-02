@@ -1,9 +1,9 @@
-package de.upb.soot.namespaces.classprovider.asm;
+package de.upb.soot.frontends.asm;
 
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassSourceContent;
-import de.upb.soot.namespaces.classprovider.asm.modules.AsmModuleClassSourceContent;
+import de.upb.soot.frontends.asm.modules.AsmModuleClassSourceContent;
 
 public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovider.IClassProvider {
 
