@@ -3,6 +3,7 @@ package de.upb.soot.frontends.asm;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Table;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootClass;
@@ -112,8 +113,8 @@ import static org.objectweb.asm.tree.AbstractInsnNode.TABLESWITCH_INSN;
 import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
 import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
 
-
-//FIXME: (Andreas) When does the implementation uses a type, and when does it use a (field|Method)Signature?
+// FIXME: (Andreas) When does the implementation uses a type, and when does it use a
+// (field|Method)Signature?
 
 public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     implements IMethodSourceContent {
@@ -194,7 +195,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
     /* build body (add units, locals, traps, etc.) */
     emitLocals();
-    emitTraps();
+    bodyTraps = emitTraps();
     emitUnits();
 
     /* clean up */
@@ -1338,8 +1339,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       }
       returnType = types[types.length - 1];
 
-
-      //FIXME: (Andreas) Why do we have a FieldRef but no MethodRef???
+      // FIXME: (Andreas) Why do we have a FieldRef but no MethodRef???
       SootMethodRef bootstrap_model = null;
       // FIXME: AD re-add lambda metafactory
       //      if (PhaseOptions.getBoolean(
@@ -1368,7 +1368,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
         indy =
             Jimple.newDynamicInvokeExpr(
-                    bsmMethodRef, bsmMethodArgs, methodRef, insn.bsm.getTag(), methodArgs);
+                bsmMethodRef, bsmMethodArgs, methodRef, insn.bsm.getTag(), methodArgs);
       }
 
       if (boxes != null) {
@@ -1641,6 +1641,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
   /* Conversion */
 
+  //FIXME: is it reasonable to get rid of it?
   private final class Edge {
     /* edge endpoint */
     final AbstractInsnNode insn;
@@ -1660,8 +1661,8 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     }
   }
 
-  private Table<AbstractInsnNode, AbstractInsnNode, soot.asm.AsmMethodSource.Edge> edges;
-  private ArrayDeque<soot.asm.AsmMethodSource.Edge> conversionWorklist;
+  private Table<AbstractInsnNode, AbstractInsnNode, Edge> edges;
+  private ArrayDeque<Edge> conversionWorklist;
 
   private void addEdges(AbstractInsnNode cur, AbstractInsnNode tgt1, List<LabelNode> tgts) {
     int lastIdx = tgts == null ? -1 : tgts.size() - 1;
@@ -1670,9 +1671,9 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     int i = 0;
     tgt_loop:
     do {
-      soot.asm.AsmMethodSource.Edge edge = edges.get(cur, tgt);
+      Edge edge = edges.get(cur, tgt);
       if (edge == null) {
-        edge = new soot.asm.AsmMethodSource.Edge(tgt);
+        edge = new Edge(tgt);
         edge.prevStacks.add(stackss);
         edges.put(cur, tgt, edge);
         conversionWorklist.add(edge);
@@ -1702,22 +1703,20 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
   }
 
   private void convert() {
-    ArrayDeque<soot.asm.AsmMethodSource.Edge> worklist =
-        new ArrayDeque<soot.asm.AsmMethodSource.Edge>();
+    ArrayDeque<Edge> worklist = new ArrayDeque<Edge>();
     for (LabelNode ln : trapHandlers.keySet()) {
       if (checkInlineExceptionHandler(ln)) {
         handleInlineExceptionHandler(ln, worklist);
       } else {
-        worklist.add(new soot.asm.AsmMethodSource.Edge(ln, new ArrayList<Operand>()));
+        worklist.add(new Edge(ln, new ArrayList<Operand>()));
       }
     }
-    worklist.add(
-        new soot.asm.AsmMethodSource.Edge(instructions.getFirst(), new ArrayList<Operand>()));
+    worklist.add(new Edge(instructions.getFirst(), new ArrayList<Operand>()));
     conversionWorklist = worklist;
     edges = HashBasedTable.create(1, 1);
 
     do {
-      soot.asm.AsmMethodSource.Edge edge = worklist.pollLast();
+      Edge edge = worklist.pollLast();
       AbstractInsnNode insn = edge.insn;
       stack = edge.stack;
       edge.stack = null;
@@ -1792,8 +1791,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     edges = null;
   }
 
-  private void handleInlineExceptionHandler(
-      LabelNode ln, ArrayDeque<soot.asm.AsmMethodSource.Edge> worklist) {
+  private void handleInlineExceptionHandler(LabelNode ln, ArrayDeque<Edge> worklist) {
     // Catch the exception
     JCaughtExceptionRef ref = Jimple.newCaughtExceptionRef();
     Local local = newStackLocal();
@@ -1805,7 +1803,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     ArrayList<Operand> stack = new ArrayList<Operand>();
     stack.add(opr);
     // FIXME: AD -- what is this ASMMethodSOurce Edge??
-    worklist.add(new soot.asm.AsmMethodSource.Edge(ln, stack));
+    worklist.add(new Edge(ln, stack));
 
     // Save the statements
     inlineExceptionHandlers.put(ln, as);
@@ -1864,11 +1862,11 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     }
   }
 
-  private void emitTraps() {
-    Chain<Trap> traps = body.getTraps();
+  private List<Trap> emitTraps() {
+    List<Trap> traps = new ArrayList<>();
     SootClass throwable = Scene.v().getSootClass("java.lang.Throwable");
     Map<LabelNode, Iterator<IStmtBox>> handlers =
-        new HashMap<LabelNode, Iterator<UnitBox>>(tryCatchBlocks.size());
+        new HashMap<LabelNode, Iterator<IStmtBox>>(tryCatchBlocks.size());
     for (TryCatchBlockNode tc : tryCatchBlocks) {
       IStmtBox start = Jimple.newStmtBox(null);
       IStmtBox end = Jimple.newStmtBox(null);
@@ -1885,6 +1883,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       labels.put(tc.start, start);
       labels.put(tc.end, end);
     }
+    return traps;
   }
 
   private void emitUnits(IStmt u) {
