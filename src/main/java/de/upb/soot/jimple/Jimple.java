@@ -75,6 +75,7 @@ import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
+import de.upb.soot.jimple.common.ref.MethodRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
@@ -386,21 +387,19 @@ public class Jimple {
 
   /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */
   public static JStaticInvokeExpr newStaticInvokeExpr(
-      IView view, MethodSignature method, List<? extends Value> args) {
+      IView view, MethodRef method, List<? extends Value> args) {
     return new JStaticInvokeExpr(view, method, args);
   }
 
-  public static JStaticInvokeExpr newStaticInvokeExpr(
-      IView view, MethodSignature method, Value... args) {
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodRef method, Value... args) {
     return newStaticInvokeExpr(view, method, Arrays.asList(args));
   }
 
-  public static JStaticInvokeExpr newStaticInvokeExpr(
-      IView view, MethodSignature method, Value arg) {
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodRef method, Value arg) {
     return newStaticInvokeExpr(view, method, Collections.singletonList(arg));
   }
 
-  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodSignature method) {
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodRef method) {
     return newStaticInvokeExpr(view, method, Collections.<Value>emptyList());
   }
 
@@ -409,7 +408,7 @@ public class Jimple {
    * chunk.
    */
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      IView view, Local base, MethodSignature method, List<? extends Value> args) {
+      IView view, Local base, MethodRef method, List<? extends Value> args) {
     return new JSpecialInvokeExpr(view, base, method, args);
   }
 
@@ -418,17 +417,16 @@ public class Jimple {
    * chunk.
    */
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      IView view, Local base, MethodSignature method, Value... args) {
+      IView view, Local base, MethodRef method, Value... args) {
     return newSpecialInvokeExpr(view, base, method, Arrays.asList(args));
   }
 
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      IView view, Local base, MethodSignature method, Value arg) {
+      IView view, Local base, MethodRef method, Value arg) {
     return newSpecialInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
   }
 
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      IView view, Local base, MethodSignature method) {
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodRef method) {
     return newSpecialInvokeExpr(view, base, method, Collections.<Value>emptyList());
   }
 
@@ -464,7 +462,7 @@ public class Jimple {
    * chunk.
    */
   public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      IView view, Local base, MethodSignature method, List<? extends Value> args) {
+      IView view, Local base, MethodRef method, List<? extends Value> args) {
     return new JVirtualInvokeExpr(view, base, method, args);
   }
 
@@ -473,17 +471,16 @@ public class Jimple {
    * chunk.
    */
   public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      IView view, Local base, MethodSignature method, Value... args) {
+      IView view, Local base, MethodRef method, Value... args) {
     return newVirtualInvokeExpr(view, base, method, Arrays.asList(args));
   }
 
   public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      IView view, Local base, MethodSignature method, Value arg) {
+      IView view, Local base, MethodRef method, Value arg) {
     return newVirtualInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
   }
 
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      IView view, Local base, MethodSignature method) {
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodRef method) {
     return newVirtualInvokeExpr(view, base, method, Collections.<Value>emptyList());
   }
 
@@ -492,7 +489,7 @@ public class Jimple {
    * chunk.
    */
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      IView view, Local base, MethodSignature method, List<? extends Value> args) {
+      IView view, Local base, MethodRef method, List<? extends Value> args) {
     return new JInterfaceInvokeExpr(view, base, method, args);
   }
 
@@ -501,17 +498,17 @@ public class Jimple {
    * chunk.
    */
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      IView view, Local base, MethodSignature method, Value... args) {
+      IView view, Local base, MethodRef method, Value... args) {
     return newInterfaceInvokeExpr(view, base, method, Arrays.asList(args));
   }
 
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      IView view, Local base, MethodSignature method, Value arg) {
+      IView view, Local base, MethodRef method, Value arg) {
     return newInterfaceInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
   }
 
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      IView view, Local base, MethodSignature method) {
+      IView view, Local base, MethodRef method) {
     return newInterfaceInvokeExpr(view, base, method, Collections.<Value>emptyList());
   }
 
@@ -633,6 +630,11 @@ public class Jimple {
     return new JStaticFieldRef(view, f);
   }
 
+  public static MethodRef newMethodRef(
+      IView view, MethodSignature methodSignature, boolean isStatic) {
+    return new MethodRef(view, methodSignature, isStatic);
+  }
+
   /** Constructs a ThisRef(RefType) grammar chunk. */
   public static JThisRef newThisRef(RefType t) {
     return new JThisRef(t);
@@ -702,7 +704,8 @@ public class Jimple {
     return new JTrap(exception, beginStmt, endStmt, handlerStmt);
   }
 
-  public static JNewMultiArrayExpr newNewMultiArrayExpr(ArrayType type, List<? extends Value> sizes) {
+  public static JNewMultiArrayExpr newNewMultiArrayExpr(
+      ArrayType type, List<? extends Value> sizes) {
     return new JNewMultiArrayExpr(type, sizes);
   }
 }

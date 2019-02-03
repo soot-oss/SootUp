@@ -34,6 +34,9 @@ public interface SignatureFactory {
 
   TypeSignature getTypeSignature(String typeName);
 
+  TypeSignature getArrayTypeSignature(TypeSignature baseType, int dim);
+
+
   MethodSignature getMethodSignature(
       String methodName,
       String fullyQualifiedNameDeclClass,
@@ -45,6 +48,13 @@ public interface SignatureFactory {
       JavaClassSignature declaringClassSignature,
       String fqReturnType,
       List<String> parameters);
+
+  MethodSignature getMethodSignature(
+          String methodName,
+          JavaClassSignature declaringClassSignature,
+          TypeSignature fqReturnType,
+          List<TypeSignature> parameters);
+
 
   FieldSignature getFieldSignature(
       String fieldName, JavaClassSignature declaringClassSignature, String fieldType);

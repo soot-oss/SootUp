@@ -16,14 +16,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class JStaticFieldRef implements FieldRef {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -8744248848897714882L;
-  private final FieldSignature fieldSig;
-  private IView view;
 
-  //FIXME: DO wo really need a view here?
+  private IView view;
+  private final FieldSignature fieldSig;
+
+  // FIXME: DO wo really need a view here?
   public JStaticFieldRef(IView view, FieldSignature fieldSig) {
     this.fieldSig = fieldSig;
     this.view = view;
@@ -52,6 +51,11 @@ public class JStaticFieldRef implements FieldRef {
       return f.map(c -> (SootField) c);
     }
     return Optional.empty();
+  }
+
+  @Override
+  public FieldSignature getFieldSignature() {
+    return fieldSig;
   }
 
   @Override
@@ -91,5 +95,4 @@ public class JStaticFieldRef implements FieldRef {
   public boolean equivTo(Object o, Comparator comparator) {
     return comparator.compare(this, o) == 0;
   }
-
 }

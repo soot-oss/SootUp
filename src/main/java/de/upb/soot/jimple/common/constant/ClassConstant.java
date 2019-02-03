@@ -39,10 +39,9 @@ import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.StringTools;
 
 import java.util.Comparator;
-
-import soot.util.StringTools;
 
 @SuppressWarnings("serial")
 public class ClassConstant extends Constant {
@@ -52,9 +51,7 @@ public class ClassConstant extends Constant {
     this.value = s;
   }
 
-  /**
-   * Returns an instance of ClassConstant.
-   */
+  /** Returns an instance of ClassConstant. */
   public static ClassConstant getInstance(String value) {
     if (value.contains(".")) {
       throw new RuntimeException("ClassConstants must use class names separated by '/', not '.'!");
@@ -106,9 +103,7 @@ public class ClassConstant extends Constant {
     return value.startsWith("L") && value.endsWith(";");
   }
 
-  /**
-   * Returns numDimensions.
-   */
+  /** Returns numDimensions. */
   public Type toSootType() {
     int numDimensions = 0;
     String tmp = value;

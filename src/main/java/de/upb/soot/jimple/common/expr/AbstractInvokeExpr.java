@@ -64,6 +64,10 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
     return method.getSootMethod();
   }
 
+  public MethodRef getMethodRef() {
+    return this.method;
+  }
+
   @Override
   public abstract Object clone();
 

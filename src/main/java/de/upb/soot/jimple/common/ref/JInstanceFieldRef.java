@@ -4,7 +4,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -30,9 +30,7 @@ import java.util.Optional;
 
 public class JInstanceFieldRef implements FieldRef {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 2900174317359676686L;
 
   private final FieldSignature fieldSig;
@@ -42,12 +40,9 @@ public class JInstanceFieldRef implements FieldRef {
   /**
    * Create a reference to a class' instance field.
    *
-   * @param view
-   *          the view
-   * @param base
-   *          the base value of the field
-   * @param fieldSig
-   *          the field sig
+   * @param view the view
+   * @param base the base value of the field
+   * @param fieldSig the field sig
    */
   public JInstanceFieldRef(IView view, Value base, FieldSignature fieldSig) {
     ValueBox baseBox = Jimple.newLocalBox(base);
@@ -95,9 +90,12 @@ public class JInstanceFieldRef implements FieldRef {
     return Optional.empty();
   }
 
-  /**
-   * Returns a list useBoxes of type ValueBox.
-   */
+  @Override
+  public FieldSignature getFieldSignature() {
+    return fieldSig;
+  }
+
+  /** Returns a list useBoxes of type ValueBox. */
   @Override
   public final List<ValueBox> getUseBoxes() {
     List<ValueBox> useBoxes = new ArrayList<ValueBox>();
@@ -141,5 +139,4 @@ public class JInstanceFieldRef implements FieldRef {
   public boolean equivTo(Object o, Comparator comparator) {
     return comparator.compare(this, o) == 0;
   }
-
 }

@@ -13,6 +13,9 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.VoidTypeSignature;
 import de.upb.soot.views.IView;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.tree.ClassNode;
@@ -66,10 +69,15 @@ public final class AsmUtil {
    * @param type the type to check.
    * @return {@code true} if its a dword type.
    */
+  // FIXME: this is the old method using type....
   public static boolean isDWord(Type type) {
     return type instanceof LongType || type instanceof DoubleType;
   }
 
+  public static boolean isDWord(TypeSignature type) {
+    return type == PrimitiveTypeSignature.LONG_TYPE_SIGNATURE
+        || type == PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
+  }
   /**
    * Converts an internal class name to a fully qualified name.
    *
@@ -107,6 +115,7 @@ public final class AsmUtil {
    * @param desc method signature.
    * @return list of types.
    */
+  // FIXME: this is old
   public static List<Type> toJimpleDesc(String desc, IView view) {
     ArrayList<Type> types = new ArrayList<>(2);
     int len = desc.length();
@@ -168,6 +177,131 @@ public final class AsmUtil {
 
       if (baseType != null && nrDims > 0) {
         types.add(ArrayType.getInstance(baseType, nrDims));
+      } else {
+        types.add(baseType);
+      }
+    }
+    return types;
+  }
+
+  // FIXME: migrate woth the other code
+  public static TypeSignature toJimpleType(IView view, String desc) {
+    int idx = desc.lastIndexOf('[');
+    int nrDims = idx + 1;
+    if (nrDims > 0) {
+      if (desc.charAt(0) != '[') {
+        throw new AssertionError("Invalid array descriptor: " + desc);
+      }
+      desc = desc.substring(idx + 1);
+    }
+    TypeSignature baseType;
+    switch (desc.charAt(0)) {
+      case 'Z':
+        baseType = PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE;
+        break;
+      case 'B':
+        baseType = PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE;
+        break;
+      case 'C':
+        baseType = PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE;
+        break;
+      case 'S':
+        baseType = PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE;
+        break;
+      case 'I':
+        baseType = PrimitiveTypeSignature.INT_TYPE_SIGNATURE;
+        break;
+      case 'F':
+        baseType = PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE;
+        break;
+      case 'J':
+        baseType = PrimitiveTypeSignature.LONG_TYPE_SIGNATURE;
+        break;
+      case 'D':
+        baseType = PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
+        break;
+      case 'V':
+        baseType = VoidTypeSignature.VOID_TYPE_SIGNATURE;
+        break;
+      case 'L':
+        if (desc.charAt(desc.length() - 1) != ';') {
+          throw new AssertionError("Invalid reference descriptor: " + desc);
+        }
+        String name = desc.substring(1, desc.length() - 1);
+        name = toQualifiedName(name);
+        baseType = view.getSignatureFactory().getTypeSignature(toQualifiedName(name));
+        break;
+      default:
+        throw new AssertionError("Unknown descriptor: " + desc);
+    }
+    if (!(baseType instanceof JavaClassSignature) && desc.length() > 1) {
+      throw new AssertionError("Invalid primitive type descriptor: " + desc);
+    }
+    return nrDims > 0
+        ? view.getSignatureFactory().getArrayTypeSignature(baseType, nrDims)
+        : baseType;
+  }
+
+  public static List<TypeSignature> toJimpleSignatureDesc(String desc, IView view) {
+    ArrayList<TypeSignature> types = new ArrayList<>(2);
+    int len = desc.length();
+    int idx = 0;
+    all:
+    while (idx != len) {
+      int nrDims = 0;
+      TypeSignature baseType = null;
+      this_type:
+      while (idx != len) {
+        char c = desc.charAt(idx++);
+        switch (c) {
+          case '(':
+          case ')':
+            continue all;
+          case '[':
+            ++nrDims;
+            continue this_type;
+          case 'Z':
+            baseType = PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE;
+            break this_type;
+          case 'B':
+            baseType = PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE;
+            break this_type;
+          case 'C':
+            baseType = PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE;
+            break this_type;
+          case 'S':
+            baseType = PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE;
+            break this_type;
+          case 'I':
+            baseType = PrimitiveTypeSignature.INT_TYPE_SIGNATURE;
+            break this_type;
+          case 'F':
+            baseType = PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE;
+            break this_type;
+          case 'J':
+            baseType = PrimitiveTypeSignature.LONG_TYPE_SIGNATURE;
+            break this_type;
+          case 'D':
+            baseType = PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
+            break this_type;
+          case 'V':
+            baseType = VoidTypeSignature.VOID_TYPE_SIGNATURE;
+            break this_type;
+          case 'L':
+            int begin = idx;
+            while (desc.charAt(++idx) != ';') {;
+            }
+            String cls = desc.substring(begin, idx++);
+            baseType = view.getSignatureFactory().getTypeSignature(toQualifiedName(cls));
+            break this_type;
+          default:
+            throw new AssertionError("Unknown type: " + c);
+        }
+      }
+
+      if (baseType != null && nrDims > 0) {
+        types.add(view.getSignatureFactory().getArrayTypeSignature(baseType, nrDims));
+
       } else {
         types.add(baseType);
       }

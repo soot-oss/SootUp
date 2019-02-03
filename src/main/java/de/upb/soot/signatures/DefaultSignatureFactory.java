@@ -155,6 +155,10 @@ public class DefaultSignatureFactory implements SignatureFactory {
     return ret;
   }
 
+  public TypeSignature getArrayTypeSignature(TypeSignature baseType, int dim) {
+    return new ArrayTypeSignature(baseType, dim);
+  }
+
   /**
    * Always creates a new MethodSignature AND a new ClassSignature.
    *
@@ -204,6 +208,16 @@ public class DefaultSignatureFactory implements SignatureFactory {
     }
     return new MethodSignature(
         methodName, declaringClassSignature, returnTypeSignature, parameterSignatures);
+  }
+
+  @Override
+  public MethodSignature getMethodSignature(
+      final String methodName,
+      final JavaClassSignature declaringClassSignature,
+      final TypeSignature fqReturnType,
+      final List<TypeSignature> parameters) {
+
+    return new MethodSignature(methodName, declaringClassSignature, fqReturnType, parameters);
   }
 
   @Override
