@@ -1,5 +1,6 @@
 package de.upb.soot.frontends.asm;
 
+import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
 import de.upb.soot.jimple.common.type.CharType;
@@ -164,9 +165,12 @@ public final class AsmUtil {
             throw new AssertionError("Unknown type: " + c);
         }
       }
-      /*
-       * if (baseType != null && nrDims > 0) { types.add(ArrayType.v(baseType, nrDims)); } else { types.add(baseType); }
-       */
+
+      if (baseType != null && nrDims > 0) {
+        types.add(ArrayType.getInstance(baseType, nrDims));
+      } else {
+        types.add(baseType);
+      }
     }
     return types;
   }
