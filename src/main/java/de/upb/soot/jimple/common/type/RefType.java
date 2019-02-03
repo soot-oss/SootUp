@@ -94,6 +94,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
     this.typeSignature = typeSignature;
   }
 
+  @Override
   public TypeSignature getTypeSignature() {
     return typeSignature;
   }

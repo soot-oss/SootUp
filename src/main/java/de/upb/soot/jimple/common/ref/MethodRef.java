@@ -9,8 +9,8 @@ import java.util.Optional;
 /** @author Andreas Dann created on 02.02.19 */
 public class MethodRef {
 
-  //FIXME: for all Ref, IMHO we should pass the view to it, when we call the "resolve" method
-  // e.g., "getField" "getSootMethod"
+  //FIXME: for all Ref, IMHO we should only pass the view to it, when we call the "resolve" method
+  // e.g., "getField" "getSootMethod" BUT NOT in the constructor...
 
   private final IView view;
   private final MethodSignature methodSignature;

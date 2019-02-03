@@ -28,6 +28,7 @@ package de.upb.soot.jimple.common.type;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.NullTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 /**
  * Soot representation of the Java type 'null'. Implemented as a singleton.
@@ -62,6 +63,11 @@ public class NullType extends RefLikeType {
   @Override
   public String toString() {
     return NullTypeSignature.NULL_TYPE_SIGNATURE.toString();
+  }
+
+  @Override
+  public TypeSignature getTypeSignature() {
+    return NullTypeSignature.NULL_TYPE_SIGNATURE;
   }
 
   @Override

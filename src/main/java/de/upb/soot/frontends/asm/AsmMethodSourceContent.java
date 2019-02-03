@@ -189,7 +189,8 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     List<Local> bodyLocals = new ArrayList<>();
     List<Trap> bodyTraps = new ArrayList<>();
     List<IStmt> bodyStmts = new ArrayList<>();
-    // FIXME: add real line number of the method
+    // FIXME: add real line number
+    // why do we use wala here?
     CAstSourcePositionMap.Position bodyPos = null;
 
     /* initialize */
