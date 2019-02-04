@@ -25,6 +25,9 @@ package de.upb.soot.frontends.asm;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.jimple.common.stmt.AbstractDefinitionStmt;
+import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.JAssignStmt;
 
 import java.util.ArrayList;
 
@@ -119,11 +122,11 @@ final class StackFrame {
       if (stack != null) {
         if (newOp.stack == null) {
           newOp.stack = stack;
-          AssignStmt as = Jimple.v().newAssignStmt(stack, newOp.value);
+          JAssignStmt as = Jimple.newAssignStmt(stack, newOp.value);
           src.setUnit(newOp.insn, as);
           newOp.updateBoxes();
         } else {
-          AssignStmt as = Jimple.v().newAssignStmt(stack, newOp.stackOrValue());
+          JAssignStmt as = Jimple.newAssignStmt(stack, newOp.stackOrValue());
           src.mergeUnits(newOp.insn, as);
           newOp.addBox(as.getRightOpBox());
         }
@@ -150,11 +153,11 @@ final class StackFrame {
           prevOp.removeBox(box);
           if (prevOp.stack == null) {
             prevOp.stack = stack;
-            AssignStmt as = Jimple.v().newAssignStmt(stack, prevOp.value);
+            JAssignStmt as = Jimple.newAssignStmt(stack, prevOp.value);
             src.setUnit(prevOp.insn, as);
           } else {
             IStmt u = src.getUnit(prevOp.insn);
-            DefinitionStmt as = (DefinitionStmt) (u instanceof soot.asm.UnitContainer ? ((soot.asm.UnitContainer) u).getFirstUnit() : u);
+            AbstractDefinitionStmt as = (AbstractDefinitionStmt) (u instanceof UnitContainer ? ((UnitContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == prevOp.stack : "Invalid stack local!";
             lvb.setValue(stack);
@@ -165,11 +168,11 @@ final class StackFrame {
         if (newOp.stack != stack) {
           if (newOp.stack == null) {
             newOp.stack = stack;
-            AssignStmt as = Jimple.v().newAssignStmt(stack, newOp.value);
+            JAssignStmt as = Jimple.newAssignStmt(stack, newOp.value);
             src.setUnit(newOp.insn, as);
           } else {
             IStmt u = src.getUnit(newOp.insn);
-            DefinitionStmt as = (DefinitionStmt) (u instanceof UnitContainer ? ((UnitContainer) u).getFirstUnit() : u);
+            AbstractDefinitionStmt as = (AbstractDefinitionStmt) (u instanceof UnitContainer ? ((UnitContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == newOp.stack : "Invalid stack local!";
             lvb.setValue(stack);
