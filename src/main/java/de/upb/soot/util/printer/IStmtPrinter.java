@@ -38,49 +38,49 @@ import de.upb.soot.signatures.MethodSignature;
  * Interface for different methods of printing out a IStmt.
  */
 public interface IStmtPrinter {
-  public void startStmt(IStmt u);
+  void startStmt(IStmt u);
 
-  public void endStmt(IStmt u);
+  void endStmt(IStmt u);
 
-  public void startStmtBox(IStmtBox u);
+  void startStmtBox(IStmtBox u);
 
-  public void endStmtBox(IStmtBox u);
+  void endStmtBox(IStmtBox u);
 
-  public void startValueBox(ValueBox u);
+  void startValueBox(ValueBox u);
 
-  public void endValueBox(ValueBox u);
+  void endValueBox(ValueBox u);
 
-  public void incIndent();
+  void incIndent();
 
-  public void decIndent();
+  void decIndent();
 
-  public void noIndent();
+  void noIndent();
 
-  public void setIndent(String newIndent);
+  void setIndent(String newIndent);
 
-  public String getIndent();
+  String getIndent();
 
-  public void literal(String s);
+  void literal(String s);
 
-  public void newline();
+  void newline();
 
-  public void local(Local jimpleLocal);
+  void local(Local jimpleLocal);
 
-  public void type(Type t);
+  void type(Type t);
 
-  public void methodSignature(MethodSignature sig);
+  void methodSignature(MethodSignature sig);
 
-  public void method(SootMethod m);
+  void method(SootMethod m);
 
-  public void constant(Constant c);
+  void constant(Constant c);
 
-  public void field(SootField f);
+  void field(SootField f);
 
-  public void fieldSignature(FieldSignature fieldSig);
+  void fieldSignature(FieldSignature fieldSig);
 
-  public void stmtRef(IStmt u, boolean branchTarget);
+  void stmtRef(IStmt u, boolean branchTarget);
 
-  public void identityRef(IdentityRef r);
+  void identityRef(IdentityRef r);
 
-  public StringBuffer output();
+  StringBuffer output();
 }

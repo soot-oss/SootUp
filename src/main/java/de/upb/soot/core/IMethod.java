@@ -9,5 +9,5 @@ import de.upb.soot.signatures.ISignature;
  *
  */
 public interface IMethod {
-  public ISignature getSignature();
+  ISignature getSignature();
 }

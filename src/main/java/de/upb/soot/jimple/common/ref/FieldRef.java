@@ -33,7 +33,7 @@ import java.util.Optional;
 
 public interface FieldRef extends ConcreteRef {
 
-  public Optional<SootField> getField();
-  public FieldSignature getFieldSignature();
+  Optional<SootField> getField();
+  FieldSignature getFieldSignature();
 
 }
