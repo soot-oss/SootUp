@@ -9,5 +9,5 @@ import de.upb.soot.signatures.ISignature;
  *
  */
 public interface IField {
-  public ISignature getSignature();
+  ISignature getSignature();
 }
