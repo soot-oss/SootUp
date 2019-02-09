@@ -23,8 +23,8 @@ package de.upb.soot.core;
 
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.namespaces.classprovider.ResolveException;
+import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.validation.ClassFlagsValidator;
 import de.upb.soot.validation.ClassValidator;

@@ -22,7 +22,7 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 
 import java.nio.file.Path;

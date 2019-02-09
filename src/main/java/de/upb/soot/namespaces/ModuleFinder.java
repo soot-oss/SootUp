@@ -1,8 +1,8 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.namespaces.classprovider.IClassProvider;
-import de.upb.soot.namespaces.classprovider.IClassSourceContent;
+import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.frontends.asm.modules.AsmModuleClassSourceContent;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModuleDecoratorClassSignature;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * @author Andreas Dann on 28.06.18
  */
 public class ModuleFinder {
-  private de.upb.soot.namespaces.classprovider.IClassProvider classProvider;
+  private IClassProvider classProvider;
   // associate a module name with the namespace, that represents the module
   private Map<String, AbstractNamespace> moduleNamespace = new HashMap<>();
   private int next = 0;

@@ -24,8 +24,8 @@ package de.upb.soot.core;
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.namespaces.classprovider.IMethodSourceContent;
-import de.upb.soot.namespaces.classprovider.ResolveException;
+import de.upb.soot.frontends.IMethodSourceContent;
+import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;

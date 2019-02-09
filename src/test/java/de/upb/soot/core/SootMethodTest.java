@@ -9,7 +9,7 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 

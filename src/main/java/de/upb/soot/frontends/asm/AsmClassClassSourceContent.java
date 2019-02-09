@@ -7,8 +7,8 @@ import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.namespaces.classprovider.IClassSourceContent;
+import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
 

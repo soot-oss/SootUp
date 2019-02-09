@@ -2,7 +2,7 @@ package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.namespaces.classprovider.IMethodSourceContent;
+import de.upb.soot.frontends.IMethodSourceContent;
 import de.upb.soot.signatures.MethodSignature;
 
 public class WalaIRMethodSourceContent implements IMethodSourceContent {

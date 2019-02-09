@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces.classprovider;
+package de.upb.soot.frontends;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -68,7 +68,7 @@ public class ClassSource {
     return srcNamespace.getClassProvider().getContent(this);
   }
 
-  public de.upb.soot.namespaces.classprovider.IClassProvider getClassProvider() {
+  public IClassProvider getClassProvider() {
     return srcNamespace.getClassProvider();
   }
 

@@ -1,6 +1,7 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
@@ -48,7 +49,7 @@ public abstract class AbstractNamespaceTest {
 
   protected static final int CLASSES_IN_JAR = 25;
   private SignatureFactory signatureFactory;
-  private de.upb.soot.namespaces.classprovider.IClassProvider classProvider;
+  private IClassProvider classProvider;
 
   @Before
   public void setUp() {
@@ -60,7 +61,7 @@ public abstract class AbstractNamespaceTest {
     return signatureFactory;
   }
 
-  protected de.upb.soot.namespaces.classprovider.IClassProvider getClassProvider() {
+  protected IClassProvider getClassProvider() {
     return classProvider;
   }
 
@@ -69,7 +70,7 @@ public abstract class AbstractNamespaceTest {
     };
   }
 
-  protected de.upb.soot.namespaces.classprovider.IClassProvider createClassProvider() {
+  protected IClassProvider createClassProvider() {
     return new AsmJavaClassProvider();
   }
 

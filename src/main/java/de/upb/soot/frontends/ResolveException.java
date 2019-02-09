@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces.classprovider;
+package de.upb.soot.frontends;
 
 public class ResolveException extends Exception {
   public ResolveException(String message) {

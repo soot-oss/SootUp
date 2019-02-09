@@ -7,10 +7,10 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.IMethod;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.namespaces.classprovider.ClassSource;
-import de.upb.soot.namespaces.classprovider.IClassProvider;
-import de.upb.soot.namespaces.classprovider.IClassSourceContent;
-import de.upb.soot.namespaces.classprovider.ResolveException;
+import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.IClassSourceContent;
+import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.views.IView;
 
 public class ClassBuilderActor extends AbstractLoggingActor {

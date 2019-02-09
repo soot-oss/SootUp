@@ -1,6 +1,6 @@
 package de.upb.soot.core;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.views.IView;
 

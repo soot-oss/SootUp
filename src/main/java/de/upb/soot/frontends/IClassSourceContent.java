@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces.classprovider;
+package de.upb.soot.frontends;
 
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;

@@ -2,7 +2,7 @@ package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
-import de.upb.soot.namespaces.classprovider.IClassSourceContent;
+import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.views.IView;
 
 import com.ibm.wala.cast.loader.AstClass;

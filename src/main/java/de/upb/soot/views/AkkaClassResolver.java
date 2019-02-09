@@ -1,7 +1,7 @@
 package de.upb.soot.views;
 
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.frontends.ClassSource;
 
 public class AkkaClassResolver {
 

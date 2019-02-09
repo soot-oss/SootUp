@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.frontends.ClassSource;
 /*-
  * #%L
  * Soot
@@ -23,7 +23,7 @@ import de.upb.soot.namespaces.classprovider.ClassSource;
  * #L%
  */
 
-import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.Utils;
