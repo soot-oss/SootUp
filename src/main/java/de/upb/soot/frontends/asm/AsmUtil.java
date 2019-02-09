@@ -27,7 +27,7 @@ import java.util.stream.StreamSupport;
 
 import org.objectweb.asm.tree.ClassNode;
 
-final class AsmUtil {
+public final class AsmUtil {
 
   private AsmUtil() {
   }

@@ -3,10 +3,10 @@ package de.upb.soot.frontends.asm.modules;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootModuleInfo;
-import de.upb.soot.frontends.asm.AsmFrontendException;
-import de.upb.soot.frontends.asm.AsmUtil;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassSourceContent;
+import de.upb.soot.frontends.asm.AsmFrontendException;
+import de.upb.soot.frontends.asm.AsmUtil;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
 
