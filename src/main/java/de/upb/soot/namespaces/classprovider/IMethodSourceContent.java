@@ -31,6 +31,6 @@ import de.upb.soot.signatures.MethodSignature;
 
 public interface IMethodSourceContent {
   /** Returns a filled-out body for the given SootMethod. */
-  Body getBody(SootMethod m);
+  Body getBody(SootMethod m) throws ResolveException;
   MethodSignature getSignature();
 }
