@@ -24,6 +24,7 @@ package de.upb.soot.core;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.ResolveException;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.validation.ClassFlagsValidator;
 import de.upb.soot.validation.ClassValidator;
@@ -232,8 +233,13 @@ public class SootClass extends AbstractClass implements Serializable {
     view.addClass(this);
   }
 
+  //FIXME: error handling
   public void resolve(de.upb.soot.core.ResolvingLevel resolvingLevel) {
-    this.getClassSource().getContent().resolve(resolvingLevel, getView());
+    try {
+      this.getClassSource().getContent().resolve(resolvingLevel, getView());
+    } catch (ResolveException e) {
+      e.printStackTrace();
+    }
   }
 
   /**

@@ -3,6 +3,7 @@ package de.upb.soot.buildactor;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.classprovider.ClassSource;
+import de.upb.soot.namespaces.classprovider.ResolveException;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaOnDemandView;
 
@@ -30,7 +31,11 @@ public class ViewBuilder {
     // compose View
 
     for (ClassSource cs : namespace.getClassSources(result.getSignatureFactory())) {
-      cs.getContent().resolve(ResolvingLevel.BODIES, result);
+      try {
+        cs.getContent().resolve(ResolvingLevel.BODIES, result);
+      } catch (ResolveException e) {
+        e.printStackTrace();
+      }
       // Populate view
     }
     return result;

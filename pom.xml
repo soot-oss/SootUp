@@ -297,12 +297,12 @@
 			<artifactId>akka-actor_2.12</artifactId>
 			<version>2.5.14</version>
 		</dependency>
-		<!-- add supports from new soot to old soot
+		<!-- add supports from new soot to old soot -->
 		<dependency>
 			<groupId>ca.mcgill.sable</groupId>
 			<artifactId>soot</artifactId>
 			<version>3.1.0-SNAPSHOT</version>
-		</dependency>-->
+		</dependency>
 	</dependencies>
 	<repositories>
 		<!-- include wala from sonatype public repository -->
@@ -318,9 +318,9 @@
 		</repository>
 		<!-- include old soot repo -->
 		<repository>
-			<id>soot-snapshot</id>
+			<id>swt-upb</id>
 			<name>soot snapshots</name>
-			<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-snapshot/</url>
+			<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/swt-upb/</url>
 		</repository>
 	</repositories>
 </project>

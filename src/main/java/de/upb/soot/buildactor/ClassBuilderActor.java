@@ -10,6 +10,7 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.namespaces.classprovider.IClassSourceContent;
+import de.upb.soot.namespaces.classprovider.ResolveException;
 import de.upb.soot.views.IView;
 
 public class ClassBuilderActor extends AbstractLoggingActor {
@@ -53,7 +54,13 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     // actually I don't want if clauses. I want to dispatch based on the type of the classSource?
 
     // FIXME: somewhere a soot class needs to be created or returned???
-    AbstractClass sootClass = content.resolve(ResolvingLevel.DANGLING, view);
+    AbstractClass sootClass = null;
+    try {
+      sootClass = content.resolve(ResolvingLevel.DANGLING, view);
+    } catch (ResolveException e) {
+      e.printStackTrace();
+      //FIXME: error handling
+    }
 
     sender().tell(sootClass, this.getSelf());
 

@@ -1,5 +1,7 @@
 package de.upb.soot.namespaces;
 
+import com.google.common.base.Preconditions;
+
 import de.upb.soot.namespaces.classprovider.ClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.FieldSignature;
@@ -10,8 +12,6 @@ import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
-
-import com.google.common.base.Preconditions;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -132,14 +132,25 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     }
 
     @Override
+    public TypeSignature getArrayTypeSignature(TypeSignature baseType, int dim) {
+      return factory.getArrayTypeSignature(baseType, dim);
+    }
+
+    @Override
     public MethodSignature getMethodSignature(String methodName, String fullyQualifiedNameDeclClass, String fqReturnType,
         List<String> parameters) {
       return factory.getMethodSignature(methodName, fullyQualifiedNameDeclClass, fqReturnType, parameters);
     }
 
     @Override
-    public MethodSignature getMethodSignature(String methodName, JavaClassSignature declaringClassSignature, String fqReturnType,
-        List<String> parameters) {
+    public MethodSignature getMethodSignature(String methodName, JavaClassSignature declaringClassSignature,
+        String fqReturnType, List<String> parameters) {
+      return factory.getMethodSignature(methodName, declaringClassSignature, fqReturnType, parameters);
+    }
+
+    @Override
+    public MethodSignature getMethodSignature(String methodName, JavaClassSignature declaringClassSignature,
+        TypeSignature fqReturnType, List<TypeSignature> parameters) {
       return factory.getMethodSignature(methodName, declaringClassSignature, fqReturnType, parameters);
     }
 
@@ -163,6 +174,12 @@ public class JavaModulePathNamespace extends AbstractNamespace {
 
     @Override
     public FieldSignature getFieldSignature(String fieldName, JavaClassSignature declaringClassSignature, String fieldType) {
+      return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
+    }
+
+    @Override
+    public FieldSignature getFieldSignature(String fieldName, JavaClassSignature declaringClassSignature,
+        TypeSignature fieldType) {
       return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
     }
   }

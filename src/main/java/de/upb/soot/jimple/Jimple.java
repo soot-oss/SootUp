@@ -105,11 +105,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * The Jimple class contains all the constructors for the components of the Jimple grammar for the
- * Jimple body. <br>
+ * The Jimple class contains all the constructors for the components of the Jimple grammar for the Jimple body. <br>
  * <br>
  *
- * <p>Immediate -> Local | Constant <br>
+ * <p>
+ * Immediate -> Local | Constant <br>
  * RValue -> Local | Constant | ConcreteRef | Expr<br>
  * Variable -> Local | ArrayRef | InstanceFieldRef | StaticFieldRef <br>
  */
@@ -183,72 +183,12 @@ public class Jimple {
   /** Returns a list of collections. */
   public static List<String> jimpleKeywordList() {
     List<String> l = new LinkedList<String>();
-    Collections.addAll(
-        l,
-        NEWARRAY,
-        NEWMULTIARRAY,
-        NOP,
-        RET,
-        SPECIALINVOKE,
-        STATICINVOKE,
-        TABLESWITCH,
-        VIRTUALINVOKE,
-        NULL_TYPE,
-        UNKNOWN,
-        CMP,
-        CMPG,
-        CMPL,
-        ENTERMONITOR,
-        EXITMONITOR,
-        INTERFACEINVOKE,
-        LENGTHOF,
-        LOOKUPSWITCH,
-        NEG,
-        IF,
-        ABSTRACT,
-        BOOLEAN,
-        BREAK,
-        BYTE,
-        CASE,
-        CATCH,
-        CHAR,
-        CLASS,
-        FINAL,
-        NATIVE,
-        PUBLIC,
-        PROTECTED,
-        PRIVATE,
-        STATIC,
-        SYNCHRONIZED,
-        TRANSIENT,
-        VOLATILE,
-        STRICTFP,
-        ENUM,
-        ANNOTATION,
-        INTERFACE,
-        VOID,
-        SHORT,
-        INT,
-        LONG,
-        FLOAT,
-        DOUBLE,
-        EXTENDS,
-        IMPLEMENTS,
-        BREAKPOINT,
-        DEFAULT,
-        GOTO,
-        INSTANCEOF,
-        NEW,
-        RETURN,
-        THROW,
-        THROWS,
-        NULL,
-        FROM,
-        TO,
-        WITH,
-        CLS,
-        TRUE,
-        FALSE);
+    Collections.addAll(l, NEWARRAY, NEWMULTIARRAY, NOP, RET, SPECIALINVOKE, STATICINVOKE, TABLESWITCH, VIRTUALINVOKE,
+        NULL_TYPE, UNKNOWN, CMP, CMPG, CMPL, ENTERMONITOR, EXITMONITOR, INTERFACEINVOKE, LENGTHOF, LOOKUPSWITCH, NEG, IF,
+        ABSTRACT, BOOLEAN, BREAK, BYTE, CASE, CATCH, CHAR, CLASS, FINAL, NATIVE, PUBLIC, PROTECTED, PRIVATE, STATIC,
+        SYNCHRONIZED, TRANSIENT, VOLATILE, STRICTFP, ENUM, ANNOTATION, INTERFACE, VOID, SHORT, INT, LONG, FLOAT, DOUBLE,
+        EXTENDS, IMPLEMENTS, BREAKPOINT, DEFAULT, GOTO, INSTANCEOF, NEW, RETURN, THROW, THROWS, NULL, FROM, TO, WITH, CLS,
+        TRUE, FALSE);
     return l;
   }
 
@@ -386,8 +326,7 @@ public class Jimple {
   }
 
   /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */
-  public static JStaticInvokeExpr newStaticInvokeExpr(
-      IView view, MethodRef method, List<? extends Value> args) {
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodRef method, List<? extends Value> args) {
     return new JStaticInvokeExpr(view, method, args);
   }
 
@@ -404,25 +343,21 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
-   * chunk.
+   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      IView view, Local base, MethodRef method, List<? extends Value> args) {
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodRef method,
+      List<? extends Value> args) {
     return new JSpecialInvokeExpr(view, base, method, args);
   }
 
   /**
-   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
-   * chunk.
+   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      IView view, Local base, MethodRef method, Value... args) {
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodRef method, Value... args) {
     return newSpecialInvokeExpr(view, base, method, Arrays.asList(args));
   }
 
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(
-      IView view, Local base, MethodRef method, Value arg) {
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodRef method, Value arg) {
     return newSpecialInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
   }
 
@@ -431,52 +366,39 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod
-   * methodRef, List args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod methodRef, List args)
+   * grammar chunk.
    */
-  public static JDynamicInvokeExpr newDynamicInvokeExpr(
-      IView view,
-      MethodSignature bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef,
-      List<? extends Value> args) {
+  public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodRef bootstrapMethodRef,
+      List<? extends Value> bootstrapArgs, MethodRef methodRef, List<? extends Value> args) {
     return new JDynamicInvokeExpr(view, bootstrapMethodRef, bootstrapArgs, methodRef, args);
   }
 
   /**
-   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod
-   * methodRef, List args) grammar chunk.
+   * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod methodRef, List args)
+   * grammar chunk.
    */
-  public static JDynamicInvokeExpr newDynamicInvokeExpr(
-      IView view,
-      MethodSignature bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef,
-      int tag,
-      List<? extends Value> args) {
+  public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodRef bootstrapMethodRef,
+      List<? extends Value> bootstrapArgs, MethodRef methodRef, int tag, List<? extends Value> args) {
     return new JDynamicInvokeExpr(view, bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
 
   /**
-   * Constructs a NewVirtualInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
-   * chunk.
+   * Constructs a NewVirtualInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      IView view, Local base, MethodRef method, List<? extends Value> args) {
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodRef method,
+      List<? extends Value> args) {
     return new JVirtualInvokeExpr(view, base, method, args);
   }
 
   /**
-   * Constructs a NewVirtualInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
-   * chunk.
+   * Constructs a NewVirtualInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      IView view, Local base, MethodRef method, Value... args) {
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodRef method, Value... args) {
     return newVirtualInvokeExpr(view, base, method, Arrays.asList(args));
   }
 
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(
-      IView view, Local base, MethodRef method, Value arg) {
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodRef method, Value arg) {
     return newVirtualInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
   }
 
@@ -485,30 +407,25 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
-   * chunk.
+   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      IView view, Local base, MethodRef method, List<? extends Value> args) {
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodRef method,
+      List<? extends Value> args) {
     return new JInterfaceInvokeExpr(view, base, method, args);
   }
 
   /**
-   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
-   * chunk.
+   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      IView view, Local base, MethodRef method, Value... args) {
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodRef method, Value... args) {
     return newInterfaceInvokeExpr(view, base, method, Arrays.asList(args));
   }
 
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      IView view, Local base, MethodRef method, Value arg) {
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodRef method, Value arg) {
     return newInterfaceInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
   }
 
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
-      IView view, Local base, MethodRef method) {
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodRef method) {
     return newInterfaceInvokeExpr(view, base, method, Collections.<Value>emptyList());
   }
 
@@ -587,16 +504,12 @@ public class Jimple {
   }
 
   /** Constructs a TableSwitchStmt(Immediate, int, int, List of Unit, Stmt) grammar chunk. */
-  public static JTableSwitchStmt newTableSwitchStmt(
-      Value key, int lowIndex, int highIndex, List<? extends IStmt> targets, IStmt defaultTarget) {
+  public static JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets,
+      IStmt defaultTarget) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget);
   }
 
-  public static JTableSwitchStmt newTableSwitchStmt(
-      Value key,
-      int lowIndex,
-      int highIndex,
-      List<? extends IStmtBox> targets,
+  public static JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets,
       IStmtBox defaultTarget) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget);
   }
@@ -604,19 +517,13 @@ public class Jimple {
   /**
    * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
    */
-  public static JLookupSwitchStmt newLookupSwitchStmt(
-      Value key,
-      List<IntConstant> lookupValues,
-      List<? extends IStmt> targets,
-      IStmt defaultTarget) {
+  public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
+      List<? extends IStmt> targets, IStmt defaultTarget) {
     return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
   }
 
-  public static JLookupSwitchStmt newLookupSwitchStmt(
-      Value key,
-      List<IntConstant> lookupValues,
-      List<? extends IStmtBox> targets,
-      IStmtBox defaultTarget) {
+  public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
+      List<? extends IStmtBox> targets, IStmtBox defaultTarget) {
     return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
   }
 
@@ -630,8 +537,7 @@ public class Jimple {
     return new JStaticFieldRef(view, f);
   }
 
-  public static MethodRef newMethodRef(
-      IView view, MethodSignature methodSignature, boolean isStatic) {
+  public static MethodRef newMethodRef(IView view, MethodSignature methodSignature, boolean isStatic) {
     return new MethodRef(view, methodSignature, isStatic);
   }
 
@@ -694,18 +600,15 @@ public class Jimple {
   }
 
   /** Constructs a JTrap */
-  public static JTrap newTrap(
-      SootClass exception, IStmt beginStmt, IStmt endStmt, IStmt handlerStmt) {
+  public static JTrap newTrap(SootClass exception, IStmt beginStmt, IStmt endStmt, IStmt handlerStmt) {
     return new JTrap(exception, beginStmt, endStmt, handlerStmt);
   }
 
-  public static JTrap newTrap(
-      SootClass exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
+  public static JTrap newTrap(SootClass exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
     return new JTrap(exception, beginStmt, endStmt, handlerStmt);
   }
 
-  public static JNewMultiArrayExpr newNewMultiArrayExpr(
-      ArrayType type, List<? extends Value> sizes) {
+  public static JNewMultiArrayExpr newNewMultiArrayExpr(ArrayType type, List<? extends Value> sizes) {
     return new JNewMultiArrayExpr(type, sizes);
   }
 }
