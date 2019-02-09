@@ -83,7 +83,7 @@ final class Operand {
       list.add(vb);
     } else if (boxes instanceof ValueBox) {
       ValueBox ovb = (ValueBox) boxes;
-      List<ValueBox> list = new ArrayList<ValueBox>();
+      List<ValueBox> list = new ArrayList<>();
       list.add(ovb);
       list.add(vb);
       boxes = list;

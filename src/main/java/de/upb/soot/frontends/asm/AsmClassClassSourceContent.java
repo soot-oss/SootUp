@@ -37,7 +37,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
   public AbstractClass resolve(ResolvingLevel level, IView view) throws AsmFrontendException {
     JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
     SootClass.SootClassBuilder builder = null;
-    // FIXME: currently ugly because, the orignal class is always re-resolved but never copied...
+    // FIXME: currently ugly because, the original class is always re-resolved but never copied...
     switch (level) {
       case DANGLING:
         builder = (SootClass.SootClassBuilder) resolveDangling(view, cs);
@@ -69,12 +69,11 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
     Optional<AbstractClass> aClass = view.getClass(cs);
     if (!aClass.isPresent()) {
       throw new AsmFrontendException(String.format("Cannot resolve class %s", cs));
-
     }
     SootClass sootClass = (SootClass) aClass.get();
     Set<JavaClassSignature> interfaces = new HashSet<>();
     Optional<JavaClassSignature> mySuperCl = Optional.empty();
-    SootClass.HierachyStep danglingStep = null;
+    SootClass.HierachyStep danglingStep;
 
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.DANGLING)) {
       // FIXME: do the setting stuff again...
@@ -103,7 +102,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
 
   private SootClass.BodyStep resolveSignature(de.upb.soot.views.IView view, JavaClassSignature cs)
       throws AsmFrontendException {
-    SootClass.SignatureStep signatureStep = null;
+    SootClass.SignatureStep signatureStep;
     Set<IMethod> methods = new HashSet<>();
     Set<SootField> fields = new HashSet<>();
     Optional<AbstractClass> aClass = view.getClass(cs);
@@ -119,7 +118,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
     }
 
     {
-      // FIXME: add support for annoation
+      // FIXME: add support for annotation
       // add the fields
       for (FieldNode fieldNode : this.fields) {
         String fieldName = fieldNode.name;
@@ -162,7 +161,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
 
     }
     SootClass sootClass = (SootClass) aClass.get();
-    SootClass.BodyStep bodyStep = null;
+    SootClass.BodyStep bodyStep;
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.SIGNATURES)) {
       bodyStep = resolveSignature(view, cs);
     } else {

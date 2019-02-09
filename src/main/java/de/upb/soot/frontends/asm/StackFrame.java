@@ -70,7 +70,7 @@ final class StackFrame {
   void in(Operand... oprs) {
     ArrayList<Operand[]> in = this.in;
     if (in == null) {
-      in = this.in = new ArrayList<Operand[]>(1);
+      in = this.in = new ArrayList<>(1);
     } else {
       in.clear();
     }
@@ -157,7 +157,7 @@ final class StackFrame {
             src.setUnit(prevOp.insn, as);
           } else {
             IStmt u = src.getUnit(prevOp.insn);
-            AbstractDefinitionStmt as = (AbstractDefinitionStmt) (u instanceof UnitContainer ? ((UnitContainer) u).getFirstUnit() : u);
+            AbstractDefinitionStmt as = (AbstractDefinitionStmt) (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == prevOp.stack : "Invalid stack local!";
             lvb.setValue(stack);
@@ -172,7 +172,7 @@ final class StackFrame {
             src.setUnit(newOp.insn, as);
           } else {
             IStmt u = src.getUnit(newOp.insn);
-            AbstractDefinitionStmt as = (AbstractDefinitionStmt) (u instanceof UnitContainer ? ((UnitContainer) u).getFirstUnit() : u);
+            AbstractDefinitionStmt as = (AbstractDefinitionStmt) (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == newOp.stack : "Invalid stack local!";
             lvb.setValue(stack);
