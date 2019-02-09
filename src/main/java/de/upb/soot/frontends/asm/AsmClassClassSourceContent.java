@@ -6,10 +6,12 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassSourceContent;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
@@ -132,11 +134,12 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
 
     { // add methods
       for (org.objectweb.asm.tree.MethodNode methodSource : this.methods) {
-        String methodName = methodSource.name;
 
-        EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);
-        List<Type> sigTypes = AsmUtil.toJimpleDesc(methodSource.desc, view);
-        Type retType = sigTypes.remove(sigTypes.size() - 1);
+        if (!(methodSource instanceof AsmMethodSourceContent)) {
+          throw new AsmFrontendException(String.format("Failed to create Method Signature %s", methodSource));
+        }
+        AsmMethodSourceContent asmClassClassSourceContent = (AsmMethodSourceContent) methodSource;
+
         List<JavaClassSignature> exceptions = new ArrayList<>();
         Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(methodSource.exceptions, view);
 
@@ -144,10 +147,16 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
 
           exceptionClass.ifPresent(exceptions::add);
         }
-        // FIXME: fix the method creation here
-        de.upb.soot.core.SootMethod sootMethod
-            = new de.upb.soot.core.SootMethod(view, null, null, null, null, modifiers, null, null);
-        // sootClass.addMethod(sootMethod);
+        String methodName = methodSource.name;
+        EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);
+        List<TypeSignature> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc, view);
+        TypeSignature retType = sigTypes.remove(sigTypes.size() - 1);
+
+        MethodSignature methodSignature
+            = view.getSignatureFactory().getMethodSignature(methodName, sootClass.getSignature(), retType, sigTypes);
+
+        de.upb.soot.core.SootMethod sootMethod = new de.upb.soot.core.SootMethod(view, sootClass.getSignature(),
+            asmClassClassSourceContent, methodSignature, modifiers, exceptions, null);
         methods.add(sootMethod);
       }
     }

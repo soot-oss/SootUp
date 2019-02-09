@@ -23,10 +23,11 @@ package de.upb.soot.core;
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.frontends.IMethodSourceContent;
 import de.upb.soot.frontends.ResolveException;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 
@@ -72,26 +73,42 @@ public class SootMethod extends SootClassMember implements IMethod {
   /** Tells this methodRef how to find out where its body lives. */
   private final IMethodSourceContent methodSource;
 
+  // FIXME: make the method immutable??, e.g., no setActive Body
+
+  // FIXME: remove Wala DebuggingInformation from this Class, IMHO it does not belong to a sootmethod
   /**
    * Constructs a SootMethod object with the given attributes. It contains no active body.
    */
   public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSourceContent source,
       List<TypeSignature> parameterTypes, TypeSignature returnType, EnumSet<Modifier> modifiers,
       DebuggingInformation debugInfo) {
-    this(view, declaringClass, source, parameterTypes, returnType, modifiers, Collections.<JavaClassSignature>emptyList(),
+    this(view, declaringClass, source, source.getSignature(), modifiers, Collections.<JavaClassSignature>emptyList(),
         debugInfo);
+  }
+
+  /**
+   * Constructs a SootMethod object with the given attributes. It contains no active body.
+   */
+  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSourceContent source,
+      List<TypeSignature> parameterTypes, TypeSignature returnType, EnumSet<Modifier> modifiers) {
+    this(view, declaringClass, source, source.getSignature(), modifiers, Collections.<JavaClassSignature>emptyList(), null);
+  }
+
+  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSourceContent source, MethodSignature signature,
+      EnumSet<Modifier> modifiers) {
+    this(view, declaringClass, source, signature, modifiers, Collections.<JavaClassSignature>emptyList(), null);
   }
 
   /**
    * Constructs a SootMethod object with the given attributes.
    */
   public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSourceContent source,
-      List<TypeSignature> parameterTypes, TypeSignature returnType, EnumSet<Modifier> modifiers,
-      List<JavaClassSignature> thrownExceptions, DebuggingInformation debugInfo) {
-    super(view, declaringClass, source.getSignature(), returnType, modifiers);
+      MethodSignature methodSignature, EnumSet<Modifier> modifiers, List<JavaClassSignature> thrownExceptions,
+      DebuggingInformation debugInfo) {
+    super(view, declaringClass, methodSignature, methodSignature.typeSignature, modifiers);
     Body myActiveBody = null;
     this.methodSource = source;
-    this.parameterTypes = Collections.unmodifiableList(parameterTypes);
+    this.parameterTypes = Collections.unmodifiableList(methodSignature.parameterSignatures);
     this.exceptions = Collections.unmodifiableList(thrownExceptions);
     this.debugInfo = debugInfo;
     try {
