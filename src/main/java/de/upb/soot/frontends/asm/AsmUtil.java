@@ -1,5 +1,6 @@
 package de.upb.soot.frontends.asm;
 
+import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
@@ -11,7 +12,6 @@ import de.upb.soot.jimple.common.type.LongType;
 import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.VoidType;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.signatures.TypeSignature;
@@ -27,7 +27,7 @@ import java.util.stream.StreamSupport;
 
 import org.objectweb.asm.tree.ClassNode;
 
-public final class AsmUtil {
+final class AsmUtil {
 
   private AsmUtil() {
   }

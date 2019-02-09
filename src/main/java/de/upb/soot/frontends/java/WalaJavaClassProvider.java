@@ -9,7 +9,7 @@ import de.upb.soot.signatures.JavaClassSignature;
 
 import java.nio.file.Path;
 
-public class WalaJavaClassProvider implements IClassProvider {
+class WalaJavaClassProvider implements IClassProvider {
 
   @Override
   public ClassSource createClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {

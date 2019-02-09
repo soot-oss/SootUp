@@ -20,7 +20,7 @@ import soot.util.Chain;
  * @author Linghui Luo
  *
  */
-public class JimpleConverter {
+class JimpleConverter {
 
   public soot.SootClass convertSootClass(de.upb.soot.core.SootClass fromClass) {
     soot.SootClass toClass = new SootClass(fromClass.getName());

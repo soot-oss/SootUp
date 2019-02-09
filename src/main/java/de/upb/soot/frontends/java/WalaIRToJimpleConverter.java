@@ -233,9 +233,7 @@ public class WalaIRToJimpleConverter {
         JavaClassSignature exceptionSig = this.view.getSignatureFactory().getClassSignature(exceptionName);
         thrownExceptions.add(exceptionSig);
       }
-    } catch (UnsupportedOperationException e) {
-      e.printStackTrace();
-    } catch (InvalidClassFileException e) {
+    } catch (UnsupportedOperationException | InvalidClassFileException e) {
       e.printStackTrace();
     }
     // add debug info

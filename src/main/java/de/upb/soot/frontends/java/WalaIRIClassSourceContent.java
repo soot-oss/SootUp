@@ -15,7 +15,7 @@ import com.ibm.wala.cast.loader.AstClass;
  * @author Ben Hermann
  *
  */
-public class WalaIRIClassSourceContent implements IClassSourceContent {
+class WalaIRIClassSourceContent implements IClassSourceContent {
   private AstClass source;
   private WalaIRToJimpleConverter converter;
 

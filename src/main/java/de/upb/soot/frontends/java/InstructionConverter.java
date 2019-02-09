@@ -105,7 +105,7 @@ import scala.Char;
  * @author Linghui Luo
  *
  */
-public class InstructionConverter {
+class InstructionConverter {
 
   private WalaIRToJimpleConverter converter;
   private SootMethod sootMethod;
@@ -297,7 +297,7 @@ public class InstructionConverter {
     stmts.add(newAssignStmt);
     MethodSignature methodSig
         = sigFactory.getMethodSignature("<init>", "java.lang.AssertionError", "void", Collections.emptyList());
-    MethodRef methodRef = Jimple.newMethodRef(converter.view, methodSig,false);
+    MethodRef methodRef = Jimple.newMethodRef(converter.view, methodSig, false);
     JSpecialInvokeExpr invoke = Jimple.newSpecialInvokeExpr(converter.view, failureLocal, methodRef);
     JInvokeStmt invokeStmt = Jimple.newInvokeStmt(invoke);
     stmts.add(invokeStmt);

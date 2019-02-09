@@ -73,9 +73,7 @@ public class WalaClassLoader {
       // build the class hierarchy
       this.classHierarchy = ClassHierarchyFactory.make(scope, new ECJClassLoaderFactory(scope.getExclusions()));
       Warnings.clear();
-    } catch (ClassHierarchyException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
+    } catch (ClassHierarchyException | IOException e) {
       e.printStackTrace();
     }
   }
