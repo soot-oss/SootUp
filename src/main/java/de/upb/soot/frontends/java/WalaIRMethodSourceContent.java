@@ -15,7 +15,7 @@ public class WalaIRMethodSourceContent implements IMethodSourceContent {
 
   @Override
   public Body getBody(SootMethod m) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return null;
   }
 

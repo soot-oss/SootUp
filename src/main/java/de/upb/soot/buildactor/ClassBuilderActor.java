@@ -99,13 +99,13 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     }
 
     private void resolveMethod(ResolveMethodMessage m) {
-      log().info("Start reifying method [{}].", method.getSignature().toString());
+      log().info("Start reifying methodRef [{}].", method.getSignature().toString());
 
-      // method.retrieveActiveBody();
+      // methodRef.retrieveActiveBody();
 
       sender().tell(method, this.getSelf());
 
-      log().info("Completed reifying method [{}].", method.getSignature().toString());
+      log().info("Completed reifying methodRef [{}].", method.getSignature().toString());
     }
 
   }

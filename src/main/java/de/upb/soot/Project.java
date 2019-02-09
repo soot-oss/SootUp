@@ -42,7 +42,7 @@ public class Project {
   }
 
   /**
-   * Create a complete view from everything in all provided namespaces. This method starts the reification process.
+   * Create a complete view from everything in all provided namespaces. This methodRef starts the reification process.
    *
    * @return A complete view on the provided code
    */
@@ -59,7 +59,7 @@ public class Project {
   }
 
   /**
-   * Returns a partial view on the code based on the provided scope and all namespaces in the project. This method starts the
+   * Returns a partial view on the code based on the provided scope and all namespaces in the project. This methodRef starts the
    * reification process.
    *
    * @param s

@@ -53,11 +53,11 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
   }
 
   public Optional<SootMethod> getMethod() {
-    /*  JavaClassSignature signature = method.declClassSignature;
+    /*  JavaClassSignature signature = methodRef.declClassSignature;
     Optional<AbstractClass> op = this.getView().getClass(signature);
     if (op.isPresent()) {
       AbstractClass klass = op.get();
-      Optional<? extends IMethod> m = klass.getMethod(method);
+      Optional<? extends IMethod> m = klass.getMethod(methodRef);
       return m.map(c -> (SootMethod) c);
     }
     return Optional.empty();*/

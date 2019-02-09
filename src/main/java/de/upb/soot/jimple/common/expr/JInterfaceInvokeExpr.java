@@ -53,7 +53,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
       IView view, Value base, MethodRef method, List<? extends Value> args) {
     super(view, Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
 
-    // Check that the method's class is resolved enough
+    // Check that the methodRef's class is resolved enough
     // CheckLevel returns without doing anything because we can be not 'done' resolving
     Optional<AbstractClass> declaringClass =
         view.getClass(method.getSignature().declClassSignature);

@@ -1,10 +1,28 @@
 package de.upb.soot.frontends.asm;
 
+import static org.objectweb.asm.tree.AbstractInsnNode.FIELD_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.FRAME;
+import static org.objectweb.asm.tree.AbstractInsnNode.IINC_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.INT_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.INVOKE_DYNAMIC_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.JUMP_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.LABEL;
+import static org.objectweb.asm.tree.AbstractInsnNode.LDC_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.LINE;
+import static org.objectweb.asm.tree.AbstractInsnNode.LOOKUPSWITCH_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.METHOD_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.MULTIANEWARRAY_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.TABLESWITCH_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
+
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
@@ -21,6 +39,7 @@ import de.upb.soot.jimple.common.constant.FloatConstant;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.constant.LongConstant;
 import de.upb.soot.jimple.common.constant.MethodHandle;
+import de.upb.soot.jimple.common.constant.MethodType;
 import de.upb.soot.jimple.common.constant.NullConstant;
 import de.upb.soot.jimple.common.constant.StringConstant;
 import de.upb.soot.jimple.common.expr.AbstractBinopExpr;
@@ -59,7 +78,6 @@ import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
-import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 import de.upb.soot.namespaces.classprovider.IMethodSourceContent;
@@ -69,9 +87,21 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
-import de.upb.soot.util.Utils;
 import de.upb.soot.views.IView;
-import javafx.scene.Scene;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -92,56 +122,22 @@ import org.objectweb.asm.tree.TryCatchBlockNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.objectweb.asm.tree.AbstractInsnNode.FIELD_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.FRAME;
-import static org.objectweb.asm.tree.AbstractInsnNode.IINC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INT_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INVOKE_DYNAMIC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.JUMP_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.LABEL;
-import static org.objectweb.asm.tree.AbstractInsnNode.LDC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.LINE;
-import static org.objectweb.asm.tree.AbstractInsnNode.LOOKUPSWITCH_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.METHOD_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.MULTIANEWARRAY_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.TABLESWITCH_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
-
 // FIXME: IMHO currently AN important question; when to use type and when a typeSignature???
 // FIXME: maybe the question is irrelevant and I'm just stupid....
 
 // FIXME: (Andreas) When does the implementation uses a type, and when does it use a
 // (field|Method|Type)Signature?
 
-public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
-    implements IMethodSourceContent {
+public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter implements IMethodSourceContent {
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
 
-  private static final String METAFACTORY_SIGNATURE =
-      "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
-          + "metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,"
-          + ""
-          + "java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>";
-  private static final String ALT_METAFACTORY_SIGNATURE =
-      "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
-          + "altMetafactory(java.lang.invoke.MethodHandles$Lookup,"
-          + "java.lang.String,java.lang.invoke.MethodType,java.lang.Object[])>";
+  private static final String METAFACTORY_SIGNATURE = "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
+      + "metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType," + ""
+      + "java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>";
+  private static final String ALT_METAFACTORY_SIGNATURE = "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
+      + "altMetafactory(java.lang.invoke.MethodHandles$Lookup,"
+      + "java.lang.String,java.lang.invoke.MethodType,java.lang.Object[])>";
 
   /* -state fields- */
   private int nextLocal;
@@ -156,9 +152,9 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
   private IView view;
 
   /**
-   * * Hint: in InstructionConverter convertInvokeInstruction() ling creates string for method and
-   * types and stores/replaces the methodref with a MethodSignature (for the method to call) and
-   * then creates the invoke Instruction Jimple.newStaticInvokeExpr
+   * * Hint: in InstructionConverter convertInvokeInstruction() ling creates string for methodRef and types and
+   * stores/replaces the methodref with a MethodSignature (for the methodRef to call) and then creates the invoke Instruction
+   * Jimple.newStaticInvokeExpr
    */
 
   /* -const fields- */
@@ -169,14 +165,13 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
   private final CastAndReturnInliner castAndReturnInliner = new CastAndReturnInliner();
 
-  public AsmMethodSourceContent(
-      int access, String name, String desc, String signature, String[] exceptions) {
+  public AsmMethodSourceContent(int access, String name, String desc, String signature, String[] exceptions) {
     super(null, access, name, desc, signature, exceptions);
   }
 
   @Override
   public MethodSignature getSignature() {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
@@ -235,7 +230,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     castAndReturnInliner.transform(bodyStmts, bodyTraps);
 
     try {
-      //      PackManager.v().getPack("jb").apply(jb);
+      // PackManager.v().getPack("jb").apply(jb);
     } catch (Throwable t) {
       throw new RuntimeException("Failed to apply jb to " + sootmethod, t);
     }
@@ -416,15 +411,15 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
   void setUnit(AbstractInsnNode insn, IStmt u) {
     // FIXME: re-add linenumber keep
     // ASM LineNumberNode
-    //    if (Options.keep_line_number() && lastLineNumber >= 0) {
-    //      Tag lineTag = u.getTag("LineNumberTag");
-    //      if (lineTag == null) {
-    //        lineTag = new LineNumberTag(lastLineNumber);
-    //        u.addTag(lineTag);
-    //      } else if (((LineNumberTag) lineTag).getLineNumber() != lastLineNumber) {
-    //        throw new RuntimeException("Line tag mismatch");
-    //      }
-    //    }
+    // if (Options.keep_line_number() && lastLineNumber >= 0) {
+    // Tag lineTag = u.getTag("LineNumberTag");
+    // if (lineTag == null) {
+    // lineTag = new LineNumberTag(lastLineNumber);
+    // u.addTag(lineTag);
+    // } else if (((LineNumberTag) lineTag).getLineNumber() != lastLineNumber) {
+    // throw new RuntimeException("Line tag mismatch");
+    // }
+    // }
 
     IStmt o = units.put(insn, u);
     if (o != null) {
@@ -493,8 +488,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     TypeSignature type;
     if (out == null) {
       // SootClass declClass = Scene.v().getSootClass(AsmUtil.toQualifiedName(insn.owner));
-      JavaClassSignature declClass =
-          view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(insn.owner));
+      JavaClassSignature declClass = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(insn.owner));
       // type = AsmUtil.toJimpleType(insn.desc);
       type = view.getSignatureFactory().getTypeSignature((AsmUtil.toQualifiedName(insn.desc)));
       Value val;
@@ -534,8 +528,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     TypeSignature type;
     if (out == null) {
       // SootClass declClass = Scene.v().getSootClass(AsmUtil.toQualifiedName(insn.owner));
-      JavaClassSignature declClass =
-          view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(insn.owner));
+      JavaClassSignature declClass = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(insn.owner));
       // type = AsmUtil.toJimpleType(insn.desc);
       type = view.getSignatureFactory().getTypeSignature((AsmUtil.toQualifiedName(insn.desc)));
 
@@ -761,32 +754,14 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
   private void convertBinopInsn(InsnNode insn) {
     int op = insn.getOpcode();
-    boolean dword =
-        op == DADD
-            || op == LADD
-            || op == DSUB
-            || op == LSUB
-            || op == DMUL
-            || op == LMUL
-            || op == DDIV
-            || op == LDIV
-            || op == DREM
-            || op == LREM
-            || op == LSHL
-            || op == LSHR
-            || op == LUSHR
-            || op == LAND
-            || op == LOR
-            || op == LXOR
-            || op == LCMP
-            || op == DCMPL
-            || op == DCMPG;
+    boolean dword = op == DADD || op == LADD || op == DSUB || op == LSUB || op == DMUL || op == LMUL || op == DDIV
+        || op == LDIV || op == DREM || op == LREM || op == LSHL || op == LSHR || op == LUSHR || op == LAND || op == LOR
+        || op == LXOR || op == LCMP || op == DCMPL || op == DCMPG;
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.out();
     Operand opr;
     if (out == null) {
-      Operand op2 =
-          (dword && op != LSHL && op != LSHR && op != LUSHR) ? popImmediateDual() : popImmediate();
+      Operand op2 = (dword && op != LSHL && op != LSHR && op != LUSHR) ? popImmediateDual() : popImmediate();
       Operand op1 = dword ? popImmediateDual() : popImmediate();
       Value v1 = op1.stackOrValue();
       Value v2 = op2.stackOrValue();
@@ -971,9 +946,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       Operand o2 = popImmediate();
       push(o1);
       push(o2);
-    } else if ((op >= IADD && op <= DREM)
-        || (op >= ISHL && op <= LXOR)
-        || (op >= LCMP && op <= DCMPG)) {
+    } else if ((op >= IADD && op <= DREM) || (op >= ISHL && op <= LXOR) || (op >= LCMP && op <= DCMPG)) {
       convertBinopInsn((InsnNode) insn);
     } else if ((op >= INEG && op <= DNEG) || op == ARRAYLENGTH) {
       convertUnopInsn(insn);
@@ -1005,10 +978,8 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       StackFrame frame = getFrame(insn);
       if (!units.containsKey(insn)) {
         Operand opr = popStackConst();
-        AbstractOpStmt ts =
-            op == MONITORENTER
-                ? Jimple.newEnterMonitorStmt(opr.stackOrValue())
-                : Jimple.newExitMonitorStmt(opr.stackOrValue());
+        AbstractOpStmt ts = op == MONITORENTER ? Jimple.newEnterMonitorStmt(opr.stackOrValue())
+            : Jimple.newExitMonitorStmt(opr.stackOrValue());
         opr.addBox(ts.getOpBox());
         frame.in(opr);
         frame.boxes(ts.getOpBox());
@@ -1191,11 +1162,10 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     } else if (val instanceof org.objectweb.asm.Type) {
       org.objectweb.asm.Type t = (org.objectweb.asm.Type) val;
       if (t.getSort() == org.objectweb.asm.Type.METHOD) {
-        List<Type> paramTypes =
-            AsmUtil.toJimpleDesc(((org.objectweb.asm.Type) val).getDescriptor());
-        Type returnType = paramTypes.remove(paramTypes.size() - 1);
-        // FIXME: e.g., make a MethodRef extend ConcreteRef
-        v = MethodType.v(paramTypes, returnType);
+        List<TypeSignature> paramTypes = AsmUtil.toJimpleSignatureDesc(((org.objectweb.asm.Type) val).getDescriptor(), view);
+        TypeSignature returnType = paramTypes.remove(paramTypes.size() - 1);
+        // FIXME: e.g., ??? make a MethodRef extend ConcreteRef
+        v = MethodType.getInstance(paramTypes, returnType);
       } else {
         v = ClassConstant.getInstance(((org.objectweb.asm.Type) val).getDescriptor());
       }
@@ -1255,16 +1225,14 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
         clsName = "java.lang.Object";
       }
       // SootClass cls = Scene.v().getSootClass(clsName);
-      JavaClassSignature cls =
-          view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(clsName));
+      JavaClassSignature cls = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(clsName));
       // List<Type> sigTypes = AsmUtil.toJimpleDesc(insn.desc);
       List<TypeSignature> sigTypes = AsmUtil.toJimpleSignatureDesc(insn.desc, view);
       // returnType = sigTypes.remove(sigTypes.size() - 1);
       returnType = sigTypes.remove((sigTypes.size() - 1));
       // SootMethodRef ref = Scene.v().makeMethodRef(cls, insn.name, sigTypes, returnType,
       // !instance);
-      MethodSignature methodSignature =
-          view.getSignatureFactory().getMethodSignature(insn.name, cls, returnType, sigTypes);
+      MethodSignature methodSignature = view.getSignatureFactory().getMethodSignature(insn.name, cls, returnType, sigTypes);
       MethodRef ref = Jimple.newMethodRef(view, methodSignature, !instance);
       int nrArgs = sigTypes.size();
       final Operand[] args;
@@ -1351,167 +1319,97 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       setUnit(insn, Jimple.newInvokeStmt(opr.value));
     }
     /*
-     * assign all read ops in case the method modifies any of the fields
+     * assign all read ops in case the methodRef modifies any of the fields
      */
     assignReadOps(null);
   }
 
+  // FIXME: convert invoke dynamic
   private void convertInvokeDynamicInsn(InvokeDynamicInsnNode insn) {
-    StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
-    Operand opr;
-    // Type returnType;
-    TypeSignature returnType;
-    if (out == null) {
-      // convert info on bootstrap method
-      SootMethodRef bsmMethodRef = toSootMethodRef(insn.bsm);
-      List<Value> bsmMethodArgs = new ArrayList<Value>(insn.bsmArgs.length);
-      for (Object bsmArg : insn.bsmArgs) {
-        bsmMethodArgs.add(toSootValue(bsmArg));
-      }
-
-      // create ref to actual method
-      SootClass bclass = Scene.v().getSootClass(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
-
-      // Generate parameters & returnType & parameterTypes
-      Type[] types = Utils.jimpleTypesOfFieldOrMethodDescriptor(insn.desc);
-      int nrArgs = types.length - 1;
-      List<Type> parameterTypes = new ArrayList<Type>(nrArgs);
-      List<Value> methodArgs = new ArrayList<Value>(nrArgs);
-
-      Operand[] args = new Operand[nrArgs];
-      ValueBox[] boxes = new ValueBox[nrArgs];
-
-      // Beware: Call stack is FIFO, Jimple is linear
-
-      while (nrArgs-- != 0) {
-        parameterTypes.add(types[nrArgs]);
-        args[nrArgs] = popImmediate(types[nrArgs]);
-        methodArgs.add(args[nrArgs].stackOrValue());
-      }
-      if (methodArgs.size() > 1) {
-        Collections.reverse(methodArgs); // Call stack is FIFO, Jimple is linear
-        Collections.reverse(parameterTypes);
-      }
-      returnType = types[types.length - 1];
-
-      // FIXME: (Andreas) Why do we have a FieldRef but no MethodRef???
-      SootMethodRef bootstrap_model = null;
-      // FIXME: AD re-add lambda metafactory
-      //      if (PhaseOptions.getBoolean(
-      //          PhaseOptions.v().getPhaseOptions("jb"), "model-lambdametafactory")) {
-      //        String bsmMethodRefStr = bsmMethodRef.toString();
-      //        if (bsmMethodRefStr.equals(METAFACTORY_SIGNATURE)
-      //            || bsmMethodRefStr.equals(ALT_METAFACTORY_SIGNATURE)) {
-      //          SootClass enclosingClass = body.getMethod().getDeclaringClass();
-      //          bootstrap_model =
-      //              LambdaMetaFactory.v()
-      //                  .makeLambdaHelper(
-      //                      bsmMethodArgs, insn.bsm.getTag(), insn.name, types, enclosingClass);
-      //        }
-      //      }
-
-      AbstractInvokeExpr indy;
-
-      if (bootstrap_model != null) {
-        indy = Jimple.newStaticInvokeExpr(bootstrap_model, methodArgs);
-      } else {
-        // if not mimicking the LambdaMetaFactory, we model invokeDynamic method refs as static
-        // method references
-        // of methods on the type SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME
-        SootMethodRef methodRef =
-            Scene.v().makeMethodRef(bclass, insn.name, parameterTypes, returnType, true);
-
-        indy =
-            Jimple.newDynamicInvokeExpr(
-                bsmMethodRef, bsmMethodArgs, methodRef, insn.bsm.getTag(), methodArgs);
-      }
-
-      if (boxes != null) {
-        for (int i = 0; i < types.length - 1; i++) {
-          boxes[i] = indy.getArgBox(i);
-          args[i].addBox(boxes[i]);
-        }
-
-        frame.boxes(boxes);
-        frame.in(args);
-      }
-      opr = new Operand(insn, indy);
-      frame.out(opr);
-    } else {
-      opr = out[0];
-      AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
-      List<Type> types = expr.getMethodRef().getParameterTypes();
-      Operand[] oprs;
-      int nrArgs = types.size();
-      if (expr.getMethodRef().isStatic()) {
-        oprs = nrArgs == 0 ? null : new Operand[nrArgs];
-      } else {
-        oprs = new Operand[nrArgs + 1];
-      }
-      if (oprs != null) {
-        while (nrArgs-- != 0) {
-          oprs[nrArgs] = pop(types.get(nrArgs));
-        }
-        if (!expr.getMethodRef().isStatic()) {
-          oprs[oprs.length - 1] = pop();
-        }
-        frame.mergeIn(oprs);
-        nrArgs = types.size();
-      }
-      returnType = expr.getMethodRef().getSignature().typeSignature;
-    }
-    if (AsmUtil.isDWord(returnType)) {
-      pushDual(opr);
-    } else if (!(returnType instanceof VoidType)) {
-      push(opr);
-    } else if (!units.containsKey(insn)) {
-      setUnit(insn, Jimple.newInvokeStmt(opr.value));
-    }
     /*
-     * assign all read ops in case the method modifies any of the fields
+     * StackFrame frame = getFrame(insn); Operand[] out = frame.out(); Operand opr; // Type returnType; TypeSignature
+     * returnType; if (out == null) { // convert info on bootstrap methodRef SootMethodRef bsmMethodRef =
+     * toSootMethodRef(insn.bsm); List<Value> bsmMethodArgs = new ArrayList<Value>(insn.bsmArgs.length); for (Object bsmArg :
+     * insn.bsmArgs) { bsmMethodArgs.add(toSootValue(bsmArg)); }
+     * 
+     * // create ref to actual methodRef SootClass bclass = Scene.v().getSootClass(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
+     * 
+     * // Generate parameters & returnType & parameterTypes Type[] types =
+     * Utils.jimpleTypesOfFieldOrMethodDescriptor(insn.desc); int nrArgs = types.length - 1; List<Type> parameterTypes = new
+     * ArrayList<Type>(nrArgs); List<Value> methodArgs = new ArrayList<Value>(nrArgs);
+     * 
+     * Operand[] args = new Operand[nrArgs]; ValueBox[] boxes = new ValueBox[nrArgs];
+     * 
+     * // Beware: Call stack is FIFO, Jimple is linear
+     * 
+     * while (nrArgs-- != 0) { parameterTypes.add(types[nrArgs]); args[nrArgs] = popImmediate(types[nrArgs]);
+     * methodArgs.add(args[nrArgs].stackOrValue()); } if (methodArgs.size() > 1) { Collections.reverse(methodArgs); // Call
+     * stack is FIFO, Jimple is linear Collections.reverse(parameterTypes); } returnType = types[types.length - 1];
+     * 
+     * // FIXME: (Andreas) Why do we have a FieldRef but no MethodRef??? SootMethodRef bootstrap_model = null; // FIXME: AD
+     * re-add lambda metafactory // if (PhaseOptions.getBoolean( // PhaseOptions.v().getPhaseOptions("jb"),
+     * "model-lambdametafactory")) { // String bsmMethodRefStr = bsmMethodRef.toString(); // if
+     * (bsmMethodRefStr.equals(METAFACTORY_SIGNATURE) // || bsmMethodRefStr.equals(ALT_METAFACTORY_SIGNATURE)) { // SootClass
+     * enclosingClass = body.getMethod().getDeclaringClass(); // bootstrap_model = // LambdaMetaFactory.v() //
+     * .makeLambdaHelper( // bsmMethodArgs, insn.bsm.getTag(), insn.name, types, enclosingClass); // } // }
+     * 
+     * AbstractInvokeExpr indy;
+     * 
+     * if (bootstrap_model != null) { indy = Jimple.newStaticInvokeExpr(bootstrap_model, methodArgs); } else { // if not
+     * mimicking the LambdaMetaFactory, we model invokeDynamic methodRef refs as static // methodRef references // of methods
+     * on the type SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME SootMethodRef methodRef = Scene.v().makeMethodRef(bclass,
+     * insn.name, parameterTypes, returnType, true);
+     * 
+     * indy = Jimple.newDynamicInvokeExpr( bsmMethodRef, bsmMethodArgs, methodRef, insn.bsm.getTag(), methodArgs); }
+     * 
+     * if (boxes != null) { for (int i = 0; i < types.length - 1; i++) { boxes[i] = indy.getArgBox(i);
+     * args[i].addBox(boxes[i]); }
+     * 
+     * frame.boxes(boxes); frame.in(args); } opr = new Operand(insn, indy); frame.out(opr); } else { opr = out[0];
+     * AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value; List<Type> types = expr.getMethodRef().getParameterTypes();
+     * Operand[] oprs; int nrArgs = types.size(); if (expr.getMethodRef().isStatic()) { oprs = nrArgs == 0 ? null : new
+     * Operand[nrArgs]; } else { oprs = new Operand[nrArgs + 1]; } if (oprs != null) { while (nrArgs-- != 0) { oprs[nrArgs] =
+     * pop(types.get(nrArgs)); } if (!expr.getMethodRef().isStatic()) { oprs[oprs.length - 1] = pop(); } frame.mergeIn(oprs);
+     * nrArgs = types.size(); } returnType = expr.getMethodRef().getSignature().typeSignature; } if
+     * (AsmUtil.isDWord(returnType)) { pushDual(opr); } else if (!(returnType instanceof VoidType)) { push(opr); } else if
+     * (!units.containsKey(insn)) { setUnit(insn, Jimple.newInvokeStmt(opr.value)); }
      */
-    assignReadOps(null);
+    /*
+     * assign all read ops in case the methodRef modifies any of the fields
+     *//*
+        * 
+        * assignReadOps(null);
+        */
   }
 
-  private SootMethodRef toSootMethodRef(Handle methodHandle) {
+  private MethodRef toSootMethodRef(Handle methodHandle) {
     String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
-    SootClass bsmCls = Scene.v().getSootClass(bsmClsName);
-    List<Type> bsmSigTypes = AsmUtil.toJimpleDesc(methodHandle.getDesc());
-    Type returnType = bsmSigTypes.remove(bsmSigTypes.size() - 1);
-    return Scene.v()
-        .makeMethodRef(
-            bsmCls,
-            methodHandle.getName(),
-            bsmSigTypes,
-            returnType,
-            methodHandle.getTag() == MethodHandle.Kind.REF_INVOKE_STATIC.getValue());
+    JavaClassSignature bsmCls = view.getSignatureFactory().getClassSignature(bsmClsName);
+    List<TypeSignature> bsmSigTypes = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc(), view);
+    TypeSignature returnType = bsmSigTypes.remove(bsmSigTypes.size() - 1);
+    MethodSignature methodSignature
+        = view.getSignatureFactory().getMethodSignature(methodHandle.getName(), bsmCls, returnType, bsmSigTypes);
+    boolean isStatic = methodHandle.getTag() == MethodHandle.Kind.REF_INVOKE_STATIC.getValue();
+    MethodRef methodRef = Jimple.newMethodRef(view, methodSignature, isStatic);
+    return methodRef;
   }
 
   private FieldRef toSootFieldRef(Handle methodHandle) {
-    /* String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
-    SootClass bsmCls = Scene.v().getSootClass(bsmClsName);
-    Type t = AsmUtil.toJimpleDesc(methodHandle.getDesc()).get(0);
-    int kind = methodHandle.getTag();
-    return Scene.v()
-        .makeFieldRef(
-            bsmCls,
-            methodHandle.getName(),
-            t,
-            kind == MethodHandle.Kind.REF_GET_FIELD_STATIC.getValue()
-                || kind == MethodHandle.Kind.REF_PUT_FIELD_STATIC.getValue());*/
-
     String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
-    SootClass bsmCls = Scene.v().getSootClass(bsmClsName);
+    JavaClassSignature bsmCls = view.getSignatureFactory().getClassSignature(bsmClsName);
+
     TypeSignature t = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc(), view).get(0);
     int kind = methodHandle.getTag();
-    return Scene.v()
-        .makeFieldRef(
-            bsmCls,
-            methodHandle.getName(),
-            t,
-            kind == MethodHandle.Kind.REF_GET_FIELD_STATIC.getValue()
-                || kind == MethodHandle.Kind.REF_PUT_FIELD_STATIC.getValue());
+    boolean isStatic = kind == MethodHandle.Kind.REF_GET_FIELD_STATIC.getValue()
+        || kind == MethodHandle.Kind.REF_PUT_FIELD_STATIC.getValue();
+
+    FieldSignature fieldSignature = view.getSignatureFactory().getFieldSignature(methodHandle.getName(), bsmCls, t);
+    // return Scene.v().makeFieldRef(bsmCls, methodHandle.getName(), t,
+    // isStatic);
+    // FIXME: in the old Soot we have SootFieldRef and FieldRef in different hierachies...
+    FieldRef fieldRef = null;
+    return fieldRef;
+
   }
 
   private void convertMultiANewArrayInsn(MultiANewArrayInsnNode insn) {
@@ -1566,8 +1464,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
       targets.add(box);
       labels.put(ln, box);
     }
-    JTableSwitchStmt tss =
-        Jimple.newTableSwitchStmt(key.stackOrValue(), insn.min, insn.max, targets, dflt);
+    JTableSwitchStmt tss = Jimple.newTableSwitchStmt(key.stackOrValue(), insn.min, insn.max, targets, dflt);
     key.addBox(tss.getKeyBox());
     frame.in(key);
     frame.boxes(tss.getKeyBox());
@@ -1740,8 +1637,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     Operand[] stackss = (new ArrayList<Operand>(stack)).toArray(new Operand[stack.size()]);
     AbstractInsnNode tgt = tgt1;
     int i = 0;
-    tgt_loop:
-    do {
+    tgt_loop: do {
       Edge edge = edges.get(cur, tgt);
       if (edge == null) {
         edge = new Edge(tgt);
@@ -1885,7 +1781,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
     // code, we have to split the exceptional case (with the exception on
     // the stack) from the normal fall-through case without anything on the
     // stack.
-    for (Iterator<AbstractInsnNode> it = instructions.iterator(); it.hasNext(); ) {
+    for (Iterator<AbstractInsnNode> it = instructions.iterator(); it.hasNext();) {
       AbstractInsnNode node = it.next();
       if (node instanceof JumpInsnNode) {
         if (((JumpInsnNode) node).label == ln) {
@@ -1931,12 +1827,10 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
 
   private void emitTraps(Collection<Trap> traps) {
     // SootClass throwable = Scene.v().getSootClass("java.lang.Throwable");
-    JavaClassSignature throwableSig =
-        view.getSignatureFactory().getClassSignature("java.lang.Throwable");
+    JavaClassSignature throwableSig = view.getSignatureFactory().getClassSignature("java.lang.Throwable");
     // FIXME: ugly? cast
     SootClass throwable = (SootClass) view.getClass(throwableSig).get();
-    Map<LabelNode, Iterator<IStmtBox>> handlers =
-        new HashMap<LabelNode, Iterator<IStmtBox>>(tryCatchBlocks.size());
+    Map<LabelNode, Iterator<IStmtBox>> handlers = new HashMap<LabelNode, Iterator<IStmtBox>>(tryCatchBlocks.size());
     for (TryCatchBlockNode tc : tryCatchBlocks) {
       IStmtBox start = Jimple.newStmtBox(null);
       IStmtBox end = Jimple.newStmtBox(null);
@@ -1951,8 +1845,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
         cls = throwable;
       } else {
         // Scene.v().getSootClass(AsmUtil.toQualifiedName(tc.type));
-        JavaClassSignature classSignature =
-            view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(tc.type));
+        JavaClassSignature classSignature = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(tc.type));
         // FIXME: ugly? cast
         cls = (SootClass) view.getClass(classSignature).get();
       }
@@ -2001,9 +1894,7 @@ public class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInliner
           caughtEx = getIdentityRefFromContrainer((UnitContainer) u);
         }
 
-        if (insn instanceof LabelNode
-            && caughtEx != null
-            && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
+        if (insn instanceof LabelNode && caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
           // We directly place this label
           Collection<IStmtBox> traps = trapHandlers.get((LabelNode) insn);
           for (IStmtBox ub : traps) {

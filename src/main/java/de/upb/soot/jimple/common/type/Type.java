@@ -35,7 +35,7 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /** Returns the least common superclass of this type and other. */
   public Type merge(Type other) {
-    // method overridden in subclasses UnknownType and RefType
+    // methodRef overridden in subclasses UnknownType and RefType
     throw new RuntimeException("illegal type merge: " + this + " and " + other);
   }
 

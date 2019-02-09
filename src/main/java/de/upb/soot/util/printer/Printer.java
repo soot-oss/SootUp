@@ -186,9 +186,9 @@ public class Printer {
 
         if (!Modifier.isAbstract(method.getModifiers()) && !Modifier.isNative(method.getModifiers())) {
           if (!method.hasActiveBody()) {
-            // method.retrieveActiveBody(); // force loading the body
+            // methodRef.retrieveActiveBody(); // force loading the body
             if (!method.hasActiveBody()) {
-              throw new RuntimeException("method " + method.getName() + " has no active body!");
+              throw new RuntimeException("methodRef " + method.getName() + " has no active body!");
             }
           }
           printTo(method.getActiveBody(), out);
@@ -212,7 +212,7 @@ public class Printer {
   }
 
   /**
-   * Prints out the method corresponding to b Body, (declaration and body), in the textual format corresponding to the IR
+   * Prints out the methodRef corresponding to b Body, (declaration and body), in the textual format corresponding to the IR
    * used to encode b body.
    *
    * @param out

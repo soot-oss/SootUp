@@ -52,7 +52,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
    */
   List<IntConstant> lookupValues;
 
-  // This method is necessary to deal with constructor-must-be-first-ism.
+  // This methodRef is necessary to deal with constructor-must-be-first-ism.
   private static IStmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
     IStmtBox[] targetBoxes = new IStmtBox[targets.size()];
     for (int i = 0; i < targetBoxes.length; i++) {

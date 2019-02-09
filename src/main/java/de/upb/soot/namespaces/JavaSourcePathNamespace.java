@@ -29,13 +29,13 @@ public class JavaSourcePathNamespace extends AbstractNamespace {
 
   @Override
   public Collection<ClassSource> getClassSources(SignatureFactory factory) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
   public Optional<ClassSource> getClassSource(JavaClassSignature classSignature) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return null;
   }
 }

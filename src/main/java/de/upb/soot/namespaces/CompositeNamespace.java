@@ -56,7 +56,7 @@ public class CompositeNamespace implements INamespace {
 
   @Override
   public Collection<ClassSource> getClassSources(SignatureFactory factory) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return null;
   }
 }

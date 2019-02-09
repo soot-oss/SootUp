@@ -9,7 +9,7 @@ import java.util.Optional;
 /** @author Andreas Dann created on 02.02.19 */
 public class MethodRef {
 
-  //FIXME: for all Ref, IMHO we should only pass the view to it, when we call the "resolve" method
+  //FIXME: for all Ref, IMHO we should only pass the view to it, when we call the "resolve" methodRef
   // e.g., "getField" "getSootMethod" BUT NOT in the constructor...
 
   private final IView view;
@@ -26,7 +26,7 @@ public class MethodRef {
     return isStatic;
   }
 
-  /** @return The Soot signature of this method. Used to refer to methods unambiguously. */
+  /** @return The Soot signature of this methodRef. Used to refer to methods unambiguously. */
   public MethodSignature getSignature() {
     return methodSignature;
   }

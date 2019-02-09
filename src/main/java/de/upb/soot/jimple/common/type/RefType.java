@@ -264,7 +264,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
   @Override
   public void accept(IVisitor sw) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
 
   }
 

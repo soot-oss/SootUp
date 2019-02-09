@@ -58,7 +58,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Class that models the Jimple body (code attribute) of a method.
+ * Class that models the Jimple body (code attribute) of a methodRef.
  * 
  * Modified by Linghui Luo
  *
@@ -80,7 +80,7 @@ public class Body implements Serializable {
 
   private final Position position;
 
-  /** The method associated with this Body. */
+  /** The methodRef associated with this Body. */
   protected SootMethod method;
 
   private static BodyValidator[] validators;
@@ -101,7 +101,7 @@ public class Body implements Serializable {
   };
 
   /**
-   * Creates a Body associated to the given method.
+   * Creates a Body associated to the given methodRef.
    * 
    * @param m
    * @param locals
@@ -116,7 +116,7 @@ public class Body implements Serializable {
   }
 
   /**
-   * Creates an body which is not associated to any method.
+   * Creates an body which is not associated to any methodRef.
    * 
    * @param locals
    *          please use {@link LocalGenerator} to generate local for a body.
@@ -134,22 +134,22 @@ public class Body implements Serializable {
   }
 
   /**
-   * Returns the method associated with this Body.
+   * Returns the methodRef associated with this Body.
    *
-   * @return the method that owns this body.
+   * @return the methodRef that owns this body.
    */
   public SootMethod getMethod() {
     if (method == null) {
-      throw new RuntimeException("no method associated w/ body");
+      throw new RuntimeException("no methodRef associated w/ body");
     }
     return method;
   }
 
   /**
-   * Sets the method associated with this Body.
+   * Sets the methodRef associated with this Body.
    *
    * @param method
-   *          the method that owns this body.
+   *          the methodRef that owns this body.
    *
    */
   protected void setMethod(SootMethod method) {
@@ -352,12 +352,12 @@ public class Body implements Serializable {
   }
 
   public Collection<ValueBox> getUseBoxes() {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
   public Collection<ValueBox> getDefBoxes() {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
@@ -367,7 +367,7 @@ public class Body implements Serializable {
    * is either a target of a branch or is being used as a pointer to the end of a CFG block.
    *
    * <p>
-   * This method is typically used for pointer patching, e.g. when the unit chain is cloned.
+   * This methodRef is typically used for pointer patching, e.g. when the unit chain is cloned.
    *
    * @return A collection of all the StmtBoxes held by this body's units.
    **/

@@ -404,7 +404,7 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
+   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
    * chunk.
    */
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
@@ -413,7 +413,7 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
+   * Constructs a NewSpecialInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
    * chunk.
    */
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
@@ -458,7 +458,7 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
+   * Constructs a NewVirtualInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
    * chunk.
    */
   public static JVirtualInvokeExpr newVirtualInvokeExpr(
@@ -467,7 +467,7 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
+   * Constructs a NewVirtualInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
    * chunk.
    */
   public static JVirtualInvokeExpr newVirtualInvokeExpr(
@@ -485,7 +485,7 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
+   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
    * chunk.
    */
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
@@ -494,7 +494,7 @@ public class Jimple {
   }
 
   /**
-   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
+   * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar
    * chunk.
    */
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(

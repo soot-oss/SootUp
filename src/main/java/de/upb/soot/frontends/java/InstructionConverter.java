@@ -1,52 +1,5 @@
 package de.upb.soot.frontends.java;
 
-import de.upb.soot.core.Modifier;
-import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.JStmtBox;
-import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.basic.LocalGenerator;
-import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.constant.ClassConstant;
-import de.upb.soot.jimple.common.constant.Constant;
-import de.upb.soot.jimple.common.constant.DoubleConstant;
-import de.upb.soot.jimple.common.constant.FloatConstant;
-import de.upb.soot.jimple.common.constant.IntConstant;
-import de.upb.soot.jimple.common.constant.LongConstant;
-import de.upb.soot.jimple.common.constant.NullConstant;
-import de.upb.soot.jimple.common.constant.StringConstant;
-import de.upb.soot.jimple.common.expr.AbstractBinopExpr;
-import de.upb.soot.jimple.common.expr.AbstractConditionExpr;
-import de.upb.soot.jimple.common.expr.JCastExpr;
-import de.upb.soot.jimple.common.expr.JEqExpr;
-import de.upb.soot.jimple.common.expr.JInstanceOfExpr;
-import de.upb.soot.jimple.common.expr.JNegExpr;
-import de.upb.soot.jimple.common.expr.JNewExpr;
-import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
-import de.upb.soot.jimple.common.ref.JArrayRef;
-import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
-import de.upb.soot.jimple.common.ref.JStaticFieldRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.stmt.JAssignStmt;
-import de.upb.soot.jimple.common.stmt.JGotoStmt;
-import de.upb.soot.jimple.common.stmt.JIfStmt;
-import de.upb.soot.jimple.common.stmt.JInvokeStmt;
-import de.upb.soot.jimple.common.stmt.JNopStmt;
-import de.upb.soot.jimple.common.stmt.JThrowStmt;
-import de.upb.soot.jimple.common.type.ArrayType;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
-import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
-import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.SignatureFactory;
-
 import com.ibm.wala.cast.ir.ssa.AssignInstruction;
 import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
 import com.ibm.wala.cast.ir.ssa.AstLexicalAccess.Access;
@@ -88,6 +41,54 @@ import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
+
+import de.upb.soot.core.Modifier;
+import de.upb.soot.core.SootField;
+import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JStmtBox;
+import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.LocalGenerator;
+import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.common.constant.ClassConstant;
+import de.upb.soot.jimple.common.constant.Constant;
+import de.upb.soot.jimple.common.constant.DoubleConstant;
+import de.upb.soot.jimple.common.constant.FloatConstant;
+import de.upb.soot.jimple.common.constant.IntConstant;
+import de.upb.soot.jimple.common.constant.LongConstant;
+import de.upb.soot.jimple.common.constant.NullConstant;
+import de.upb.soot.jimple.common.constant.StringConstant;
+import de.upb.soot.jimple.common.expr.AbstractBinopExpr;
+import de.upb.soot.jimple.common.expr.AbstractConditionExpr;
+import de.upb.soot.jimple.common.expr.JCastExpr;
+import de.upb.soot.jimple.common.expr.JEqExpr;
+import de.upb.soot.jimple.common.expr.JInstanceOfExpr;
+import de.upb.soot.jimple.common.expr.JNegExpr;
+import de.upb.soot.jimple.common.expr.JNewExpr;
+import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
+import de.upb.soot.jimple.common.ref.JArrayRef;
+import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
+import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
+import de.upb.soot.jimple.common.ref.JStaticFieldRef;
+import de.upb.soot.jimple.common.ref.MethodRef;
+import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.JAssignStmt;
+import de.upb.soot.jimple.common.stmt.JGotoStmt;
+import de.upb.soot.jimple.common.stmt.JIfStmt;
+import de.upb.soot.jimple.common.stmt.JInvokeStmt;
+import de.upb.soot.jimple.common.stmt.JNopStmt;
+import de.upb.soot.jimple.common.stmt.JThrowStmt;
+import de.upb.soot.jimple.common.type.ArrayType;
+import de.upb.soot.jimple.common.type.BooleanType;
+import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.common.type.UnknownType;
+import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
+import de.upb.soot.signatures.FieldSignature;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.SignatureFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -296,7 +297,8 @@ public class InstructionConverter {
     stmts.add(newAssignStmt);
     MethodSignature methodSig
         = sigFactory.getMethodSignature("<init>", "java.lang.AssertionError", "void", Collections.emptyList());
-    JSpecialInvokeExpr invoke = Jimple.newSpecialInvokeExpr(converter.view, failureLocal, methodSig);
+    MethodRef methodRef = Jimple.newMethodRef(converter.view, methodSig,false);
+    JSpecialInvokeExpr invoke = Jimple.newSpecialInvokeExpr(converter.view, failureLocal, methodRef);
     JInvokeStmt invokeStmt = Jimple.newInvokeStmt(invoke);
     stmts.add(invokeStmt);
     JThrowStmt throwStmt = Jimple.newThrowStmt(failureLocal);
@@ -561,6 +563,8 @@ public class InstructionConverter {
         declaringClassSignature, returnType, parameters);
 
     if (!callee.isStatic()) {
+      MethodRef methodRef = Jimple.newMethodRef(converter.view, methodSig, false);
+
       int receiver = invokeInst.getReceiver();
       Type classType = converter.convertType(target.getDeclaringClass());
       Local base = getLocal(classType, receiver);
@@ -568,16 +572,18 @@ public class InstructionConverter {
         Type baseType = UnknownType.getInstance();
         // TODO. baseType could be a problem.
         base = getLocal(baseType, receiver);
-        invoke = Jimple.newSpecialInvokeExpr(converter.view, base, methodSig, args); // constructor
+        invoke = Jimple.newSpecialInvokeExpr(converter.view, base, methodRef, args); // constructor
       } else if (callee.isVirtual()) {
-        invoke = Jimple.newVirtualInvokeExpr(converter.view, base, methodSig, args);
+        invoke = Jimple.newVirtualInvokeExpr(converter.view, base, methodRef, args);
       } else if (callee.isInterface()) {
-        invoke = Jimple.newInterfaceInvokeExpr(converter.view, base, methodSig, args);
+        invoke = Jimple.newInterfaceInvokeExpr(converter.view, base, methodRef, args);
       } else {
         throw new RuntimeException("Unsupported invoke instruction: " + callee.toString());
       }
     } else {
-      invoke = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
+      MethodRef methodRef = Jimple.newMethodRef(converter.view, methodSig, true);
+
+      invoke = Jimple.newStaticInvokeExpr(converter.view, methodRef, args);
     }
 
     if (!invokeInst.hasDef()) {

@@ -149,7 +149,7 @@ public class ArrayType extends RefLikeType {
 
   /**
    * If I have a variable x of declared type t, what is a good declared type for the expression
-   * ((Object[]) x)[i]? The getArrayElementType() method in RefLikeType was introduced to answer
+   * ((Object[]) x)[i]? The getArrayElementType() methodRef in RefLikeType was introduced to answer
    * this question for all classes implementing RefLikeType. If t is an array, then the answer is
    * the same as getElementType(). But t could also be Object, Serializable, or Cloneable, which can
    * all hold any array, so then the answer is Object.
@@ -161,7 +161,7 @@ public class ArrayType extends RefLikeType {
 
   /**
    * If I get an element of the array, what will be its type? That is, if I have an array a of type
-   * A[][][], what is the type of a[] (it's A[][])? The getElementType() method in ArrayType was
+   * A[][][], what is the type of a[] (it's A[][])? The getElementType() methodRef in ArrayType was
    * introduced to answer this question.
    */
   public Type getElementType() {

@@ -79,7 +79,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   /**
-   * Makes a parameterized call to JDynamicInvokeExpr method.
+   * Makes a parameterized call to JDynamicInvokeExpr methodRef.
    */
   public JDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef, List<? extends Value> bootstrapArgs,
       MethodSignature methodRef, List<? extends Value> methodArgs) {
@@ -174,7 +174,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     StringBuffer buffer = new StringBuffer();
     buffer.append(Jimple.DYNAMICINVOKE);
     buffer.append(" \"");
-    buffer.append(method); // quoted method name (can be any UTF8
+    buffer.append(method); // quoted methodRef name (can be any UTF8
     // string)
     buffer.append("\" <");
     buffer.append(method.getSubSignature());

@@ -326,7 +326,7 @@ public class WalaIRToJimpleConverter {
   }
 
   /**
-   * Return all modifiers for the given method.
+   * Return all modifiers for the given methodRef.
    * 
    * @param method
    * @return
@@ -421,7 +421,7 @@ public class WalaIRToJimpleConverter {
 
         int startPara = 0;
         if (!walaMethod.isStatic()) {
-          // wala's first parameter is this reference for non-static method
+          // wala's first parameter is this reference for non-static methodRef
           startPara = 1;
         }
         for (; startPara < walaMethod.getNumberOfParameters(); startPara++) {

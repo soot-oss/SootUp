@@ -4,10 +4,10 @@ public class FloatOps {
 
   // public static void main(String[] args) throws InvocationTargetException, IllegalAccessException {
   // FloatOps ops = new FloatOps();
-  // for (Method method : ops.getClass().getMethods()) {
-  // if (!method.getName().contains("main")) {
-  // final Object invoke = method.invoke(ops);
-  // System.out.println(method.getName());
+  // for (Method methodRef : ops.getClass().getMethods()) {
+  // if (!methodRef.getName().contains("main")) {
+  // final Object invoke = methodRef.invoke(ops);
+  // System.out.println(methodRef.getName());
   // }
   // }
   // }

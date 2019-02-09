@@ -50,13 +50,13 @@ import java.util.regex.Pattern;
  *
  * Implementation notes:
  *
- * 1. The getFieldOf() method is slow because it traverses the list of fields, comparing the names,
+ * 1. The getFieldOf() methodRef is slow because it traverses the list of fields, comparing the names,
  * one by one.  If you establish a Dictionary of Name->Field, you will need to add a
- * notifyOfNameChange() method, and register fields which belong to classes, because the hashtable
+ * notifyOfNameChange() methodRef, and register fields which belong to classes, because the hashtable
  * will need to be updated.  I will do this later. - kor  16-Sep-97
  *
  * 2. Note 1 is kept for historical (i.e. amusement) reasons.  In fact, there is no longer a list of fields;
- * these are kept in a Chain now.  But that's ok; there is no longer a getFieldOf() method,
+ * these are kept in a Chain now.  But that's ok; there is no longer a getFieldOf() methodRef,
  * either.  There still is no efficient way to get a field by name, although one could establish
  * a Chain of EquivalentValue-like objects and do an O(1) search on that.  - plam 2-24-00
  */
@@ -246,7 +246,7 @@ public class SootClass extends AbstractClass implements Serializable {
    *           if the resolution is at an insufficient level
    */
   public void checkLevel(ResolvingLevel level) {
-    // Fast check: e.g. FastHierarchy.canStoreClass calls this method quite
+    // Fast check: e.g. FastHierarchy.canStoreClass calls this methodRef quite
     // often
     ResolvingLevel currentLevel = resolvingLevel();
     if (currentLevel.ordinal() >= level.ordinal()) {
@@ -383,7 +383,7 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the method with the given name, parameters and return type. If no matching method can be found, an
+   * Attempts to retrieve the methodRef with the given name, parameters and return type. If no matching methodRef can be found, an
    * exception is thrown.
    */
   public SootMethod getMethod(String name, List<Type> parameterTypes, Type returnType) {
@@ -393,11 +393,11 @@ public class SootClass extends AbstractClass implements Serializable {
     }
 
     throw new RuntimeException(
-        "Class " + classSignature + " doesn't have method " + name + "(" + parameterTypes + ")" + " : " + returnType);
+        "Class " + classSignature + " doesn't have methodRef " + name + "(" + parameterTypes + ")" + " : " + returnType);
   }
 
   /**
-   * Attempts to retrieve the method with the given name, parameters and return type. If no matching method can be found,
+   * Attempts to retrieve the methodRef with the given name, parameters and return type. If no matching methodRef can be found,
    * null is returned.
    */
   public SootMethod getMethodUnsafe(String name, List<Type> parameterTypes, Type returnType) {
@@ -417,8 +417,8 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the method with the given name and parameters. This method may throw an AmbiguousMethodException if
-   * there is more than one method with the given name and parameter.
+   * Attempts to retrieve the methodRef with the given name and parameters. This methodRef may throw an AmbiguousMethodException if
+   * there is more than one methodRef with the given name and parameter.
    */
 
   public SootMethod getMethod(String name, List<Type> parameterTypes) {
@@ -435,20 +435,20 @@ public class SootClass extends AbstractClass implements Serializable {
         if (foundMethod == null) {
           foundMethod = method;
         } else {
-          throw new RuntimeException("ambiguous method");
+          throw new RuntimeException("ambiguous methodRef");
         }
       }
     }
 
     if (foundMethod == null) {
-      throw new RuntimeException("couldn't find method " + name + "(" + parameterTypes + ") in " + this);
+      throw new RuntimeException("couldn't find methodRef " + name + "(" + parameterTypes + ") in " + this);
     }
     return foundMethod;
   }
 
   /**
-   * Attempts to retrieve the method with the given subSignature. This method may throw an AmbiguousMethodException if there
-   * are more than one method with the given subSignature. If no method with the given is found, null is returned.
+   * Attempts to retrieve the methodRef with the given subSignature. This methodRef may throw an AmbiguousMethodException if there
+   * are more than one methodRef with the given subSignature. If no methodRef with the given is found, null is returned.
    */
   public SootMethod getMethodBySubSignature(String subSignature) {
     checkLevel(ResolvingLevel.SIGNATURES);
@@ -462,7 +462,7 @@ public class SootClass extends AbstractClass implements Serializable {
         if (foundMethod == null) {
           foundMethod = method;
         } else {
-          throw new RuntimeException("ambiguous method: " + subSignature + " in class " + this);
+          throw new RuntimeException("ambiguous methodRef: " + subSignature + " in class " + this);
         }
       }
     }
@@ -470,13 +470,13 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the method with the given name. This method may throw an AmbiguousMethodException if there are more
-   * than one method with the given name. If no method with the given is found, an exception is thrown as well.
+   * Attempts to retrieve the methodRef with the given name. This methodRef may throw an AmbiguousMethodException if there are more
+   * than one methodRef with the given name. If no methodRef with the given is found, an exception is thrown as well.
    */
   public SootMethod getMethodByName(String name) {
     SootMethod foundMethod = getMethodBySubSignature(name);
     if (foundMethod == null) {
-      throw new RuntimeException("couldn't find method " + name + "(*) in " + this);
+      throw new RuntimeException("couldn't find methodRef " + name + "(*) in " + this);
     }
     return foundMethod;
   }
@@ -557,7 +557,7 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * This method returns the outer class.
+   * This methodRef returns the outer class.
    */
   public Optional<SootClass> getOuterClass() {
     checkLevel(ResolvingLevel.HIERARCHY);
@@ -576,19 +576,19 @@ public class SootClass extends AbstractClass implements Serializable {
     return classSignature;
   }
 
-  /** Convenience method; returns true if this class is an interface. */
+  /** Convenience methodRef; returns true if this class is an interface. */
   public boolean isInterface() {
     checkLevel(ResolvingLevel.HIERARCHY);
     return Modifier.isInterface(this.getModifiers());
   }
 
-  /** Convenience method; returns true if this class is an enumeration. */
+  /** Convenience methodRef; returns true if this class is an enumeration. */
   public boolean isEnum() {
     checkLevel(ResolvingLevel.HIERARCHY);
     return Modifier.isEnum(this.getModifiers());
   }
 
-  /** Convenience method; returns true if this class is synchronized. */
+  /** Convenience methodRef; returns true if this class is synchronized. */
   public boolean isSynchronized() {
     checkLevel(ResolvingLevel.HIERARCHY);
     return Modifier.isSynchronized(this.getModifiers());
@@ -599,7 +599,7 @@ public class SootClass extends AbstractClass implements Serializable {
     return !isInterface() && !isAbstract();
   }
 
-  /** Convenience method; returns true if this class is public. */
+  /** Convenience methodRef; returns true if this class is public. */
   public boolean isPublic() {
     return Modifier.isPublic(this.getModifiers());
   }
@@ -659,35 +659,35 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Convenience method returning true if this class is private.
+   * Convenience methodRef returning true if this class is private.
    */
   public boolean isPrivate() {
     return Modifier.isPrivate(this.getModifiers());
   }
 
   /**
-   * Convenience method returning true if this class is protected.
+   * Convenience methodRef returning true if this class is protected.
    */
   public boolean isProtected() {
     return Modifier.isProtected(this.getModifiers());
   }
 
   /**
-   * Convenience method returning true if this class is abstract.
+   * Convenience methodRef returning true if this class is abstract.
    */
   public boolean isAbstract() {
     return Modifier.isAbstract(this.getModifiers());
   }
 
   /**
-   * Convenience method returning true if this class is final.
+   * Convenience methodRef returning true if this class is final.
    */
   public boolean isFinal() {
     return Modifier.isFinal(this.getModifiers());
   }
 
   /**
-   * Convenience method returning true if this class is static.
+   * Convenience methodRef returning true if this class is static.
    */
   public boolean isStatic() {
     return Modifier.isStatic(this.getModifiers());
@@ -711,7 +711,7 @@ public class SootClass extends AbstractClass implements Serializable {
   };
 
   /**
-   * Validates this SootClass for logical errors. Note that this does not validate the method bodies, only the class
+   * Validates this SootClass for logical errors. Note that this does not validate the methodRef bodies, only the class
    * structure.
    */
   public void validate() {
@@ -723,7 +723,7 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Validates this SootClass for logical errors. Note that this does not validate the method bodies, only the class
+   * Validates this SootClass for logical errors. Note that this does not validate the methodRef bodies, only the class
    * structure. All found errors are saved into the given list.
    */
   public void validate(List<ValidationException> exceptionList) {

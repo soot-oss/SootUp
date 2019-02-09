@@ -58,8 +58,8 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
   }
 
   /**
-   * Returns a unique ModuleSignature. The method looks up a cache if it already contains a signature with the given module
-   * name. If the cache lookup fails a new signature is created. Returns a unique ModuleSignature. The method looks up a
+   * Returns a unique ModuleSignature. The methodRef looks up a cache if it already contains a signature with the given module
+   * name. If the cache lookup fails a new signature is created. Returns a unique ModuleSignature. The methodRef looks up a
    * cache if it already contains a signature with the given module name. If the cache lookup fails a new signature is
    * created.
    *
@@ -85,7 +85,7 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
   }
 
   /**
-   * Returns a unique PackageSignature. The method looks up a cache if it already contains a signature with the given package
+   * Returns a unique PackageSignature. The methodRef looks up a cache if it already contains a signature with the given package
    * and module name. If the cache lookup fails a new signature is created.
    *
    * @param packageName

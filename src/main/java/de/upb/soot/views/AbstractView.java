@@ -76,31 +76,31 @@ public abstract class AbstractView implements IView {
 
   @Override
   public ICallGraph createCallGraph() {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
   public ICallGraph createCallGraph(ICallGraphAlgorithm algorithm) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
   public ITypeHierarchy createTypeHierarchy() {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
   public Optional<Scope> getScope() {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
   public boolean doneResolving() {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return false;
   }
 

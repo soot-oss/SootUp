@@ -27,7 +27,7 @@ import de.upb.soot.core.SootClass;
 import java.util.List;
 
 /**
- * Validates classes to make sure that all method signatures are valid
+ * Validates classes to make sure that all methodRef signatures are valid
  *
  * @author Steven Arzt
  */

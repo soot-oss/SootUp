@@ -25,21 +25,22 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.common.ref.MethodRef;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import org.objectweb.asm.Opcodes;
 
 import java.util.Comparator;
 
+import org.objectweb.asm.Opcodes;
+
 public class MethodHandle extends Constant {
+
   public static enum Kind {
-    REF_GET_FIELD(Opcodes.H_GETFIELD, "REF_GET_FIELD"),
-    REF_GET_FIELD_STATIC(Opcodes.H_GETSTATIC, "REF_GET_FIELD_STATIC"),
-    REF_PUT_FIELD(Opcodes.H_PUTFIELD, "REF_PUT_FIELD"),
-    REF_PUT_FIELD_STATIC(Opcodes.H_PUTSTATIC, "REF_PUT_FIELD_STATIC"),
+    REF_GET_FIELD(Opcodes.H_GETFIELD, "REF_GET_FIELD"), REF_GET_FIELD_STATIC(Opcodes.H_GETSTATIC, "REF_GET_FIELD_STATIC"),
+    REF_PUT_FIELD(Opcodes.H_PUTFIELD, "REF_PUT_FIELD"), REF_PUT_FIELD_STATIC(Opcodes.H_PUTSTATIC, "REF_PUT_FIELD_STATIC"),
     REF_INVOKE_VIRTUAL(Opcodes.H_INVOKEVIRTUAL, "REF_INVOKE_VIRTUAL"),
     REF_INVOKE_STATIC(Opcodes.H_INVOKESTATIC, "REF_INVOKE_STATIC"),
     REF_INVOKE_SPECIAL(Opcodes.H_INVOKESPECIAL, "REF_INVOKE_SPECIAL"),
@@ -69,7 +70,7 @@ public class MethodHandle extends Constant {
           return k;
         }
       }
-      throw new RuntimeException("Error: No method handle kind for value '" + kind + "'.");
+      throw new RuntimeException("Error: No methodRef handle kind for value '" + kind + "'.");
     }
 
     public static Kind getKind(String kind) {
@@ -78,32 +79,49 @@ public class MethodHandle extends Constant {
           return k;
         }
       }
-      throw new RuntimeException("Error: No method handle kind for value '" + kind + "'.");
+      throw new RuntimeException("Error: No methodRef handle kind for value '" + kind + "'.");
     }
 
   }
-
-
 
   /**
    * 
    */
   private static final long serialVersionUID = 76297846662243365L;
-  public final SootMethod method;
+  public final MethodRef methodRef;
+  private final FieldRef fieldRef;
+
   public int tag;
 
-  private MethodHandle(SootMethod ref, int tag) {
-    this.method = ref;
+  private MethodHandle(MethodRef ref, int tag) {
+    this.methodRef = ref;
     this.tag = tag;
+    this.fieldRef = null;
   }
 
-  public static MethodHandle getInstance(SootMethod ref, int tag) {
+  private MethodHandle(FieldRef ref, int tag) {
+    this.fieldRef = ref;
+    this.tag = tag;
+    this.methodRef = null;
+  }
+
+  public static MethodHandle getInstance(MethodRef ref, int tag) {
     return new MethodHandle(ref, tag);
+  }
+
+  public static MethodHandle getInstance(FieldRef ref, int tag) {
+    return new MethodHandle(ref, tag);
+  }
+
+  public static boolean isMethodRef(int kind) {
+    return kind == Kind.REF_INVOKE_VIRTUAL.getValue() || kind == Kind.REF_INVOKE_STATIC.getValue()
+        || kind == Kind.REF_INVOKE_SPECIAL.getValue() || kind == Kind.REF_INVOKE_CONSTRUCTOR.getValue()
+        || kind == Kind.REF_INVOKE_INTERFACE.getValue();
   }
 
   @Override
   public String toString() {
-    return "handle: " + method;
+    return "handle: " + methodRef;
   }
 
   @Override
@@ -111,8 +129,8 @@ public class MethodHandle extends Constant {
     return RefType.getInstance("java.lang.invoke.MethodHandle");
   }
 
-  public SootMethod getMethodRef() {
-    return method;
+  public MethodRef getMethodRef() {
+    return methodRef;
   }
 
   @Override
@@ -124,7 +142,7 @@ public class MethodHandle extends Constant {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((method == null) ? 0 : method.hashCode());
+    result = prime * result + ((methodRef == null) ? 0 : methodRef.hashCode());
     return result;
   }
 
@@ -140,11 +158,11 @@ public class MethodHandle extends Constant {
       return false;
     }
     MethodHandle other = (MethodHandle) obj;
-    if (method == null) {
-      if (other.method != null) {
+    if (methodRef == null) {
+      if (other.methodRef != null) {
         return false;
       }
-    } else if (!method.equals(other.method)) {
+    } else if (!methodRef.equals(other.methodRef)) {
       return false;
     }
     return true;
@@ -152,7 +170,7 @@ public class MethodHandle extends Constant {
 
   @Override
   public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return false;
   }
 }

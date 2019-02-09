@@ -88,7 +88,7 @@ public class JStaticFieldRef implements FieldRef {
 
   @Override
   public void accept(IVisitor v) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
   }
 
   @Override

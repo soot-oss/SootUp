@@ -78,7 +78,7 @@ public class StringConstant extends Constant {
 
   @Override
   public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return false;
   }
 }

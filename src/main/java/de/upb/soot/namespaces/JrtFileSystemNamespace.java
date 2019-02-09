@@ -134,10 +134,10 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   }
 
   // TODO: originally, I could create a ModuleSingatre in any case, however, then
-  // every signature factory needs a method create from path
+  // every signature factory needs a methodRef create from path
   // however, I cannot think of a general way for java 9 modules anyway....
   // how to create the module name if we have a jar file..., or a multi jar, or the jrt file system
-  // nevertheless, one general method for all signatures seems reasonable
+  // nevertheless, one general methodRef for all signatures seems reasonable
   private JavaClassSignature fromPath(final Path filename, final Path moduleDir, final SignatureFactory factory) {
 
     // else use the module system and create fully class signature

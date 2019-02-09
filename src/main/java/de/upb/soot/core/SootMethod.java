@@ -39,9 +39,9 @@ import java.util.Optional;
 import java.util.StringTokenizer;
 
 /**
- * Soot's counterpart of th import java.util.stream.Collectors;e source language's method concept. Soot representation of a
- * Java method. Can be declared to belong to a SootClass. Does not contain the actual code, which belongs to a Body. The
- * getActiveBody() method points to the currently-active body.
+ * Soot's counterpart of th import java.util.stream.Collectors;e source language's methodRef concept. Soot representation of a
+ * Java methodRef. Can be declared to belong to a SootClass. Does not contain the actual code, which belongs to a Body. The
+ * getActiveBody() methodRef points to the currently-active body.
  *
  * Modified by Linghui Luo
  *
@@ -62,13 +62,13 @@ public class SootMethod extends SootClassMember implements IMethod {
    */
   private final List<TypeSignature> parameterTypes;
 
-  /** Declared exceptions thrown by this method. Created upon demand. */
+  /** Declared exceptions thrown by this methodRef. Created upon demand. */
   protected final List<JavaClassSignature> exceptions;
 
-  /** Active body associated with this method. */
+  /** Active body associated with this methodRef. */
   protected final Body activeBody;
 
-  /** Tells this method how to find out where its body lives. */
+  /** Tells this methodRef how to find out where its body lives. */
   private final IMethodSourceContent methodSource;
 
   /**
@@ -98,7 +98,7 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   /**
-   * Construct a SootMethod object with the attributes of given method and activeBody.
+   * Construct a SootMethod object with the attributes of given methodRef and activeBody.
    *
    * @param method
    * @param activeBody
@@ -117,29 +117,29 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   /**
-   * Returns true if this method is not phantom, abstract or native, i.e. this method can have a body.
+   * Returns true if this methodRef is not phantom, abstract or native, i.e. this methodRef can have a body.
    */
   public boolean isConcrete() {
     return !isPhantom() && !isAbstract() && !isNative();
   }
 
-  /** Returns the return type of this method. */
+  /** Returns the return type of this methodRef. */
   public Type getReturnType() {
     return this.getView().getType(this.typeSignature);
   }
 
-  /** Returns the number of parameters taken by this method. */
+  /** Returns the number of parameters taken by this methodRef. */
   public int getParameterCount() {
     return parameterTypes == null ? 0 : parameterTypes.size();
   }
 
-  /** Gets the type of the <i>n</i>th parameter of this method. */
+  /** Gets the type of the <i>n</i>th parameter of this methodRef. */
   public Type getParameterType(int n) {
     return this.getView().getType(parameterTypes.get(n));
   }
 
   /**
-   * Returns a read-only list of the parameter types of this method.
+   * Returns a read-only list of the parameter types of this methodRef.
    */
   public Collection<Type> getParameterTypes() {
     List<Type> ret = new ArrayList<Type>();
@@ -148,24 +148,24 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   /**
-   * Retrieves the active body for this method.
+   * Retrieves the active body for this methodRef.
    */
   public Body getActiveBody() {
     return this.activeBody;
   }
 
-  /** Returns true if this method has an active body. */
+  /** Returns true if this methodRef has an active body. */
   public boolean hasActiveBody() {
     return activeBody != null;
   }
 
-  /** Returns true if this method throws exception <code>e</code>. */
+  /** Returns true if this methodRef throws exception <code>e</code>. */
   public boolean throwsException(SootClass e) {
     return exceptions != null && exceptions.contains(e);
   }
 
   /**
-   * Returns a backed list of the exceptions thrown by this method.
+   * Returns a backed list of the exceptions thrown by this methodRef.
    */
 
   public Collection<SootClass> getExceptions() {
@@ -176,21 +176,21 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   /**
-   * Convenience method returning true if this method is abstract.
+   * Convenience methodRef returning true if this methodRef is abstract.
    */
   public boolean isAbstract() {
     return Modifier.isAbstract(this.getModifiers());
   }
 
   /**
-   * Convenience method returning true if this method is native.
+   * Convenience methodRef returning true if this methodRef is native.
    */
   public boolean isNative() {
     return Modifier.isNative(this.getModifiers());
   }
 
   /**
-   * Convenience method returning true if this method is synchronized.
+   * Convenience methodRef returning true if this methodRef is synchronized.
    */
   public boolean isSynchronized() {
     return Modifier.isSynchronized(this.getModifiers());
@@ -198,7 +198,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
   /**
    *
-   * @return yes if this is the main method
+   * @return yes if this is the main methodRef
    */
   public boolean isMain() {
     if (isPublic() && isStatic()) {
@@ -212,7 +212,7 @@ public class SootMethod extends SootClassMember implements IMethod {
   /**
    *
    * @return yes, if this function is a constructor. Please not that <clinit> methods are not treated as constructors in this
-   *         method.
+   *         methodRef.
    */
   public boolean isConstructor() {
     return this.signature.name.equals(constructorName);
@@ -227,7 +227,7 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   /**
-   * We rely on the JDK class recognition to decide if a method is JDK method.
+   * We rely on the JDK class recognition to decide if a methodRef is JDK methodRef.
    */
   public boolean isJavaLibraryMethod() {
     Optional<SootClass> op = getDeclaringClass();
@@ -240,7 +240,7 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   /**
-   * Returns the declaration of this method, as used at the top of textual body representations (before the {}'s containing
+   * Returns the declaration of this methodRef, as used at the top of textual body representations (before the {}'s containing
    * the code for representation.)
    */
   public String getDeclaration() {

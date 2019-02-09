@@ -40,7 +40,7 @@ public enum FieldRefValidator implements BodyValidator {
   public void validate(Body body, List<ValidationException> exceptions) {
     // TODO: check copied code from old soot
     /*
-     * SootMethod method = body.getMethod(); if (method.isAbstract()) { return; }
+     * SootMethod methodRef = body.getMethod(); if (methodRef.isAbstract()) { return; }
      * 
      * Chain<Unit> units = body.getUnits().getNonPatchingChain();
      * 

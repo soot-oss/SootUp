@@ -69,7 +69,7 @@ public final class AsmUtil {
    * @param type the type to check.
    * @return {@code true} if its a dword type.
    */
-  // FIXME: this is the old method using type....
+  // FIXME: this is the old methodRef using type....
   public static boolean isDWord(Type type) {
     return type instanceof LongType || type instanceof DoubleType;
   }
@@ -109,10 +109,10 @@ public final class AsmUtil {
 
   // FIXME: migrated from old soot
   /**
-   * Converts a method signature to a list of types, with the last entry in the returned list
+   * Converts a methodRef signature to a list of types, with the last entry in the returned list
    * denoting the return type.
    *
-   * @param desc method signature.
+   * @param desc methodRef signature.
    * @return list of types.
    */
   // FIXME: this is old
