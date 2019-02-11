@@ -98,9 +98,9 @@ public class Body implements Serializable {
           CheckEscapingValidator.getInstance() };
     }
     return validators;
-  };
+  }
 
-  /**
+    /**
    * Creates a Body associated to the given method.
    * 
    * @param locals

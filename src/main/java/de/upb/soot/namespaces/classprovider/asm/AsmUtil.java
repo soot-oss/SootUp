@@ -145,7 +145,6 @@ public final class AsmUtil {
           case 'L':
             int begin = idx;
             while (desc.charAt(++idx) != ';') {
-              ;
             }
             String cls = desc.substring(begin, idx++);
             baseType = view.getRefType(view.getSignatureFactory().getTypeSignature((AsmUtil.toQualifiedName(cls))));

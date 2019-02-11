@@ -712,7 +712,7 @@ public class SootClass extends AbstractClass implements Serializable {
           ClassFlagsValidator.getInstance() };
     }
     return validators;
-  };
+  }
 
   /**
    * Validates this SootClass for logical errors. Note that this does not validate the method bodies, only the class
