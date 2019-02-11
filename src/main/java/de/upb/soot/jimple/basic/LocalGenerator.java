@@ -58,7 +58,7 @@ public class LocalGenerator {
   }
 
   protected boolean bodyContainsLocal(String name) {
-    return locals.stream().filter(c -> c.name.equals(name)).findFirst().isPresent();
+    return locals.stream().anyMatch(c -> c.name.equals(name));
   }
 
   /**
