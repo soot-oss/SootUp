@@ -33,7 +33,7 @@ public class CompositeNamespace implements INamespace {
     @Override
     public Optional<AbstractClassSource> getClassSource(JavaClassSignature signature) {
         List<Optional<AbstractClassSource>> result = namespaces.stream().map(n -> n.getClassSource(signature))
-                                                                .filter(o -> o.isPresent()).collect(Collectors.toList());
+                                                                .filter(Optional::isPresent).collect(Collectors.toList());
         if(result.size() > 1) {
             // TODO: Warn here b/c of multiple results
             return Optional.empty();
@@ -51,7 +51,7 @@ public class CompositeNamespace implements INamespace {
      */
     @Override
     public IClassProvider getClassProvider() {
-        return namespaces.stream().findFirst().map(n -> n.getClassProvider()).orElse(null);
+        return namespaces.stream().findFirst().map(INamespace::getClassProvider).orElse(null);
     }
 
   @Override

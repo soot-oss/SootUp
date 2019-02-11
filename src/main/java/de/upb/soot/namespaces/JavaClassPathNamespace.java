@@ -103,7 +103,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
     final Stream<Path> exploded = Stream.of(paths.split(regex)).flatMap(JavaClassPathNamespace::handleWildCards);
     // we need to filter out duplicates of the same files to not generate duplicate namespaces
-    return exploded.map(cp -> cp.normalize()).distinct();
+    return exploded.map(Path::normalize).distinct();
   }
 
   /**
