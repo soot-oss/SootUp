@@ -218,7 +218,7 @@ public class LongConstant extends ArithmeticConstant {
 
   @Override
   public String toString() {
-    return Long.toString(value) + "L";
+    return value + "L";
   }
 
   @Override
