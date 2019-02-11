@@ -1,6 +1,7 @@
 package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
+
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.FieldSignature;
@@ -11,9 +12,6 @@ import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
-import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -21,6 +19,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the {@link INamespace} interface for the Java modulepath. Handles directories, archives (including
@@ -43,8 +45,8 @@ public class JavaModulePathNamespace extends AbstractNamespace {
    * Creates a {@link JavaModulePathNamespace} which locates classes in the given module path.
    *
    * @param modulePath
-   *          The class path to search in The {@link IClassProvider} for generating {@link AbstractClassSource}es for the files found
-   *          on the class path
+   *          The class path to search in The {@link IClassProvider} for generating {@link AbstractClassSource}es for the
+   *          files found on the class path
    */
   public JavaModulePathNamespace(String modulePath, IClassProvider classProvider) {
     super(classProvider);
@@ -133,8 +135,8 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     }
 
     @Override
-    public MethodSignature getMethodSignature(String methodName, JavaClassSignature declaringClassSignature, String fqReturnType,
-        List<String> parameters) {
+    public MethodSignature getMethodSignature(String methodName, JavaClassSignature declaringClassSignature,
+        String fqReturnType, List<String> parameters) {
       return factory.getMethodSignature(methodName, declaringClassSignature, fqReturnType, parameters);
     }
 

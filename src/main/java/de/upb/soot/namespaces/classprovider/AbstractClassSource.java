@@ -9,7 +9,6 @@ import java.nio.file.Path;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-
 //FIXME: I don't see the need for subclassing is currently it is just a container mapping a found file to a class signature and a namespace
 
 /**
@@ -28,19 +27,19 @@ public abstract class AbstractClassSource {
   private final Path sourcePath;
 
   /**
-   * Creates and a {@link AbstractClassSource} for a specific source file. The file should be passed as {@link Path} and can be
-   * located in an arbitrary {@link java.nio.file.FileSystem}. Implementations should use
+   * Creates and a {@link AbstractClassSource} for a specific source file. The file should be passed as {@link Path} and can
+   * be located in an arbitrary {@link java.nio.file.FileSystem}. Implementations should use
    * {@link java.nio.file.Files#newInputStream(Path, OpenOption...)} to access the file.
    *
    * @param srcNamespace
    *          The {@link INamespace} that holds the given file
    * @param sourcePath
-   *          Path to the source file of the to-be-created {@link AbstractClassSource}. The given path has to exist and requires to
-   *          be handled by this {@link IClassProvider}. Implementations might double check this if wanted.
+   *          Path to the source file of the to-be-created {@link AbstractClassSource}. The given path has to exist and
+   *          requires to be handled by this {@link IClassProvider}. Implementations might double check this if wanted.
    * @param classSignature
    *          the signature that has been used to resolve this class
-   * @return A not yet resolved {@link AbstractClassSource}, backed up by the given file A not yet resolved {@link AbstractClassSource},
-   *         backed up by the given file
+   * @return A not yet resolved {@link AbstractClassSource}, backed up by the given file A not yet resolved
+   *         {@link AbstractClassSource}, backed up by the given file
    */
   public AbstractClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {
     checkNotNull(srcNamespace);
@@ -96,6 +95,5 @@ public abstract class AbstractClassSource {
   public int hashCode() {
     return Objects.hashCode(srcNamespace, sourcePath);
   }
-
 
 }

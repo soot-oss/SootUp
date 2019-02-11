@@ -83,7 +83,8 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   public String toString() {
     StringBuilder builder = new StringBuilder();
 
-    builder.append(Jimple.INTERFACEINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(method).append("(");
+    builder.append(Jimple.INTERFACEINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(method)
+        .append("(");
     argBoxesToString(builder);
     builder.append(")");
 

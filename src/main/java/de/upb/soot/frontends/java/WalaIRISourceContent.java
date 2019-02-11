@@ -1,10 +1,10 @@
 package de.upb.soot.frontends.java;
 
+import com.ibm.wala.cast.loader.AstClass;
+
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.views.IView;
-
-import com.ibm.wala.cast.loader.AstClass;
 
 /**
  * Converts one Wala IR source file to Jimple representation
@@ -33,8 +33,8 @@ public class WalaIRISourceContent implements de.upb.soot.namespaces.classprovide
       case BODIES:
         break;
       default:
-          return null;
+        return null;
     }
-      return null;
+    return null;
   }
 }

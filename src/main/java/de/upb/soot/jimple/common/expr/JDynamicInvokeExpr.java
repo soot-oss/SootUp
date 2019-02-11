@@ -39,12 +39,13 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
-import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+
+import org.objectweb.asm.Opcodes;
 
 public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   /**
@@ -203,7 +204,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
     up.literal(") ");
     Optional<SootMethod> op = getBootstrapMethod();
-      op.ifPresent(up::method);
+    op.ifPresent(up::method);
     up.literal("(");
     final int len = bsmArgBoxes.length;
     if (0 < len) {

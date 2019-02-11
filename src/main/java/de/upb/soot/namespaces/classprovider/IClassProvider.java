@@ -35,7 +35,6 @@ import java.nio.file.Path;
  */
 public interface IClassProvider {
 
-
   AbstractClassSource createClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature);
 
   /**
@@ -47,6 +46,5 @@ public interface IClassProvider {
    * Create or provide a representation of the actual manifestation of the class.
    */
   de.upb.soot.namespaces.classprovider.ISourceContent getContent(AbstractClassSource classSource);
-
 
 }

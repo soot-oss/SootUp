@@ -17,32 +17,32 @@ import de.upb.soot.views.IView;
  */
 public class SimpleSootClient {
 
-    public static void main(String[] args) {
-        String javaClassPath = "example/classes/";
-        String javaSourcePath = "example/src";
+  public static void main(String[] args) {
+    String javaClassPath = "example/classes/";
+    String javaSourcePath = "example/src";
 
-        INamespace cpBased = new JavaClassPathNamespace(javaClassPath);
+    INamespace cpBased = new JavaClassPathNamespace(javaClassPath);
 
-        INamespace walaSource = new JavaSourcePathNamespace(javaSourcePath);
+    INamespace walaSource = new JavaSourcePathNamespace(javaSourcePath);
 
-        Project p = new Project(walaSource);
+    Project p = new Project(walaSource);
 
-        // 1. simple case
-        IView fullView = p.createFullView();
+    // 1. simple case
+    IView fullView = p.createFullView();
 
-        ICallGraph cg = fullView.createCallGraph();
-        ITypeHierarchy t = fullView.createTypeHierarchy();
+    ICallGraph cg = fullView.createCallGraph();
+    ITypeHierarchy t = fullView.createTypeHierarchy();
 
-        // here goes my own analysis
+    // here goes my own analysis
 
-        // 2. advanced case
-        Scope s = new Scope(cpBased);
-        IView limitedView = p.createView(s);
+    // 2. advanced case
+    Scope s = new Scope(cpBased);
+    IView limitedView = p.createView(s);
 
-        cg = limitedView.createCallGraph();
-        t = limitedView.createTypeHierarchy();
+    cg = limitedView.createCallGraph();
+    t = limitedView.createTypeHierarchy();
 
-        // here goes my own analysis
-    }
+    // here goes my own analysis
+  }
 
 }

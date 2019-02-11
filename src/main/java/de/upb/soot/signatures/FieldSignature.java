@@ -13,9 +13,7 @@ public class FieldSignature extends AbstractClassMemberSignature {
 
   @Override
   public String getSubSignature() {
-      return typeSignature.toString() +
-              ' ' +
-              name;
+    return typeSignature.toString() + ' ' + name;
   }
 
 }

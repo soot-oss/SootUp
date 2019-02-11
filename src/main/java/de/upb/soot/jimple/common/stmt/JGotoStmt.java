@@ -107,10 +107,12 @@ public class JGotoStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-      return o instanceof JGotoStmt && targetBox.getStmt().equivTo(((JGotoStmt) o).targetBox.getStmt());/*
-     * JGotoStmt gotoStmt = (JGotoStmt) o; List<IStmtBox> gotoStmtBoxes = gotoStmt.getStmtBoxes(); if( gotoStmtBoxes.size()
-     * != targetBoxes.size() ){ return false; } if( gotoStmt.equivHashCode() != equivHashCode()){ return false; }
-     */
+    return o instanceof JGotoStmt && targetBox.getStmt().equivTo(((JGotoStmt) o).targetBox
+        .getStmt());/*
+                     * JGotoStmt gotoStmt = (JGotoStmt) o; List<IStmtBox> gotoStmtBoxes = gotoStmt.getStmtBoxes(); if(
+                     * gotoStmtBoxes.size() != targetBoxes.size() ){ return false; } if( gotoStmt.equivHashCode() !=
+                     * equivHashCode()){ return false; }
+                     */
   }
 
   @Override

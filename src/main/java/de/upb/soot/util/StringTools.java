@@ -34,7 +34,9 @@ public class StringTools {
    */
   public static java.lang.String getEscapedStringOf(String fromString) {
     char[] fromStringArray;
-    int cr, lf, ch;
+    int cr;
+    int lf;
+    int ch;
     StringBuilder whole = new StringBuilder();
     StringBuilder mini = new StringBuilder();
 
@@ -70,7 +72,7 @@ public class StringTools {
   }
 
   /** Convenience field storing the system line separator. */
-  public final static String lineSeparator = System.getProperty("line.separator");
+  public static final String lineSeparator = System.getProperty("line.separator");
 
   /**
    * Returns fromString, but with certain characters printed as if they were in a Java string literal. Used by

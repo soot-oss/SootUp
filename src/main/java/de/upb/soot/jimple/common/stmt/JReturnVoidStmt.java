@@ -71,7 +71,7 @@ public class JReturnVoidStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-      return o instanceof JReturnVoidStmt;
+    return o instanceof JReturnVoidStmt;
   }
 
   @Override

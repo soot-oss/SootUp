@@ -28,8 +28,8 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
   public AsmClassSourceContent(AbstractClassSource classSource) {
     super(Opcodes.ASM6);
     this.classSource = classSource;
-    //FIXME: maybe delete class reading
-    AsmUtil.initASMClassSource(classSource, this);
+    // FIXME: maybe delete class reading
+    AsmUtil.initAsmClassSource(classSource, this);
 
   }
 
@@ -54,6 +54,9 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
       case BODIES:
         builder = (SootClass.SootClassBuilder) resolveBody(view, cs);
         break;
+
+        default:
+          throw new UnsupportedOperationException("Unsupported level " + level);
     }
 
     // FIXME: should return the build sootclass?
@@ -93,7 +96,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     }
     {
       // add the interfaces
-      Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(this.interfaces, view);
+      Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIdToSignature(this.interfaces, view);
       for (Optional<JavaClassSignature> interfaceClass : optionals) {
 
         interfaceClass.ifPresent(interfaces::add);
@@ -134,7 +137,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         List<Type> sigTypes = AsmUtil.toJimpleDesc(methodSource.desc, view);
         Type retType = sigTypes.remove(sigTypes.size() - 1);
         List<JavaClassSignature> exceptions = new ArrayList<>();
-        Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(methodSource.exceptions, view);
+        Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIdToSignature(methodSource.exceptions, view);
 
         for (Optional<JavaClassSignature> excepetionClass : optionals) {
           excepetionClass.ifPresent(exceptions::add);

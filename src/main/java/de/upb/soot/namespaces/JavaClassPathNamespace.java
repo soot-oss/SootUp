@@ -90,7 +90,6 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     logger.trace("{} class path entries registered", cpEntries.size());
   }
 
-
   /**
    * Explode the class or modulepath entries, separated by {@link File#pathSeparator}.
    *

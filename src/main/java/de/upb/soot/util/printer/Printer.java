@@ -68,7 +68,6 @@ public class Printer {
     return (options & ADD_JIMPLE_LN) != 0;
   }
 
-
   public void setOption(int opt) {
     options |= opt;
   }
@@ -76,7 +75,6 @@ public class Printer {
   public void clearOption(int opt) {
     options &= ~opt;
   }
-
 
   public int getJimpleLnNum() {
     return jimpleLnNum;
@@ -313,8 +311,8 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        out.println("        catch " + body.getMethod().getView().quotedNameOf(trap.getException().getSignature().toString()) + " from "
-            + up.labels().get(trap.getBeginStmt()) + " to " + up.labels().get(trap.getEndStmt()) + " with "
+        out.println("        catch " + body.getMethod().getView().quotedNameOf(trap.getException().getSignature().toString())
+            + " from " + up.labels().get(trap.getBeginStmt()) + " to " + up.labels().get(trap.getEndStmt()) + " with "
             + up.labels().get(trap.getHandlerStmt()) + ";");
 
         incJimpleLnNum();
@@ -343,42 +341,42 @@ public class Printer {
       // Collect locals
       {
 
-          for (Local local : body.getLocals()) {
-              List<Local> localList;
+        for (Local local : body.getLocals()) {
+          List<Local> localList;
 
-              Type t = local.getType();
+          Type t = local.getType();
 
-              if (typeToLocals.containsKey(t)) {
-                  localList = typeToLocals.get(t);
-              } else {
-                  localList = new ArrayList<>();
-                  typeToLocals.put(t, localList);
-              }
-
-              localList.add(local);
+          if (typeToLocals.containsKey(t)) {
+            localList = typeToLocals.get(t);
+          } else {
+            localList = new ArrayList<>();
+            typeToLocals.put(t, localList);
           }
+
+          localList.add(local);
+        }
       }
 
       // Print locals
       {
 
-          for (Type type : typeToLocals.keySet()) {
-              List<Local> localList = typeToLocals.get(type);
-              Object[] locals = localList.toArray();
-              up.type(type);
-              up.literal(" ");
+        for (Type type : typeToLocals.keySet()) {
+          List<Local> localList = typeToLocals.get(type);
+          Object[] locals = localList.toArray();
+          up.type(type);
+          up.literal(" ");
 
-              for (int k = 0; k < locals.length; k++) {
-                  if (k != 0) {
-                      up.literal(", ");
-                  }
+          for (int k = 0; k < locals.length; k++) {
+            if (k != 0) {
+              up.literal(", ");
+            }
 
-                  up.local((Local) locals[k]);
-              }
-
-              up.literal(";");
-              up.newline();
+            up.local((Local) locals[k]);
           }
+
+          up.literal(";");
+          up.newline();
+        }
       }
 
       if (!typeToLocals.isEmpty()) {

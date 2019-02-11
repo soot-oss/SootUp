@@ -35,6 +35,7 @@ import java.util.Set;
 public class JavaView extends AbstractView {
 
   private Set<ArrayType> arrayTypes;
+
   /**
    * Instantiates a new view.
    */
@@ -42,7 +43,6 @@ public class JavaView extends AbstractView {
     super(project);
     this.arrayTypes = new HashSet<>();
   }
-
 
   @Override
   protected void setReservedNames() {
@@ -117,18 +117,17 @@ public class JavaView extends AbstractView {
     return new DefaultSignatureFactory();
   }
 
-  private ArrayType getArrayType(ArrayTypeSignature arrayTypeSignature)
-  {
+  private ArrayType getArrayType(ArrayTypeSignature arrayTypeSignature) {
     Optional<ArrayType> op
         = this.arrayTypes.stream().filter(r -> r.toString().equals(arrayTypeSignature.toString())).findFirst();
     if (!op.isPresent()) {
-      ArrayType arrayType
-          = ArrayType.getInstance(getRefType(arrayTypeSignature.baseType), arrayTypeSignature.dimension);
+      ArrayType arrayType = ArrayType.getInstance(getRefType(arrayTypeSignature.baseType), arrayTypeSignature.dimension);
       this.arrayTypes.add(arrayType);
       return arrayType;
     }
     return op.get();
   }
+
   @Override
   public Type getType(TypeSignature signature) {
     if (signature instanceof PrimitiveTypeSignature) {
@@ -151,8 +150,7 @@ public class JavaView extends AbstractView {
       } else {
         throw new RuntimeException("Unsupported PrimitiveTypeSignature: " + signature.toString());
       }
-    }
-    else if (signature instanceof VoidTypeSignature) {
+    } else if (signature instanceof VoidTypeSignature) {
       return VoidType.getInstance();
     } else if (signature instanceof NullTypeSignature) {
       return NullType.getInstance();

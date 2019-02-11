@@ -23,9 +23,10 @@ package de.upb.soot.signatures;
  */
 
 import com.google.common.base.Objects;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 /** Represents the fully qualified signature of a method. */
 public class MethodSignature extends AbstractClassMemberSignature {

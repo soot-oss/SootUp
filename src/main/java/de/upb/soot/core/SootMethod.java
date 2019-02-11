@@ -21,13 +21,13 @@ package de.upb.soot.core;
  * #L%
  */
 
+import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.IMethodSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
-
-import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,8 +77,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    */
   public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSource source, List<TypeSignature> parameterTypes,
       TypeSignature returnType, EnumSet<Modifier> modifiers, DebuggingInformation debugInfo) {
-    this(view, declaringClass, source, parameterTypes, returnType, modifiers, Collections.emptyList(),
-        debugInfo);
+    this(view, declaringClass, source, parameterTypes, returnType, modifiers, Collections.emptyList(), debugInfo);
   }
 
   /**
@@ -102,8 +101,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    * Construct a SootMethod object with the attributes of given method and activeBody.
    */
   public SootMethod(SootMethod method, Body activeBody) {
-    super(method.getView(), method.getDeclaringClassSignature(), method.signature, method.typeSignature,
-        method.modifiers);
+    super(method.getView(), method.getDeclaringClassSignature(), method.signature, method.typeSignature, method.modifiers);
     this.methodSource = method.methodSource;
     this.parameterTypes = Collections.unmodifiableList(method.parameterTypes);
     this.exceptions = Collections.unmodifiableList(method.exceptions);
@@ -294,7 +292,6 @@ public class SootMethod extends SootClassMember implements IMethod {
   public int getJavaSourceStartLineNumber() {
     return debugInfo.getCodeBodyPosition().getFirstLine();
   }
-
 
   public DebuggingInformation getDebugInfo() {
     return this.debugInfo;

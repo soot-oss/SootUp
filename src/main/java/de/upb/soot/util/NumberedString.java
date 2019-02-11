@@ -27,7 +27,6 @@ package de.upb.soot.util;
  * @author Ondrej Lhotak
  */
 
-
 public final class NumberedString implements Numberable {
   public NumberedString(String s) {
     this.s = s;
@@ -83,7 +82,8 @@ public final class NumberedString implements Numberable {
       return false;
     }
     if (s == null) {
-        return other.s == null;
-    } else return s.equals(other.s);
+      return other.s == null;
+    } else
+      return s.equals(other.s);
   }
 }

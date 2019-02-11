@@ -27,7 +27,7 @@ public final class AsmUtil {
   private AsmUtil() {
   }
 
-  public static void initASMClassSource(AbstractClassSource classSource, ClassNode classNode) {
+  public static void initAsmClassSource(AbstractClassSource classSource, ClassNode classNode) {
     java.net.URI uri = classSource.getSourcePath().toUri();
 
     try {
@@ -142,7 +142,7 @@ public final class AsmUtil {
             break this_type;
           case 'L':
             int begin = idx;
-            //noinspection StatementWithEmptyBody
+            // noinspection StatementWithEmptyBody
             while (desc.charAt(++idx) != ';') {
             }
             String cls = desc.substring(begin, idx++);
@@ -159,7 +159,7 @@ public final class AsmUtil {
     return types;
   }
 
-  public static Iterable<Optional<JavaClassSignature>> asmIDToSignature(Iterable<String> modules, IView view) {
+  public static Iterable<Optional<JavaClassSignature>> asmIdToSignature(Iterable<String> modules, IView view) {
     if (modules == null) {
       return java.util.Collections.emptyList();
     }
@@ -169,8 +169,8 @@ public final class AsmUtil {
 
   // FIXME: double check optional here
   public static Optional<JavaClassSignature> resolveAsmNameToClassSignature(String asmClassName, IView view) {
-    String excepetionFQName = toQualifiedName(asmClassName);
-    JavaClassSignature classSignature = view.getSignatureFactory().getClassSignature(excepetionFQName);
+    String exceptionFqName = toQualifiedName(asmClassName);
+    JavaClassSignature classSignature = view.getSignatureFactory().getClassSignature(exceptionFqName);
     return Optional.ofNullable(classSignature);
   }
 }
