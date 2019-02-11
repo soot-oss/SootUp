@@ -199,9 +199,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    */
   public boolean isMain() {
     if (isPublic() && isStatic()) {
-      if (this.getSubSignature().equals("void main(java.lang.String[])")) {
-        return true;
-      }
+      return this.getSubSignature().equals("void main(java.lang.String[])");
     }
     return false;
   }

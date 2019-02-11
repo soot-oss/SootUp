@@ -88,12 +88,8 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
     }
 
     JIdentityStmt identityStmt = (JIdentityStmt) o;
-    if (!(leftBox.getValue().equivTo(identityStmt.leftBox.getValue())
-        && rightBox.getValue().equivTo(identityStmt.rightBox.getValue()))) {
-      return false;
-    }
-
-    return true;
+      return leftBox.getValue().equivTo(identityStmt.leftBox.getValue())
+              && rightBox.getValue().equivTo(identityStmt.rightBox.getValue());
   }
 
   @Override

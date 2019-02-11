@@ -114,10 +114,7 @@ public class JRetStmt extends AbstractStmt {
     if (!(o instanceof JReturnStmt)) {
       return false;
     }
-    if (stmtAddressBox != ((JRetStmt) o).stmtAddressBox) {
-      return false;
-    }
-    return true;
+      return stmtAddressBox == ((JRetStmt) o).stmtAddressBox;
   }
 
   @Override

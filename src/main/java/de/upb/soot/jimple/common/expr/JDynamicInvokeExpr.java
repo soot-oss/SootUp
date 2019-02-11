@@ -39,13 +39,12 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
+import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-
-import org.objectweb.asm.Opcodes;
 
 public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   /**
@@ -142,10 +141,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       if (!method.equals(ie.method)) {
         return false;
       }
-      if (!bsm.equals(ie.bsm)) {
-        return false;
-      }
-      return true;
+      return bsm.equals(ie.bsm);
     }
     return false;
   }

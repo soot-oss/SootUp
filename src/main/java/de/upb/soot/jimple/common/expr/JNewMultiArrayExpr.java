@@ -79,10 +79,7 @@ public class JNewMultiArrayExpr implements Expr {
   public boolean equivTo(Object o) {
     if (o instanceof JNewMultiArrayExpr) {
       JNewMultiArrayExpr ae = (JNewMultiArrayExpr) o;
-      if (!baseType.equals(ae.baseType) || sizeBoxes.length != ae.sizeBoxes.length) {
-        return false;
-      }
-      return true;
+        return baseType.equals(ae.baseType) && sizeBoxes.length == ae.sizeBoxes.length;
     }
     return false;
   }
