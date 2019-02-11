@@ -4,6 +4,22 @@
  */
 package de.upb.soot.frontends.java;
 
+import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
+import com.ibm.wala.cast.loader.AstClass;
+import com.ibm.wala.cast.loader.AstField;
+import com.ibm.wala.cast.loader.AstMethod;
+import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+import com.ibm.wala.cfg.AbstractCFG;
+import com.ibm.wala.classLoader.IClass;
+import com.ibm.wala.classLoader.IField;
+import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.shrikeCT.InvalidClassFileException;
+import com.ibm.wala.ssa.SSAInstruction;
+import com.ibm.wala.types.TypeReference;
+import com.ibm.wala.util.collections.HashSetFactory;
+import com.ibm.wala.util.intset.FixedSizeBitVector;
+
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -11,6 +27,7 @@ import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -31,29 +48,12 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.JavaView;
-
-import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
-import com.ibm.wala.cast.loader.AstClass;
-import com.ibm.wala.cast.loader.AstField;
-import com.ibm.wala.cast.loader.AstMethod;
-import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-import com.ibm.wala.cfg.AbstractCFG;
-import com.ibm.wala.classLoader.IClass;
-import com.ibm.wala.classLoader.IField;
-import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.shrikeCT.InvalidClassFileException;
-import com.ibm.wala.ssa.SSAInstruction;
-import com.ibm.wala.types.TypeReference;
-import com.ibm.wala.util.collections.HashSetFactory;
-import com.ibm.wala.util.intset.FixedSizeBitVector;
 
 import java.net.URL;
 import java.nio.file.Path;
@@ -241,8 +241,7 @@ public class WalaIRToJimpleConverter {
     MethodSignature methodSig = this.view.getSignatureFactory().getMethodSignature(walaMethod.getName().toString(), classSig,
         returnType.toString(), sigs);
     WalaIRMethodSourceContent methodSource = new WalaIRMethodSourceContent(methodSig);
-    SootMethod sootMethod = new SootMethod(view, classSig, methodSource, paraTypes,
-        this.view.getSignatureFactory().getTypeSignature(returnType.toString()), modifiers, thrownExceptions, debugInfo);
+    SootMethod sootMethod = new SootMethod(view, classSig, methodSource, methodSig, modifiers, thrownExceptions, debugInfo);
     // create and set active body of the SootMethod
     if (!walaMethod.isAbstract()) {
       Optional<Body> body = createBody(sootMethod, walaMethod);
