@@ -64,11 +64,11 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
     Iterator<IStmt> stmtIt = orderedStmts.iterator();
     IStmt currentIStmt, nextIStmt;
 
-    nextIStmt = stmtIt.hasNext() ? (IStmt) stmtIt.next() : null;
+    nextIStmt = stmtIt.hasNext() ? stmtIt.next() : null;
 
     while (nextIStmt != null) {
       currentIStmt = nextIStmt;
-      nextIStmt = stmtIt.hasNext() ? (IStmt) stmtIt.next() : null;
+      nextIStmt = stmtIt.hasNext() ? stmtIt.next() : null;
 
       ArrayList<IStmt> successors = new ArrayList<>();
 

@@ -13,6 +13,7 @@ import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
+import org.objectweb.asm.tree.ClassNode;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -20,9 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
-
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.tree.ClassNode;
 
 public final class AsmUtil {
 
@@ -39,7 +37,7 @@ public final class AsmUtil {
         org.objectweb.asm.ClassReader clsr
             = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
 
-        clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
+        clsr.accept(classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
       } else {
         // a zip file system needs to be re-openend
         // otherwise it crashes
@@ -52,7 +50,7 @@ public final class AsmUtil {
           org.objectweb.asm.ClassReader clsr
               = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
 
-          clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
+          clsr.accept(classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
         }
       }
 
