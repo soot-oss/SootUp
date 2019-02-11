@@ -75,7 +75,6 @@ import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
-import de.upb.soot.jimple.common.ref.MethodRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
@@ -95,6 +94,8 @@ import de.upb.soot.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.soot.jimple.symbolicreferences.FieldRef;
+import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
@@ -326,51 +327,55 @@ public class Jimple {
   }
 
   /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */
-  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodRef method, List<? extends Value> args) {
-    return new JStaticInvokeExpr(view, method, args);
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodSignature methodSig, List<? extends Value> args) {
+    MethodRef methodRef = createSymbolicMethodRef(methodSig, true);
+    return new JStaticInvokeExpr(view, methodRef, args);
   }
 
-  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodRef method, Value... args) {
-    return newStaticInvokeExpr(view, method, Arrays.asList(args));
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodSignature methodSig, Value... args) {
+    return newStaticInvokeExpr(view, methodSig, Arrays.asList(args));
   }
 
-  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodRef method, Value arg) {
-    return newStaticInvokeExpr(view, method, Collections.singletonList(arg));
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodSignature methodSig, Value arg) {
+    return newStaticInvokeExpr(view, methodSig, Collections.singletonList(arg));
   }
 
-  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodRef method) {
-    return newStaticInvokeExpr(view, method, Collections.<Value>emptyList());
+  public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodSignature methodSig) {
+    return newStaticInvokeExpr(view, methodSig, Collections.<Value>emptyList());
   }
 
   /**
    * Constructs a NewSpecialInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodRef method,
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodSignature methodSig,
       List<? extends Value> args) {
-    return new JSpecialInvokeExpr(view, base, method, args);
+    MethodRef methodRef = createSymbolicMethodRef(methodSig, false);
+    return new JSpecialInvokeExpr(view, base, methodRef, args);
   }
 
   /**
    * Constructs a NewSpecialInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodRef method, Value... args) {
-    return newSpecialInvokeExpr(view, base, method, Arrays.asList(args));
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodSignature methodSig, Value... args) {
+    return newSpecialInvokeExpr(view, base, methodSig, Arrays.asList(args));
   }
 
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodRef method, Value arg) {
-    return newSpecialInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodSignature methodSig, Value arg) {
+    return newSpecialInvokeExpr(view, base, methodSig, Collections.<Value>singletonList(arg));
   }
 
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodRef method) {
-    return newSpecialInvokeExpr(view, base, method, Collections.<Value>emptyList());
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodSignature methodSig) {
+    return newSpecialInvokeExpr(view, base, methodSig, Collections.<Value>emptyList());
   }
 
   /**
    * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod methodRef, List args)
    * grammar chunk.
    */
-  public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodRef bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs, MethodRef methodRef, List<? extends Value> args) {
+  public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodSig,
+      List<? extends Value> bootstrapArgs, MethodSignature methodSig, List<? extends Value> args) {
+    MethodRef bootstrapMethodRef = createSymbolicMethodRef(bootstrapMethodSig, false);
+    MethodRef methodRef = createSymbolicMethodRef(methodSig, false);
     return new JDynamicInvokeExpr(view, bootstrapMethodRef, bootstrapArgs, methodRef, args);
   }
 
@@ -378,55 +383,66 @@ public class Jimple {
    * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod methodRef, List args)
    * grammar chunk.
    */
-  public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodRef bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs, MethodRef methodRef, int tag, List<? extends Value> args) {
+  public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodSig,
+      List<? extends Value> bootstrapArgs, MethodSignature methodSig, int tag, List<? extends Value> args) {
+    MethodRef bootstrapMethodRef = createSymbolicMethodRef(bootstrapMethodSig, false);
+    MethodRef methodRef = createSymbolicMethodRef(methodSig, false);
+
     return new JDynamicInvokeExpr(view, bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
 
   /**
    * Constructs a NewVirtualInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodRef method,
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodSignature methodSig,
       List<? extends Value> args) {
-    return new JVirtualInvokeExpr(view, base, method, args);
+
+    MethodRef symbolicMethodRef = createSymbolicMethodRef(methodSig, false);
+
+    return new JVirtualInvokeExpr(view, base, symbolicMethodRef, args);
   }
 
   /**
    * Constructs a NewVirtualInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodRef method, Value... args) {
-    return newVirtualInvokeExpr(view, base, method, Arrays.asList(args));
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodSignature methodSig, Value... args) {
+
+    return newVirtualInvokeExpr(view, base, methodSig, Arrays.asList(args));
   }
 
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodRef method, Value arg) {
-    return newVirtualInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodSignature methodSig, Value arg) {
+
+    return newVirtualInvokeExpr(view, base, methodSig, Collections.<Value>singletonList(arg));
   }
 
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodRef method) {
-    return newVirtualInvokeExpr(view, base, method, Collections.<Value>emptyList());
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodSignature methodSig) {
+    return newVirtualInvokeExpr(view, base, methodSig, Collections.<Value>emptyList());
   }
 
   /**
    * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodRef method,
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodSignature methodSig,
       List<? extends Value> args) {
-    return new JInterfaceInvokeExpr(view, base, method, args);
+    MethodRef symbolicMethodRef = createSymbolicMethodRef(methodSig, false);
+
+    return new JInterfaceInvokeExpr(view, base, symbolicMethodRef, args);
   }
 
   /**
    * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod methodRef, List of Immediate) grammar chunk.
    */
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodRef method, Value... args) {
-    return newInterfaceInvokeExpr(view, base, method, Arrays.asList(args));
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodSignature methodSig,
+      Value... args) {
+    return newInterfaceInvokeExpr(view, base, methodSig, Arrays.asList(args));
   }
 
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodRef method, Value arg) {
-    return newInterfaceInvokeExpr(view, base, method, Collections.<Value>singletonList(arg));
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodSignature methodSig, Value arg) {
+    return newInterfaceInvokeExpr(view, base, methodSig, Collections.<Value>singletonList(arg));
   }
 
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodRef method) {
-    return newInterfaceInvokeExpr(view, base, method, Collections.<Value>emptyList());
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodSignature methodSig) {
+    return newInterfaceInvokeExpr(view, base, methodSig, Collections.<Value>emptyList());
   }
 
   /** Constructs a ThrowStmt(Immediate) grammar chunk. */
@@ -534,11 +550,8 @@ public class Jimple {
 
   /** Constructs a JStaticFieldRef(FieldSignature) grammar chunk. */
   public static JStaticFieldRef newStaticFieldRef(IView view, FieldSignature f) {
-    return new JStaticFieldRef(view, f);
-  }
-
-  public static MethodRef newMethodRef(IView view, MethodSignature methodSignature, boolean isStatic) {
-    return new MethodRef(view, methodSignature, isStatic);
+    FieldRef symbolicFieldRef = createSymbolicFieldRef(f, true);
+    return new JStaticFieldRef(view, symbolicFieldRef);
   }
 
   /** Constructs a ThisRef(RefType) grammar chunk. */
@@ -553,7 +566,9 @@ public class Jimple {
 
   /** Constructs a InstanceFieldRef(Local, FieldSignature) grammar chunk. */
   public static JInstanceFieldRef newInstanceFieldRef(IView view, Value base, FieldSignature f) {
-    return new JInstanceFieldRef(view, base, f);
+    FieldRef symbolicFieldRef = createSymbolicFieldRef(f, false);
+
+    return new JInstanceFieldRef(view, base, symbolicFieldRef);
   }
 
   /** Constructs a ArrayRef(Local, Immediate) grammar chunk. */
@@ -610,5 +625,16 @@ public class Jimple {
 
   public static JNewMultiArrayExpr newNewMultiArrayExpr(ArrayType type, List<? extends Value> sizes) {
     return new JNewMultiArrayExpr(type, sizes);
+  }
+
+  /**
+   * FIXME: not a nice place to be, creation of symbolic references
+   */
+  private static MethodRef createSymbolicMethodRef(MethodSignature methodSignature, boolean isStatic) {
+    return new MethodRef(methodSignature, isStatic);
+  }
+
+  private static FieldRef createSymbolicFieldRef(FieldSignature fieldSignature, boolean isStatic) {
+    return new FieldRef(fieldSignature, isStatic);
   }
 }

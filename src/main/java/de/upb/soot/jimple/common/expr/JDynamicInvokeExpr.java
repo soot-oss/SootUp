@@ -26,24 +26,21 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.IMethod;
+import com.google.common.base.Optional;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.MethodRef;
+import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 import org.objectweb.asm.Opcodes;
 
@@ -150,15 +147,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     return false;
   }
 
-  public Optional<SootMethod> getBootstrapMethod() {
-    JavaClassSignature signature = bsm.getSignature().declClassSignature;
-    Optional<AbstractClass> op = this.getView().getClass(signature);
-    if (op.isPresent()) {
-      AbstractClass klass = op.get();
-      Optional<? extends IMethod> m = bsm.getSootMethod();
-      return m.map(c -> (SootMethod) c);
-    }
-    return Optional.empty();
+  public com.google.common.base.Optional<SootMethod> getBootstrapMethod() {
+    return com.google.common.base.Optional.fromNullable(method.resolve());
   }
 
   /**

@@ -70,7 +70,6 @@ import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
-import de.upb.soot.jimple.common.ref.MethodRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
@@ -297,8 +296,7 @@ class InstructionConverter {
     stmts.add(newAssignStmt);
     MethodSignature methodSig
         = sigFactory.getMethodSignature("<init>", "java.lang.AssertionError", "void", Collections.emptyList());
-    MethodRef methodRef = Jimple.newMethodRef(converter.view, methodSig, false);
-    JSpecialInvokeExpr invoke = Jimple.newSpecialInvokeExpr(converter.view, failureLocal, methodRef);
+    JSpecialInvokeExpr invoke = Jimple.newSpecialInvokeExpr(converter.view, failureLocal, methodSig);
     JInvokeStmt invokeStmt = Jimple.newInvokeStmt(invoke);
     stmts.add(invokeStmt);
     JThrowStmt throwStmt = Jimple.newThrowStmt(failureLocal);
@@ -563,7 +561,6 @@ class InstructionConverter {
         declaringClassSignature, returnType, parameters);
 
     if (!callee.isStatic()) {
-      MethodRef methodRef = Jimple.newMethodRef(converter.view, methodSig, false);
 
       int receiver = invokeInst.getReceiver();
       Type classType = converter.convertType(target.getDeclaringClass());
@@ -572,18 +569,16 @@ class InstructionConverter {
         Type baseType = UnknownType.getInstance();
         // TODO. baseType could be a problem.
         base = getLocal(baseType, receiver);
-        invoke = Jimple.newSpecialInvokeExpr(converter.view, base, methodRef, args); // constructor
+        invoke = Jimple.newSpecialInvokeExpr(converter.view, base, methodSig, args); // constructor
       } else if (callee.isVirtual()) {
-        invoke = Jimple.newVirtualInvokeExpr(converter.view, base, methodRef, args);
+        invoke = Jimple.newVirtualInvokeExpr(converter.view, base, methodSig, args);
       } else if (callee.isInterface()) {
-        invoke = Jimple.newInterfaceInvokeExpr(converter.view, base, methodRef, args);
+        invoke = Jimple.newInterfaceInvokeExpr(converter.view, base, methodSig, args);
       } else {
         throw new RuntimeException("Unsupported invoke instruction: " + callee.toString());
       }
     } else {
-      MethodRef methodRef = Jimple.newMethodRef(converter.view, methodSig, true);
-
-      invoke = Jimple.newStaticInvokeExpr(converter.view, methodRef, args);
+      invoke = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
     }
 
     if (!invokeInst.hasDef()) {

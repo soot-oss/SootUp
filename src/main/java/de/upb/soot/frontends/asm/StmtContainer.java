@@ -27,7 +27,7 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IVisitor;
@@ -164,7 +164,7 @@ class StmtContainer implements IStmt {
   }
 
   @Override
-  public FieldRef getFieldRef() {
+  public JFieldRef getFieldRef() {
     throw new UnsupportedOperationException();
   }
 

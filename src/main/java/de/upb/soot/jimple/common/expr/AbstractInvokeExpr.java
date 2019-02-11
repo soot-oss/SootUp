@@ -30,7 +30,7 @@ import de.upb.soot.core.AbstractViewResident;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.ref.MethodRef;
+import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.views.IView;
 
@@ -61,7 +61,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
       return m.map(c -> (SootMethod) c);
     }
     return Optional.empty();*/
-    return method.getSootMethod();
+    return Optional.ofNullable(method.resolve());
   }
 
   public MethodRef getMethodRef() {

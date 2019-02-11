@@ -44,7 +44,7 @@ public enum FieldRefValidator implements BodyValidator {
      * 
      * Chain<Unit> units = body.getUnits().getNonPatchingChain();
      * 
-     * for (Unit unit : units) { Stmt s = (Stmt) unit; if (!s.containsFieldRef()) { continue; } FieldRef fr =
+     * for (Unit unit : units) { Stmt s = (Stmt) unit; if (!s.containsFieldRef()) { continue; } JFieldRef fr =
      * s.getFieldRef();
      * 
      * if (fr instanceof JStaticFieldRef) { JStaticFieldRef v = (JStaticFieldRef) fr; try { SootField field = v.getField();

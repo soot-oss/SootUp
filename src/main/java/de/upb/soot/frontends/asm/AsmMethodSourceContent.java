@@ -54,11 +54,12 @@ import de.upb.soot.jimple.common.expr.JCastExpr;
 import de.upb.soot.jimple.common.expr.JInstanceOfExpr;
 import de.upb.soot.jimple.common.expr.JNewArrayExpr;
 import de.upb.soot.jimple.common.expr.JNewMultiArrayExpr;
-import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
-import de.upb.soot.jimple.common.ref.MethodRef;
+import de.upb.soot.jimple.symbolicreferences.FieldRef;
+import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
@@ -496,7 +497,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       // type = AsmUtil.toJimpleType(insn.desc);
       type = view.getSignatureFactory().getTypeSignature((AsmUtil.toQualifiedName(insn.desc)));
       Value val;
-      // FieldRef ref;
+      // JFieldRef ref;
       FieldSignature ref;
       if (insn.getOpcode() == GETSTATIC) {
         // ref = Scene.v().makeFieldRef(declClass, insn.name, type, true);
@@ -516,7 +517,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       frame.out(opr);
     } else {
       opr = out[0];
-      type = opr.<FieldRef>value().getFieldSignature().typeSignature;
+      type = opr.<JFieldRef>value().getFieldSignature().typeSignature;
       if (insn.getOpcode() == GETFIELD) {
         frame.mergeIn(pop());
       }
@@ -565,7 +566,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       setUnit(insn, as);
     } else {
       opr = out[0];
-      type = opr.<FieldRef>value().getFieldSignature().typeSignature;
+      type = opr.<JFieldRef>value().getFieldSignature().typeSignature;
       rvalue = pop(type);
       if (!instance) {
         /* PUTSTATIC only needs one operand on the stack, the rvalue */
@@ -1237,7 +1238,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       // SootMethodRef ref = Scene.v().makeMethodRef(cls, insn.name, sigTypes, returnType,
       // !instance);
       MethodSignature methodSignature = view.getSignatureFactory().getMethodSignature(insn.name, cls, returnType, sigTypes);
-      MethodRef ref = Jimple.newMethodRef(view, methodSignature, !instance);
+     // MethodRef ref = Jimple.newMethodRef(view, methodSignature, !instance);
       int nrArgs = sigTypes.size();
       final Operand[] args;
       List<Value> argList = Collections.emptyList();
@@ -1265,16 +1266,16 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       ValueBox[] boxes = args == null ? null : new ValueBox[args.length];
       AbstractInvokeExpr invoke;
       if (!instance) {
-        invoke = Jimple.newStaticInvokeExpr(view, ref, argList);
+        invoke = Jimple.newStaticInvokeExpr(view, methodSignature, argList);
       } else {
         Local base = (Local) args[args.length - 1].stackOrValue();
         AbstractInstanceInvokeExpr iinvoke;
         if (op == INVOKESPECIAL) {
-          iinvoke = Jimple.newSpecialInvokeExpr(view, base, ref, argList);
+          iinvoke = Jimple.newSpecialInvokeExpr(view, base, methodSignature, argList);
         } else if (op == INVOKEVIRTUAL) {
-          iinvoke = Jimple.newVirtualInvokeExpr(view, base, ref, argList);
+          iinvoke = Jimple.newVirtualInvokeExpr(view, base, methodSignature, argList);
         } else if (op == INVOKEINTERFACE) {
-          iinvoke = Jimple.newInterfaceInvokeExpr(view, base, ref, argList);
+          iinvoke = Jimple.newInterfaceInvokeExpr(view, base, methodSignature, argList);
         } else {
           throw new AssertionError("Unknown invoke op:" + op);
         }
@@ -1350,7 +1351,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
      * methodArgs.add(args[nrArgs].stackOrValue()); } if (methodArgs.size() > 1) { Collections.reverse(methodArgs); // Call
      * stack is FIFO, Jimple is linear Collections.reverse(parameterTypes); } returnType = types[types.length - 1];
      * 
-     * // FIXME: (Andreas) Why do we have a FieldRef but no MethodRef??? SootMethodRef bootstrap_model = null; // FIXME: AD
+     * // FIXME: (Andreas) Why do we have a JFieldRef but no MethodRef??? SootMethodRef bootstrap_model = null; // FIXME: AD
      * re-add lambda metafactory // if (PhaseOptions.getBoolean( // PhaseOptions.v().getPhaseOptions("jb"),
      * "model-lambdametafactory")) { // String bsmMethodRefStr = bsmMethodRef.toString(); // if
      * (bsmMethodRefStr.equals(METAFACTORY_SIGNATURE) // || bsmMethodRefStr.equals(ALT_METAFACTORY_SIGNATURE)) { // SootClass
@@ -1394,7 +1395,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     MethodSignature methodSignature
         = view.getSignatureFactory().getMethodSignature(methodHandle.getName(), bsmCls, returnType, bsmSigTypes);
     boolean isStatic = methodHandle.getTag() == MethodHandle.Kind.REF_INVOKE_STATIC.getValue();
-    return Jimple.newMethodRef(view, methodSignature, isStatic);
+    return new MethodRef( methodSignature, isStatic);
   }
 
   private FieldRef toSootFieldRef(Handle methodHandle) {
@@ -1409,8 +1410,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     FieldSignature fieldSignature = view.getSignatureFactory().getFieldSignature(methodHandle.getName(), bsmCls, t);
     // return Scene.v().makeFieldRef(bsmCls, methodHandle.getName(), t,
     // isStatic);
-    // FIXME: in the old Soot we have SootFieldRef and FieldRef in different hierachies...
-    FieldRef fieldRef = null;
+    // FIXME: in the old Soot we have SootFieldRef and JFieldRef in different hierachies...
+    FieldRef fieldRef = new FieldRef(fieldSignature, isStatic);
     return fieldRef;
 
   }

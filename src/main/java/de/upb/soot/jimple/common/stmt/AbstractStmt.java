@@ -30,7 +30,7 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.FieldRef;
+import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IVisitor;
 
@@ -192,13 +192,13 @@ public abstract class AbstractStmt implements IStmt {
   }
 
   @Override
-  public FieldRef getFieldRef() {
-    throw new RuntimeException("getFieldRef() called with no FieldRef present!");
+  public JFieldRef getFieldRef() {
+    throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
   }
 
   @Override
   public ValueBox getFieldRefBox() {
-    throw new RuntimeException("getFieldRefBox() called with no FieldRef present!");
+    throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
   }
 
   @Override

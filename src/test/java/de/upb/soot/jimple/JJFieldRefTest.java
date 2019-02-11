@@ -34,7 +34,7 @@ import categories.Java8Test;
  *
  */
 @Category(Java8Test.class)
-public class JFieldRefTest {
+public class JJFieldRefTest {
 
   @Test
   public void testJStaticFieldRef() {

@@ -1,23 +1,19 @@
-package de.upb.soot.jimple.common.ref;
+package de.upb.soot.jimple.symbolicreferences;
 
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
 
-import java.util.Optional;
-
 /** @author Andreas Dann created on 02.02.19 */
-public class MethodRef {
+public class MethodRef implements SymbolicRef<SootMethod> {
 
-  //FIXME: for all Ref, IMHO we should only pass the view to it, when we call the "resolve" methodRef
+  // FIXME: for all Ref, IMHO we should only pass the view to it, when we call the "resolve" methodRef
   // e.g., "getField" "getSootMethod" BUT NOT in the constructor...
 
-  private final IView view;
   private final MethodSignature methodSignature;
   private final boolean isStatic;
 
-  public MethodRef(IView view, MethodSignature methodSignature, boolean isStatic) {
-    this.view = view;
+  public MethodRef(MethodSignature methodSignature, boolean isStatic) {
     this.methodSignature = methodSignature;
     this.isStatic = isStatic;
   }
@@ -31,8 +27,8 @@ public class MethodRef {
     return methodSignature;
   }
 
-  public Optional<SootMethod> getSootMethod() {
-    // put here the logic to get the class
+  @Override
+  public SootMethod resolve() {
     return null;
   }
 }
