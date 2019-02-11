@@ -142,9 +142,7 @@ public abstract class AbstractStmt implements IStmt {
     IStmtBox[] boxes = boxesPointing.toArray(new IStmtBox[boxesPointing.size()]);
     // important to change this to an array to have a static copy
 
-    for (IStmtBox element : boxes) {
-      IStmtBox box = element;
-
+    for (IStmtBox box : boxes) {
       if (box.getStmt() != this) {
         throw new RuntimeException("Something weird's happening");
       }

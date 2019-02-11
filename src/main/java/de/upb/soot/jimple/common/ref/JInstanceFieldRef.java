@@ -50,8 +50,7 @@ public class JInstanceFieldRef implements FieldRef {
    *          the field sig
    */
   public JInstanceFieldRef(IView view, Value base, FieldSignature fieldSig) {
-    ValueBox baseBox = Jimple.newLocalBox(base);
-    this.baseBox = baseBox;
+    this.baseBox = Jimple.newLocalBox(base);
     this.fieldSig = fieldSig;
     this.view = view;
   }

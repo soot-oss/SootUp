@@ -1,5 +1,6 @@
 package de.upb.soot.namespaces;
 
+import com.google.common.base.Preconditions;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.FieldSignature;
@@ -10,8 +11,9 @@ import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
-
-import com.google.common.base.Preconditions;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -19,10 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the {@link INamespace} interface for the Java modulepath. Handles directories, archives (including
@@ -152,8 +150,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
           className = fullyQualifiedName.substring(index, fullyQualifiedName.length());
           packageName = fullyQualifiedName.substring(0, index);
         }
-        JavaClassSignature signature = moduleSignatureFactory.getClassSignature(className, packageName, this.moduleName);
-        return signature;
+        return moduleSignatureFactory.getClassSignature(className, packageName, this.moduleName);
       }
       return factory.fromPath(file);
     }

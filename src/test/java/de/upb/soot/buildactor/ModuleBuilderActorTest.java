@@ -1,19 +1,16 @@
 package de.upb.soot.buildactor;
 
-import static org.junit.Assert.assertTrue;
-
+import categories.Java9Test;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
 import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.views.IView;
-
-import java.util.Optional;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java9Test;
+import java.util.Optional;
+
+import static org.junit.Assert.assertTrue;
 
 @Category(Java9Test.class)
 
@@ -33,9 +30,8 @@ public class ModuleBuilderActorTest {
     // view.stuffAViewNeeds = stuffAViewNeeds;
 
     // 1. simple case
-    IView view = project.createDemandView();
 
-    return view;
+    return project.createDemandView();
   }
 
   @Test

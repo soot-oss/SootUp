@@ -155,9 +155,8 @@ public class WalaIRToJimpleConverter {
       sootMethods.add(sootMethod);
     }
 
-    SootClass ret = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, superClass, interfaces,
+    return new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, superClass, interfaces,
         outerClass, sootFields, sootMethods, position, modifiers);
-    return ret;
   }
 
   /**
@@ -186,9 +185,7 @@ public class WalaIRToJimpleConverter {
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
     FieldSignature signature
         = view.getSignatureFactory().getFieldSignature(walaField.getName().toString(), classSig, type.toString());
-    SootField sootField
-        = new SootField(view, classSig, signature, view.getSignatureFactory().getTypeSignature(type.toString()), modifiers);
-    return sootField;
+    return new SootField(view, classSig, signature, view.getSignatureFactory().getTypeSignature(type.toString()), modifiers);
   }
 
   /**

@@ -292,8 +292,7 @@ public class Body implements Serializable {
   /** Clones the current body, making deep copies of the contents. */
   @Override
   public Object clone() {
-    Body b = new Body(this.method, this.locals, this.traps, this.stmts, this.position);
-    return b;
+    return new Body(this.method, this.locals, this.traps, this.stmts, this.position);
   }
 
   /**
