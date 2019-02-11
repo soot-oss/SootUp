@@ -35,7 +35,7 @@ public class ModuleBuilderActorTest {
   }
 
   @Test
-  public void refiyMessageModuleInfoTest() throws Exception {
+  public void refiyMessageModuleInfoTest() {
     de.upb.soot.views.IView iView = createNewScene();
 
     final JavaClassSignature sig
@@ -52,7 +52,7 @@ public class ModuleBuilderActorTest {
   }
 
   @Test
-  public void resolveMessageModuleInfoTest() throws Exception {
+  public void resolveMessageModuleInfoTest() {
     de.upb.soot.views.IView iView = createNewScene();
 
     final JavaClassSignature sig

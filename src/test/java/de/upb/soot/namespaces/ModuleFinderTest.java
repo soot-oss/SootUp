@@ -67,7 +67,7 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
   }
 
   @Test
-  public void modularJar() throws Exception {
+  public void modularJar() {
     ModuleFinder moduleFinder
         = new ModuleFinder(new AsmJavaClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules/");
     Collection<String> discoveredModules = moduleFinder.discoverAllModules();
