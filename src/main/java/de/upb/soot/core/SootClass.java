@@ -639,8 +639,6 @@ public class SootClass extends AbstractClass implements Serializable {
   /**
    * Sometimes we need to know which class is a JDK class. There is no simple way to distinguish a user class and a JDK
    * class, here we use the package prefix as the heuristic.
-   *
-   * @author xiao
    */
   private static final Pattern libraryClassPattern
       = Pattern.compile("^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");

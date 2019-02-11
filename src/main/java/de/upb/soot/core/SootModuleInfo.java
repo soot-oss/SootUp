@@ -184,8 +184,6 @@ public class SootModuleInfo extends AbstractClass {
    *          the moduleSignature
    * @param access
    *          the module access modifier
-   * @param version
-   * @param resolvingLevel
    */
 
   public SootModuleInfo(IView view, AbstractClassSource cs, JavaClassSignature moduleSignature, EnumSet<Modifier> access,

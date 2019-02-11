@@ -1,14 +1,13 @@
 package de.upb.soot.namespaces.classprovider;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import com.google.common.base.Objects;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.JavaClassSignature;
 
-import com.google.common.base.Objects;
-
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 
 //FIXME: I don't see the need for subclassing is currently it is just a container mapping a found file to a class signature and a namespace
@@ -60,8 +59,6 @@ public abstract class AbstractClassSource {
 
   /**
    * Create or provide a representation of the actual manifestation of the class.
-   * 
-   * @return
    */
   public de.upb.soot.namespaces.classprovider.ISourceContent getContent() {
     // TODO: Find a better common supertype for this.
@@ -78,7 +75,7 @@ public abstract class AbstractClassSource {
 
   /**
    * Even if a the signature changes, the classource remains the same, e.g., if it is associated to an automatic module s
-   * 
+   *
    * @param o
    *          the object to compare with
    * @return both objects are logically equal

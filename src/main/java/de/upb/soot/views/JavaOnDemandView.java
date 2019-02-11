@@ -21,8 +21,6 @@ public class JavaOnDemandView extends JavaView {
 
   /**
    * Instantiates a new view.
-   *
-   * @param project
    */
   public JavaOnDemandView(Project project, INamespace namespace) {
     super(project);

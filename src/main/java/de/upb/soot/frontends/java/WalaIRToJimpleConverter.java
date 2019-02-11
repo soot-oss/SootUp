@@ -91,7 +91,6 @@ public class WalaIRToJimpleConverter {
   /**
    * Convert a wala {@link AstClass} to {@link SootClass}.
    * 
-   * @param walaClass
    * @return A SootClass converted from walaClass
    */
   public SootClass convertClass(AstClass walaClass) {
@@ -164,9 +163,6 @@ public class WalaIRToJimpleConverter {
 
   /**
    * Create a {@link JavaClassSource} object for the given walaClass.
-   * 
-   * @param walaClass
-   * @return
    */
   public AbstractClassSource createClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
@@ -298,9 +294,6 @@ public class WalaIRToJimpleConverter {
 
   /**
    * Return all modifiers for the given field.
-   * 
-   * @param field
-   * @return
    */
   public EnumSet<Modifier> convertModifiers(AstField field) {
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
@@ -328,9 +321,6 @@ public class WalaIRToJimpleConverter {
 
   /**
    * Return all modifiers for the given method.
-   * 
-   * @param method
-   * @return
    */
   public EnumSet<Modifier> convertModifiers(AstMethod method) {
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
@@ -524,9 +514,6 @@ public class WalaIRToJimpleConverter {
 
   /**
    * Convert className in soot-format to wala-format, e.g.,soot-format: java.lang.String.-> wala-format: Ljava/lang/String
-   * 
-   * @param signature
-   * @return
    */
   public String convertClassNameFromSoot(String signature) {
     StringBuilder sb = new StringBuilder();

@@ -35,7 +35,6 @@ public interface ClassValidator {
    * 
    * @param sc
    *          the class to check
-   * @param exceptions
    */
   public void validate(SootClass sc, List<ValidationException> exceptions);
 

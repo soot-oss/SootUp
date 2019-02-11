@@ -103,12 +103,8 @@ public class Body implements Serializable {
   /**
    * Creates a Body associated to the given method.
    * 
-   * @param m
    * @param locals
    *          please use {@link LocalGenerator} to generate local for a body.
-   * @param traps
-   * @param stmts
-   * @param position
    */
   public Body(SootMethod m, List<Local> locals, List<Trap> traps, List<IStmt> stmts, Position position) {
     this(locals, traps, stmts, position);
@@ -120,9 +116,6 @@ public class Body implements Serializable {
    * 
    * @param locals
    *          please use {@link LocalGenerator} to generate local for a body.
-   * @param traps
-   * @param stmts
-   * @param position
    */
   public Body(List<Local> locals, List<Trap> traps, List<IStmt> stmts, Position position) {
     this.locals = Collections.unmodifiableList(locals);

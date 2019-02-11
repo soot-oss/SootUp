@@ -51,8 +51,6 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /**
    * Returns <code>true</code> if this type is allowed to appear in final (clean) Jimple code.
-   * 
-   * @return
    */
   public boolean isAllowedInFinalCode() {
     return false;

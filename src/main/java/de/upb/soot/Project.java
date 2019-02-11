@@ -25,8 +25,6 @@ public class Project {
 
   /**
    * Create a project from an arbitrary list of namespaces
-   * 
-   * @param namespaces
    */
   public Project(INamespace... namespaces) {
     Collections.addAll(this.namespaces, namespaces);
@@ -34,8 +32,6 @@ public class Project {
 
   /**
    * Create a project from a single JAR file
-   * 
-   * @param file
    */
   public Project(File file) {
     this.namespaces.add(new JavaClassPathNamespace(file.getAbsolutePath()));

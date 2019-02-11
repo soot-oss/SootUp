@@ -78,9 +78,6 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
   /**
    * Create a RefType instance for the given view.
-   * 
-   * @param view
-   * @param typeSignature
    */
   public RefType(IView view, TypeSignature typeSignature) {
     RefType.view = view;

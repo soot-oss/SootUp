@@ -99,9 +99,6 @@ public class SootMethod extends SootClassMember implements IMethod {
 
   /**
    * Construct a SootMethod object with the attributes of given method and activeBody.
-   *
-   * @param method
-   * @param activeBody
    */
   public SootMethod(SootMethod method, Body activeBody) {
     super(method.getView(), method.getDeclaringClassSignature(), method.signature, method.typeSignature,

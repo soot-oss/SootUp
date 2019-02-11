@@ -63,9 +63,6 @@ public class LocalGenerator {
 
   /**
    * generate this local with given type
-   * 
-   * @param type
-   * @return
    */
   public Local generateThisLocal(Type type) {
     if (this.thisLocal == null) {
@@ -244,8 +241,6 @@ public class LocalGenerator {
 
   /**
    * Return all locals created for the body referenced in this LocalGenrator.
-   * 
-   * @return
    */
   public List<Local> getLocals() {
     return this.locals;

@@ -104,9 +104,6 @@ public class WalaClassLoader {
 
   /**
    * Return a soot class with the given signature converted from a WALA class.
-   * 
-   * @param signature
-   * @return
    */
   public Optional<SootClass> getSootClass(JavaClassSignature signature) {
     if (classHierarchy == null) {
