@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -256,8 +255,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
 
     // pathStack := list of succs lists
     // pathStackIndex := last visited index in pathStack
-    LinkedList<IStmt> pathStack = new LinkedList<>();
-    LinkedList<Integer> pathStackIndex = new LinkedList<>();
+    List<IStmt> pathStack = new ArrayList<>();
+    List<Integer> pathStackIndex = new ArrayList<>();
 
     pathStack.add(from);
     pathStackIndex.add(0);
