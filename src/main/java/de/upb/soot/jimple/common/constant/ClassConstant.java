@@ -179,7 +179,7 @@ public class ClassConstant extends Constant {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<?> comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     // TODO Auto-generated method stub
     return false;
   }

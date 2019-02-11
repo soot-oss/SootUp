@@ -198,7 +198,7 @@ public class FloatConstant extends RealConstant {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<?> comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     // TODO Auto-generated method stub
     return false;
   }

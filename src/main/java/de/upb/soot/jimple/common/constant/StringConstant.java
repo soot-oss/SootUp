@@ -29,10 +29,9 @@ import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import soot.util.StringTools;
 
 import java.util.Comparator;
-
-import soot.util.StringTools;
 
 public class StringConstant extends Constant {
   /**
@@ -77,7 +76,7 @@ public class StringConstant extends Constant {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<?> comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     // TODO Auto-generated method stub
     return false;
   }
