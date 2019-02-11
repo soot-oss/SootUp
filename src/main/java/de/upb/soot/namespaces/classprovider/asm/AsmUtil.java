@@ -142,6 +142,7 @@ public final class AsmUtil {
             break this_type;
           case 'L':
             int begin = idx;
+            //noinspection StatementWithEmptyBody
             while (desc.charAt(++idx) != ';') {
             }
             String cls = desc.substring(begin, idx++);
