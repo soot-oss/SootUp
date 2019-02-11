@@ -221,8 +221,11 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
   @Override
   public Type getArrayElementType() {
-    if (typeSignature.equals("java.lang.Object") || typeSignature.equals("java.io.Serializable")
-        || typeSignature.equals("java.lang.Cloneable")) {
+    SignatureFactory signatureFactory = getView().getSignatureFactory();
+
+    if (typeSignature.equals(signatureFactory.getClassSignature("java.lang.Object"))
+        || typeSignature.equals(signatureFactory.getClassSignature("java.io.Serializable"))
+        || typeSignature.equals(signatureFactory.getClassSignature("java.lang.Cloneable"))) {
       return RefType.getInstance("java.lang.Object");
     }
     throw new RuntimeException("Attempt to get array base type of a non-array");

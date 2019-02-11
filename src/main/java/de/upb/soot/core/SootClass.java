@@ -21,18 +21,18 @@ package de.upb.soot.core;
  * #L%
  */
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.validation.ClassFlagsValidator;
 import de.upb.soot.validation.ClassValidator;
 import de.upb.soot.validation.MethodDeclarationValidator;
 import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.views.IView;
-
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
@@ -391,37 +391,31 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the method with the given name, parameters and return type. If no matching method can be found, an
-   * exception is thrown.
+   * Attempts to retrieve the method with the given signature, parameters and return type. If no matching method can be
+   * found, an exception is thrown.
    */
-  public SootMethod getMethod(String name, List<Type> parameterTypes, Type returnType) {
-    SootMethod sm = getMethodUnsafe(name, parameterTypes, returnType);
+  public SootMethod getMethod(MethodSignature signature) {
+    SootMethod sm = getMethodUnsafe(signature);
     if (sm != null) {
       return sm;
     }
 
-    throw new RuntimeException(
-        "Class " + classSignature + " doesn't have method " + name + "(" + parameterTypes + ")" + " : " + returnType);
+    throw new RuntimeException("Class " + classSignature + " doesn't have method " + signature);
   }
 
   /**
-   * Attempts to retrieve the method with the given name, parameters and return type. If no matching method can be found,
-   * null is returned.
+   * Attempts to retrieve the method with the given signature, parameters and return type. If no matching method can be
+   * found, null is returned.
    */
-  public SootMethod getMethodUnsafe(String name, List<Type> parameterTypes, Type returnType) {
+  @Nullable
+  public SootMethod getMethodUnsafe(MethodSignature signature) {
     checkLevel(ResolvingLevel.SIGNATURES);
     if (methods == null) {
       return null;
     }
 
-    for (IMethod m : methods) {
-      SootMethod method = (SootMethod) m;
-      if (method.getSignature().equals(name) && parameterTypes.equals(method.getParameterTypes())
-          && returnType.equals(method.getReturnType())) {
-        return method;
-      }
-    }
-    return null;
+    return methods.stream().map(m -> (SootMethod) m).filter(method -> method.getSignature().equals(signature)).findFirst()
+        .orElse(null);
   }
 
   /**
