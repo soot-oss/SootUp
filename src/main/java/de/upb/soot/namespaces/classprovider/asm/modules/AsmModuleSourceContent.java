@@ -1,9 +1,5 @@
 package de.upb.soot.namespaces.classprovider.asm.modules;
 
-import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.asmIDToSignature;
-import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.getModifiers;
-import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.resolveAsmNameToClassSignature;
-
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootModuleInfo;
@@ -11,15 +7,18 @@ import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.asm.AsmUtil;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
-
-import java.util.ArrayList;
-import java.util.Optional;
-
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ModuleExportNode;
 import org.objectweb.asm.tree.ModuleOpenNode;
 import org.objectweb.asm.tree.ModuleProvideNode;
 import org.objectweb.asm.tree.ModuleRequireNode;
+
+import java.util.ArrayList;
+import java.util.Optional;
+
+import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.asmIDToSignature;
+import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.getModifiers;
+import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.resolveAsmNameToClassSignature;
 
 public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
     implements de.upb.soot.namespaces.classprovider.ISourceContent {
@@ -145,14 +144,10 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
         Optional<JavaClassSignature> serviceOptional = resolveAsmNameToClassSignature(moduleProvideNode.service, view);
         Iterable<Optional<JavaClassSignature>> providersOptionals = asmIDToSignature(moduleProvideNode.providers, view);
         for (Optional<JavaClassSignature> sootClassOptional : providersOptionals) {
-          if (sootClassOptional.isPresent()) {
-            providers.add(sootClassOptional.get());
-          }
+          sootClassOptional.ifPresent(providers::add);
         }
 
-        if (serviceOptional.isPresent()) {
-          providers.add(serviceOptional.get());
-        }
+        serviceOptional.ifPresent(providers::add);
       }
     }
 

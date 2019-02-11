@@ -96,9 +96,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
       Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(this.interfaces, view);
       for (Optional<JavaClassSignature> interfaceClass : optionals) {
 
-        if (interfaceClass.isPresent()) {
-          interfaces.add(interfaceClass.get());
-        }
+        interfaceClass.ifPresent(interfaces::add);
       }
     }
     return danglingStep.hierachy(mySuperCl, interfaces, null, null);
@@ -139,10 +137,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(methodSource.exceptions, view);
 
         for (Optional<JavaClassSignature> excepetionClass : optionals) {
-
-          if (excepetionClass.isPresent()) {
-            exceptions.add(excepetionClass.get());
-          }
+          excepetionClass.ifPresent(exceptions::add);
         }
 
         de.upb.soot.core.SootMethod sootMethod

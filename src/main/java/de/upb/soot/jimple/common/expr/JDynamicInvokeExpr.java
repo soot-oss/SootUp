@@ -207,9 +207,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
     up.literal(") ");
     Optional<SootMethod> op = getBootstrapMethod();
-    if (op.isPresent()) {
-      up.method(op.get());
-    }
+      op.ifPresent(up::method);
     up.literal("(");
     final int len = bsmArgBoxes.length;
     if (0 < len) {

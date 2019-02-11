@@ -515,9 +515,7 @@ public class SootClass extends AbstractClass implements Serializable {
     Set<SootClass> ret = new HashSet<>();
     for (JavaClassSignature i : interfaces) {
       Optional<AbstractClass> op = this.getView().getClass(i);
-      if (op.isPresent()) {
-        ret.add((SootClass) op.get());
-      }
+      op.ifPresent(abstractClass -> ret.add((SootClass) abstractClass));
     }
     return ret;
   }

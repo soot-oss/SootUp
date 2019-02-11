@@ -44,9 +44,7 @@ public class JavaOnDemandView extends JavaView {
         resolvedClass = akkaClassResolver.reifyClass(source.get(), this);
 
         // add it to the existing
-        if (resolvedClass.isPresent()) {
-          this.classes.put(signature, resolvedClass.get());
-        }
+        resolvedClass.ifPresent(abstractClass -> this.classes.put(signature, abstractClass));
         return resolvedClass;
       }
 

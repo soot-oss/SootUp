@@ -94,11 +94,8 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     }
 
     final Optional<AbstractClassSource> classSource = ns.getClassSource(signature);
-    if (classSource.isPresent()) {
-      return classSource;
-    }
+    return classSource;
 
-    return Optional.empty();
   }
 
   private class SignatureFactoryWrapper implements SignatureFactory {
