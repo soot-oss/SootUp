@@ -76,7 +76,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    */
   public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSource source, List<TypeSignature> parameterTypes,
       TypeSignature returnType, EnumSet<Modifier> modifiers, DebuggingInformation debugInfo) {
-    this(view, declaringClass, source, parameterTypes, returnType, modifiers, Collections.<JavaClassSignature>emptyList(),
+    this(view, declaringClass, source, parameterTypes, returnType, modifiers, Collections.emptyList(),
         debugInfo);
   }
 

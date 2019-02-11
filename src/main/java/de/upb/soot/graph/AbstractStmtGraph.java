@@ -170,7 +170,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
 
       int resultSize = listA.size() + listB.size();
       if (resultSize == 0) {
-        result.put(stmt, Collections.<IStmt>emptyList());
+        result.put(stmt, Collections.emptyList());
       } else {
         List<IStmt> resultList = new ArrayList<>(resultSize);
         List<IStmt> list = null;
