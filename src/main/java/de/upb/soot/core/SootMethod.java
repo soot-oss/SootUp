@@ -159,7 +159,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
   /** Returns true if this method throws exception <code>e</code>. */
   public boolean throwsException(SootClass e) {
-    return exceptions != null && exceptions.contains(e);
+    return exceptions != null && exceptions.contains(e.getSignature());
   }
 
   /**
