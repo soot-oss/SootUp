@@ -100,7 +100,7 @@ public class Body implements Serializable {
     return validators;
   }
 
-    /**
+  /**
    * Creates a Body associated to the given method.
    * 
    * @param locals
@@ -364,21 +364,13 @@ public class Body implements Serializable {
    * @return A collection of all the StmtBoxes held by this body's units.
    **/
   public Collection<IStmtBox> getAllStmtBoxes() {
-    ArrayList<IStmtBox> stmtBoxList = new ArrayList<IStmtBox>();
-    {
-      Iterator<IStmt> it = stmts.iterator();
-      while (it.hasNext()) {
-        IStmt item = it.next();
-        stmtBoxList.addAll(item.getStmtBoxes());
-      }
+    List<IStmtBox> stmtBoxList = new ArrayList<>();
+    for (IStmt item : stmts) {
+      stmtBoxList.addAll(item.getStmtBoxes());
     }
 
-    {
-      Iterator<Trap> it = traps.iterator();
-      while (it.hasNext()) {
-        Trap item = it.next();
-        stmtBoxList.addAll(item.getStmtBoxes());
-      }
+    for (Trap item : traps) {
+      stmtBoxList.addAll(item.getStmtBoxes());
     }
     return Collections.unmodifiableCollection(stmtBoxList);
   }

@@ -342,49 +342,43 @@ public class Printer {
 
       // Collect locals
       {
-        Iterator<Local> localIt = body.getLocals().iterator();
 
-        while (localIt.hasNext()) {
-          Local local = localIt.next();
+          for (Local local : body.getLocals()) {
+              List<Local> localList;
 
-          List<Local> localList;
+              Type t = local.getType();
 
-          Type t = local.getType();
+              if (typeToLocals.containsKey(t)) {
+                  localList = typeToLocals.get(t);
+              } else {
+                  localList = new ArrayList<Local>();
+                  typeToLocals.put(t, localList);
+              }
 
-          if (typeToLocals.containsKey(t)) {
-            localList = typeToLocals.get(t);
-          } else {
-            localList = new ArrayList<Local>();
-            typeToLocals.put(t, localList);
+              localList.add(local);
           }
-
-          localList.add(local);
-        }
       }
 
       // Print locals
       {
-        Iterator<Type> typeIt = typeToLocals.keySet().iterator();
 
-        while (typeIt.hasNext()) {
-          Type type = typeIt.next();
+          for (Type type : typeToLocals.keySet()) {
+              List<Local> localList = typeToLocals.get(type);
+              Object[] locals = localList.toArray();
+              up.type(type);
+              up.literal(" ");
 
-          List<Local> localList = typeToLocals.get(type);
-          Object[] locals = localList.toArray();
-          up.type(type);
-          up.literal(" ");
+              for (int k = 0; k < locals.length; k++) {
+                  if (k != 0) {
+                      up.literal(", ");
+                  }
 
-          for (int k = 0; k < locals.length; k++) {
-            if (k != 0) {
-              up.literal(", ");
-            }
+                  up.local((Local) locals[k]);
+              }
 
-            up.local((Local) locals[k]);
+              up.literal(";");
+              up.newline();
           }
-
-          up.literal(";");
-          up.newline();
-        }
       }
 
       if (!typeToLocals.isEmpty()) {
