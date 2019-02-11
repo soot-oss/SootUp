@@ -23,6 +23,7 @@ package de.upb.soot.util;
  */
 
 import java.util.AbstractSet;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -94,9 +95,7 @@ class TrustingMonotonicArraySet<T> extends AbstractSet<T> {
   public TrustingMonotonicArraySet(T[] elements) {
     this();
 
-    for (T element : elements) {
-      add(element);
-    }
+    addAll(Arrays.asList(elements));
   }
 
   @Override
