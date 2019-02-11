@@ -76,7 +76,7 @@ public class JNewArrayExpr implements Expr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
     buffer.append(Jimple.NEWARRAY + " (" + getBaseTypeString() + ")");
     buffer.append("[" + sizeBox.getValue().toString() + "]");

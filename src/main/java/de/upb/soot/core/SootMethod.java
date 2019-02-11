@@ -239,7 +239,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    * the code for representation.)
    */
   public String getDeclaration() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
     // modifiers
     StringTokenizer st = new StringTokenizer(Modifier.toString(this.getModifiers()));

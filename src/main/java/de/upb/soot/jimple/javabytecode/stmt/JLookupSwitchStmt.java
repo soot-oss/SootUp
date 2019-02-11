@@ -92,7 +92,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     String endOfLine = " ";
 
     buffer.append(Jimple.LOOKUPSWITCH + "(" + keyBox.getValue().toString() + ")" + endOfLine);

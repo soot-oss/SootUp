@@ -35,8 +35,8 @@ public class StringTools {
   public static java.lang.String getEscapedStringOf(String fromString) {
     char[] fromStringArray;
     int cr, lf, ch;
-    StringBuffer whole = new StringBuffer();
-    StringBuffer mini = new StringBuffer();
+    StringBuilder whole = new StringBuilder();
+    StringBuilder mini = new StringBuilder();
 
     fromStringArray = fromString.toCharArray();
 
@@ -79,7 +79,7 @@ public class StringTools {
   public static java.lang.String getQuotedStringOf(String fromString) {
     // We definitely need fromString.length + 2, but let's have some
     // additional space
-    StringBuffer toStringBuffer = new java.lang.StringBuffer(fromString.length() + 20);
+    StringBuilder toStringBuffer = new StringBuilder(fromString.length() + 20);
     toStringBuffer.append("\"");
     for (int i = 0; i < fromString.length(); i++) {
       char ch = fromString.charAt(i);
@@ -146,7 +146,7 @@ public class StringTools {
    * Returns a String de-escaping the <code>\\unnnn</code> representation for any escaped characters in the string.
    */
   public static String getUnEscapedStringOf(String str) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     CharacterIterator iter = new StringCharacterIterator(str);
 
     for (char ch = iter.first(); ch != CharacterIterator.DONE; ch = iter.next()) {
@@ -161,7 +161,7 @@ public class StringTools {
         } else if ((format = getCFormatChar(ch)) != '\0') {
           buf.append(format);
         } else if (ch == 'u') { // enter unicode mode
-          StringBuffer mini = new StringBuffer(4);
+          StringBuilder mini = new StringBuilder(4);
           for (int i = 0; i < 4; i++) {
             mini.append(iter.next());
           }

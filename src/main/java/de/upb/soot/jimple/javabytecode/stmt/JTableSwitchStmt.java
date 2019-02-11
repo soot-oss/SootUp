@@ -83,7 +83,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
     String endOfLine = " ";
 
     buffer.append(Jimple.TABLESWITCH + "(" + keyBox.getValue().toString() + ")" + endOfLine);

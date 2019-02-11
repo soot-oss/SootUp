@@ -92,7 +92,7 @@ public class JNewMultiArrayExpr implements Expr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
     Type t = baseType.baseType;
     buffer.append(Jimple.NEWMULTIARRAY + " (" + t.toString() + ")");

@@ -146,7 +146,7 @@ public enum Modifier {
    * @return a textual representation of the modifiers.
    */
   public static String toString(EnumSet<Modifier> m) {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
     if (isPublic(m)) {
       buffer.append("public ");

@@ -115,7 +115,7 @@ public class ArrayType extends RefLikeType {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder buffer = new StringBuilder();
 
     buffer.append(baseType.toString());
 
