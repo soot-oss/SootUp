@@ -493,7 +493,7 @@ public class WalaIRToJimpleConverter {
               count = this.clsWithInnerCls.get(outClass.toString()) + 1;
             }
             this.clsWithInnerCls.put(outClass, count);
-            sb.append(count + "$");
+            sb.append(count).append("$");
           }
           sb.append(name);
         }

@@ -102,7 +102,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   public String toString() {
     StringBuffer buffer = new StringBuffer();
 
-    buffer.append(Jimple.STATICINVOKE + " " + method + "(");
+    buffer.append(Jimple.STATICINVOKE + " ").append(method).append("(");
     argBoxesToString(buffer);
     buffer.append(")");
 

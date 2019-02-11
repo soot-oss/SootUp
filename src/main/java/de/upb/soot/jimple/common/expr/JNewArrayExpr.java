@@ -78,8 +78,8 @@ public class JNewArrayExpr implements Expr {
   public String toString() {
     StringBuilder buffer = new StringBuilder();
 
-    buffer.append(Jimple.NEWARRAY + " (" + getBaseTypeString() + ")");
-    buffer.append("[" + sizeBox.getValue().toString() + "]");
+    buffer.append(Jimple.NEWARRAY + " (").append(getBaseTypeString()).append(")");
+    buffer.append("[").append(sizeBox.getValue().toString()).append("]");
 
     return buffer.toString();
   }

@@ -248,7 +248,7 @@ public class SootMethod extends SootClassMember implements IMethod {
     }
 
     while (st.hasMoreTokens()) {
-      buffer.append(" " + st.nextToken());
+      buffer.append(" ").append(st.nextToken());
     }
 
     if (buffer.length() != 0) {
@@ -257,7 +257,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
     // return type + name
 
-    buffer.append(this.getReturnType().toQuotedString() + " ");
+    buffer.append(this.getReturnType().toQuotedString()).append(" ");
     buffer.append(this.getView().quotedNameOf(this.getSignature().name));
 
     buffer.append("(");
@@ -279,10 +279,10 @@ public class SootMethod extends SootClassMember implements IMethod {
       Iterator<SootClass> exceptionIt = this.getExceptions().iterator();
 
       if (exceptionIt.hasNext()) {
-        buffer.append(" throws " + this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
+        buffer.append(" throws ").append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
 
         while (exceptionIt.hasNext()) {
-          buffer.append(", " + this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
+          buffer.append(", ").append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
         }
       }
     }

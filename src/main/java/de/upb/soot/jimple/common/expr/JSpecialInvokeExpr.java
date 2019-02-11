@@ -70,7 +70,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   public String toString() {
     StringBuffer buffer = new StringBuffer();
 
-    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
+    buffer.append(Jimple.SPECIALINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(method).append("(");
     argBoxesToString(buffer);
     buffer.append(")");
 

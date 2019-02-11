@@ -95,10 +95,10 @@ public class JNewMultiArrayExpr implements Expr {
     StringBuilder buffer = new StringBuilder();
 
     Type t = baseType.baseType;
-    buffer.append(Jimple.NEWMULTIARRAY + " (" + t.toString() + ")");
+    buffer.append(Jimple.NEWMULTIARRAY + " (").append(t.toString()).append(")");
 
     for (ValueBox element : sizeBoxes) {
-      buffer.append("[" + element.getValue().toString() + "]");
+      buffer.append("[").append(element.getValue().toString()).append("]");
     }
 
     for (int i = 0; i < baseType.numDimensions - sizeBoxes.length; i++) {

@@ -130,7 +130,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
       initializeQuotableLocals();
     }
     if (quotableLocals.contains(l.getName())) {
-      output.append("'" + l.getName() + "'");
+      output.append("'").append(l.getName()).append("'");
     } else {
       output.append(l.getName());
     }
