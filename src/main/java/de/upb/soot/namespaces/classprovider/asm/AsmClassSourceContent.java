@@ -77,7 +77,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
   private SootClass.SignatureStep resolveHierarchy(IView view, JavaClassSignature cs) {
     SootClass sootClass = (SootClass) view.getClass(cs).get();
     Set<JavaClassSignature> interfaces = new HashSet<>();
-    JavaClassSignature mySuperCl = null;
+    JavaClassSignature mySuperCl;
     SootClass.HierachyStep danglingStep;
 
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.DANGLING)) {

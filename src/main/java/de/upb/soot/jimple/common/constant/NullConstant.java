@@ -50,6 +50,7 @@ public class NullConstant extends Constant {
     return nullconstant;
   }
 
+  @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
   @Override
   public boolean equals(Object c) {
     return c == nullconstant;

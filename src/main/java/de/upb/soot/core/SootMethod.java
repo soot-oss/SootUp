@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -166,7 +167,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    */
 
   public Collection<SootClass> getExceptions() {
-    Collection<SootClass> ret = Collections.emptySet();
+    Collection<SootClass> ret = new HashSet<>();
     exceptions.stream().filter(e -> this.getView().getClass(e).isPresent())
         .forEach(e -> ret.add((SootClass) this.getView().getClass(e).get()));
     return ret;
