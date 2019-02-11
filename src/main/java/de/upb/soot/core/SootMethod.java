@@ -73,7 +73,6 @@ public class SootMethod extends SootClassMember implements IMethod {
   /** Tells this methodRef how to find out where its body lives. */
   private final IMethodSourceContent methodSource;
 
-  // FIXME: make the method immutable??, e.g., no setActive Body
 
   // FIXME: remove Wala DebuggingInformation from this Class, IMHO it does not belong to a sootmethod
   /**
