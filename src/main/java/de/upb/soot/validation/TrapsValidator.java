@@ -33,8 +33,8 @@ public enum TrapsValidator implements BodyValidator {
     return INSTANCE;
   }
 
-  @Override
   /** Verifies that the begin, end and handler units of each trap are in this body. */
+  @Override
   public void validate(Body body, List<ValidationException> exception) {
 
     // TODO: check code from old soot below

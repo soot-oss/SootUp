@@ -1,6 +1,8 @@
 package de.upb.soot.signatures;
 
 import com.google.common.base.Preconditions;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ClassUtils;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -8,9 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ClassUtils;
 
 /**
  * Factory to create valid signatures for Java classes in a classpath.
@@ -23,7 +22,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
   protected final Map<String, PackageSignature> packages = new HashMap<>();
 
   public DefaultSignatureFactory() {
-    /** Represents the default package. */
+    /* Represents the default package. */
     packages.put(PackageSignature.DEFAULT_PACKAGE.packageName, PackageSignature.DEFAULT_PACKAGE);
   }
 

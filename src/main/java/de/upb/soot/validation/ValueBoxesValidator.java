@@ -33,8 +33,8 @@ public enum ValueBoxesValidator implements BodyValidator {
     return INSTANCE;
   }
 
-  @Override
   /** Verifies that a ValueBox is not used in more than one place. */
+  @Override
   public void validate(Body body, List<ValidationException> exception) {
     // TODO: check code from old soot below
     /*

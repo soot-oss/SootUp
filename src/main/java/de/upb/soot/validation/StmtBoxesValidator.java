@@ -11,8 +11,8 @@ public enum StmtBoxesValidator implements BodyValidator {
     return INSTANCE;
   }
 
-  @Override
   /** Verifies that the UnitBoxes of this Body all point to a Unit contained within this body. */
+  @Override
   public void validate(Body body, List<ValidationException> exception) {
   }
 

@@ -33,8 +33,8 @@ public enum UsesValidator implements BodyValidator {
     return INSTANCE;
   }
 
-  @Override
   /** Verifies that each use in this Body has a def. */
+  @Override
   public void validate(Body body, List<ValidationException> exception) {
     // TODO: auto generated stub
     /*
