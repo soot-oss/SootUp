@@ -36,14 +36,14 @@ import java.io.Serializable;
  */
 public interface ValueBox extends Serializable {
   /** Sets the value contained in this box as given. Subject to canContainValue() checks. */
-  public void setValue(Value value);
+  void setValue(Value value);
 
   /** Returns the value contained in this box. */
-  public Value getValue();
+  Value getValue();
 
   /** Returns true if the given Value fits in this box. */
-  public boolean canContainValue(Value value);
+  boolean canContainValue(Value value);
 
-  public void toString(IStmtPrinter up);
+  void toString(IStmtPrinter up);
 
 }

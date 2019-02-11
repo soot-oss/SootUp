@@ -36,29 +36,29 @@ public interface DirectedGraph<N> extends Iterable<N> {
   /**
    * Returns a list of entry points for this graph.
    */
-  public List<N> getHeads();
+  List<N> getHeads();
 
   /** Returns a list of exit points for this graph. */
-  public List<N> getTails();
+  List<N> getTails();
 
   /**
    * Returns a list of predecessors for the given node in the graph.
    */
-  public List<N> getPredsOf(N s);
+  List<N> getPredsOf(N s);
 
   /**
    * Returns a list of successors for the given node in the graph.
    */
-  public List<N> getSuccsOf(N s);
+  List<N> getSuccsOf(N s);
 
   /**
    * Returns the node count for this graph.
    */
-  public int size();
+  int size();
 
   /**
    * Returns an iterator for the nodes in this graph. No specific ordering of the nodes is guaranteed.
    */
   @Override
-  public Iterator<N> iterator();
+  Iterator<N> iterator();
 }

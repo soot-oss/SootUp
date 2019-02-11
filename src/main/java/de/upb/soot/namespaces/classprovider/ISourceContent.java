@@ -12,5 +12,5 @@ import de.upb.soot.views.IView;
  * @author Ben Hermann
  */
 public interface ISourceContent {
-  public AbstractClass resolve(ResolvingLevel level, IView view);
+  AbstractClass resolve(ResolvingLevel level, IView view);
 }

@@ -36,7 +36,7 @@ public interface ClassValidator {
    * @param sc
    *          the class to check
    */
-  public void validate(SootClass sc, List<ValidationException> exceptions);
+  void validate(SootClass sc, List<ValidationException> exceptions);
 
   /**
    * Basic validators run essential checks and are run always if validate is called.<br>
@@ -45,5 +45,5 @@ public interface ClassValidator {
    *
    * @return whether this validator is a basic validator
    */
-  public boolean isBasicValidator();
+  boolean isBasicValidator();
 }
