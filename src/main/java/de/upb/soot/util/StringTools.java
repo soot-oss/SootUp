@@ -76,7 +76,7 @@ public class StringTools {
    * Returns fromString, but with certain characters printed as if they were in a Java string literal. Used by
    * StringConstant.toString()
    */
-  public static java.lang.String getQuotedStringOf(String fromString) {
+  public static String getQuotedStringOf(String fromString) {
     // We definitely need fromString.length + 2, but let's have some
     // additional space
     StringBuilder toStringBuffer = new StringBuilder(fromString.length() + 20);
@@ -89,7 +89,6 @@ public class StringTools {
         toStringBuffer.append("\\\'");
       } else if (ch == '\"') {
         toStringBuffer.append("\\\"");
-        continue;
       } else if (ch == '\n') {
         toStringBuffer.append("\\n");
       } else if (ch == '\t') {
