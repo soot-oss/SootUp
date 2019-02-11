@@ -147,17 +147,16 @@ public class WalaIRToJimpleConverter {
 
     // convert methods
     Set<SootMethod> sootMethods = new HashSet<>();
-    new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Application, Optional.ofNullable(superClass),
-        interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+    new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Application, superClass, interfaces, outerClass,
+        sootFields, sootMethods, position, modifiers);
 
     for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
       SootMethod sootMethod = convertMethod(classSig, (AstMethod) walaMethod);
       sootMethods.add(sootMethod);
     }
 
-    SootClass ret
-        = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
-            interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+    SootClass ret = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, superClass, interfaces,
+        outerClass, sootFields, sootMethods, position, modifiers);
     return ret;
   }
 
