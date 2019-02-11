@@ -173,7 +173,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
         result.put(stmt, Collections.emptyList());
       } else {
         List<IStmt> resultList = new ArrayList<>(resultSize);
-        List<IStmt> list = null;
+        List<IStmt> list;
         // As a minor optimization of the duplicate screening,
         // copy the longer list first.
         if (listA.size() >= listB.size()) {

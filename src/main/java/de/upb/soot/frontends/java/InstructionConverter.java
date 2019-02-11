@@ -1,5 +1,46 @@
 package de.upb.soot.frontends.java;
 
+import com.ibm.wala.cast.ir.ssa.AssignInstruction;
+import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
+import com.ibm.wala.cast.ir.ssa.AstLexicalAccess.Access;
+import com.ibm.wala.cast.ir.ssa.AstLexicalRead;
+import com.ibm.wala.cast.ir.ssa.AstLexicalWrite;
+import com.ibm.wala.cast.ir.ssa.CAstBinaryOp;
+import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
+import com.ibm.wala.cast.java.ssa.EnclosingObjectReference;
+import com.ibm.wala.cast.loader.AstMethod;
+import com.ibm.wala.classLoader.CallSiteReference;
+import com.ibm.wala.shrikeBT.IBinaryOpInstruction;
+import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.IOperator;
+import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.Operator;
+import com.ibm.wala.shrikeBT.IShiftInstruction;
+import com.ibm.wala.ssa.SSAArrayLengthInstruction;
+import com.ibm.wala.ssa.SSAArrayLoadInstruction;
+import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
+import com.ibm.wala.ssa.SSAArrayStoreInstruction;
+import com.ibm.wala.ssa.SSABinaryOpInstruction;
+import com.ibm.wala.ssa.SSACheckCastInstruction;
+import com.ibm.wala.ssa.SSAComparisonInstruction;
+import com.ibm.wala.ssa.SSAConditionalBranchInstruction;
+import com.ibm.wala.ssa.SSAConversionInstruction;
+import com.ibm.wala.ssa.SSAFieldAccessInstruction;
+import com.ibm.wala.ssa.SSAGetCaughtExceptionInstruction;
+import com.ibm.wala.ssa.SSAGetInstruction;
+import com.ibm.wala.ssa.SSAGotoInstruction;
+import com.ibm.wala.ssa.SSAInstanceofInstruction;
+import com.ibm.wala.ssa.SSAInstruction;
+import com.ibm.wala.ssa.SSALoadMetadataInstruction;
+import com.ibm.wala.ssa.SSAMonitorInstruction;
+import com.ibm.wala.ssa.SSANewInstruction;
+import com.ibm.wala.ssa.SSAPutInstruction;
+import com.ibm.wala.ssa.SSAReturnInstruction;
+import com.ibm.wala.ssa.SSASwitchInstruction;
+import com.ibm.wala.ssa.SSAThrowInstruction;
+import com.ibm.wala.ssa.SSAUnaryOpInstruction;
+import com.ibm.wala.ssa.SymbolTable;
+import com.ibm.wala.types.FieldReference;
+import com.ibm.wala.types.MethodReference;
+import com.ibm.wala.types.TypeReference;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
@@ -46,48 +87,7 @@ import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.SignatureFactory;
-
-import com.ibm.wala.cast.ir.ssa.AssignInstruction;
-import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
-import com.ibm.wala.cast.ir.ssa.AstLexicalAccess.Access;
-import com.ibm.wala.cast.ir.ssa.AstLexicalRead;
-import com.ibm.wala.cast.ir.ssa.AstLexicalWrite;
-import com.ibm.wala.cast.ir.ssa.CAstBinaryOp;
-import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
-import com.ibm.wala.cast.java.ssa.EnclosingObjectReference;
-import com.ibm.wala.cast.loader.AstMethod;
-import com.ibm.wala.classLoader.CallSiteReference;
-import com.ibm.wala.shrikeBT.IBinaryOpInstruction;
-import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.IOperator;
-import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.Operator;
-import com.ibm.wala.shrikeBT.IShiftInstruction;
-import com.ibm.wala.ssa.SSAArrayLengthInstruction;
-import com.ibm.wala.ssa.SSAArrayLoadInstruction;
-import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
-import com.ibm.wala.ssa.SSAArrayStoreInstruction;
-import com.ibm.wala.ssa.SSABinaryOpInstruction;
-import com.ibm.wala.ssa.SSACheckCastInstruction;
-import com.ibm.wala.ssa.SSAComparisonInstruction;
-import com.ibm.wala.ssa.SSAConditionalBranchInstruction;
-import com.ibm.wala.ssa.SSAConversionInstruction;
-import com.ibm.wala.ssa.SSAFieldAccessInstruction;
-import com.ibm.wala.ssa.SSAGetCaughtExceptionInstruction;
-import com.ibm.wala.ssa.SSAGetInstruction;
-import com.ibm.wala.ssa.SSAGotoInstruction;
-import com.ibm.wala.ssa.SSAInstanceofInstruction;
-import com.ibm.wala.ssa.SSAInstruction;
-import com.ibm.wala.ssa.SSALoadMetadataInstruction;
-import com.ibm.wala.ssa.SSAMonitorInstruction;
-import com.ibm.wala.ssa.SSANewInstruction;
-import com.ibm.wala.ssa.SSAPutInstruction;
-import com.ibm.wala.ssa.SSAReturnInstruction;
-import com.ibm.wala.ssa.SSASwitchInstruction;
-import com.ibm.wala.ssa.SSAThrowInstruction;
-import com.ibm.wala.ssa.SSAUnaryOpInstruction;
-import com.ibm.wala.ssa.SymbolTable;
-import com.ibm.wala.types.FieldReference;
-import com.ibm.wala.types.MethodReference;
-import com.ibm.wala.types.TypeReference;
+import scala.Char;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -95,8 +95,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import scala.Char;
 
 /**
  * This class converts wala instruction to jimple statement.
@@ -204,14 +202,14 @@ public class InstructionConverter {
   private IStmt convertArrayStoreInstruction(SSAArrayStoreInstruction inst) {
     Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
     int i = inst.getIndex();
-    Value index = null;
+    Value index;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
       index = getLocal(IntType.getInstance(), i);
     }
     JArrayRef arrayRef = Jimple.newArrayRef(base, index);
-    Value rvalue = null;
+    Value rvalue;
     int value = inst.getValue();
     if (symbolTable.isConstant(value)) {
       rvalue = getConstant(value);
@@ -224,14 +222,14 @@ public class InstructionConverter {
   private IStmt convertArrayLoadInstruction(SSAArrayLoadInstruction inst) {
     Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
     int i = inst.getIndex();
-    Value index = null;
+    Value index;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
       index = getLocal(IntType.getInstance(), i);
     }
     JArrayRef arrayRef = Jimple.newArrayRef(base, index);
-    Value left = null;
+    Value left;
     int def = inst.getDef();
     left = getLocal(base.getType(), def);
     return Jimple.newAssignStmt(left, arrayRef);
@@ -312,7 +310,7 @@ public class InstructionConverter {
     for (int i = 0; i < inst.getAccessCount(); i++) {
       Access access = inst.getAccess(i);
       Type type = converter.convertType(access.type);
-      Value right = null;
+      Value right;
       if (symbolTable.isConstant(access.valueNumber)) {
         right = getConstant(access.valueNumber);
       } else {
@@ -320,7 +318,7 @@ public class InstructionConverter {
       }
       JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
       // TODO check modifier
-      Value left = null;
+      Value left;
       if (!walaMethod.isStatic()) {
         FieldSignature fieldSig = sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
         SootField field = new SootField(converter.view, cSig, fieldSig, sigFactory.getTypeSignature(type.toString()),
@@ -344,7 +342,7 @@ public class InstructionConverter {
       Local left = getLocal(type, access.valueNumber);
       JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
       // TODO check modifier
-      Value rvalue = null;
+      Value rvalue;
       if (!walaMethod.isStatic()) {
         FieldSignature fieldSig = sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
         SootField field = new SootField(converter.view, cSig, fieldSig, sigFactory.getTypeSignature(type.toString()),
@@ -375,7 +373,7 @@ public class InstructionConverter {
   private IStmt convertCheckCastInstruction(SSACheckCastInstruction inst) {
     TypeReference[] types = inst.getDeclaredResultTypes();
     Local result = getLocal(converter.convertType(types[0]), inst.getResult());
-    Value rvalue = null;
+    Value rvalue;
     int val = inst.getVal();
     if (symbolTable.isConstant(val)) {
       rvalue = getConstant(val);
@@ -428,7 +426,7 @@ public class InstructionConverter {
   private IStmt convertUnaryOpInstruction(SSAUnaryOpInstruction inst) {
     int def = inst.getDef();
     int use = inst.getUse(0);
-    Value op = null;
+    Value op;
     // TODO: change type
     Type type = UnknownType.getInstance();
     if (symbolTable.isConstant(use)) {
@@ -452,7 +450,7 @@ public class InstructionConverter {
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassSignature classSig = sigFactory.getClassSignature(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig = sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
-    Value fieldValue = null;
+    Value fieldValue;
     if (inst.isStatic()) {
       fieldValue = Jimple.newStaticFieldRef(converter.view, fieldSig);
     } else {
@@ -460,7 +458,7 @@ public class InstructionConverter {
       Local base = getLocal(converter.view.getRefType(classSig), ref);
       fieldValue = Jimple.newInstanceFieldRef(converter.view, base, fieldSig);
     }
-    Value value = null;
+    Value value;
     int val = inst.getVal();
     if (symbolTable.isConstant(val)) {
       value = getConstant(val);
@@ -474,10 +472,10 @@ public class InstructionConverter {
     int result = inst.getDef();
     Type type = converter.convertType(inst.getNewSite().getDeclaredType());
     Value var = getLocal(type, result);
-    Value rvalue = null;
+    Value rvalue;
     if (type instanceof ArrayType) {
       int use = inst.getUse(0);
-      Value size = null;
+      Value size;
       if (symbolTable.isConstant(use)) {
         size = getConstant(use);
       } else {
@@ -513,7 +511,7 @@ public class InstructionConverter {
     int def = inst.getDef();
     int use = inst.getUse(0);
     Value lvalue = getLocal(toType, def);
-    Value rvalue = null;
+    Value rvalue;
     if (symbolTable.isConstant(use)) {
       rvalue = getConstant(use);
     } else {
@@ -524,7 +522,7 @@ public class InstructionConverter {
   }
 
   private IStmt convertInvokeInstruction(AstJavaInvokeInstruction invokeInst) {
-    Value invoke = null;
+    Value invoke;
     CallSiteReference callee = invokeInst.getCallSite();
     MethodReference target = invokeInst.getDeclaredTarget();
     String declaringClassSignature = converter.convertClassNameFromWala(target.getDeclaringClass().getName().toString());
@@ -543,7 +541,7 @@ public class InstructionConverter {
     }
     for (; i < invokeInst.getNumberOfUses(); i++) {
       int use = invokeInst.getUse(i);
-      Value arg = null;
+      Value arg;
       if (symbolTable.isConstant(use)) {
         arg = getConstant(use);
       } else {
@@ -592,19 +590,19 @@ public class InstructionConverter {
   private IStmt convertBranchInstruction(SSAConditionalBranchInstruction condInst) {
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
-    Value value1 = null;
+    Value value1;
     if (symbolTable.isZero(val1)) {
       value1 = IntConstant.getInstance(0);
     } else {
       value1 = getLocal(IntType.getInstance(), val1);
     }
-    Value value2 = null;
+    Value value2;
     if (symbolTable.isZero(val2)) {
       value2 = IntConstant.getInstance(0);
     } else {
       value2 = getLocal(IntType.getInstance(), val1);
     }
-    AbstractConditionExpr condition = null;
+    AbstractConditionExpr condition;
     IOperator op = condInst.getOperator();
     if (op.equals(Operator.EQ)) {
       condition = Jimple.newEqExpr(value1, value2);
@@ -634,21 +632,21 @@ public class InstructionConverter {
     // TODO: only int type?
     Type type = IntType.getInstance();
     Value result = getLocal(type, def);
-    Value op1 = null;
+    Value op1;
     if (symbolTable.isConstant(val1)) {
       op1 = getConstant(val1);
       type = op1.getType();
     } else {
       op1 = getLocal(type, val1);
     }
-    Value op2 = null;
+    Value op2;
     if (symbolTable.isConstant(val2)) {
       op2 = getConstant(val2);
       type = op2.getType();
     } else {
       op2 = getLocal(type, val2);
     }
-    AbstractBinopExpr binExpr = null;
+    AbstractBinopExpr binExpr;
     IBinaryOpInstruction.IOperator operator = binOpInst.getOperator();
     if (operator.equals(IBinaryOpInstruction.Operator.ADD)) {
       binExpr = Jimple.newAddExpr(op1, op2);
@@ -722,7 +720,7 @@ public class InstructionConverter {
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassSignature classSig = sigFactory.getClassSignature(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig = sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
-    Value rvalue = null;
+    Value rvalue;
     if (inst.isStatic()) {
       rvalue = Jimple.newStaticFieldRef(converter.view, fieldSig);
     } else {

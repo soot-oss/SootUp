@@ -95,7 +95,7 @@ public class LocalGenerator {
   }
 
   private Local generate(Type type, boolean isField) {
-    String name = "v";
+    String name;
 
     if (type instanceof IntType) {
       do {

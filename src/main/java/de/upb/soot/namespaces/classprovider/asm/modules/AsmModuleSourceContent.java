@@ -74,7 +74,7 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
 
   private SootModuleInfo.Build resolveHierarchy(IView view, JavaClassSignature cs) {
     SootModuleInfo sootClass = (SootModuleInfo) view.getClass(cs).get();
-    SootModuleInfo.HierachyStep hierachyStep = null;
+    SootModuleInfo.HierachyStep hierachyStep;
     ArrayList<JavaClassSignature> providers = new ArrayList<>();
     ArrayList<SootModuleInfo.ModuleReference> requieres = new ArrayList<>();
     ArrayList<SootModuleInfo.PackageReference> exports = new ArrayList<>();
@@ -155,7 +155,7 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
   }
 
   private SootModuleInfo.Build resolveSignature(IView view, JavaClassSignature cs) {
-    SootModuleInfo.Build signatureStep = null;
+    SootModuleInfo.Build signatureStep;
     SootModuleInfo sootClass = (SootModuleInfo) view.getClass(cs).get();
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.HIERARCHY)) {
       signatureStep = resolveHierarchy(view, cs);
@@ -168,7 +168,7 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
 
   private SootModuleInfo.Build resolveBody(IView view, JavaClassSignature cs) {
     SootModuleInfo sootClass = (SootModuleInfo) view.getClass(cs).get();
-    SootModuleInfo.Build bodyStep = null;
+    SootModuleInfo.Build bodyStep;
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.SIGNATURES)) {
       bodyStep = resolveSignature(view, cs);
     } else {

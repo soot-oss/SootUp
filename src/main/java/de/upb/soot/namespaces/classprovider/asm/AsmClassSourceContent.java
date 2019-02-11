@@ -151,7 +151,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   private SootClass.Build resolveBody(de.upb.soot.views.IView view, JavaClassSignature cs) {
     SootClass sootClass = (SootClass) view.getClass(cs).get();
-    SootClass.BodyStep bodyStep = null;
+    SootClass.BodyStep bodyStep;
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.SIGNATURES)) {
       bodyStep = resolveSignature(view, cs);
     } else {
