@@ -466,7 +466,7 @@ public class SootClass extends AbstractClass implements Serializable {
     }
     for (IMethod m : methods) {
       SootMethod method = (SootMethod) m;
-      if (method.getSubSignature().toString().equals(subSignature)) {
+      if (method.getSubSignature().equals(subSignature)) {
         if (foundMethod == null) {
           foundMethod = method;
         } else {

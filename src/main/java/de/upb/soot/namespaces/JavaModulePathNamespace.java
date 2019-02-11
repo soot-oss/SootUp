@@ -147,7 +147,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
         int index = fullyQualifiedName.lastIndexOf(".");
         String className = fullyQualifiedName;
         if (index > 0) {
-          className = fullyQualifiedName.substring(index, fullyQualifiedName.length());
+          className = fullyQualifiedName.substring(index);
           packageName = fullyQualifiedName.substring(0, index);
         }
         return moduleSignatureFactory.getClassSignature(className, packageName, this.moduleName);

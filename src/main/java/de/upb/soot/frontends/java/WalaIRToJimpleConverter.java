@@ -490,7 +490,7 @@ public class WalaIRToJimpleConverter {
             String outClass = sb.toString();
             int count = 1;
             if (this.clsWithInnerCls.containsKey(outClass)) {
-              count = this.clsWithInnerCls.get(outClass.toString()) + 1;
+              count = this.clsWithInnerCls.get(outClass) + 1;
             }
             this.clsWithInnerCls.put(outClass, count);
             sb.append(count).append("$");
