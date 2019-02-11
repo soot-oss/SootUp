@@ -77,11 +77,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
         if (nextIStmt != null) {
           successors.add(nextIStmt);
 
-          List<IStmt> preds = stmtToPreds.get(nextIStmt);
-          if (preds == null) {
-            preds = new ArrayList<>();
-            stmtToPreds.put(nextIStmt, preds);
-          }
+          List<IStmt> preds = stmtToPreds.computeIfAbsent(nextIStmt, k -> new ArrayList<>());
           preds.add(currentIStmt);
         }
       }
@@ -94,11 +90,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
           if (!successors.contains(target)) {
             successors.add(target);
 
-            List<IStmt> preds = stmtToPreds.get(target);
-            if (preds == null) {
-              preds = new ArrayList<>();
-              stmtToPreds.put(target, preds);
-            }
+            List<IStmt> preds = stmtToPreds.computeIfAbsent(target, k -> new ArrayList<>());
             preds.add(currentIStmt);
           }
         }
@@ -225,19 +217,12 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
    *          The {@link IStmt} to which the edge flows.
    */
   protected void addEdge(Map<IStmt, List<IStmt>> stmtToSuccs, Map<IStmt, List<IStmt>> stmtToPreds, IStmt head, IStmt tail) {
-    List<IStmt> headsSuccs = stmtToSuccs.get(head);
-    if (headsSuccs == null) {
-      headsSuccs = new ArrayList<>(3); // We expect this list to
-      // remain short.
-      stmtToSuccs.put(head, headsSuccs);
-    }
+    List<IStmt> headsSuccs = stmtToSuccs.computeIfAbsent(head, k -> new ArrayList<>(3));
+    // We expect this list to
+    // remain short.
     if (!headsSuccs.contains(tail)) {
       headsSuccs.add(tail);
-      List<IStmt> tailsPreds = stmtToPreds.get(tail);
-      if (tailsPreds == null) {
-        tailsPreds = new ArrayList<>();
-        stmtToPreds.put(tail, tailsPreds);
-      }
+      List<IStmt> tailsPreds = stmtToPreds.computeIfAbsent(tail, k -> new ArrayList<>());
       tailsPreds.add(head);
     }
   }
