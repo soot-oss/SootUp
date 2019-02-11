@@ -47,5 +47,5 @@ public interface EquivTo {
   /**
    * Returns true if this object is equivalent to o according to the given comparator.
    */
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator);
+  public boolean equivTo(Object o, Comparator<?> comparator);
 }

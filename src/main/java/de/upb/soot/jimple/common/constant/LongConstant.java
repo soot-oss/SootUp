@@ -232,7 +232,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+  public boolean equivTo(Object o, Comparator<?> comparator) {
     // TODO Auto-generated method stub
     return false;
   }
