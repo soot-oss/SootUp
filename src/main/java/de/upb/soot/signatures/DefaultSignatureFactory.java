@@ -85,7 +85,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
    * Returns a TypeSignature which can be a {@link JavaClassSignature},{@link PrimitiveTypeSignature},
    * {@link VoidTypeSignature}, or {@link NullTypeSignature}.
    *
-   * @param typeName
+   * @param typeDesc
    *          the fully-qualified name of the class or for primitives its simple name, e.g., int, null, void, ...
    * @return the type signature
    */

@@ -80,7 +80,6 @@ public interface IView {
    * Returns the {@link RefType} with given class Signature from the view. If there is no RefType with given className
    * exists, create a new instance.
    * 
-   * @param className
    * @return
    */
   RefType getRefType(TypeSignature classSignature);
@@ -89,7 +88,6 @@ public interface IView {
    * Return the {@link Type} wtih given signature from the view. If there is no Type with given signature exists, create a
    * new instance.
    * 
-   * @param signature
    * @return
    */
   Type getType(TypeSignature signature);
