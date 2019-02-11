@@ -57,7 +57,7 @@ public abstract class AbstractOpStmt extends AbstractStmt {
 
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
+    List<ValueBox> list = new ArrayList<>();
 
     list.addAll(opBox.getValue().getUseBoxes());
     list.add(opBox);

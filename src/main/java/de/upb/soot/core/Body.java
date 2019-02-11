@@ -155,7 +155,7 @@ public class Body implements Serializable {
   }
 
   protected void runValidation(BodyValidator validator) {
-    final List<ValidationException> exceptionList = new ArrayList<ValidationException>();
+    final List<ValidationException> exceptionList = new ArrayList<>();
     validator.validate(this, exceptionList);
     if (!exceptionList.isEmpty()) {
       throw exceptionList.get(0);
@@ -238,7 +238,7 @@ public class Body implements Serializable {
    */
   public Collection<Local> getParameterLocals() {
     final int numParams = getMethod().getParameterCount();
-    final List<Local> retVal = new ArrayList<Local>(numParams);
+    final List<Local> retVal = new ArrayList<>(numParams);
     for (IStmt u : stmts) {
       if (u instanceof JIdentityStmt) {
         JIdentityStmt is = (JIdentityStmt) u;
@@ -299,7 +299,7 @@ public class Body implements Serializable {
    * Make sure that the JimpleBody is well formed. If not, throw an exception. Right now, performs only a handful of checks.
    */
   public void validate() {
-    final List<ValidationException> exceptionList = new ArrayList<ValidationException>();
+    final List<ValidationException> exceptionList = new ArrayList<>();
     validate(exceptionList);
     if (!exceptionList.isEmpty()) {
       throw exceptionList.get(0);

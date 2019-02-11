@@ -34,7 +34,7 @@ import java.util.Set;
  * This is quite useful for maps of Locals, to avoid nondeterministic local-name drift.
  */
 public class DeterministicHashMap<K, V> extends HashMap<K, V> {
-  Set<K> keys = new TrustingMonotonicArraySet<K>();
+  Set<K> keys = new TrustingMonotonicArraySet<>();
 
   /** Constructs a DeterministicHashMap with the given initial capacity. */
   public DeterministicHashMap(int initialCapacity) {

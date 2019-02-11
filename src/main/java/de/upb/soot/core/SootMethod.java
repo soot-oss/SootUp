@@ -139,7 +139,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    * Returns a read-only list of the parameter types of this method.
    */
   public Collection<Type> getParameterTypes() {
-    List<Type> ret = new ArrayList<Type>();
+    List<Type> ret = new ArrayList<>();
     parameterTypes.forEach(t -> ret.add(this.getView().getType(t)));
     return ret;
   }

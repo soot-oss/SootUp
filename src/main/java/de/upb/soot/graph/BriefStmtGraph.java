@@ -46,8 +46,8 @@ public class BriefStmtGraph extends AbstractStmtGraph {
   public BriefStmtGraph(Body body) {
     super(body);
     int size = orderedStmts.size();
-    stmtToSuccs = new HashMap<IStmt, List<IStmt>>(size * 2 + 1, 0.7f);
-    stmtToPreds = new HashMap<IStmt, List<IStmt>>(size * 2 + 1, 0.7f);
+    stmtToSuccs = new HashMap<>(size * 2 + 1, 0.7f);
+    stmtToPreds = new HashMap<>(size * 2 + 1, 0.7f);
     buildUnexceptionalEdges(stmtToSuccs, stmtToPreds);
     buildHeadsAndTails();
   }

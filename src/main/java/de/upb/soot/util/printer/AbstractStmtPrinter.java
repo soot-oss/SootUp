@@ -162,7 +162,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   }
 
   protected void initializeQuotableLocals() {
-    quotableLocals = new HashSet<String>();
+    quotableLocals = new HashSet<>();
     quotableLocals.addAll(Jimple.jimpleKeywordList());
   }
 

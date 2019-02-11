@@ -66,7 +66,7 @@ public class JNewMultiArrayExpr implements Expr {
 
   @Override
   public Object clone() {
-    List<Value> clonedSizes = new ArrayList<Value>(getSizeCount());
+    List<Value> clonedSizes = new ArrayList<>(getSizeCount());
 
     for (int i = 0; i < getSizeCount(); i++) {
       clonedSizes.add(i, Jimple.cloneIfNecessary(getSize(i)));
@@ -152,7 +152,7 @@ public class JNewMultiArrayExpr implements Expr {
    * Returns a list of values of sizeBoxes.
    */
   public List<Value> getSizes() {
-    List<Value> toReturn = new ArrayList<Value>();
+    List<Value> toReturn = new ArrayList<>();
 
     for (ValueBox element : sizeBoxes) {
       toReturn.add(element.getValue());
@@ -167,7 +167,7 @@ public class JNewMultiArrayExpr implements Expr {
 
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
+    List<ValueBox> list = new ArrayList<>();
     Collections.addAll(list, sizeBoxes);
 
     for (ValueBox element : sizeBoxes) {

@@ -70,7 +70,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
       currentIStmt = nextIStmt;
       nextIStmt = stmtIt.hasNext() ? (IStmt) stmtIt.next() : null;
 
-      ArrayList<IStmt> successors = new ArrayList<IStmt>();
+      ArrayList<IStmt> successors = new ArrayList<>();
 
       if (currentIStmt.fallsThrough()) {
         // Add the next stmt as the successor
@@ -79,7 +79,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
 
           List<IStmt> preds = stmtToPreds.get(nextIStmt);
           if (preds == null) {
-            preds = new ArrayList<IStmt>();
+            preds = new ArrayList<>();
             stmtToPreds.put(nextIStmt, preds);
           }
           preds.add(currentIStmt);
@@ -96,7 +96,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
 
             List<IStmt> preds = stmtToPreds.get(target);
             if (preds == null) {
-              preds = new ArrayList<IStmt>();
+              preds = new ArrayList<>();
               stmtToPreds.put(target, preds);
             }
             preds.add(currentIStmt);
@@ -126,8 +126,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
    * </p>
    */
   protected void buildHeadsAndTails() {
-    tails = new ArrayList<IStmt>();
-    heads = new ArrayList<IStmt>();
+    tails = new ArrayList<>();
+    heads = new ArrayList<>();
 
     for (IStmt s : orderedStmts) {
       List<IStmt> succs = stmtToSuccs.get(s);
@@ -165,7 +165,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
    */
   protected Map<IStmt, List<IStmt>> combineMapValues(Map<IStmt, List<IStmt>> mapA, Map<IStmt, List<IStmt>> mapB) {
     // The duplicate screen
-    Map<IStmt, List<IStmt>> result = new HashMap<IStmt, List<IStmt>>(mapA.size() * 2 + 1, 0.7f);
+    Map<IStmt, List<IStmt>> result = new HashMap<>(mapA.size() * 2 + 1, 0.7f);
     for (IStmt stmt : orderedStmts) {
       List<IStmt> listA = mapA.get(stmt);
       if (listA == null) {
@@ -180,7 +180,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
       if (resultSize == 0) {
         result.put(stmt, Collections.<IStmt>emptyList());
       } else {
-        List<IStmt> resultList = new ArrayList<IStmt>(resultSize);
+        List<IStmt> resultList = new ArrayList<>(resultSize);
         List<IStmt> list = null;
         // As a minor optimization of the duplicate screening,
         // copy the longer list first.
@@ -227,7 +227,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   protected void addEdge(Map<IStmt, List<IStmt>> stmtToSuccs, Map<IStmt, List<IStmt>> stmtToPreds, IStmt head, IStmt tail) {
     List<IStmt> headsSuccs = stmtToSuccs.get(head);
     if (headsSuccs == null) {
-      headsSuccs = new ArrayList<IStmt>(3); // We expect this list to
+      headsSuccs = new ArrayList<>(3); // We expect this list to
       // remain short.
       stmtToSuccs.put(head, headsSuccs);
     }
@@ -235,7 +235,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
       headsSuccs.add(tail);
       List<IStmt> tailsPreds = stmtToPreds.get(tail);
       if (tailsPreds == null) {
-        tailsPreds = new ArrayList<IStmt>();
+        tailsPreds = new ArrayList<>();
         stmtToPreds.put(tail, tailsPreds);
       }
       tailsPreds.add(head);
@@ -271,8 +271,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
 
     // pathStack := list of succs lists
     // pathStackIndex := last visited index in pathStack
-    LinkedList<IStmt> pathStack = new LinkedList<IStmt>();
-    LinkedList<Integer> pathStackIndex = new LinkedList<Integer>();
+    LinkedList<IStmt> pathStack = new LinkedList<>();
+    LinkedList<Integer> pathStackIndex = new LinkedList<>();
 
     pathStack.add(from);
     pathStackIndex.add(0);

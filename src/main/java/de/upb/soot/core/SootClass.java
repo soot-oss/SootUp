@@ -719,7 +719,7 @@ public class SootClass extends AbstractClass implements Serializable {
    * structure.
    */
   public void validate() {
-    final List<ValidationException> exceptionList = new ArrayList<ValidationException>();
+    final List<ValidationException> exceptionList = new ArrayList<>();
     validate(exceptionList);
     if (!exceptionList.isEmpty()) {
       throw exceptionList.get(0);

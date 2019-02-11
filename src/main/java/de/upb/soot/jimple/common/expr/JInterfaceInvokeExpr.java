@@ -72,7 +72,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> argList = new ArrayList<Value>(getArgCount());
+    List<Value> argList = new ArrayList<>(getArgCount());
     for (int i = 0; i < getArgCount(); i++) {
       argList.add(i, Jimple.cloneIfNecessary(getArg(i)));
     }

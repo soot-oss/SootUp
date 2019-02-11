@@ -54,7 +54,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     this.targetBoxes = targetBoxes;
 
     // Build up stmtBoxes
-    List<IStmtBox> list = new ArrayList<IStmtBox>();
+    List<IStmtBox> list = new ArrayList<>();
     stmtBoxes = Collections.unmodifiableList(list);
 
     Collections.addAll(list, targetBoxes);
@@ -87,7 +87,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
+    List<ValueBox> list = new ArrayList<>();
 
     list.addAll(keyBox.getValue().getUseBoxes());
     list.add(keyBox);
@@ -115,7 +115,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
    * Returns a list targets of type Stmt.
    */
   public final List<IStmt> getTargets() {
-    List<IStmt> targets = new ArrayList<IStmt>();
+    List<IStmt> targets = new ArrayList<>();
 
     for (IStmtBox element : targetBoxes) {
       targets.add(element.getStmt());

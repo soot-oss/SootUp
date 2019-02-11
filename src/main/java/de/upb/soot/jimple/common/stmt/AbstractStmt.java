@@ -92,7 +92,7 @@ public abstract class AbstractStmt implements IStmt {
   @Override
   public void addBoxPointingToThis(IStmtBox b) {
     if (boxesPointingToThis == null) {
-      boxesPointingToThis = new ArrayList<IStmtBox>();
+      boxesPointingToThis = new ArrayList<>();
     }
     boxesPointingToThis.add(b);
   }
@@ -122,7 +122,7 @@ public abstract class AbstractStmt implements IStmt {
       if (defBoxes.isEmpty()) {
         return useBoxes;
       } else {
-        List<ValueBox> valueBoxes = new ArrayList<ValueBox>();
+        List<ValueBox> valueBoxes = new ArrayList<>();
         valueBoxes.addAll(defBoxes);
         valueBoxes.addAll(useBoxes);
         return valueBoxes;

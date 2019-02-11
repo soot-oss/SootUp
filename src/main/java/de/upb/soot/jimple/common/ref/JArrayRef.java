@@ -115,7 +115,7 @@ public class JArrayRef implements ConcreteRef {
 
   @Override
   public List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
+    List<ValueBox> useBoxes = new ArrayList<>();
 
     useBoxes.addAll(baseBox.getValue().getUseBoxes());
     useBoxes.add(baseBox);

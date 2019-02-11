@@ -87,7 +87,7 @@ public class JInvokeStmt extends AbstractStmt {
 
   @Override
   public List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
+    List<ValueBox> list = new ArrayList<>();
 
     list.addAll(invokeExprBox.getValue().getUseBoxes());
     list.add(invokeExprBox);

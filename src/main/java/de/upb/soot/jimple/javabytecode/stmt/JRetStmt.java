@@ -86,7 +86,7 @@ public class JRetStmt extends AbstractStmt {
 
   @Override
   public List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
+    List<ValueBox> useBoxes = new ArrayList<>();
 
     useBoxes.addAll(stmtAddressBox.getValue().getUseBoxes());
     useBoxes.add(stmtAddressBox);

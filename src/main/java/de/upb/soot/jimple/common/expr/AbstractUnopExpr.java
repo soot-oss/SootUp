@@ -58,7 +58,7 @@ public abstract class AbstractUnopExpr implements Expr {
    * Returns a list of type ValueBox that contains values of type ValueBox.
    */
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
+    List<ValueBox> list = new ArrayList<>();
 
     list.addAll(opBox.getValue().getUseBoxes());
     list.add(opBox);

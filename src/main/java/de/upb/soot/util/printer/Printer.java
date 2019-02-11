@@ -338,7 +338,7 @@ public class Printer {
   private void printLocalsInBody(Body body, IStmtPrinter up) {
     // Print out local variables
     {
-      Map<Type, List<Local>> typeToLocals = new DeterministicHashMap<Type, List<Local>>(body.getLocalCount() * 2 + 1, 0.7f);
+      Map<Type, List<Local>> typeToLocals = new DeterministicHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
 
       // Collect locals
       {
@@ -351,7 +351,7 @@ public class Printer {
               if (typeToLocals.containsKey(t)) {
                   localList = typeToLocals.get(t);
               } else {
-                  localList = new ArrayList<Local>();
+                  localList = new ArrayList<>();
                   typeToLocals.put(t, localList);
               }
 
