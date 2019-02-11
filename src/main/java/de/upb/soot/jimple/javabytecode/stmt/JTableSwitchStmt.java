@@ -65,7 +65,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   }
 
   public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets, IStmtBox defaultTarget) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[targets.size()]), defaultTarget);
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[0]), defaultTarget);
   }
 
   protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, IStmtBox[] targetBoxes,

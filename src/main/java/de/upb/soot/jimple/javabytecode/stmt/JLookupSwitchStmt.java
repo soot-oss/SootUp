@@ -81,7 +81,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   /** Constructs a new JLookupSwitchStmt. lookupValues should be a list of IntConst s. */
   public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends IStmtBox> targets,
       IStmtBox defaultTarget) {
-    this(Jimple.newImmediateBox(key), lookupValues, targets.toArray(new IStmtBox[targets.size()]), defaultTarget);
+    this(Jimple.newImmediateBox(key), lookupValues, targets.toArray(new IStmtBox[0]), defaultTarget);
   }
 
   protected JLookupSwitchStmt(ValueBox keyBox, List<IntConstant> lookupValues, IStmtBox[] targetBoxes,

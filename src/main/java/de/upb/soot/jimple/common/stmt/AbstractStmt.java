@@ -139,7 +139,7 @@ public abstract class AbstractStmt implements IStmt {
   public void redirectJumpsToThisTo(IStmt newLocation) {
     List<IStmtBox> boxesPointing = getBoxesPointingToThis();
 
-    IStmtBox[] boxes = boxesPointing.toArray(new IStmtBox[boxesPointing.size()]);
+    IStmtBox[] boxes = boxesPointing.toArray(new IStmtBox[0]);
     // important to change this to an array to have a static copy
 
     for (IStmtBox box : boxes) {
