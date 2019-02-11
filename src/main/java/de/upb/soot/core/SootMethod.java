@@ -240,55 +240,55 @@ public class SootMethod extends SootClassMember implements IMethod {
    * the code for representation.)
    */
   public String getDeclaration() {
-    StringBuilder buffer = new StringBuilder();
+    StringBuilder builder = new StringBuilder();
 
     // modifiers
     StringTokenizer st = new StringTokenizer(Modifier.toString(this.getModifiers()));
     if (st.hasMoreTokens()) {
-      buffer.append(st.nextToken());
+      builder.append(st.nextToken());
     }
 
     while (st.hasMoreTokens()) {
-      buffer.append(" ").append(st.nextToken());
+      builder.append(" ").append(st.nextToken());
     }
 
-    if (buffer.length() != 0) {
-      buffer.append(" ");
+    if (builder.length() != 0) {
+      builder.append(" ");
     }
 
     // return type + name
 
-    buffer.append(this.getReturnType().toQuotedString()).append(" ");
-    buffer.append(this.getView().quotedNameOf(this.getSignature().name));
+    builder.append(this.getReturnType().toQuotedString()).append(" ");
+    builder.append(this.getView().quotedNameOf(this.getSignature().name));
 
-    buffer.append("(");
+    builder.append("(");
 
     // parameters
     Iterator<Type> typeIt = this.getParameterTypes().iterator();
     // int count = 0;
     while (typeIt.hasNext()) {
       Type t = typeIt.next();
-      buffer.append(t.toQuotedString());
+      builder.append(t.toQuotedString());
       if (typeIt.hasNext()) {
-        buffer.append(", ");
+        builder.append(", ");
       }
     }
-    buffer.append(")");
+    builder.append(")");
 
     // Print exceptions
     if (exceptions != null) {
       Iterator<SootClass> exceptionIt = this.getExceptions().iterator();
 
       if (exceptionIt.hasNext()) {
-        buffer.append(" throws ").append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
+        builder.append(" throws ").append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
 
         while (exceptionIt.hasNext()) {
-          buffer.append(", ").append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
+          builder.append(", ").append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
         }
       }
     }
 
-    return buffer.toString().intern();
+    return builder.toString().intern();
   }
 
   public int getJavaSourceStartLineNumber() {

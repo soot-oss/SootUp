@@ -118,15 +118,14 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
     return list;
   }
 
-
-  protected void argBoxesToString( StringBuffer buffer ) {
+  protected void argBoxesToString(StringBuilder builder) {
     if (argBoxes != null) {
       final int len = argBoxes.length;
       if (0 < len) {
-        buffer.append(argBoxes[0].getValue().toString());
+        builder.append(argBoxes[0].getValue().toString());
         for (int i = 1; i < len; i++) {
-          buffer.append(", ");
-          buffer.append(argBoxes[i].getValue().toString());
+          builder.append(", ");
+          builder.append(argBoxes[i].getValue().toString());
         }
       }
     }

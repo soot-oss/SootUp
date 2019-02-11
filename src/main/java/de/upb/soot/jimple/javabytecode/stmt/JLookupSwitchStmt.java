@@ -92,24 +92,24 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public String toString() {
-    StringBuilder buffer = new StringBuilder();
+    StringBuilder builder = new StringBuilder();
     String endOfLine = " ";
 
-    buffer.append(Jimple.LOOKUPSWITCH + "(").append(keyBox.getValue().toString()).append(")").append(endOfLine);
+    builder.append(Jimple.LOOKUPSWITCH + "(").append(keyBox.getValue().toString()).append(")").append(endOfLine);
 
-    buffer.append("{").append(endOfLine);
+    builder.append("{").append(endOfLine);
 
     for (int i = 0; i < lookupValues.size(); i++) {
       IStmt target = getTarget(i);
-      buffer.append("    " + Jimple.CASE + " ").append(lookupValues.get(i)).append(": ").append(Jimple.GOTO).append(" ").append(target == this ? "self" : target).append(";").append(endOfLine);
+      builder.append("    " + Jimple.CASE + " ").append(lookupValues.get(i)).append(": ").append(Jimple.GOTO).append(" ").append(target == this ? "self" : target).append(";").append(endOfLine);
     }
 
     IStmt target = getDefaultTarget();
-    buffer.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " ").append(target == this ? "self" : target).append(";").append(endOfLine);
+    builder.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " ").append(target == this ? "self" : target).append(";").append(endOfLine);
 
-    buffer.append("}");
+    builder.append("}");
 
-    return buffer.toString();
+    return builder.toString();
   }
 
   @Override

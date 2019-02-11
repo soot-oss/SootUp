@@ -167,31 +167,31 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append(Jimple.DYNAMICINVOKE);
-    buffer.append(" \"");
-    buffer.append(method); // quoted method name (can be any UTF8
+    StringBuilder builder = new StringBuilder();
+    builder.append(Jimple.DYNAMICINVOKE);
+    builder.append(" \"");
+    builder.append(method); // quoted method name (can be any UTF8
     // string)
-    buffer.append("\" <");
-    buffer.append(method.getSubSignature());
-    buffer.append(">(");
+    builder.append("\" <");
+    builder.append(method.getSubSignature());
+    builder.append(">(");
 
-    argBoxesToString(buffer);
+    argBoxesToString(builder);
 
-    buffer.append(") ");
-    buffer.append(bsm);
-    buffer.append("(");
+    builder.append(") ");
+    builder.append(bsm);
+    builder.append("(");
     final int len = bsmArgBoxes.length;
     if (0 < len) {
-      buffer.append(bsmArgBoxes[0].getValue().toString());
+      builder.append(bsmArgBoxes[0].getValue().toString());
       for (int i = 1; i < len; i++) {
-        buffer.append(", ");
-        buffer.append(bsmArgBoxes[i].getValue().toString());
+        builder.append(", ");
+        builder.append(bsmArgBoxes[i].getValue().toString());
       }
     }
-    buffer.append(")");
+    builder.append(")");
 
-    return buffer.toString();
+    return builder.toString();
   }
 
   @Override

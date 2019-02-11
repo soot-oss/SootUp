@@ -146,61 +146,61 @@ public enum Modifier {
    * @return a textual representation of the modifiers.
    */
   public static String toString(EnumSet<Modifier> m) {
-    StringBuilder buffer = new StringBuilder();
+    StringBuilder builder = new StringBuilder();
 
     if (isPublic(m)) {
-      buffer.append("public ");
+      builder.append("public ");
     } else if (isPrivate(m)) {
-      buffer.append("private ");
+      builder.append("private ");
     } else if (isProtected(m)) {
-      buffer.append("protected ");
+      builder.append("protected ");
     }
 
     if (isAbstract(m)) {
-      buffer.append("abstract ");
+      builder.append("abstract ");
     }
 
     if (isStatic(m)) {
-      buffer.append("static ");
+      builder.append("static ");
     }
 
     if (isFinal(m)) {
-      buffer.append("final ");
+      builder.append("final ");
     }
 
     if (isSynchronized(m)) {
-      buffer.append("synchronized ");
+      builder.append("synchronized ");
     }
 
     if (isNative(m)) {
-      buffer.append("native ");
+      builder.append("native ");
     }
 
     if (isTransient(m)) {
-      buffer.append("transient ");
+      builder.append("transient ");
     }
 
     if (isVolatile(m)) {
-      buffer.append("volatile ");
+      builder.append("volatile ");
     }
 
     if (isStrictFP(m)) {
-      buffer.append("strictfp ");
+      builder.append("strictfp ");
     }
 
     if (isAnnotation(m)) {
-      buffer.append("annotation ");
+      builder.append("annotation ");
     }
 
     if (isEnum(m)) {
-      buffer.append("enum ");
+      builder.append("enum ");
     }
 
     if (isInterface(m)) {
-      buffer.append("interface ");
+      builder.append("interface ");
     }
 
-    return (buffer.toString()).trim();
+    return (builder.toString()).trim();
   }
 
   /**

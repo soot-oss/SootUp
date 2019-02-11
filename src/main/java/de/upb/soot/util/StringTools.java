@@ -79,41 +79,41 @@ public class StringTools {
   public static String getQuotedStringOf(String fromString) {
     // We definitely need fromString.length + 2, but let's have some
     // additional space
-    StringBuilder toStringBuffer = new StringBuilder(fromString.length() + 20);
-    toStringBuffer.append("\"");
+    StringBuilder builder = new StringBuilder(fromString.length() + 20);
+    builder.append("\"");
     for (int i = 0; i < fromString.length(); i++) {
       char ch = fromString.charAt(i);
       if (ch == '\\') {
-        toStringBuffer.append("\\\\");
+        builder.append("\\\\");
       } else if (ch == '\'') {
-        toStringBuffer.append("\\\'");
+        builder.append("\\\'");
       } else if (ch == '\"') {
-        toStringBuffer.append("\\\"");
+        builder.append("\\\"");
       } else if (ch == '\n') {
-        toStringBuffer.append("\\n");
+        builder.append("\\n");
       } else if (ch == '\t') {
-        toStringBuffer.append("\\t");
+        builder.append("\\t");
       }
       /*
        * 04.04.2006 mbatch added handling of \r, as compilers throw error if unicode
        */
       else if (ch == '\r') {
-        toStringBuffer.append("\\r");
+        builder.append("\\r");
       }
       /*
        * 10.04.2006 Nomait A Naeem added handling of \f, as compilers throw error if unicode
        */
       else if (ch == '\f') {
-        toStringBuffer.append("\\f");
+        builder.append("\\f");
       } else if (ch >= 32 && ch <= 126) {
-        toStringBuffer.append(ch);
+        builder.append(ch);
       } else {
-        toStringBuffer.append(getUnicodeStringFromChar(ch));
+        builder.append(getUnicodeStringFromChar(ch));
       }
     }
 
-    toStringBuffer.append("\"");
-    return toStringBuffer.toString();
+    builder.append("\"");
+    return builder.toString();
   }
 
   /**

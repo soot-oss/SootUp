@@ -42,7 +42,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
 
   protected boolean startOfLine = true;
   protected String indent = "        ";
-  protected StringBuffer output = new StringBuffer();
+  protected StringBuilder output = new StringBuilder();
   protected HashSet<String> quotableLocals;
 
   @Override
@@ -145,12 +145,12 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   @Override
   public String toString() {
     String ret = output.toString();
-    output = new StringBuffer();
+    output = new StringBuilder();
     return ret;
   }
 
   @Override
-  public StringBuffer output() {
+  public StringBuilder output() {
     return output;
   }
 

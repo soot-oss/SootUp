@@ -82,5 +82,5 @@ public interface IStmtPrinter {
 
   void identityRef(IdentityRef r);
 
-  StringBuffer output();
+  StringBuilder output();
 }

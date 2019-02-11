@@ -52,7 +52,7 @@ public class JTrap extends AbstractTrap {
 
   @Override
   public String toString() {
-    StringBuffer buf = new StringBuffer("Trap :");
+    StringBuilder buf = new StringBuilder("Trap :");
     buf.append("\nbegin  : ");
     buf.append(getBeginStmt());
     buf.append("\nend    : ");
