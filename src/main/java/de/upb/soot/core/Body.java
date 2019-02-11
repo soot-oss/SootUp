@@ -331,7 +331,7 @@ public class Body implements Serializable {
   /** Returns the first non-identity stmt in this body. */
   public IStmt getFirstNonIdentityStmt() {
     Iterator<IStmt> it = getStmts().iterator();
-    Object o = null;
+    IStmt o = null;
     while (it.hasNext()) {
       if (!((o = it.next()) instanceof JIdentityStmt)) {
         break;
@@ -340,7 +340,7 @@ public class Body implements Serializable {
     if (o == null) {
       throw new RuntimeException("no non-id statements!");
     }
-    return (IStmt) o;
+    return o;
   }
 
   public Collection<ValueBox> getUseBoxes() {
