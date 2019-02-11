@@ -9,8 +9,6 @@ import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.views.IView;
 
-import java.io.File;
-
 /**
  * A sample application to illustrate a potential client's path through the API
  *

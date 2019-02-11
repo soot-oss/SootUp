@@ -6,9 +6,7 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.util.printer.Printer;
 
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Optional;
 
