@@ -1,6 +1,7 @@
 package de.upb.soot.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import de.upb.soot.frontends.java.WalaIRMethodSource;
 import de.upb.soot.jimple.Jimple;
@@ -53,7 +54,7 @@ public class SootMethodTest {
             view.getSignatureFactory().getTypeSignature("void"),
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), Collections.emptyList(), null);
     dummyMainMethod = new SootMethod(dummyMainMethod, body);
-    assertEquals(true, dummyMainMethod.hasActiveBody());
+      assertTrue(dummyMainMethod.hasActiveBody());
     
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
         new JavaClassSource(new JavaSourcePathNamespace(""), null,

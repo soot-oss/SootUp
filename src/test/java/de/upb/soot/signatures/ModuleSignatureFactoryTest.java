@@ -7,6 +7,7 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -56,7 +57,7 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
     ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
     PackageSignature packageSignature1 = signatureFactory.getPackageSignature("java.lang", "myModule");
     assertTrue(packageSignature1 instanceof ModulePackageSignature);
-    assertFalse(((ModulePackageSignature) packageSignature1).moduleSignature == ModuleSignature.UNNAMED_MODULE);
+    assertNotSame(((ModulePackageSignature) packageSignature1).moduleSignature, ModuleSignature.UNNAMED_MODULE);
   }
 
   @Test
