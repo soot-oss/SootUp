@@ -275,12 +275,12 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
     LinkedList<Integer> pathStackIndex = new LinkedList<Integer>();
 
     pathStack.add(from);
-    pathStackIndex.add(new Integer(0));
+    pathStackIndex.add(0);
 
     int psiMax = (g.getSuccsOf(pathStack.get(0))).size();
     int level = 0;
-    while (pathStackIndex.get(0).intValue() != psiMax) {
-      int p = (pathStackIndex.get(level)).intValue();
+    while (pathStackIndex.get(0) != psiMax) {
+      int p = pathStackIndex.get(level);
 
       List<IStmt> succs = g.getSuccsOf((pathStack.get(level)));
       if (p >= succs.size()) {
@@ -290,8 +290,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
         pathStackIndex.remove(level);
 
         level--;
-        int q = pathStackIndex.get(level).intValue();
-        pathStackIndex.set(level, new Integer(q + 1));
+        int q = pathStackIndex.get(level);
+        pathStackIndex.set(level, q + 1);
         continue;
       }
 
@@ -305,13 +305,13 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
 
       // check preds of betweenIStmt to see if we should visit its kids.
       if (g.getPredsOf(betweenIStmt).size() > 1) {
-        pathStackIndex.set(level, new Integer(p + 1));
+        pathStackIndex.set(level, p + 1);
         continue;
       }
 
       // visit kids of betweenIStmt.
       level++;
-      pathStackIndex.add(new Integer(0));
+      pathStackIndex.add(0);
       pathStack.add(betweenIStmt);
     }
     return null;

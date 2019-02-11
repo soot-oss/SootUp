@@ -201,7 +201,7 @@ public class IntConstant extends ArithmeticConstant {
 
   @Override
   public String toString() {
-    return new Integer(value).toString();
+    return Integer.toString(value);
   }
 
   @Override
