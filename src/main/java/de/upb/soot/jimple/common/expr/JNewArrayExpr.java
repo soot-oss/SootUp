@@ -128,9 +128,8 @@ public class JNewArrayExpr implements Expr {
    */
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<>();
 
-    useBoxes.addAll(sizeBox.getValue().getUseBoxes());
+    List<ValueBox> useBoxes = new ArrayList<>(sizeBox.getValue().getUseBoxes());
     useBoxes.add(sizeBox);
 
     return useBoxes;

@@ -99,9 +99,8 @@ public class JInstanceOfExpr implements Expr {
 
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<>();
 
-    list.addAll(opBox.getValue().getUseBoxes());
+    List<ValueBox> list = new ArrayList<>(opBox.getValue().getUseBoxes());
     list.add(opBox);
 
     return list;
