@@ -41,12 +41,12 @@ public enum FieldRefValidator implements BodyValidator {
     // TODO: check copied code from old soot
     /*
      * SootMethod method = body.getMethod(); if (method.isAbstract()) { return; }
-     * 
+     *
      * Chain<Unit> units = body.getUnits().getNonPatchingChain();
-     * 
+     *
      * for (Unit unit : units) { Stmt s = (Stmt) unit; if (!s.containsFieldRef()) { continue; } FieldRef fr =
      * s.getFieldRef();
-     * 
+     *
      * if (fr instanceof JStaticFieldRef) { JStaticFieldRef v = (JStaticFieldRef) fr; try { SootField field = v.getField();
      * if (field == null) { exceptions.add(new UnitValidationException(unit, body, "Resolved field is null: " +
      * fr.toString())); } else if (!field.isStatic() && !field.isPhantom()) { exceptions .add(new
@@ -54,7 +54,7 @@ public enum FieldRefValidator implements BodyValidator {
      * (ResolutionFailedException e) { exceptions.add(new UnitValidationException(unit, body,
      * "Trying to get a static field which is non-static: " + v)); } } else if (fr instanceof InstanceFieldRef) {
      * InstanceFieldRef v = (InstanceFieldRef) fr;
-     * 
+     *
      * try { SootField field = v.getField(); if (field == null) { exceptions.add(new UnitValidationException(unit, body,
      * "Resolved field is null: " + fr.toString())); } else if (field.isStatic() && !field.isPhantom()) { exceptions.add(new
      * UnitValidationException(unit, body, "Trying to get an instance field which is static: " + v)); } } catch

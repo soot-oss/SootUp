@@ -197,7 +197,7 @@ public class WalaIRToJimpleConverter {
    *          the walMethod to be converted
    */
   public SootMethod convertMethod(JavaClassSignature classSig, AstMethod walaMethod) {
-    // create SootMethond instance
+    // create SootMethod instance
     List<TypeSignature> paraTypes = new ArrayList<>();
     List<String> sigs = new ArrayList<>();
     if (walaMethod.symbolTable() != null) {
@@ -250,23 +250,23 @@ public class WalaIRToJimpleConverter {
   public Type convertType(TypeReference type) {
     if (type.isPrimitiveType()) {
       if (type.equals(TypeReference.Boolean)) {
-        return BooleanType.getInstance();
+        return BooleanType.INSTANCE;
       } else if (type.equals(TypeReference.Byte)) {
-        return ByteType.getInstance();
+        return ByteType.INSTANCE;
       } else if (type.equals(TypeReference.Char)) {
-        return CharType.getInstance();
+        return CharType.INSTANCE;
       } else if (type.equals(TypeReference.Short)) {
-        return ShortType.getInstance();
+        return ShortType.INSTANCE;
       } else if (type.equals(TypeReference.Int)) {
-        return IntType.getInstance();
+        return IntType.INSTANCE;
       } else if (type.equals(TypeReference.Long)) {
-        return LongType.getInstance();
+        return LongType.INSTANCE;
       } else if (type.equals(TypeReference.Float)) {
-        return FloatType.getInstance();
+        return FloatType.INSTANCE;
       } else if (type.equals(TypeReference.Double)) {
-        return DoubleType.getInstance();
+        return DoubleType.INSTANCE;
       } else if (type.equals(TypeReference.Void)) {
-        return VoidType.getInstance();
+        return VoidType.INSTANCE;
       }
     } else if (type.isReferenceType()) {
       if (type.isArrayType()) {
@@ -276,7 +276,7 @@ public class WalaIRToJimpleConverter {
         return ArrayType.getInstance(baseType, dim);
       } else if (type.isClassType()) {
         if (type.equals(TypeReference.Null)) {
-          return NullType.getInstance();
+          return NullType.INSTANCE;
         } else {
           String className = convertClassNameFromWala(type.getName().toString());
           return view.getRefType(this.view.getSignatureFactory().getClassSignature(className));

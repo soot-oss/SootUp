@@ -35,18 +35,9 @@ import de.upb.soot.signatures.PrimitiveTypeSignature;
 @SuppressWarnings("serial")
 public class FloatType extends PrimType {
 
-  private static FloatType instance;
+  public static final FloatType INSTANCE = new FloatType();
 
-  /**
-   * Get the FloatType instance.
-   * 
-   * @return the FloatType instance.
-   */
-  public static FloatType getInstance() {
-    if (instance == null) {
-      instance = new FloatType();
-    }
-    return instance;
+  private FloatType() {
   }
 
   @Override

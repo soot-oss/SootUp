@@ -114,31 +114,31 @@ public final class AsmUtil {
             ++nrDims;
             continue this_type;
           case 'Z':
-            baseType = BooleanType.getInstance();
+            baseType = BooleanType.INSTANCE;
             break this_type;
           case 'B':
-            baseType = ByteType.getInstance();
+            baseType = ByteType.INSTANCE;
             break this_type;
           case 'C':
-            baseType = CharType.getInstance();
+            baseType = CharType.INSTANCE;
             break this_type;
           case 'S':
-            baseType = ShortType.getInstance();
+            baseType = ShortType.INSTANCE;
             break this_type;
           case 'I':
-            baseType = IntType.getInstance();
+            baseType = IntType.INSTANCE;
             break this_type;
           case 'F':
-            baseType = FloatType.getInstance();
+            baseType = FloatType.INSTANCE;
             break this_type;
           case 'J':
-            baseType = LongType.getInstance();
+            baseType = LongType.INSTANCE;
             break this_type;
           case 'D':
-            baseType = DoubleType.getInstance();
+            baseType = DoubleType.INSTANCE;
             break this_type;
           case 'V':
-            baseType = VoidType.getInstance();
+            baseType = VoidType.INSTANCE;
             break this_type;
           case 'L':
             int begin = idx;

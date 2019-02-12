@@ -41,7 +41,6 @@ import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
-
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
@@ -88,6 +87,7 @@ import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.SignatureFactory;
+import scala.Char;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -95,8 +95,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import scala.Char;
 
 /**
  * This class converts wala instruction to jimple statement.
@@ -202,13 +200,13 @@ public class InstructionConverter {
   }
 
   private IStmt convertArrayStoreInstruction(SSAArrayStoreInstruction inst) {
-    Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
+    Local base = getLocal(UnknownType.INSTANCE, inst.getArrayRef());
     int i = inst.getIndex();
     Value index;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
-      index = getLocal(IntType.getInstance(), i);
+      index = getLocal(IntType.INSTANCE, i);
     }
     JArrayRef arrayRef = Jimple.newArrayRef(base, index);
     Value rvalue;
@@ -222,13 +220,13 @@ public class InstructionConverter {
   }
 
   private IStmt convertArrayLoadInstruction(SSAArrayLoadInstruction inst) {
-    Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
+    Local base = getLocal(UnknownType.INSTANCE, inst.getArrayRef());
     int i = inst.getIndex();
     Value index;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
-      index = getLocal(IntType.getInstance(), i);
+      index = getLocal(IntType.INSTANCE, i);
     }
     JArrayRef arrayRef = Jimple.newArrayRef(base, index);
     Value left;
@@ -239,9 +237,9 @@ public class InstructionConverter {
 
   private IStmt convertArrayLengthInstruction(SSAArrayLengthInstruction inst) {
     int result = inst.getDef();
-    Local left = getLocal(IntType.getInstance(), result);
+    Local left = getLocal(IntType.INSTANCE, result);
     int arrayRef = inst.getArrayRef();
-    Local arrayLocal = getLocal(UnknownType.getInstance(), arrayRef);
+    Local arrayLocal = getLocal(UnknownType.INSTANCE, arrayRef);
     Value right = Jimple.newLengthExpr(arrayLocal);
     return Jimple.newAssignStmt(left, right);
   }
@@ -254,7 +252,7 @@ public class InstructionConverter {
   }
 
   private IStmt convertMonitorInstruction(SSAMonitorInstruction inst) {
-    Value op = getLocal(UnknownType.getInstance(), inst.getRef());
+    Value op = getLocal(UnknownType.INSTANCE, inst.getRef());
     if (inst.isMonitorEnter()) {
       return Jimple.newEnterMonitorStmt(op);
     } else {
@@ -271,7 +269,7 @@ public class InstructionConverter {
         = new SootField(converter.view, cSig, sigFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean"),
             sigFactory.getTypeSignature("boolean"), EnumSet.of(Modifier.FINAL, Modifier.STATIC));
     converter.addSootField(assertionsDisabled);
-    Local testLocal = localGenerator.generateLocal(BooleanType.getInstance());
+    Local testLocal = localGenerator.generateLocal(BooleanType.INSTANCE);
     JStaticFieldRef assertFieldRef = Jimple.newStaticFieldRef(converter.view, fieldSig);
     JAssignStmt assignStmt = Jimple.newAssignStmt(testLocal, assertFieldRef);
     stmts.add(assignStmt);
@@ -283,7 +281,7 @@ public class InstructionConverter {
     stmts.add(ifStmt);
 
     // create ifStmt for the actual assertion.
-    Local assertLocal = getLocal(BooleanType.getInstance(), inst.getUse(0));
+    Local assertLocal = getLocal(BooleanType.INSTANCE, inst.getUse(0));
     JEqExpr assertionExpr = Jimple.newEqExpr(assertLocal, IntConstant.getInstance(1));
     JIfStmt assertIfStmt = Jimple.newIfStmt(assertionExpr, nopStmt);
     stmts.add(assertIfStmt);
@@ -396,7 +394,7 @@ public class InstructionConverter {
 
   private IStmt convertSwitchInstruction(SSASwitchInstruction inst) {
     int val = inst.getUse(0);
-    Local local = getLocal(UnknownType.getInstance(), val);
+    Local local = getLocal(UnknownType.INSTANCE, val);
     int[] cases = inst.getCasesAndLabels();
     int defaultCase = inst.getDefault();
     List<IntConstant> lookupValues = new ArrayList<>();
@@ -421,7 +419,7 @@ public class InstructionConverter {
 
   private IStmt convertThrowInstruction(SSAThrowInstruction inst) {
     int exception = inst.getException();
-    Local local = getLocal(UnknownType.getInstance(), exception);
+    Local local = getLocal(UnknownType.INSTANCE, exception);
     return Jimple.newThrowStmt(local);
   }
 
@@ -430,7 +428,7 @@ public class InstructionConverter {
     int use = inst.getUse(0);
     Value op;
     // TODO: change type
-    Type type = UnknownType.getInstance();
+    Type type = UnknownType.INSTANCE;
     if (symbolTable.isConstant(use)) {
       op = getConstant(use);
       type = op.getType();
@@ -482,7 +480,7 @@ public class InstructionConverter {
         size = getConstant(use);
       } else {
         // TODO: size type unsure
-        size = getLocal(IntType.getInstance(), use);
+        size = getLocal(IntType.INSTANCE, use);
       }
       rvalue = Jimple.newNewArrayExpr(type, size);
     } else {
@@ -501,9 +499,9 @@ public class InstructionConverter {
     int ref = inst.getRef();
     Type checkedType = converter.convertType(inst.getCheckedType());
     // TODO. how to get type of ref?
-    Local op = getLocal(UnknownType.getInstance(), ref);
+    Local op = getLocal(UnknownType.INSTANCE, ref);
     JInstanceOfExpr expr = Jimple.newInstanceOfExpr(op, checkedType);
-    Value left = getLocal(BooleanType.getInstance(), result);
+    Value left = getLocal(BooleanType.INSTANCE, result);
     return Jimple.newAssignStmt(left, expr);
   }
 
@@ -565,7 +563,7 @@ public class InstructionConverter {
       Type classType = converter.convertType(target.getDeclaringClass());
       Local base = getLocal(classType, receiver);
       if (callee.isSpecial()) {
-        Type baseType = UnknownType.getInstance();
+        Type baseType = UnknownType.INSTANCE;
         // TODO. baseType could be a problem.
         base = getLocal(baseType, receiver);
         invoke = Jimple.newSpecialInvokeExpr(converter.view, base, methodSig, args); // constructor
@@ -596,13 +594,13 @@ public class InstructionConverter {
     if (symbolTable.isZero(val1)) {
       value1 = IntConstant.getInstance(0);
     } else {
-      value1 = getLocal(IntType.getInstance(), val1);
+      value1 = getLocal(IntType.INSTANCE, val1);
     }
     Value value2;
     if (symbolTable.isZero(val2)) {
       value2 = IntConstant.getInstance(0);
     } else {
-      value2 = getLocal(IntType.getInstance(), val1);
+      value2 = getLocal(IntType.INSTANCE, val1);
     }
     AbstractConditionExpr condition;
     IOperator op = condInst.getOperator();
@@ -632,7 +630,7 @@ public class InstructionConverter {
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
     // TODO: only int type?
-    Type type = IntType.getInstance();
+    Type type = IntType.INSTANCE;
     Value result = getLocal(type, def);
     Value op1;
     if (symbolTable.isConstant(val1)) {
@@ -702,7 +700,7 @@ public class InstructionConverter {
         ret = getConstant(result);
       } else {
         // TODO. how to get the type of result?
-        ret = this.getLocal(UnknownType.getInstance(), result);
+        ret = this.getLocal(UnknownType.INSTANCE, result);
       }
       return Jimple.newReturnStmt(ret);
     }
@@ -753,7 +751,7 @@ public class InstructionConverter {
     } else if (symbolTable.isStringConstant(valueNumber)) {
       return StringConstant.getInstance((String) value);
     } else if (symbolTable.isNullConstant(valueNumber)) {
-      return NullConstant.getInstance();
+      return NullConstant.INSTANCE;
     } else {
       throw new RuntimeException("Unsupported constant type: " + value.getClass().toString());
     }

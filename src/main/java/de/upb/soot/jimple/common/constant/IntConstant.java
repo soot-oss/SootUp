@@ -206,7 +206,7 @@ public class IntConstant extends ArithmeticConstant {
 
   @Override
   public Type getType() {
-    return IntType.getInstance();
+    return IntType.INSTANCE;
   }
 
   @Override

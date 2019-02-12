@@ -60,17 +60,17 @@ public class JUshrExpr extends AbstractIntLongBinopExpr {
     Value op2 = op2Box.getValue();
 
     if (!isIntLikeType(op2.getType())) {
-      return UnknownType.getInstance();
+      return UnknownType.INSTANCE;
     }
 
     if (isIntLikeType(op1.getType())) {
-      return IntType.getInstance();
+        return IntType.INSTANCE;
     }
-    if (op1.getType().equals(LongType.getInstance())) {
-      return LongType.getInstance();
+    if (op1.getType().equals(LongType.INSTANCE)) {
+      return LongType.INSTANCE;
     }
 
-    return UnknownType.getInstance();
+    return UnknownType.INSTANCE;
   }
 
   @Override

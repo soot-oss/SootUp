@@ -78,7 +78,7 @@ public class JLengthExpr extends AbstractUnopExpr {
 
   @Override
   public Type getType() {
-    return IntType.getInstance();
+      return IntType.INSTANCE;
   }
 
   @Override

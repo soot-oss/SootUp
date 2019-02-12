@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A Soot user should first define a Project instance to describe the outlines of an analysis run. It is the starting point
+ * A Soot user should first define a Project INSTANCE to describe the outlines of an analysis run. It is the starting point
  * for all operations. You can have multiple instances of projects as there is no information shared between them. All caches
  * are always at the project level.
  *

@@ -139,7 +139,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
   /** Returns the least common superclass of this type and other. */
   @Override
   public Type merge(Type other) {
-    if (other.equals(UnknownType.getInstance()) || this.equals(other)) {
+    if (other.equals(UnknownType.INSTANCE) || this.equals(other)) {
       return this;
     }
 

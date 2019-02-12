@@ -31,8 +31,8 @@ public class JIdentityStmtTest {
     IStmt thisIdStmt
         = new JIdentityStmt(thiz, new JThisRef(new RefType(view, factory.getTypeSignature("somepackage.dummy.MyClass"))));
 
-    Local param = new Local("$i0", IntType.getInstance());
-    IStmt paramIdStmt = new JIdentityStmt(param, new JParameterRef(IntType.getInstance(), 123));
+    Local param = new Local("$i0", IntType.INSTANCE);
+    IStmt paramIdStmt = new JIdentityStmt(param, new JParameterRef(IntType.INSTANCE, 123));
 
     Local exception = new Local("$r1", new RefType(view, factory.getTypeSignature("java.lang.Exception")));
     IStmt exceptionIdStmt = new JIdentityStmt(exception, new JCaughtExceptionRef());
@@ -53,10 +53,10 @@ public class JIdentityStmtTest {
     Assert.assertFalse(thisIdStmt.equivTo(exceptionIdStmt));
     Assert.assertFalse(thisIdStmt.equivTo(paramIdStmt));
 
-    Assert.assertFalse(thisIdStmt
-        .equivTo(new JIdentityStmt(new Local("$i1", IntType.getInstance()), new JParameterRef(IntType.getInstance(), 123))));
-    Assert.assertFalse(thisIdStmt
-        .equivTo(new JIdentityStmt(new Local("$i0", IntType.getInstance()), new JParameterRef(IntType.getInstance(), 42))));
+    Assert.assertFalse(
+        thisIdStmt.equivTo(new JIdentityStmt(new Local("$i1", IntType.INSTANCE), new JParameterRef(IntType.INSTANCE, 123))));
+    Assert.assertFalse(
+        thisIdStmt.equivTo(new JIdentityStmt(new Local("$i0", IntType.INSTANCE), new JParameterRef(IntType.INSTANCE, 42))));
     Assert.assertFalse(exceptionIdStmt.equivTo(thisIdStmt));
     Assert.assertTrue(exceptionIdStmt.equivTo(exceptionIdStmt));
     Assert.assertFalse(exceptionIdStmt.equivTo(paramIdStmt));

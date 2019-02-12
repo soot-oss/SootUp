@@ -223,7 +223,7 @@ public class LongConstant extends ArithmeticConstant {
 
   @Override
   public Type getType() {
-    return LongType.getInstance();
+    return LongType.INSTANCE;
   }
 
   @Override

@@ -35,18 +35,9 @@ import de.upb.soot.signatures.PrimitiveTypeSignature;
 @SuppressWarnings("serial")
 public class ByteType extends PrimType {
 
-  private static ByteType instance;
+  public static final ByteType INSTANCE = new ByteType();
 
-  /**
-   * Get the ByteType instance.
-   * 
-   * @return the ByteType instance.
-   */
-  public static ByteType getInstance() {
-    if (instance == null) {
-      instance = new ByteType();
-    }
-    return instance;
+  private ByteType() {
   }
 
   @Override
