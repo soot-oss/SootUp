@@ -55,8 +55,8 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         builder = (SootClass.SootClassBuilder) resolveBody(view, cs);
         break;
 
-        default:
-          throw new UnsupportedOperationException("Unsupported level " + level);
+      default:
+        throw new UnsupportedOperationException("Unsupported level " + level);
     }
 
     // FIXME: should return the build sootclass?

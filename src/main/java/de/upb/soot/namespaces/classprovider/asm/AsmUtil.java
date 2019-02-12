@@ -13,7 +13,6 @@ import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
-import org.objectweb.asm.tree.ClassNode;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -21,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
+
+import org.objectweb.asm.tree.ClassNode;
 
 public final class AsmUtil {
 

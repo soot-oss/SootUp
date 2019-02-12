@@ -44,6 +44,6 @@ public abstract class AbstractIntBinopExpr extends AbstractBinopExpr {
 
   @Override
   public Type getType() {
-      return IntType.INSTANCE;
+    return IntType.INSTANCE;
   }
 }

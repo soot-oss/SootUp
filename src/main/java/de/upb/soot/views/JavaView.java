@@ -144,7 +144,7 @@ public class JavaView extends AbstractView {
       } else if (signature.equals(PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE)) {
         return DoubleType.INSTANCE;
       } else if (signature.equals(PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE)) {
-          return BooleanType.INSTANCE;
+        return BooleanType.INSTANCE;
       } else if (signature.equals(PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE)) {
         return CharType.INSTANCE;
       } else {
