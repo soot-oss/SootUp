@@ -83,7 +83,8 @@ public final class NumberedString implements Numberable {
     }
     if (s == null) {
       return other.s == null;
-    } else
+    } else {
       return s.equals(other.s);
+    }
   }
 }
