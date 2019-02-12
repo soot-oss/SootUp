@@ -34,12 +34,12 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.util.DeterministicHashMap;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -336,7 +336,7 @@ public class Printer {
   private void printLocalsInBody(Body body, IStmtPrinter up) {
     // Print out local variables
     {
-      Map<Type, List<Local>> typeToLocals = new DeterministicHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
+      Map<Type, List<Local>> typeToLocals = new LinkedHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
 
       // Collect locals
       {
