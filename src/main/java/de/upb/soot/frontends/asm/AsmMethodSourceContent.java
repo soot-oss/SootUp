@@ -1,28 +1,10 @@
 package de.upb.soot.frontends.asm;
 
-import static org.objectweb.asm.tree.AbstractInsnNode.FIELD_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.FRAME;
-import static org.objectweb.asm.tree.AbstractInsnNode.IINC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INT_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INVOKE_DYNAMIC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.JUMP_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.LABEL;
-import static org.objectweb.asm.tree.AbstractInsnNode.LDC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.LINE;
-import static org.objectweb.asm.tree.AbstractInsnNode.LOOKUPSWITCH_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.METHOD_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.MULTIANEWARRAY_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.TABLESWITCH_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
-
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootClass;
@@ -54,12 +36,10 @@ import de.upb.soot.jimple.common.expr.JCastExpr;
 import de.upb.soot.jimple.common.expr.JInstanceOfExpr;
 import de.upb.soot.jimple.common.expr.JNewArrayExpr;
 import de.upb.soot.jimple.common.expr.JNewMultiArrayExpr;
-import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
+import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
-import de.upb.soot.jimple.symbolicreferences.FieldRef;
-import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
@@ -83,6 +63,8 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.soot.jimple.symbolicreferences.FieldRef;
+import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.signatures.ArrayTypeSignature;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
@@ -90,21 +72,6 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
 import de.upb.soot.views.IView;
-
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -124,6 +91,39 @@ import org.objectweb.asm.tree.TableSwitchInsnNode;
 import org.objectweb.asm.tree.TryCatchBlockNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import static org.objectweb.asm.tree.AbstractInsnNode.FIELD_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.FRAME;
+import static org.objectweb.asm.tree.AbstractInsnNode.IINC_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.INT_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.INVOKE_DYNAMIC_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.JUMP_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.LABEL;
+import static org.objectweb.asm.tree.AbstractInsnNode.LDC_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.LINE;
+import static org.objectweb.asm.tree.AbstractInsnNode.LOOKUPSWITCH_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.METHOD_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.MULTIANEWARRAY_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.TABLESWITCH_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
 
 // FIXME: IMHO currently AN important question; when to use type and when a typeSignature???
 // FIXME: maybe the question is irrelevant and I'm just stupid....
@@ -148,29 +148,30 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
 
   /* -state fields- */
   private int nextLocal;
-  private Map<Integer, Local> locals;
-  private Multimap<LabelNode, IStmtBox> labels;
-  private Map<AbstractInsnNode, IStmt> units;
-  private ArrayList<Operand> stack;
-  private Map<AbstractInsnNode, StackFrame> frames;
-  private Multimap<LabelNode, IStmtBox> trapHandlers;
+  private @Nullable Map<Integer, Local> locals;
+  private @Nullable Multimap<LabelNode, IStmtBox> labels;
+  private @Nullable Map<AbstractInsnNode, IStmt> units;
+  private @Nullable ArrayList<Operand> stack;
+  private @Nullable Map<AbstractInsnNode, StackFrame> frames;
+  private @Nullable Multimap<LabelNode, IStmtBox> trapHandlers;
   private int lastLineNumber = -1;
 
+  // FIXME: This field is never assigned
   private IView view;
 
-  /**
-   * * Hint: in InstructionConverter convertInvokeInstruction() ling creates string for methodRef and types and
+  /*
+   * Hint: in InstructionConverter convertInvokeInstruction() ling creates string for methodRef and types and
    * stores/replaces the methodref with a MethodSignature (for the methodRef to call) and then creates the invoke Instruction
    * Jimple.newStaticInvokeExpr
    */
 
   /* -const fields- */
 
-  private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
+  private final @Nonnull Set<LabelNode> inlineExceptionLabels = new HashSet<>();
 
-  private final Map<LabelNode, IStmt> inlineExceptionHandlers = new HashMap<>();
+  private final @Nonnull Map<LabelNode, IStmt> inlineExceptionHandlers = new HashMap<>();
 
-  private final CastAndReturnInliner castAndReturnInliner = new CastAndReturnInliner();
+  private final @Nonnull CastAndReturnInliner castAndReturnInliner = new CastAndReturnInliner();
 
   public AsmMethodSourceContent(int access, String name, String desc, String signature, String[] exceptions) {
     super(null, access, name, desc, signature, exceptions);
@@ -183,11 +184,12 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
   }
 
   @Override
-  public de.upb.soot.core.Body getBody(de.upb.soot.core.SootMethod sootmethod) throws AsmFrontendException {
+  public @Nullable Body getBody(@Nonnull SootMethod sootmethod) throws AsmFrontendException {
 
     if (!sootmethod.isConcrete()) {
       return null;
     }
+    
     List<Local> bodyLocals = new ArrayList<>();
     List<Trap> bodyTraps = new ArrayList<>();
     List<IStmt> bodyStmts = new ArrayList<>();
@@ -237,6 +239,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     castAndReturnInliner.transform(bodyStmts, bodyTraps);
 
     try {
+      // TODO: Implement body transformer
       // PackManager.v().getPack("jb").apply(jb);
     } catch (Throwable t) {
       throw new RuntimeException("Failed to apply jb to " + sootmethod, t);
@@ -296,15 +299,6 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return stack.get(stack.size() - 1);
   }
 
-  // FIXME: this is old code
-  private void push(Type t, Operand opr) {
-    if (AsmUtil.isDWord(t)) {
-      pushDual(opr);
-    } else {
-      push(opr);
-    }
-  }
-
   private void push(TypeSignature t, Operand opr) {
     if (AsmUtil.isDWord(t)) {
       pushDual(opr);
@@ -328,11 +322,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
     return o;
   }
-
-  private Operand pop(Type t) {
-    return AsmUtil.isDWord(t) ? popDual() : pop();
-  }
-
+  
   private Operand pop(TypeSignature t) {
     return AsmUtil.isDWord(t) ? popDual() : pop();
   }
@@ -374,13 +364,9 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return popLocal(pop());
   }
 
+  @SuppressWarnings("unused")
   private Operand popLocalDual() {
     return popLocal(popDual());
-  }
-
-  @SuppressWarnings("unused")
-  private Operand popLocal(Type t) {
-    return AsmUtil.isDWord(t) ? popLocalDual() : popLocal();
   }
 
   private Operand popImmediate() {
@@ -391,11 +377,6 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return popImmediate(popDual());
   }
 
-  // FIXME: this is old
-  private Operand popImmediate(Type t) {
-    return AsmUtil.isDWord(t) ? popImmediateDual() : popImmediate();
-  }
-
   private Operand popImmediate(TypeSignature t) {
     return AsmUtil.isDWord(t) ? popImmediateDual() : popImmediate();
   }
@@ -404,13 +385,9 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return popStackConst(pop());
   }
 
+  @SuppressWarnings("unused")
   private Operand popStackConstDual() {
     return popStackConst(popDual());
-  }
-
-  @SuppressWarnings("unused")
-  private Operand popStackConst(Type t) {
-    return AsmUtil.isDWord(t) ? popStackConstDual() : popStackConst();
   }
 
   void setUnit(AbstractInsnNode insn, IStmt u) {

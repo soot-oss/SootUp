@@ -100,6 +100,7 @@ import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -589,7 +590,7 @@ public class Jimple {
     return new ImmediateBox(value);
   }
 
-  public static IStmtBox newStmtBox(IStmt stmt) {
+  public static IStmtBox newStmtBox(@Nullable IStmt stmt) {
     return new JStmtBox(stmt);
   }
 

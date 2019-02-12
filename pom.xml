@@ -303,6 +303,12 @@
 			<artifactId>soot</artifactId>
 			<version>3.1.0-SNAPSHOT</version>
 		</dependency>
+		<!-- adds `@Nullable` and `@Nonnull` annotations -->
+		<dependency>
+			<groupId>com.google.code.findbugs</groupId>
+			<artifactId>jsr305</artifactId>
+			<version>3.0.2</version>
+		</dependency>
 	</dependencies>
 	<repositories>
 		<!-- include wala from sonatype public repository -->

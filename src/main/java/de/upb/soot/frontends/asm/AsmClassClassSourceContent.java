@@ -8,11 +8,12 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassSourceContent;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.FieldNode;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -20,9 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.FieldNode;
 
 class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implements IClassSourceContent {
 
@@ -125,9 +123,9 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
       for (FieldNode fieldNode : this.fields) {
         String fieldName = fieldNode.name;
         EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
-        Type fieldType = AsmUtil.toJimpleDesc(fieldNode.desc, view).get(0);
-        // FIXME: fieldname??
-        SootField sootField = new SootField(view, null, null, null, modifiers);
+        TypeSignature fieldType = AsmUtil.toJimpleType(view, fieldNode.desc);
+        
+        SootField sootField = new SootField(view, null, null, fieldType, modifiers);
         fields.add(sootField);
       }
     }
