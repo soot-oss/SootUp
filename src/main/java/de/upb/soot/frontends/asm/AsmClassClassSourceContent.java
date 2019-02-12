@@ -8,6 +8,7 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassSourceContent;
+import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
@@ -91,7 +92,8 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     }
     {
       // add the interfaces
-      Iterable<JavaClassSignature> interfaceSignatures = AsmUtil.asmIDToSignature(this.interfaces, view);
+      Iterable<JavaClassSignature> interfaceSignatures =
+          AsmUtil.asmIDToSignature(this.interfaces, view);
       for (JavaClassSignature interfaceSig : interfaceSignatures) {
 
         interfaces.add(interfaceSig);
@@ -123,8 +125,11 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
         String fieldName = fieldNode.name;
         EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
         TypeSignature fieldType = AsmUtil.toJimpleType(view, fieldNode.desc);
-
-        SootField sootField = new SootField(view, null, null, fieldType, modifiers);
+        FieldSignature fieldSignature =
+            view.getSignatureFactory()
+                .getFieldSignature(fieldName, sootClass.getSignature(), fieldType);
+        SootField sootField =
+            new SootField(view, sootClass.getSignature(), fieldSignature, fieldType, modifiers);
         fields.add(sootField);
       }
     }
@@ -182,7 +187,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     } else {
       bodyStep = SootClass.fromExisting(sootClass);
     }
-    // FIXME:
+    // TODO: resolve the method bodies
     return bodyStep.bodies("dummy");
   }
 

@@ -631,11 +631,11 @@ public class Jimple {
   /**
    * FIXME: not a nice place to be, creation of symbolic references
    */
-  private static MethodRef createSymbolicMethodRef(MethodSignature methodSignature, boolean isStatic) {
+  public static MethodRef createSymbolicMethodRef(MethodSignature methodSignature, boolean isStatic) {
     return new MethodRef(methodSignature, isStatic);
   }
 
-  private static FieldRef createSymbolicFieldRef(FieldSignature fieldSignature, boolean isStatic) {
+  public static FieldRef createSymbolicFieldRef(FieldSignature fieldSignature, boolean isStatic) {
     return new FieldRef(fieldSignature, isStatic);
   }
 }

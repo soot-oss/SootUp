@@ -11,7 +11,6 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 
 
-//FIXME: I don't see the need for subclassing is currently it is just a container mapping a found file to a class signature and a namespace
 
 /**
  * Basic class for storing information that is needed to reify a {@link de.upb.soot.core.SootClass}.
