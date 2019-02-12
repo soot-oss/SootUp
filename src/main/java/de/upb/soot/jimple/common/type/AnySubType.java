@@ -40,11 +40,11 @@ public class AnySubType extends RefLikeType {
   }
 
   /**
-   * Creates an AnySubType INSTANCE parameterized by a given super type.
+   * Creates an AnySubType instance parameterized by a given super type.
    * 
    * @param base
    *          the super type
-   * @return the AnySubType INSTANCE
+   * @return the AnySubType instance
    */
   public static AnySubType getInstance(RefType base) {
     if (base.getAnySubType() == null) {

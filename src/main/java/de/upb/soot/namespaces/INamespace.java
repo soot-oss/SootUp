@@ -54,7 +54,7 @@ public interface INamespace {
   /**
    * The class provider attached to this namespace.
    * 
-   * @return An INSTANCE of {@link IClassProvider} to be used.
+   * @return An instance of {@link IClassProvider} to be used.
    */
   IClassProvider getClassProvider();
 
