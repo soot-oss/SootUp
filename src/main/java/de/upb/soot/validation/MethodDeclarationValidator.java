@@ -31,12 +31,7 @@ import java.util.List;
  *
  * @author Steven Arzt
  */
-public enum MethodDeclarationValidator implements ClassValidator {
-  INSTANCE;
-
-  public static MethodDeclarationValidator getInstance() {
-    return INSTANCE;
-  }
+public class MethodDeclarationValidator implements ClassValidator {
 
   @Override
   public void validate(SootClass sc, List<ValidationException> exceptions) {

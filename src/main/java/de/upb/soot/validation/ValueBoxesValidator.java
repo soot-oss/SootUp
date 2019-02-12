@@ -26,12 +26,7 @@ import de.upb.soot.core.Body;
 
 import java.util.List;
 
-public enum ValueBoxesValidator implements BodyValidator {
-  INSTANCE;
-
-  public static ValueBoxesValidator getInstance() {
-    return INSTANCE;
-  }
+public class ValueBoxesValidator implements BodyValidator {
 
   /** Verifies that a ValueBox is not used in more than one place. */
   @Override

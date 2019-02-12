@@ -26,12 +26,7 @@ import de.upb.soot.core.Body;
 
 import java.util.List;
 
-public enum FieldRefValidator implements BodyValidator {
-  INSTANCE;
-
-  public static FieldRefValidator getInstance() {
-    return INSTANCE;
-  }
+public class FieldRefValidator implements BodyValidator {
 
   /**
    * Checks the consistency of field references.

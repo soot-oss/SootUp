@@ -26,12 +26,7 @@ import de.upb.soot.core.Body;
 
 import java.util.List;
 
-public enum TrapsValidator implements BodyValidator {
-  INSTANCE;
-
-  public static TrapsValidator getInstance() {
-    return INSTANCE;
-  }
+public class TrapsValidator implements BodyValidator {
 
   /** Verifies that the begin, end and handler units of each trap are in this body. */
   @Override

@@ -33,17 +33,12 @@ import java.util.List;
  * @author Marc Miltenberger
  * @author Steven Arzt
  */
-public enum NewValidator implements BodyValidator {
-  INSTANCE;
+public class NewValidator implements BodyValidator {
 
   private static final String errorMsg
       = "There is a path from '%s' to the usage '%s' where <init> does not get called in between.";
 
   public static boolean MUST_CALL_CONSTRUCTOR_BEFORE_RETURN = false;
-
-  public static NewValidator getInstance() {
-    return INSTANCE;
-  }
 
   /**
    * Checks whether after each new-instruction a constructor call follows.

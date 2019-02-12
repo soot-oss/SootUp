@@ -26,12 +26,7 @@ import de.upb.soot.core.Body;
 
 import java.util.List;
 
-public enum UsesValidator implements BodyValidator {
-  INSTANCE;
-
-  public static UsesValidator getInstance() {
-    return INSTANCE;
-  }
+public class UsesValidator implements BodyValidator {
 
   /** Verifies that each use in this Body has a def. */
   @Override

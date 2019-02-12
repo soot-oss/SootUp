@@ -92,10 +92,10 @@ public class Body implements Serializable {
    */
   private static BodyValidator[] getValidators() {
     if (validators == null) {
-      validators = new BodyValidator[] { LocalsValidator.getInstance(), TrapsValidator.getInstance(),
-          StmtBoxesValidator.getInstance(), UsesValidator.getInstance(), ValueBoxesValidator.getInstance(),
-          CheckInitValidator.getInstance(), CheckTypesValidator.getInstance(), CheckVoidLocalesValidator.getInstance(),
-          CheckEscapingValidator.getInstance() };
+      validators = new BodyValidator[] {new LocalsValidator(), new TrapsValidator(),
+              new StmtBoxesValidator(), new UsesValidator(), new ValueBoxesValidator(),
+              new CheckInitValidator(), new CheckTypesValidator(), new CheckVoidLocalesValidator(),
+              new CheckEscapingValidator()};
     }
     return validators;
   }
@@ -164,27 +164,27 @@ public class Body implements Serializable {
 
   /** Verifies that a ValueBox is not used in more than one place. */
   public void validateValueBoxes() {
-    runValidation(ValueBoxesValidator.getInstance());
+    runValidation(new ValueBoxesValidator());
   }
 
   /** Verifies that each Local of getUseAndDefBoxes() is in this body's locals Chain. */
   public void validateLocals() {
-    runValidation(LocalsValidator.getInstance());
+    runValidation(new LocalsValidator());
   }
 
   /** Verifies that the begin, end and handler units of each trap are in this body. */
   public void validateTraps() {
-    runValidation(TrapsValidator.getInstance());
+    runValidation(new TrapsValidator());
   }
 
   /** Verifies that the StmtBoxes of this Body all point to a Stmt contained within this body. */
   public void validateStmtBoxes() {
-    runValidation(StmtBoxesValidator.getInstance());
+    runValidation(new StmtBoxesValidator());
   }
 
   /** Verifies that each use in this Body has a def. */
   public void validateUses() {
-    runValidation(UsesValidator.getInstance());
+    runValidation(new UsesValidator());
   }
 
   /** Returns a backed chain of the locals declared in this Body. */
@@ -265,7 +265,7 @@ public class Body implements Serializable {
   }
 
   public void checkInit() {
-    runValidation(CheckInitValidator.getInstance());
+    runValidation(new CheckInitValidator());
   }
 
   /**
@@ -325,7 +325,7 @@ public class Body implements Serializable {
   }
 
   public void validateIdentityStatements() {
-    runValidation(IdentityStatementsValidator.getInstance());
+    runValidation(new IdentityStatementsValidator());
   }
 
   /** Returns the first non-identity stmt in this body. */

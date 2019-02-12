@@ -29,12 +29,7 @@ import de.upb.soot.jimple.basic.ValueBox;
 
 import java.util.List;
 
-public enum LocalsValidator implements BodyValidator {
-  INSTANCE;
-
-  public static LocalsValidator getInstance() {
-    return INSTANCE;
-  }
+public class LocalsValidator implements BodyValidator {
 
   /** Verifies that each Local of getUseAndDefBoxes() is in this body's locals Chain. */
   @Override
