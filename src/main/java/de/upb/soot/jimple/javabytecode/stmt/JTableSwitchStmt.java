@@ -35,8 +35,10 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JTableSwitchStmt extends AbstractSwitchStmt {
   /**
@@ -47,12 +49,8 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   int highIndex;
 
   // This method is necessary to deal with constructor-must-be-first-ism.
-  private static IStmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
-    IStmtBox[] targetBoxes = new IStmtBox[targets.size()];
-    for (int i = 0; i < targetBoxes.length; i++) {
-      targetBoxes[i] = Jimple.newStmtBox(targets.get(i));
-    }
-    return targetBoxes;
+  private static List<IStmtBox> getTargetBoxes(List<? extends IStmt> targets) {
+    return targets.stream().map(Jimple::newStmtBox).collect(Collectors.toList());
   }
 
   @Override
@@ -61,14 +59,14 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   }
 
   public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets, IStmt defaultTarget) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets), Jimple.newStmtBox(defaultTarget));
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, getTargetBoxes(targets), Jimple.newStmtBox(defaultTarget));
   }
 
   public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets, IStmtBox defaultTarget) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[0]), defaultTarget);
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, new ArrayList<>(targets), defaultTarget);
   }
 
-  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, IStmtBox[] targetBoxes,
+  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, List<? extends IStmtBox> targetBoxes,
       IStmtBox defaultTargetBox) {
     super(keyBox, defaultTargetBox, targetBoxes);
 
@@ -145,7 +143,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     up.literal(": ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    targetBoxes[targetIndex - lowIndex].toString(up);
+    targetBoxes.get(targetIndex - lowIndex).toString(up);
     up.literal(";");
     up.newline();
   }

@@ -139,10 +139,10 @@ public abstract class AbstractStmt implements IStmt {
   public void redirectJumpsToThisTo(IStmt newLocation) {
     List<IStmtBox> boxesPointing = getBoxesPointingToThis();
 
-    IStmtBox[] boxes = boxesPointing.toArray(new IStmtBox[0]);
-    // important to change this to an array to have a static copy
+    // important to have a static copy
+    List<IStmtBox> boxesCopy = new ArrayList<>(boxesPointing);
 
-    for (IStmtBox box : boxes) {
+    for (IStmtBox box : boxesCopy) {
       if (box.getStmt() != this) {
         throw new RuntimeException("Something weird's happening");
       }
