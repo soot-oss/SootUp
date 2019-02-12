@@ -52,6 +52,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -83,22 +84,12 @@ public class Body implements Serializable {
   /** The method associated with this Body. */
   protected SootMethod method;
 
-  private static BodyValidator[] validators;
-
   /**
-   * Returns an array containing some validators in order to validate the JimpleBody
-   *
-   * @return the array containing validators
+   * An array containing some validators in order to validate the JimpleBody
    */
-  private static BodyValidator[] getValidators() {
-    if (validators == null) {
-      validators = new BodyValidator[] {new LocalsValidator(), new TrapsValidator(),
-              new StmtBoxesValidator(), new UsesValidator(), new ValueBoxesValidator(),
-              new CheckInitValidator(), new CheckTypesValidator(), new CheckVoidLocalesValidator(),
-              new CheckEscapingValidator()};
-    }
-    return validators;
-  }
+  private static final List<BodyValidator> validators = Arrays.asList(new LocalsValidator(), new TrapsValidator(),
+      new StmtBoxesValidator(), new UsesValidator(), new ValueBoxesValidator(), new CheckInitValidator(),
+      new CheckTypesValidator(), new CheckVoidLocalesValidator(), new CheckEscapingValidator());
 
   /**
    * Creates a Body associated to the given method.
@@ -316,7 +307,7 @@ public class Body implements Serializable {
     validate(exceptionList);
     final boolean runAllValidators
         = this.method.getView().getOptions().debug() || this.method.getView().getOptions().validate();
-    for (BodyValidator validator : getValidators()) {
+    for (BodyValidator validator : validators) {
       if (!validator.isBasicValidator() && !runAllValidators) {
         continue;
       }

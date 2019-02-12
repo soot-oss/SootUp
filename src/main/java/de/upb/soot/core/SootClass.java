@@ -37,6 +37,7 @@ import de.upb.soot.views.IView;
 import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -693,20 +694,11 @@ public class SootClass extends AbstractClass implements Serializable {
 
   protected int number = 0;
 
-  private static ClassValidator[] validators;
-
   /**
-   * Returns an array containing some validators in order to validate the SootClass
-   *
-   * @return the array containing validators
+   * An array containing some validators in order to validate the SootClass
    */
-  private synchronized static ClassValidator[] getValidators() {
-    if (validators == null) {
-      validators = new ClassValidator[] {new OuterClassValidator(), new MethodDeclarationValidator(),
-              new ClassFlagsValidator()};
-    }
-    return validators;
-  }
+  private static final List<ClassValidator> validators
+      = Arrays.asList(new OuterClassValidator(), new MethodDeclarationValidator(), new ClassFlagsValidator());
 
   /**
    * Validates this SootClass for logical errors. Note that this does not validate the method bodies, only the class
@@ -726,7 +718,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   public void validate(List<ValidationException> exceptionList) {
     final boolean runAllValidators = this.getView().getOptions().debug() || this.getView().getOptions().validate();
-    for (ClassValidator validator : getValidators()) {
+    for (ClassValidator validator : validators) {
       if (!validator.isBasicValidator() && !runAllValidators) {
         continue;
       }
