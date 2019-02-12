@@ -1796,11 +1796,11 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       jbu.add(Jimple.newIdentityStmt(l, Jimple.newThisRef(declaringClass.get().getType())));
     }
     int nrp = 0;
-    for (Object ot : m.getParameterTypes()) {
+    for (Type ot : m.getParameterTypes()) {
       Type t = (Type) ot;
       Local l = getLocal(iloc);
       jbu.add(Jimple.newIdentityStmt(l, Jimple.newParameterRef(t, nrp++)));
-      if (AsmUtil.isDWord(t)) {
+      if (AsmUtil.isDWord(t.getTypeSignature())) {
         iloc += 2;
       } else {
         iloc++;

@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implements IClassSourceContent {
+class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
+    implements IClassSourceContent {
 
   private final ClassSource classSource;
 
@@ -64,7 +65,8 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
     return SootClass.builder().dangling(view, this.classSource, null);
   }
 
-  private SootClass.SignatureStep resolveHierarchy(IView view, JavaClassSignature cs) throws AsmFrontendException {
+  private SootClass.SignatureStep resolveHierarchy(IView view, JavaClassSignature cs)
+      throws AsmFrontendException {
 
     Optional<AbstractClass> aClass = view.getClass(cs);
     if (!aClass.isPresent()) {
@@ -83,18 +85,16 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
     }
     {
       // add super class
-
-      Optional<JavaClassSignature> superClass = AsmUtil.resolveAsmNameToClassSignature(superName, view);
-      if (superClass.isPresent()) {
-        mySuperCl = superClass;
-      }
+      JavaClassSignature superClass =
+          view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(superName));
+      mySuperCl = Optional.of(superClass);
     }
     {
       // add the interfaces
-      Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(this.interfaces, view);
-      for (Optional<JavaClassSignature> interfaceClass : optionals) {
+      Iterable<JavaClassSignature> interfaceSignatures = AsmUtil.asmIDToSignature(this.interfaces, view);
+      for (JavaClassSignature interfaceSig : interfaceSignatures) {
 
-        interfaceClass.ifPresent(interfaces::add);
+        interfaces.add(interfaceSig);
       }
     }
     return danglingStep.hierachy(mySuperCl, interfaces, null, Optional.empty());
@@ -108,7 +108,6 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
     Optional<AbstractClass> aClass = view.getClass(cs);
     if (!aClass.isPresent()) {
       throw new AsmFrontendException(String.format("Cannot resolve class %s", cs));
-
     }
     SootClass sootClass = (SootClass) aClass.get();
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.HIERARCHY)) {
@@ -124,7 +123,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
         String fieldName = fieldNode.name;
         EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
         TypeSignature fieldType = AsmUtil.toJimpleType(view, fieldNode.desc);
-        
+
         SootField sootField = new SootField(view, null, null, fieldType, modifiers);
         fields.add(sootField);
       }
@@ -134,38 +133,47 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
       for (org.objectweb.asm.tree.MethodNode methodSource : this.methods) {
 
         if (!(methodSource instanceof AsmMethodSourceContent)) {
-          throw new AsmFrontendException(String.format("Failed to create Method Signature %s", methodSource));
+          throw new AsmFrontendException(
+              String.format("Failed to create Method Signature %s", methodSource));
         }
         AsmMethodSourceContent asmClassClassSourceContent = (AsmMethodSourceContent) methodSource;
 
         List<JavaClassSignature> exceptions = new ArrayList<>();
-        Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(methodSource.exceptions, view);
+        Iterable<JavaClassSignature> exceptionsSignatures =
+            AsmUtil.asmIDToSignature(methodSource.exceptions, view);
 
-        for (Optional<JavaClassSignature> exceptionClass : optionals) {
-
-          exceptionClass.ifPresent(exceptions::add);
+        for (JavaClassSignature exceptionSig : exceptionsSignatures) {
+          exceptions.add(exceptionSig);
         }
         String methodName = methodSource.name;
         EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);
         List<TypeSignature> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc, view);
         TypeSignature retType = sigTypes.remove(sigTypes.size() - 1);
 
-        MethodSignature methodSignature
-            = view.getSignatureFactory().getMethodSignature(methodName, sootClass.getSignature(), retType, sigTypes);
+        MethodSignature methodSignature =
+            view.getSignatureFactory()
+                .getMethodSignature(methodName, sootClass.getSignature(), retType, sigTypes);
 
-        de.upb.soot.core.SootMethod sootMethod = new de.upb.soot.core.SootMethod(view, sootClass.getSignature(),
-            asmClassClassSourceContent, methodSignature, modifiers, exceptions, null);
+        de.upb.soot.core.SootMethod sootMethod =
+            new de.upb.soot.core.SootMethod(
+                view,
+                sootClass.getSignature(),
+                asmClassClassSourceContent,
+                methodSignature,
+                modifiers,
+                exceptions,
+                null);
         methods.add(sootMethod);
       }
     }
     return signatureStep.signature(fields, methods);
   }
 
-  private SootClass.Build resolveBody(de.upb.soot.views.IView view, JavaClassSignature cs) throws AsmFrontendException {
+  private SootClass.Build resolveBody(de.upb.soot.views.IView view, JavaClassSignature cs)
+      throws AsmFrontendException {
     Optional<AbstractClass> aClass = view.getClass(cs);
     if (!aClass.isPresent()) {
       throw new AsmFrontendException(String.format("Cannot resolve class %s", cs));
-
     }
     SootClass sootClass = (SootClass) aClass.get();
     SootClass.BodyStep bodyStep;
@@ -179,10 +187,11 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implem
   }
 
   @Override
-  public org.objectweb.asm.MethodVisitor visitMethod(int access, String name, String desc, String signature,
-      String[] exceptions) {
+  public org.objectweb.asm.MethodVisitor visitMethod(
+      int access, String name, String desc, String signature, String[] exceptions) {
 
-    AsmMethodSourceContent mn = new AsmMethodSourceContent(access, name, desc, signature, exceptions);
+    AsmMethodSourceContent mn =
+        new AsmMethodSourceContent(access, name, desc, signature, exceptions);
     methods.add(mn);
     return mn;
   }

@@ -1,9 +1,6 @@
 package de.upb.soot.frontends.asm;
 
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.signatures.TypeSignature;
@@ -20,8 +17,7 @@ import java.util.stream.StreamSupport;
 
 public final class AsmUtil {
 
-  private AsmUtil() {
-  }
+  private AsmUtil() {}
 
   public static void initASMClassSource(ClassSource classSource, ClassNode classNode) {
     java.net.URI uri = classSource.getSourcePath().toUri();
@@ -30,8 +26,8 @@ public final class AsmUtil {
       if (classSource.getSourcePath().getFileSystem().isOpen()) {
         Path sourceFile = java.nio.file.Paths.get(uri);
 
-        org.objectweb.asm.ClassReader clsr
-            = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
+        org.objectweb.asm.ClassReader clsr =
+            new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
 
         clsr.accept(classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
       } else {
@@ -43,8 +39,8 @@ public final class AsmUtil {
         try (java.nio.file.FileSystem zipfs = java.nio.file.FileSystems.newFileSystem(uri, env)) {
           Path sourceFile = java.nio.file.Paths.get(uri);
 
-          org.objectweb.asm.ClassReader clsr
-              = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
+          org.objectweb.asm.ClassReader clsr =
+              new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
 
           clsr.accept(classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
         }
@@ -58,24 +54,18 @@ public final class AsmUtil {
   /**
    * Determines if a type is a dword type.
    *
-   * @param type
-   *          the type to check.
+   * @param type the type to check.
    * @return {@code true} if its a dword type.
    */
-  // FIXME: this is the old methodRef using type....
-  public static boolean isDWord(Type type) {
-    return type instanceof LongType || type instanceof DoubleType;
-  }
-
   public static boolean isDWord(TypeSignature type) {
-    return type == PrimitiveTypeSignature.LONG_TYPE_SIGNATURE || type == PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
+    return type == PrimitiveTypeSignature.LONG_TYPE_SIGNATURE
+        || type == PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
   }
 
   /**
    * Converts an internal class name to a fully qualified name.
    *
-   * @param internal
-   *          internal name.
+   * @param internal internal name.
    * @return fully qualified name.
    */
   public static String toQualifiedName(String internal) {
@@ -83,7 +73,8 @@ public final class AsmUtil {
   }
 
   public static java.util.EnumSet<de.upb.soot.core.Modifier> getModifiers(int access) {
-    java.util.EnumSet<de.upb.soot.core.Modifier> modifierEnumSet = java.util.EnumSet.noneOf(de.upb.soot.core.Modifier.class);
+    java.util.EnumSet<de.upb.soot.core.Modifier> modifierEnumSet =
+        java.util.EnumSet.noneOf(de.upb.soot.core.Modifier.class);
 
     // add all modifiers for which (access & ABSTRACT) =! 0
     for (de.upb.soot.core.Modifier modifier : de.upb.soot.core.Modifier.values()) {
@@ -94,7 +85,6 @@ public final class AsmUtil {
     return modifierEnumSet;
   }
 
-  // FIXME: migrate woth the other code
   public static TypeSignature toJimpleType(IView view, String desc) {
     int idx = desc.lastIndexOf('[');
     int nrDims = idx + 1;
@@ -147,17 +137,21 @@ public final class AsmUtil {
     if (!(baseType instanceof JavaClassSignature) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
-    return nrDims > 0 ? view.getSignatureFactory().getArrayTypeSignature(baseType, nrDims) : baseType;
+    return nrDims > 0
+        ? view.getSignatureFactory().getArrayTypeSignature(baseType, nrDims)
+        : baseType;
   }
 
   public static List<TypeSignature> toJimpleSignatureDesc(String desc, IView view) {
     ArrayList<TypeSignature> types = new ArrayList<>(2);
     int len = desc.length();
     int idx = 0;
-    all: while (idx != len) {
+    all:
+    while (idx != len) {
       int nrDims = 0;
       TypeSignature baseType = null;
-      this_type: while (idx != len) {
+      this_type:
+      while (idx != len) {
         char c = desc.charAt(idx++);
         switch (c) {
           case '(':
@@ -195,8 +189,7 @@ public final class AsmUtil {
             break this_type;
           case 'L':
             int begin = idx;
-            while (desc.charAt(++idx) != ';') {
-              ;
+            while (desc.charAt(++idx) != ';') {;
             }
             String cls = desc.substring(begin, idx++);
             baseType = view.getSignatureFactory().getTypeSignature(toQualifiedName(cls));
@@ -216,18 +209,13 @@ public final class AsmUtil {
     return types;
   }
 
-  public static Iterable<Optional<JavaClassSignature>> asmIDToSignature(Iterable<String> modules, IView view) {
+  public static Iterable<JavaClassSignature> asmIDToSignature(
+      Iterable<String> modules, IView view) {
     if (modules == null) {
       return java.util.Collections.emptyList();
     }
-    return StreamSupport.stream(modules.spliterator(), false).map(p -> resolveAsmNameToClassSignature(p, view))
+    return StreamSupport.stream(modules.spliterator(), false)
+        .map(p -> (view.getSignatureFactory().getClassSignature(toQualifiedName(p))))
         .collect(java.util.stream.Collectors.toList());
-  }
-
-  // FIXME: double check optional here
-  public static Optional<JavaClassSignature> resolveAsmNameToClassSignature(String asmClassName, IView view) {
-    String excepetionFQName = toQualifiedName(asmClassName);
-    JavaClassSignature classSignature = view.getSignatureFactory().getClassSignature(excepetionFQName);
-    return Optional.ofNullable(classSignature);
   }
 }
