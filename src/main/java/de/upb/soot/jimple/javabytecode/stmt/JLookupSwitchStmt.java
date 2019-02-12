@@ -41,6 +41,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JLookupSwitchStmt extends AbstractSwitchStmt {
   /**
@@ -53,12 +54,8 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   List<IntConstant> lookupValues;
 
   // This method is necessary to deal with constructor-must-be-first-ism.
-  private static IStmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
-    IStmtBox[] targetBoxes = new IStmtBox[targets.size()];
-    for (int i = 0; i < targetBoxes.length; i++) {
-      targetBoxes[i] = Jimple.newStmtBox(targets.get(i));
-    }
-    return targetBoxes;
+  private static List<IStmtBox> getTargetBoxesArray(List<? extends IStmt> targets) {
+    return targets.stream().map(Jimple::newStmtBox).collect(Collectors.toList());
   }
 
   @Override
@@ -81,10 +78,10 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   /** Constructs a new JLookupSwitchStmt. lookupValues should be a list of IntConst s. */
   public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends IStmtBox> targets,
       IStmtBox defaultTarget) {
-    this(Jimple.newImmediateBox(key), lookupValues, targets.toArray(new IStmtBox[0]), defaultTarget);
+    this(Jimple.newImmediateBox(key), lookupValues, new ArrayList<>(targets), defaultTarget);
   }
 
-  protected JLookupSwitchStmt(ValueBox keyBox, List<IntConstant> lookupValues, IStmtBox[] targetBoxes,
+  protected JLookupSwitchStmt(ValueBox keyBox, List<IntConstant> lookupValues, List<IStmtBox> targetBoxes,
       IStmtBox defaultTargetBox) {
     super(keyBox, defaultTargetBox, targetBoxes);
     setLookupValues(lookupValues);
@@ -131,7 +128,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
       up.literal(": ");
       up.literal(Jimple.GOTO);
       up.literal(" ");
-      targetBoxes[i].toString(up);
+      targetBoxes.get(i).toString(up);
       up.literal(";");
       up.newline();
     }
