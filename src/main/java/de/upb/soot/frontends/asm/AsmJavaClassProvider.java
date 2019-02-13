@@ -5,6 +5,12 @@ import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.frontends.asm.modules.AsmModuleClassSourceContent;
 import de.upb.soot.namespaces.FileType;
+import de.upb.soot.namespaces.INamespace;
+import de.upb.soot.signatures.JavaClassSignature;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.nio.file.Path;
 
 public class AsmJavaClassProvider implements IClassProvider {
 
@@ -12,14 +18,14 @@ public class AsmJavaClassProvider implements IClassProvider {
 
   @Override
   public ClassSource createClassSource(
-      de.upb.soot.namespaces.INamespace srcNamespace,
-      java.nio.file.Path sourcePath,
-      de.upb.soot.signatures.JavaClassSignature classSignature) {
+      @Nonnull INamespace srcNamespace,
+      @Nullable Path sourcePath,
+      @Nullable JavaClassSignature classSignature) {
     return new ClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   @Override
-  public FileType getHandledFileType() {
+  public @Nonnull FileType getHandledFileType() {
     return FileType.CLASS;
   }
 
@@ -30,7 +36,7 @@ public class AsmJavaClassProvider implements IClassProvider {
    * @return A representation of the class file.
    */
   @Override
-  public IClassSourceContent getContent(ClassSource classSource) {
+  public @Nonnull IClassSourceContent getContent(@Nonnull ClassSource classSource) {
 
     IClassSourceContent classNode;
     if (classSource.getClassSignature().isModuleInfo()) {

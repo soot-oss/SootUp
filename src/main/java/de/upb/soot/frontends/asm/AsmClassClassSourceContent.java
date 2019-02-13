@@ -13,9 +13,11 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldNode;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -28,7 +30,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   private final ClassSource classSource;
 
-  public AsmClassClassSourceContent(ClassSource classSource) {
+  public AsmClassClassSourceContent(@Nonnull ClassSource classSource) {
     super(Opcodes.ASM6);
     this.classSource = classSource;
     // FIXME: maybe delete class reading
@@ -36,7 +38,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
   }
 
   @Override
-  public AbstractClass resolve(ResolvingLevel level, IView view) throws AsmFrontendException {
+  public @Nonnull AbstractClass resolve(@Nonnull ResolvingLevel level, @Nonnull IView view) throws AsmFrontendException {
     JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
     SootClass.SootClassBuilder builder = null;
     // FIXME: currently ugly because, the original class is always re-resolved but never copied...
@@ -61,12 +63,13 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     return builder.build();
   }
 
-  private SootClass.HierachyStep resolveDangling(IView view, JavaClassSignature cs) {
+  // FIXME: Parameter `cs` is unused
+  private @Nonnull SootClass.HierachyStep resolveDangling(@Nonnull IView view, @Nonnull JavaClassSignature cs) {
 
     return SootClass.builder().dangling(view, this.classSource, null);
   }
 
-  private SootClass.SignatureStep resolveHierarchy(IView view, JavaClassSignature cs)
+  private @Nonnull SootClass.SignatureStep resolveHierarchy(@Nonnull IView view, @Nonnull JavaClassSignature cs)
       throws AsmFrontendException {
 
     Optional<AbstractClass> aClass = view.getClass(cs);
@@ -102,7 +105,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     return danglingStep.hierachy(mySuperCl, interfaces, null, Optional.empty());
   }
 
-  private SootClass.BodyStep resolveSignature(de.upb.soot.views.IView view, JavaClassSignature cs)
+  private @Nonnull SootClass.BodyStep resolveSignature(@Nonnull IView view, @Nonnull JavaClassSignature cs)
       throws AsmFrontendException {
     SootClass.SignatureStep signatureStep;
     Set<IMethod> methods = new HashSet<>();
@@ -174,7 +177,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     return signatureStep.signature(fields, methods);
   }
 
-  private SootClass.Build resolveBody(de.upb.soot.views.IView view, JavaClassSignature cs)
+  private @Nonnull SootClass.Build resolveBody(@Nonnull IView view, @Nonnull JavaClassSignature cs)
       throws AsmFrontendException {
     Optional<AbstractClass> aClass = view.getClass(cs);
     if (!aClass.isPresent()) {
@@ -192,8 +195,8 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
   }
 
   @Override
-  public org.objectweb.asm.MethodVisitor visitMethod(
-      int access, String name, String desc, String signature, String[] exceptions) {
+  public @Nonnull MethodVisitor visitMethod(
+      int access, @Nonnull String name, @Nonnull String desc, @Nonnull String signature, @Nonnull String[] exceptions) {
 
     AsmMethodSourceContent mn =
         new AsmMethodSourceContent(access, name, desc, signature, exceptions);

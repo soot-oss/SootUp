@@ -27,6 +27,8 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import org.objectweb.asm.tree.AbstractInsnNode;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,10 +39,10 @@ import java.util.List;
  */
 final class Operand {
 
-  final AbstractInsnNode insn;
-  final Value value;
-  Local stack;
-  private Object boxes;
+  final @Nonnull AbstractInsnNode insn;
+  final @Nonnull Value value;
+  @Nullable Local stack;
+  private @Nullable Object boxes;
 
   /**
    * Constructs a new stack operand.
@@ -48,7 +50,7 @@ final class Operand {
    * @param insn the instruction that produced this operand.
    * @param value the generated value.
    */
-  Operand(AbstractInsnNode insn, Value value) {
+  Operand(@Nonnull AbstractInsnNode insn, @Nonnull Value value) {
     this.insn = insn;
     this.value = value;
   }
@@ -59,7 +61,7 @@ final class Operand {
    * @param vb the value box.
    */
   @SuppressWarnings("unchecked")
-  void removeBox(ValueBox vb) {
+  void removeBox(@Nullable ValueBox vb) {
     if (vb == null) {
       return;
     }
@@ -77,7 +79,7 @@ final class Operand {
    * @param vb the value box.
    */
   @SuppressWarnings("unchecked")
-  void addBox(ValueBox vb) {
+  void addBox(@Nonnull ValueBox vb) {
     if (boxes instanceof List) {
       List<ValueBox> list = (List<ValueBox>) boxes;
       list.add(vb);
@@ -110,12 +112,12 @@ final class Operand {
    * @return the value.
    */
   @SuppressWarnings("unchecked")
-  <A> A value() {
+  @Nonnull <A> A value() {
     return (A) value;
   }
 
   /** @return either the stack local allocated for this operand, or its value. */
-  Value stackOrValue() {
+  @Nonnull Value stackOrValue() {
     Local s = stack;
     return s == null ? value : s;
   }
@@ -126,7 +128,7 @@ final class Operand {
    * @param other the other operand.
    * @return {@code true} if this operand is equal to another operand, {@code false} otherwise.
    */
-  boolean equivTo(Operand other) {
+  boolean equivTo(@Nonnull Operand other) {
     if (other.value == null && value == null) {
       return true;
     }

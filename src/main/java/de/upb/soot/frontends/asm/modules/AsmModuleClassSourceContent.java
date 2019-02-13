@@ -10,20 +10,22 @@ import de.upb.soot.frontends.asm.AsmUtil;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.ModuleExportNode;
 import org.objectweb.asm.tree.ModuleOpenNode;
 import org.objectweb.asm.tree.ModuleProvideNode;
 import org.objectweb.asm.tree.ModuleRequireNode;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class AsmModuleClassSourceContent extends org.objectweb.asm.tree.ClassNode
+public class AsmModuleClassSourceContent extends ClassNode
     implements IClassSourceContent {
 
   private final ClassSource classSource;
 
-  public AsmModuleClassSourceContent(ClassSource classSource) {
+  public AsmModuleClassSourceContent(@Nonnull ClassSource classSource) {
     super(Opcodes.ASM6);
     this.classSource = classSource;
 
@@ -32,7 +34,7 @@ public class AsmModuleClassSourceContent extends org.objectweb.asm.tree.ClassNod
   }
 
   @Override
-  public AbstractClass resolve(ResolvingLevel level, IView view) throws AsmFrontendException {
+  public @Nonnull AbstractClass resolve(@Nonnull ResolvingLevel level, @Nonnull IView view) throws AsmFrontendException {
     JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
     SootModuleInfo.SootModuleInfoBuilder builder = null;
     if (module == null) {
@@ -63,12 +65,12 @@ public class AsmModuleClassSourceContent extends org.objectweb.asm.tree.ClassNod
     return builder.build();
   }
 
-  private SootModuleInfo.HierachyStep resolveDangling(IView view, JavaClassSignature cs) {
+  private @Nonnull SootModuleInfo.HierachyStep resolveDangling(@Nonnull IView view, @Nonnull JavaClassSignature cs) {
     // sootClass.setModifiers(AsmUtil.getModifiers(access & ~org.objectweb.asm.Opcodes.ACC_SUPER));
     return SootModuleInfo.builder().dangling(view, this.classSource, null, this.module.name);
   }
 
-  private SootModuleInfo.Build resolveHierarchy(IView view, JavaClassSignature cs)
+  private @Nonnull SootModuleInfo.Build resolveHierarchy(@Nonnull IView view, @Nonnull JavaClassSignature cs)
       throws AsmFrontendException {
     Optional<AbstractClass> aClass = view.getClass(cs);
     if (!aClass.isPresent()) {
@@ -162,7 +164,7 @@ public class AsmModuleClassSourceContent extends org.objectweb.asm.tree.ClassNod
     return hierachyStep.hierachy(requieres, exports, opens, providers);
   }
 
-  private SootModuleInfo.Build resolveSignature(IView view, JavaClassSignature cs)
+  private @Nonnull SootModuleInfo.Build resolveSignature(@Nonnull IView view, @Nonnull JavaClassSignature cs)
       throws AsmFrontendException {
     SootModuleInfo.Build signatureStep;
     Optional<AbstractClass> aClass = view.getClass(cs);
@@ -178,7 +180,7 @@ public class AsmModuleClassSourceContent extends org.objectweb.asm.tree.ClassNod
     return signatureStep;
   }
 
-  private SootModuleInfo.Build resolveBody(IView view, JavaClassSignature cs)
+  private @Nonnull SootModuleInfo.Build resolveBody(@Nonnull IView view, @Nonnull JavaClassSignature cs)
       throws AsmFrontendException {
     Optional<AbstractClass> aClass = view.getClass(cs);
     if (!aClass.isPresent()) {

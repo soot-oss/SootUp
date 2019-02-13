@@ -23,16 +23,16 @@ package de.upb.soot.frontends.asm;
  */
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
-
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
+import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
+import javax.annotation.Nonnull;
 import java.util.Comparator;
 import java.util.List;
 
@@ -44,9 +44,9 @@ import java.util.List;
 @SuppressWarnings("serial")
 class StmtContainer implements IStmt {
 
-  final IStmt[] units;
+  final @Nonnull IStmt[] units;
 
-  StmtContainer(IStmt... units) {
+  StmtContainer(@Nonnull IStmt... units) {
     this.units = units;
   }
 
@@ -55,7 +55,7 @@ class StmtContainer implements IStmt {
    *
    * @return the first IStmt of the container
    */
-  IStmt getFirstUnit() {
+  @Nonnull IStmt getFirstUnit() {
     IStmt ret = units[0];
     while (ret instanceof StmtContainer) {
       ret = ((StmtContainer) ret).units[0];

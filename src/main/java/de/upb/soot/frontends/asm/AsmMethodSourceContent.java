@@ -71,6 +71,7 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
+import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -131,24 +132,24 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
 
-  private static final String METAFACTORY_SIGNATURE =
-      "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
-          + "metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,"
-          + ""
-          + "java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>";
-  private static final String ALT_METAFACTORY_SIGNATURE =
-      "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
-          + "altMetafactory(java.lang.invoke.MethodHandles$Lookup,"
-          + "java.lang.String,java.lang.invoke.MethodType,java.lang.Object[])>";
+//  private static final String METAFACTORY_SIGNATURE =
+//      "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
+//          + "metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,"
+//          + ""
+//          + "java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>";
+//  private static final String ALT_METAFACTORY_SIGNATURE =
+//      "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
+//          + "altMetafactory(java.lang.invoke.MethodHandles$Lookup,"
+//          + "java.lang.String,java.lang.invoke.MethodType,java.lang.Object[])>";
 
   /* -state fields- */
   private int nextLocal;
-  private @Nullable Map<Integer, Local> locals;
-  private @Nullable Multimap<LabelNode, IStmtBox> labels;
-  private @Nullable Map<AbstractInsnNode, IStmt> units;
-  private @Nullable ArrayList<Operand> stack;
-  private @Nullable Map<AbstractInsnNode, StackFrame> frames;
-  private @Nullable Multimap<LabelNode, IStmtBox> trapHandlers;
+  private Map<Integer, Local> locals;
+  private Multimap<LabelNode, IStmtBox> labels;
+  private Map<AbstractInsnNode, IStmt> units;
+  private ArrayList<Operand> stack;
+  private Map<AbstractInsnNode, StackFrame> frames;
+  private Multimap<LabelNode, IStmtBox> trapHandlers;
   private int lastLineNumber = -1;
 
   // FIXME: This field is never assigned
@@ -169,14 +170,14 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
   private final @Nonnull CastAndReturnInliner castAndReturnInliner = new CastAndReturnInliner();
 
   public AsmMethodSourceContent(
-      int access, String name, String desc, String signature, String[] exceptions) {
+      int access, @Nonnull String name, @Nonnull String desc, @Nonnull String signature, @Nonnull String[] exceptions) {
     super(null, access, name, desc, signature, exceptions);
   }
 
   @Override
-  public MethodSignature getSignature() {
+  public @Nonnull MethodSignature getSignature() {
     // TODO Auto-generated methodRef stub
-    return null;
+    throw new NotYetImplementedException("Getting method signature is not implemented, yet.");
   }
 
   @Override
@@ -319,11 +320,11 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return o;
   }
 
-  private Operand pop(TypeSignature t) {
+  private @Nonnull Operand pop(@Nonnull TypeSignature t) {
     return AsmUtil.isDWord(t) ? popDual() : pop();
   }
 
-  private Operand popLocal(Operand o) {
+  private @Nonnull Operand popLocal(@Nonnull Operand o) {
     Value v = o.value;
     Local l = o.stack;
     if (l == null && !(v instanceof Local)) {
@@ -334,7 +335,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return o;
   }
 
-  private Operand popImmediate(Operand o) {
+  private @Nonnull Operand popImmediate(@Nonnull Operand o) {
     Value v = o.value;
     Local l = o.stack;
     if (l == null && !(v instanceof Local) && !(v instanceof Constant)) {
@@ -345,7 +346,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return o;
   }
 
-  private Operand popStackConst(Operand o) {
+  private @Nonnull Operand popStackConst(@Nonnull Operand o) {
     Value v = o.value;
     Local l = o.stack;
     if (l == null && !(v instanceof Constant)) {
@@ -356,47 +357,47 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return o;
   }
 
-  private Operand popLocal() {
+  private @Nonnull Operand popLocal() {
     return popLocal(pop());
   }
 
   @SuppressWarnings("unused")
-  private Operand popLocalDual() {
+  private @Nonnull Operand popLocalDual() {
     return popLocal(popDual());
   }
 
-  private Operand popImmediate() {
+  private @Nonnull Operand popImmediate() {
     return popImmediate(pop());
   }
 
-  private Operand popImmediateDual() {
+  private @Nonnull Operand popImmediateDual() {
     return popImmediate(popDual());
   }
 
-  private Operand popImmediate(TypeSignature t) {
+  private @Nonnull Operand popImmediate(@Nonnull TypeSignature t) {
     return AsmUtil.isDWord(t) ? popImmediateDual() : popImmediate();
   }
 
-  private Operand popStackConst() {
+  private @Nonnull Operand popStackConst() {
     return popStackConst(pop());
   }
 
   @SuppressWarnings("unused")
-  private Operand popStackConstDual() {
+  private @Nonnull Operand popStackConstDual() {
     return popStackConst(popDual());
   }
 
-  void setUnit(AbstractInsnNode insn, IStmt u) {
+  void setUnit(@Nonnull AbstractInsnNode insn, @Nonnull IStmt u) {
     // FIXME: re-add linenumber keep
     // ASM LineNumberNode
     // if (Options.keep_line_number() && lastLineNumber >= 0) {
-    // Tag lineTag = u.getTag("LineNumberTag");
-    // if (lineTag == null) {
-    // lineTag = new LineNumberTag(lastLineNumber);
-    // u.addTag(lineTag);
-    // } else if (((LineNumberTag) lineTag).getLineNumber() != lastLineNumber) {
-    // throw new RuntimeException("Line tag mismatch");
-    // }
+    //   Tag lineTag = u.getTag("LineNumberTag");
+    //   if (lineTag == null) {
+    //     lineTag = new LineNumberTag(lastLineNumber);
+    //     u.addTag(lineTag);
+    //   } else if (((LineNumberTag) lineTag).getLineNumber() != lastLineNumber) {
+    //     throw new RuntimeException("Line tag mismatch");
+    //   }
     // }
 
     IStmt o = units.put(insn, u);
@@ -405,7 +406,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  void mergeUnits(AbstractInsnNode insn, IStmt u) {
+  void mergeUnits(@Nonnull AbstractInsnNode insn, @Nonnull IStmt u) {
     IStmt prev = units.put(insn, u);
     if (prev != null) {
       IStmt merged = new StmtContainer(prev, u);
@@ -413,19 +414,19 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  Local newStackLocal() {
-    Integer idx = nextLocal++;
+  @Nonnull Local newStackLocal() {
+    int idx = nextLocal++;
     Local l = Jimple.newLocal("$stack" + idx, UnknownType.getInstance());
     locals.put(idx, l);
     return l;
   }
 
   @SuppressWarnings("unchecked")
-  <A extends IStmt> A getUnit(AbstractInsnNode insn) {
+  <A extends IStmt> A getUnit(@Nonnull AbstractInsnNode insn) {
     return (A) units.get(insn);
   }
 
-  private void assignReadOps(Local l) {
+  private void assignReadOps(@Nullable Local l) {
     if (stack.isEmpty()) {
       return;
     }
@@ -459,7 +460,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertGetFieldInsn(FieldInsnNode insn) {
+  private void convertGetFieldInsn(@Nonnull FieldInsnNode insn) {
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.out();
     Operand opr;
@@ -499,7 +500,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     push(type, opr);
   }
 
-  private void convertPutFieldInsn(FieldInsnNode insn) {
+  private void convertPutFieldInsn(@Nonnull FieldInsnNode insn) {
     boolean instance = insn.getOpcode() == PUTFIELD;
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.out();
@@ -558,7 +559,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     assignReadOps(null);
   }
 
-  private void convertFieldInsn(FieldInsnNode insn) {
+  private void convertFieldInsn(@Nonnull FieldInsnNode insn) {
     int op = insn.getOpcode();
     if (op == GETSTATIC || op == GETFIELD) {
       convertGetFieldInsn(insn);
@@ -567,7 +568,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertIincInsn(IincInsnNode insn) {
+  private void convertIincInsn(@Nonnull IincInsnNode insn) {
     Local local = getLocal(insn.var);
     assignReadOps(local);
     if (!units.containsKey(insn)) {
@@ -576,7 +577,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertConstInsn(InsnNode insn) {
+  private void convertConstInsn(@Nonnull InsnNode insn) {
     int op = insn.getOpcode();
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.out();
@@ -608,7 +609,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertArrayLoadInsn(InsnNode insn) {
+  private void convertArrayLoadInsn(@Nonnull InsnNode insn) {
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.out();
     Operand opr;
@@ -634,7 +635,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertArrayStoreInsn(InsnNode insn) {
+  private void convertArrayStoreInsn(@Nonnull InsnNode insn) {
     int op = insn.getOpcode();
     boolean dword = op == LASTORE || op == DASTORE;
     StackFrame frame = getFrame(insn);
@@ -667,7 +668,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
    * else { frame.mergeIn(dupd); } }
    */
 
-  private void convertDupInsn(InsnNode insn) {
+  private void convertDupInsn(@Nonnull InsnNode insn) {
     int op = insn.getOpcode();
 
     // Get the top stack value which we need in either case
@@ -732,7 +733,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertBinopInsn(InsnNode insn) {
+  private void convertBinopInsn(@Nonnull InsnNode insn) {
     int op = insn.getOpcode();
     boolean dword =
         op == DADD
@@ -820,7 +821,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertUnopInsn(InsnNode insn) {
+  private void convertUnopInsn(@Nonnull InsnNode insn) {
     int op = insn.getOpcode();
     boolean dword = op == LNEG || op == DNEG;
     StackFrame frame = getFrame(insn);
@@ -853,7 +854,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertPrimCastInsn(InsnNode insn) {
+  private void convertPrimCastInsn(@Nonnull InsnNode insn) {
     int op = insn.getOpcode();
     boolean tod = op == I2L || op == I2D || op == F2L || op == F2D || op == D2L || op == L2D;
     boolean fromd = op == D2L || op == L2D || op == D2I || op == L2I || op == D2F || op == L2F;
@@ -897,7 +898,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertReturnInsn(InsnNode insn) {
+  private void convertReturnInsn(@Nonnull InsnNode insn) {
     int op = insn.getOpcode();
     boolean dword = op == LRETURN || op == DRETURN;
     StackFrame frame = getFrame(insn);
@@ -913,7 +914,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertInsn(InsnNode insn) {
+  private void convertInsn(@Nonnull InsnNode insn) {
     int op = insn.getOpcode();
     if (op == NOP) {
       /*
@@ -994,7 +995,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertIntInsn(IntInsnNode insn) {
+  private void convertIntInsn(@Nonnull IntInsnNode insn) {
     int op = insn.getOpcode();
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.out();
@@ -1051,7 +1052,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     push(opr);
   }
 
-  private void convertJumpInsn(JumpInsnNode insn) {
+  private void convertJumpInsn(@Nonnull JumpInsnNode insn) {
     int op = insn.getOpcode();
     if (op == GOTO) {
       if (!units.containsKey(insn)) {
@@ -1129,7 +1130,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertLdcInsn(LdcInsnNode insn) {
+  private void convertLdcInsn(@Nonnull LdcInsnNode insn) {
     Object val = insn.cst;
     boolean dword = val instanceof Long || val instanceof Double;
     StackFrame frame = getFrame(insn);
@@ -1149,7 +1150,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private Value toSootValue(Object val) throws AssertionError {
+  private Value toSootValue(@Nonnull Object val) throws AssertionError {
     Value v;
     if (val instanceof Integer) {
       v = IntConstant.getInstance((Integer) val);
@@ -1184,7 +1185,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return v;
   }
 
-  private void convertLookupSwitchInsn(LookupSwitchInsnNode insn) {
+  private void convertLookupSwitchInsn(@Nonnull LookupSwitchInsnNode insn) {
     StackFrame frame = getFrame(insn);
     if (units.containsKey(insn)) {
       frame.mergeIn(pop());
@@ -1213,7 +1214,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     setUnit(insn, lss);
   }
 
-  private void convertMethodInsn(MethodInsnNode insn) {
+  private void convertMethodInsn(@Nonnull MethodInsnNode insn) {
     int op = insn.getOpcode();
     boolean instance = op != INVOKESTATIC;
     StackFrame frame = getFrame(insn);
@@ -1329,7 +1330,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
   }
 
   // FIXME: convert invoke dynamic
-  private void convertInvokeDynamicInsn(InvokeDynamicInsnNode insn) {
+  private void convertInvokeDynamicInsn(@Nonnull InvokeDynamicInsnNode insn) {
     /*
      * StackFrame frame = getFrame(insn); Operand[] out = frame.out(); Operand opr; // Type returnType; TypeSignature
      * returnType; if (out == null) { // convert info on bootstrap methodRef SootMethodRef bsmMethodRef =
@@ -1386,7 +1387,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
      */
   }
 
-  private MethodRef toSootMethodRef(Handle methodHandle) {
+  private @Nonnull MethodRef toSootMethodRef(@Nonnull Handle methodHandle) {
     String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
     JavaClassSignature bsmCls = view.getSignatureFactory().getClassSignature(bsmClsName);
     List<TypeSignature> bsmSigTypes = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc(), view);
@@ -1414,7 +1415,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return fieldRef;
   }
 
-  private void convertMultiANewArrayInsn(MultiANewArrayInsnNode insn) {
+  private void convertMultiANewArrayInsn(@Nonnull MultiANewArrayInsnNode insn) {
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.out();
     Operand opr;
@@ -1451,7 +1452,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     push(opr);
   }
 
-  private void convertTableSwitchInsn(TableSwitchInsnNode insn) {
+  private void convertTableSwitchInsn(@Nonnull TableSwitchInsnNode insn) {
     StackFrame frame = getFrame(insn);
     if (units.containsKey(insn)) {
       frame.mergeIn(pop());
@@ -1474,7 +1475,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     setUnit(insn, tss);
   }
 
-  private void convertTypeInsn(TypeInsnNode insn) {
+  private void convertTypeInsn(@Nonnull TypeInsnNode insn) {
     int op = insn.getOpcode();
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.out();
@@ -1520,7 +1521,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     push(opr);
   }
 
-  private void convertVarLoadInsn(VarInsnNode insn) {
+  private void convertVarLoadInsn(@Nonnull VarInsnNode insn) {
     int op = insn.getOpcode();
     boolean dword = op == LLOAD || op == DLOAD;
     StackFrame frame = getFrame(insn);
@@ -1539,7 +1540,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertVarStoreInsn(VarInsnNode insn) {
+  private void convertVarStoreInsn(@Nonnull VarInsnNode insn) {
     int op = insn.getOpcode();
     boolean dword = op == LSTORE || op == DSTORE;
     StackFrame frame = getFrame(insn);
@@ -1557,7 +1558,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     assignReadOps(local);
   }
 
-  private void convertVarInsn(VarInsnNode insn) {
+  private void convertVarInsn(@Nonnull VarInsnNode insn) {
     int op = insn.getOpcode();
     if (op >= ILOAD && op <= ALOAD) {
       convertVarLoadInsn(insn);
@@ -1573,7 +1574,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void convertLabel(LabelNode ln) {
+  private void convertLabel(@Nonnull LabelNode ln) {
     if (!trapHandlers.containsKey(ln)) {
       return;
     }
@@ -1606,7 +1607,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     push(opr);
   }
 
-  private void convertLine(LineNumberNode ln) {
+  private void convertLine(@Nonnull LineNumberNode ln) {
     lastLineNumber = ln.line;
   }
 
@@ -1635,7 +1636,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
   private Table<AbstractInsnNode, AbstractInsnNode, Edge> edges;
   private ArrayDeque<Edge> conversionWorklist;
 
-  private void addEdges(AbstractInsnNode cur, AbstractInsnNode tgt1, List<LabelNode> tgts) {
+  private void addEdges(@Nonnull AbstractInsnNode cur, @Nonnull AbstractInsnNode tgt1, @Nullable List<LabelNode> tgts) {
     int lastIdx = tgts == null ? -1 : tgts.size() - 1;
     Operand[] stackss = (new ArrayList<>(stack)).toArray(new Operand[stack.size()]);
     AbstractInsnNode tgt = tgt1;
@@ -1780,7 +1781,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     inlineExceptionHandlers.put(ln, as);
   }
 
-  private boolean checkInlineExceptionHandler(LabelNode ln) {
+  private boolean checkInlineExceptionHandler(@Nonnull LabelNode ln) {
     // If this label is reachable through an exception and through normal
     // code, we have to split the exceptional case (with the exception on
     // the stack) from the normal fall-through case without anything on the
@@ -1807,7 +1808,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return false;
   }
 
-  private void emitLocals(SootMethod m, Collection<Local> jbl, Collection<IStmt> jbu)
+  private void emitLocals(@Nonnull SootMethod m, @Nonnull Collection<Local> jbl, @Nonnull Collection<IStmt> jbu)
       throws AsmFrontendException {
     int iloc = 0;
     if (!m.isStatic()) {
@@ -1833,7 +1834,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     jbl.addAll(locals.values());
   }
 
-  private void emitTraps(Collection<Trap> traps) throws AsmFrontendException {
+  private void emitTraps(@Nonnull Collection<Trap> traps) throws AsmFrontendException {
     // SootClass throwable = Scene.v().getSootClass("java.lang.Throwable");
     JavaClassSignature throwableSig =
         view.getSignatureFactory().getClassSignature("java.lang.Throwable");
@@ -1874,7 +1875,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void emitUnits(List<IStmt> bodyStmts, IStmt u) {
+  private void emitUnits(@Nonnull List<IStmt> bodyStmts, @Nonnull IStmt u) {
     if (u instanceof StmtContainer) {
       for (IStmt uu : ((StmtContainer) u).units) {
         emitUnits(bodyStmts, uu);
@@ -1884,7 +1885,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private void emitUnits(List<IStmt> bodyStmts) {
+  private void emitUnits(@Nonnull List<IStmt> bodyStmts) {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> labls = new ArrayDeque<>();
 
@@ -1969,7 +1970,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
   }
 
-  private JIdentityStmt getIdentityRefFromContrainer(StmtContainer u) {
+  private @Nullable JIdentityStmt getIdentityRefFromContrainer(@Nonnull StmtContainer u) {
     for (IStmt uu : u.units) {
       if (uu instanceof JIdentityStmt) {
         return (JIdentityStmt) uu;

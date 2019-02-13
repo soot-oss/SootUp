@@ -30,6 +30,7 @@ import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -50,7 +51,7 @@ import java.util.List;
  */
 class CastAndReturnInliner {
 
-  void transform(List<IStmt> bodyUnits, List<Trap> bodyTraps) {
+  void transform(@Nonnull List<IStmt> bodyUnits, @Nonnull List<Trap> bodyTraps) {
     // original snapshot iterator
     // Iterator<IStmt> it = body.getUnits().snapshotIterator();
 

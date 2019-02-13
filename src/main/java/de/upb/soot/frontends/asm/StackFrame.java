@@ -29,6 +29,8 @@ import de.upb.soot.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 
 /**
@@ -38,11 +40,11 @@ import java.util.ArrayList;
  */
 final class StackFrame {
 
-  private Operand[] out;
-  private Local[] inStackLocals;
-  private ValueBox[] boxes;
-  private ArrayList<Operand[]> in;
-  private final AsmMethodSourceContent src;
+  private @Nullable Operand[] out;
+  private @Nullable Local[] inStackLocals;
+  private @Nullable ValueBox[] boxes;
+  private @Nullable ArrayList<Operand[]> in;
+  private final @Nonnull AsmMethodSourceContent src;
 
   /**
    * Constructs a new stack frame.
@@ -50,14 +52,14 @@ final class StackFrame {
    * @param src
    *          source the frame belongs to.
    */
-  StackFrame(AsmMethodSourceContent src) {
+  StackFrame(@Nonnull AsmMethodSourceContent src) {
     this.src = src;
   }
 
   /**
    * @return operands produced by this frame.
    */
-  Operand[] out() {
+  @Nullable Operand[] out() {
     return out;
   }
 
@@ -67,7 +69,7 @@ final class StackFrame {
    * @param oprs
    *          the operands.
    */
-  void in(Operand... oprs) {
+  void in(@Nonnull Operand... oprs) {
     ArrayList<Operand[]> in = this.in;
     if (in == null) {
       in = this.in = new ArrayList<>(1);
@@ -106,7 +108,7 @@ final class StackFrame {
    * @throws IllegalArgumentException
    *           if the number of new operands is not equal to the number of old operands.
    */
-  void mergeIn(Operand... oprs) {
+  void mergeIn(@Nonnull Operand... oprs) {
     ArrayList<Operand[]> in = this.in;
     if (in.get(0).length != oprs.length) {
       throw new IllegalArgumentException("Invalid in operands length!");

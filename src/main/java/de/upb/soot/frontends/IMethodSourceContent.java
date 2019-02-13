@@ -4,7 +4,6 @@ import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.MethodSignature;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /*-
@@ -33,6 +32,6 @@ import javax.annotation.Nullable;
 
 public interface IMethodSourceContent {
   /** Returns a filled-out body for the given SootMethod. */
-  @Nullable Body getBody(@Nonnull SootMethod m) throws ResolveException;
+  @Nullable Body getBody(SootMethod m) throws ResolveException;
   MethodSignature getSignature();
 }
