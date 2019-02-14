@@ -6,6 +6,9 @@ import java.net.URL;
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 
+import com.ibm.wala.classLoader.IMethod.SourcePosition;
+
+
 public class NoPositionInformation implements CAstSourcePositionMap.Position {
 
     @Override
@@ -49,7 +52,7 @@ public class NoPositionInformation implements CAstSourcePositionMap.Position {
     }
 
     @Override
-    public int compareTo(Object arg0) {
+    public int compareTo(SourcePosition arg0) {
       // TODO Auto-generated method stub
       return 0;
     }
