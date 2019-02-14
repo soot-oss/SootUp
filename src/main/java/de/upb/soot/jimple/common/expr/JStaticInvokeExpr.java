@@ -103,17 +103,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     StringBuffer buffer = new StringBuffer();
 
     buffer.append(Jimple.STATICINVOKE + " " + methodSignature + "(");
-
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          buffer.append(", ");
-        }
-
-        buffer.append(argBoxes[i].getValue().toString());
-      }
-    }
-
+    argBoxesToString(buffer);
     buffer.append(")");
 
     return buffer.toString();
@@ -129,15 +119,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     up.methodSignature(methodSignature);
     up.literal("(");
 
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          up.literal(", ");
-        }
-
-        argBoxes[i].toString(up);
-      }
-    }
+    argBoxesToPrinter(up);
 
     up.literal(")");
   }

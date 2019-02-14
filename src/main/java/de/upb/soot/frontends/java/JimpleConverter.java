@@ -1,5 +1,13 @@
 package de.upb.soot.frontends.java;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import de.upb.soot.core.Body;
 import de.upb.soot.core.IField;
 import de.upb.soot.core.IMethod;
@@ -11,6 +19,7 @@ import de.upb.soot.jimple.common.expr.Expr;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
 import de.upb.soot.jimple.common.ref.Ref;
+import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
@@ -31,15 +40,7 @@ import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import soot.FastHierarchy;
 import soot.Local;
 import soot.PatchingChain;
 import soot.RefType;
@@ -91,7 +92,7 @@ public class JimpleConverter {
     if (fromClass.hasSuperclass()) {
       Optional<de.upb.soot.core.SootClass> superClass = fromClass.getSuperclass();
       soot.SootClass s = getSootClass(superClass, fromClass.getSuperclassSignature());
-      toClass.setSuperclass(s);
+      toClass.setSuperclass(s); 
     }
     if (fromClass.hasOuterClass()) {
       Optional<de.upb.soot.core.SootClass> outClass = fromClass.getOuterClass();
@@ -144,8 +145,13 @@ public class JimpleConverter {
     soot.SootMethod toMethod = new SootMethod(fromMethod.getName(), types, convertType(fromMethod.getReturnType()));
     toMethod.setModifiers(convertModifiers(fromMethod.getModifiers()));
     List<soot.SootClass> exceptions = new ArrayList<>();
-    // TODO. add exceptions
+
+    for ( de.upb.soot.core.SootClass fromException: fromMethod.getExceptions()) {
+      soot.SootClass exception = convertSootClass(fromException);
+      exceptions.add(exception);
+    }
     toMethod.setExceptions(exceptions);
+
     // add source position into tag
     toMethod.addTag(new DebuggingInformationTag(fromMethod.getDebugInfo()));
 
@@ -184,7 +190,7 @@ public class JimpleConverter {
     } else if (fromStmt instanceof JNopStmt) {
       toStmt = convertNopStmt(fromStmt);
     } else if (fromStmt instanceof JLookupSwitchStmt) {
-      toStmt = convertLookSwitchStmt(fromStmt);
+      toStmt = convertLookupSwitchStmt(fromStmt);
     } else if (fromStmt instanceof JTableSwitchStmt) {
       toStmt = convertTableSwitchStmt(fromStmt);
     } else if (fromStmt instanceof JRetStmt) {
@@ -192,7 +198,7 @@ public class JimpleConverter {
     } else if (fromStmt instanceof JEnterMonitorStmt) {
       toStmt = convertEnterMonitorStmt(fromStmt);
     } else if (fromStmt instanceof JExitMonitorStmt) {
-      toStmt = convertExitMintorStmt(fromStmt);
+      toStmt = convertExitMonitorStmt(fromStmt);
     } else if (fromStmt instanceof JBreakpointStmt) {
       toStmt = convertBreakpointStmt(fromStmt);
     } else {
@@ -244,38 +250,47 @@ public class JimpleConverter {
   }
 
   private Stmt convertBreakpointStmt(IStmt fromStmt) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  private Stmt convertExitMintorStmt(IStmt fromStmt) {
-    // TODO Auto-generated method stub
-    return null;
+    return Jimple.v().newBreakpointStmt();
   }
 
   private Stmt convertEnterMonitorStmt(IStmt fromStmt) {
-    // TODO Auto-generated method stub
-    return null;
+    JEnterMonitorStmt stmt = (JEnterMonitorStmt) fromStmt;
+    Value op = convertValue(stmt.getOp());
+    return Jimple.v().newEnterMonitorStmt(op);
+  }
+
+  private Stmt convertExitMonitorStmt(IStmt fromStmt) {
+    JExitMonitorStmt stmt = (JExitMonitorStmt) fromStmt;
+    Value op = convertValue(stmt.getOp());
+    return Jimple.v().newExitMonitorStmt(op);
   }
 
   private Stmt convertRetStmt(IStmt fromStmt) {
-    // TODO Auto-generated method stub
-    return null;
+    JRetStmt stmt = (JRetStmt) fromStmt;
+    return Jimple.v().newRetStmt(convertValue(stmt.getStmtAddress()));
   }
 
   private Stmt convertTableSwitchStmt(IStmt fromStmt) {
-    // TODO Auto-generated method stub
-    return null;
+    JTableSwitchStmt stmt = (JTableSwitchStmt) fromStmt;
+    List<Stmt> targetList = getSwitchStmtsTargets(stmt);
+    Stmt defaultTarget = getTarget(stmt.getDefaultTarget());
+    return Jimple.v().newTableSwitchStmt(convertValue(stmt.getKey()), stmt.getLowIndex(), stmt.getHighIndex(), targetList, defaultTarget);
   }
 
-  private Stmt convertLookSwitchStmt(IStmt fromStmt) {
+  private Stmt convertLookupSwitchStmt(IStmt fromStmt) {
     JLookupSwitchStmt stmt = (JLookupSwitchStmt) fromStmt;
     List<soot.jimple.IntConstant> lookupValues = new ArrayList<>();
     for (IntConstant c : stmt.getLookupValues()) {
       lookupValues.add((soot.jimple.IntConstant) convertValue(c));
     }
+    List<Stmt> targetList = getSwitchStmtsTargets(stmt);
+    Stmt defaultTarget = getTarget(stmt.getDefaultTarget());
+    return Jimple.v().newLookupSwitchStmt(convertValue(stmt.getKey()), lookupValues, targetList, defaultTarget);
+  }
+
+  private List<Stmt> getSwitchStmtsTargets(AbstractSwitchStmt fromStmt) {
     List<Stmt> targetList = new ArrayList<>();
-    for (IStmt t : stmt.getTargets()) {
+    for (IStmt t : fromStmt.getTargets()) {
       // TODO. wala bug
       if (t == null) {
         targetList.add(null);
@@ -288,18 +303,17 @@ public class JimpleConverter {
         }
       }
     }
-    Stmt defaultTarget = getTarget(stmt.getDefaultTarget());
-    return Jimple.v().newLookupSwitchStmt(convertValue(stmt.getKey()), lookupValues, targetList, defaultTarget);
+    return targetList;
   }
 
   private Stmt convertNopStmt(IStmt fromStmt) {
-    // TODO Auto-generated method stub
-    return null;
+    return Jimple.v().newNopStmt();
   }
 
   private Stmt convertThrowStmt(IStmt fromStmt) {
-    // TODO Auto-generated method stub
-    return null;
+    JThrowStmt stmt = (JThrowStmt) fromStmt;
+    Value op = convertValue(stmt.getOp());
+    return Jimple.v().newThrowStmt(op);
   }
 
   private Stmt convertReturnVoidStmt(IStmt fromStmt) {
@@ -656,5 +670,6 @@ public class JimpleConverter {
     for (de.upb.soot.core.SootClass sootClass : fromClasses) {
       this.convertSootClass(sootClass);
     }
+    Scene.v().setFastHierarchy(new FastHierarchy());
   }
 }
