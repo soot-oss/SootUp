@@ -239,6 +239,11 @@
 			<artifactId>com.ibm.wala.shrike</artifactId>
 			<version>1.5.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jdt</groupId>
+			<artifactId>org.eclipse.jdt.core</artifactId>
+			<version>3.15.0</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor -->
 		<dependency>
 			<groupId>com.typesafe.akka</groupId>
@@ -254,7 +259,7 @@
 	</dependencies>
 	<repositories>
 		<!-- include wala from sonatype public repository -->
-		<repository>
+		<!-- repository>
 			<id>sonatype-public-repository</id>
 			<url>https://oss.sonatype.org/content/groups/public</url>
 			<snapshots>
@@ -263,7 +268,7 @@
 			<releases>
 				<enabled>true</enabled>
 			</releases>
-		</repository>
+		</repository -->
 		<!-- include old soot repo -->
 		<repository>
 			<id>soot-snapshot</id>

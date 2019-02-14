@@ -1,13 +1,18 @@
 package de.upb.soot.frontends.java;
 
+import java.nio.file.Path;
+
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 
-import java.nio.file.Path;
-
+/**
+ * 
+ * @author Linghui Luo
+ *
+ */
 public class WalaJavaClassProvider implements IClassProvider {
 
   @Override

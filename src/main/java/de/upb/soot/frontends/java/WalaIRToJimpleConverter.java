@@ -439,11 +439,10 @@ public class WalaIRToJimpleConverter {
         // TODO 2. convert traps
         // get exceptions which are not caught
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
-
         InstructionConverter instConverter = new InstructionConverter(this, sootMethod, walaMethod, localGenerator);
         Map<IStmt, Integer> stmt2IIndex = new HashMap<>();
         for (SSAInstruction inst : insts) {
-          List<IStmt> retStmts = instConverter.convertInstruction(inst);
+          List<IStmt> retStmts = instConverter.convertInstruction(debugInfo,inst);
           if (!retStmts.isEmpty()) {
             for (IStmt stmt : retStmts) {
               // set position for each statement
