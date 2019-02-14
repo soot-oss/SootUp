@@ -22,7 +22,6 @@ package de.upb.soot.core;
  */
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-
 import de.upb.soot.frontends.IMethodSourceContent;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.jimple.common.type.Type;
@@ -31,6 +30,7 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -68,7 +68,7 @@ public class SootMethod extends SootClassMember implements IMethod {
   protected final List<JavaClassSignature> exceptions;
 
   /** Active body associated with this methodRef. */
-  protected final Body activeBody;
+  protected final @Nullable Body activeBody;
 
   /** Tells this methodRef how to find out where its body lives. */
   private final IMethodSourceContent methodSource;
@@ -190,14 +190,16 @@ public class SootMethod extends SootClassMember implements IMethod {
 
   /** Returns true if this methodRef throws exception <code>e</code>. */
   public boolean throwsException(SootClass e) {
+    // FIXME: [JMP] `exceptions` contain instances of type `JavaClassSignature`,
+    //              but `contains(…)` is called with `SootClass`
     return exceptions != null && exceptions.contains(e);
   }
 
   /**
    * Returns a backed list of the exceptions thrown by this methodRef.
    */
-
   public Collection<SootClass> getExceptions() {
+    // FIXME: `Collections.emptySet()` is immutable, this it can't be modified!
     Collection<SootClass> ret = Collections.emptySet();
     exceptions.stream().filter(e -> this.getView().getClass(e).isPresent())
         .forEach(e -> ret.add((SootClass) this.getView().getClass(e).get()));

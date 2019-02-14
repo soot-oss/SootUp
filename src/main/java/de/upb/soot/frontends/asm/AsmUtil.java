@@ -8,6 +8,7 @@ import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
 import de.upb.soot.views.IView;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
 import javax.annotation.Nonnull;
@@ -32,6 +33,8 @@ import java.util.stream.StreamSupport;
 public final class AsmUtil {
 
   private AsmUtil() {}
+  
+  public static final int SUPPORTED_ASM_OPCODE = Opcodes.ASM7;
   
   /**
    * Initializes a class node.

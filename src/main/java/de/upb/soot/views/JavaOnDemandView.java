@@ -2,11 +2,11 @@ package de.upb.soot.views;
 
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.JavaClassSignature;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 
 /**
@@ -16,45 +16,47 @@ import java.util.Optional;
  */
 public class JavaOnDemandView extends JavaView {
 
-  private final INamespace namespace;
   private final AkkaClassResolver akkaClassResolver = new AkkaClassResolver();
 
   /**
    * Instantiates a new view.
    *
-   * @param project
+   * @param project The project.
    */
-  public JavaOnDemandView(Project project, INamespace namespace) {
+  public JavaOnDemandView(@Nonnull Project project) {
     super(project);
-    this.namespace = namespace;
   }
 
   // Where and why should we decide which phantom classes to create?
 
   @Override
-  public Optional<AbstractClass> getClass(ISignature signature) {
-    Optional<AbstractClass> foundClasss
-        = this.classes().filter(c -> c.getClassSource().getClassSignature().equals(signature)).findFirst();
-    if (!foundClasss.isPresent()) {
-
+  public @Nonnull Optional<AbstractClass> getClass(@Nonnull ISignature signature) {
+    if(!(signature instanceof JavaClassSignature)) {
+      throw new IllegalArgumentException("The signature must be a `JavaClassSignature`.");
+    }
+    
+    Optional<AbstractClass> foundClass =
+      this.classes()
+      .filter(c -> c.getClassSource().getClassSignature().equals(signature))
+      .findFirst();
+    
+    if (!foundClass.isPresent()) {
       // query the namespace for the class source
-      Optional<ClassSource> source = namespace.getClassSource((JavaClassSignature) signature);
+      Optional<ClassSource> source = this.project.getNamespace().getClassSource((JavaClassSignature) signature);
+     
       if (source.isPresent()) {
-        // resolve it ...
-        Optional<AbstractClass> resolvedClass = null;
-        // using akka
-        resolvedClass = akkaClassResolver.reifyClass(source.get(), this);
+        // resolve it ... using akka
+        Optional<AbstractClass> resolvedClass  = akkaClassResolver.reifyClass(source.get(), this);
 
         // add it to the existing
-        if (resolvedClass.isPresent()) {
-          this.classes.put(signature, resolvedClass.get());
-        }
+        resolvedClass.ifPresent(it -> this.classes.put(signature, it));
+        
         return resolvedClass;
       }
 
     }
 
-    return foundClasss;
+    return foundClass;
   }
 
 }

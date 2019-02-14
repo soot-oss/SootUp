@@ -175,7 +175,7 @@ public class SootClass extends AbstractClass implements Serializable {
     return builder;
   }
 
-  // FIXME: add missing statementss
+  // FIXME: add missing statements
   private SootClass(SootClassBuilder builder) {
     super(builder.view, builder.classSource, builder.methods, builder.fields);
     this.resolvingLevel = builder.resolvingLevel;
@@ -210,20 +210,20 @@ public class SootClass extends AbstractClass implements Serializable {
   public final static String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, ClassSource classSource, ClassType type,
-                   Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
+                   Optional<JavaClassSignature> superClass, Collection<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
                    Position position, EnumSet<Modifier> modifiers) {
     this(view, resolvingLevel, classSource, type, superClass, interfaces, outerClass, new HashSet<>(), new HashSet<>(),
         position, modifiers);
   }
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, ClassSource classSource, ClassType type,
-                   Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
+                   Optional<JavaClassSignature> superClass, Collection<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
                    Set<SootField> fields, Set<SootMethod> methods, Position position, EnumSet<Modifier> modifiers) {
     super(view, classSource, methods, fields);
     this.resolvingLevel = resolvingLevel;
     this.classType = type;
     this.superClass = superClass;
-    this.interfaces = Collections.unmodifiableSet(interfaces);
+    this.interfaces = Collections.unmodifiableSet(new HashSet<>(interfaces));
     this.classSignature = classSource.getClassSignature();
     this.refType = view.getRefType(classSignature);
     refType.setSootClass(this);

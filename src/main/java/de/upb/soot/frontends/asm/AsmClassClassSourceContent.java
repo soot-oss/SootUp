@@ -6,6 +6,7 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.signatures.FieldSignature;
@@ -14,7 +15,6 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.FieldNode;
 
 import javax.annotation.Nonnull;
@@ -31,7 +31,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
   private final ClassSource classSource;
 
   public AsmClassClassSourceContent(@Nonnull ClassSource classSource) {
-    super(Opcodes.ASM6);
+    super(AsmUtil.SUPPORTED_ASM_OPCODE);
     this.classSource = classSource;
     // FIXME: maybe delete class reading
     AsmUtil.initASMClassSource(classSource, this);
@@ -71,17 +71,12 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   private @Nonnull SootClass.SignatureStep resolveHierarchy(@Nonnull IView view, @Nonnull JavaClassSignature cs)
       throws AsmFrontendException {
-
-    Optional<AbstractClass> aClass = view.getClass(cs);
-    if (!aClass.isPresent()) {
-      throw new AsmFrontendException(String.format("Cannot resolve class %s", cs));
-    }
-    SootClass sootClass = (SootClass) aClass.get();
+    SootClass sootClass = (SootClass) view.getClass(cs).orElseThrow(() -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
     Set<JavaClassSignature> interfaces = new HashSet<>();
     Optional<JavaClassSignature> mySuperCl = Optional.empty();
     SootClass.HierachyStep danglingStep;
 
-    if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.DANGLING)) {
+    if (sootClass.resolvingLevel().isLoweverLevel(ResolvingLevel.DANGLING)) {
       // FIXME: do the setting stuff again...
       danglingStep = resolveDangling(view, cs);
     } else {
@@ -110,12 +105,8 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     SootClass.SignatureStep signatureStep;
     Set<IMethod> methods = new HashSet<>();
     Set<SootField> fields = new HashSet<>();
-    Optional<AbstractClass> aClass = view.getClass(cs);
-    if (!aClass.isPresent()) {
-      throw new AsmFrontendException(String.format("Cannot resolve class %s", cs));
-    }
-    SootClass sootClass = (SootClass) aClass.get();
-    if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.HIERARCHY)) {
+    SootClass sootClass = (SootClass) view.getClass(cs).orElseThrow(() -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
+    if (sootClass.resolvingLevel().isLoweverLevel(ResolvingLevel.HIERARCHY)) {
       signatureStep = resolveHierarchy(view, cs);
     } else {
       signatureStep = SootClass.fromExisting(sootClass);
@@ -162,8 +153,8 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
             view.getSignatureFactory()
                 .getMethodSignature(methodName, sootClass.getSignature(), retType, sigTypes);
 
-        de.upb.soot.core.SootMethod sootMethod =
-            new de.upb.soot.core.SootMethod(
+        SootMethod sootMethod =
+            new SootMethod(
                 view,
                 sootClass.getSignature(),
                 asmClassClassSourceContent,
@@ -179,13 +170,9 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   private @Nonnull SootClass.Build resolveBody(@Nonnull IView view, @Nonnull JavaClassSignature cs)
       throws AsmFrontendException {
-    Optional<AbstractClass> aClass = view.getClass(cs);
-    if (!aClass.isPresent()) {
-      throw new AsmFrontendException(String.format("Cannot resolve class %s", cs));
-    }
-    SootClass sootClass = (SootClass) aClass.get();
+    SootClass sootClass = (SootClass) view.getClass(cs).orElseThrow(() -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
     SootClass.BodyStep bodyStep;
-    if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.SIGNATURES)) {
+    if (sootClass.resolvingLevel().isLoweverLevel(ResolvingLevel.SIGNATURES)) {
       bodyStep = resolveSignature(view, cs);
     } else {
       bodyStep = SootClass.fromExisting(sootClass);

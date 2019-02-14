@@ -9,7 +9,6 @@ import de.upb.soot.frontends.asm.AsmFrontendException;
 import de.upb.soot.frontends.asm.AsmUtil;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.ModuleExportNode;
 import org.objectweb.asm.tree.ModuleOpenNode;
@@ -26,7 +25,7 @@ public class AsmModuleClassSourceContent extends ClassNode
   private final ClassSource classSource;
 
   public AsmModuleClassSourceContent(@Nonnull ClassSource classSource) {
-    super(Opcodes.ASM6);
+    super(AsmUtil.SUPPORTED_ASM_OPCODE);
     this.classSource = classSource;
 
     // FIXME: maybe delete class reading
