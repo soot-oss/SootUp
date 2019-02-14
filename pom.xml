@@ -5,7 +5,7 @@
 	<groupId>de.upb</groupId>
 	<artifactId>Soot</artifactId>
 	<packaging>jar</packaging>
-	<version>4.0-SNAPSHOT</version>
+	<version>4.0.0-SNAPSHOT</version>
 	<name>Soot</name>
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -125,33 +125,6 @@
                     <fixFieldComment>false</fixFieldComment>
                     <fixMethodComment>false</fixMethodComment>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>1.16</version>
-                <configuration>
-                    <failOnMissingHeader>${licence-check.failOnMissingHeader}</failOnMissingHeader>
-                    <failOnNotUptodateHeader>${licence-check.failOnMissingHeader}</failOnNotUptodateHeader>
-                    <inceptionYear>2018</inceptionYear>
-                    <addJavaLicenseAfterPackage>true</addJavaLicenseAfterPackage>
-                    <licenseName>lgpl_v2_1</licenseName>
-                    <organizationName>Secure Software Engineering Department, University of Paderborn</organizationName>
-                    <roots>
-                        <root>src/main/java</root>
-                        <root>src/test/java</root>
-                        <root>src/test/java8</root>
-                    </roots>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>license-check</id>
-                        <goals>
-                            <goal>check-file-header</goal>
-                        </goals>
-                        <phase>verify</phase>
-                    </execution>
-                </executions>
             </plugin>
 		</plugins>
 	</build>
