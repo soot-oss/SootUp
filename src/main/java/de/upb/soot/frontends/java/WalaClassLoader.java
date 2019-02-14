@@ -108,7 +108,6 @@ public class WalaClassLoader {
           scope.setExclusions(classes);
         }
       }
-
       factory = new ECJClassLoaderFactory(scope.getExclusions());
     } catch (FileNotFoundException e) {
       e.printStackTrace();

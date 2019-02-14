@@ -1,10 +1,10 @@
 package referencejimple;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URL;
+
+import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 
 public class NoPositionInformation implements CAstSourcePositionMap.Position {
 
@@ -49,7 +49,8 @@ public class NoPositionInformation implements CAstSourcePositionMap.Position {
     }
 
     @Override
-    public int compareTo(Object o) {
-        return 1;
+    public int compareTo(Object arg0) {
+      // TODO Auto-generated method stub
+      return 0;
     }
 }

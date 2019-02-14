@@ -2,11 +2,6 @@ package de.upb.soot.frontends;
 
 import static org.junit.Assert.assertTrue;
 
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.java.WalaClassLoader;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassSignature;
-
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -15,6 +10,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import categories.Java8Test;
+import de.upb.soot.core.SootMethod;
+import de.upb.soot.frontends.java.WalaClassLoader;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.JavaClassSignature;
 
 /**
  * 

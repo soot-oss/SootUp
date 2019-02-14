@@ -315,7 +315,7 @@
 	</dependencies>
 	<repositories>
 		<!-- include wala from sonatype public repository -->
-		<repository>
+		<!-- repository>
 			<id>sonatype-public-repository</id>
 			<url>https://oss.sonatype.org/content/groups/public</url>
 			<snapshots>
@@ -324,7 +324,7 @@
 			<releases>
 				<enabled>true</enabled>
 			</releases>
-		</repository>
+		</repository -->
 		<!-- include old soot repo -->
 		<repository>
 			<id>soot-snapshot</id>
