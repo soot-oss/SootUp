@@ -3,7 +3,9 @@ package de.upb.soot.namespaces;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.util.NotYetImplementedException;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -15,27 +17,28 @@ import java.util.Optional;
  */
 public class JavaSourcePathNamespace extends AbstractNamespace {
 
-  private final String sourcePath;
+  private final @Nonnull String sourcePath;
   /**
    * Create a {@link JavaSourcePathNamespace} which locates java source code in the given source path.
    * 
    * @param sourcePath
    *          the source code path to search in
    */
-  public JavaSourcePathNamespace(String sourcePath) {
+  public JavaSourcePathNamespace(@Nonnull String sourcePath) {
+    // FIXME: [JMP] Is `null` intended here?
     super(null);
     this.sourcePath = sourcePath;
   }
 
   @Override
-  public Collection<ClassSource> getClassSources(SignatureFactory factory) {
+  public @Nonnull Collection<ClassSource> getClassSources(@Nonnull SignatureFactory factory) {
     // TODO Auto-generated methodRef stub
-    return null;
+    throw new NotYetImplementedException("Getting class sources is not implemented, yet.");
   }
 
   @Override
-  public Optional<ClassSource> getClassSource(JavaClassSignature classSignature) {
+  public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature classSignature) {
     // TODO Auto-generated methodRef stub
-    return null;
+    throw new NotYetImplementedException("Getting class source is not implemented, yet.");
   }
 }

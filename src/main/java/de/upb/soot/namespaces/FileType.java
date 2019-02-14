@@ -22,6 +22,7 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
+import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
 /**
@@ -32,15 +33,15 @@ import java.util.EnumSet;
 public enum FileType {
   JAR("jar"), ZIP("zip"), APK("apk"), CLASS("class"), JAVA("java"), JIMPLE("jimple");
 
-  public static final EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK);
+  public static final @Nonnull EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK);
 
-  private final String extension;
+  private final @Nonnull String extension;
 
-  FileType(String fileExtension) {
+  FileType(@Nonnull String fileExtension) {
     this.extension = fileExtension;
   }
 
-  public String getExtension() {
+  public @Nonnull String getExtension() {
     return extension;
   }
 }

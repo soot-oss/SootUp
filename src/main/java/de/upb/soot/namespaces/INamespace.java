@@ -28,6 +28,7 @@ import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -48,13 +49,13 @@ public interface INamespace {
    * @param signature The signature of the class to be found.
    * @return The source entry for that class.
    */
-  Optional<ClassSource> getClassSource(JavaClassSignature signature);
+  @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature signature);
 
   /**
    * The class provider attached to this namespace.
    * @return An instance of {@link IClassProvider} to be used.
    */
-  IClassProvider getClassProvider();
+  @Nonnull IClassProvider getClassProvider();
 
-  Collection<ClassSource> getClassSources(SignatureFactory factory);
+  @Nonnull Collection<ClassSource> getClassSources(@Nonnull SignatureFactory factory);
 }

@@ -1,8 +1,11 @@
 package de.upb.soot.namespaces;
 
-import static org.junit.Assert.assertTrue;
-
+import categories.Java9Test;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.powermock.reflect.Whitebox;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -10,12 +13,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.powermock.reflect.Whitebox;
-
-import categories.Java9Test;
+import static org.junit.Assert.assertTrue;
 
 @Category(Java9Test.class)
 
@@ -53,7 +51,6 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
     String jarName = "foo-1.2.3-SNAPSHOT.jar";
     String result = Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);
     Assert.assertEquals("foo", result);
-
   }
 
   @Test
@@ -63,24 +60,24 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
     String jarName = "foo-bar.jar";
     String result = Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);
     Assert.assertEquals("foo.bar", result);
-
   }
 
   @Test
-  public void modularJar() throws Exception {
+  public void modularJar() {
     ModuleFinder moduleFinder
         = new ModuleFinder(new AsmJavaClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules/");
     Collection<String> discoveredModules = moduleFinder.discoverAllModules();
     assertTrue(discoveredModules.contains("de.upb.mod"));
   }
-
+  
   @Test
+  @SuppressWarnings("unchecked")
   public void explodedModule() throws Exception {
 
     ModuleFinder moduleFinder
         = new ModuleFinder(new AsmJavaClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules");
     Path p = Paths.get("target/test-classes/de/upb/soot/namespaces/modules/testMod");
-    String result = Whitebox.invokeMethod(moduleFinder, "buildModuleForExplodedModule", p);
+    Whitebox.invokeMethod(moduleFinder, "buildModuleForExplodedModule", p);
     Field field = Whitebox.getField(moduleFinder.getClass(), "moduleNamespace");
     Map<String, AbstractNamespace> values = (Map<String, AbstractNamespace>) field.get(moduleFinder);
     assertTrue(values.containsKey("fancyMod"));

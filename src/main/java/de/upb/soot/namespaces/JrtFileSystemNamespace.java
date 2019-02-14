@@ -1,5 +1,6 @@
 package de.upb.soot.namespaces;
 
+import com.google.common.base.Preconditions;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
@@ -8,8 +9,7 @@ import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.Utils;
 
-import com.google.common.base.Preconditions;
-
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.DirectoryStream;
@@ -37,14 +37,14 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Optional<ClassSource> getClassSource(JavaClassSignature signature) {
+  public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature signature) {
     if (signature.packageSignature instanceof ModulePackageSignature) {
       return this.getClassSourceInternalForModule(signature);
     }
     return this.getClassSourceInternalForClassPath(signature);
   }
 
-  private Optional<ClassSource> getClassSourceInternalForClassPath(JavaClassSignature classSignature) {
+  private @Nonnull Optional<ClassSource> getClassSourceInternalForClassPath(@Nonnull JavaClassSignature classSignature) {
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path moduleRoot = theFileSystem.getPath("modules");
@@ -68,7 +68,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   }
 
-  private Optional<ClassSource> getClassSourceInternalForModule(JavaClassSignature classSignature) {
+  private @Nonnull Optional<ClassSource> getClassSourceInternalForModule(@Nonnull JavaClassSignature classSignature) {
     Preconditions.checkArgument(classSignature.packageSignature instanceof ModulePackageSignature);
 
     ModulePackageSignature modulePackageSignature = (ModulePackageSignature) classSignature.packageSignature;
@@ -88,14 +88,14 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   // get the factory, which I should use the create the correspond class signatures
   @Override
-  public Collection<ClassSource> getClassSources(SignatureFactory factory) {
+  public @Nonnull Collection<ClassSource> getClassSources(@Nonnull SignatureFactory factory) {
 
     final Path archiveRoot = theFileSystem.getPath("modules");
     return walkDirectory(archiveRoot, factory);
 
   }
 
-  protected Collection<ClassSource> walkDirectory(Path dirPath, SignatureFactory factory) {
+  protected @Nonnull Collection<ClassSource> walkDirectory(@Nonnull Path dirPath, @Nonnull SignatureFactory factory) {
 
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
@@ -114,7 +114,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
    * 
    * @return Collection of found module names.
    */
-  public Collection<String> discoverModules() {
+  public @Nonnull Collection<String> discoverModules() {
     final Path moduleRoot = theFileSystem.getPath("modules");
     List<String> foundModules = new ArrayList<>();
 
@@ -138,7 +138,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   // however, I cannot think of a general way for java 9 modules anyway....
   // how to create the module name if we have a jar file..., or a multi jar, or the jrt file system
   // nevertheless, one general methodRef for all signatures seems reasonable
-  private JavaClassSignature fromPath(final Path filename, final Path moduleDir, final SignatureFactory factory) {
+  private @Nonnull JavaClassSignature fromPath(final Path filename, final Path moduleDir, final SignatureFactory factory) {
 
     // else use the module system and create fully class signature
     if (factory instanceof ModuleSignatureFactory) {

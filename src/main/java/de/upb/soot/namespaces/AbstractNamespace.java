@@ -1,6 +1,13 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.asm.AsmJavaClassProvider;
+import de.upb.soot.signatures.JavaClassSignature;
+
+import javax.annotation.Nonnull;
+import java.util.Optional;
+
 /*-
  * #%L
  * Soot
@@ -11,23 +18,17 @@ import de.upb.soot.frontends.ClassSource;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-
-import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.frontends.asm.AsmJavaClassProvider;
-import de.upb.soot.signatures.JavaClassSignature;
-
-import java.util.Optional;
 
 /**
  * Basic implementation of {@link INamespace}, encapsulating common behavior. Also used to keep the {@link INamespace}
@@ -36,13 +37,13 @@ import java.util.Optional;
  * @author Manuel Benz created on 22.05.18
  */
 public abstract class AbstractNamespace implements INamespace {
-  protected final IClassProvider classProvider;
+  protected final @Nonnull IClassProvider classProvider;
 
   /**
    * Create the namespace
    * @param classProvider The class provider to be used
    */
-  public AbstractNamespace(IClassProvider classProvider) {
+  public AbstractNamespace(@Nonnull IClassProvider classProvider) {
     this.classProvider = classProvider;
   }
 
@@ -51,7 +52,7 @@ public abstract class AbstractNamespace implements INamespace {
    * @return The class provider for this namespace
    */
   @Override
-  public IClassProvider getClassProvider() {
+  public @Nonnull IClassProvider getClassProvider() {
     return classProvider;
   }
 
@@ -74,10 +75,10 @@ public abstract class AbstractNamespace implements INamespace {
    *
    * @return An instance of {@link IClassProvider} to be used.
    */
-  protected static IClassProvider getDefaultClassProvider() {
+  protected static @Nonnull IClassProvider getDefaultClassProvider() {
     return new AsmJavaClassProvider();
   }
 
   @Override
-  public abstract Optional<ClassSource> getClassSource(JavaClassSignature classSignature);
+  public abstract @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature classSignature);
 }

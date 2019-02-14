@@ -1,21 +1,19 @@
 package de.upb.soot.namespaces;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
+import categories.Java9Test;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
-
-import java.util.Collections;
-import java.util.Optional;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
 
-import categories.Java9Test;
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Category(Java9Test.class)
 
@@ -23,8 +21,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
   @Override
   protected SignatureFactory getSignatureFactory() {
-    return new ModuleSignatureFactory() {
-    };
+    return new ModuleSignatureFactory();
   }
 
   @Test
