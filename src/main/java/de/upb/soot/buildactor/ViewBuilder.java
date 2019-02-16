@@ -38,7 +38,6 @@ public class ViewBuilder {
 
   public IView buildOnDemand() {
     // FIXME: why do we need a project for a view?
-    IView result = new JavaOnDemandView(null, namespace);
-    return result;
+    return new JavaOnDemandView(null, namespace);
   }
 }

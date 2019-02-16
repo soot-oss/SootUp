@@ -1,5 +1,7 @@
 package de.upb.soot.namespaces;
 
+import com.google.common.base.Preconditions;
+
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
@@ -7,8 +9,6 @@ import de.upb.soot.signatures.ModulePackageSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.Utils;
-
-import com.google.common.base.Preconditions;
 
 import java.io.IOException;
 import java.net.URI;

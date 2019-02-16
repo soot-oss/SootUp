@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.StreamSupport;
 
-import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.tree.ClassNode;
 
 public final class AsmUtil {
@@ -29,7 +28,7 @@ public final class AsmUtil {
   private AsmUtil() {
   }
 
-  public static void initASMClassSource(AbstractClassSource classSource, ClassNode classNode) {
+  public static void initAsmClassSource(AbstractClassSource classSource, ClassNode classNode) {
     java.net.URI uri = classSource.getSourcePath().toUri();
 
     try {
@@ -39,7 +38,7 @@ public final class AsmUtil {
         org.objectweb.asm.ClassReader clsr
             = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
 
-        clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
+        clsr.accept(classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
       } else {
         // a zip file system needs to be re-openend
         // otherwise it crashes
@@ -52,7 +51,7 @@ public final class AsmUtil {
           org.objectweb.asm.ClassReader clsr
               = new org.objectweb.asm.ClassReader(java.nio.file.Files.newInputStream(sourceFile));
 
-          clsr.accept((ClassVisitor) classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
+          clsr.accept(classNode, org.objectweb.asm.ClassReader.SKIP_FRAMES);
         }
       }
 
@@ -116,36 +115,36 @@ public final class AsmUtil {
             ++nrDims;
             continue this_type;
           case 'Z':
-            baseType = BooleanType.getInstance();
+            baseType = BooleanType.INSTANCE;
             break this_type;
           case 'B':
-            baseType = ByteType.getInstance();
+            baseType = ByteType.INSTANCE;
             break this_type;
           case 'C':
-            baseType = CharType.getInstance();
+            baseType = CharType.INSTANCE;
             break this_type;
           case 'S':
-            baseType = ShortType.getInstance();
+            baseType = ShortType.INSTANCE;
             break this_type;
           case 'I':
-            baseType = IntType.getInstance();
+            baseType = IntType.INSTANCE;
             break this_type;
           case 'F':
-            baseType = FloatType.getInstance();
+            baseType = FloatType.INSTANCE;
             break this_type;
           case 'J':
-            baseType = LongType.getInstance();
+            baseType = LongType.INSTANCE;
             break this_type;
           case 'D':
-            baseType = DoubleType.getInstance();
+            baseType = DoubleType.INSTANCE;
             break this_type;
           case 'V':
-            baseType = VoidType.getInstance();
+            baseType = VoidType.INSTANCE;
             break this_type;
           case 'L':
             int begin = idx;
+            // noinspection StatementWithEmptyBody
             while (desc.charAt(++idx) != ';') {
-              ;
             }
             String cls = desc.substring(begin, idx++);
             baseType = view.getRefType(view.getSignatureFactory().getTypeSignature((AsmUtil.toQualifiedName(cls))));
@@ -161,7 +160,7 @@ public final class AsmUtil {
     return types;
   }
 
-  public static Iterable<Optional<JavaClassSignature>> asmIDToSignature(Iterable<String> modules, IView view) {
+  public static Iterable<Optional<JavaClassSignature>> asmIdToSignature(Iterable<String> modules, IView view) {
     if (modules == null) {
       return java.util.Collections.emptyList();
     }
@@ -171,8 +170,8 @@ public final class AsmUtil {
 
   // FIXME: double check optional here
   public static Optional<JavaClassSignature> resolveAsmNameToClassSignature(String asmClassName, IView view) {
-    String excepetionFQName = toQualifiedName(asmClassName);
-    JavaClassSignature classSignature = view.getSignatureFactory().getClassSignature(excepetionFQName);
+    String exceptionFqName = toQualifiedName(asmClassName);
+    JavaClassSignature classSignature = view.getSignatureFactory().getClassSignature(exceptionFqName);
     return Optional.ofNullable(classSignature);
   }
 }

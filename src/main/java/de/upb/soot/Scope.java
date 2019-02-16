@@ -15,8 +15,6 @@ public class Scope {
 
   /**
    * Define a scope consists of multiple namespaces.
-   * 
-   * @param namespaces
    */
   public Scope(INamespace... namespaces) {
     // TODO Auto-generated constructor stub
@@ -24,8 +22,6 @@ public class Scope {
 
   /**
    * Define a scope consists of multiple packages.
-   * 
-   * @param packages
    */
   public Scope(PackageSignature... packages) {
     // TODO Auto-generated constructor stub
@@ -33,8 +29,6 @@ public class Scope {
 
   /**
    * Define a scope consists of multiple classes.
-   * 
-   * @param classSignatures
    */
   public Scope(JavaClassSignature... classSignatures) {
     // TODO Auto-generated constructor stub

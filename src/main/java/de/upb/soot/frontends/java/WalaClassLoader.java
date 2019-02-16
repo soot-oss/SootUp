@@ -1,12 +1,5 @@
 package de.upb.soot.frontends.java;
 
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.TypeSignature;
-
 import com.ibm.wala.cast.java.ipa.callgraph.JavaSourceAnalysisScope;
 import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
 import com.ibm.wala.cast.java.translator.jdt.ecj.ECJClassLoaderFactory;
@@ -23,6 +16,13 @@ import com.ibm.wala.types.ClassLoaderReference;
 import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
+
+import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -73,9 +73,7 @@ public class WalaClassLoader {
       // build the class hierarchy
       this.classHierarchy = ClassHierarchyFactory.make(scope, new ECJClassLoaderFactory(scope.getExclusions()));
       Warnings.clear();
-    } catch (ClassHierarchyException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
+    } catch (ClassHierarchyException | IOException e) {
       e.printStackTrace();
     }
   }
@@ -104,9 +102,6 @@ public class WalaClassLoader {
 
   /**
    * Return a soot class with the given signature converted from a WALA class.
-   * 
-   * @param signature
-   * @return
    */
   public Optional<SootClass> getSootClass(JavaClassSignature signature) {
     if (classHierarchy == null) {
@@ -150,7 +145,7 @@ public class WalaClassLoader {
         JavaClass c = (JavaClass) it.next();
         String cname = walaToSoot.convertClassNameFromWala(c.getName().toString());
         if (cname.equals(signature.declClassSignature.getFullyQualifiedName())) {
-          walaClass=c;
+          walaClass = c;
         }
       }
     }

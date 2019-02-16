@@ -50,8 +50,7 @@ public class JInstanceFieldRef implements FieldRef {
    *          the field sig
    */
   public JInstanceFieldRef(IView view, Value base, FieldSignature fieldSig) {
-    ValueBox baseBox = Jimple.newLocalBox(base);
-    this.baseBox = baseBox;
+    this.baseBox = Jimple.newLocalBox(base);
     this.fieldSig = fieldSig;
     this.view = view;
   }
@@ -100,9 +99,8 @@ public class JInstanceFieldRef implements FieldRef {
    */
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
-    useBoxes.addAll(baseBox.getValue().getUseBoxes());
+    List<ValueBox> useBoxes = new ArrayList<>(baseBox.getValue().getUseBoxes());
     useBoxes.add(baseBox);
 
     return useBoxes;
@@ -138,7 +136,7 @@ public class JInstanceFieldRef implements FieldRef {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 

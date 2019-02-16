@@ -35,18 +35,9 @@ import de.upb.soot.signatures.PrimitiveTypeSignature;
 @SuppressWarnings("serial")
 public class ShortType extends PrimType {
 
-  private static ShortType instance;
+  public static final ShortType INSTANCE = new ShortType();
 
-  /**
-   * Get the ShortType instance.
-   * 
-   * @return the ShortType instance.
-   */
-  public static ShortType getInstance() {
-    if (instance == null) {
-      instance = new ShortType();
-    }
-    return instance;
+  private ShortType() {
   }
 
   @Override

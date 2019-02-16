@@ -90,17 +90,13 @@ public class MethodHandle extends Constant {
     }
     MethodHandle other = (MethodHandle) obj;
     if (method == null) {
-      if (other.method != null) {
-        return false;
-      }
-    } else if (!method.equals(other.method)) {
-      return false;
-    }
-    return true;
+      return other.method == null;
+    } else
+      return method.equals(other.method);
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     // TODO Auto-generated method stub
     return false;
   }

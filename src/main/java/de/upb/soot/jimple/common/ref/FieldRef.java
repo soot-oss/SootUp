@@ -31,5 +31,5 @@ import de.upb.soot.core.SootField;
 import java.util.Optional;
 
 public interface FieldRef extends ConcreteRef {
-  public Optional<SootField> getField();
+  Optional<SootField> getField();
 }

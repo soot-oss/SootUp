@@ -1,5 +1,7 @@
 package de.upb.soot.namespaces;
 
+import com.google.common.base.Preconditions;
+
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.namespaces.classprovider.IClassProvider;
 import de.upb.soot.signatures.FieldSignature;
@@ -10,8 +12,6 @@ import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
-
-import com.google.common.base.Preconditions;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -45,8 +45,8 @@ public class JavaModulePathNamespace extends AbstractNamespace {
    * Creates a {@link JavaModulePathNamespace} which locates classes in the given module path.
    *
    * @param modulePath
-   *          The class path to search in The {@link IClassProvider} for generating {@link AbstractClassSource}es for the files found
-   *          on the class path
+   *          The class path to search in The {@link IClassProvider} for generating {@link AbstractClassSource}es for the
+   *          files found on the class path
    */
   public JavaModulePathNamespace(String modulePath, IClassProvider classProvider) {
     super(classProvider);
@@ -94,11 +94,8 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     }
 
     final Optional<AbstractClassSource> classSource = ns.getClassSource(signature);
-    if (classSource.isPresent()) {
-      return classSource;
-    }
+    return classSource;
 
-    return Optional.empty();
   }
 
   private class SignatureFactoryWrapper implements SignatureFactory {
@@ -138,8 +135,8 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     }
 
     @Override
-    public MethodSignature getMethodSignature(String methodName, JavaClassSignature declaringClassSignature, String fqReturnType,
-        List<String> parameters) {
+    public MethodSignature getMethodSignature(String methodName, JavaClassSignature declaringClassSignature,
+        String fqReturnType, List<String> parameters) {
       return factory.getMethodSignature(methodName, declaringClassSignature, fqReturnType, parameters);
     }
 
@@ -152,11 +149,10 @@ public class JavaModulePathNamespace extends AbstractNamespace {
         int index = fullyQualifiedName.lastIndexOf(".");
         String className = fullyQualifiedName;
         if (index > 0) {
-          className = fullyQualifiedName.substring(index, fullyQualifiedName.length());
+          className = fullyQualifiedName.substring(index);
           packageName = fullyQualifiedName.substring(0, index);
         }
-        JavaClassSignature signature = moduleSignatureFactory.getClassSignature(className, packageName, this.moduleName);
-        return signature;
+        return moduleSignatureFactory.getClassSignature(className, packageName, this.moduleName);
       }
       return factory.fromPath(file);
     }

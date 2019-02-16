@@ -27,8 +27,6 @@ public interface IView {
 
   /**
    * Return all classes in the view.
-   * 
-   * @return
    */
   Collection<AbstractClass> getClasses();
 
@@ -79,39 +77,27 @@ public interface IView {
   /**
    * Returns the {@link RefType} with given class Signature from the view. If there is no RefType with given className
    * exists, create a new instance.
-   * 
-   * @param className
-   * @return
    */
   RefType getRefType(TypeSignature classSignature);
 
   /**
    * Return the {@link Type} wtih given signature from the view. If there is no Type with given signature exists, create a
    * new instance.
-   * 
-   * @param signature
-   * @return
    */
   Type getType(TypeSignature signature);
 
   /**
    * Returns the {@link SignatureFactory} for this view.
-   * 
-   * @return
    */
   SignatureFactory getSignatureFactory();
 
   /**
    * Return the {@link Options} of this view.
-   * 
-   * @return
    */
   Options getOptions();
 
   /**
    * Add given class to the view.
-   * 
-   * @param klass
    */
   void addClass(AbstractClass klass);
 

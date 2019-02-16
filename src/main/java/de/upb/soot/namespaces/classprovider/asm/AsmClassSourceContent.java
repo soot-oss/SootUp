@@ -10,6 +10,8 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.FieldNode;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -17,9 +19,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.FieldNode;
 
 public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     implements de.upb.soot.namespaces.classprovider.ISourceContent {
@@ -29,8 +28,8 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
   public AsmClassSourceContent(AbstractClassSource classSource) {
     super(Opcodes.ASM6);
     this.classSource = classSource;
-    //FIXME: maybe delete class reading
-    AsmUtil.initASMClassSource(classSource, this);
+    // FIXME: maybe delete class reading
+    AsmUtil.initAsmClassSource(classSource, this);
 
   }
 
@@ -55,6 +54,9 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
       case BODIES:
         builder = (SootClass.SootClassBuilder) resolveBody(view, cs);
         break;
+
+      default:
+        throw new UnsupportedOperationException("Unsupported level " + level);
     }
 
     // FIXME: should return the build sootclass?
@@ -78,8 +80,8 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
   private SootClass.SignatureStep resolveHierarchy(IView view, JavaClassSignature cs) {
     SootClass sootClass = (SootClass) view.getClass(cs).get();
     Set<JavaClassSignature> interfaces = new HashSet<>();
-    Optional<JavaClassSignature> mySuperCl = null;
-    SootClass.HierachyStep danglingStep = null;
+    JavaClassSignature mySuperCl;
+    SootClass.HierachyStep danglingStep;
 
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.DANGLING)) {
       // FIXME: do the setting stuff again...
@@ -90,26 +92,21 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
     {
       // add super class
 
-      Optional<JavaClassSignature> superClass = AsmUtil.resolveAsmNameToClassSignature(superName, view);
-      if (superClass.isPresent()) {
-        mySuperCl = superClass;
-      }
+      mySuperCl = AsmUtil.resolveAsmNameToClassSignature(superName, view).orElse(null);
     }
     {
       // add the interfaces
-      Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(this.interfaces, view);
+      Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIdToSignature(this.interfaces, view);
       for (Optional<JavaClassSignature> interfaceClass : optionals) {
 
-        if (interfaceClass.isPresent()) {
-          interfaces.add(interfaceClass.get());
-        }
+        interfaceClass.ifPresent(interfaces::add);
       }
     }
     return danglingStep.hierachy(mySuperCl, interfaces, null, null);
   }
 
   private SootClass.BodyStep resolveSignature(de.upb.soot.views.IView view, JavaClassSignature cs) {
-    SootClass.SignatureStep signatureStep = null;
+    SootClass.SignatureStep signatureStep;
     Set<IMethod> methods = new HashSet<>();
     Set<SootField> fields = new HashSet<>();
     SootClass sootClass = (SootClass) view.getClass(cs).get();
@@ -140,13 +137,10 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
         List<Type> sigTypes = AsmUtil.toJimpleDesc(methodSource.desc, view);
         Type retType = sigTypes.remove(sigTypes.size() - 1);
         List<JavaClassSignature> exceptions = new ArrayList<>();
-        Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIDToSignature(methodSource.exceptions, view);
+        Iterable<Optional<JavaClassSignature>> optionals = AsmUtil.asmIdToSignature(methodSource.exceptions, view);
 
         for (Optional<JavaClassSignature> excepetionClass : optionals) {
-
-          if (excepetionClass.isPresent()) {
-            exceptions.add(excepetionClass.get());
-          }
+          excepetionClass.ifPresent(exceptions::add);
         }
 
         de.upb.soot.core.SootMethod sootMethod
@@ -160,7 +154,7 @@ public class AsmClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   private SootClass.Build resolveBody(de.upb.soot.views.IView view, JavaClassSignature cs) {
     SootClass sootClass = (SootClass) view.getClass(cs).get();
-    SootClass.BodyStep bodyStep = null;
+    SootClass.BodyStep bodyStep;
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.SIGNATURES)) {
       bodyStep = resolveSignature(view, cs);
     } else {

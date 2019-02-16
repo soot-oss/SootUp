@@ -175,7 +175,7 @@ public class FloatConstant extends RealConstant {
 
   @Override
   public Type getType() {
-    return FloatType.getInstance();
+    return FloatType.INSTANCE;
   }
 
   @Override
@@ -198,7 +198,7 @@ public class FloatConstant extends RealConstant {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     // TODO Auto-generated method stub
     return false;
   }

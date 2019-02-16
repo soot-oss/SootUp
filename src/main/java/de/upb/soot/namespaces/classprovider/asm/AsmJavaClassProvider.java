@@ -32,7 +32,7 @@ public class AsmJavaClassProvider implements de.upb.soot.namespaces.classprovide
   @Override
   public de.upb.soot.namespaces.classprovider.ISourceContent getContent(AbstractClassSource classSource) {
 
-    ISourceContent classNode = null;
+    ISourceContent classNode;
     // FIXME: maybe check here if module info file ... and create other ClassSource
     if (classSource.getClassSignature().isModuleInfo()) {
       classNode = new AsmModuleSourceContent(classSource);

@@ -35,10 +35,11 @@ import java.io.Serializable;
 
 public interface IStmtBox extends Serializable {
   /** Sets this box to contain the given unit. Subject to canContainValue() checks. */
-  public void setStmt(IStmt u);
+  void setStmt(IStmt u);
 
   /** Returns the unit contained within this box. */
-  public IStmt getStmt();
+  IStmt getStmt();
+
   /**
    * Returns true if the StmtBox is holding a Stmt that is the target of a branch (ie a Stmt at the beginning of a CFG
    * block). This is the default case.
@@ -48,7 +49,7 @@ public interface IStmtBox extends Serializable {
    * processing for SSA.
    * </p>
    **/
-  public boolean isBranchTarget();
+  boolean isBranchTarget();
 
-  public void toString(IStmtPrinter up);
+  void toString(IStmtPrinter up);
 }

@@ -34,18 +34,9 @@ import de.upb.soot.jimple.visitor.IVisitor;
 @SuppressWarnings("serial")
 public class UnknownType extends Type {
 
-  private static UnknownType instance;
+  public static final UnknownType INSTANCE = new UnknownType();
 
-  /**
-   * Get the UnknownType instance.
-   * 
-   * @return the UnknownType instance.
-   */
-  public static UnknownType getInstance() {
-    if (instance == null) {
-      instance = new UnknownType();
-    }
-    return instance;
+  private UnknownType() {
   }
 
   @Override

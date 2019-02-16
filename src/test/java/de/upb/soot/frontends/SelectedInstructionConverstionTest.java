@@ -9,6 +9,7 @@ import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -42,7 +43,7 @@ public class SelectedInstructionConverstionTest {
     // TODO FIX IT
     declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA.AA");
     Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("makeAB", declareClassSig, "alreadywalaunittests.InnerClassAA.AB", Arrays.asList()));
+        sigFactory.getMethodSignature("makeAB", declareClassSig, "alreadywalaunittests.InnerClassAA.AB", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -52,7 +53,7 @@ public class SelectedInstructionConverstionTest {
   public void test2() {
     declareClassSig = sigFactory.getClassSignature("AnonymousClass");
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("method", declareClassSig, "void", Arrays.asList()));
+        = loader.getSootMethod(sigFactory.getMethodSignature("method", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -62,7 +63,7 @@ public class SelectedInstructionConverstionTest {
   public void test3() {
     declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA");
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("doAllThis", declareClassSig, "void", Arrays.asList()));
+        = loader.getSootMethod(sigFactory.getMethodSignature("doAllThis", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -72,7 +73,7 @@ public class SelectedInstructionConverstionTest {
   public void test4() {
     declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA");
     Optional<SootMethod> m = loader
-        .getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Arrays.asList("java.lang.String[]")));
+        .getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -82,7 +83,7 @@ public class SelectedInstructionConverstionTest {
   public void test5() {
     declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA");
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("<init>", declareClassSig, "void", Arrays.asList()));
+        = loader.getSootMethod(sigFactory.getMethodSignature("<init>", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -92,7 +93,7 @@ public class SelectedInstructionConverstionTest {
   public void test6() {
     declareClassSig = sigFactory.getClassSignature("foo.bar.hello.world.ArraysAndSuch");
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Arrays.asList()));
+        = loader.getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -102,7 +103,7 @@ public class SelectedInstructionConverstionTest {
   public void testThrowInstruction() {
     declareClassSig = sigFactory.getClassSignature("FooEx1");
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("bar", declareClassSig, "void", Arrays.asList()));
+        = loader.getSootMethod(sigFactory.getMethodSignature("bar", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -112,7 +113,7 @@ public class SelectedInstructionConverstionTest {
   public void testSwitchInstruction() {
     declareClassSig = sigFactory.getClassSignature("bugfixes.DoWhileInCase");
     Optional<SootMethod> m = loader
-        .getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Arrays.asList("java.lang.String[]")));
+        .getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -122,7 +123,7 @@ public class SelectedInstructionConverstionTest {
   public void testLoadMetadataInstruction() {
     declareClassSig = sigFactory.getClassSignature("javaonepointfive.EnumSwitch$Palo");
     Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("valueOf", declareClassSig,
-        "javaonepointfive.EnumSwitch$Palo", Arrays.asList("java.lang.String")));
+        "javaonepointfive.EnumSwitch$Palo", Collections.singletonList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -132,7 +133,7 @@ public class SelectedInstructionConverstionTest {
   public void testCheckCastInstruction() {
     declareClassSig = sigFactory.getClassSignature("javaonepointfive.EnumSwitch$Palo");
     Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("valueOf", declareClassSig,
-        "javaonepointfive.EnumSwitch$Palo", Arrays.asList("java.lang.String")));
+        "javaonepointfive.EnumSwitch$Palo", Collections.singletonList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -142,7 +143,7 @@ public class SelectedInstructionConverstionTest {
   public void testEnclosingObjectReference() {
     declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA$AA");
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("doSomeCrazyStuff", declareClassSig, "void", Arrays.asList()));
+        = loader.getSootMethod(sigFactory.getMethodSignature("doSomeCrazyStuff", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -160,7 +161,7 @@ public class SelectedInstructionConverstionTest {
   public void testAstLexicalRead() {
     declareClassSig = sigFactory.getClassSignature("AnonymousClass$1");
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("getValueBase", declareClassSig, "int", Arrays.asList()));
+        = loader.getSootMethod(sigFactory.getMethodSignature("getValueBase", declareClassSig, "int", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -170,7 +171,7 @@ public class SelectedInstructionConverstionTest {
   public void testAstLexicalReadFromField() {
     declareClassSig = sigFactory.getClassSignature("Scoping2");
     Optional<SootMethod> m = loader
-        .getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Arrays.asList("java.lang.String[]")));
+        .getSootMethod(sigFactory.getMethodSignature("main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -188,7 +189,7 @@ public class SelectedInstructionConverstionTest {
   public void testAstLexicalWrite() {
     declareClassSig = sigFactory.getClassSignature("foo.bar.hello.world.InnerClasses");
     Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("anonymousCoward", declareClassSig, "java.lang.Object", Arrays.asList()));
+        sigFactory.getMethodSignature("anonymousCoward", declareClassSig, "java.lang.Object", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -198,7 +199,7 @@ public class SelectedInstructionConverstionTest {
   public void testAstLexicalWriteToField() {
     declareClassSig = sigFactory.getClassSignature("foo.bar.hello.world.InnerClasses");
     Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("supportLocalBusiness", declareClassSig, "java.lang.Object", Arrays.asList()));
+        sigFactory.getMethodSignature("supportLocalBusiness", declareClassSig, "java.lang.Object", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -216,7 +217,7 @@ public class SelectedInstructionConverstionTest {
   public void testAstAssertInstruction() {
     declareClassSig = sigFactory.getClassSignature("MiniaturSliceBug");
     Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("validNonDispatchedCall", declareClassSig, "void", Arrays.asList("IntWrapper")));
+        sigFactory.getMethodSignature("validNonDispatchedCall", declareClassSig, "void", Collections.singletonList("IntWrapper")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -234,7 +235,7 @@ public class SelectedInstructionConverstionTest {
   public void testMonitorInstruction() {
     declareClassSig = sigFactory.getClassSignature("Monitor");
     Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("incr", declareClassSig, "void", Arrays.asList()));
+        sigFactory.getMethodSignature("incr", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -245,7 +246,7 @@ public class SelectedInstructionConverstionTest {
     declareClassSig = sigFactory.getClassSignature("Exception1");
     Optional<SootMethod> m
         = loader.getSootMethod(
-            sigFactory.getMethodSignature("main", declareClassSig, "void", Arrays.asList("java.lang.String[]")));
+            sigFactory.getMethodSignature("main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -255,7 +256,7 @@ public class SelectedInstructionConverstionTest {
   public void testArrayInstructions() {
     declareClassSig = sigFactory.getClassSignature("Array1");
     Optional<SootMethod> m = loader
-        .getSootMethod(sigFactory.getMethodSignature("foo", declareClassSig, "void", Arrays.asList()));
+        .getSootMethod(sigFactory.getMethodSignature("foo", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);

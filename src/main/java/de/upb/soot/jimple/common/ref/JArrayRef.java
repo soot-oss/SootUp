@@ -115,9 +115,8 @@ public class JArrayRef implements ConcreteRef {
 
   @Override
   public List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
-    useBoxes.addAll(baseBox.getValue().getUseBoxes());
+    List<ValueBox> useBoxes = new ArrayList<>(baseBox.getValue().getUseBoxes());
     useBoxes.add(baseBox);
 
     useBoxes.addAll(indexBox.getValue().getUseBoxes());
@@ -131,10 +130,10 @@ public class JArrayRef implements ConcreteRef {
     Value base = baseBox.getValue();
     Type type = base.getType();
 
-    if (type.equals(UnknownType.getInstance())) {
-      return UnknownType.getInstance();
-    } else if (type.equals(NullType.getInstance())) {
-      return NullType.getInstance();
+    if (type.equals(UnknownType.INSTANCE)) {
+      return UnknownType.INSTANCE;
+    } else if (type.equals(NullType.INSTANCE)) {
+      return NullType.INSTANCE;
     } else {
       // use makeArrayType on non-array type references when they propagate to this point.
       // kludge, most likely not correct.
@@ -161,7 +160,7 @@ public class JArrayRef implements ConcreteRef {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 

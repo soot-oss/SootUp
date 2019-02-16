@@ -16,6 +16,7 @@ import java.util.Optional;
 public class JavaSourcePathNamespace extends AbstractNamespace {
 
   private final String sourcePath;
+
   /**
    * Create a {@link JavaSourcePathNamespace} which locates java source code in the given source path.
    * 

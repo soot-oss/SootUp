@@ -21,10 +21,12 @@ package de.upb.soot.core;
  * #L%
  */
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.AbstractClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.validation.ClassFlagsValidator;
 import de.upb.soot.validation.ClassValidator;
 import de.upb.soot.validation.MethodDeclarationValidator;
@@ -32,10 +34,10 @@ import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.views.IView;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-
+import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -83,8 +85,8 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   public interface HierachyStep extends Build {
-    SignatureStep hierachy(Optional<JavaClassSignature> superclass, Set<JavaClassSignature> interfaces,
-        EnumSet<Modifier> modifiers, Optional<JavaClassSignature> outerClass);
+    SignatureStep hierachy(@Nullable JavaClassSignature superclass, Set<JavaClassSignature> interfaces,
+        EnumSet<Modifier> modifiers, @Nullable JavaClassSignature outerClass);
   }
 
   public interface SignatureStep extends Build {
@@ -108,8 +110,12 @@ public class SootClass extends AbstractClass implements Serializable {
     private Set<? extends IField> fields;
     private Set<? extends IMethod> methods;
     private Set<JavaClassSignature> interfaces;
-    private Optional<JavaClassSignature> superClass;
-    private Optional<JavaClassSignature> outerClass;
+
+    @Nullable
+    private JavaClassSignature superClass;
+    @Nullable
+    private JavaClassSignature outerClass;
+
     private AbstractClassSource classSource;
     private IView view;
 
@@ -127,8 +133,8 @@ public class SootClass extends AbstractClass implements Serializable {
 
     // FIXME: decided what a Class at Hierachy Level must have resoled...
     @Override
-    public SignatureStep hierachy(Optional<JavaClassSignature> superclass, Set<JavaClassSignature> interfaces,
-        EnumSet<Modifier> modifiers, Optional<JavaClassSignature> outerClass) {
+    public SignatureStep hierachy(JavaClassSignature superclass, Set<JavaClassSignature> interfaces,
+        EnumSet<Modifier> modifiers, JavaClassSignature outerClass) {
 
       this.superClass = superclass;
       this.interfaces = interfaces;
@@ -203,20 +209,23 @@ public class SootClass extends AbstractClass implements Serializable {
   private final RefType refType;
   private final JavaClassSignature classSignature;
   private final Set<JavaClassSignature> interfaces;
-  private final Optional<JavaClassSignature> superClass;
-  private final Optional<JavaClassSignature> outerClass;
+
+  @Nullable
+  private final JavaClassSignature superClass;
+  @Nullable
+  private final JavaClassSignature outerClass;
 
   public final static String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, AbstractClassSource classSource, ClassType type,
-      Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
+      @Nullable JavaClassSignature superClass, Set<JavaClassSignature> interfaces, @Nullable JavaClassSignature outerClass,
       Position position, EnumSet<Modifier> modifiers) {
     this(view, resolvingLevel, classSource, type, superClass, interfaces, outerClass, new HashSet<>(), new HashSet<>(),
         position, modifiers);
   }
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, AbstractClassSource classSource, ClassType type,
-      Optional<JavaClassSignature> superClass, Set<JavaClassSignature> interfaces, Optional<JavaClassSignature> outerClass,
+      @Nullable JavaClassSignature superClass, Set<JavaClassSignature> interfaces, @Nullable JavaClassSignature outerClass,
       Set<SootField> fields, Set<SootMethod> methods, Position position, EnumSet<Modifier> modifiers) {
     super(view, classSource, methods, fields);
     this.resolvingLevel = resolvingLevel;
@@ -383,37 +392,31 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the method with the given name, parameters and return type. If no matching method can be found, an
-   * exception is thrown.
+   * Attempts to retrieve the method with the given signature, parameters and return type. If no matching method can be
+   * found, an exception is thrown.
    */
-  public SootMethod getMethod(String name, List<Type> parameterTypes, Type returnType) {
-    SootMethod sm = getMethodUnsafe(name, parameterTypes, returnType);
+  public SootMethod getMethod(MethodSignature signature) {
+    SootMethod sm = getMethodUnsafe(signature);
     if (sm != null) {
       return sm;
     }
 
-    throw new RuntimeException(
-        "Class " + classSignature + " doesn't have method " + name + "(" + parameterTypes + ")" + " : " + returnType);
+    throw new RuntimeException("Class " + classSignature + " doesn't have method " + signature);
   }
 
   /**
-   * Attempts to retrieve the method with the given name, parameters and return type. If no matching method can be found,
-   * null is returned.
+   * Attempts to retrieve the method with the given signature, parameters and return type. If no matching method can be
+   * found, null is returned.
    */
-  public SootMethod getMethodUnsafe(String name, List<Type> parameterTypes, Type returnType) {
+  @Nullable
+  public SootMethod getMethodUnsafe(MethodSignature signature) {
     checkLevel(ResolvingLevel.SIGNATURES);
     if (methods == null) {
       return null;
     }
 
-    for (IMethod m : methods) {
-      SootMethod method = (SootMethod) m;
-      if (method.getSignature().equals(name) && parameterTypes.equals(method.getParameterTypes())
-          && returnType.equals(method.getReturnType())) {
-        return method;
-      }
-    }
-    return null;
+    return methods.stream().map(m -> (SootMethod) m).filter(method -> method.getSignature().equals(signature)).findFirst()
+        .orElse(null);
   }
 
   /**
@@ -458,7 +461,7 @@ public class SootClass extends AbstractClass implements Serializable {
     }
     for (IMethod m : methods) {
       SootMethod method = (SootMethod) m;
-      if (method.getSubSignature().toString().equals(subSignature)) {
+      if (method.getSubSignature().equals(subSignature)) {
         if (foundMethod == null) {
           foundMethod = method;
         } else {
@@ -507,9 +510,7 @@ public class SootClass extends AbstractClass implements Serializable {
     Set<SootClass> ret = new HashSet<>();
     for (JavaClassSignature i : interfaces) {
       Optional<AbstractClass> op = this.getView().getClass(i);
-      if (op.isPresent()) {
-        ret.add((SootClass) op.get());
-      }
+      op.ifPresent(abstractClass -> ret.add((SootClass) abstractClass));
     }
     return ret;
   }
@@ -539,7 +540,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
   public boolean hasSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return superClass.isPresent() && getSuperclass().isPresent();
+    return superClass != null && getSuperclass().isPresent();
   }
 
   /**
@@ -548,12 +549,12 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   public Optional<SootClass> getSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return superClass.flatMap(s -> this.getView().getClass(s).map(c -> (SootClass) c));
+    return superClass != null ? getView().getClass(superClass).map(c -> (SootClass) c) : Optional.empty();
   }
 
   public boolean hasOuterClass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return outerClass.isPresent() && getOuterClass().isPresent();
+    return outerClass != null && getOuterClass().isPresent();
   }
 
   /**
@@ -561,7 +562,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   public Optional<SootClass> getOuterClass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return outerClass.flatMap(s -> this.getView().getClass(s).map(c -> (SootClass) c));
+    return outerClass != null ? getView().getClass(outerClass).map(c -> (SootClass) c) : Optional.empty();
   }
 
   public boolean isInnerClass() {
@@ -639,8 +640,6 @@ public class SootClass extends AbstractClass implements Serializable {
   /**
    * Sometimes we need to know which class is a JDK class. There is no simple way to distinguish a user class and a JDK
    * class, here we use the package prefix as the heuristic.
-   *
-   * @author xiao
    */
   private static final Pattern libraryClassPattern
       = Pattern.compile("^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");
@@ -695,27 +694,18 @@ public class SootClass extends AbstractClass implements Serializable {
 
   protected int number = 0;
 
-  private static ClassValidator[] validators;
-
   /**
-   * Returns an array containing some validators in order to validate the SootClass
-   *
-   * @return the array containing validators
+   * An array containing some validators in order to validate the SootClass
    */
-  private synchronized static ClassValidator[] getValidators() {
-    if (validators == null) {
-      validators = new ClassValidator[] { OuterClassValidator.getInstance(), MethodDeclarationValidator.getInstance(),
-          ClassFlagsValidator.getInstance() };
-    }
-    return validators;
-  };
+  private static final List<ClassValidator> validators
+      = Arrays.asList(new OuterClassValidator(), new MethodDeclarationValidator(), new ClassFlagsValidator());
 
   /**
    * Validates this SootClass for logical errors. Note that this does not validate the method bodies, only the class
    * structure.
    */
   public void validate() {
-    final List<ValidationException> exceptionList = new ArrayList<ValidationException>();
+    final List<ValidationException> exceptionList = new ArrayList<>();
     validate(exceptionList);
     if (!exceptionList.isEmpty()) {
       throw exceptionList.get(0);
@@ -728,7 +718,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   public void validate(List<ValidationException> exceptionList) {
     final boolean runAllValidators = this.getView().getOptions().debug() || this.getView().getOptions().validate();
-    for (ClassValidator validator : getValidators()) {
+    for (ClassValidator validator : validators) {
       if (!validator.isBasicValidator() && !runAllValidators) {
         continue;
       }

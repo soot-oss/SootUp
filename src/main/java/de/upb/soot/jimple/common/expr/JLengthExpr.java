@@ -78,7 +78,7 @@ public class JLengthExpr extends AbstractUnopExpr {
 
   @Override
   public Type getType() {
-    return IntType.getInstance();
+    return IntType.INSTANCE;
   }
 
   @Override
@@ -87,7 +87,7 @@ public class JLengthExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 

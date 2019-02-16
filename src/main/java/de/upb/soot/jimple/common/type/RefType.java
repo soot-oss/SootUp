@@ -78,9 +78,6 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
   /**
    * Create a RefType instance for the given view.
-   * 
-   * @param view
-   * @param typeSignature
    */
   public RefType(IView view, TypeSignature typeSignature) {
     RefType.view = view;
@@ -142,7 +139,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
   /** Returns the least common superclass of this type and other. */
   @Override
   public Type merge(Type other) {
-    if (other.equals(UnknownType.getInstance()) || this.equals(other)) {
+    if (other.equals(UnknownType.INSTANCE) || this.equals(other)) {
       return this;
     }
 
@@ -224,8 +221,11 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
   @Override
   public Type getArrayElementType() {
-    if (typeSignature.equals("java.lang.Object") || typeSignature.equals("java.io.Serializable")
-        || typeSignature.equals("java.lang.Cloneable")) {
+    SignatureFactory signatureFactory = getView().getSignatureFactory();
+
+    if (typeSignature.equals(signatureFactory.getClassSignature("java.lang.Object"))
+        || typeSignature.equals(signatureFactory.getClassSignature("java.io.Serializable"))
+        || typeSignature.equals(signatureFactory.getClassSignature("java.lang.Cloneable"))) {
       return RefType.getInstance("java.lang.Object");
     }
     throw new RuntimeException("Attempt to get array base type of a non-array");

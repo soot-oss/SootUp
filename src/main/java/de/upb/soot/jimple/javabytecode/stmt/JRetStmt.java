@@ -86,9 +86,8 @@ public class JRetStmt extends AbstractStmt {
 
   @Override
   public List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
-    useBoxes.addAll(stmtAddressBox.getValue().getUseBoxes());
+    List<ValueBox> useBoxes = new ArrayList<>(stmtAddressBox.getValue().getUseBoxes());
     useBoxes.add(stmtAddressBox);
 
     return useBoxes;
@@ -114,10 +113,7 @@ public class JRetStmt extends AbstractStmt {
     if (!(o instanceof JReturnStmt)) {
       return false;
     }
-    if (stmtAddressBox != ((JRetStmt) o).stmtAddressBox) {
-      return false;
-    }
-    return true;
+    return stmtAddressBox == ((JRetStmt) o).stmtAddressBox;
   }
 
   @Override
@@ -126,7 +122,7 @@ public class JRetStmt extends AbstractStmt {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 

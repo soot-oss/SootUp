@@ -35,18 +35,9 @@ import de.upb.soot.signatures.PrimitiveTypeSignature;
 @SuppressWarnings("serial")
 public class CharType extends PrimType {
 
-  private static CharType instance;
+  public static final CharType INSTANCE = new CharType();
 
-  /**
-   * Get the CharType instance.
-   * 
-   * @return the CharType instance.
-   */
-  public static CharType getInstance() {
-    if (instance == null) {
-      instance = new CharType();
-    }
-    return instance;
+  private CharType() {
   }
 
   @Override

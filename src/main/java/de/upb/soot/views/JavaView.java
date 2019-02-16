@@ -35,6 +35,7 @@ import java.util.Set;
 public class JavaView extends AbstractView {
 
   private Set<ArrayType> arrayTypes;
+
   /**
    * Instantiates a new view.
    */
@@ -42,7 +43,6 @@ public class JavaView extends AbstractView {
     super(project);
     this.arrayTypes = new HashSet<>();
   }
-
 
   @Override
   protected void setReservedNames() {
@@ -117,51 +117,49 @@ public class JavaView extends AbstractView {
     return new DefaultSignatureFactory();
   }
 
-  private ArrayType getArrayType(ArrayTypeSignature arrayTypeSignature)
-  {
+  private ArrayType getArrayType(ArrayTypeSignature arrayTypeSignature) {
     Optional<ArrayType> op
         = this.arrayTypes.stream().filter(r -> r.toString().equals(arrayTypeSignature.toString())).findFirst();
     if (!op.isPresent()) {
-      ArrayType arrayType
-          = ArrayType.getInstance(getRefType(arrayTypeSignature.baseType), arrayTypeSignature.dimension);
+      ArrayType arrayType = ArrayType.getInstance(getRefType(arrayTypeSignature.baseType), arrayTypeSignature.dimension);
       this.arrayTypes.add(arrayType);
       return arrayType;
     }
     return op.get();
   }
+
   @Override
   public Type getType(TypeSignature signature) {
     if (signature instanceof PrimitiveTypeSignature) {
       if (signature.equals(PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE)) {
-        return ByteType.getInstance();
+        return ByteType.INSTANCE;
       } else if (signature.equals(PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE)) {
-        return ShortType.getInstance();
+        return ShortType.INSTANCE;
       } else if (signature.equals(PrimitiveTypeSignature.INT_TYPE_SIGNATURE)) {
-        return IntType.getInstance();
+        return IntType.INSTANCE;
       } else if (signature.equals(PrimitiveTypeSignature.LONG_TYPE_SIGNATURE)) {
-        return LongType.getInstance();
+        return LongType.INSTANCE;
       } else if (signature.equals(PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE)) {
-        return FloatType.getInstance();
+        return FloatType.INSTANCE;
       } else if (signature.equals(PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE)) {
-        return DoubleType.getInstance();
+        return DoubleType.INSTANCE;
       } else if (signature.equals(PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE)) {
-        return BooleanType.getInstance();
+        return BooleanType.INSTANCE;
       } else if (signature.equals(PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE)) {
-        return CharType.getInstance();
+        return CharType.INSTANCE;
       } else {
         throw new RuntimeException("Unsupported PrimitiveTypeSignature: " + signature.toString());
       }
-    }
-    else if (signature instanceof VoidTypeSignature) {
-      return VoidType.getInstance();
+    } else if (signature instanceof VoidTypeSignature) {
+      return VoidType.INSTANCE;
     } else if (signature instanceof NullTypeSignature) {
-      return NullType.getInstance();
+      return NullType.INSTANCE;
     } else if (signature instanceof JavaClassSignature) {
       return getRefType(signature);
     } else if (signature instanceof ArrayTypeSignature) {
       return getArrayType((ArrayTypeSignature) signature);
     } else {
-      return UnknownType.getInstance();
+      return UnknownType.INSTANCE;
     }
   }
 

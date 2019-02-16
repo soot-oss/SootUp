@@ -58,8 +58,7 @@ public class MethodSignature extends AbstractClassMemberSignature {
     }
     MethodSignature that = (MethodSignature) o;
     return Objects.equal(name, that.name) && Objects.equal(declClassSignature, that.declClassSignature)
-        && Objects.equal(parameterSignatures, that.parameterSignatures)
-        && Objects.equal(typeSignature, that.typeSignature);
+        && Objects.equal(parameterSignatures, that.parameterSignatures) && Objects.equal(typeSignature, that.typeSignature);
   }
 
   @Override
@@ -74,13 +73,6 @@ public class MethodSignature extends AbstractClassMemberSignature {
    */
   @Override
   public String getSubSignature() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(typeSignature.toString());
-    sb.append(' ');
-    sb.append(name);
-    sb.append('(');
-    sb.append(StringUtils.join(parameterSignatures, ", "));
-    sb.append(')');
-    return sb.toString();
+    return typeSignature.toString() + ' ' + name + '(' + StringUtils.join(parameterSignatures, ", ") + ')';
   }
 }

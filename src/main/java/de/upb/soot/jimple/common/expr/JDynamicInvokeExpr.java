@@ -99,12 +99,12 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> clonedBsmArgs = new ArrayList<Value>(getBootstrapArgCount());
+    List<Value> clonedBsmArgs = new ArrayList<>(getBootstrapArgCount());
     for (int i = 0; i < getBootstrapArgCount(); i++) {
       clonedBsmArgs.add(i, getBootstrapArg(i));
     }
 
-    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+    List<Value> clonedArgs = new ArrayList<>(getArgCount());
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
@@ -142,10 +142,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       if (!method.equals(ie.method)) {
         return false;
       }
-      if (!bsm.equals(ie.bsm)) {
-        return false;
-      }
-      return true;
+      return bsm.equals(ie.bsm);
     }
     return false;
   }
@@ -171,31 +168,31 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append(Jimple.DYNAMICINVOKE);
-    buffer.append(" \"");
-    buffer.append(method); // quoted method name (can be any UTF8
+    StringBuilder builder = new StringBuilder();
+    builder.append(Jimple.DYNAMICINVOKE);
+    builder.append(" \"");
+    builder.append(method); // quoted method name (can be any UTF8
     // string)
-    buffer.append("\" <");
-    buffer.append(method.getSubSignature());
-    buffer.append(">(");
+    builder.append("\" <");
+    builder.append(method.getSubSignature());
+    builder.append(">(");
 
-    argBoxesToString(buffer);
+    argBoxesToString(builder);
 
-    buffer.append(") ");
-    buffer.append(bsm);
-    buffer.append("(");
+    builder.append(") ");
+    builder.append(bsm);
+    builder.append("(");
     final int len = bsmArgBoxes.length;
     if (0 < len) {
-      buffer.append(bsmArgBoxes[0].getValue().toString());
+      builder.append(bsmArgBoxes[0].getValue().toString());
       for (int i = 1; i < len; i++) {
-        buffer.append(", ");
-        buffer.append(bsmArgBoxes[i].getValue().toString());
+        builder.append(", ");
+        builder.append(bsmArgBoxes[i].getValue().toString());
       }
     }
-    buffer.append(")");
+    builder.append(")");
 
-    return buffer.toString();
+    return builder.toString();
   }
 
   @Override
@@ -207,9 +204,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
     up.literal(") ");
     Optional<SootMethod> op = getBootstrapMethod();
-    if (op.isPresent()) {
-      up.method(op.get());
-    }
+    op.ifPresent(up::method);
     up.literal("(");
     final int len = bsmArgBoxes.length;
     if (0 < len) {
@@ -231,7 +226,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
    * Returns a list containing elements of type ValueBox.
    */
   public List<Value> getBootstrapArgs() {
-    List<Value> l = new ArrayList<Value>();
+    List<Value> l = new ArrayList<>();
     for (ValueBox element : bsmArgBoxes) {
       l.add(element.getValue());
     }
@@ -244,7 +239,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 

@@ -21,8 +21,6 @@ public class JavaOnDemandView extends JavaView {
 
   /**
    * Instantiates a new view.
-   *
-   * @param project
    */
   public JavaOnDemandView(Project project, INamespace namespace) {
     super(project);
@@ -41,14 +39,12 @@ public class JavaOnDemandView extends JavaView {
       Optional<AbstractClassSource> source = namespace.getClassSource((JavaClassSignature) signature);
       if (source.isPresent()) {
         // resolve it ...
-        Optional<AbstractClass> resolvedClass = null;
+        Optional<AbstractClass> resolvedClass;
         // using akka
         resolvedClass = akkaClassResolver.reifyClass(source.get(), this);
 
         // add it to the existing
-        if (resolvedClass.isPresent()) {
-          this.classes.put(signature, resolvedClass.get());
-        }
+        resolvedClass.ifPresent(abstractClass -> this.classes.put(signature, abstractClass));
         return resolvedClass;
       }
 

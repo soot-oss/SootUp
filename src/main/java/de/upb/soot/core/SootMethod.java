@@ -21,18 +21,19 @@ package de.upb.soot.core;
  * #L%
  */
 
+import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.classprovider.IMethodSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 
-import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -76,8 +77,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    */
   public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSource source, List<TypeSignature> parameterTypes,
       TypeSignature returnType, EnumSet<Modifier> modifiers, DebuggingInformation debugInfo) {
-    this(view, declaringClass, source, parameterTypes, returnType, modifiers, Collections.<JavaClassSignature>emptyList(),
-        debugInfo);
+    this(view, declaringClass, source, parameterTypes, returnType, modifiers, Collections.emptyList(), debugInfo);
   }
 
   /**
@@ -99,13 +99,9 @@ public class SootMethod extends SootClassMember implements IMethod {
 
   /**
    * Construct a SootMethod object with the attributes of given method and activeBody.
-   *
-   * @param method
-   * @param activeBody
    */
   public SootMethod(SootMethod method, Body activeBody) {
-    super(method.getView(), method.getDeclaringClassSignature(), method.signature, method.typeSignature,
-        method.modifiers);
+    super(method.getView(), method.getDeclaringClassSignature(), method.signature, method.typeSignature, method.modifiers);
     this.methodSource = method.methodSource;
     this.parameterTypes = Collections.unmodifiableList(method.parameterTypes);
     this.exceptions = Collections.unmodifiableList(method.exceptions);
@@ -142,7 +138,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    * Returns a read-only list of the parameter types of this method.
    */
   public Collection<Type> getParameterTypes() {
-    List<Type> ret = new ArrayList<Type>();
+    List<Type> ret = new ArrayList<>();
     parameterTypes.forEach(t -> ret.add(this.getView().getType(t)));
     return ret;
   }
@@ -161,7 +157,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
   /** Returns true if this method throws exception <code>e</code>. */
   public boolean throwsException(SootClass e) {
-    return exceptions != null && exceptions.contains(e);
+    return exceptions != null && exceptions.contains(e.getSignature());
   }
 
   /**
@@ -169,7 +165,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    */
 
   public Collection<SootClass> getExceptions() {
-    Collection<SootClass> ret = Collections.emptySet();
+    Collection<SootClass> ret = new HashSet<>();
     exceptions.stream().filter(e -> this.getView().getClass(e).isPresent())
         .forEach(e -> ret.add((SootClass) this.getView().getClass(e).get()));
     return ret;
@@ -202,9 +198,7 @@ public class SootMethod extends SootClassMember implements IMethod {
    */
   public boolean isMain() {
     if (isPublic() && isStatic()) {
-      if (this.getSubSignature().equals("void main(java.lang.String[])")) {
-        return true;
-      }
+      return this.getSubSignature().equals("void main(java.lang.String[])");
     }
     return false;
   }
@@ -244,61 +238,60 @@ public class SootMethod extends SootClassMember implements IMethod {
    * the code for representation.)
    */
   public String getDeclaration() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder builder = new StringBuilder();
 
     // modifiers
     StringTokenizer st = new StringTokenizer(Modifier.toString(this.getModifiers()));
     if (st.hasMoreTokens()) {
-      buffer.append(st.nextToken());
+      builder.append(st.nextToken());
     }
 
     while (st.hasMoreTokens()) {
-      buffer.append(" " + st.nextToken());
+      builder.append(" ").append(st.nextToken());
     }
 
-    if (buffer.length() != 0) {
-      buffer.append(" ");
+    if (builder.length() != 0) {
+      builder.append(" ");
     }
 
     // return type + name
 
-    buffer.append(this.getReturnType().toQuotedString() + " ");
-    buffer.append(this.getView().quotedNameOf(this.getSignature().name));
+    builder.append(this.getReturnType().toQuotedString()).append(" ");
+    builder.append(this.getView().quotedNameOf(this.getSignature().name));
 
-    buffer.append("(");
+    builder.append("(");
 
     // parameters
     Iterator<Type> typeIt = this.getParameterTypes().iterator();
     // int count = 0;
     while (typeIt.hasNext()) {
       Type t = typeIt.next();
-      buffer.append(t.toQuotedString());
+      builder.append(t.toQuotedString());
       if (typeIt.hasNext()) {
-        buffer.append(", ");
+        builder.append(", ");
       }
     }
-    buffer.append(")");
+    builder.append(")");
 
     // Print exceptions
     if (exceptions != null) {
       Iterator<SootClass> exceptionIt = this.getExceptions().iterator();
 
       if (exceptionIt.hasNext()) {
-        buffer.append(" throws " + this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
+        builder.append(" throws ").append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
 
         while (exceptionIt.hasNext()) {
-          buffer.append(", " + this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
+          builder.append(", ").append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
         }
       }
     }
 
-    return buffer.toString().intern();
+    return builder.toString().intern();
   }
 
   public int getJavaSourceStartLineNumber() {
     return debugInfo.getCodeBodyPosition().getFirstLine();
   }
-
 
   public DebuggingInformation getDebugInfo() {
     return this.debugInfo;

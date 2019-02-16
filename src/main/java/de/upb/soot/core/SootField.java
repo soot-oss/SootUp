@@ -62,11 +62,7 @@ public class SootField extends SootClassMember implements IField {
     if (modifiers.isEmpty()) {
       return signature.getSubSignature();
     } else {
-      StringBuilder sb = new StringBuilder();
-      sb.append(Modifier.toString(modifiers));
-      sb.append(' ');
-      sb.append(this.signature.getSubSignature());
-      return sb.toString();
+      return Modifier.toString(modifiers) + ' ' + this.signature.getSubSignature();
     }
   }
 

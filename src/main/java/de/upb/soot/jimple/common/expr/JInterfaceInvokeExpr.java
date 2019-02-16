@@ -72,7 +72,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> argList = new ArrayList<Value>(getArgCount());
+    List<Value> argList = new ArrayList<>(getArgCount());
     for (int i = 0; i < getArgCount(); i++) {
       argList.add(i, Jimple.cloneIfNecessary(getArg(i)));
     }
@@ -81,13 +81,14 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder builder = new StringBuilder();
 
-    buffer.append(Jimple.INTERFACEINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
-    argBoxesToString(buffer);
-    buffer.append(")");
+    builder.append(Jimple.INTERFACEINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(method)
+        .append("(");
+    argBoxesToString(builder);
+    builder.append(")");
 
-    return buffer.toString();
+    return builder.toString();
   }
 
   /**
@@ -110,7 +111,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 

@@ -34,7 +34,8 @@ import java.util.Map;
  */
 public class ModuleSignatureFactory extends DefaultSignatureFactory {
 
-  public static final JavaClassSignature MODULE_INFO_CLASS = new JavaClassSignature("module-info", PackageSignature.DEFAULT_PACKAGE);
+  public static final JavaClassSignature MODULE_INFO_CLASS
+      = new JavaClassSignature("module-info", PackageSignature.DEFAULT_PACKAGE);
 
   private static final Map<String, ModuleSignature> modules = new HashMap<>();
 

@@ -58,7 +58,7 @@ public class PathUtils {
     if (Files.isDirectory(path)) {
       return false;
     }
-    final String extensionList = extensions.stream().map(ft -> ft.getExtension()).collect(Collectors.joining(","));
+    final String extensionList = extensions.stream().map(FileType::getExtension).collect(Collectors.joining(","));
     return path.getFileSystem().getPathMatcher("glob:*.{" + extensionList + "}").matches(path.getFileName());
   }
 

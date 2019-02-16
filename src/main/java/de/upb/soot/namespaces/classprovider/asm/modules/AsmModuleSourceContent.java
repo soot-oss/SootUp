@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces.classprovider.asm.modules;
 
-import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.asmIDToSignature;
+import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.asmIdToSignature;
 import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.getModifiers;
 import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.resolveAsmNameToClassSignature;
 
@@ -31,13 +31,13 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
     this.classSource = classSource;
 
     // FIXME: maybe delete class reading
-    AsmUtil.initASMClassSource(classSource, this);
+    AsmUtil.initAsmClassSource(classSource, this);
   }
 
   @Override
   public AbstractClass resolve(ResolvingLevel level, IView view) {
     JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
-    SootModuleInfo.SootModuleInfoBuilder builder = null;
+    SootModuleInfo.SootModuleInfoBuilder builder;
     if (module == null) {
       throw new IllegalArgumentException("This is not a module-info file");
     }
@@ -61,6 +61,9 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
       case BODIES:
         builder = (SootModuleInfo.SootModuleInfoBuilder) resolveBody(view, cs);
         break;
+
+      default:
+        throw new IllegalArgumentException("Unsupported level " + level);
     }
 
     return builder.build();
@@ -75,7 +78,7 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
 
   private SootModuleInfo.Build resolveHierarchy(IView view, JavaClassSignature cs) {
     SootModuleInfo sootClass = (SootModuleInfo) view.getClass(cs).get();
-    SootModuleInfo.HierachyStep hierachyStep = null;
+    SootModuleInfo.HierachyStep hierachyStep;
     ArrayList<JavaClassSignature> providers = new ArrayList<>();
     ArrayList<SootModuleInfo.ModuleReference> requieres = new ArrayList<>();
     ArrayList<SootModuleInfo.PackageReference> exports = new ArrayList<>();
@@ -88,10 +91,10 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
       hierachyStep = SootModuleInfo.fromExisting(sootClass);
     }
 
-    {// add exports
+    { // add exports
 
       for (ModuleExportNode exportNode : module.exports) {
-        Iterable<Optional<JavaClassSignature>> optionals = asmIDToSignature(exportNode.modules, view);
+        Iterable<Optional<JavaClassSignature>> optionals = asmIdToSignature(exportNode.modules, view);
         ArrayList<JavaClassSignature> modules = new ArrayList<>();
         for (Optional<JavaClassSignature> sootClassOptional : optionals) {
           if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
@@ -109,7 +112,7 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
     {
       /// add opens
       for (ModuleOpenNode moduleOpenNode : module.opens) {
-        Iterable<Optional<JavaClassSignature>> optionals = asmIDToSignature(moduleOpenNode.modules, view);
+        Iterable<Optional<JavaClassSignature>> optionals = asmIdToSignature(moduleOpenNode.modules, view);
         ArrayList<JavaClassSignature> modules = new ArrayList<>();
         for (Optional<JavaClassSignature> sootClassOptional : optionals) {
           if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
@@ -143,16 +146,12 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
       // add provides
       for (ModuleProvideNode moduleProvideNode : module.provides) {
         Optional<JavaClassSignature> serviceOptional = resolveAsmNameToClassSignature(moduleProvideNode.service, view);
-        Iterable<Optional<JavaClassSignature>> providersOptionals = asmIDToSignature(moduleProvideNode.providers, view);
+        Iterable<Optional<JavaClassSignature>> providersOptionals = asmIdToSignature(moduleProvideNode.providers, view);
         for (Optional<JavaClassSignature> sootClassOptional : providersOptionals) {
-          if (sootClassOptional.isPresent()) {
-            providers.add(sootClassOptional.get());
-          }
+          sootClassOptional.ifPresent(providers::add);
         }
 
-        if (serviceOptional.isPresent()) {
-          providers.add(serviceOptional.get());
-        }
+        serviceOptional.ifPresent(providers::add);
       }
     }
 
@@ -160,7 +159,7 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
   }
 
   private SootModuleInfo.Build resolveSignature(IView view, JavaClassSignature cs) {
-    SootModuleInfo.Build signatureStep = null;
+    SootModuleInfo.Build signatureStep;
     SootModuleInfo sootClass = (SootModuleInfo) view.getClass(cs).get();
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.HIERARCHY)) {
       signatureStep = resolveHierarchy(view, cs);
@@ -173,7 +172,7 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
 
   private SootModuleInfo.Build resolveBody(IView view, JavaClassSignature cs) {
     SootModuleInfo sootClass = (SootModuleInfo) view.getClass(cs).get();
-    SootModuleInfo.Build bodyStep = null;
+    SootModuleInfo.Build bodyStep;
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.SIGNATURES)) {
       bodyStep = resolveSignature(view, cs);
     } else {

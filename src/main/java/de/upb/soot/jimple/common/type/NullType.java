@@ -35,18 +35,9 @@ import de.upb.soot.signatures.NullTypeSignature;
 @SuppressWarnings("serial")
 public class NullType extends RefLikeType {
 
-  private static NullType instance;
+  public static final NullType INSTANCE = new NullType();
 
-  /**
-   * Get the NullType instance.
-   * 
-   * @return the NullType instance.
-   */
-  public static NullType getInstance() {
-    if (instance == null) {
-      instance = new NullType();
-    }
-    return instance;
+  private NullType() {
   }
 
   @Override

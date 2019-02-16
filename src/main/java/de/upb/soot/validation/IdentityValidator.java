@@ -31,12 +31,7 @@ import java.util.List;
  *
  * @author Marc Miltenberger
  */
-public enum IdentityValidator implements BodyValidator {
-  INSTANCE;
-
-  public static IdentityValidator getInstance() {
-    return INSTANCE;
-  }
+public class IdentityValidator implements BodyValidator {
 
   /**
    * Checks whether each ParameterRef and ThisRef is used exactly once.

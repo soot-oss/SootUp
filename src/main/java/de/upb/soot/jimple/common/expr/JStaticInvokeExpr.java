@@ -59,7 +59,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+    List<Value> clonedArgs = new ArrayList<>(getArgCount());
 
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
@@ -100,13 +100,13 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder builder = new StringBuilder();
 
-    buffer.append(Jimple.STATICINVOKE + " " + method + "(");
-    argBoxesToString(buffer);
-    buffer.append(")");
+    builder.append(Jimple.STATICINVOKE + " ").append(method).append("(");
+    argBoxesToString(builder);
+    builder.append(")");
 
-    return buffer.toString();
+    return builder.toString();
   }
 
   /**
@@ -130,7 +130,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 

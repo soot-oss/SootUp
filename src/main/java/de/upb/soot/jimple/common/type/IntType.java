@@ -35,18 +35,9 @@ import de.upb.soot.signatures.PrimitiveTypeSignature;
 @SuppressWarnings("serial")
 public class IntType extends PrimType {
 
-  private static IntType instance;
+  public static final IntType INSTANCE = new IntType();
 
-  /**
-   * Get the IntType instance.
-   * 
-   * @return the IntType instance.
-   */
-  public static IntType getInstance() {
-    if (instance == null) {
-      instance = new IntType();
-    }
-    return instance;
+  private IntType() {
   }
 
   @Override

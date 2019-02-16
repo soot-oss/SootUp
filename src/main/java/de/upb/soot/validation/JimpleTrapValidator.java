@@ -33,12 +33,7 @@ import java.util.List;
  * @see JimpleTrapValidator#validate(Body, List)
  * @author Marc Miltenberger
  */
-public enum JimpleTrapValidator implements BodyValidator {
-  INSTANCE;
-
-  public static JimpleTrapValidator getInstance() {
-    return INSTANCE;
-  }
+public class JimpleTrapValidator implements BodyValidator {
 
   /**
    * Checks whether all Caught-Exception-References are associated to traps.
