@@ -28,7 +28,7 @@ public class ViewBuilder {
 
   public @Nonnull IView buildComplete() {
     IView result = new JavaView(this.project);
-    
+
     // create a starting view
     // iterate over everything in the namespace
     // convert source representation to IR (Jimple) representation

@@ -33,7 +33,6 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 
-
 /**
  * Interface for different methods of printing out a IStmt.
  */
@@ -82,5 +81,5 @@ public interface IStmtPrinter {
 
   void identityRef(IdentityRef r);
 
-  StringBuffer output();
+  StringBuilder output();
 }

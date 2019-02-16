@@ -1,7 +1,6 @@
 package de.upb.soot.core;
 
-import static org.junit.Assert.assertEquals;
-
+import categories.Java8Test;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.java.WalaIRMethodSourceContent;
 import de.upb.soot.jimple.Jimple;
@@ -12,17 +11,16 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import categories.Java8Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * 
@@ -53,11 +51,10 @@ public class SootMethodTest {
         Collections.emptyList(), view.getSignatureFactory().getTypeSignature("void"),
         EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), null);
     dummyMainMethod = new SootMethod(dummyMainMethod, body);
-    assertEquals(true, dummyMainMethod.hasActiveBody());
-
+    assertTrue(dummyMainMethod.hasActiveBody());
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
         new ClassSource(new JavaSourcePathNamespace(""), null, view.getSignatureFactory().getClassSignature("dummyMain")),
-        ClassType.Application, Optional.empty(), Collections.emptySet(), Optional.empty(), Collections.emptySet(),
+        ClassType.Application, null, Collections.emptySet(), null, Collections.emptySet(),
         Collections.singleton(dummyMainMethod), null, EnumSet.of(Modifier.PUBLIC));
 
     assertEquals(mainClass.getMethods().size(), 1);

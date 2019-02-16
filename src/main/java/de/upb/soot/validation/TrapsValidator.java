@@ -26,15 +26,10 @@ import de.upb.soot.core.Body;
 
 import java.util.List;
 
-public enum TrapsValidator implements BodyValidator {
-  INSTANCE;
+public class TrapsValidator implements BodyValidator {
 
-  public static TrapsValidator getInstance() {
-    return INSTANCE;
-  }
-
-  @Override
   /** Verifies that the begin, end and handler units of each trap are in this body. */
+  @Override
   public void validate(Body body, List<ValidationException> exception) {
 
     // TODO: check code from old soot below

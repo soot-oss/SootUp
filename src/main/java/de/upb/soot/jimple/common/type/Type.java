@@ -23,11 +23,11 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /** Converts the int-like types (short, byte, boolean and char) to IntType. */
   public static Type toMachineType(Type t) {
-    if (t.equals(ShortType.getInstance())
-        || t.equals(ByteType.getInstance())
-        || t.equals(BooleanType.getInstance())
-        || t.equals(CharType.getInstance())) {
-      return IntType.getInstance();
+    if (t.equals(ShortType.INSTANCE)
+        || t.equals(ByteType.INSTANCE)
+        || t.equals(BooleanType.INSTANCE)
+        || t.equals(CharType.INSTANCE)) {
+      return IntType.INSTANCE;
     } else {
       return t;
     }
@@ -53,8 +53,6 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /**
    * Returns <code>true</code> if this type is allowed to appear in final (clean) Jimple code.
-   *
-   * @return
    */
   public boolean isAllowedInFinalCode() {
     return false;

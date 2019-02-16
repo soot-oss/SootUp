@@ -33,6 +33,7 @@ import de.upb.soot.signatures.FieldSignature;
 public interface JFieldRef extends ConcreteRef {
 
   Optional<SootField> getField();
+
   FieldSignature getFieldSignature();
 
 }

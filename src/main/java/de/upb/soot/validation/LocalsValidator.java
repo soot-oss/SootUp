@@ -29,15 +29,10 @@ import de.upb.soot.jimple.basic.ValueBox;
 
 import java.util.List;
 
-public enum LocalsValidator implements BodyValidator {
-  INSTANCE;
+public class LocalsValidator implements BodyValidator {
 
-  public static LocalsValidator getInstance() {
-    return INSTANCE;
-  }
-
-  @Override
   /** Verifies that each Local of getUseAndDefBoxes() is in this body's locals Chain. */
+  @Override
   public void validate(Body body, List<ValidationException> exception) {
     for (ValueBox vb : body.getUseBoxes()) {
       validateLocal(body, vb, exception);

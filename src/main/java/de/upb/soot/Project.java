@@ -25,34 +25,30 @@ public class Project {
   public Project(@Nonnull INamespace namespace) {
     this(namespace, new DefaultSignatureFactory());
   }
+
   /**
    * Create a project from an arbitrary list of namespaces
-   * 
-   * @param namespaces The namespaces.
    */
   public Project(@Nonnull INamespace namespaces, @Nonnull SignatureFactory signatureFactory) {
     this.namespace = namespaces;
     this.signatureFactory = signatureFactory;
   }
-  
+
   private @Nonnull INamespace namespace;
-  
+
   /**
    * Gets the namespace.
-   * 
-   * @return The value to get.
    */
-  public @Nonnull INamespace getNamespace()
-  {
-  	return this.namespace;
+  public @Nonnull INamespace getNamespace() {
+    return this.namespace;
   }
-  
+
   private final @Nonnull SignatureFactory signatureFactory;
-  
-  public @Nonnull SignatureFactory getSignatureFactory() { 
+
+  public @Nonnull SignatureFactory getSignatureFactory() {
     return this.signatureFactory;
   }
-  
+
   /**
    * Create a complete view from everything in all provided namespaces. This methodRef starts the reification process.
    *
@@ -69,8 +65,8 @@ public class Project {
   }
 
   /**
-   * Returns a partial view on the code based on the provided scope and all namespaces in the project. This methodRef starts the
-   * reification process.
+   * Returns a partial view on the code based on the provided scope and all namespaces in the project. This methodRef starts
+   * the reification process.
    *
    * @param s
    *          A scope of interest for the view

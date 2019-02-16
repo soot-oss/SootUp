@@ -13,11 +13,7 @@ public class FieldSignature extends AbstractClassMemberSignature {
 
   @Override
   public String getSubSignature() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(typeSignature.toString());
-    sb.append(' ');
-    sb.append(name);
-    return sb.toString();
+    return typeSignature.toString() + ' ' + name;
   }
 
 }

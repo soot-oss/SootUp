@@ -15,15 +15,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Composes a namespace out of other namespaces hence removing the necessity to adapt every API to allow for multiple namespaces
+ * Composes a namespace out of other namespaces hence removing the necessity to adapt every API to allow for multiple
+ * namespaces
  *
  * @author Linghui Luo
  * @author Ben Hermann
  *
  */
 public class CompositeNamespace implements INamespace {
-    private @Nonnull List<INamespace> namespaces;
-  
+  private @Nonnull List<INamespace> namespaces;
+
   /**
    * Creates a new instance of the {@link CompositeNamespace} class.
    * @param namespaces The composited namespaces.
@@ -31,47 +32,48 @@ public class CompositeNamespace implements INamespace {
    */
     public CompositeNamespace(@Nonnull Collection<? extends INamespace> namespaces) {
       List<INamespace> unmodifiableNamespaces = Collections.unmodifiableList(new ArrayList<>(namespaces));
-  
+
       if (unmodifiableNamespaces.isEmpty()) {
         throw new IllegalArgumentException("The namespaces collection must not be empty.");
       }
-  
-      this.namespaces = unmodifiableNamespaces;
-    }
 
-    /**
-     * Provides the first class source instance found in the namespaces represented.
-     *
-     * @param signature The class to be searched.
-     * @return The {@link ClassSource} instance found or created... Or an empty Optional.
-     */
-    @Override
-    public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature signature) {
+      this.namespaces = unmodifiableNamespaces;
+  }
+
+  /**
+   * Provides the first class source instance found in the namespaces represented.
+   *
+   * @param signature
+   *          The class to be searched.
+   * @return The {@link ClassSource} instance found or created... Or an empty Optional.
+   */
+  @Override
+  public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature signature) {
       List<ClassSource> result =
         namespaces.stream()
           .map(n -> n.getClassSource(signature))
           .filter(Optional::isPresent)
           .map(Optional::get)
           .collect(Collectors.toList());
-        
+
       if (result.size() > 1) {
         // FIXME: [JMP] Is an empty result better than the first item in the list?
         // TODO: Warn here b/c of multiple results
         return Optional.empty();
       }
-  
-      return result.stream().findFirst();
-    }
 
-    /**
-     * Provides the class provider of the first namespace in the composition.
-     *
-     * @return An instance of {@link IClassProvider} to be used.
-     */
-    @Override
-    public @Nonnull IClassProvider getClassProvider() {
-        return namespaces.stream().findFirst().map(INamespace::getClassProvider).orElseThrow(() -> new RuntimeException("FATAL ERROR: No class provider found."));
-    }
+      return result.stream().findFirst();
+  }
+
+  /**
+   * Provides the class provider of the first namespace in the composition.
+   *
+   * @return An instance of {@link IClassProvider} to be used.
+   */
+  @Override
+  public @Nonnull IClassProvider getClassProvider() {
+    return namespaces.stream().findFirst().map(INamespace::getClassProvider).orElseThrow(() -> new RuntimeException("FATAL ERROR: No class provider found."));
+  }
 
   @Override
   public @Nonnull Collection<ClassSource> getClassSources(@Nonnull SignatureFactory factory) {

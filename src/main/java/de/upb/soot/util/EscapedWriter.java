@@ -43,7 +43,7 @@ public class EscapedWriter extends FilterWriter {
     super(fos);
   }
 
-  private final StringBuffer mini = new StringBuffer();
+  private final StringBuilder mini = new StringBuilder();
 
   /** Print a single character (unsupported). */
   public void print(int ch) throws IOException {
@@ -60,7 +60,7 @@ public class EscapedWriter extends FilterWriter {
 
   /** Write a single character. */
   public void write(int ch) throws IOException {
-    if (ch >= 32 && ch <= 126 || ch == cr || ch == lf || ch == ' ') {
+    if (ch >= 32 && ch <= 126 || ch == cr || ch == lf) {
       super.write(ch);
       return;
     }

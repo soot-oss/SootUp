@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractInvokeExpr extends AbstractViewResident implements Expr {
-  /** */
   private static final long serialVersionUID = 1796920588315752175L;
 
   protected MethodRef method;
@@ -53,14 +52,11 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
   }
 
   public Optional<SootMethod> getMethod() {
-    /*  JavaClassSignature signature = methodRef.declClassSignature;
-    Optional<AbstractClass> op = this.getView().getClass(signature);
-    if (op.isPresent()) {
-      AbstractClass klass = op.get();
-      Optional<? extends IMethod> m = klass.getMethod(methodRef);
-      return m.map(c -> (SootMethod) c);
-    }
-    return Optional.empty();*/
+    /*
+     * JavaClassSignature signature = methodRef.declClassSignature; Optional<AbstractClass> op =
+     * this.getView().getClass(signature); if (op.isPresent()) { AbstractClass klass = op.get(); Optional<? extends IMethod>
+     * m = klass.getMethod(methodRef); return m.map(c -> (SootMethod) c); } return Optional.empty();
+     */
     return Optional.ofNullable(method.resolve());
   }
 
@@ -108,11 +104,12 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
     if (argBoxes == null) {
       return Collections.emptyList();
     }
-    List<ValueBox> list = new ArrayList<ValueBox>();
+    List<ValueBox> list = new ArrayList<>();
     Collections.addAll(list, argBoxes);
     for (ValueBox element : argBoxes) {
       list.addAll(element.getValue().getUseBoxes());
     }
     return list;
   }
+
 }

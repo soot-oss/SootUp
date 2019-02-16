@@ -93,7 +93,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
         // FIXME: [JMP] Throwing exception and catching it immediately? This causes `ns` to remain `null`.
       }
     }
-  
+
     // FIXME: [JMP] `ns` may be `null`
     return ns.getClassSource(signature);
   }
@@ -134,20 +134,22 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     }
 
     @Override
-    public @Nonnull MethodSignature getMethodSignature(@Nonnull String methodName, @Nonnull String fullyQualifiedNameDeclClass, @Nonnull String fqReturnType,
-        @Nonnull List<String> parameters) {
+    public @Nonnull MethodSignature getMethodSignature(@Nonnull String methodName,
+        @Nonnull String fullyQualifiedNameDeclClass, @Nonnull String fqReturnType, @Nonnull List<String> parameters) {
       return factory.getMethodSignature(methodName, fullyQualifiedNameDeclClass, fqReturnType, parameters);
     }
 
     @Override
-    public MethodSignature getMethodSignature(@Nonnull String methodName, @Nonnull JavaClassSignature declaringClassSignature,
-        @Nonnull String fqReturnType, @Nonnull List<String> parameters) {
+    public MethodSignature getMethodSignature(@Nonnull String methodName,
+        @Nonnull JavaClassSignature declaringClassSignature, @Nonnull String fqReturnType,
+        @Nonnull List<String> parameters) {
       return factory.getMethodSignature(methodName, declaringClassSignature, fqReturnType, parameters);
     }
 
     @Override
-    public @Nonnull MethodSignature getMethodSignature(@Nonnull String methodName, @Nonnull JavaClassSignature declaringClassSignature,
-        @Nonnull TypeSignature fqReturnType, @Nonnull List<TypeSignature> parameters) {
+    public @Nonnull MethodSignature getMethodSignature(@Nonnull String methodName,
+        @Nonnull JavaClassSignature declaringClassSignature, @Nonnull TypeSignature fqReturnType,
+        @Nonnull List<TypeSignature> parameters) {
       return factory.getMethodSignature(methodName, declaringClassSignature, fqReturnType, parameters);
     }
 
@@ -160,23 +162,23 @@ public class JavaModulePathNamespace extends AbstractNamespace {
         int index = fullyQualifiedName.lastIndexOf(".");
         String className = fullyQualifiedName;
         if (index > 0) {
-          className = fullyQualifiedName.substring(index, fullyQualifiedName.length());
+          className = fullyQualifiedName.substring(index);
           packageName = fullyQualifiedName.substring(0, index);
         }
-        JavaClassSignature signature = moduleSignatureFactory.getClassSignature(className, packageName, this.moduleName);
-        return signature;
+        return moduleSignatureFactory.getClassSignature(className, packageName, this.moduleName);
       }
       return factory.fromPath(file);
     }
 
     @Override
-    public @Nonnull FieldSignature getFieldSignature(@Nonnull String fieldName, @Nonnull JavaClassSignature declaringClassSignature, @Nonnull String fieldType) {
+    public @Nonnull FieldSignature getFieldSignature(@Nonnull String fieldName,
+        @Nonnull JavaClassSignature declaringClassSignature, @Nonnull String fieldType) {
       return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
     }
 
     @Override
-    public @Nonnull FieldSignature getFieldSignature(@Nonnull String fieldName, @Nonnull JavaClassSignature declaringClassSignature,
-        @Nonnull TypeSignature fieldType) {
+    public @Nonnull FieldSignature getFieldSignature(@Nonnull String fieldName,
+        @Nonnull JavaClassSignature declaringClassSignature, @Nonnull TypeSignature fieldType) {
       return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
     }
   }

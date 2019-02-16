@@ -20,8 +20,6 @@ public class JavaOnDemandView extends JavaView {
 
   /**
    * Instantiates a new view.
-   *
-   * @param project The project.
    */
   public JavaOnDemandView(@Nonnull Project project) {
     super(project);
@@ -34,23 +32,23 @@ public class JavaOnDemandView extends JavaView {
     if(!(signature instanceof JavaClassSignature)) {
       throw new IllegalArgumentException("The signature must be a `JavaClassSignature`.");
     }
-    
+
     Optional<AbstractClass> foundClass =
       this.classes()
       .filter(c -> c.getClassSource().getClassSignature().equals(signature))
       .findFirst();
-    
+
     if (!foundClass.isPresent()) {
       // query the namespace for the class source
       Optional<ClassSource> source = this.project.getNamespace().getClassSource((JavaClassSignature) signature);
-     
+
       if (source.isPresent()) {
         // resolve it ... using akka
         Optional<AbstractClass> resolvedClass  = akkaClassResolver.reifyClass(source.get(), this);
 
         // add it to the existing
         resolvedClass.ifPresent(it -> this.classes.put(signature, it));
-        
+
         return resolvedClass;
       }
 

@@ -201,12 +201,12 @@ public class IntConstant extends ArithmeticConstant {
 
   @Override
   public String toString() {
-    return new Integer(value).toString();
+    return Integer.toString(value);
   }
 
   @Override
   public Type getType() {
-    return IntType.getInstance();
+    return IntType.INSTANCE;
   }
 
   @Override
@@ -215,7 +215,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     // TODO Auto-generated methodRef stub
     return false;
   }

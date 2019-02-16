@@ -176,7 +176,7 @@ public class DoubleConstant extends RealConstant {
 
   @Override
   public Type getType() {
-    return DoubleType.getInstance();
+    return DoubleType.INSTANCE;
   }
 
   @Override
@@ -199,7 +199,7 @@ public class DoubleConstant extends RealConstant {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     // TODO Auto-generated methodRef stub
     return false;
   }

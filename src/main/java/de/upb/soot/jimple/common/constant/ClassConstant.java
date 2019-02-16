@@ -112,7 +112,7 @@ public class ClassConstant extends Constant {
       tmp = tmp.substring(1);
     }
 
-    Type baseType = null;
+    Type baseType;
     if (tmp.startsWith("L")) {
       tmp = tmp.substring(1);
       if (tmp.endsWith(";")) {
@@ -121,21 +121,21 @@ public class ClassConstant extends Constant {
       tmp = tmp.replace("/", ".");
       baseType = RefType.getInstance(tmp);
     } else if (tmp.equals("I")) {
-      baseType = IntType.getInstance();
+      baseType = IntType.INSTANCE;
     } else if (tmp.equals("B")) {
-      baseType = ByteType.getInstance();
+      baseType = ByteType.INSTANCE;
     } else if (tmp.equals("C")) {
-      baseType = CharType.getInstance();
+      baseType = CharType.INSTANCE;
     } else if (tmp.equals("D")) {
-      baseType = DoubleType.getInstance();
+      baseType = DoubleType.INSTANCE;
     } else if (tmp.equals("F")) {
-      baseType = FloatType.getInstance();
+      baseType = FloatType.INSTANCE;
     } else if (tmp.equals("L")) {
-      baseType = LongType.getInstance();
+      baseType = LongType.INSTANCE;
     } else if (tmp.equals("S")) {
-      baseType = ShortType.getInstance();
+      baseType = ShortType.INSTANCE;
     } else if (tmp.equals("Z")) {
-      baseType = BooleanType.getInstance();
+      baseType = BooleanType.INSTANCE;
     } else {
       throw new RuntimeException("Unsupported class constant: " + value);
     }
@@ -175,7 +175,7 @@ public class ClassConstant extends Constant {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     // TODO Auto-generated methodRef stub
     return false;
   }

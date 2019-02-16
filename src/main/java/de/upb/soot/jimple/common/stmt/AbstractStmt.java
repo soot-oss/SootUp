@@ -92,7 +92,7 @@ public abstract class AbstractStmt implements IStmt {
   @Override
   public void addBoxPointingToThis(IStmtBox b) {
     if (boxesPointingToThis == null) {
-      boxesPointingToThis = new ArrayList<IStmtBox>();
+      boxesPointingToThis = new ArrayList<>();
     }
     boxesPointingToThis.add(b);
   }
@@ -122,7 +122,7 @@ public abstract class AbstractStmt implements IStmt {
       if (defBoxes.isEmpty()) {
         return useBoxes;
       } else {
-        List<ValueBox> valueBoxes = new ArrayList<ValueBox>();
+        List<ValueBox> valueBoxes = new ArrayList<>();
         valueBoxes.addAll(defBoxes);
         valueBoxes.addAll(useBoxes);
         return valueBoxes;
@@ -139,12 +139,10 @@ public abstract class AbstractStmt implements IStmt {
   public void redirectJumpsToThisTo(IStmt newLocation) {
     List<IStmtBox> boxesPointing = getBoxesPointingToThis();
 
-    IStmtBox[] boxes = boxesPointing.toArray(new IStmtBox[boxesPointing.size()]);
-    // important to change this to an array to have a static copy
+    // important to have a static copy
+    List<IStmtBox> boxesCopy = new ArrayList<>(boxesPointing);
 
-    for (IStmtBox element : boxes) {
-      IStmtBox box = element;
-
+    for (IStmtBox box : boxesCopy) {
       if (box.getStmt() != this) {
         throw new RuntimeException("Something weird's happening");
       }
@@ -211,7 +209,7 @@ public abstract class AbstractStmt implements IStmt {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 

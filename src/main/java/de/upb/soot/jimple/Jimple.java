@@ -103,7 +103,6 @@ import de.upb.soot.views.IView;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -182,16 +181,16 @@ public class Jimple {
   public static final String TRUE = "true";
   public static final String FALSE = "false";
 
+  private static final List<String> jimpleKeywordList = Collections.unmodifiableList(Arrays.asList(NEWARRAY, NEWMULTIARRAY,
+      NOP, RET, SPECIALINVOKE, STATICINVOKE, TABLESWITCH, VIRTUALINVOKE, NULL_TYPE, UNKNOWN, CMP, CMPG, CMPL, ENTERMONITOR,
+      EXITMONITOR, INTERFACEINVOKE, LENGTHOF, LOOKUPSWITCH, NEG, IF, ABSTRACT, BOOLEAN, BREAK, BYTE, CASE, CATCH, CHAR,
+      CLASS, FINAL, NATIVE, PUBLIC, PROTECTED, PRIVATE, STATIC, SYNCHRONIZED, TRANSIENT, VOLATILE, STRICTFP, ENUM,
+      ANNOTATION, INTERFACE, VOID, SHORT, INT, LONG, FLOAT, DOUBLE, EXTENDS, IMPLEMENTS, BREAKPOINT, DEFAULT, GOTO,
+      INSTANCEOF, NEW, RETURN, THROW, THROWS, NULL, FROM, TO, WITH, CLS, TRUE, FALSE));
+
   /** Returns a list of collections. */
   public static List<String> jimpleKeywordList() {
-    List<String> l = new LinkedList<String>();
-    Collections.addAll(l, NEWARRAY, NEWMULTIARRAY, NOP, RET, SPECIALINVOKE, STATICINVOKE, TABLESWITCH, VIRTUALINVOKE,
-        NULL_TYPE, UNKNOWN, CMP, CMPG, CMPL, ENTERMONITOR, EXITMONITOR, INTERFACEINVOKE, LENGTHOF, LOOKUPSWITCH, NEG, IF,
-        ABSTRACT, BOOLEAN, BREAK, BYTE, CASE, CATCH, CHAR, CLASS, FINAL, NATIVE, PUBLIC, PROTECTED, PRIVATE, STATIC,
-        SYNCHRONIZED, TRANSIENT, VOLATILE, STRICTFP, ENUM, ANNOTATION, INTERFACE, VOID, SHORT, INT, LONG, FLOAT, DOUBLE,
-        EXTENDS, IMPLEMENTS, BREAKPOINT, DEFAULT, GOTO, INSTANCEOF, NEW, RETURN, THROW, THROWS, NULL, FROM, TO, WITH, CLS,
-        TRUE, FALSE);
-    return l;
+    return jimpleKeywordList;
   }
 
   public static boolean isJavaKeywordType(Type t) {
@@ -342,7 +341,7 @@ public class Jimple {
   }
 
   public static JStaticInvokeExpr newStaticInvokeExpr(IView view, MethodSignature methodSig) {
-    return newStaticInvokeExpr(view, methodSig, Collections.<Value>emptyList());
+    return newStaticInvokeExpr(view, methodSig, Collections.emptyList());
   }
 
   /**
@@ -362,11 +361,11 @@ public class Jimple {
   }
 
   public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodSignature methodSig, Value arg) {
-    return newSpecialInvokeExpr(view, base, methodSig, Collections.<Value>singletonList(arg));
+    return newSpecialInvokeExpr(view, base, methodSig, Collections.singletonList(arg));
   }
 
   public static JSpecialInvokeExpr newSpecialInvokeExpr(IView view, Local base, MethodSignature methodSig) {
-    return newSpecialInvokeExpr(view, base, methodSig, Collections.<Value>emptyList());
+    return newSpecialInvokeExpr(view, base, methodSig, Collections.emptyList());
   }
 
   /**
@@ -388,7 +387,6 @@ public class Jimple {
       List<? extends Value> bootstrapArgs, MethodSignature methodSig, int tag, List<? extends Value> args) {
     MethodRef bootstrapMethodRef = createSymbolicMethodRef(bootstrapMethodSig, false);
     MethodRef methodRef = createSymbolicMethodRef(methodSig, false);
-
     return new JDynamicInvokeExpr(view, bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
 
@@ -413,11 +411,11 @@ public class Jimple {
 
   public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodSignature methodSig, Value arg) {
 
-    return newVirtualInvokeExpr(view, base, methodSig, Collections.<Value>singletonList(arg));
+    return newVirtualInvokeExpr(view, base, methodSig, Collections.singletonList(arg));
   }
 
   public static JVirtualInvokeExpr newVirtualInvokeExpr(IView view, Local base, MethodSignature methodSig) {
-    return newVirtualInvokeExpr(view, base, methodSig, Collections.<Value>emptyList());
+    return newVirtualInvokeExpr(view, base, methodSig, Collections.emptyList());
   }
 
   /**
@@ -439,11 +437,11 @@ public class Jimple {
   }
 
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodSignature methodSig, Value arg) {
-    return newInterfaceInvokeExpr(view, base, methodSig, Collections.<Value>singletonList(arg));
+    return newInterfaceInvokeExpr(view, base, methodSig, Collections.singletonList(arg));
   }
 
   public static JInterfaceInvokeExpr newInterfaceInvokeExpr(IView view, Local base, MethodSignature methodSig) {
-    return newInterfaceInvokeExpr(view, base, methodSig, Collections.<Value>emptyList());
+    return newInterfaceInvokeExpr(view, base, methodSig, Collections.emptyList());
   }
 
   /** Constructs a ThrowStmt(Immediate) grammar chunk. */

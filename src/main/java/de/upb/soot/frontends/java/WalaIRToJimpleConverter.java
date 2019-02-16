@@ -89,8 +89,7 @@ public class WalaIRToJimpleConverter {
 
   /**
    * Convert a wala {@link AstClass} to {@link SootClass}.
-   * 
-   * @param walaClass
+   *
    * @return A SootClass converted from walaClass
    */
   public SootClass convertClass(AstClass walaClass) {
@@ -147,25 +146,20 @@ public class WalaIRToJimpleConverter {
 
     // convert methods
     Set<SootMethod> sootMethods = new HashSet<>();
-    new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Application, Optional.ofNullable(superClass),
-        interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
+    new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Application, superClass, interfaces, outerClass,
+        sootFields, sootMethods, position, modifiers);
 
     for (IMethod walaMethod : walaClass.getDeclaredMethods()) {
       SootMethod sootMethod = convertMethod(classSig, (AstMethod) walaMethod);
       sootMethods.add(sootMethod);
     }
 
-    SootClass ret
-        = new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, Optional.ofNullable(superClass),
-            interfaces, Optional.ofNullable(outerClass), sootFields, sootMethods, position, modifiers);
-    return ret;
+    return new SootClass(view, ResolvingLevel.BODIES, classSource, ClassType.Application, superClass, interfaces, outerClass,
+        sootFields, sootMethods, position, modifiers);
   }
 
   /**
    * Create a {@link JavaClassSource} object for the given walaClass.
-   * 
-   * @param walaClass
-   * @return
    */
   public ClassSource createClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
@@ -190,9 +184,7 @@ public class WalaIRToJimpleConverter {
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
     FieldSignature signature
         = view.getSignatureFactory().getFieldSignature(walaField.getName().toString(), classSig, type.toString());
-    SootField sootField
-        = new SootField(view, classSig, signature, view.getSignatureFactory().getTypeSignature(type.toString()), modifiers);
-    return sootField;
+    return new SootField(view, classSig, signature, view.getSignatureFactory().getTypeSignature(type.toString()), modifiers);
   }
 
   /**
@@ -204,7 +196,7 @@ public class WalaIRToJimpleConverter {
    *          the walMethod to be converted
    */
   public SootMethod convertMethod(JavaClassSignature classSig, AstMethod walaMethod) {
-    // create SootMethond instance
+    // create SootMethod instance
     List<TypeSignature> paraTypes = new ArrayList<>();
     List<String> sigs = new ArrayList<>();
     if (walaMethod.symbolTable() != null) {
@@ -256,23 +248,23 @@ public class WalaIRToJimpleConverter {
   public Type convertType(TypeReference type) {
     if (type.isPrimitiveType()) {
       if (type.equals(TypeReference.Boolean)) {
-        return BooleanType.getInstance();
+        return BooleanType.INSTANCE;
       } else if (type.equals(TypeReference.Byte)) {
-        return ByteType.getInstance();
+        return ByteType.INSTANCE;
       } else if (type.equals(TypeReference.Char)) {
-        return CharType.getInstance();
+        return CharType.INSTANCE;
       } else if (type.equals(TypeReference.Short)) {
-        return ShortType.getInstance();
+        return ShortType.INSTANCE;
       } else if (type.equals(TypeReference.Int)) {
-        return IntType.getInstance();
+        return IntType.INSTANCE;
       } else if (type.equals(TypeReference.Long)) {
-        return LongType.getInstance();
+        return LongType.INSTANCE;
       } else if (type.equals(TypeReference.Float)) {
-        return FloatType.getInstance();
+        return FloatType.INSTANCE;
       } else if (type.equals(TypeReference.Double)) {
-        return DoubleType.getInstance();
+        return DoubleType.INSTANCE;
       } else if (type.equals(TypeReference.Void)) {
-        return VoidType.getInstance();
+        return VoidType.INSTANCE;
       }
     } else if (type.isReferenceType()) {
       if (type.isArrayType()) {
@@ -282,7 +274,7 @@ public class WalaIRToJimpleConverter {
         return ArrayType.getInstance(baseType, dim);
       } else if (type.isClassType()) {
         if (type.equals(TypeReference.Null)) {
-          return NullType.getInstance();
+          return NullType.INSTANCE;
         } else {
           String className = convertClassNameFromWala(type.getName().toString());
           return view.getRefType(this.view.getSignatureFactory().getClassSignature(className));
@@ -294,9 +286,6 @@ public class WalaIRToJimpleConverter {
 
   /**
    * Return all modifiers for the given field.
-   * 
-   * @param field
-   * @return
    */
   public EnumSet<Modifier> convertModifiers(AstField field) {
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
@@ -324,9 +313,6 @@ public class WalaIRToJimpleConverter {
 
   /**
    * Return all modifiers for the given methodRef.
-   * 
-   * @param method
-   * @return
    */
   public EnumSet<Modifier> convertModifiers(AstMethod method) {
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
@@ -502,10 +488,10 @@ public class WalaIRToJimpleConverter {
             String outClass = sb.toString();
             int count = 1;
             if (this.clsWithInnerCls.containsKey(outClass)) {
-              count = this.clsWithInnerCls.get(outClass.toString()) + 1;
+              count = this.clsWithInnerCls.get(outClass) + 1;
             }
             this.clsWithInnerCls.put(outClass, count);
-            sb.append(count + "$");
+            sb.append(count).append("$");
           }
           sb.append(name);
         }
@@ -520,9 +506,6 @@ public class WalaIRToJimpleConverter {
 
   /**
    * Convert className in soot-format to wala-format, e.g.,soot-format: java.lang.String.-> wala-format: Ljava/lang/String
-   * 
-   * @param signature
-   * @return
    */
   public String convertClassNameFromSoot(String signature) {
     StringBuilder sb = new StringBuilder();

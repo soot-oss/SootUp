@@ -30,12 +30,7 @@ import java.util.List;
  * Checks whether the types used for locals, methodRef parameters, and methodRef return values are allowed in final Jimple code.
  * This reports an error if a methodRef uses e.g., null_type.
  */
-public enum TypesValidator implements BodyValidator {
-  INSTANCE;
-
-  public static TypesValidator getInstance() {
-    return INSTANCE;
-  }
+public class TypesValidator implements BodyValidator {
 
   @Override
   public void validate(Body body, List<ValidationException> exceptions) {

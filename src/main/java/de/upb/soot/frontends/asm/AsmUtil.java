@@ -32,34 +32,37 @@ import java.util.stream.StreamSupport;
 
 public final class AsmUtil {
 
-  private AsmUtil() {}
-  
+  private AsmUtil() {
+  }
+
   public static final int SUPPORTED_ASM_OPCODE = Opcodes.ASM7;
-  
+
   /**
    * Initializes a class node.
    * 
-   * @param classSource The source.
-   * @param classNode The node to initialize
+   * @param classSource
+   *          The source.
+   * @param classNode
+   *          The node to initialize
    */
-  public static void initASMClassSource(@Nonnull ClassSource classSource, @Nonnull ClassNode classNode) {
+  public static void initAsmClassSource(@Nonnull ClassSource classSource, @Nonnull ClassNode classNode) {
     URI uri = classSource.getSourcePath().toUri();
 
     try {
       if (classSource.getSourcePath().getFileSystem().isOpen()) {
         Path sourceFile = java.nio.file.Paths.get(uri);
-  
+
         initClassNode(sourceFile, classNode);
       } else {
         // A zip file system needs to be re-opened, otherwise it crashes
         // http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
-        
+
         Map<String, String> env = new HashMap<>();
         env.put("create", "false");
-        
+
         // Info: The `__zipfs` variable is intentionally unused. It is required
-        //       to create the ZIP file system, but the file system instance itself
-        //       has not explicitly to be used – this happens in the background.
+        // to create the ZIP file system, but the file system instance itself
+        // has not explicitly to be used – this happens in the background.
         try (FileSystem __zipfs = FileSystems.newFileSystem(uri, env)) {
           Path sourceFile = Paths.get(uri);
 
@@ -72,13 +75,16 @@ public final class AsmUtil {
       // TODO: Exception handling
     }
   }
-  
+
   /**
    * Initializes the specified class node from a class file.
    * 
-   * @param sourceFile The source file.
-   * @param classNode The class node.
-   * @throws IOException An error occurred.
+   * @param sourceFile
+   *          The source file.
+   * @param classNode
+   *          The class node.
+   * @throws IOException
+   *           An error occurred.
    */
   private static void initClassNode(@Nonnull Path sourceFile, @Nonnull ClassNode classNode) throws IOException {
     try (InputStream sourceFileInputStream = Files.newInputStream(sourceFile)) {
@@ -91,18 +97,19 @@ public final class AsmUtil {
   /**
    * Determines if a type is a dword type.
    *
-   * @param type the type to check.
+   * @param type
+   *          the type to check.
    * @return {@code true} if its a dword type.
    */
   public static boolean isDWord(@Nonnull TypeSignature type) {
-    return type == PrimitiveTypeSignature.LONG_TYPE_SIGNATURE
-        || type == PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
+    return type == PrimitiveTypeSignature.LONG_TYPE_SIGNATURE || type == PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
   }
 
   /**
    * Converts an internal class name to a fully qualified name.
    *
-   * @param internal internal name.
+   * @param internal
+   *          internal name.
    * @return fully qualified name.
    */
   public static String toQualifiedName(@Nonnull String internal) {
@@ -110,8 +117,7 @@ public final class AsmUtil {
   }
 
   public static EnumSet<Modifier> getModifiers(int access) {
-    EnumSet<Modifier> modifierEnumSet = 
-      EnumSet.noneOf(Modifier.class);
+    EnumSet<Modifier> modifierEnumSet = EnumSet.noneOf(Modifier.class);
 
     // add all modifiers for which (access & ABSTRACT) =! 0
     for (Modifier modifier : Modifier.values()) {
@@ -174,21 +180,17 @@ public final class AsmUtil {
     if (!(baseType instanceof JavaClassSignature) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
-    return nrDims > 0
-        ? view.getSignatureFactory().getArrayTypeSignature(baseType, nrDims)
-        : baseType;
+    return nrDims > 0 ? view.getSignatureFactory().getArrayTypeSignature(baseType, nrDims) : baseType;
   }
 
   public static @Nonnull List<TypeSignature> toJimpleSignatureDesc(@Nonnull String desc, @Nonnull IView view) {
-    ArrayList<TypeSignature> types = new ArrayList<>(2);
+    List<TypeSignature> types = new ArrayList<>(2);
     int len = desc.length();
     int idx = 0;
-    all:
-    while (idx != len) {
+    all: while (idx != len) {
       int nrDims = 0;
       TypeSignature baseType = null;
-      this_type:
-      while (idx != len) {
+      this_type: while (idx != len) {
         char c = desc.charAt(idx++);
         switch (c) {
           case '(':
@@ -226,12 +228,12 @@ public final class AsmUtil {
             break this_type;
           case 'L':
             int begin = idx;
-            
-            //noinspection StatementWithEmptyBody
-            while (desc.charAt(++idx) != ';'){
+
+            // noinspection StatementWithEmptyBody
+            while (desc.charAt(++idx) != ';') {
               // Empty while body: Just find the index of the semicolon.
             }
-            
+
             String cls = desc.substring(begin, idx++);
             baseType = view.getSignatureFactory().getTypeSignature(toQualifiedName(cls));
             break this_type;
@@ -250,13 +252,13 @@ public final class AsmUtil {
     return types;
   }
 
-  public static @Nonnull Iterable<JavaClassSignature> asmIDToSignature(@Nullable Iterable<String> modules, @Nonnull IView view) {
+  public static @Nonnull Iterable<JavaClassSignature> asmIdToSignature(@Nullable Iterable<String> modules,
+      @Nonnull IView view) {
     if (modules == null) {
       return Collections.emptyList();
     }
-    
+
     return StreamSupport.stream(modules.spliterator(), false)
-        .map(p -> (view.getSignatureFactory().getClassSignature(toQualifiedName(p))))
-        .collect(Collectors.toList());
+        .map(p -> (view.getSignatureFactory().getClassSignature(toQualifiedName(p)))).collect(Collectors.toList());
   }
 }

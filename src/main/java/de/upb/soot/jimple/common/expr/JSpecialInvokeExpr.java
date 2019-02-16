@@ -57,7 +57,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+    List<Value> clonedArgs = new ArrayList<>(getArgCount());
 
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
@@ -68,22 +68,13 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
+    StringBuilder builder = new StringBuilder();
 
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          buffer.append(", ");
-        }
+    builder.append(Jimple.SPECIALINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(method).append("(");
+    argBoxesToString(builder);
+    builder.append(")");
 
-        buffer.append(argBoxes[i].getValue().toString());
-      }
-    }
-
-    buffer.append(")");
-
-    return buffer.toString();
+    return builder.toString();
   }
 
   /**
@@ -101,18 +92,19 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
     if (argBoxes != null) {
       final int len = argBoxes.length;
-      for (int i = 0; i < len; i++) {
-        if (i != 0) {
+      if (0 < len) {
+        argBoxes[0].toString(up);
+        for (int i = 1; i < len; i++) {
           up.literal(", ");
+          argBoxes[i].toString(up);
         }
-        argBoxes[i].toString(up);
       }
     }
     up.literal(")");
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 

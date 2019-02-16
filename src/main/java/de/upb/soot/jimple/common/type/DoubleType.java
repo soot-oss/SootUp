@@ -36,18 +36,9 @@ import de.upb.soot.signatures.TypeSignature;
 @SuppressWarnings("serial")
 public class DoubleType extends PrimType {
 
-  private static DoubleType instance;
+  public static final DoubleType INSTANCE = new DoubleType();
 
-  /**
-   * Get the DoubleType instance.
-   * 
-   * @return the DoubleType instance.
-   */
-  public static DoubleType getInstance() {
-    if (instance == null) {
-      instance = new DoubleType();
-    }
-    return instance;
+  private DoubleType() {
   }
 
   @Override

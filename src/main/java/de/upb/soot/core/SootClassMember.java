@@ -47,8 +47,7 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
 
   /** Constructor. */
   public SootClassMember(IView view, JavaClassSignature declaringClass, AbstractClassMemberSignature signature,
-      TypeSignature type,
-      EnumSet<Modifier> modifiers) {
+      TypeSignature type, EnumSet<Modifier> modifiers) {
     super(view);
     this.declaringClassSig = declaringClass;
     this.signature = signature;
@@ -65,6 +64,7 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
   public JavaClassSignature getDeclaringClassSignature() {
     return this.declaringClassSig;
   }
+
   /** Returns true when this object is from a phantom class. */
   public boolean isPhantom() {
     return this.getDeclaringClass().isPresent() && this.getDeclaringClass().get().isPhantomClass();

@@ -136,7 +136,7 @@ public class Local implements Value, Numberable, Immediate {
   private int number = 0;
 
   @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     // TODO Auto-generated methodRef stub
     return false;
   }

@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Set;
 
 public class SootModuleInfo extends AbstractClass {
 
@@ -134,7 +135,7 @@ public class SootModuleInfo extends AbstractClass {
   public static class PackageReference {
     private String packageName;
     private EnumSet<Modifier> modifers;
-    private HashSet<JavaClassSignature> targetModules;
+    private Set<JavaClassSignature> targetModules;
 
     public PackageReference(String packageName, EnumSet<Modifier> modifier, Collection<JavaClassSignature> targetModules) {
       this.packageName = packageName;
@@ -184,8 +185,6 @@ public class SootModuleInfo extends AbstractClass {
    *          the moduleSignature
    * @param access
    *          the module access modifier
-   * @param version
-   * @param resolvingLevel
    */
 
   public SootModuleInfo(IView view, ClassSource cs, JavaClassSignature moduleSignature, EnumSet<Modifier> access,

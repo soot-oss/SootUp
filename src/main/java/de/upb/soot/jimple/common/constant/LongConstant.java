@@ -218,12 +218,12 @@ public class LongConstant extends ArithmeticConstant {
 
   @Override
   public String toString() {
-    return new Long(value).toString() + "L";
+    return value + "L";
   }
 
   @Override
   public Type getType() {
-    return LongType.getInstance();
+    return LongType.INSTANCE;
   }
 
   @Override
@@ -232,7 +232,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     // TODO Auto-generated methodRef stub
     return false;
   }

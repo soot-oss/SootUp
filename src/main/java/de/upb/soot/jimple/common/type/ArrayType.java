@@ -115,15 +115,14 @@ public class ArrayType extends RefLikeType {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-
-    buffer.append(baseType.toString());
+    StringBuilder builder = new StringBuilder();
+    builder.append(baseType.toString());
 
     for (int i = 0; i < numDimensions; i++) {
-      buffer.append("[]");
+      builder.append("[]");
     }
 
-    return buffer.toString();
+    return builder.toString();
   }
 
   /**
@@ -132,14 +131,14 @@ public class ArrayType extends RefLikeType {
    */
   @Override
   public String toQuotedString() {
-    StringBuilder buffer = new StringBuilder();
+    StringBuilder builder = new StringBuilder();
 
-    buffer.append(baseType.toQuotedString());
+    builder.append(baseType.toQuotedString());
     for (int i = 0; i < numDimensions; i++) {
-      buffer.append("[]");
+      builder.append("[]");
     }
 
-    return buffer.toString();
+    return builder.toString();
   }
 
   @Override

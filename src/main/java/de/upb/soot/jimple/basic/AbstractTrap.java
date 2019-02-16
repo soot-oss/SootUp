@@ -58,7 +58,7 @@ public class AbstractTrap implements Trap, Serializable {
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
-    //TODO: Use of FQDNs in implementations should be discouraged. They need to be parsed through a SignatureFactory object.
+    // TODO: Use of FQDNs in implementations should be discouraged. They need to be parsed through a SignatureFactory object.
     exception = null; // this.getView().getSootClass((String) in.readObject());
   }
 

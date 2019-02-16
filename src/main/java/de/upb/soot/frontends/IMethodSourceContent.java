@@ -32,6 +32,8 @@ import javax.annotation.Nullable;
 
 public interface IMethodSourceContent {
   /** Returns a filled-out body for the given SootMethod. */
-  @Nullable Body getBody(SootMethod m) throws ResolveException;
+  @Nullable
+  Body getBody(SootMethod m) throws ResolveException;
+
   MethodSignature getSignature();
 }

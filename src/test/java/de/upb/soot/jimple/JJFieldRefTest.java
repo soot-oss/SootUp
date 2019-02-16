@@ -1,7 +1,6 @@
 package de.upb.soot.jimple;
 
-import static org.junit.Assert.assertEquals;
-
+import categories.Java8Test;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.ResolvingLevel;
@@ -18,15 +17,14 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
-
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Optional;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java8Test;
+import java.util.Collections;
+import java.util.EnumSet;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -46,13 +44,12 @@ public class JJFieldRefTest {
         = new SootField(view, declaringClassSignature, fieldSig, fact.getTypeSignature("int"), EnumSet.of(Modifier.FINAL));
 
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
-        new ClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application,
-        Optional.empty(), Collections.emptySet(), Optional.empty(), Collections.singleton(field), Collections.emptySet(),
-        null,
+        new ClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application, null,
+        Collections.emptySet(), null, Collections.singleton(field), Collections.emptySet(), null,
         EnumSet.of(Modifier.PUBLIC));
     JStaticFieldRef ref = Jimple.newStaticFieldRef(view, fieldSig);
     assertEquals("<dummyMainClass: int dummyField>", ref.toString());
-    assertEquals(true, ref.getField().isPresent());
+    assertTrue(ref.getField().isPresent());
     assertEquals(field, ref.getField().get());
     assertEquals(EnumSet.of(Modifier.FINAL), ref.getField().get().getModifiers());
   }
@@ -66,13 +63,13 @@ public class JJFieldRefTest {
     SootField field
         = new SootField(view, declaringClassSignature, fieldSig, fact.getTypeSignature("int"), EnumSet.of(Modifier.FINAL));
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
-        new ClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application,
-        Optional.empty(), Collections.emptySet(), Optional.empty(), Collections.singleton(field), Collections.emptySet(),
-        null, EnumSet.of(Modifier.PUBLIC));
+        new ClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application, null,
+        Collections.emptySet(), null, Collections.singleton(field), Collections.emptySet(), null,
+        EnumSet.of(Modifier.PUBLIC));
     Local base = new Local("obj", RefType.getInstance(mainClass));
     JInstanceFieldRef ref = Jimple.newInstanceFieldRef(view, base, fieldSig);
     assertEquals("obj.<dummyMainClass: int dummyField>", ref.toString());
-    assertEquals(true, ref.getField().isPresent());
+    assertTrue(ref.getField().isPresent());
     assertEquals(field, ref.getField().get());
     assertEquals(EnumSet.of(Modifier.FINAL), ref.getField().get().getModifiers());
   }

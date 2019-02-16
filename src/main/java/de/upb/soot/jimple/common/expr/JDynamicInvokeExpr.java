@@ -96,12 +96,12 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> clonedBsmArgs = new ArrayList<Value>(getBootstrapArgCount());
+    List<Value> clonedBsmArgs = new ArrayList<>(getBootstrapArgCount());
     for (int i = 0; i < getBootstrapArgCount(); i++) {
       clonedBsmArgs.add(i, getBootstrapArg(i));
     }
 
-    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+    List<Value> clonedArgs = new ArrayList<>(getArgCount());
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
@@ -139,10 +139,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       if (!method.equals(ie.method)) {
         return false;
       }
-      if (!bsm.equals(ie.bsm)) {
-        return false;
-      }
-      return true;
+      return bsm.equals(ie.bsm);
     }
     return false;
   }
@@ -161,69 +158,52 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append(Jimple.DYNAMICINVOKE);
-    buffer.append(" \"");
-    buffer.append(method); // quoted methodRef name (can be any UTF8
+    StringBuilder builder = new StringBuilder();
+    builder.append(Jimple.DYNAMICINVOKE);
+    builder.append(" \"");
+    builder.append(method); // quoted methodRef name (can be any UTF8
     // string)
-    buffer.append("\" <");
-    buffer.append(method.getSignature());
-    buffer.append(">(");
+    builder.append("\" <");
+    builder.append(method.getSignature());
+    builder.append(">(");
 
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          buffer.append(", ");
-        }
+    argBoxesToString(builder);
 
-        buffer.append(argBoxes[i].getValue().toString());
+    builder.append(") ");
+    builder.append(bsm);
+    builder.append("(");
+    final int len = bsmArgBoxes.length;
+    if (0 < len) {
+      builder.append(bsmArgBoxes[0].getValue().toString());
+      for (int i = 1; i < len; i++) {
+        builder.append(", ");
+        builder.append(bsmArgBoxes[i].getValue().toString());
       }
     }
+    builder.append(")");
 
-    buffer.append(") ");
-    buffer.append(bsm);
-    buffer.append("(");
-    for (int i = 0; i < bsmArgBoxes.length; i++) {
-      if (i != 0) {
-        buffer.append(", ");
-      }
-
-      buffer.append(bsmArgBoxes[i].getValue().toString());
-    }
-    buffer.append(")");
-
-    return buffer.toString();
+    return builder.toString();
   }
 
   @Override
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
     up.literal(" \"" + method.getSignature().name + "\" <" + method.getSignature().getSubSignature() + ">(");
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          up.literal(", ");
-        }
 
-        argBoxes[i].toString(up);
-      }
-    }
+    argBoxesToPrinter(up);
 
     up.literal(") ");
     Optional<SootMethod> op = getBootstrapMethod();
-    if (op.isPresent()) {
-      up.method(op.get());
-    }
+    op.ifPresent(up::method);
     up.literal("(");
-
-    for (int i = 0; i < bsmArgBoxes.length; i++) {
-      if (i != 0) {
+    final int len = bsmArgBoxes.length;
+    if (0 < len) {
+      bsmArgBoxes[0].toString(up);
+      for (int i = 1; i < len; i++) {
         up.literal(", ");
+        bsmArgBoxes[i].toString(up);
       }
-
-      bsmArgBoxes[i].toString(up);
     }
-
     up.literal(")");
   }
 
@@ -236,7 +216,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
    * Returns a list containing elements of type ValueBox.
    */
   public List<Value> getBootstrapArgs() {
-    List<Value> l = new ArrayList<Value>();
+    List<Value> l = new ArrayList<>();
     for (ValueBox element : bsmArgBoxes) {
       l.add(element.getValue());
     }
@@ -249,7 +229,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 

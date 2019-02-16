@@ -21,6 +21,8 @@ package de.upb.soot.core;
  * #L%
  */
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -45,13 +47,12 @@ import de.upb.soot.validation.UsesValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.validation.ValueBoxesValidator;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -83,32 +84,18 @@ public class Body implements Serializable {
   /** The methodRef associated with this Body. */
   protected SootMethod method;
 
-  private static BodyValidator[] validators;
-
   /**
-   * Returns an array containing some validators in order to validate the JimpleBody
-   *
-   * @return the array containing validators
+   * An array containing some validators in order to validate the JimpleBody
    */
-  private static BodyValidator[] getValidators() {
-    if (validators == null) {
-      validators = new BodyValidator[] { LocalsValidator.getInstance(), TrapsValidator.getInstance(),
-          StmtBoxesValidator.getInstance(), UsesValidator.getInstance(), ValueBoxesValidator.getInstance(),
-          CheckInitValidator.getInstance(), CheckTypesValidator.getInstance(), CheckVoidLocalesValidator.getInstance(),
-          CheckEscapingValidator.getInstance() };
-    }
-    return validators;
-  };
+  private static final List<BodyValidator> validators = Arrays.asList(new LocalsValidator(), new TrapsValidator(),
+      new StmtBoxesValidator(), new UsesValidator(), new ValueBoxesValidator(), new CheckInitValidator(),
+      new CheckTypesValidator(), new CheckVoidLocalesValidator(), new CheckEscapingValidator());
 
   /**
    * Creates a Body associated to the given methodRef.
    * 
-   * @param m
    * @param locals
    *          please use {@link LocalGenerator} to generate local for a body.
-   * @param traps
-   * @param stmts
-   * @param position
    */
   public Body(SootMethod m, List<Local> locals, List<Trap> traps, List<IStmt> stmts, Position position) {
     this(locals, traps, stmts, position);
@@ -120,9 +107,6 @@ public class Body implements Serializable {
    * 
    * @param locals
    *          please use {@link LocalGenerator} to generate local for a body.
-   * @param traps
-   * @param stmts
-   * @param position
    */
   public Body(List<Local> locals, List<Trap> traps, List<IStmt> stmts, Position position) {
     this.locals = Collections.unmodifiableList(locals);
@@ -162,7 +146,7 @@ public class Body implements Serializable {
   }
 
   protected void runValidation(BodyValidator validator) {
-    final List<ValidationException> exceptionList = new ArrayList<ValidationException>();
+    final List<ValidationException> exceptionList = new ArrayList<>();
     validator.validate(this, exceptionList);
     if (!exceptionList.isEmpty()) {
       throw exceptionList.get(0);
@@ -171,27 +155,27 @@ public class Body implements Serializable {
 
   /** Verifies that a ValueBox is not used in more than one place. */
   public void validateValueBoxes() {
-    runValidation(ValueBoxesValidator.getInstance());
+    runValidation(new ValueBoxesValidator());
   }
 
   /** Verifies that each Local of getUseAndDefBoxes() is in this body's locals Chain. */
   public void validateLocals() {
-    runValidation(LocalsValidator.getInstance());
+    runValidation(new LocalsValidator());
   }
 
   /** Verifies that the begin, end and handler units of each trap are in this body. */
   public void validateTraps() {
-    runValidation(TrapsValidator.getInstance());
+    runValidation(new TrapsValidator());
   }
 
   /** Verifies that the StmtBoxes of this Body all point to a Stmt contained within this body. */
   public void validateStmtBoxes() {
-    runValidation(StmtBoxesValidator.getInstance());
+    runValidation(new StmtBoxesValidator());
   }
 
   /** Verifies that each use in this Body has a def. */
   public void validateUses() {
-    runValidation(UsesValidator.getInstance());
+    runValidation(new UsesValidator());
   }
 
   /** Returns a backed chain of the locals declared in this Body. */
@@ -245,7 +229,7 @@ public class Body implements Serializable {
    */
   public Collection<Local> getParameterLocals() {
     final int numParams = getMethod().getParameterCount();
-    final List<Local> retVal = new ArrayList<Local>(numParams);
+    final List<Local> retVal = new ArrayList<>(numParams);
     for (IStmt u : stmts) {
       if (u instanceof JIdentityStmt) {
         JIdentityStmt is = (JIdentityStmt) u;
@@ -272,7 +256,7 @@ public class Body implements Serializable {
   }
 
   public void checkInit() {
-    runValidation(CheckInitValidator.getInstance());
+    runValidation(new CheckInitValidator());
   }
 
   /**
@@ -299,15 +283,14 @@ public class Body implements Serializable {
   /** Clones the current body, making deep copies of the contents. */
   @Override
   public Object clone() {
-    Body b = new Body(this.method, this.locals, this.traps, this.stmts, this.position);
-    return b;
+    return new Body(this.method, this.locals, this.traps, this.stmts, this.position);
   }
 
   /**
    * Make sure that the JimpleBody is well formed. If not, throw an exception. Right now, performs only a handful of checks.
    */
   public void validate() {
-    final List<ValidationException> exceptionList = new ArrayList<ValidationException>();
+    final List<ValidationException> exceptionList = new ArrayList<>();
     validate(exceptionList);
     if (!exceptionList.isEmpty()) {
       throw exceptionList.get(0);
@@ -324,7 +307,7 @@ public class Body implements Serializable {
     validate(exceptionList);
     final boolean runAllValidators
         = this.method.getView().getOptions().debug() || this.method.getView().getOptions().validate();
-    for (BodyValidator validator : getValidators()) {
+    for (BodyValidator validator : validators) {
       if (!validator.isBasicValidator() && !runAllValidators) {
         continue;
       }
@@ -333,13 +316,13 @@ public class Body implements Serializable {
   }
 
   public void validateIdentityStatements() {
-    runValidation(IdentityStatementsValidator.getInstance());
+    runValidation(new IdentityStatementsValidator());
   }
 
   /** Returns the first non-identity stmt in this body. */
   public IStmt getFirstNonIdentityStmt() {
     Iterator<IStmt> it = getStmts().iterator();
-    Object o = null;
+    IStmt o = null;
     while (it.hasNext()) {
       if (!((o = it.next()) instanceof JIdentityStmt)) {
         break;
@@ -348,7 +331,7 @@ public class Body implements Serializable {
     if (o == null) {
       throw new RuntimeException("no non-id statements!");
     }
-    return (IStmt) o;
+    return o;
   }
 
   public Collection<ValueBox> getUseBoxes() {
@@ -372,21 +355,13 @@ public class Body implements Serializable {
    * @return A collection of all the StmtBoxes held by this body's units.
    **/
   public Collection<IStmtBox> getAllStmtBoxes() {
-    ArrayList<IStmtBox> stmtBoxList = new ArrayList<IStmtBox>();
-    {
-      Iterator<IStmt> it = stmts.iterator();
-      while (it.hasNext()) {
-        IStmt item = it.next();
-        stmtBoxList.addAll(item.getStmtBoxes());
-      }
+    List<IStmtBox> stmtBoxList = new ArrayList<>();
+    for (IStmt item : stmts) {
+      stmtBoxList.addAll(item.getStmtBoxes());
     }
 
-    {
-      Iterator<Trap> it = traps.iterator();
-      while (it.hasNext()) {
-        Trap item = it.next();
-        stmtBoxList.addAll(item.getStmtBoxes());
-      }
+    for (Trap item : traps) {
+      stmtBoxList.addAll(item.getStmtBoxes());
     }
     return Collections.unmodifiableCollection(stmtBoxList);
   }

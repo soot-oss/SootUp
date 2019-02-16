@@ -36,18 +36,9 @@ import de.upb.soot.signatures.TypeSignature;
 @SuppressWarnings("serial")
 public class LongType extends PrimType {
 
-  private static LongType instance;
+  public static final LongType INSTANCE = new LongType();
 
-  /**
-   * Get the LongType instance.
-   * 
-   * @return the LongType instance.
-   */
-  public static LongType getInstance() {
-    if (instance == null) {
-      instance = new LongType();
-    }
-    return instance;
+  private LongType() {
   }
 
   @Override

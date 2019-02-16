@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Defines the notion of a directed graph.
  * 
- * @param N
+ * @param <N>
  *          node type
  */
 public interface DirectedGraph<N> extends Iterable<N> {
@@ -59,5 +59,6 @@ public interface DirectedGraph<N> extends Iterable<N> {
   /**
    * Returns an iterator for the nodes in this graph. No specific ordering of the nodes is guaranteed.
    */
-  @Override Iterator<N> iterator();
+  @Override
+  Iterator<N> iterator();
 }

@@ -26,12 +26,7 @@ import de.upb.soot.core.Body;
 
 import java.util.List;
 
-public enum ReturnStatementsValidator implements BodyValidator {
-  INSTANCE;
-
-  public static ReturnStatementsValidator getInstance() {
-    return INSTANCE;
-  }
+public class ReturnStatementsValidator implements BodyValidator {
 
   /**
    * Checks the following invariants on this Jimple body:

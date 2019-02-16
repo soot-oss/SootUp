@@ -1,8 +1,8 @@
 package de.upb.soot.signatures;
 
-import de.upb.soot.core.SootClassMember;
-
 import com.google.common.base.Objects;
+
+import de.upb.soot.core.SootClassMember;
 
 /**
  * Abstract class for the signature of a {@link SootClassMember}
@@ -17,15 +17,14 @@ public abstract class AbstractClassMemberSignature implements ISignature {
   public final TypeSignature typeSignature;
   public final String name;
 
-  public AbstractClassMemberSignature(String name, JavaClassSignature klass,
-      TypeSignature returnType) {
+  public AbstractClassMemberSignature(String name, JavaClassSignature klass, TypeSignature returnType) {
     this.name = name;
     this.declClassSignature = klass;
     this.typeSignature = returnType;
   }
 
   public abstract String getSubSignature();
-  
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -45,15 +44,8 @@ public abstract class AbstractClassMemberSignature implements ISignature {
   }
 
   @Override
-  public String toString()
-  {
-    StringBuilder sb = new StringBuilder();
-    sb.append('<');
-    sb.append(declClassSignature.toString());
-    sb.append(": ");
-    sb.append(getSubSignature());
-    sb.append('>');
-    return sb.toString();
+  public String toString() {
+    return "<" + declClassSignature.toString() + ": " + getSubSignature() + '>';
   }
 
 }

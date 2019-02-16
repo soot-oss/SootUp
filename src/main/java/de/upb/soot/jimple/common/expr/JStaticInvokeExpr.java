@@ -58,7 +58,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+    List<Value> clonedArgs = new ArrayList<>(getArgCount());
 
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
@@ -99,23 +99,13 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder builder = new StringBuilder();
 
-    buffer.append(Jimple.STATICINVOKE + " " + method + "(");
+    builder.append(Jimple.STATICINVOKE + " ").append(method).append("(");
+    argBoxesToString(builder);
+    builder.append(")");
 
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          buffer.append(", ");
-        }
-
-        buffer.append(argBoxes[i].getValue().toString());
-      }
-    }
-
-    buffer.append(")");
-
-    return buffer.toString();
+    return builder.toString();
   }
 
   /**
@@ -128,15 +118,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     up.methodSignature(method.getSignature());
     up.literal("(");
 
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          up.literal(", ");
-        }
-
-        argBoxes[i].toString(up);
-      }
-    }
+    argBoxesToPrinter(up);
 
     up.literal(")");
   }
@@ -147,7 +129,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 

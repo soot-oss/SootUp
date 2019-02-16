@@ -34,7 +34,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     super(AsmUtil.SUPPORTED_ASM_OPCODE);
     this.classSource = classSource;
     // FIXME: maybe delete class reading
-    AsmUtil.initASMClassSource(classSource, this);
+    AsmUtil.initAsmClassSource(classSource, this);
   }
 
   @Override
@@ -91,7 +91,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     {
       // add the interfaces
       Iterable<JavaClassSignature> interfaceSignatures =
-          AsmUtil.asmIDToSignature(this.interfaces, view);
+          AsmUtil.asmIdToSignature(this.interfaces, view);
       for (JavaClassSignature interfaceSig : interfaceSignatures) {
 
         interfaces.add(interfaceSig);
@@ -139,7 +139,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
         List<JavaClassSignature> exceptions = new ArrayList<>();
         Iterable<JavaClassSignature> exceptionsSignatures =
-            AsmUtil.asmIDToSignature(methodSource.exceptions, view);
+            AsmUtil.asmIdToSignature(methodSource.exceptions, view);
 
         for (JavaClassSignature exceptionSig : exceptionsSignatures) {
           exceptions.add(exceptionSig);

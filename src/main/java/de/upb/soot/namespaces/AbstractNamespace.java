@@ -40,15 +40,18 @@ public abstract class AbstractNamespace implements INamespace {
   protected final @Nonnull IClassProvider classProvider;
 
   /**
-   * Create the namespace
-   * @param classProvider The class provider to be used
+   * Create the namespace.
+   * 
+   * @param classProvider
+   *          The class provider to be used
    */
   public AbstractNamespace(@Nonnull IClassProvider classProvider) {
     this.classProvider = classProvider;
   }
 
   /**
-   * Returns the {@link IClassProvider} instance for this namespace
+   * Returns the {@link IClassProvider} instance for this namespace.
+   * 
    * @return The class provider for this namespace
    */
   @Override
@@ -69,9 +72,8 @@ public abstract class AbstractNamespace implements INamespace {
    */
 
   /**
-   * Constructs a default class provider for use with namespaces.
-   * Currently, this provides an instance of {@link AsmJavaClassProvider} to read Java Bytecode.
-   * This might be more brilliant in the future.
+   * Constructs a default class provider for use with namespaces. Currently, this provides an instance of
+   * {@link AsmJavaClassProvider} to read Java Bytecode. This might be more brilliant in the future.
    *
    * @return An instance of {@link IClassProvider} to be used.
    */

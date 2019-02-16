@@ -34,9 +34,11 @@ public class StringTools {
    */
   public static java.lang.String getEscapedStringOf(String fromString) {
     char[] fromStringArray;
-    int cr, lf, ch;
-    StringBuffer whole = new StringBuffer();
-    StringBuffer mini = new StringBuffer();
+    int cr;
+    int lf;
+    int ch;
+    StringBuilder whole = new StringBuilder();
+    StringBuilder mini = new StringBuilder();
 
     fromStringArray = fromString.toCharArray();
 
@@ -70,51 +72,50 @@ public class StringTools {
   }
 
   /** Convenience field storing the system line separator. */
-  public final static String lineSeparator = System.getProperty("line.separator");
+  public static final String lineSeparator = System.getProperty("line.separator");
 
   /**
    * Returns fromString, but with certain characters printed as if they were in a Java string literal. Used by
    * StringConstant.toString()
    */
-  public static java.lang.String getQuotedStringOf(String fromString) {
+  public static String getQuotedStringOf(String fromString) {
     // We definitely need fromString.length + 2, but let's have some
     // additional space
-    StringBuffer toStringBuffer = new java.lang.StringBuffer(fromString.length() + 20);
-    toStringBuffer.append("\"");
+    StringBuilder builder = new StringBuilder(fromString.length() + 20);
+    builder.append("\"");
     for (int i = 0; i < fromString.length(); i++) {
       char ch = fromString.charAt(i);
       if (ch == '\\') {
-        toStringBuffer.append("\\\\");
+        builder.append("\\\\");
       } else if (ch == '\'') {
-        toStringBuffer.append("\\\'");
+        builder.append("\\\'");
       } else if (ch == '\"') {
-        toStringBuffer.append("\\\"");
-        continue;
+        builder.append("\\\"");
       } else if (ch == '\n') {
-        toStringBuffer.append("\\n");
+        builder.append("\\n");
       } else if (ch == '\t') {
-        toStringBuffer.append("\\t");
+        builder.append("\\t");
       }
       /*
        * 04.04.2006 mbatch added handling of \r, as compilers throw error if unicode
        */
       else if (ch == '\r') {
-        toStringBuffer.append("\\r");
+        builder.append("\\r");
       }
       /*
        * 10.04.2006 Nomait A Naeem added handling of \f, as compilers throw error if unicode
        */
       else if (ch == '\f') {
-        toStringBuffer.append("\\f");
+        builder.append("\\f");
       } else if (ch >= 32 && ch <= 126) {
-        toStringBuffer.append(ch);
+        builder.append(ch);
       } else {
-        toStringBuffer.append(getUnicodeStringFromChar(ch));
+        builder.append(getUnicodeStringFromChar(ch));
       }
     }
 
-    toStringBuffer.append("\"");
-    return toStringBuffer.toString();
+    builder.append("\"");
+    return builder.toString();
   }
 
   /**
@@ -146,7 +147,7 @@ public class StringTools {
    * Returns a String de-escaping the <code>\\unnnn</code> representation for any escaped characters in the string.
    */
   public static String getUnEscapedStringOf(String str) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     CharacterIterator iter = new StringCharacterIterator(str);
 
     for (char ch = iter.first(); ch != CharacterIterator.DONE; ch = iter.next()) {
@@ -161,7 +162,7 @@ public class StringTools {
         } else if ((format = getCFormatChar(ch)) != '\0') {
           buf.append(format);
         } else if (ch == 'u') { // enter unicode mode
-          StringBuffer mini = new StringBuffer(4);
+          StringBuilder mini = new StringBuilder(4);
           for (int i = 0; i < 4; i++) {
             mini.append(iter.next());
           }

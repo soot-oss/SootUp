@@ -48,8 +48,7 @@ public class JInstanceFieldRef implements JFieldRef {
    *          the field sig
    */
   public JInstanceFieldRef(IView view, Value base, FieldRef symbolicFieldRef) {
-    ValueBox baseBox = Jimple.newLocalBox(base);
-    this.baseBox = baseBox;
+    this.baseBox = Jimple.newLocalBox(base);
     this.symbolicFieldRef = symbolicFieldRef;
     this.view = view;
   }
@@ -96,9 +95,8 @@ public class JInstanceFieldRef implements JFieldRef {
   /** Returns a list useBoxes of type ValueBox. */
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
-    useBoxes.addAll(baseBox.getValue().getUseBoxes());
+    List<ValueBox> useBoxes = new ArrayList<>(baseBox.getValue().getUseBoxes());
     useBoxes.add(baseBox);
 
     return useBoxes;
@@ -134,7 +132,7 @@ public class JInstanceFieldRef implements JFieldRef {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
 }

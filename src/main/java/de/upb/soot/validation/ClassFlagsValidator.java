@@ -32,12 +32,7 @@ import java.util.List;
  * @author Steven Arzt
  *
  */
-public enum ClassFlagsValidator implements ClassValidator {
-  INSTANCE;
-
-  public static ClassFlagsValidator getInstance() {
-    return INSTANCE;
-  }
+public class ClassFlagsValidator implements ClassValidator {
 
   @Override
   public void validate(SootClass sc, List<ValidationException> exceptions) {
