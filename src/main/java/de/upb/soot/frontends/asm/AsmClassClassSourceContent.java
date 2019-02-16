@@ -14,18 +14,19 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.tree.FieldNode;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
-    implements IClassSourceContent {
+import javax.annotation.Nonnull;
+
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.tree.FieldNode;
+
+class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode implements IClassSourceContent {
 
   private final ClassSource classSource;
 
@@ -70,7 +71,8 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   private @Nonnull SootClass.SignatureStep resolveHierarchy(@Nonnull IView view, @Nonnull JavaClassSignature cs)
       throws AsmFrontendException {
-    SootClass sootClass = (SootClass) view.getClass(cs).orElseThrow(() -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
+    SootClass sootClass = (SootClass) view.getClass(cs)
+        .orElseThrow(() -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
     Set<JavaClassSignature> interfaces = new HashSet<>();
     JavaClassSignature mySuperClass;
     SootClass.HierachyStep danglingStep;
@@ -87,8 +89,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     }
     {
       // add the interfaces
-      Iterable<JavaClassSignature> interfaceSignatures =
-          AsmUtil.asmIdToSignature(this.interfaces, view);
+      Iterable<JavaClassSignature> interfaceSignatures = AsmUtil.asmIdToSignature(this.interfaces, view);
       for (JavaClassSignature interfaceSig : interfaceSignatures) {
 
         interfaces.add(interfaceSig);
@@ -102,7 +103,8 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     SootClass.SignatureStep signatureStep;
     Set<IMethod> methods = new HashSet<>();
     Set<SootField> fields = new HashSet<>();
-    SootClass sootClass = (SootClass) view.getClass(cs).orElseThrow(() -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
+    SootClass sootClass = (SootClass) view.getClass(cs)
+        .orElseThrow(() -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
     if (sootClass.resolvingLevel().isLoweverLevel(ResolvingLevel.HIERARCHY)) {
       signatureStep = resolveHierarchy(view, cs);
     } else {
@@ -116,11 +118,9 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
         String fieldName = fieldNode.name;
         EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
         TypeSignature fieldType = AsmUtil.toJimpleType(view, fieldNode.desc);
-        FieldSignature fieldSignature =
-            view.getSignatureFactory()
-                .getFieldSignature(fieldName, sootClass.getSignature(), fieldType);
-        SootField sootField =
-            new SootField(view, sootClass.getSignature(), fieldSignature, fieldType, modifiers);
+        FieldSignature fieldSignature
+            = view.getSignatureFactory().getFieldSignature(fieldName, sootClass.getSignature(), fieldType);
+        SootField sootField = new SootField(view, sootClass.getSignature(), fieldSignature, fieldType, modifiers);
         fields.add(sootField);
       }
     }
@@ -129,14 +129,12 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
       for (org.objectweb.asm.tree.MethodNode methodSource : this.methods) {
 
         if (!(methodSource instanceof AsmMethodSourceContent)) {
-          throw new AsmFrontendException(
-              String.format("Failed to create Method Signature %s", methodSource));
+          throw new AsmFrontendException(String.format("Failed to create Method Signature %s", methodSource));
         }
         AsmMethodSourceContent asmClassClassSourceContent = (AsmMethodSourceContent) methodSource;
 
         List<JavaClassSignature> exceptions = new ArrayList<>();
-        Iterable<JavaClassSignature> exceptionsSignatures =
-            AsmUtil.asmIdToSignature(methodSource.exceptions, view);
+        Iterable<JavaClassSignature> exceptionsSignatures = AsmUtil.asmIdToSignature(methodSource.exceptions, view);
 
         for (JavaClassSignature exceptionSig : exceptionsSignatures) {
           exceptions.add(exceptionSig);
@@ -146,19 +144,11 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
         List<TypeSignature> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc, view);
         TypeSignature retType = sigTypes.remove(sigTypes.size() - 1);
 
-        MethodSignature methodSignature =
-            view.getSignatureFactory()
-                .getMethodSignature(methodName, sootClass.getSignature(), retType, sigTypes);
+        MethodSignature methodSignature
+            = view.getSignatureFactory().getMethodSignature(methodName, sootClass.getSignature(), retType, sigTypes);
 
-        SootMethod sootMethod =
-            new SootMethod(
-                view,
-                sootClass.getSignature(),
-                asmClassClassSourceContent,
-                methodSignature,
-                modifiers,
-                exceptions,
-                null);
+        SootMethod sootMethod = new SootMethod(view, sootClass.getSignature(), asmClassClassSourceContent, methodSignature,
+            modifiers, exceptions, null);
         methods.add(sootMethod);
       }
     }
@@ -167,7 +157,8 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   private @Nonnull SootClass.Build resolveBody(@Nonnull IView view, @Nonnull JavaClassSignature cs)
       throws AsmFrontendException {
-    SootClass sootClass = (SootClass) view.getClass(cs).orElseThrow(() -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
+    SootClass sootClass = (SootClass) view.getClass(cs)
+        .orElseThrow(() -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
     SootClass.BodyStep bodyStep;
     if (sootClass.resolvingLevel().isLoweverLevel(ResolvingLevel.SIGNATURES)) {
       bodyStep = resolveSignature(view, cs);
@@ -179,11 +170,10 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
   }
 
   @Override
-  public @Nonnull MethodVisitor visitMethod(
-      int access, @Nonnull String name, @Nonnull String desc, @Nonnull String signature, @Nonnull String[] exceptions) {
+  public @Nonnull MethodVisitor visitMethod(int access, @Nonnull String name, @Nonnull String desc,
+      @Nonnull String signature, @Nonnull String[] exceptions) {
 
-    AsmMethodSourceContent mn =
-        new AsmMethodSourceContent(access, name, desc, signature, exceptions);
+    AsmMethodSourceContent mn = new AsmMethodSourceContent(access, name, desc, signature, exceptions);
     methods.add(mn);
     return mn;
   }

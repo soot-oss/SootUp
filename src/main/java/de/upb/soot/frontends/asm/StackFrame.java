@@ -29,9 +29,10 @@ import de.upb.soot.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 
+import java.util.ArrayList;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 
 /**
  * Frame of stack for an instruction.
@@ -59,7 +60,8 @@ final class StackFrame {
   /**
    * @return operands produced by this frame.
    */
-  @Nullable Operand[] out() {
+  @Nullable
+  Operand[] out() {
     return out;
   }
 
@@ -159,7 +161,8 @@ final class StackFrame {
             src.setUnit(prevOp.insn, as);
           } else {
             IStmt u = src.getUnit(prevOp.insn);
-            AbstractDefinitionStmt as = (AbstractDefinitionStmt) (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
+            AbstractDefinitionStmt as
+                = (AbstractDefinitionStmt) (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == prevOp.stack : "Invalid stack local!";
             lvb.setValue(stack);
@@ -174,7 +177,8 @@ final class StackFrame {
             src.setUnit(newOp.insn, as);
           } else {
             IStmt u = src.getUnit(newOp.insn);
-            AbstractDefinitionStmt as = (AbstractDefinitionStmt) (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
+            AbstractDefinitionStmt as
+                = (AbstractDefinitionStmt) (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == newOp.stack : "Invalid stack local!";
             lvb.setValue(stack);

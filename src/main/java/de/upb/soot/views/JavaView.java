@@ -23,10 +23,11 @@ import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
 
-import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.

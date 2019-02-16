@@ -12,7 +12,6 @@ import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +19,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
 
 /**
  * Abstract class for view.
@@ -43,7 +44,7 @@ public abstract class AbstractView implements IView {
     this.refTypes = new HashSet<>();
     this.classes = new HashMap<>();
   }
-  
+
   @Override
   public @Nonnull SignatureFactory getSignatureFactory() {
     return this.project.getSignatureFactory();

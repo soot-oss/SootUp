@@ -2,7 +2,6 @@ package de.upb.soot.jimple.symbolicreferences;
 
 import de.upb.soot.core.SootField;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.ISignature;
 
 public class FieldRef implements SymbolicRef<SootField> {
 

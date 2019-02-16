@@ -7,12 +7,7 @@ import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
 import de.upb.soot.views.IView;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -29,6 +24,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
 
 public final class AsmUtil {
 

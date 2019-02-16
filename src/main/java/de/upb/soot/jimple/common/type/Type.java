@@ -14,8 +14,7 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
   public abstract String toString();
 
   /**
-   * Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to
-   * .jimple format
+   * Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to .jimple format
    */
   public String toQuotedString() {
     return toString();
@@ -23,9 +22,7 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /** Converts the int-like types (short, byte, boolean and char) to IntType. */
   public static Type toMachineType(Type t) {
-    if (t.equals(ShortType.INSTANCE)
-        || t.equals(ByteType.INSTANCE)
-        || t.equals(BooleanType.INSTANCE)
+    if (t.equals(ShortType.INSTANCE) || t.equals(ByteType.INSTANCE) || t.equals(BooleanType.INSTANCE)
         || t.equals(CharType.INSTANCE)) {
       return IntType.INSTANCE;
     } else {

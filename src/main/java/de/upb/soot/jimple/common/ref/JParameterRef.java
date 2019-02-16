@@ -35,8 +35,8 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter slots on methodRef entry.
- * <br>
+ * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter slots on methodRef
+ * entry. <br>
  * <p>
  * For instance, in an instance methodRef, the first statement will often be <code> this := @parameter0; </code>
  * </p>

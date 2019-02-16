@@ -2,7 +2,6 @@ package de.upb.soot.jimple.symbolicreferences;
 
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.views.IView;
 
 /** @author Andreas Dann created on 02.02.19 */
 public class MethodRef implements SymbolicRef<SootMethod> {

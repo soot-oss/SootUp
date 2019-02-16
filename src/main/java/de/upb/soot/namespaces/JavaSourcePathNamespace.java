@@ -5,9 +5,10 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.NotYetImplementedException;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
 
 /**
  * An implementation of the {@link INamespace} interface for the Java source code path.
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class JavaSourcePathNamespace extends AbstractNamespace {
 
   private final @Nonnull String sourcePath;
+
   /**
    * Create a {@link JavaSourcePathNamespace} which locates java source code in the given source path.
    * 

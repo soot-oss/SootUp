@@ -1,6 +1,7 @@
 package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
+
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.FieldSignature;
@@ -11,17 +12,19 @@ import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
-import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
+
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the {@link INamespace} interface for the Java modulepath. Handles directories, archives (including

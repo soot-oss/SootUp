@@ -46,7 +46,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   }
 
   /**
-   * Utility methodRef for <tt>IStmtGraph</tt> constructors. It computes the edges corresponding to unexceptional control flow.
+   * Utility methodRef for <tt>IStmtGraph</tt> constructors. It computes the edges corresponding to unexceptional control
+   * flow.
    *
    * @param stmtToSuccs
    *          A {@link Map} from {@link IStmt}s to {@link List}s of {@link IStmt}s. This is an ``out parameter''; callers
@@ -104,8 +105,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
 
   /**
    * <p>
-   * Utility methodRef used in the construction of {@link IStmtGraph}s, to be called only after the stmtToPreds and stmtToSuccs
-   * maps have been built.
+   * Utility methodRef used in the construction of {@link IStmtGraph}s, to be called only after the stmtToPreds and
+   * stmtToSuccs maps have been built.
    * </p>
    *
    * <p>
@@ -142,8 +143,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   }
 
   /**
-   * Utility methodRef that produces a new map from the {@link IStmt}s of this graph's body to the union of the values stored in
-   * the two argument {@link Map}s, used to combine the maps of exceptional and unexceptional predecessors and successors
+   * Utility methodRef that produces a new map from the {@link IStmt}s of this graph's body to the union of the values stored
+   * in the two argument {@link Map}s, used to combine the maps of exceptional and unexceptional predecessors and successors
    * into maps of all predecessors and successors. The values stored in both argument maps must be {@link List}s of
    * {@link IStmt}s, which are assumed not to contain any duplicate <tt>IStmt</tt>s.
    *

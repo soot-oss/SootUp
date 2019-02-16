@@ -40,7 +40,7 @@ public class JStmtBox implements IStmtBox {
    * 
    */
   private static final long serialVersionUID = 7292172470036407386L;
-  
+
   @Nullable
   protected IStmt stmt;
 

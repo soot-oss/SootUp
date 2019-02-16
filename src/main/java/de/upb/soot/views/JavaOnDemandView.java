@@ -6,8 +6,9 @@ import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.JavaClassSignature;
 
-import javax.annotation.Nonnull;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
 
 /**
  * The Class JavaOnDemandView loads Java Source Files on Demand.
@@ -29,14 +30,12 @@ public class JavaOnDemandView extends JavaView {
 
   @Override
   public @Nonnull Optional<AbstractClass> getClass(@Nonnull ISignature signature) {
-    if(!(signature instanceof JavaClassSignature)) {
+    if (!(signature instanceof JavaClassSignature)) {
       throw new IllegalArgumentException("The signature must be a `JavaClassSignature`.");
     }
 
-    Optional<AbstractClass> foundClass =
-      this.classes()
-      .filter(c -> c.getClassSource().getClassSignature().equals(signature))
-      .findFirst();
+    Optional<AbstractClass> foundClass
+        = this.classes().filter(c -> c.getClassSource().getClassSignature().equals(signature)).findFirst();
 
     if (!foundClass.isPresent()) {
       // query the namespace for the class source
@@ -44,7 +43,7 @@ public class JavaOnDemandView extends JavaView {
 
       if (source.isPresent()) {
         // resolve it ... using akka
-        Optional<AbstractClass> resolvedClass  = akkaClassResolver.reifyClass(source.get(), this);
+        Optional<AbstractClass> resolvedClass = akkaClassResolver.reifyClass(source.get(), this);
 
         // add it to the existing
         resolvedClass.ifPresent(it -> this.classes.put(signature, it));

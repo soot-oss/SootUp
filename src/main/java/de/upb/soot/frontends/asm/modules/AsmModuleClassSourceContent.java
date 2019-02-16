@@ -9,15 +9,17 @@ import de.upb.soot.frontends.asm.AsmFrontendException;
 import de.upb.soot.frontends.asm.AsmUtil;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
+
+import java.util.ArrayList;
+import java.util.Optional;
+
+import javax.annotation.Nonnull;
+
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.ModuleExportNode;
 import org.objectweb.asm.tree.ModuleOpenNode;
 import org.objectweb.asm.tree.ModuleProvideNode;
 import org.objectweb.asm.tree.ModuleRequireNode;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Optional;
 
 public class AsmModuleClassSourceContent extends ClassNode implements IClassSourceContent {
 

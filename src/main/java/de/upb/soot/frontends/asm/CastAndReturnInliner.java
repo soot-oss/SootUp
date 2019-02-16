@@ -30,8 +30,9 @@ import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
 
-import javax.annotation.Nonnull;
 import java.util.List;
+
+import javax.annotation.Nonnull;
 
 /**
  * Transformers that inlines returns that cast and return an object. We take a = .. goto l0;

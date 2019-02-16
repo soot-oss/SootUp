@@ -59,7 +59,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
       sootClass = content.resolve(ResolvingLevel.DANGLING, view);
     } catch (ResolveException e) {
       e.printStackTrace();
-      //FIXME: error handling
+      // FIXME: error handling
     }
 
     sender().tell(sootClass, this.getSelf());

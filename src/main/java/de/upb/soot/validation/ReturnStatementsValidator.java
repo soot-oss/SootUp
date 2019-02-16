@@ -46,9 +46,10 @@ public class ReturnStatementsValidator implements BodyValidator {
      * instanceof JReturnStmt) || (u instanceof JReturnVoidStmt) || (u instanceof JRetStmt) || (u instanceof JThrowStmt)) {
      * return; } }
      * 
-     * // A methodRef can have an infinite loop // and no return statement: // // public class Infinite { // public static void
-     * main(String[] args) { // int i = 0; while (true) {i += 1;} } } // // Only check that the execution cannot fall off the
-     * code. Unit last = body.getUnits().getLast(); if (last instanceof JGotoStmt|| last instanceof JThrowStmt) { return; }
+     * // A methodRef can have an infinite loop // and no return statement: // // public class Infinite { // public static
+     * void main(String[] args) { // int i = 0; while (true) {i += 1;} } } // // Only check that the execution cannot fall
+     * off the code. Unit last = body.getUnits().getLast(); if (last instanceof JGotoStmt|| last instanceof JThrowStmt) {
+     * return; }
      * 
      * exceptions.add(new ValidationException(body.getMethod(), "The methodRef does not contain a return statement",
      * "Body of methodRef " + body.getMethod().getSignature() + " does not contain a return statement"));

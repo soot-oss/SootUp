@@ -1,6 +1,7 @@
 package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
+
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
@@ -9,7 +10,6 @@ import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.Utils;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.DirectoryStream;
@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 /**
  * Base class for {@link INamespace}s that can be located by a {@link Path} object.

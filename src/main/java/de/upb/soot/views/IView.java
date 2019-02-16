@@ -12,10 +12,11 @@ import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
 
 /**
  * A view on code.
@@ -29,28 +30,32 @@ public interface IView {
   /**
    * Return all classes in the view.
    */
-  @Nonnull Collection<AbstractClass> getClasses();
+  @Nonnull
+  Collection<AbstractClass> getClasses();
 
   /**
    * Returns a stream of classes in the view.
    * 
    * @return A stream of classes
    */
-  @Nonnull Stream<AbstractClass> classes();
+  @Nonnull
+  Stream<AbstractClass> classes();
 
   /**
    * Return a class with given signature.
    * 
    * @return A class with given signature.
    */
-  @Nonnull Optional<AbstractClass> getClass(@Nonnull ISignature signature);
+  @Nonnull
+  Optional<AbstractClass> getClass(@Nonnull ISignature signature);
 
   /**
    * Provides the call graph using the default algorithm.
    * 
    * @return A call graph valid in the view
    */
-  @Nonnull ICallGraph createCallGraph();
+  @Nonnull
+  ICallGraph createCallGraph();
 
   /**
    * Provides the call graph using a provided algorithm.
@@ -59,43 +64,50 @@ public interface IView {
    *          A call graph algorithm
    * @return A call graph valid in the view
    */
-  @Nonnull ICallGraph createCallGraph(ICallGraphAlgorithm algorithm);
+  @Nonnull
+  ICallGraph createCallGraph(ICallGraphAlgorithm algorithm);
 
   /**
    * Provides a type hierarchy.
    * 
    * @return A type hierarchy valid in the view
    */
-  @Nonnull ITypeHierarchy createTypeHierarchy();
+  @Nonnull
+  ITypeHierarchy createTypeHierarchy();
 
   /**
    * Returns the scope if the view is scoped.
    * 
    * @return The scope that led to the view
    */
-  @Nonnull Optional<Scope> getScope();
+  @Nonnull
+  Optional<Scope> getScope();
 
   /**
    * Returns the {@link RefType} with given class Signature from the view. If there is no RefType with given className
    * exists, create a new instance.
    */
-  @Nonnull RefType getRefType(@Nonnull TypeSignature classSignature);
+  @Nonnull
+  RefType getRefType(@Nonnull TypeSignature classSignature);
 
   /**
    * Return the {@link Type} wtih given signature from the view. If there is no Type with given signature exists, create a
    * new instance.
    */
-  @Nonnull Type getType(@Nonnull TypeSignature signature);
+  @Nonnull
+  Type getType(@Nonnull TypeSignature signature);
 
   /**
    * Returns the {@link SignatureFactory} for this view.
    */
-  @Nonnull SignatureFactory getSignatureFactory();
+  @Nonnull
+  SignatureFactory getSignatureFactory();
 
   /**
    * Return the {@link Options} of this view.
    */
-  @Nonnull Options getOptions();
+  @Nonnull
+  Options getOptions();
 
   /**
    * Add given class to the view.
@@ -104,5 +116,6 @@ public interface IView {
 
   boolean doneResolving();
 
-  @Nonnull String quotedNameOf(@Nonnull String name);
+  @Nonnull
+  String quotedNameOf(@Nonnull String name);
 }

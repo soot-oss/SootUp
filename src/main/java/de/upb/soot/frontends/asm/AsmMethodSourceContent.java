@@ -1,10 +1,28 @@
 package de.upb.soot.frontends.asm;
 
+import static org.objectweb.asm.tree.AbstractInsnNode.FIELD_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.FRAME;
+import static org.objectweb.asm.tree.AbstractInsnNode.IINC_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.INT_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.INVOKE_DYNAMIC_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.JUMP_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.LABEL;
+import static org.objectweb.asm.tree.AbstractInsnNode.LDC_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.LINE;
+import static org.objectweb.asm.tree.AbstractInsnNode.LOOKUPSWITCH_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.METHOD_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.MULTIANEWARRAY_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.TABLESWITCH_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
+import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
+
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootClass;
@@ -73,6 +91,24 @@ import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -92,39 +128,6 @@ import org.objectweb.asm.tree.TableSwitchInsnNode;
 import org.objectweb.asm.tree.TryCatchBlockNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.objectweb.asm.tree.AbstractInsnNode.FIELD_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.FRAME;
-import static org.objectweb.asm.tree.AbstractInsnNode.IINC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INT_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.INVOKE_DYNAMIC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.JUMP_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.LABEL;
-import static org.objectweb.asm.tree.AbstractInsnNode.LDC_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.LINE;
-import static org.objectweb.asm.tree.AbstractInsnNode.LOOKUPSWITCH_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.METHOD_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.MULTIANEWARRAY_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.TABLESWITCH_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
-import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
 
 /** @author Andreas Dann */
 class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter implements IMethodSourceContent {

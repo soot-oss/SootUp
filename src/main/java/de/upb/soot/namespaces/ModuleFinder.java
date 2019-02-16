@@ -9,8 +9,6 @@ import de.upb.soot.signatures.ModuleDecoratorClassSignature;
 import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -29,6 +27,9 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Discovers all modules in a given module path. For automatic modules, names are generated. Supports exploded modules,

@@ -30,8 +30,8 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
+import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.ArrayList;

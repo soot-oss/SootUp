@@ -1,10 +1,10 @@
 package de.upb.soot.frontends.java;
 
-import de.upb.soot.namespaces.FileType;
-import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.IClassSourceContent;
+import de.upb.soot.namespaces.FileType;
+import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.JavaClassSignature;
 
 import java.nio.file.Path;

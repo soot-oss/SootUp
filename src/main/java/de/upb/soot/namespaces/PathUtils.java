@@ -22,12 +22,13 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
-import javax.annotation.Nonnull;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 /**
  * Common functionality useful to cope with {@link Path}s.

@@ -65,7 +65,7 @@ public class AnySubType extends RefLikeType {
 
   @Override
   public TypeSignature getTypeSignature() {
-    //FIXME ... interesting
+    // FIXME ... interesting
     return null;
   }
 

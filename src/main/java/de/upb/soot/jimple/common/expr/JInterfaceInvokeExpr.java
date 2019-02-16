@@ -46,26 +46,21 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   private static final long serialVersionUID = 7458533916011927970L;
 
   /**
-   * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array
-   * argBoxes.
+   * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array argBoxes.
    */
-  public JInterfaceInvokeExpr(
-      IView view, Value base, MethodRef method, List<? extends Value> args) {
+  public JInterfaceInvokeExpr(IView view, Value base, MethodRef method, List<? extends Value> args) {
     super(view, Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
 
     // Check that the methodRef's class is resolved enough
     // CheckLevel returns without doing anything because we can be not 'done' resolving
-    Optional<AbstractClass> declaringClass =
-        view.getClass(method.getSignature().declClassSignature);
+    Optional<AbstractClass> declaringClass = view.getClass(method.getSignature().declClassSignature);
     if (declaringClass.isPresent()) {
       SootClass cls = (SootClass) declaringClass.get();
       cls.checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
       // now check if the class is valid
       if (!cls.isInterface() && !cls.isPhantomClass()) {
-        throw new RuntimeException(
-            "Trying to create interface invoke expression for non-interface type: "
-                + cls
-                + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
+        throw new RuntimeException("Trying to create interface invoke expression for non-interface type: " + cls
+            + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
       }
     }
     for (int i = 0; i < args.size(); i++) {
@@ -79,8 +74,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     for (int i = 0; i < getArgCount(); i++) {
       argList.add(i, Jimple.cloneIfNecessary(getArg(i)));
     }
-    return new JInterfaceInvokeExpr(
-        this.getView(), Jimple.cloneIfNecessary(getBase()), method, argList);
+    return new JInterfaceInvokeExpr(this.getView(), Jimple.cloneIfNecessary(getBase()), method, argList);
   }
 
   @Override

@@ -64,10 +64,10 @@ public class NewValidator implements BodyValidator {
      * }
      *
      * 
-     * <p> Checks whether all pathes from start to the end of the methodRef have a call to the &lt;init&gt; methodRef in between.
-     * </p> <code> $r0 = new X;<br> ...<br> specialinvoke $r0.<X: void <init>()>; //validator checks whether this statement
-     * is missing </code> <p> Regarding <i>aliasingLocals</i>:<br> The first local in the set is always the local on the LHS
-     * of the new-expression-assignment (called: original local; in the example <code>$r0</code>). </p>
+     * <p> Checks whether all pathes from start to the end of the methodRef have a call to the &lt;init&gt; methodRef in
+     * between. </p> <code> $r0 = new X;<br> ...<br> specialinvoke $r0.<X: void <init>()>; //validator checks whether this
+     * statement is missing </code> <p> Regarding <i>aliasingLocals</i>:<br> The first local in the set is always the local
+     * on the LHS of the new-expression-assignment (called: original local; in the example <code>$r0</code>). </p>
      *
      * @param g the unit graph of the methodRef
      * 
@@ -108,8 +108,9 @@ public class NewValidator implements BodyValidator {
      * in between. // However, when creating such an alias, the use is okay. exception.add(new ValidationException(newStmt,
      * String.format(errorMsg, newStmt, curStmt))); return false; } } } } // Enqueue the successors List<Unit> successors =
      * g.getSuccsOf(curStmt); if (successors.isEmpty() && MUST_CALL_CONSTRUCTOR_BEFORE_RETURN) { // This means that we are
-     * e.g. at the end of the methodRef // There was no <init> call on our way... exception.add(new ValidationException(newStmt,
-     * String.format(errorMsg, newStmt, curStmt))); return false; } workList.addAll(successors); } return true;
+     * e.g. at the end of the methodRef // There was no <init> call on our way... exception.add(new
+     * ValidationException(newStmt, String.format(errorMsg, newStmt, curStmt))); return false; } workList.addAll(successors);
+     * } return true;
      * 
      * 
      */

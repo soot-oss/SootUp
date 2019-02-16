@@ -8,9 +8,10 @@ import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.JavaClassSignature;
 
+import java.nio.file.Path;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.nio.file.Path;
 
 public class AsmJavaClassProvider implements IClassProvider {
 

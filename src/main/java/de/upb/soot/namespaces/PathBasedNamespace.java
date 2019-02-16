@@ -6,7 +6,6 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.Utils;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -15,6 +14,8 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 /*-
  * #%L

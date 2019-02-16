@@ -37,7 +37,7 @@ public class ViewBuilder {
 
     for (ClassSource cs : this.project.getNamespace().getClassSources(result.getSignatureFactory())) {
       try {
-       AbstractClass abstactClass = cs.getContent().resolve(ResolvingLevel.BODIES, result);
+        AbstractClass abstactClass = cs.getContent().resolve(ResolvingLevel.BODIES, result);
       } catch (ResolveException e) {
         e.printStackTrace();
       }

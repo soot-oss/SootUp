@@ -27,8 +27,8 @@ import de.upb.soot.core.Body;
 import java.util.List;
 
 /**
- * Checks whether the types used for locals, methodRef parameters, and methodRef return values are allowed in final Jimple code.
- * This reports an error if a methodRef uses e.g., null_type.
+ * Checks whether the types used for locals, methodRef parameters, and methodRef return values are allowed in final Jimple
+ * code. This reports an error if a methodRef uses e.g., null_type.
  */
 public class TypesValidator implements BodyValidator {
 

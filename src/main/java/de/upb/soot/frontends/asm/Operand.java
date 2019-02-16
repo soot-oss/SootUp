@@ -25,12 +25,14 @@ package de.upb.soot.frontends.asm;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import org.objectweb.asm.tree.AbstractInsnNode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.objectweb.asm.tree.AbstractInsnNode;
 
 /**
  * Stack operand.

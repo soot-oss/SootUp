@@ -22,8 +22,9 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
+
+import javax.annotation.Nonnull;
 
 /**
  * An enumeration of common file types used for class loading/writing and other purposes.

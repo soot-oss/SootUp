@@ -11,8 +11,7 @@ public class AkkaClassResolver {
    * always preferable to communicate with other Actors using their ActorRef instead of relying upon ActorSelection"
    *
    */
-  private java.util.HashMap<ClassSource, akka.actor.ActorRef> createdActors
-      = new java.util.HashMap<>();
+  private java.util.HashMap<ClassSource, akka.actor.ActorRef> createdActors = new java.util.HashMap<>();
 
   public akka.actor.ActorSystem system = akka.actor.ActorSystem.create("myActorToRunTests");
 
@@ -36,8 +35,7 @@ public class AkkaClassResolver {
     return result;
   }
 
-  public java.util.Optional<AbstractClass> resolveClass(ClassSource classSource,
-                                                        de.upb.soot.views.IView view) {
+  public java.util.Optional<AbstractClass> resolveClass(ClassSource classSource, de.upb.soot.views.IView view) {
     java.util.Optional<AbstractClass> result = java.util.Optional.empty();
     akka.actor.ActorRef cb = getOrCreateActor(classSource, view);
     akka.util.Timeout timeout = new akka.util.Timeout(scala.concurrent.duration.Duration.create(5, "seconds"));
@@ -59,8 +57,7 @@ public class AkkaClassResolver {
    *          to resolve
    * @return the initial resolved class or an empty Optional, if the class initialization fails
    */
-  public java.util.Optional<AbstractClass> reifyClass(ClassSource classSource,
-                                                      de.upb.soot.views.IView view) {
+  public java.util.Optional<AbstractClass> reifyClass(ClassSource classSource, de.upb.soot.views.IView view) {
     java.util.Optional<AbstractClass> result = java.util.Optional.empty();
     akka.actor.ActorRef cb = getOrCreateActor(classSource, view);
     akka.util.Timeout timeout = new akka.util.Timeout(scala.concurrent.duration.Duration.create(5, "seconds"));
@@ -74,8 +71,7 @@ public class AkkaClassResolver {
     return result;
   }
 
-  private akka.actor.ActorRef getOrCreateActor(ClassSource source,
-                                               de.upb.soot.views.IView view) {
+  private akka.actor.ActorRef getOrCreateActor(ClassSource source, de.upb.soot.views.IView view) {
     akka.actor.ActorRef actorRef = null;
     if (this.createdActors.containsKey(source)) {
       return createdActors.get(source);
@@ -86,8 +82,7 @@ public class AkkaClassResolver {
     return createActorRef(source, view);
   }
 
-  private akka.actor.ActorRef createActorRef(ClassSource source,
-                                             de.upb.soot.views.IView view) {
+  private akka.actor.ActorRef createActorRef(ClassSource source, de.upb.soot.views.IView view) {
     akka.actor.ActorRef actorRef = null;
     actorRef = system.actorOf(de.upb.soot.buildactor.ClassBuilderActor.props(view, source));
     this.createdActors.put(source, actorRef);

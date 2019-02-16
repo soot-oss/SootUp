@@ -188,7 +188,7 @@ public class SootModuleInfo extends AbstractClass {
    */
 
   public SootModuleInfo(IView view, ClassSource cs, JavaClassSignature moduleSignature, EnumSet<Modifier> access,
-                        String version, ResolvingLevel resolvingLevel) {
+      String version, ResolvingLevel resolvingLevel) {
     super(view, cs, Collections.emptySet(), Collections.emptySet());
     this.moduleSignature = moduleSignature;
     this.resolvingLevel = resolvingLevel;

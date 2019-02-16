@@ -22,10 +22,11 @@ package de.upb.soot.core;
  */
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
+
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
+import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.validation.ClassFlagsValidator;
@@ -35,7 +36,6 @@ import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.views.IView;
 
-import javax.annotation.Nullable;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +47,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import javax.annotation.Nullable;
 
 /*
  * Incomplete and inefficient implementation.
@@ -219,15 +221,16 @@ public class SootClass extends AbstractClass implements Serializable {
   public final static String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, ClassSource classSource, ClassType type,
-                   @Nullable JavaClassSignature superClass, Collection<JavaClassSignature> interfaces, @Nullable JavaClassSignature outerClass,
-                   Position position, EnumSet<Modifier> modifiers) {
+      @Nullable JavaClassSignature superClass, Collection<JavaClassSignature> interfaces,
+      @Nullable JavaClassSignature outerClass, Position position, EnumSet<Modifier> modifiers) {
     this(view, resolvingLevel, classSource, type, superClass, interfaces, outerClass, new HashSet<>(), new HashSet<>(),
         position, modifiers);
   }
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, ClassSource classSource, ClassType type,
-                   @Nullable JavaClassSignature superClass, Collection<JavaClassSignature> interfaces, @Nullable JavaClassSignature outerClass,
-                   Set<SootField> fields, Set<SootMethod> methods, Position position, EnumSet<Modifier> modifiers) {
+      @Nullable JavaClassSignature superClass, Collection<JavaClassSignature> interfaces,
+      @Nullable JavaClassSignature outerClass, Set<SootField> fields, Set<SootMethod> methods, Position position,
+      EnumSet<Modifier> modifiers) {
     super(view, classSource, methods, fields);
     this.resolvingLevel = resolvingLevel;
     this.classType = type;
@@ -242,7 +245,7 @@ public class SootClass extends AbstractClass implements Serializable {
     view.addClass(this);
   }
 
-  //FIXME: error handling
+  // FIXME: error handling
   public void resolve(de.upb.soot.core.ResolvingLevel resolvingLevel) {
     try {
       this.getClassSource().getContent().resolve(resolvingLevel, getView());
@@ -426,8 +429,8 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given name and parameters. This methodRef may throw an AmbiguousMethodException if
-   * there is more than one methodRef with the given name and parameter.
+   * Attempts to retrieve the methodRef with the given name and parameters. This methodRef may throw an
+   * AmbiguousMethodException if there is more than one methodRef with the given name and parameter.
    */
 
   public SootMethod getMethod(String name, List<Type> parameterTypes) {
@@ -456,8 +459,9 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given subSignature. This methodRef may throw an AmbiguousMethodException if there
-   * are more than one methodRef with the given subSignature. If no methodRef with the given is found, null is returned.
+   * Attempts to retrieve the methodRef with the given subSignature. This methodRef may throw an AmbiguousMethodException if
+   * there are more than one methodRef with the given subSignature. If no methodRef with the given is found, null is
+   * returned.
    */
   public SootMethod getMethodBySubSignature(String subSignature) {
     checkLevel(ResolvingLevel.SIGNATURES);
@@ -479,8 +483,9 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given name. This methodRef may throw an AmbiguousMethodException if there are more
-   * than one methodRef with the given name. If no methodRef with the given is found, an exception is thrown as well.
+   * Attempts to retrieve the methodRef with the given name. This methodRef may throw an AmbiguousMethodException if there
+   * are more than one methodRef with the given name. If no methodRef with the given is found, an exception is thrown as
+   * well.
    */
   public SootMethod getMethodByName(String name) {
     SootMethod foundMethod = getMethodBySubSignature(name);

@@ -36,31 +36,18 @@ public interface SignatureFactory {
 
   TypeSignature getArrayTypeSignature(TypeSignature baseType, int dim);
 
-
-  MethodSignature getMethodSignature(
-      String methodName,
-      String fullyQualifiedNameDeclClass,
-      String fqReturnType,
+  MethodSignature getMethodSignature(String methodName, String fullyQualifiedNameDeclClass, String fqReturnType,
       List<String> parameters);
 
-  MethodSignature getMethodSignature(
-      String methodName,
-      JavaClassSignature declaringClassSignature,
-      String fqReturnType,
+  MethodSignature getMethodSignature(String methodName, JavaClassSignature declaringClassSignature, String fqReturnType,
       List<String> parameters);
 
-  MethodSignature getMethodSignature(
-          String methodName,
-          JavaClassSignature declaringClassSignature,
-          TypeSignature fqReturnType,
-          List<TypeSignature> parameters);
+  MethodSignature getMethodSignature(String methodName, JavaClassSignature declaringClassSignature,
+      TypeSignature fqReturnType, List<TypeSignature> parameters);
 
+  FieldSignature getFieldSignature(String fieldName, JavaClassSignature declaringClassSignature, String fieldType);
 
-  FieldSignature getFieldSignature(
-      String fieldName, JavaClassSignature declaringClassSignature, String fieldType);
-
-  FieldSignature getFieldSignature(
-      String fieldName, JavaClassSignature declaringClassSignature, TypeSignature fieldType);
+  FieldSignature getFieldSignature(String fieldName, JavaClassSignature declaringClassSignature, TypeSignature fieldType);
 
   JavaClassSignature fromPath(Path file);
 }

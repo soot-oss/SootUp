@@ -22,6 +22,7 @@ package de.upb.soot.core;
  */
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+
 import de.upb.soot.frontends.IMethodSourceContent;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.jimple.common.type.Type;
@@ -30,7 +31,6 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,6 +40,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringTokenizer;
+
+import javax.annotation.Nullable;
 
 /**
  * Soot's counterpart of th import java.util.stream.Collectors;e source language's methodRef concept. Soot representation of

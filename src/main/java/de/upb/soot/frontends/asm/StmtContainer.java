@@ -55,7 +55,8 @@ class StmtContainer implements IStmt {
    *
    * @return the first IStmt of the container
    */
-  @Nonnull IStmt getFirstUnit() {
+  @Nonnull
+  IStmt getFirstUnit() {
     IStmt ret = units[0];
     while (ret instanceof StmtContainer) {
       ret = ((StmtContainer) ret).units[0];
