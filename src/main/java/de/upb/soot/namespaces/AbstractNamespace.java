@@ -49,7 +49,7 @@ public abstract class AbstractNamespace implements INamespace {
   }
 
   /**
-   * Returns the {@link IClassProvider} INSTANCE for this namespace.
+   * Returns the {@link IClassProvider} instance for this namespace.
    * 
    * @return The class provider for this namespace
    */
@@ -71,7 +71,7 @@ public abstract class AbstractNamespace implements INamespace {
    */
 
   /**
-   * Constructs a default class provider for use with namespaces. Currently, this provides an INSTANCE of
+   * Constructs a default class provider for use with namespaces. Currently, this provides an instance of
    * {@link AsmJavaClassProvider} to read Java Bytecode. This might be more brilliant in the future.
    *
    * @return An instance of {@link IClassProvider} to be used.
