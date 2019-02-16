@@ -25,8 +25,12 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
+import java.util.Comparator;
+import java.util.List;
+
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
@@ -34,9 +38,6 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.Comparator;
-import java.util.List;
 
 public class JTableSwitchStmt extends AbstractSwitchStmt {
   /**
@@ -57,20 +58,25 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public JTableSwitchStmt clone() {
-    return new JTableSwitchStmt(Jimple.cloneIfNecessary(getKey()), lowIndex, highIndex, getTargets(), getDefaultTarget());
+    return new JTableSwitchStmt(Jimple.cloneIfNecessary(getKey()), lowIndex, highIndex, getTargets(), getDefaultTarget(),
+        getPositionInfo().clone());
   }
 
-  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets, IStmt defaultTarget) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets), Jimple.newStmtBox(defaultTarget));
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets, IStmt defaultTarget,
+      PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets), Jimple.newStmtBox(defaultTarget),
+        positionInfo);
   }
 
-  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets, IStmtBox defaultTarget) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[targets.size()]), defaultTarget);
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets, IStmtBox defaultTarget,
+      PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[targets.size()]), defaultTarget,
+        positionInfo);
   }
 
-  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, IStmtBox[] targetBoxes,
-      IStmtBox defaultTargetBox) {
-    super(keyBox, defaultTargetBox, targetBoxes);
+  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, IStmtBox[] targetBoxes, IStmtBox defaultTargetBox,
+      PositionInfo positionInfo) {
+    super(positionInfo, keyBox, defaultTargetBox, targetBoxes);
 
     if (lowIndex > highIndex) {
       throw new RuntimeException(

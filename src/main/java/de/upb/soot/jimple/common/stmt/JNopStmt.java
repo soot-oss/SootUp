@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -36,12 +37,13 @@ public class JNopStmt extends AbstractStmt {
    */
   private static final long serialVersionUID = -614576667391055548L;
 
-  public JNopStmt() {
+  public JNopStmt(PositionInfo positionInfo) {
+    super(positionInfo);
   }
 
   @Override
   public JNopStmt clone() {
-    return new JNopStmt();
+    return new JNopStmt(getPositionInfo().clone());
   }
 
   @Override

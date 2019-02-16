@@ -1,25 +1,5 @@
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.core.ClassType;
-import de.upb.soot.core.Modifier;
-import de.upb.soot.core.ResolvingLevel;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootMethod;
-import referencejimple.NoPositionInformation;
-import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.common.constant.StringConstant;
-import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
-import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.namespaces.JavaClassPathNamespace;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.views.IView;
-import de.upb.soot.views.JavaView;
-
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,12 +14,37 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import categories.Java8Test;
-
+import de.upb.soot.core.ClassType;
+import de.upb.soot.core.Modifier;
+import de.upb.soot.core.ResolvingLevel;
+import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootField;
+import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.NoPositionInformation;
+import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.common.constant.StringConstant;
+import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
+import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
+import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.namespaces.JavaClassPathNamespace;
+import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.views.IView;
+import de.upb.soot.views.JavaView;
+/**
+*
+* @author Markus Schmidt & Linghui Luo
+*
+*/
 @Category(Java8Test.class)
 public class JInvokeStmtTest {
 
   @Test
   public void test() {
+    PositionInfo nop = PositionInfo.createNoPositionInfo();
 
     IView view = new JavaView(null);
     DefaultSignatureFactory dsm = new DefaultSignatureFactory();
@@ -62,26 +67,21 @@ public class JInvokeStmtTest {
     // JStaticInvokeExpr
     MethodSignature imethodSig = dsm.getMethodSignature("print", "java.system.Out", "void", Arrays.asList("String"));
     IStmt staticInvokeStmt
-        = new JInvokeStmt(new JStaticInvokeExpr(view, imethodSig, Arrays.asList(StringConstant.getInstance("Towel"))));
+        = new JInvokeStmt(new JStaticInvokeExpr(view, imethodSig, Arrays.asList(StringConstant.getInstance("Towel"))), nop);
 
     // JSpecialInvoke
     MethodSignature smethodSig = dsm.getMethodSignature("<init>", "java.lang.Object", "void", Arrays.asList());
     IStmt specialInvokeStmt = new JInvokeStmt(new JSpecialInvokeExpr(view,
-        new Local("$r0", new RefType(view, sootClass.getSignature())), smethodSig, Arrays.asList()));
+        new Local("$r0", new RefType(view, sootClass.getSignature())), smethodSig, Arrays.asList()), nop);
 
     // TODO: JInterfaceInvoke
     // TODO: JDynamicInvoke (lambdas)
-
-
-
-
-
 
     // toString
     Assert.assertEquals("staticinvoke <java.system.Out: void print(String)>(\"Towel\")", staticInvokeStmt.toString());
 
     // equivTo
-    Assert.assertFalse(staticInvokeStmt.equivTo(new JNopStmt()));
+    Assert.assertFalse(staticInvokeStmt.equivTo(new JNopStmt(nop)));
     Assert.assertTrue(staticInvokeStmt.equivTo(staticInvokeStmt));
     // TODO:
 
@@ -89,7 +89,7 @@ public class JInvokeStmtTest {
     Assert.assertEquals("specialinvoke $r0.<java.lang.Object: void <init>()>()", specialInvokeStmt.toString());
 
     // equivTo
-    Assert.assertFalse(specialInvokeStmt.equivTo(new JNopStmt()));
+    Assert.assertFalse(specialInvokeStmt.equivTo(new JNopStmt(nop)));
     Assert.assertTrue(specialInvokeStmt.equivTo(specialInvokeStmt));
     // TODO:
 

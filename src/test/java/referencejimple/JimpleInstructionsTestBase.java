@@ -1,10 +1,5 @@
 package referencejimple;
 
-import de.upb.soot.Project;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.util.printer.Printer;
-import de.upb.soot.views.JavaView;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,6 +10,15 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
 
+import de.upb.soot.Project;
+import de.upb.soot.core.SootClass;
+import de.upb.soot.util.printer.Printer;
+import de.upb.soot.views.JavaView;
+/**
+*
+* @author Markus Schmidt 
+*
+*/
 public abstract class JimpleInstructionsTestBase {
 
     public JavaView view;

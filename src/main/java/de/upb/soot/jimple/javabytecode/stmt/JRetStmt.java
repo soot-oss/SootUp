@@ -25,17 +25,18 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 public class JRetStmt extends AbstractStmt {
   /**
@@ -45,18 +46,19 @@ public class JRetStmt extends AbstractStmt {
   final ValueBox stmtAddressBox;
   // List useBoxes;
 
-  public JRetStmt(Value stmtAddress) {
-    this(Jimple.newLocalBox(stmtAddress));
+  public JRetStmt(Value stmtAddress, PositionInfo positionInfo) {
+    this(Jimple.newLocalBox(stmtAddress), positionInfo);
   }
 
-  protected JRetStmt(ValueBox stmtAddressBox) {
+  protected JRetStmt(ValueBox stmtAddressBox, PositionInfo positionInfo) {
+    super(positionInfo);
     this.stmtAddressBox = stmtAddressBox;
 
   }
 
   @Override
   public JRetStmt clone() {
-    return new JRetStmt(Jimple.cloneIfNecessary(getStmtAddress()));
+    return new JRetStmt(Jimple.cloneIfNecessary(getStmtAddress()), getPositionInfo().clone());
   }
 
   @Override
@@ -113,7 +115,7 @@ public class JRetStmt extends AbstractStmt {
     if (!(o instanceof JRetStmt)) {
       return false;
     }
-    if (!getStmtAddress().equivTo( ((JRetStmt) o).getStmtAddress() ) ) {
+    if (!getStmtAddress().equivTo(((JRetStmt) o).getStmtAddress())) {
       return false;
     }
     return true;

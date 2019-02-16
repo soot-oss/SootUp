@@ -25,17 +25,18 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class JIfStmt extends AbstractStmt {
   /**
@@ -47,15 +48,16 @@ public class JIfStmt extends AbstractStmt {
 
   final List<IStmtBox> targetBoxes;
 
-  public JIfStmt(Value condition, IStmt target) {
-    this(condition, Jimple.newStmtBox(target));
+  public JIfStmt(Value condition, IStmt target,PositionInfo positionInfo) {
+    this(condition, Jimple.newStmtBox(target),positionInfo);
   }
 
-  public JIfStmt(Value condition, IStmtBox target) {
-    this(Jimple.newConditionExprBox(condition), target);
+  public JIfStmt(Value condition, IStmtBox target,PositionInfo positionInfo) {
+    this(Jimple.newConditionExprBox(condition), target,positionInfo);
   }
 
-  protected JIfStmt(ValueBox conditionBox, IStmtBox targetBox) {
+  protected JIfStmt(ValueBox conditionBox, IStmtBox targetBox,PositionInfo positionInfo) {
+    super(positionInfo);
     this.conditionBox = conditionBox;
     this.targetBox = targetBox;
 
@@ -64,7 +66,7 @@ public class JIfStmt extends AbstractStmt {
 
   @Override
   public JIfStmt clone() {
-    return new JIfStmt(Jimple.cloneIfNecessary(getCondition()), getTarget());
+    return new JIfStmt(Jimple.cloneIfNecessary(getCondition()), getTarget(),getPositionInfo().clone());
   }
 
   @Override

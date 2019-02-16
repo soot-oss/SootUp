@@ -25,13 +25,14 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
+import java.util.Comparator;
+
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.Comparator;
 
 public class JBreakpointStmt extends AbstractStmt {
   /**
@@ -39,7 +40,8 @@ public class JBreakpointStmt extends AbstractStmt {
    */
   private static final long serialVersionUID = 7082976523552855249L;
 
-  public JBreakpointStmt() {
+  public JBreakpointStmt(PositionInfo positionInfo) {
+    super(positionInfo);
   }
 
   @Override
@@ -59,7 +61,7 @@ public class JBreakpointStmt extends AbstractStmt {
 
   @Override
   public JBreakpointStmt clone() {
-    return new JBreakpointStmt();
+    return new JBreakpointStmt(getPositionInfo().clone());
   }
 
   @Override

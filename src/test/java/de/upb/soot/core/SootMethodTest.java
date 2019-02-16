@@ -2,17 +2,6 @@ package de.upb.soot.core;
 
 import static org.junit.Assert.assertEquals;
 
-import de.upb.soot.frontends.java.WalaIRMethodSource;
-import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.LocalGenerator;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
-import de.upb.soot.views.IView;
-import de.upb.soot.views.JavaView;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -23,6 +12,17 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import categories.Java8Test;
+import de.upb.soot.frontends.java.WalaIRMethodSource;
+import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.LocalGenerator;
+import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.namespaces.JavaSourcePathNamespace;
+import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
+import de.upb.soot.views.IView;
+import de.upb.soot.views.JavaView;
 
 /**
  * 
@@ -37,11 +37,11 @@ public class SootMethodTest {
     IView view = new JavaView(null);
     Type type = view.getType(view.getSignatureFactory().getTypeSignature("java.lang.String"));
 
-
+    PositionInfo nop=PositionInfo.createNoPositionInfo();
     List<IStmt> stmts=new ArrayList<>();
     LocalGenerator generator = new LocalGenerator();
-    stmts.add(Jimple.newIdentityStmt(generator.generateLocal(type), Jimple.newParameterRef(type, 0)));
-    stmts.add(Jimple.newAssignStmt(generator.generateLocal(type), Jimple.newNewExpr((RefType) type)));
+    stmts.add(Jimple.newIdentityStmt(generator.generateLocal(type), Jimple.newParameterRef(type, 0),nop));
+    stmts.add(Jimple.newAssignStmt(generator.generateLocal(type), Jimple.newNewExpr((RefType) type),nop));
 
     Body body = new Body(generator.getLocals(), Collections.emptyList(), stmts, null);
     

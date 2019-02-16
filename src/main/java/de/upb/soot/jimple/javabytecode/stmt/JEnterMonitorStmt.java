@@ -25,7 +25,10 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
+import java.util.Comparator;
+
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
@@ -33,25 +36,23 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
-import java.util.Comparator;
-
 public class JEnterMonitorStmt extends AbstractOpStmt {
   /**
    * 
    */
   private static final long serialVersionUID = -8580317170617446624L;
 
-  public JEnterMonitorStmt(Value op) {
-    this(Jimple.newImmediateBox(op));
+  public JEnterMonitorStmt(Value op,PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(op),positionInfo);
   }
 
-  protected JEnterMonitorStmt(ValueBox opBox) {
-    super(opBox);
+  protected JEnterMonitorStmt(ValueBox opBox,PositionInfo positionInfo) {
+    super(opBox,positionInfo);
   }
 
   @Override
   public JEnterMonitorStmt clone() {
-    return new JEnterMonitorStmt(Jimple.cloneIfNecessary(getOp()));
+    return new JEnterMonitorStmt(Jimple.cloneIfNecessary(getOp()),getPositionInfo().clone());
   }
 
   @Override
@@ -82,6 +83,7 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
     return false;
   }
 
+  @Override
   public boolean equivTo(Object o) {
     if (!(o instanceof JEnterMonitorStmt)) {
       return false;

@@ -11,9 +11,12 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import java.util.List;
+
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Immediate;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.RValueBox;
 import de.upb.soot.jimple.basic.StmtBoxOwner;
 import de.upb.soot.jimple.basic.Value;
@@ -25,8 +28,6 @@ import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.List;
 
 /**
  * The Class JAssignStmt.
@@ -144,8 +145,8 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @param rvalue
    *          the value on the right side of the assign statement.
    */
-  public JAssignStmt(Value variable, Value rvalue) {
-    this(new LinkedVariableBox(variable), new LinkedRValueBox(rvalue));
+  public JAssignStmt(Value variable, Value rvalue, PositionInfo positionInfo) {
+    this(new LinkedVariableBox(variable), new LinkedRValueBox(rvalue),positionInfo);
 
     ((LinkedVariableBox) leftBox).setOtherBox(rightBox);
     ((LinkedRValueBox) rightBox).setOtherBox(leftBox);
@@ -165,8 +166,8 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @param rvalueBox
    *          the rvalue box on the right side of the assign statement.
    */
-  protected JAssignStmt(ValueBox variableBox, ValueBox rvalueBox) {
-    super(variableBox, rvalueBox);
+  protected JAssignStmt(ValueBox variableBox, ValueBox rvalueBox, PositionInfo positionInfo) {
+    super(variableBox, rvalueBox, positionInfo);
   }
 
   /*
@@ -345,7 +346,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    */
   @Override
   public JAssignStmt clone() {
-    return new JAssignStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()));
+    return new JAssignStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()), getPositionInfo().clone());
   }
 
   /**

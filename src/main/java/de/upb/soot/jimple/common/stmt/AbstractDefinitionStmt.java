@@ -25,12 +25,13 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.basic.ValueBox;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.basic.ValueBox;
 
 public abstract class AbstractDefinitionStmt extends AbstractStmt {
   /**
@@ -40,7 +41,8 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
   public final ValueBox leftBox;
   public final ValueBox rightBox;
 
-  protected AbstractDefinitionStmt(ValueBox leftBox, ValueBox rightBox) {
+  protected AbstractDefinitionStmt(ValueBox leftBox, ValueBox rightBox, PositionInfo positionInfo) {
+    super(positionInfo);
     this.leftBox = leftBox;
     this.rightBox = rightBox;
   }

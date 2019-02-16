@@ -25,14 +25,15 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import java.util.Collections;
+import java.util.List;
+
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.Collections;
-import java.util.List;
 
 public class JGotoStmt extends AbstractStmt {
   /**
@@ -42,18 +43,19 @@ public class JGotoStmt extends AbstractStmt {
   final IStmtBox targetBox;
   final List<IStmtBox> targetBoxes;
 
-  public JGotoStmt(IStmt target) {
-    this(Jimple.newStmtBox(target));
+  public JGotoStmt(IStmt target,PositionInfo positionInfo) {
+    this(Jimple.newStmtBox(target),positionInfo);
   }
 
-  public JGotoStmt(IStmtBox box) {
+  public JGotoStmt(IStmtBox box,PositionInfo positionInfo) {
+    super(positionInfo);
     targetBox = box;
     targetBoxes = Collections.singletonList(box);
   }
 
   @Override
   public JGotoStmt clone() {
-    return new JGotoStmt(getTarget());
+    return new JGotoStmt(getTarget(), getPositionInfo().clone());
   }
 
   @Override

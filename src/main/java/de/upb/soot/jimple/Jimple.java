@@ -24,6 +24,11 @@
 
 package de.upb.soot.jimple;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+
 import de.upb.soot.jimple.basic.ConditionExprBox;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.IdentityRefBox;
@@ -32,6 +37,7 @@ import de.upb.soot.jimple.basic.InvokeExprBox;
 import de.upb.soot.jimple.basic.JStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalBox;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.IntConstant;
@@ -93,14 +99,6 @@ import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-
-
 
 /**
  * The Jimple class contains all the constructors for the components of the Jimple grammar for the Jimple body. <br>
@@ -194,10 +192,12 @@ public class Jimple {
   }
 
   public static boolean isJavaKeywordType(Type t) {
+    // TODO
     return false;
   }
 
   public static Value cloneIfNecessary(Value val) {
+    // TODO
     return null;
   }
 
@@ -423,8 +423,7 @@ public class Jimple {
    * grammar chunk.
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef, List<? extends Value> args) {
+      List<? extends Value> bootstrapArgs, MethodSignature methodRef, List<? extends Value> args) {
     return new JDynamicInvokeExpr(view, bootstrapMethodRef, bootstrapArgs, methodRef, args);
   }
 
@@ -433,8 +432,7 @@ public class Jimple {
    * grammar chunk.
    */
   public static JDynamicInvokeExpr newDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef, int tag, List<? extends Value> args) {
+      List<? extends Value> bootstrapArgs, MethodSignature methodRef, int tag, List<? extends Value> args) {
     return new JDynamicInvokeExpr(view, bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
 
@@ -487,131 +485,129 @@ public class Jimple {
   /**
    * Constructs a ThrowStmt(Immediate) grammar chunk.
    */
-  public static JThrowStmt newThrowStmt(Value op) {
-    return new JThrowStmt(op);
+  public static JThrowStmt newThrowStmt(Value op, PositionInfo posInfo) {
+    return new JThrowStmt(op, posInfo);
   }
 
   /**
    * Constructs a ExitMonitorStmt(Immediate) grammar chunk.
    */
-  public static JExitMonitorStmt newExitMonitorStmt(Value op) {
-    return new JExitMonitorStmt(op);
+  public static JExitMonitorStmt newExitMonitorStmt(Value op, PositionInfo posInfo) {
+    return new JExitMonitorStmt(op, posInfo);
   }
 
   /**
    * Constructs a EnterMonitorStmt(Immediate) grammar chunk.
    */
-  public static JEnterMonitorStmt newEnterMonitorStmt(Value op) {
-    return new JEnterMonitorStmt(op);
+  public static JEnterMonitorStmt newEnterMonitorStmt(Value op, PositionInfo posInfo) {
+    return new JEnterMonitorStmt(op, posInfo);
   }
 
   /**
    * Constructs a BreakpointStmt() grammar chunk.
    */
-  public static JBreakpointStmt newBreakpointStmt() {
-    return new JBreakpointStmt();
+  public static JBreakpointStmt newBreakpointStmt(PositionInfo posInfo) {
+    return new JBreakpointStmt(posInfo);
   }
 
   /**
    * Constructs a GotoStmt(Stmt) grammar chunk.
    */
-  public static JGotoStmt newGotoStmt(IStmt target) {
-    return new JGotoStmt(target);
+  public static JGotoStmt newGotoStmt(IStmt target, PositionInfo posInfo) {
+    return new JGotoStmt(target, posInfo);
   }
 
-  public static JGotoStmt newGotoStmt(IStmtBox stmtBox) {
-    return new JGotoStmt(stmtBox);
+  public static JGotoStmt newGotoStmt(IStmtBox stmtBox, PositionInfo posInfo) {
+    return new JGotoStmt(stmtBox, posInfo);
   }
 
   /**
    * Constructs a NopStmt() grammar chunk.
    */
-  public static JNopStmt newNopStmt() {
-    return new JNopStmt();
+  public static JNopStmt newNopStmt(PositionInfo posInfo) {
+    return new JNopStmt(posInfo);
   }
 
   /**
    * Constructs a ReturnVoidStmt() grammar chunk.
    */
-  public static JReturnVoidStmt newReturnVoidStmt() {
-    return new JReturnVoidStmt();
+  public static JReturnVoidStmt newReturnVoidStmt(PositionInfo posInfo) {
+    return new JReturnVoidStmt(posInfo);
   }
 
   /**
    * Constructs a ReturnStmt(Immediate) grammar chunk.
    */
-  public static JReturnStmt newReturnStmt(Value op) {
-    return new JReturnStmt(op);
+  public static JReturnStmt newReturnStmt(Value op, PositionInfo posInfo) {
+    return new JReturnStmt(op, posInfo);
   }
 
   /**
    * Constructs a RetStmt(Local) grammar chunk.
    */
-  public static JRetStmt newRetStmt(Value stmtAddress) {
-    return new JRetStmt(stmtAddress);
+  public static JRetStmt newRetStmt(Value stmtAddress, PositionInfo posInfo) {
+    return new JRetStmt(stmtAddress, posInfo);
   }
 
   /**
    * Constructs a IfStmt(Condition, Stmt) grammar chunk.
    */
-  public static JIfStmt newIfStmt(Value condition, IStmt target) {
-    return new JIfStmt(condition, target);
+  public static JIfStmt newIfStmt(Value condition, IStmt target, PositionInfo posInfo) {
+    return new JIfStmt(condition, target, posInfo);
   }
 
   /**
    * Constructs a IfStmt(Condition, UnitBox) grammar chunk.
    */
-  public static JIfStmt newIfStmt(Value condition, IStmtBox target) {
-    return new JIfStmt(condition, target);
+  public static JIfStmt newIfStmt(Value condition, IStmtBox target, PositionInfo posInfo) {
+    return new JIfStmt(condition, target, posInfo);
   }
 
   /**
    * Constructs a IdentityStmt(Local, IdentityRef) grammar chunk.
    */
-  public static JIdentityStmt newIdentityStmt(Value local, Value identityRef) {
-    return new JIdentityStmt(local, identityRef);
+  public static JIdentityStmt newIdentityStmt(Value local, Value identityRef, PositionInfo posInfo) {
+    return new JIdentityStmt(local, identityRef, posInfo);
   }
 
   /**
    * Constructs a AssignStmt(Variable, RValue) grammar chunk.
    */
-  public static JAssignStmt newAssignStmt(Value variable, Value rvalue) {
-    return new JAssignStmt(variable, rvalue);
+  public static JAssignStmt newAssignStmt(Value variable, Value rvalue, PositionInfo posInfo) {
+    return new JAssignStmt(variable, rvalue, posInfo);
   }
 
   /**
    * Constructs a InvokeStmt(InvokeExpr) grammar chunk.
    */
-  public static JInvokeStmt newInvokeStmt(Value op) {
-    return new JInvokeStmt(op);
+  public static JInvokeStmt newInvokeStmt(Value op, PositionInfo posInfo) {
+    return new JInvokeStmt(op, posInfo);
   }
 
   /**
    * Constructs a TableSwitchStmt(Immediate, int, int, List of Unit, Stmt) grammar chunk.
    */
   public static JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets,
-      IStmt defaultTarget) {
-    return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget);
+      IStmt defaultTarget, PositionInfo posInfo) {
+    return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
 
   public static JTableSwitchStmt newTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets,
-      IStmtBox defaultTarget) {
-    return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget);
+      IStmtBox defaultTarget, PositionInfo posInfo) {
+    return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
 
   /**
    * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
    */
   public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
-      List<? extends IStmt> targets,
-      IStmt defaultTarget) {
-    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
+      List<? extends IStmt> targets, IStmt defaultTarget, PositionInfo posInfo) {
+    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
 
   public static JLookupSwitchStmt newLookupSwitchStmt(Value key, List<IntConstant> lookupValues,
-      List<? extends IStmtBox> targets,
-      IStmtBox defaultTarget) {
-    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget);
+      List<? extends IStmtBox> targets, IStmtBox defaultTarget, PositionInfo posInfo) {
+    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
 
   /**

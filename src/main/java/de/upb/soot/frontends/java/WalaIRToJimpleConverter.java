@@ -42,6 +42,7 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.ArrayType;
@@ -417,8 +418,7 @@ public class WalaIRToJimpleConverter {
         if (!sootMethod.isStatic()) {
           RefType thisType = view.getRefType(sootMethod.getDeclaringClassSignature());
           Local thisLocal = localGenerator.generateThisLocal(thisType);
-          IStmt stmt = Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType));
-          stmt.setPosition(debugInfo.getInstructionPosition(0));
+          IStmt stmt = Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType), new PositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
 
@@ -431,8 +431,7 @@ public class WalaIRToJimpleConverter {
           TypeReference t = walaMethod.getParameterType(startPara);
           Type type = convertType(t);
           Local paraLocal = localGenerator.generateParameterLocal(type, startPara);
-          IStmt stmt = Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, startPara-1));
-          stmt.setPosition(debugInfo.getInstructionPosition(0));
+          IStmt stmt = Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, startPara-1), new PositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
 
@@ -445,9 +444,6 @@ public class WalaIRToJimpleConverter {
           List<IStmt> retStmts = instConverter.convertInstruction(debugInfo,inst);
           if (!retStmts.isEmpty()) {
             for (IStmt stmt : retStmts) {
-              // set position for each statement
-              Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
-              stmt.setPosition(stmtPos);
               stmts.add(stmt);
               stmt2IIndex.put(stmt, inst.iindex);
             }
@@ -459,9 +455,8 @@ public class WalaIRToJimpleConverter {
         }
         // add return void stmt for methods with return type beiing void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
-          IStmt ret = Jimple.newReturnVoidStmt();
+          IStmt ret = Jimple.newReturnVoidStmt(new PositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
           instConverter.setTarget(ret, -1);
-          ret.setPosition(debugInfo.getInstructionPosition(insts.length - 1));
           stmts.add(ret);
         }
         Body body = new Body(sootMethod, localGenerator.getLocals(), traps, stmts, bodyPos);
