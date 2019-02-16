@@ -189,7 +189,7 @@ class StmtContainer implements IStmt {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<?> comparator) {
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
     throw new UnsupportedOperationException();
   }
 

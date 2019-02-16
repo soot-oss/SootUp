@@ -26,7 +26,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import com.google.common.base.Optional;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
@@ -37,12 +36,12 @@ import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
+import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
-import org.objectweb.asm.Opcodes;
+import java.util.Optional;
 
 public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   /**
@@ -144,8 +143,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     return false;
   }
 
-  public com.google.common.base.Optional<SootMethod> getBootstrapMethod() {
-    return com.google.common.base.Optional.fromNullable(method.resolve());
+  public Optional<SootMethod> getBootstrapMethod() {
+    return Optional.ofNullable(method.resolve());
   }
 
   /**

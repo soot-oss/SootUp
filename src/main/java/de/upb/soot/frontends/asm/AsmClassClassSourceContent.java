@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
@@ -73,7 +72,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
       throws AsmFrontendException {
     SootClass sootClass = (SootClass) view.getClass(cs).orElseThrow(() -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
     Set<JavaClassSignature> interfaces = new HashSet<>();
-    Optional<JavaClassSignature> mySuperCl = Optional.empty();
+    JavaClassSignature mySuperClass;
     SootClass.HierachyStep danglingStep;
 
     if (sootClass.resolvingLevel().isLoweverLevel(ResolvingLevel.DANGLING)) {
@@ -84,9 +83,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     }
     {
       // add super class
-      JavaClassSignature superClass =
-          view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(superName));
-      mySuperCl = Optional.of(superClass);
+      mySuperClass = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(superName));
     }
     {
       // add the interfaces
@@ -97,7 +94,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
         interfaces.add(interfaceSig);
       }
     }
-    return danglingStep.hierachy(mySuperCl, interfaces, null, Optional.empty());
+    return danglingStep.hierachy(mySuperClass, interfaces, null, null);
   }
 
   private @Nonnull SootClass.BodyStep resolveSignature(@Nonnull IView view, @Nonnull JavaClassSignature cs)

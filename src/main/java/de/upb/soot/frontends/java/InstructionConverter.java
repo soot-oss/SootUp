@@ -741,7 +741,7 @@ class InstructionConverter {
       } else {
         return IntConstant.getInstance(0);
       }
-    } else if (value instanceof Byte || value instanceof Char || value instanceof Short || value instanceof Integer) {
+    } else if (value instanceof Byte || value instanceof Character || value instanceof Short || value instanceof Integer) {
       return IntConstant.getInstance((int) value);
     } else if (symbolTable.isLongConstant(valueNumber)) {
       return LongConstant.getInstance((long) value);

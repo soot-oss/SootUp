@@ -60,12 +60,12 @@ public class MethodType extends Constant {
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator<?> comparator) {
-    return false;
+  public void accept(IVisitor v) {
+
   }
 
   @Override
-  public void accept(IVisitor v) {
-
+  public boolean equivTo(Object o, Comparator<Object> comparator) {
+    return false;
   }
 }
