@@ -40,38 +40,33 @@ pipeline {
 
 	    stage('Test') {
         parallel {
-	  
+
           stage('Test JDK8'){
 
             agent {
               docker {
                 image 'maven:3-jdk-8-alpine'
                 args '-v $HOME/.m2:/root/.m2'
+
               }
             }
 
             steps {
               sh 'mvn test -PJava8'
-              jacoco(   execPattern: '**/target/coverage-reports/jacoco-ut.exec',
-              classPattern: '**/classes',
-              sourcePattern: 'src/main/java',
-              exclusionPattern: 'src/test*',
-              changeBuildStatus: true,
-              minimumMethodCoverage: "50",
-              maximumMethodCoverage: "70",
-              deltaMethodCoverage: "10"
-              )
+
             }
 
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
+                stash includes: '**/target/coverage-reports/*', name: 'reports1'
+
               }
             }
           }
 
 	        stage('Test JDK9'){
-  
+
             agent {
               docker {
                 image 'maven:3-jdk-9-slim'
@@ -81,20 +76,14 @@ pipeline {
 
             steps {
               sh 'mvn test -PJava9'
-              jacoco(
-              execPattern: '**/target/coverage-reports/jacoco-ut.exec',
-              classPattern: '**/classes',
-              sourcePattern: 'src/main/java',
-              exclusionPattern: 'src/test*',
-              changeBuildStatus: true,
-              minimumMethodCoverage: "50",
-              maximumMethodCoverage: "70",
-              deltaMethodCoverage: "10"
-              )
+
             }
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
+                stash includes: '**/target/coverage-reports/*', name: 'reports2'
+
+
               }
             }
           }
@@ -102,6 +91,21 @@ pipeline {
 
 	       }
 		}
+
+
+		stage('Report'){
+		     agent {
+                      docker {
+                        image 'maven:3-jdk-9-slim'
+                        args '-v $HOME/.m2:/root/.m2'
+                      }
+                    }
+          steps {
+                      unstash 'reports1'
+                      unstash 'reports2'
+        	        }
+        		}
+
 
 		stage('Deploy'){
 		    when {

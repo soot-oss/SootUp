@@ -27,9 +27,9 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   private static final long serialVersionUID = 5554270441921308784L;
   protected final ValueBox baseBox;
 
-  protected AbstractInstanceInvokeExpr(IView view, ValueBox baseBox, MethodSignature method, ValueBox[] argBoxes) {
+  protected AbstractInstanceInvokeExpr(IView view, ValueBox baseBox, MethodRef method, ValueBox[] argBoxes) {
     super(view, method, argBoxes);
     this.baseBox = baseBox;
   }
@@ -62,7 +62,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
+    List<ValueBox> list = new ArrayList<>();
     if (argBoxes != null) {
       Collections.addAll(list, argBoxes);
       for (ValueBox element : argBoxes) {

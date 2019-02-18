@@ -31,38 +31,20 @@ import java.util.EnumSet;
 
 /**
  * An Enum that provides static methods and constants to represent and work with with Java modifiers (ie public, final,...)
- * Represents Java modifiers that can be packed and combined via EnumSet and methods to query
- * these.
+ * Represents Java modifiers that can be packed and combined via EnumSet and methods to query these.
  *
  */
 public enum Modifier {
-  ABSTRACT(0x0400),
-  FINAL(0x0010), 
-  INTERFACE(0x0200), 
-  NATIVE(0x0100), 
-  PRIVATE(0x0002), 
-  PROTECTED(0x0004), 
-  PUBLIC(0x0001), 
-  STATIC(0x0008),
-  SYNCHRONIZED(0x0020), 
-  TRANSIENT(0x0080), /* VARARGS for methods */
+  ABSTRACT(0x0400), FINAL(0x0010), INTERFACE(0x0200), NATIVE(0x0100), PRIVATE(0x0002), PROTECTED(0x0004), PUBLIC(0x0001),
+  STATIC(0x0008), SYNCHRONIZED(0x0020), TRANSIENT(0x0080), /* VARARGS for methods */
   VOLATILE(0x0040), /* BRIDGE for methods */
-  STRICTFP(0x0800), 
-  ANNOTATION(0x2000), 
-  ENUM(0x4000), 
-  MODULE(0x8000),
+  STRICTFP(0x0800), ANNOTATION(0x2000), ENUM(0x4000), MODULE(0x8000),
 
   // dex specifific modifiers
-  SYNTHETIC(0x1000), 
-  CONSTRUCTOR(0x10000), 
-  DECLARED_SYNCHRONIZED(0x20000),
+  SYNTHETIC(0x1000), CONSTRUCTOR(0x10000), DECLARED_SYNCHRONIZED(0x20000),
 
   // modifier for java 9 modules
-  OPEN(0x0020), 
-  REQUIRES_TRANSITIVE(0x0020), 
-  REQUIRES_STATIC(0x0040), 
-  REQUIRES_SYNTHETIC(0x1000), 
-  REQUIRES_MANDATED(0x8000);
+  OPEN(0x0020), REQUIRES_TRANSITIVE(0x0020), REQUIRES_STATIC(0x0040), REQUIRES_SYNTHETIC(0x1000), REQUIRES_MANDATED(0x8000);
 
   private final int bytecode;
 
@@ -146,61 +128,61 @@ public enum Modifier {
    * @return a textual representation of the modifiers.
    */
   public static String toString(EnumSet<Modifier> m) {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder builder = new StringBuilder();
 
     if (isPublic(m)) {
-      buffer.append("public ");
+      builder.append("public ");
     } else if (isPrivate(m)) {
-      buffer.append("private ");
+      builder.append("private ");
     } else if (isProtected(m)) {
-      buffer.append("protected ");
+      builder.append("protected ");
     }
 
     if (isAbstract(m)) {
-      buffer.append("abstract ");
+      builder.append("abstract ");
     }
 
     if (isStatic(m)) {
-      buffer.append("static ");
+      builder.append("static ");
     }
 
     if (isFinal(m)) {
-      buffer.append("final ");
+      builder.append("final ");
     }
 
     if (isSynchronized(m)) {
-      buffer.append("synchronized ");
+      builder.append("synchronized ");
     }
 
     if (isNative(m)) {
-      buffer.append("native ");
+      builder.append("native ");
     }
 
     if (isTransient(m)) {
-      buffer.append("transient ");
+      builder.append("transient ");
     }
 
     if (isVolatile(m)) {
-      buffer.append("volatile ");
+      builder.append("volatile ");
     }
 
     if (isStrictFP(m)) {
-      buffer.append("strictfp ");
+      builder.append("strictfp ");
     }
 
     if (isAnnotation(m)) {
-      buffer.append("annotation ");
+      builder.append("annotation ");
     }
 
     if (isEnum(m)) {
-      buffer.append("enum ");
+      builder.append("enum ");
     }
 
     if (isInterface(m)) {
-      buffer.append("interface ");
+      builder.append("interface ");
     }
 
-    return (buffer.toString()).trim();
+    return (builder.toString()).trim();
   }
 
   /**

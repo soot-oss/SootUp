@@ -28,22 +28,17 @@ import java.util.List;
 
 /**
  * A relatively simple validator. It tries to check whether after each new-expression-statement there is a corresponding call
- * to the &lt;init&gt; method before a use or the end of the method.
+ * to the &lt;init&gt; methodRef before a use or the end of the methodRef.
  *
  * @author Marc Miltenberger
  * @author Steven Arzt
  */
-public enum NewValidator implements BodyValidator {
-  INSTANCE;
+public class NewValidator implements BodyValidator {
 
   private static final String errorMsg
       = "There is a path from '%s' to the usage '%s' where <init> does not get called in between.";
 
   public static boolean MUST_CALL_CONSTRUCTOR_BEFORE_RETURN = false;
-
-  public static NewValidator getInstance() {
-    return INSTANCE;
-  }
 
   /**
    * Checks whether after each new-instruction a constructor call follows.
@@ -58,7 +53,7 @@ public enum NewValidator implements BodyValidator {
      * // First seek for a JNewExpr. if (assign.getRightOp() instanceof JNewExpr) { if (!(assign.getLeftOp().getType()
      * instanceof RefType)) { exceptions.add(new ValidationException(u,
      * "A new-expression must be used on reference type locals",
-     * String.format("Body of method %s contains a new-expression, which is assigned to a non-reference local",
+     * String.format("Body of methodRef %s contains a new-expression, which is assigned to a non-reference local",
      * body.getMethod().getSignature()))); return; }
      * 
      * // We search for a JSpecialInvokeExpr on the local. LinkedHashSet<Local> locals = new LinkedHashSet<Local>();
@@ -69,12 +64,12 @@ public enum NewValidator implements BodyValidator {
      * }
      *
      * 
-     * <p> Checks whether all pathes from start to the end of the method have a call to the &lt;init&gt; method in between.
-     * </p> <code> $r0 = new X;<br> ...<br> specialinvoke $r0.<X: void <init>()>; //validator checks whether this statement
-     * is missing </code> <p> Regarding <i>aliasingLocals</i>:<br> The first local in the set is always the local on the LHS
-     * of the new-expression-assignment (called: original local; in the example <code>$r0</code>). </p>
+     * <p> Checks whether all pathes from start to the end of the methodRef have a call to the &lt;init&gt; methodRef in
+     * between. </p> <code> $r0 = new X;<br> ...<br> specialinvoke $r0.<X: void <init>()>; //validator checks whether this
+     * statement is missing </code> <p> Regarding <i>aliasingLocals</i>:<br> The first local in the set is always the local
+     * on the LHS of the new-expression-assignment (called: original local; in the example <code>$r0</code>). </p>
      *
-     * @param g the unit graph of the method
+     * @param g the unit graph of the methodRef
      * 
      * @param exception the list of all collected exceptions
      * 
@@ -88,7 +83,7 @@ public enum NewValidator implements BodyValidator {
      * while (!workList.isEmpty()) { Stmt curStmt = (Stmt) workList.remove(0); if (!doneSet.add(curStmt)) { continue; } if
      * (!newStmt.equals(curStmt)) { if (curStmt.containsInvokeExpr()) { InvokeExpr expr = curStmt.getInvokeExpr(); if
      * (expr.getMethod().isConstructor()) { if (!(expr instanceof SpecialInvokeExpr)) { exception.add(new
-     * ValidationException(curStmt, "<init> method calls may only be used with specialinvoke.")); // At least we found an
+     * ValidationException(curStmt, "<init> methodRef calls may only be used with specialinvoke.")); // At least we found an
      * initializer, so we return true... return true; } if (!(curStmt instanceof InvokeStmt)) { exception.add(new
      * ValidationException(curStmt, "<init> methods may only be called with invoke statements.")); // At least we found an
      * initializer, so we return true... return true; }
@@ -113,8 +108,9 @@ public enum NewValidator implements BodyValidator {
      * in between. // However, when creating such an alias, the use is okay. exception.add(new ValidationException(newStmt,
      * String.format(errorMsg, newStmt, curStmt))); return false; } } } } // Enqueue the successors List<Unit> successors =
      * g.getSuccsOf(curStmt); if (successors.isEmpty() && MUST_CALL_CONSTRUCTOR_BEFORE_RETURN) { // This means that we are
-     * e.g. at the end of the method // There was no <init> call on our way... exception.add(new ValidationException(newStmt,
-     * String.format(errorMsg, newStmt, curStmt))); return false; } workList.addAll(successors); } return true;
+     * e.g. at the end of the methodRef // There was no <init> call on our way... exception.add(new
+     * ValidationException(newStmt, String.format(errorMsg, newStmt, curStmt))); return false; } workList.addAll(successors);
+     * } return true;
      * 
      * 
      */

@@ -116,9 +116,8 @@ public class SignatureFactoryTest {
   public void getCompareClassSignature3() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
     JavaClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
-    JavaClassSignature classSignature2 = classSignature1;
     // Class Signatures are unique but not their package
-    boolean sameObject = classSignature1.equals(classSignature2);
+    boolean sameObject = classSignature1.equals(classSignature1);
     assertTrue(sameObject);
   }
 

@@ -22,6 +22,7 @@
 
 package de.upb.soot.jimple.basic;
 
+import de.upb.soot.frontends.asm.StmtContainer;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.AbstractBinopExpr;
@@ -407,4 +408,7 @@ public class JimpleComparator {
     return constant.equals(o);
   }
 
+  public boolean caseStmtContainer(StmtContainer stmtContainer, Object o) {
+    throw new UnsupportedOperationException();
+  }
 }

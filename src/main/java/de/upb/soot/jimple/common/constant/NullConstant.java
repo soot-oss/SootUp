@@ -36,21 +36,15 @@ public class NullConstant extends Constant {
    * 
    */
   private static final long serialVersionUID = 8286431855238615958L;
-  private static NullConstant nullconstant;
+  public static final NullConstant INSTANCE = new NullConstant();
 
   private NullConstant() {
   }
 
-  public static NullConstant getInstance() {
-    if (nullconstant == null) {
-      nullconstant = new NullConstant();
-    }
-    return nullconstant;
-  }
-
+  @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
   @Override
   public boolean equals(Object c) {
-    return c == nullconstant;
+    return c == INSTANCE;
   }
 
   @Override
@@ -60,7 +54,7 @@ public class NullConstant extends Constant {
 
   @Override
   public Type getType() {
-    return NullType.getInstance();
+    return NullType.INSTANCE;
   }
 
   @Override

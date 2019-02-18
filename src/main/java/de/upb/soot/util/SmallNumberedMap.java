@@ -119,7 +119,7 @@ public final class SmallNumberedMap<T> {
 
   /* Private stuff. */
 
-  private final int findPosition(Numberable o) {
+  private int findPosition(Numberable o) {
     int number = o.getNumber();
     if (number == 0) {
       throw new RuntimeException("unnumbered");
@@ -136,7 +136,7 @@ public final class SmallNumberedMap<T> {
     }
   }
 
-  private final void doubleSize() {
+  private void doubleSize() {
     Numberable[] oldArray = array;
     Object[] oldValues = values;
     int newLength = array.length * 2;

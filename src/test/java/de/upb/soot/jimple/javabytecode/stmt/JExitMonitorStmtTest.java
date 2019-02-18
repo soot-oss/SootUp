@@ -23,19 +23,17 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
+import categories.Java8Test;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.IntType;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java8Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(Java8Test.class)
 public class JExitMonitorStmtTest {
@@ -43,9 +41,9 @@ public class JExitMonitorStmtTest {
   @Test
   public void test() {
 
-    Local sandman = new Local("sandman", IntType.getInstance());
-    Local night = new Local("night", BooleanType.getInstance());
-    Local light = new Local("light", BooleanType.getInstance());
+    Local sandman = new Local("sandman", IntType.INSTANCE);
+    Local night = new Local("night", BooleanType.INSTANCE);
+    Local light = new Local("light", BooleanType.INSTANCE);
 
     IStmt stmt = new JExitMonitorStmt(sandman);
     IStmt nightStmt = new JExitMonitorStmt(night);

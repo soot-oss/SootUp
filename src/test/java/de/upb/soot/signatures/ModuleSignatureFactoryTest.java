@@ -1,6 +1,16 @@
 package de.upb.soot.signatures;
 
-import static org.junit.Assert.*;
+import categories.Java9Test;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 /*-
  * #%L
  * Soot
@@ -11,23 +21,17 @@ import static org.junit.Assert.*;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
-
-
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import categories.Java9Test;
 
 @Category(Java9Test.class)
 
@@ -53,7 +57,7 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
     ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
     PackageSignature packageSignature1 = signatureFactory.getPackageSignature("java.lang", "myModule");
     assertTrue(packageSignature1 instanceof ModulePackageSignature);
-    assertFalse(((ModulePackageSignature) packageSignature1).moduleSignature == ModuleSignature.UNNAMED_MODULE);
+    assertNotSame(((ModulePackageSignature) packageSignature1).moduleSignature, ModuleSignature.UNNAMED_MODULE);
   }
 
   @Test
@@ -112,8 +116,8 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
   @Test
   public void compModuleSignature() {
     ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
-    ModuleSignature signature = signatureFactory.getModuleSignature("java.base");
-    ModuleSignature signature2 = signatureFactory.getModuleSignature("java.base");
+    ModuleSignature signature = ModuleSignatureFactory.getModuleSignature("java.base");
+    ModuleSignature signature2 = ModuleSignatureFactory.getModuleSignature("java.base");
     assertEquals(signature, signature2);
     assertEquals(signature.hashCode(), signature2.hashCode());
     assertEquals(signature.toString(), "java.base");
@@ -122,8 +126,8 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
   @Test
   public void compModuleSignature2() {
     ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
-    ModuleSignature signature = signatureFactory.getModuleSignature("java.base");
-    ModuleSignature signature2 = signatureFactory.getModuleSignature("javafx.base");
+    ModuleSignature signature = ModuleSignatureFactory.getModuleSignature("java.base");
+    ModuleSignature signature2 = ModuleSignatureFactory.getModuleSignature("javafx.base");
     assertNotEquals(signature, signature2);
     assertNotEquals(signature.hashCode(), signature2.hashCode());
     assertEquals(signature2.toString(), "javafx.base");

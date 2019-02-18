@@ -216,12 +216,12 @@ public class LongConstant extends ArithmeticConstant {
 
   @Override
   public String toString() {
-    return new Long(value).toString() + "L";
+    return value + "L";
   }
 
   @Override
   public Type getType() {
-    return LongType.getInstance();
+    return LongType.INSTANCE;
   }
 
   @Override

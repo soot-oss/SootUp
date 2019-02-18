@@ -26,12 +26,7 @@ import de.upb.soot.core.Body;
 
 import java.util.List;
 
-public enum CheckInitValidator implements BodyValidator {
-  INSTANCE;
-
-  public static CheckInitValidator getInstance() {
-    return INSTANCE;
-  }
+public class CheckInitValidator implements BodyValidator {
 
   @Override
   public void validate(Body body, List<ValidationException> exception) {

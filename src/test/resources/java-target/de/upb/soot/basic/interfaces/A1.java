@@ -1,6 +1,6 @@
 package de.upb.soot.basic.interfaces;
 
 interface A1 {
-  // method signature
+  // methodRef signature
   void printA1();
 }

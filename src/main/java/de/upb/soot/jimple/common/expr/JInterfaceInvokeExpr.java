@@ -19,7 +19,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -33,7 +33,7 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
@@ -42,20 +42,18 @@ import java.util.List;
 import java.util.Optional;
 
 public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 7458533916011927970L;
 
   /**
    * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array argBoxes.
    */
-  public JInterfaceInvokeExpr(IView view, Value base, MethodSignature method, List<? extends Value> args) {
+  public JInterfaceInvokeExpr(IView view, Value base, MethodRef method, List<? extends Value> args) {
     super(view, Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
 
-    // Check that the method's class is resolved enough
+    // Check that the methodRef's class is resolved enough
     // CheckLevel returns without doing anything because we can be not 'done' resolving
-    Optional<AbstractClass> declaringClass = view.getClass(method.declClassSignature);
+    Optional<AbstractClass> declaringClass = view.getClass(method.getSignature().declClassSignature);
     if (declaringClass.isPresent()) {
       SootClass cls = (SootClass) declaringClass.get();
       cls.checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
@@ -72,7 +70,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> argList = new ArrayList<Value>(getArgCount());
+    List<Value> argList = new ArrayList<>(getArgCount());
     for (int i = 0; i < getArgCount(); i++) {
       argList.add(i, Jimple.cloneIfNecessary(getArg(i)));
     }
@@ -91,27 +89,17 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append(Jimple.INTERFACEINVOKE + " " + baseBox.getValue().toString() + "." + method + "(");
+    StringBuilder builder = new StringBuilder();
 
-    if (argBoxes != null) {
-      for (int i = 0; i < argBoxes.length; i++) {
-        if (i != 0) {
-          buffer.append(", ");
-        }
+    builder.append(Jimple.INTERFACEINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(method)
+        .append("(");
+    argBoxesToString(builder);
+    builder.append(")");
 
-        buffer.append(argBoxes[i].getValue().toString());
-      }
-    }
-
-    buffer.append(")");
-
-    return buffer.toString();
+    return builder.toString();
   }
 
-  /**
-   * Converts a parameter of type StmtPrinter to a string literal.
-   */
+  /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
   public void toString(IStmtPrinter up) {
 
@@ -120,18 +108,11 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.methodSignature(method);
+    up.methodSignature(method.getSignature());
     up.literal("(");
 
-    if (argBoxes != null) {
-      final int len = argBoxes.length;
-      for (int i = 0; i < len; i++) {
-        if (i != 0) {
-          up.literal(", ");
-        }
-        argBoxes[i].toString(up);
-      }
-    }
+    argBoxesToPrinter(up);
+
     up.literal(")");
   }
 

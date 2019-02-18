@@ -27,28 +27,23 @@ import de.upb.soot.core.Body;
 import java.util.List;
 
 /**
- * Checks whether the types used for locals, method parameters, and method return values are allowed in final Jimple code.
- * This reports an error if a method uses e.g., null_type.
+ * Checks whether the types used for locals, methodRef parameters, and methodRef return values are allowed in final Jimple
+ * code. This reports an error if a methodRef uses e.g., null_type.
  */
-public enum TypesValidator implements BodyValidator {
-  INSTANCE;
-
-  public static TypesValidator getInstance() {
-    return INSTANCE;
-  }
+public class TypesValidator implements BodyValidator {
 
   @Override
   public void validate(Body body, List<ValidationException> exceptions) {
     /*
-     * SootMethod method = body.getMethod();
+     * SootMethod methodRef = body.getMethod();
      * 
-     * if (method != null) { if (!method.getReturnType().isAllowedInFinalCode()) { exceptions.add(new
-     * ValidationException(method, "Return type not allowed in final code: " + method.getReturnType(),
-     * "return type not allowed in final code:" + method.getReturnType() + "\n method: " + method)); } for (Type t :
-     * method.getParameterTypes()) { if (!t.isAllowedInFinalCode()) { exceptions.add(new ValidationException(method,
-     * "Parameter type not allowed in final code: " + t, "parameter type not allowed in final code:" + t + "\n method: " +
-     * method)); } } } for (Local l : body.getLocals()) { Type t = l.getType(); if (!t.isAllowedInFinalCode()) {
-     * exceptions.add(new ValidationException(l, "Local type not allowed in final code: " + t, "(" + method +
+     * if (methodRef != null) { if (!methodRef.getReturnType().isAllowedInFinalCode()) { exceptions.add(new
+     * ValidationException(methodRef, "Return type not allowed in final code: " + methodRef.getReturnType(),
+     * "return type not allowed in final code:" + methodRef.getReturnType() + "\n methodRef: " + methodRef)); } for (Type t :
+     * methodRef.getParameterTypes()) { if (!t.isAllowedInFinalCode()) { exceptions.add(new ValidationException(methodRef,
+     * "Parameter type not allowed in final code: " + t, "parameter type not allowed in final code:" + t + "\n methodRef: " +
+     * methodRef)); } } } for (Local l : body.getLocals()) { Type t = l.getType(); if (!t.isAllowedInFinalCode()) {
+     * exceptions.add(new ValidationException(l, "Local type not allowed in final code: " + t, "(" + methodRef +
      * ") local type not allowed in final code: " + t + " local: " + l)); } }
      */
   }

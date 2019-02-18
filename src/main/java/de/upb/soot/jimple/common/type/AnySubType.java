@@ -27,6 +27,7 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.TypeSignature;
 
 /**
  * A class that models Java's sub types. AnySubTypes are parameterized by a super type called base.
@@ -60,6 +61,12 @@ public class AnySubType extends RefLikeType {
   @Override
   public String toString() {
     return "Any_subtype_of_" + base;
+  }
+
+  @Override
+  public TypeSignature getTypeSignature() {
+    // FIXME ... interesting
+    return null;
   }
 
   @Override

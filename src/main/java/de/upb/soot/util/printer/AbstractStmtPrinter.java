@@ -24,8 +24,8 @@ package de.upb.soot.util.printer;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
@@ -42,7 +42,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
 
   protected boolean startOfLine = true;
   protected String indent = "        ";
-  protected StringBuffer output = new StringBuffer();
+  protected StringBuilder output = new StringBuilder();
   protected HashSet<String> quotableLocals;
 
   @Override
@@ -130,7 +130,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
       initializeQuotableLocals();
     }
     if (quotableLocals.contains(l.getName())) {
-      output.append("'" + l.getName() + "'");
+      output.append("'").append(l.getName()).append("'");
     } else {
       output.append(l.getName());
     }
@@ -145,12 +145,12 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   @Override
   public String toString() {
     String ret = output.toString();
-    output = new StringBuffer();
+    output = new StringBuilder();
     return ret;
   }
 
   @Override
-  public StringBuffer output() {
+  public StringBuilder output() {
     return output;
   }
 
@@ -162,7 +162,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   }
 
   protected void initializeQuotableLocals() {
-    quotableLocals = new HashSet<String>();
+    quotableLocals = new HashSet<>();
     quotableLocals.addAll(Jimple.jimpleKeywordList());
   }
 

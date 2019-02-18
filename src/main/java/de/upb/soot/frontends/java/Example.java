@@ -31,7 +31,6 @@ public class Example {
     // load basic classes from soot
     Scene.v().loadBasicClasses();
 
-
     String sourceDirPath = args[0];
     String exclusionFilePath = args[1];
     // Use WALA java front-end to load classes and convert to soot classes
@@ -39,8 +38,8 @@ public class Example {
     List<SootClass> sootClasses = loader.getSootClasses();
 
     // Convert classes in new jimple to old one
-    JimpleConverter jimpleConverter=new JimpleConverter();
-    for(SootClass sootClass: sootClasses) {
+    JimpleConverter jimpleConverter = new JimpleConverter();
+    for (SootClass sootClass : sootClasses) {
       soot.SootClass klass = jimpleConverter.convertSootClass(sootClass);
       // add each application class to Scene
       Scene.v().addClass(klass);

@@ -4,10 +4,10 @@ public class ShortOps {
 
   // public static void main(String[] args) throws InvocationTargetException, IllegalAccessException {
   // ShortOps ops = new ShortOps();
-  // for (Method method : ops.getClass().getMethods()) {
-  // if (!method.getName().contains("main")) {
-  // System.out.println(method.getName());
-  // final O }bject invoke = method.invoke(ops);
+  // for (Method methodRef : ops.getClass().getMethods()) {
+  // if (!methodRef.getName().contains("main")) {
+  // System.out.println(methodRef.getName());
+  // final O }bject invoke = methodRef.invoke(ops);
   // }
   // }
   //

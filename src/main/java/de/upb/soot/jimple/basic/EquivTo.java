@@ -34,20 +34,16 @@ public interface EquivTo {
   /**
    * Returns true if this object is equivalent to o.
    */
-  public boolean equivTo(Object o);
+  boolean equivTo(Object o);
 
   /**
    * Returns a (not necessarily fixed) hash code for this object. This hash code coincides with equivTo; it is undefined in
    * the presence of mutable objects.
    */
-  public int equivHashCode();
+  int equivHashCode();
 
   /**
    * Returns true if this object is equivalent to o according to the given comparator.
-   * 
-   * @param o
-   * @param comparator
-   * @return
    */
-  public boolean equivTo(Object o, JimpleComparator comparator);
+  boolean equivTo(Object o, JimpleComparator comparator);
 }

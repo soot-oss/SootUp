@@ -21,8 +21,8 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.basic.VariableBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
+import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -262,7 +262,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    */
   @Override
   public boolean containsFieldRef() {
-    return ((getLeftOp() instanceof FieldRef) || (getRightOp() instanceof FieldRef));
+    return ((getLeftOp() instanceof JFieldRef) || (getRightOp() instanceof JFieldRef));
   }
 
   /*
@@ -271,15 +271,15 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getFieldRef()
    */
   @Override
-  public FieldRef getFieldRef() {
+  public JFieldRef getFieldRef() {
     if (!containsFieldRef()) {
-      throw new RuntimeException("getFieldRef() called with no FieldRef present!");
+      throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
     }
 
-    if (leftBox.getValue() instanceof FieldRef) {
-      return (FieldRef) leftBox.getValue();
+    if (leftBox.getValue() instanceof JFieldRef) {
+      return (JFieldRef) leftBox.getValue();
     } else {
-      return (FieldRef) rightBox.getValue();
+      return (JFieldRef) rightBox.getValue();
     }
   }
 
@@ -291,10 +291,10 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   @Override
   public ValueBox getFieldRefBox() {
     if (!containsFieldRef()) {
-      throw new RuntimeException("getFieldRefBox() called with no FieldRef present!");
+      throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
     }
 
-    if (leftBox.getValue() instanceof FieldRef) {
+    if (leftBox.getValue() instanceof JFieldRef) {
       return leftBox;
     } else {
       return rightBox;

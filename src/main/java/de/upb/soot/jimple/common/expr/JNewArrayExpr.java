@@ -77,12 +77,7 @@ public class JNewArrayExpr implements Expr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-
-    buffer.append(Jimple.NEWARRAY + " (" + getBaseTypeString() + ")");
-    buffer.append("[" + sizeBox.getValue().toString() + "]");
-
-    return buffer.toString();
+    return (Jimple.NEWARRAY + " (") + getBaseTypeString() + ")" + "[" + sizeBox.getValue().toString() + "]";
   }
 
   /**
@@ -129,9 +124,8 @@ public class JNewArrayExpr implements Expr {
    */
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
-    useBoxes.addAll(sizeBox.getValue().getUseBoxes());
+    List<ValueBox> useBoxes = new ArrayList<>(sizeBox.getValue().getUseBoxes());
     useBoxes.add(sizeBox);
 
     return useBoxes;

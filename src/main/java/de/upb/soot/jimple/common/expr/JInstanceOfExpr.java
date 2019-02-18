@@ -100,9 +100,8 @@ public class JInstanceOfExpr implements Expr {
 
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
 
-    list.addAll(opBox.getValue().getUseBoxes());
+    List<ValueBox> list = new ArrayList<>(opBox.getValue().getUseBoxes());
     list.add(opBox);
 
     return list;
@@ -110,7 +109,7 @@ public class JInstanceOfExpr implements Expr {
 
   @Override
   public Type getType() {
-    return BooleanType.getInstance();
+    return BooleanType.INSTANCE;
   }
 
   public Type getCheckType() {

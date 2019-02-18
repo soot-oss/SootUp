@@ -1,21 +1,19 @@
 package de.upb.soot.namespaces;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
+import categories.Java9Test;
+import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
-
-import java.util.Collections;
-import java.util.Optional;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
 
-import categories.Java9Test;
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @Category(Java9Test.class)
 
@@ -23,24 +21,24 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
   @Override
   protected SignatureFactory getSignatureFactory() {
-    return new ModuleSignatureFactory(){};
+    return new ModuleSignatureFactory();
   }
 
   @Test
   public void singleDir() {
     ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace
-        = new JavaModulePathNamespace( "target/test-classes/de/upb/soot/namespaces/modules",getClassProvider());
+        = new JavaModulePathNamespace("target/test-classes/de/upb/soot/namespaces/modules", getClassProvider());
     final JavaClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
-    Optional<AbstractClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
+    Optional<ClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
   }
 
   @Test
   public void singleDir2() {
-    ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();;
+    ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace
-        = new JavaModulePathNamespace("target/test-classes/de/upb/soot/namespaces/modules",getClassProvider());
+        = new JavaModulePathNamespace("target/test-classes/de/upb/soot/namespaces/modules", getClassProvider());
     final JavaClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
     // TODO: check for a better minClassFoundNumber
     // also all JDK classes are loaded
@@ -51,9 +49,9 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
   public void singleJar() {
     ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace = new JavaModulePathNamespace(
-        "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",getClassProvider());
+        "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar", getClassProvider());
     final JavaClassSignature sig = factory.getClassSignature("module-info", "", "de.upb.mod");
-    Optional<AbstractClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
+    Optional<ClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
 
   }
@@ -62,7 +60,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
   public void testSignatureWrapper() throws Exception {
     ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace = new JavaModulePathNamespace(
-        "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",getClassProvider());
+        "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar", getClassProvider());
     Class signatureCLass = Whitebox.getInnerClassType(JavaModulePathNamespace.class, "SignatureFactoryWrapper");
     // Constructor constructor = Whitebox.getConstructor(signatureCLass, SignatureFactory.class, String.class);
     Object signatureFacotryWrapper = Whitebox.invokeConstructor(signatureCLass,

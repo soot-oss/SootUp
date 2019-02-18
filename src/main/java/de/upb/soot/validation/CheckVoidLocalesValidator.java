@@ -26,12 +26,7 @@ import de.upb.soot.core.Body;
 
 import java.util.List;
 
-public enum CheckVoidLocalesValidator implements BodyValidator {
-  INSTANCE;
-
-  public static CheckVoidLocalesValidator getInstance() {
-    return INSTANCE;
-  }
+public class CheckVoidLocalesValidator implements BodyValidator {
 
   @Override
   public void validate(Body body, List<ValidationException> exception) {

@@ -30,8 +30,8 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
+import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.ArrayList;
@@ -91,7 +91,7 @@ public abstract class AbstractStmt implements IStmt {
   @Override
   public void addBoxPointingToThis(IStmtBox b) {
     if (boxesPointingToThis == null) {
-      boxesPointingToThis = new ArrayList<IStmtBox>();
+      boxesPointingToThis = new ArrayList<>();
     }
     boxesPointingToThis.add(b);
   }
@@ -121,7 +121,7 @@ public abstract class AbstractStmt implements IStmt {
       if (defBoxes.isEmpty()) {
         return useBoxes;
       } else {
-        List<ValueBox> valueBoxes = new ArrayList<ValueBox>();
+        List<ValueBox> valueBoxes = new ArrayList<>();
         valueBoxes.addAll(defBoxes);
         valueBoxes.addAll(useBoxes);
         return valueBoxes;
@@ -138,12 +138,10 @@ public abstract class AbstractStmt implements IStmt {
   public void redirectJumpsToThisTo(IStmt newLocation) {
     List<IStmtBox> boxesPointing = getBoxesPointingToThis();
 
-    IStmtBox[] boxes = boxesPointing.toArray(new IStmtBox[boxesPointing.size()]);
-    // important to change this to an array to have a static copy
+    // important to have a static copy
+    List<IStmtBox> boxesCopy = new ArrayList<>(boxesPointing);
 
-    for (IStmtBox element : boxes) {
-      IStmtBox box = element;
-
+    for (IStmtBox box : boxesCopy) {
       if (box.getStmt() != this) {
         throw new RuntimeException("Something weird's happening");
       }
@@ -191,13 +189,13 @@ public abstract class AbstractStmt implements IStmt {
   }
 
   @Override
-  public FieldRef getFieldRef() {
-    throw new RuntimeException("getFieldRef() called with no FieldRef present!");
+  public JFieldRef getFieldRef() {
+    throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
   }
 
   @Override
   public ValueBox getFieldRefBox() {
-    throw new RuntimeException("getFieldRefBox() called with no FieldRef present!");
+    throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
   }
 
   @Override
