@@ -67,8 +67,8 @@ import java.util.Iterator;
 
 /**
  *
- * This class contains the equivalence implementations for the individual equivTo() methods of the Jimple IR.
- * You can use it as your base class if your use case needs an adjustment for checking structural equivalence.
+ * This class contains the equivalence implementations for the individual equivTo() methods of the Jimple IR. You can use it
+ * as your base class if your use case needs an adjustment for checking structural equivalence.
  *
  * @author Markus Schmidt
  *
@@ -76,12 +76,9 @@ import java.util.Iterator;
 
 public class JimpleComparator {
 
-  static JimpleComparator INSTANCE;
+  private static final JimpleComparator INSTANCE = new JimpleComparator();
 
   public static JimpleComparator getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new JimpleComparator();
-    }
     return INSTANCE;
   }
 
@@ -297,10 +294,7 @@ public class JimpleComparator {
       return false;
     }
     JNewMultiArrayExpr ae = (JNewMultiArrayExpr) o;
-    if (!v.getBaseType().equals(ae.getBaseType()) || v.getSizeCount() != ae.getSizeCount()) {
-      return false;
-    }
-    return true;
+    return v.getBaseType().equals(ae.getBaseType()) && v.getSizeCount() == ae.getSizeCount();
   }
 
   public boolean caseNewExpr(JNewExpr v, Object o) {
@@ -372,7 +366,7 @@ public class JimpleComparator {
   }
 
   public boolean caseCaughtException(JCaughtExceptionRef obj, Object o) {
-    return obj instanceof JCaughtExceptionRef;
+    return o instanceof JCaughtExceptionRef;
   }
 
   public boolean caseInstanceFieldRef(JInstanceFieldRef obj, Object o) {

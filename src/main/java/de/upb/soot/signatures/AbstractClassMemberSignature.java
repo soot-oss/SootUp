@@ -45,11 +45,7 @@ public abstract class AbstractClassMemberSignature implements ISignature {
 
   @Override
   public String toString() {
-    return "<" +
-            declClassSignature.toString() +
-            ": " +
-            getSubSignature() +
-            '>';
+    return "<" + declClassSignature.toString() + ": " + getSubSignature() + '>';
   }
 
 }
