@@ -75,12 +75,9 @@ import java.util.Iterator;
 
 public class JimpleComparator {
 
-  static JimpleComparator INSTANCE;
+  private static final JimpleComparator INSTANCE = new JimpleComparator();
 
   public static JimpleComparator getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new JimpleComparator();
-    }
     return INSTANCE;
   }
 
@@ -296,10 +293,7 @@ public class JimpleComparator {
       return false;
     }
     JNewMultiArrayExpr ae = (JNewMultiArrayExpr) o;
-    if (!v.getBaseType().equals(ae.getBaseType()) || v.getSizeCount() != ae.getSizeCount()) {
-      return false;
-    }
-    return true;
+    return v.getBaseType().equals(ae.getBaseType()) && v.getSizeCount() == ae.getSizeCount();
   }
 
   public boolean caseNewExpr(JNewExpr v, Object o) {

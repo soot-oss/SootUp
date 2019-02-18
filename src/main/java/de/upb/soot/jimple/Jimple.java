@@ -104,6 +104,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 /**
  * The Jimple class contains all the constructors for the components of the Jimple grammar for the Jimple body. <br>
  * <br>
