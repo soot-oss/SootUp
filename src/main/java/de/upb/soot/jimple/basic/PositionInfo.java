@@ -3,8 +3,6 @@ package de.upb.soot.jimple.basic;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import com.ibm.wala.cast.tree.impl.LineNumberPosition;
 
-import javax.annotation.Nullable;
-
 /**
  * This class stores position information stored for a statement.
  * 
@@ -53,12 +51,11 @@ public class PositionInfo {
    * 
    * @return the position of the statement
    */
-  @Nullable
   public Position getStmtPosition() {
     if (this.stmtPosition != null) {
       return this.stmtPosition;
     } else {
-      return null;
+      return new NoPositionInformation();
     }
   }
 
@@ -69,12 +66,11 @@ public class PositionInfo {
    *          the operand index
    * @return the position of the given operand
    */
-  @Nullable
   public Position getOperandPosition(int index) {
     if (this.operandPositions != null && index >= 0 && index < this.operandPositions.length) {
       return this.operandPositions[index];
     } else {
-      return null;
+      return new NoPositionInformation();
     }
   }
 
