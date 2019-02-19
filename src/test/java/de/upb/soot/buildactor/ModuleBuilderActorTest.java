@@ -40,7 +40,7 @@ public class ModuleBuilderActorTest {
 
     final JavaClassSignature sig
         = new de.upb.soot.signatures.ModuleSignatureFactory().getClassSignature("module-info", "", "de.upb.mod");
-    // Optional<AbstractClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
+    // Optional<ClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
 
     // assertTrue(source.isPresent());
 

@@ -1,33 +1,32 @@
-package de.upb.soot.namespaces.classprovider.asm.modules;
-
-import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.asmIdToSignature;
-import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.getModifiers;
-import static de.upb.soot.namespaces.classprovider.asm.AsmUtil.resolveAsmNameToClassSignature;
+package de.upb.soot.frontends.asm.modules;
 
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootModuleInfo;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.namespaces.classprovider.asm.AsmUtil;
+import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.IClassSourceContent;
+import de.upb.soot.frontends.asm.AsmFrontendException;
+import de.upb.soot.frontends.asm.AsmUtil;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.objectweb.asm.Opcodes;
+import javax.annotation.Nonnull;
+
+import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.ModuleExportNode;
 import org.objectweb.asm.tree.ModuleOpenNode;
 import org.objectweb.asm.tree.ModuleProvideNode;
 import org.objectweb.asm.tree.ModuleRequireNode;
 
-public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
-    implements de.upb.soot.namespaces.classprovider.ISourceContent {
+public class AsmModuleClassSourceContent extends ClassNode implements IClassSourceContent {
 
-  private final AbstractClassSource classSource;
+  private final ClassSource classSource;
 
-  public AsmModuleSourceContent(AbstractClassSource classSource) {
-    super(Opcodes.ASM6);
+  public AsmModuleClassSourceContent(@Nonnull ClassSource classSource) {
+    super(AsmUtil.SUPPORTED_ASM_OPCODE);
     this.classSource = classSource;
 
     // FIXME: maybe delete class reading
@@ -35,9 +34,9 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
   }
 
   @Override
-  public AbstractClass resolve(ResolvingLevel level, IView view) {
+  public @Nonnull AbstractClass resolve(@Nonnull ResolvingLevel level, @Nonnull IView view) throws AsmFrontendException {
     JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
-    SootModuleInfo.SootModuleInfoBuilder builder;
+    SootModuleInfo.SootModuleInfoBuilder builder = null;
     if (module == null) {
       throw new IllegalArgumentException("This is not a module-info file");
     }
@@ -61,23 +60,23 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
       case BODIES:
         builder = (SootModuleInfo.SootModuleInfoBuilder) resolveBody(view, cs);
         break;
-
-      default:
-        throw new IllegalArgumentException("Unsupported level " + level);
     }
 
     return builder.build();
-
   }
 
-  private SootModuleInfo.HierachyStep resolveDangling(IView view, JavaClassSignature cs) {
+  private @Nonnull SootModuleInfo.HierachyStep resolveDangling(@Nonnull IView view, @Nonnull JavaClassSignature cs) {
     // sootClass.setModifiers(AsmUtil.getModifiers(access & ~org.objectweb.asm.Opcodes.ACC_SUPER));
     return SootModuleInfo.builder().dangling(view, this.classSource, null, this.module.name);
-
   }
 
-  private SootModuleInfo.Build resolveHierarchy(IView view, JavaClassSignature cs) {
-    SootModuleInfo sootClass = (SootModuleInfo) view.getClass(cs).get();
+  private @Nonnull SootModuleInfo.Build resolveHierarchy(@Nonnull IView view, @Nonnull JavaClassSignature cs)
+      throws AsmFrontendException {
+    Optional<AbstractClass> aClass = view.getClass(cs);
+    if (!aClass.isPresent()) {
+      throw new AsmFrontendException(String.format("Cannot resolve class %s", cs));
+    }
+    SootModuleInfo sootClass = (SootModuleInfo) aClass.get();
     SootModuleInfo.HierachyStep hierachyStep;
     ArrayList<JavaClassSignature> providers = new ArrayList<>();
     ArrayList<SootModuleInfo.ModuleReference> requieres = new ArrayList<>();
@@ -92,19 +91,18 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
     }
 
     { // add exports
-
       for (ModuleExportNode exportNode : module.exports) {
-        Iterable<Optional<JavaClassSignature>> optionals = asmIdToSignature(exportNode.modules, view);
+        Iterable<JavaClassSignature> optionals = AsmUtil.asmIdToSignature(exportNode.modules, view);
         ArrayList<JavaClassSignature> modules = new ArrayList<>();
-        for (Optional<JavaClassSignature> sootClassOptional : optionals) {
-          if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
-            modules.add(sootClassOptional.get());
+        for (JavaClassSignature sootClassOptional : optionals) {
+          if (sootClassOptional.isModuleInfo()) {
+            modules.add(sootClassOptional);
           }
         }
         // FIXME: create constructs here
         // sootModuleInfo.addExport(exportNode.packaze, exportNode.access, modules);
         SootModuleInfo.PackageReference reference
-            = new SootModuleInfo.PackageReference(exportNode.packaze, getModifiers(exportNode.access), modules);
+            = new SootModuleInfo.PackageReference(exportNode.packaze, AsmUtil.getModifiers(exportNode.access), modules);
         opens.add(reference);
       }
     }
@@ -112,66 +110,75 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
     {
       /// add opens
       for (ModuleOpenNode moduleOpenNode : module.opens) {
-        Iterable<Optional<JavaClassSignature>> optionals = asmIdToSignature(moduleOpenNode.modules, view);
+        Iterable<JavaClassSignature> optionals = AsmUtil.asmIdToSignature(moduleOpenNode.modules, view);
         ArrayList<JavaClassSignature> modules = new ArrayList<>();
-        for (Optional<JavaClassSignature> sootClassOptional : optionals) {
-          if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
-            modules.add(sootClassOptional.get());
+        for (JavaClassSignature sootClassOptional : optionals) {
+          if (sootClassOptional.isModuleInfo()) {
+            modules.add(sootClassOptional);
           }
         }
 
-        SootModuleInfo.PackageReference reference
-            = new SootModuleInfo.PackageReference(moduleOpenNode.packaze, getModifiers(moduleOpenNode.access), modules);
+        SootModuleInfo.PackageReference reference = new SootModuleInfo.PackageReference(moduleOpenNode.packaze,
+            AsmUtil.getModifiers(moduleOpenNode.access), modules);
         opens.add(reference);
       }
-
     }
 
     {
       // add requies
       for (ModuleRequireNode moduleRequireNode : module.requires) {
-        Optional<JavaClassSignature> sootClassOptional = resolveAsmNameToClassSignature(moduleRequireNode.module, view);
-        if (sootClassOptional.isPresent() && sootClassOptional.get().isModuleInfo()) {
-          // sootModuleInfo.addRequire(sootClassOptional.get(), moduleRequireNode.access, moduleRequireNode.version);
+        JavaClassSignature classSignature
+            = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(moduleRequireNode.module));
+        if (classSignature.isModuleInfo()) {
+          // sootModuleInfo.addRequire(sootClassOptional.get(), moduleRequireNode.access,
+          // moduleRequireNode.version);
           SootModuleInfo.ModuleReference reference
-              = new SootModuleInfo.ModuleReference(sootClassOptional.get(), AsmUtil.getModifiers(moduleRequireNode.access));
+              = new SootModuleInfo.ModuleReference(classSignature, AsmUtil.getModifiers(moduleRequireNode.access));
           requieres.add(reference);
-
         }
       }
-
     }
 
     {
       // add provides
       for (ModuleProvideNode moduleProvideNode : module.provides) {
-        Optional<JavaClassSignature> serviceOptional = resolveAsmNameToClassSignature(moduleProvideNode.service, view);
-        Iterable<Optional<JavaClassSignature>> providersOptionals = asmIdToSignature(moduleProvideNode.providers, view);
-        for (Optional<JavaClassSignature> sootClassOptional : providersOptionals) {
-          sootClassOptional.ifPresent(providers::add);
+        JavaClassSignature serviceSignature
+            = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(moduleProvideNode.service));
+        Iterable<JavaClassSignature> providersSignatures = AsmUtil.asmIdToSignature(moduleProvideNode.providers, view);
+        for (JavaClassSignature sootClassSignature : providersSignatures) {
+          providers.add(sootClassSignature);
         }
 
-        serviceOptional.ifPresent(providers::add);
+        providers.add(serviceSignature);
       }
     }
 
     return hierachyStep.hierachy(requieres, exports, opens, providers);
   }
 
-  private SootModuleInfo.Build resolveSignature(IView view, JavaClassSignature cs) {
+  private @Nonnull SootModuleInfo.Build resolveSignature(@Nonnull IView view, @Nonnull JavaClassSignature cs)
+      throws AsmFrontendException {
     SootModuleInfo.Build signatureStep;
-    SootModuleInfo sootClass = (SootModuleInfo) view.getClass(cs).get();
+    Optional<AbstractClass> aClass = view.getClass(cs);
+    if (!aClass.isPresent()) {
+      throw new AsmFrontendException(String.format("Cannot resolve class %s", cs));
+    }
+    SootModuleInfo sootClass = (SootModuleInfo) aClass.get();
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.HIERARCHY)) {
       signatureStep = resolveHierarchy(view, cs);
     } else {
       signatureStep = SootModuleInfo.fromExisting(sootClass);
     }
     return signatureStep;
-
   }
 
-  private SootModuleInfo.Build resolveBody(IView view, JavaClassSignature cs) {
-    SootModuleInfo sootClass = (SootModuleInfo) view.getClass(cs).get();
+  private @Nonnull SootModuleInfo.Build resolveBody(@Nonnull IView view, @Nonnull JavaClassSignature cs)
+      throws AsmFrontendException {
+    Optional<AbstractClass> aClass = view.getClass(cs);
+    if (!aClass.isPresent()) {
+      throw new AsmFrontendException(String.format("Cannot resolve class %s", cs));
+    }
+    SootModuleInfo sootClass = (SootModuleInfo) aClass.get();
     SootModuleInfo.Build bodyStep;
     if (sootClass.resolvingLevel().isLoweverLevel(de.upb.soot.core.ResolvingLevel.SIGNATURES)) {
       bodyStep = resolveSignature(view, cs);
@@ -181,5 +188,4 @@ public class AsmModuleSourceContent extends org.objectweb.asm.tree.ClassNode
 
     return bodyStep;
   }
-
 }

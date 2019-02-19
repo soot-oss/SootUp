@@ -27,6 +27,7 @@ import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -47,8 +48,6 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
@@ -90,11 +89,11 @@ public class WalaIRToJimpleConverter {
 
   /**
    * Convert a wala {@link AstClass} to {@link SootClass}.
-   * 
+   *
    * @return A SootClass converted from walaClass
    */
   public SootClass convertClass(AstClass walaClass) {
-    AbstractClassSource classSource = createClassSource(walaClass);
+    ClassSource classSource = createClassSource(walaClass);
     JavaClassSignature classSig = classSource.getClassSignature();
     // get super class
     IClass sc = walaClass.getSuperclass();
@@ -162,13 +161,13 @@ public class WalaIRToJimpleConverter {
   /**
    * Create a {@link JavaClassSource} object for the given walaClass.
    */
-  public AbstractClassSource createClassSource(AstClass walaClass) {
+  public ClassSource createClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassSignature classSignature = new DefaultSignatureFactory() {
     }.getClassSignature(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
-    return new JavaClassSource(srcNamespace, sourcePath, classSignature);
+    return new ClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   /**
@@ -233,9 +232,8 @@ public class WalaIRToJimpleConverter {
     DebuggingInformation debugInfo = walaMethod.debugInfo();
     MethodSignature methodSig = this.view.getSignatureFactory().getMethodSignature(walaMethod.getName().toString(), classSig,
         returnType.toString(), sigs);
-    WalaIRMethodSource methodSource = new WalaIRMethodSource(methodSig);
-    SootMethod sootMethod = new SootMethod(view, classSig, methodSource, paraTypes,
-        this.view.getSignatureFactory().getTypeSignature(returnType.toString()), modifiers, thrownExceptions, debugInfo);
+    WalaIRMethodSourceContent methodSource = new WalaIRMethodSourceContent(methodSig);
+    SootMethod sootMethod = new SootMethod(view, classSig, methodSource, methodSig, modifiers, thrownExceptions, debugInfo);
     // create and set active body of the SootMethod
     if (!walaMethod.isAbstract()) {
       Optional<Body> body = createBody(sootMethod, walaMethod);
@@ -314,7 +312,7 @@ public class WalaIRToJimpleConverter {
   }
 
   /**
-   * Return all modifiers for the given method.
+   * Return all modifiers for the given methodRef.
    */
   public EnumSet<Modifier> convertModifiers(AstMethod method) {
     EnumSet<Modifier> modifiers = EnumSet.noneOf(Modifier.class);
@@ -396,7 +394,7 @@ public class WalaIRToJimpleConverter {
         DebuggingInformation debugInfo = walaMethod.debugInfo();
         Position bodyPos = debugInfo.getCodeBodyPosition();
 
-        /* Look AsmMethodSource.getBody, see AsmMethodSource.emitLocals(); */
+        /* Look AsmMethodSourceContent.getBody, see AsmMethodSourceContent.emitLocals(); */
 
         if (!sootMethod.isStatic()) {
           RefType thisType = view.getRefType(sootMethod.getDeclaringClassSignature());
@@ -406,7 +404,7 @@ public class WalaIRToJimpleConverter {
 
         int startPara = 0;
         if (!walaMethod.isStatic()) {
-          // wala's first parameter is this reference for non-static method
+          // wala's first parameter is this reference for non-static methodRef
           startPara = 1;
         }
         for (; startPara < walaMethod.getNumberOfParameters(); startPara++) {

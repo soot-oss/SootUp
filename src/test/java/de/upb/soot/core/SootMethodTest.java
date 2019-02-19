@@ -1,14 +1,14 @@
 package de.upb.soot.core;
 
 import categories.Java8Test;
-import de.upb.soot.frontends.java.WalaIRMethodSource;
+import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.java.WalaIRMethodSourceContent;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 import org.junit.Test;
@@ -44,17 +44,16 @@ public class SootMethodTest {
 
     assertEquals(2, body.getLocalCount());
 
-    SootMethod dummyMainMethod = new SootMethod(view, null,
-        new WalaIRMethodSource(
+    SootMethod dummyMainMethod;
+    dummyMainMethod = new SootMethod(view, null,
+        new WalaIRMethodSourceContent(
             view.getSignatureFactory().getMethodSignature("main", "dummyMain", "void", Collections.emptyList())),
         Collections.emptyList(), view.getSignatureFactory().getTypeSignature("void"),
-        EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), Collections.emptyList(), null);
+        EnumSet.of(Modifier.PUBLIC, Modifier.STATIC), null);
     dummyMainMethod = new SootMethod(dummyMainMethod, body);
     assertTrue(dummyMainMethod.hasActiveBody());
-
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
-        new JavaClassSource(new JavaSourcePathNamespace(""), null,
-            view.getSignatureFactory().getClassSignature("dummyMain")),
+        new ClassSource(new JavaSourcePathNamespace(""), null, view.getSignatureFactory().getClassSignature("dummyMain")),
         ClassType.Application, null, Collections.emptySet(), null, Collections.emptySet(),
         Collections.singleton(dummyMainMethod), null, EnumSet.of(Modifier.PUBLIC));
 

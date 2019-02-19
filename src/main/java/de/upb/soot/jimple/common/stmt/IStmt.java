@@ -6,8 +6,8 @@ import de.upb.soot.jimple.basic.EquivTo;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
+import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.IAcceptor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
@@ -79,7 +79,7 @@ public interface IStmt extends EquivTo, IAcceptor, Serializable {
 
   boolean containsFieldRef();
 
-  FieldRef getFieldRef();
+  JFieldRef getFieldRef();
 
   ValueBox getFieldRefBox();
 

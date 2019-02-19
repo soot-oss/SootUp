@@ -28,6 +28,7 @@ package de.upb.soot.jimple.common.type;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 /**
  * Soot representation of the Java built-in type 'long'. Implemented as a singleton.
@@ -53,6 +54,11 @@ public class LongType extends PrimType {
   @Override
   public String toString() {
     return PrimitiveTypeSignature.LONG_TYPE_SIGNATURE.toString();
+  }
+
+  @Override
+  public TypeSignature getTypeSignature() {
+    return PrimitiveTypeSignature.LONG_TYPE_SIGNATURE;
   }
 
   @Override

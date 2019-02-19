@@ -4,20 +4,21 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
 package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.IField;
+import com.google.common.base.Optional;
+
 import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.jimple.symbolicreferences.FieldRef;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -26,16 +27,13 @@ import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
-public class JInstanceFieldRef implements FieldRef {
+public class JInstanceFieldRef implements JFieldRef {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 2900174317359676686L;
 
-  private final FieldSignature fieldSig;
+  private final FieldRef symbolicFieldRef;
   private final ValueBox baseBox;
   private IView view;
 
@@ -46,30 +44,30 @@ public class JInstanceFieldRef implements FieldRef {
    *          the view
    * @param base
    *          the base value of the field
-   * @param fieldSig
+   * @param symbolicFieldRef
    *          the field sig
    */
-  public JInstanceFieldRef(IView view, Value base, FieldSignature fieldSig) {
+  public JInstanceFieldRef(IView view, Value base, FieldRef symbolicFieldRef) {
     this.baseBox = Jimple.newLocalBox(base);
-    this.fieldSig = fieldSig;
+    this.symbolicFieldRef = symbolicFieldRef;
     this.view = view;
   }
 
   @Override
   public Object clone() {
-    return new JInstanceFieldRef(this.view, Jimple.cloneIfNecessary(getBase()), fieldSig);
+    return new JInstanceFieldRef(this.view, Jimple.cloneIfNecessary(getBase()), symbolicFieldRef);
   }
 
   @Override
   public String toString() {
-    return baseBox.getValue().toString() + "." + fieldSig.toString();
+    return baseBox.getValue().toString() + "." + symbolicFieldRef.toString();
   }
 
   @Override
   public void toString(IStmtPrinter up) {
     baseBox.toString(up);
     up.literal(".");
-    up.fieldSignature(fieldSig);
+    up.fieldSignature(symbolicFieldRef.getSignature());
   }
 
   public Value getBase() {
@@ -86,17 +84,15 @@ public class JInstanceFieldRef implements FieldRef {
 
   @Override
   public Optional<SootField> getField() {
-    Optional<AbstractClass> declClass = view.getClass(fieldSig.declClassSignature);
-    if (declClass.isPresent()) {
-      Optional<? extends IField> f = declClass.get().getField(fieldSig);
-      return f.map(c -> (SootField) c);
-    }
-    return Optional.empty();
+    return com.google.common.base.Optional.fromNullable(symbolicFieldRef.resolve());
   }
 
-  /**
-   * Returns a list useBoxes of type ValueBox.
-   */
+  @Override
+  public FieldSignature getFieldSignature() {
+    return symbolicFieldRef.getSignature();
+  }
+
+  /** Returns a list useBoxes of type ValueBox. */
   @Override
   public final List<ValueBox> getUseBoxes() {
 
@@ -108,7 +104,7 @@ public class JInstanceFieldRef implements FieldRef {
 
   @Override
   public Type getType() {
-    return view.getType(fieldSig.typeSignature);
+    return view.getType(symbolicFieldRef.getSignature().typeSignature);
   }
 
   @Override
@@ -139,5 +135,4 @@ public class JInstanceFieldRef implements FieldRef {
   public boolean equivTo(Object o, Comparator<Object> comparator) {
     return comparator.compare(this, o) == 0;
   }
-
 }

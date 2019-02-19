@@ -11,7 +11,7 @@ import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
+import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
@@ -32,7 +32,7 @@ import static org.junit.Assert.assertTrue;
  *
  */
 @Category(Java8Test.class)
-public class JFieldRefTest {
+public class JJFieldRefTest {
 
   @Test
   public void testJStaticFieldRef() {
@@ -44,7 +44,7 @@ public class JFieldRefTest {
         = new SootField(view, declaringClassSignature, fieldSig, fact.getTypeSignature("int"), EnumSet.of(Modifier.FINAL));
 
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
-        new JavaClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application, null,
+        new ClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application, null,
         Collections.emptySet(), null, Collections.singleton(field), Collections.emptySet(), null,
         EnumSet.of(Modifier.PUBLIC));
     JStaticFieldRef ref = Jimple.newStaticFieldRef(view, fieldSig);
@@ -63,7 +63,7 @@ public class JFieldRefTest {
     SootField field
         = new SootField(view, declaringClassSignature, fieldSig, fact.getTypeSignature("int"), EnumSet.of(Modifier.FINAL));
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
-        new JavaClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application, null,
+        new ClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application, null,
         Collections.emptySet(), null, Collections.singleton(field), Collections.emptySet(), null,
         EnumSet.of(Modifier.PUBLIC));
     Local base = new Local("obj", RefType.getInstance(mainClass));

@@ -41,6 +41,7 @@ import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
+
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
@@ -87,7 +88,6 @@ import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.SignatureFactory;
-import scala.Char;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,7 +102,7 @@ import java.util.Map;
  * @author Linghui Luo
  *
  */
-public class InstructionConverter {
+class InstructionConverter {
 
   private WalaIRToJimpleConverter converter;
   private SootMethod sootMethod;
@@ -559,6 +559,7 @@ public class InstructionConverter {
         declaringClassSignature, returnType, parameters);
 
     if (!callee.isStatic()) {
+
       int receiver = invokeInst.getReceiver();
       Type classType = converter.convertType(target.getDeclaringClass());
       Local base = getLocal(classType, receiver);
@@ -740,7 +741,7 @@ public class InstructionConverter {
       } else {
         return IntConstant.getInstance(0);
       }
-    } else if (value instanceof Byte || value instanceof Char || value instanceof Short || value instanceof Integer) {
+    } else if (value instanceof Byte || value instanceof Character || value instanceof Short || value instanceof Integer) {
       return IntConstant.getInstance((int) value);
     } else if (symbolTable.isLongConstant(valueNumber)) {
       return LongConstant.getInstance((long) value);

@@ -48,7 +48,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   int lowIndex;
   int highIndex;
 
-  // This method is necessary to deal with constructor-must-be-first-ism.
+  // This methodRef is necessary to deal with constructor-must-be-first-ism.
   private static List<IStmtBox> getTargetBoxes(List<? extends IStmt> targets) {
     return targets.stream().map(Jimple::newStmtBox).collect(Collectors.toList());
   }

@@ -1,14 +1,19 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.util.NotYetImplementedException;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 /**
  * Composes a namespace out of other namespaces hence removing the necessity to adapt every API to allow for multiple
@@ -19,10 +24,24 @@ import java.util.stream.Collectors;
  *
  */
 public class CompositeNamespace implements INamespace {
-  private List<INamespace> namespaces;
+  private @Nonnull List<INamespace> namespaces;
 
-  public CompositeNamespace(List<INamespace> namespaces) {
-    this.namespaces = namespaces;
+  /**
+   * Creates a new instance of the {@link CompositeNamespace} class.
+   * 
+   * @param namespaces
+   *          The composited namespaces.
+   * @throws IllegalArgumentException
+   *           <i>namespaces</i> is empty.
+   */
+  public CompositeNamespace(@Nonnull Collection<? extends INamespace> namespaces) {
+    List<INamespace> unmodifiableNamespaces = Collections.unmodifiableList(new ArrayList<>(namespaces));
+
+    if (unmodifiableNamespaces.isEmpty()) {
+      throw new IllegalArgumentException("The namespaces collection must not be empty.");
+    }
+
+    this.namespaces = unmodifiableNamespaces;
   }
 
   /**
@@ -30,20 +49,20 @@ public class CompositeNamespace implements INamespace {
    *
    * @param signature
    *          The class to be searched.
-   * @return The {@link AbstractClassSource} instance found or created... Or an empty Optional.
+   * @return The {@link ClassSource} instance found or created... Or an empty Optional.
    */
   @Override
-  public Optional<AbstractClassSource> getClassSource(JavaClassSignature signature) {
-    List<Optional<AbstractClassSource>> result
-        = namespaces.stream().map(n -> n.getClassSource(signature)).filter(Optional::isPresent).collect(Collectors.toList());
+  public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature signature) {
+    List<ClassSource> result = namespaces.stream().map(n -> n.getClassSource(signature)).filter(Optional::isPresent)
+        .map(Optional::get).collect(Collectors.toList());
+
     if (result.size() > 1) {
+      // FIXME: [JMP] Is an empty result better than the first item in the list?
       // TODO: Warn here b/c of multiple results
       return Optional.empty();
     }
-    if (result.size() == 1) {
-      return result.get(0);
-    }
-    return Optional.empty();
+
+    return result.stream().findFirst();
   }
 
   /**
@@ -52,13 +71,14 @@ public class CompositeNamespace implements INamespace {
    * @return An instance of {@link IClassProvider} to be used.
    */
   @Override
-  public IClassProvider getClassProvider() {
-    return namespaces.stream().findFirst().map(INamespace::getClassProvider).orElse(null);
+  public @Nonnull IClassProvider getClassProvider() {
+    return namespaces.stream().findFirst().map(INamespace::getClassProvider)
+        .orElseThrow(() -> new RuntimeException("FATAL ERROR: No class provider found."));
   }
 
   @Override
-  public Collection<AbstractClassSource> getClassSources(SignatureFactory factory) {
-    // TODO Auto-generated method stub
-    return null;
+  public @Nonnull Collection<ClassSource> getClassSources(@Nonnull SignatureFactory factory) {
+    // TODO Auto-generated methodRef stub
+    throw new NotYetImplementedException("Getting class sources is not implemented, yet.");
   }
 }

@@ -28,10 +28,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-/** Represents the fully qualified signature of a method. */
+/** Represents the fully qualified signature of a methodRef. */
 public class MethodSignature extends AbstractClassMemberSignature {
 
-  /** The method's parameters' signatures. */
+  /** The methodRef's parameters' signatures. */
   public final List<TypeSignature> parameterSignatures;
 
   /**
@@ -67,7 +67,7 @@ public class MethodSignature extends AbstractClassMemberSignature {
   }
 
   /**
-   * The simple name of the method; the method's name and its parameters.
+   * The simple name of the methodRef; the methodRef's name and its parameters.
    *
    * @return a String of the form "returnTypeName methodName(ParameterName(,)*)"
    */

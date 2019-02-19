@@ -20,7 +20,7 @@ import soot.util.Chain;
  * @author Linghui Luo
  *
  */
-public class JimpleConverter {
+class JimpleConverter {
 
   public soot.SootClass convertSootClass(de.upb.soot.core.SootClass fromClass) {
     soot.SootClass toClass = new SootClass(fromClass.getName());
@@ -48,7 +48,7 @@ public class JimpleConverter {
     PatchingChain<Unit> units = ret.getUnits();
     Chain<Local> locals = ret.getLocals();
     Chain<Trap> traps = ret.getTraps();
-    // need to look at the clone method of body.
+    // need to look at the clone methodRef of body.
 
     for (IStmt fromStmt : body.getStmts()) {
       // convert stmts

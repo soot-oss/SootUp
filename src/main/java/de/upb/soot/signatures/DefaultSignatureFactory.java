@@ -28,8 +28,8 @@ public class DefaultSignatureFactory implements SignatureFactory {
   }
 
   /**
-   * Returns a unique PackageSignature. The method looks up a cache if it already contains a signature with the given package
-   * name. If the cache lookup fails a new signature is created.
+   * Returns a unique PackageSignature. The methodRef looks up a cache if it already contains a signature with the given
+   * package name. If the cache lookup fails a new signature is created.
    *
    * @param packageName
    *          the Java package name; must not be null use empty string for the default package
@@ -158,14 +158,17 @@ public class DefaultSignatureFactory implements SignatureFactory {
       ret = new ArrayTypeSignature(ret, nrDims);
     }
     return ret;
+  }
 
+  public TypeSignature getArrayTypeSignature(TypeSignature baseType, int dim) {
+    return new ArrayTypeSignature(baseType, dim);
   }
 
   /**
    * Always creates a new MethodSignature AND a new ClassSignature.
    *
    * @param methodName
-   *          the method's name
+   *          the methodRef's name
    * @param fullyQualifiedNameDeclClass
    *          the fully-qualified name of the declaring class
    * @param parameters
@@ -191,7 +194,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
    * Always creates a new MethodSignature reusing the given ClassSignature.
    *
    * @param methodName
-   *          the method's name
+   *          the methodRef's name
    * @param declaringClassSignature
    *          the ClassSignature of the declaring class
    * @param parameters
@@ -213,10 +216,23 @@ public class DefaultSignatureFactory implements SignatureFactory {
   }
 
   @Override
+  public MethodSignature getMethodSignature(final String methodName, final JavaClassSignature declaringClassSignature,
+      final TypeSignature fqReturnType, final List<TypeSignature> parameters) {
+
+    return new MethodSignature(methodName, declaringClassSignature, fqReturnType, parameters);
+  }
+
+  @Override
   public FieldSignature getFieldSignature(final String fieldName, final JavaClassSignature declaringClassSignature,
       final String fieldType) {
     TypeSignature typeSignature = getTypeSignature(fieldType);
     return new FieldSignature(fieldName, declaringClassSignature, typeSignature);
+  }
+
+  @Override
+  public FieldSignature getFieldSignature(final String fieldName, final JavaClassSignature declaringClassSignature,
+      final TypeSignature fieldType) {
+    return new FieldSignature(fieldName, declaringClassSignature, fieldType);
   }
 
   @Override

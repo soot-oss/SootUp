@@ -37,7 +37,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
    * Performs the work that is required to construct any sort of <tt>IStmtGraph</tt>.
    *
    * @param body
-   *          The body of the method for which to construct a control flow graph.
+   *          The body of the methodRef for which to construct a control flow graph.
    */
   protected AbstractStmtGraph(Body body) {
     this.body = body;
@@ -46,7 +46,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   }
 
   /**
-   * Utility method for <tt>IStmtGraph</tt> constructors. It computes the edges corresponding to unexceptional control flow.
+   * Utility methodRef for <tt>IStmtGraph</tt> constructors. It computes the edges corresponding to unexceptional control
+   * flow.
    *
    * @param stmtToSuccs
    *          A {@link Map} from {@link IStmt}s to {@link List}s of {@link IStmt}s. This is an ``out parameter''; callers
@@ -104,15 +105,15 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
 
   /**
    * <p>
-   * Utility method used in the construction of {@link IStmtGraph}s, to be called only after the stmtToPreds and stmtToSuccs
-   * maps have been built.
+   * Utility methodRef used in the construction of {@link IStmtGraph}s, to be called only after the stmtToPreds and
+   * stmtToSuccs maps have been built.
    * </p>
    *
    * <p>
    * <code>IStmtGraph</code> provides an implementation of <code>buildHeadsAndTails()</code> which defines the graph's set of
    * heads to include the first {@link IStmt} in the graph's body, together with any other <tt>IStmt</tt> which has no
    * predecessors. It defines the graph's set of tails to include all <tt>IStmt</tt>s with no successors. Subclasses of
-   * <code>IStmtGraph</code> may override this method to change the criteria for classifying a node as a head or tail.
+   * <code>IStmtGraph</code> may override this methodRef to change the criteria for classifying a node as a head or tail.
    * </p>
    */
   protected void buildHeadsAndTails() {
@@ -142,8 +143,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   }
 
   /**
-   * Utility method that produces a new map from the {@link IStmt}s of this graph's body to the union of the values stored in
-   * the two argument {@link Map}s, used to combine the maps of exceptional and unexceptional predecessors and successors
+   * Utility methodRef that produces a new map from the {@link IStmt}s of this graph's body to the union of the values stored
+   * in the two argument {@link Map}s, used to combine the maps of exceptional and unexceptional predecessors and successors
    * into maps of all predecessors and successors. The values stored in both argument maps must be {@link List}s of
    * {@link IStmt}s, which are assumed not to contain any duplicate <tt>IStmt</tt>s.
    *
@@ -200,7 +201,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   }
 
   /**
-   * Utility method for adding an edge to maps representing the CFG.
+   * Utility methodRef for adding an edge to maps representing the CFG.
    *
    * @param stmtToSuccs
    *          The {@link Map} from {@link IStmt}s to {@link List}s of their successors.

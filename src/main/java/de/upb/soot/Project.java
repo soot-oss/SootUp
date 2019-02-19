@@ -1,16 +1,13 @@
 package de.upb.soot;
 
 import de.upb.soot.buildactor.ViewBuilder;
-import de.upb.soot.namespaces.CompositeNamespace;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.namespaces.JavaClassPathNamespace;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * A Soot user should first define a Project instance to describe the outlines of an analysis run. It is the starting point
@@ -21,42 +18,55 @@ import java.util.List;
  * @author Ben Hermann
  */
 public class Project {
-  private List<INamespace> namespaces = new ArrayList<>();
+  /**
+   * Create a project from an arbitrary list of namespaces
+   * 
+   */
+  public Project(@Nonnull INamespace namespace) {
+    this(namespace, new DefaultSignatureFactory());
+  }
 
   /**
    * Create a project from an arbitrary list of namespaces
    */
-  public Project(INamespace... namespaces) {
-    Collections.addAll(this.namespaces, namespaces);
+  public Project(@Nonnull INamespace namespaces, @Nonnull SignatureFactory signatureFactory) {
+    this.namespace = namespaces;
+    this.signatureFactory = signatureFactory;
   }
 
+  private @Nonnull INamespace namespace;
+
   /**
-   * Create a project from a single JAR file
+   * Gets the namespace.
    */
-  public Project(File file) {
-    this.namespaces.add(new JavaClassPathNamespace(file.getAbsolutePath()));
+  public @Nonnull INamespace getNamespace() {
+    return this.namespace;
+  }
+
+  private final @Nonnull SignatureFactory signatureFactory;
+
+  public @Nonnull SignatureFactory getSignatureFactory() {
+    return this.signatureFactory;
   }
 
   /**
-   * Create a complete view from everything in all provided namespaces. This method starts the reification process.
+   * Create a complete view from everything in all provided namespaces. This methodRef starts the reification process.
    *
    * @return A complete view on the provided code
    */
   public IView createFullView() {
-    CompositeNamespace cn = new CompositeNamespace(this.namespaces);
-    ViewBuilder vb = new ViewBuilder(cn);
+    ViewBuilder vb = new ViewBuilder(this);
     return vb.buildComplete();
   }
 
   public IView createDemandView() {
-    CompositeNamespace cn = new CompositeNamespace(this.namespaces);
-    ViewBuilder vb = new ViewBuilder(cn);
+    ViewBuilder vb = new ViewBuilder(this);
     return vb.buildOnDemand();
   }
 
   /**
-   * Returns a partial view on the code based on the provided scope and all namespaces in the project. This method starts the
-   * reification process.
+   * Returns a partial view on the code based on the provided scope and all namespaces in the project. This methodRef starts
+   * the reification process.
    *
    * @param s
    *          A scope of interest for the view

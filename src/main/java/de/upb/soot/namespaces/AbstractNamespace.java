@@ -1,10 +1,11 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.namespaces.classprovider.IClassProvider;
-import de.upb.soot.namespaces.classprovider.asm.AsmJavaClassProvider;
+import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 
+import javax.annotation.Nonnull;
 import java.util.Optional;
 
 /*-
@@ -36,7 +37,7 @@ import java.util.Optional;
  * @author Manuel Benz created on 22.05.18
  */
 public abstract class AbstractNamespace implements INamespace {
-  protected final IClassProvider classProvider;
+  protected final @Nonnull IClassProvider classProvider;
 
   /**
    * Create the namespace.
@@ -44,7 +45,7 @@ public abstract class AbstractNamespace implements INamespace {
    * @param classProvider
    *          The class provider to be used
    */
-  public AbstractNamespace(IClassProvider classProvider) {
+  public AbstractNamespace(@Nonnull IClassProvider classProvider) {
     this.classProvider = classProvider;
   }
 
@@ -54,7 +55,7 @@ public abstract class AbstractNamespace implements INamespace {
    * @return The class provider for this namespace
    */
   @Override
-  public IClassProvider getClassProvider() {
+  public @Nonnull IClassProvider getClassProvider() {
     return classProvider;
   }
 
@@ -76,10 +77,10 @@ public abstract class AbstractNamespace implements INamespace {
    *
    * @return An instance of {@link IClassProvider} to be used.
    */
-  protected static IClassProvider getDefaultClassProvider() {
+  protected static @Nonnull IClassProvider getDefaultClassProvider() {
     return new AsmJavaClassProvider();
   }
 
   @Override
-  public abstract Optional<AbstractClassSource> getClassSource(JavaClassSignature classSignature);
+  public abstract @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature classSignature);
 }

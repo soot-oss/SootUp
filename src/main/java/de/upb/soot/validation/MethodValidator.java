@@ -38,8 +38,8 @@ public class MethodValidator implements BodyValidator {
   public void validate(Body body, List<ValidationException> exceptions) {
     // TODO: check copied code from old soot
     /*
-     * SootMethod method = body.getMethod(); if (method.isAbstract()) { return; } if (method.isStaticInitializer() &&
-     * !method.isStatic()) { exceptions.add(new ValidationException(method, SootMethod.staticInitializerName +
+     * SootMethod methodRef = body.getMethod(); if (methodRef.isAbstract()) { return; } if (methodRef.isStaticInitializer()
+     * && !methodRef.isStatic()) { exceptions.add(new ValidationException(methodRef, SootMethod.staticInitializerName +
      * " should be static! Static initializer without 'static'('0x8') modifier" +
      * " will cause problem when running on android platform: " + "\"<clinit> is not flagged correctly wrt/ static\"!")); }
      */

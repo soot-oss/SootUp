@@ -23,13 +23,15 @@ package de.upb.soot.namespaces;
  */
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 
 import java.util.Collection;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
 
 /**
  * Public interface to a namespace. Namespaces are sources for {@link SootClass}es, e.g. Java Classpath, Android APK, JAR
@@ -49,14 +51,17 @@ public interface INamespace {
    *          The signature of the class to be found.
    * @return The source entry for that class.
    */
-  Optional<AbstractClassSource> getClassSource(JavaClassSignature signature);
+  @Nonnull
+  Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature signature);
 
   /**
    * The class provider attached to this namespace.
    * 
    * @return An instance of {@link IClassProvider} to be used.
    */
+  @Nonnull
   IClassProvider getClassProvider();
 
-  Collection<AbstractClassSource> getClassSources(SignatureFactory factory);
+  @Nonnull
+  Collection<ClassSource> getClassSources(@Nonnull SignatureFactory factory);
 }

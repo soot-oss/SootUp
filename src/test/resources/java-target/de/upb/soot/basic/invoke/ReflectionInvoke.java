@@ -6,12 +6,12 @@ import java.lang.reflect.Method;
 public class ReflectionInvoke extends A {
 
   public static void ReflectionInvoke() throws NoSuchMethodException {
-    // Invoking static method
+    // Invoking static methodRef
     A.methodA();
   }
 
   public static void staticInvokeReflection() throws NoSuchMethodException {
-    // Invoking static method using reflection ( so its virtualinvoke)
+    // Invoking static methodRef using reflection ( so its virtualinvoke)
     Method method = A.class.getClass().getMethod("methodA");
     try {
       method.invoke(method);

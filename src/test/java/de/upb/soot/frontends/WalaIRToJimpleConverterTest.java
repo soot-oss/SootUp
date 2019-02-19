@@ -44,7 +44,7 @@ public class WalaIRToJimpleConverterTest {
     String walaName = "LLocalClass/main([Ljava/lang/String;)V/Foo";
     String name = converter.convertClassNameFromWala(walaName);
     assertEquals("LocalClass1$Foo", name);
-    walaName = "LLocalClass/method()V/Foo";
+    walaName = "LLocalClass/methodRef()V/Foo";
     name = converter.convertClassNameFromWala(walaName);
     assertEquals("LocalClass2$Foo", name);
   }

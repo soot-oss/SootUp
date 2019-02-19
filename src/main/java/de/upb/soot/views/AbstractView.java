@@ -8,6 +8,7 @@ import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.signatures.ISignature;
+import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 
@@ -19,6 +20,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
+
 /**
  * Abstract class for view.
  * 
@@ -27,14 +30,14 @@ import java.util.stream.Stream;
  */
 public abstract class AbstractView implements IView {
 
-  protected Project project;
+  protected final @Nonnull Project project;
   protected Options options;
 
   protected Set<RefType> refTypes;
   protected Map<ISignature, AbstractClass> classes;
   protected Set<String> reservedNames;
 
-  public AbstractView(Project project) {
+  public AbstractView(@Nonnull Project project) {
     this.project = project;
     this.options = new Options();
     setReservedNames();
@@ -43,7 +46,12 @@ public abstract class AbstractView implements IView {
   }
 
   @Override
-  public RefType getRefType(TypeSignature classSignature) {
+  public @Nonnull SignatureFactory getSignatureFactory() {
+    return this.project.getSignatureFactory();
+  }
+
+  @Override
+  public @Nonnull RefType getRefType(@Nonnull TypeSignature classSignature) {
     Optional<RefType> op = this.refTypes.stream().filter(r -> r.getTypeSignature().equals(classSignature)).findFirst();
     if (!op.isPresent()) {
       RefType refType = new RefType(this, classSignature);
@@ -54,58 +62,52 @@ public abstract class AbstractView implements IView {
   }
 
   @Override
-  public void addClass(AbstractClass klass) {
+  public void addClass(@Nonnull AbstractClass klass) {
     this.classes.put(klass.getSignature(), klass);
   }
 
   @Override
-  public Collection<AbstractClass> getClasses() {
+  public @Nonnull Collection<AbstractClass> getClasses() {
     return classes.values();
   }
 
   @Override
-  public Stream<AbstractClass> classes() {
+  public @Nonnull Stream<AbstractClass> classes() {
     return this.classes.values().stream();
   }
 
   @Override
-  public Optional<AbstractClass> getClass(ISignature signature) {
-    // we can also implement this by resolving none-exist class in view on demand in future.
-    return this.classes().filter(c -> c.getClassSource().getClassSignature().equals(signature)).findFirst();
-  }
-
-  @Override
-  public ICallGraph createCallGraph() {
-    // TODO Auto-generated method stub
+  public @Nonnull ICallGraph createCallGraph() {
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
-  public ICallGraph createCallGraph(ICallGraphAlgorithm algorithm) {
-    // TODO Auto-generated method stub
+  public @Nonnull ICallGraph createCallGraph(ICallGraphAlgorithm algorithm) {
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
-  public ITypeHierarchy createTypeHierarchy() {
-    // TODO Auto-generated method stub
+  public @Nonnull ITypeHierarchy createTypeHierarchy() {
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
-  public Optional<Scope> getScope() {
-    // TODO Auto-generated method stub
+  public @Nonnull Optional<Scope> getScope() {
+    // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
   public boolean doneResolving() {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return false;
   }
 
   @Override
-  public String quotedNameOf(String s) {
+  public @Nonnull String quotedNameOf(@Nonnull String s) {
     // Pre-check: Is there a chance that we need to escape something?
     // If not, skip the transformation altogether.
     boolean found = s.contains("-");
@@ -141,7 +143,7 @@ public abstract class AbstractView implements IView {
   protected abstract void setReservedNames();
 
   @Override
-  public Options getOptions() {
+  public @Nonnull Options getOptions() {
     return this.options;
   }
 }

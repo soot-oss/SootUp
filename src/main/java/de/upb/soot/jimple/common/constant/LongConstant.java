@@ -233,7 +233,7 @@ public class LongConstant extends ArithmeticConstant {
 
   @Override
   public boolean equivTo(Object o, Comparator<Object> comparator) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
     return false;
   }
 }

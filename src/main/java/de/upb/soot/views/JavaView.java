@@ -1,6 +1,7 @@
 package de.upb.soot.views;
 
 import de.upb.soot.Project;
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
@@ -15,17 +16,18 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.signatures.ArrayTypeSignature;
-import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.NullTypeSignature;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
-import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
 
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.annotation.Nonnull;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
@@ -39,7 +41,7 @@ public class JavaView extends AbstractView {
   /**
    * Instantiates a new view.
    */
-  public JavaView(Project project) {
+  public JavaView(@Nonnull Project project) {
     super(project);
     this.arrayTypes = new HashSet<>();
   }
@@ -112,11 +114,6 @@ public class JavaView extends AbstractView {
     this.reservedNames.add("strictfp");
   }
 
-  @Override
-  public SignatureFactory getSignatureFactory() {
-    return new DefaultSignatureFactory();
-  }
-
   private ArrayType getArrayType(ArrayTypeSignature arrayTypeSignature) {
     Optional<ArrayType> op
         = this.arrayTypes.stream().filter(r -> r.toString().equals(arrayTypeSignature.toString())).findFirst();
@@ -129,7 +126,12 @@ public class JavaView extends AbstractView {
   }
 
   @Override
-  public Type getType(TypeSignature signature) {
+  public @Nonnull Optional<AbstractClass> getClass(@Nonnull ISignature signature) {
+    return this.classes().filter(c -> c.getClassSource().getClassSignature().equals(signature)).findFirst();
+  }
+
+  @Override
+  public @Nonnull Type getType(@Nonnull TypeSignature signature) {
     if (signature instanceof PrimitiveTypeSignature) {
       if (signature.equals(PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE)) {
         return ByteType.INSTANCE;

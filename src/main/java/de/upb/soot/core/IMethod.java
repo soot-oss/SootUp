@@ -3,7 +3,7 @@ package de.upb.soot.core;
 import de.upb.soot.signatures.ISignature;
 
 /**
- * Interface for method.
+ * Interface for methodRef.
  * 
  * @author Linghui Luo
  *

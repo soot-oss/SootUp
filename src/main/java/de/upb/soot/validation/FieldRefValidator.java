@@ -35,11 +35,11 @@ public class FieldRefValidator implements BodyValidator {
   public void validate(Body body, List<ValidationException> exceptions) {
     // TODO: check copied code from old soot
     /*
-     * SootMethod method = body.getMethod(); if (method.isAbstract()) { return; }
+     * SootMethod methodRef = body.getMethod(); if (methodRef.isAbstract()) { return; }
      *
      * Chain<Unit> units = body.getUnits().getNonPatchingChain();
      *
-     * for (Unit unit : units) { Stmt s = (Stmt) unit; if (!s.containsFieldRef()) { continue; } FieldRef fr =
+     * for (Unit unit : units) { Stmt s = (Stmt) unit; if (!s.containsFieldRef()) { continue; } JFieldRef fr =
      * s.getFieldRef();
      *
      * if (fr instanceof JStaticFieldRef) { JStaticFieldRef v = (JStaticFieldRef) fr; try { SootField field = v.getField();
