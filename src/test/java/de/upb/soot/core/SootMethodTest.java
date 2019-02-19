@@ -1,6 +1,7 @@
 package de.upb.soot.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import de.upb.soot.Project;
 import de.upb.soot.frontends.JavaClassSource;
@@ -56,7 +57,7 @@ public class SootMethodTest {
         Collections.emptyList(), view.getSignatureFactory().getTypeSignature("void"),
         EnumSet.of(Modifier.PUBLIC, Modifier.STATIC));
     dummyMainMethod = new SootMethod(dummyMainMethod, body);
-    assertEquals(true, dummyMainMethod.hasActiveBody());
+    assertTrue(dummyMainMethod.hasActiveBody());
 
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
         new JavaClassSource(new JavaSourcePathNamespace(""), null,
