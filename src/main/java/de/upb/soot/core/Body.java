@@ -22,7 +22,6 @@ package de.upb.soot.core;
  */
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -47,6 +46,7 @@ import de.upb.soot.validation.UsesValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.validation.ValueBoxesValidator;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -82,6 +82,7 @@ public class Body implements Serializable {
   private final Position position;
 
   /** The methodRef associated with this Body. */
+  @Nullable
   protected SootMethod method;
 
   /**
@@ -97,9 +98,13 @@ public class Body implements Serializable {
    * @param locals
    *          please use {@link LocalGenerator} to generate local for a body.
    */
-  public Body(SootMethod m, List<Local> locals, List<Trap> traps, List<IStmt> stmts, Position position) {
-    this(locals, traps, stmts, position);
+  public Body(@Nullable SootMethod m, List<Local> locals, List<Trap> traps, List<IStmt> stmts, Position position) {
+    this.locals = Collections.unmodifiableList(locals);
+    this.traps = Collections.unmodifiableList(traps);
+    this.stmts = Collections.unmodifiableList(stmts);
+    this.position = position;
     this.method = m;
+    checkInit();
   }
 
   /**
@@ -109,12 +114,7 @@ public class Body implements Serializable {
    *          please use {@link LocalGenerator} to generate local for a body.
    */
   public Body(List<Local> locals, List<Trap> traps, List<IStmt> stmts, Position position) {
-    this.locals = Collections.unmodifiableList(locals);
-    this.traps = Collections.unmodifiableList(traps);
-    this.stmts = Collections.unmodifiableList(stmts);
-    this.position = position;
-    this.method = null;
-    checkInit();
+    this(null, locals, traps, stmts, position);
   }
 
   /**
@@ -136,7 +136,7 @@ public class Body implements Serializable {
    *          the methodRef that owns this body.
    *
    */
-  protected void setMethod(SootMethod method) {
+  protected void setMethod(@Nullable SootMethod method) {
     this.method = method;
   }
 

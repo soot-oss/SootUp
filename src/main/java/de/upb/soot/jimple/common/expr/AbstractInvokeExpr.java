@@ -44,7 +44,7 @@ import java.util.Optional;
 public abstract class AbstractInvokeExpr extends AbstractViewResident implements Expr {
   private static final long serialVersionUID = 1796920588315752175L;
 
-  protected MethodRef method;
+  protected final MethodRef method;
   protected final ValueBox[] argBoxes;
 
   protected AbstractInvokeExpr(IView view, MethodRef method, ValueBox[] argBoxes) {

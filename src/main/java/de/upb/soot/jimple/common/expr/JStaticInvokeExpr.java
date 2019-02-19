@@ -50,11 +50,9 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
    */
   public JStaticInvokeExpr(IView view, MethodRef method, List<? extends Value> args) {
     super(view, method, new ValueBox[args.size()]);
-    this.method = method;
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
-
   }
 
   @Override
