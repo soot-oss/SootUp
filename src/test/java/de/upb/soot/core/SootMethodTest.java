@@ -1,6 +1,18 @@
 package de.upb.soot.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
 import categories.Java8Test;
+import de.upb.soot.Project;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.java.WalaIRMethodSourceContent;
 import de.upb.soot.jimple.Jimple;
@@ -9,18 +21,9 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
+import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * 
@@ -32,7 +35,7 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    IView view = new JavaView(null);
+    IView view = new JavaView(new Project(null, new DefaultSignatureFactory()));
     Type type = view.getType(view.getSignatureFactory().getTypeSignature("java.lang.String"));
 
     List<IStmt> stmts = new ArrayList<>();

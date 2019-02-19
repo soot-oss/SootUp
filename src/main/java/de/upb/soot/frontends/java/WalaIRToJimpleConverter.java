@@ -20,6 +20,7 @@ import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 
+import de.upb.soot.Project;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -82,7 +83,7 @@ public class WalaIRToJimpleConverter {
 
   public WalaIRToJimpleConverter(String sourceDirPath) {
     srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
-    view = new JavaView(null);
+    view = new JavaView(new Project(null, new DefaultSignatureFactory()));
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
   }
