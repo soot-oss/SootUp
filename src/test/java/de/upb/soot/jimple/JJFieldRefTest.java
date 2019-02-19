@@ -1,30 +1,33 @@
 package de.upb.soot.jimple;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Collections;
+import java.util.EnumSet;
+
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
 import categories.Java8Test;
+import de.upb.soot.Project;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
+import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import java.util.Collections;
-import java.util.EnumSet;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -36,7 +39,7 @@ public class JJFieldRefTest {
 
   @Test
   public void testJStaticFieldRef() {
-    IView view = new JavaView(null);
+    IView view = new JavaView(new Project(null, new DefaultSignatureFactory()));
     SignatureFactory fact = view.getSignatureFactory();
     JavaClassSignature declaringClassSignature = fact.getClassSignature("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
@@ -56,7 +59,7 @@ public class JJFieldRefTest {
 
   @Test
   public void testJInstanceFieldRef() {
-    IView view = new JavaView(null);
+    IView view = new JavaView(new Project(null, new DefaultSignatureFactory()));
     SignatureFactory fact = view.getSignatureFactory();
     JavaClassSignature declaringClassSignature = fact.getClassSignature("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");

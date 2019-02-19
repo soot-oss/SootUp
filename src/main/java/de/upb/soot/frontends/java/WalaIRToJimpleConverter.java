@@ -4,6 +4,35 @@
  */
 package de.upb.soot.frontends.java;
 
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
+import com.ibm.wala.cast.loader.AstClass;
+import com.ibm.wala.cast.loader.AstField;
+import com.ibm.wala.cast.loader.AstMethod;
+import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+import com.ibm.wala.cfg.AbstractCFG;
+import com.ibm.wala.classLoader.IClass;
+import com.ibm.wala.classLoader.IField;
+import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.shrikeCT.InvalidClassFileException;
+import com.ibm.wala.ssa.SSAInstruction;
+import com.ibm.wala.types.TypeReference;
+import com.ibm.wala.util.collections.HashSetFactory;
+import com.ibm.wala.util.intset.FixedSizeBitVector;
+
+import de.upb.soot.Project;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -39,34 +68,7 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.JavaView;
-
-import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
-import com.ibm.wala.cast.loader.AstClass;
-import com.ibm.wala.cast.loader.AstField;
-import com.ibm.wala.cast.loader.AstMethod;
-import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-import com.ibm.wala.cfg.AbstractCFG;
-import com.ibm.wala.classLoader.IClass;
-import com.ibm.wala.classLoader.IField;
-import com.ibm.wala.classLoader.IMethod;
-import com.ibm.wala.shrikeCT.InvalidClassFileException;
-import com.ibm.wala.ssa.SSAInstruction;
-import com.ibm.wala.types.TypeReference;
-import com.ibm.wala.util.collections.HashSetFactory;
-import com.ibm.wala.util.intset.FixedSizeBitVector;
-
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import soot.JavaClassSource;
 
 /**
  * Converter which converts WALA IR to jimple.
@@ -83,7 +85,7 @@ public class WalaIRToJimpleConverter {
 
   public WalaIRToJimpleConverter(String sourceDirPath) {
     srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
-    view = new JavaView(null);
+    view = new JavaView(new Project(null, new DefaultSignatureFactory()));
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
   }

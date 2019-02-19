@@ -2,14 +2,6 @@ package de.upb.soot.frontends;
 
 import static org.junit.Assert.assertTrue;
 
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.java.WalaClassLoader;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.util.printer.Printer;
-
-import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -49,6 +41,6 @@ public class GetInstructionConversionTest {
         = loader.getSootMethod(sigFactory.getMethodSignature("getA_X", declareClassSig, "int", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Utils.print(method, true);
+    Utils.print(method, false);
   }
 }
