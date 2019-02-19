@@ -25,12 +25,12 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractBinopExpr implements Expr {
@@ -67,7 +67,7 @@ public abstract class AbstractBinopExpr implements Expr {
 
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
+    List<ValueBox> list = new ArrayList<>();
 
     list.addAll(op1Box.getValue().getUseBoxes());
     list.add(op1Box);
@@ -79,17 +79,12 @@ public abstract class AbstractBinopExpr implements Expr {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof AbstractBinopExpr) {
-      AbstractBinopExpr abe = (AbstractBinopExpr) o;
-      return op1Box.getValue().equivTo(abe.op1Box.getValue()) && op2Box.getValue().equivTo(abe.op2Box.getValue())
-          && getSymbol().equals(abe.getSymbol());
-    }
-    return false;
+    return JimpleComparator.getInstance().caseAbstractBinopExpr(this, o);
   }
 
   @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseAbstractBinopExpr(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -99,7 +94,7 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   /** Returns the unique symbol for an operator. */
-  protected abstract String getSymbol();
+  public abstract String getSymbol();
 
   @Override
   public abstract Object clone();

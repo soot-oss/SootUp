@@ -34,12 +34,12 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.util.DeterministicHashMap;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -68,7 +68,6 @@ public class Printer {
     return (options & ADD_JIMPLE_LN) != 0;
   }
 
-
   public void setOption(int opt) {
     options |= opt;
   }
@@ -76,7 +75,6 @@ public class Printer {
   public void clearOption(int opt) {
     options &= ~opt;
   }
-
 
   public int getJimpleLnNum() {
     return jimpleLnNum;
@@ -186,9 +184,9 @@ public class Printer {
 
         if (!Modifier.isAbstract(method.getModifiers()) && !Modifier.isNative(method.getModifiers())) {
           if (!method.hasActiveBody()) {
-            // method.retrieveActiveBody(); // force loading the body
+            // methodRef.retrieveActiveBody(); // force loading the body
             if (!method.hasActiveBody()) {
-              throw new RuntimeException("method " + method.getName() + " has no active body!");
+              throw new RuntimeException("methodRef " + method.getName() + " has no active body!");
             }
           }
           printTo(method.getActiveBody(), out);
@@ -212,7 +210,7 @@ public class Printer {
   }
 
   /**
-   * Prints out the method corresponding to b Body, (declaration and body), in the textual format corresponding to the IR
+   * Prints out the methodRef corresponding to b Body, (declaration and body), in the textual format corresponding to the IR
    * used to encode b body.
    *
    * @param out
@@ -313,8 +311,8 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        out.println("        catch " + body.getMethod().getView().quotedNameOf(trap.getException().getSignature().toString()) + " from "
-            + up.labels().get(trap.getBeginStmt()) + " to " + up.labels().get(trap.getEndStmt()) + " with "
+        out.println("        catch " + body.getMethod().getView().quotedNameOf(trap.getException().getSignature().toString())
+            + " from " + up.labels().get(trap.getBeginStmt()) + " to " + up.labels().get(trap.getEndStmt()) + " with "
             + up.labels().get(trap.getHandlerStmt()) + ";");
 
         incJimpleLnNum();
@@ -338,15 +336,12 @@ public class Printer {
   private void printLocalsInBody(Body body, IStmtPrinter up) {
     // Print out local variables
     {
-      Map<Type, List<Local>> typeToLocals = new DeterministicHashMap<Type, List<Local>>(body.getLocalCount() * 2 + 1, 0.7f);
+      Map<Type, List<Local>> typeToLocals = new LinkedHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
 
       // Collect locals
       {
-        Iterator<Local> localIt = body.getLocals().iterator();
 
-        while (localIt.hasNext()) {
-          Local local = localIt.next();
-
+        for (Local local : body.getLocals()) {
           List<Local> localList;
 
           Type t = local.getType();
@@ -354,7 +349,7 @@ public class Printer {
           if (typeToLocals.containsKey(t)) {
             localList = typeToLocals.get(t);
           } else {
-            localList = new ArrayList<Local>();
+            localList = new ArrayList<>();
             typeToLocals.put(t, localList);
           }
 
@@ -364,22 +359,19 @@ public class Printer {
 
       // Print locals
       {
-        Iterator<Type> typeIt = typeToLocals.keySet().iterator();
 
-        while (typeIt.hasNext()) {
-          Type type = typeIt.next();
-
+        for (Type type : typeToLocals.keySet()) {
           List<Local> localList = typeToLocals.get(type);
-          Object[] locals = localList.toArray();
+          List<Local> localsCopy = new ArrayList<>(localList);
           up.type(type);
           up.literal(" ");
 
-          for (int k = 0; k < locals.length; k++) {
+          for (int k = 0; k < localsCopy.size(); k++) {
             if (k != 0) {
               up.literal(", ");
             }
 
-            up.local((Local) locals[k]);
+            up.local(localsCopy.get(k));
           }
 
           up.literal(";");

@@ -30,8 +30,8 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import java.util.List;
 
 public interface EqualLocals {
-  public boolean isLocalEqualToAt(Local l1, Local l2, IStmt s);
+  boolean isLocalEqualToAt(Local l1, Local l2, IStmt s);
 
-  public List getCopiesAt(IStmt s);
+  List getCopiesAt(IStmt s);
 
 }

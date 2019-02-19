@@ -37,9 +37,6 @@ import java.util.Optional;
 
 public abstract class FieldRef implements ConcreteRef {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = 1914104591633719756L;
   protected final FieldSignature fieldSignature;
   protected IView view;

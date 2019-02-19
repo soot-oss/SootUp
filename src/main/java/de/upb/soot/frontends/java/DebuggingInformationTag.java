@@ -4,10 +4,9 @@ import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 
 import soot.tagkit.AttributeValueException;
 import soot.tagkit.Tag;
+
 /**
- * 
  * @author Linghui Luo
- *
  */
 public class DebuggingInformationTag implements Tag {
 

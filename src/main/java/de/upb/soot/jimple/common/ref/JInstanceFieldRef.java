@@ -4,7 +4,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -12,6 +12,7 @@
 package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IVisitor;
@@ -20,14 +21,11 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class JInstanceFieldRef extends FieldRef {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 2900174317359676686L;
 
   private final ValueBox baseBox;
@@ -39,7 +37,7 @@ public class JInstanceFieldRef extends FieldRef {
    *          the view
    * @param base
    *          the base value of the field
-   * @param fieldSig
+   * @param symbolicFieldRef
    *          the field sig
    */
   public JInstanceFieldRef(IView view, Value base, FieldSignature fieldSig) {
@@ -82,9 +80,8 @@ public class JInstanceFieldRef extends FieldRef {
    */
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
-    useBoxes.addAll(baseBox.getValue().getUseBoxes());
+    List<ValueBox> useBoxes = new ArrayList<>(baseBox.getValue().getUseBoxes());
     useBoxes.add(baseBox);
 
     return useBoxes;
@@ -97,11 +94,12 @@ public class JInstanceFieldRef extends FieldRef {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JInstanceFieldRef) {
-      JInstanceFieldRef fr = (JInstanceFieldRef) o;
-      return fr.getField().equals(getField()) && fr.baseBox.getValue().equivTo(baseBox.getValue());
-    }
-    return false;
+    return JimpleComparator.getInstance().caseInstanceFieldRef(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseInstanceFieldRef(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -112,11 +110,6 @@ public class JInstanceFieldRef extends FieldRef {
     } else {
       return 16;
     }
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

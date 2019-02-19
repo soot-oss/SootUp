@@ -30,8 +30,6 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-import java.util.Comparator;
-
 public class LongConstant extends ArithmeticConstant {
   /**
    * 
@@ -218,12 +216,12 @@ public class LongConstant extends ArithmeticConstant {
 
   @Override
   public String toString() {
-    return new Long(value).toString() + "L";
+    return value + "L";
   }
 
   @Override
   public Type getType() {
-    return LongType.getInstance();
+    return LongType.INSTANCE;
   }
 
   @Override
@@ -231,9 +229,4 @@ public class LongConstant extends ArithmeticConstant {
     ((IConstantVisitor) sw).caseLongConstant(this);
   }
 
-  @Override
-  public boolean equivTo(Object o, Comparator<? extends Object> comparator) {
-    // TODO Auto-generated method stub
-    return false;
-  }
 }

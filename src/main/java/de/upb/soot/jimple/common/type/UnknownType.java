@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -27,25 +27,15 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.TypeSignature;
 
-/**
- * Soot representation used for not-yet-typed objects. Implemented as a singleton.
- */
+/** Soot representation used for not-yet-typed objects. Implemented as a singleton. */
 @SuppressWarnings("serial")
 public class UnknownType extends Type {
 
-  private static UnknownType instance;
+  public static final UnknownType INSTANCE = new UnknownType();
 
-  /**
-   * Get the UnknownType instance.
-   * 
-   * @return the UnknownType instance.
-   */
-  public static UnknownType getInstance() {
-    if (instance == null) {
-      instance = new UnknownType();
-    }
-    return instance;
+  private UnknownType() {
   }
 
   @Override
@@ -75,5 +65,10 @@ public class UnknownType extends Type {
       return other;
     }
     throw new RuntimeException("illegal type merge: " + this + " and " + other);
+  }
+
+  @Override
+  public TypeSignature getTypeSignature() {
+    return null;
   }
 }

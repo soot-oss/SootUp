@@ -1,16 +1,5 @@
 package de.upb.soot.frontends.java;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.jar.JarFile;
-
 import com.ibm.wala.cast.java.ipa.callgraph.JavaSourceAnalysisScope;
 import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
 import com.ibm.wala.cast.java.translator.jdt.ecj.ECJClassLoaderFactory;
@@ -36,6 +25,16 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+import java.util.jar.JarFile;
 
 /**
  * This class loads java source code using WALA's java source code front-end.
@@ -69,8 +68,7 @@ public class WalaClassLoader {
     this(sourceDirPath, null);
   }
 
-  public WalaClassLoader(String sourceDirPath, String androidJar,boolean android)
-  {
+  public WalaClassLoader(String sourceDirPath, String androidJar, boolean android) {
     // disable System.err messages generated from eclipse jdt
     System.setProperty("wala.jdt.quiet", "true");
     scope = new JavaSourceAnalysisScope();
@@ -80,18 +78,16 @@ public class WalaClassLoader {
       for (String stdlib : stdlibs) {
         scope.addToScope(ClassLoaderReference.Primordial, new JarFile(stdlib));
       }
-      scope.addToScope(ClassLoaderReference.Primordial,new JarFile(androidJar));
+      scope.addToScope(ClassLoaderReference.Primordial, new JarFile(androidJar));
       scope.addToScope(JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(sourceDirPath)));
     } catch (IOException e) {
       e.printStackTrace();
     }
     factory = new ECJClassLoaderFactory(scope.getExclusions());
   }
+
   /**
    * Constructor used for loading classes from given source code path.
-   * 
-   * @param sourceDirPath
-   * @param exclusionFilePath
    */
   public WalaClassLoader(String sourceDirPath, String exclusionFilePath) {
     addScopesForJava();
@@ -109,8 +105,6 @@ public class WalaClassLoader {
         }
       }
       factory = new ECJClassLoaderFactory(scope.getExclusions());
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -170,9 +164,6 @@ public class WalaClassLoader {
 
   /**
    * Return a soot class with the given signature converted from a WALA class.
-   * 
-   * @param signature
-   * @return
    */
   public Optional<SootClass> getSootClass(JavaClassSignature signature) {
     if (classHierarchy == null) {

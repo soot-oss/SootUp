@@ -28,10 +28,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-/** Represents the fully qualified signature of a method. */
+/** Represents the fully qualified signature of a methodRef. */
 public class MethodSignature extends AbstractClassMemberSignature {
 
-  /** The method's parameters' signatures. */
+  /** The methodRef's parameters' signatures. */
   public final List<TypeSignature> parameterSignatures;
 
   /**
@@ -58,8 +58,7 @@ public class MethodSignature extends AbstractClassMemberSignature {
     }
     MethodSignature that = (MethodSignature) o;
     return Objects.equal(name, that.name) && Objects.equal(declClassSignature, that.declClassSignature)
-        && Objects.equal(parameterSignatures, that.parameterSignatures)
-        && Objects.equal(typeSignature, that.typeSignature);
+        && Objects.equal(parameterSignatures, that.parameterSignatures) && Objects.equal(typeSignature, that.typeSignature);
   }
 
   @Override
@@ -68,19 +67,12 @@ public class MethodSignature extends AbstractClassMemberSignature {
   }
 
   /**
-   * The simple name of the method; the method's name and its parameters.
+   * The simple name of the methodRef; the methodRef's name and its parameters.
    *
    * @return a String of the form "returnTypeName methodName(ParameterName(,)*)"
    */
   @Override
   public String getSubSignature() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(typeSignature.toString());
-    sb.append(' ');
-    sb.append(name);
-    sb.append('(');
-    sb.append(StringUtils.join(parameterSignatures, ", "));
-    sb.append(')');
-    return sb.toString();
+    return typeSignature.toString() + ' ' + name + '(' + StringUtils.join(parameterSignatures, ", ") + ')';
   }
 }

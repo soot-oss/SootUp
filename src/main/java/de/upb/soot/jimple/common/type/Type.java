@@ -1,31 +1,30 @@
 package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.IAcceptor;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.util.Numberable;
 
 import java.io.Serializable;
 
-/**
- * Represents types within Soot, eg <code>int</code>, <code>java.lang.String</code>.
- * 
- *
- */
+/** Represents types within Soot, eg <code>int</code>, <code>java.lang.String</code>. */
 @SuppressWarnings("serial")
 public abstract class Type implements IAcceptor, Serializable, Numberable {
   /** Returns a textual representation of this type. */
   @Override
   public abstract String toString();
 
-  /** Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to .jimple format */
+  /**
+   * Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to .jimple format
+   */
   public String toQuotedString() {
     return toString();
   }
 
   /** Converts the int-like types (short, byte, boolean and char) to IntType. */
   public static Type toMachineType(Type t) {
-    if (t.equals(ShortType.getInstance()) || t.equals(ByteType.getInstance()) || t.equals(BooleanType.getInstance())
-        || t.equals(CharType.getInstance())) {
-      return IntType.getInstance();
+    if (t.equals(ShortType.INSTANCE) || t.equals(ByteType.INSTANCE) || t.equals(BooleanType.INSTANCE)
+        || t.equals(CharType.INSTANCE)) {
+      return IntType.INSTANCE;
     } else {
       return t;
     }
@@ -33,7 +32,7 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /** Returns the least common superclass of this type and other. */
   public Type merge(Type other) {
-    // method overridden in subclasses UnknownType and RefType
+    // methodRef overridden in subclasses UnknownType and RefType
     throw new RuntimeException("illegal type merge: " + this + " and " + other);
   }
 
@@ -51,8 +50,6 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /**
    * Returns <code>true</code> if this type is allowed to appear in final (clean) Jimple code.
-   * 
-   * @return
    */
   public boolean isAllowedInFinalCode() {
     return false;
@@ -67,6 +64,8 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
   public final void setNumber(int number) {
     this.number = number;
   }
+
+  public abstract TypeSignature getTypeSignature();
 
   protected ArrayType arrayType;
   private int number = 0;

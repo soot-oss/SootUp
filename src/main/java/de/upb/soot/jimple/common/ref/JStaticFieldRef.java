@@ -1,5 +1,6 @@
 package de.upb.soot.jimple.common.ref;
 
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.FieldSignature;
@@ -7,16 +8,12 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class JStaticFieldRef extends FieldRef {
-  /**
-   * 
-   */
   private static final long serialVersionUID = -8744248848897714882L;
 
-
+  // FIXME: DO wo really need a view here?
   public JStaticFieldRef(IView view, FieldSignature fieldSig) {
     super(view, fieldSig);
   }
@@ -43,11 +40,12 @@ public class JStaticFieldRef extends FieldRef {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JStaticFieldRef) {
-      return ((JStaticFieldRef) o).getField().equals(getField());
-    }
+    return JimpleComparator.getInstance().caseStaticFieldRef(this, o);
+  }
 
-    return false;
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseStaticFieldRef(this, o);
   }
 
   @Override
@@ -61,12 +59,7 @@ public class JStaticFieldRef extends FieldRef {
 
   @Override
   public void accept(IVisitor v) {
-    // TODO Auto-generated method stub
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
+    // TODO Auto-generated methodRef stub
   }
 
 }

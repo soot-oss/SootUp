@@ -24,8 +24,8 @@ package de.upb.soot.namespaces;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
-import de.upb.soot.namespaces.classprovider.AbstractClassSource;
-import de.upb.soot.namespaces.classprovider.IClassProvider;
+import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.Utils;
@@ -45,6 +45,9 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,10 +59,10 @@ import org.slf4j.LoggerFactory;
  * @author Manuel Benz created on 22.05.18
  */
 public class JavaClassPathNamespace extends AbstractNamespace {
-  private static final Logger logger = LoggerFactory.getLogger(JavaClassPathNamespace.class);
-  private static final String WILDCARD_CHAR = "*";
+  private static final @Nonnull Logger logger = LoggerFactory.getLogger(JavaClassPathNamespace.class);
+  private static final @Nonnull String WILDCARD_CHAR = "*";
 
-  protected Collection<AbstractNamespace> cpEntries;
+  protected @Nonnull Collection<AbstractNamespace> cpEntries;
 
   /**
    * Creates a {@link JavaClassPathNamespace} which locates classes in the given class path.
@@ -67,12 +70,13 @@ public class JavaClassPathNamespace extends AbstractNamespace {
    * @param classPath
    *          The class path to search in
    */
-  public JavaClassPathNamespace(String classPath) {
+  public JavaClassPathNamespace(@Nonnull String classPath) {
     this(classPath, getDefaultClassProvider());
   }
 
-  public JavaClassPathNamespace(String classPath, IClassProvider provider) {
+  public JavaClassPathNamespace(@Nonnull String classPath, @Nonnull IClassProvider provider) {
     super(provider);
+
     if (isNullOrEmpty(classPath)) {
       throw new InvalidClassPathException("Empty class path given");
     }
@@ -90,7 +94,6 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     logger.trace("{} class path entries registered", cpEntries.size());
   }
 
-
   /**
    * Explode the class or modulepath entries, separated by {@link File#pathSeparator}.
    *
@@ -98,12 +101,12 @@ public class JavaClassPathNamespace extends AbstractNamespace {
    *          entries as one string
    * @return path entries
    */
-  public static Stream<Path> explode(String paths) {
+  public static @Nonnull Stream<Path> explode(@Nonnull String paths) {
     // the classpath is split at every path separator which is not escaped
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
     final Stream<Path> exploded = Stream.of(paths.split(regex)).flatMap(JavaClassPathNamespace::handleWildCards);
     // we need to filter out duplicates of the same files to not generate duplicate namespaces
-    return exploded.map(cp -> cp.normalize()).distinct();
+    return exploded.map(Path::normalize).distinct();
   }
 
   /**
@@ -114,7 +117,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
    *          A class path entry
    * @return A stream of class path entries with wildcards exploded
    */
-  private static Stream<Path> handleWildCards(String entry) {
+  private static @Nonnull Stream<Path> handleWildCards(@Nonnull String entry) {
     if (entry.endsWith(WILDCARD_CHAR)) {
       Path baseDir = Paths.get(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
       try {
@@ -130,10 +133,10 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Collection<AbstractClassSource> getClassSources(SignatureFactory factory) {
+  public @Nonnull Collection<ClassSource> getClassSources(@Nonnull SignatureFactory factory) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
-    Set<AbstractClassSource> found = new HashSet<>();
+    Set<ClassSource> found = new HashSet<>();
     for (AbstractNamespace ns : cpEntries) {
       found.addAll(ns.getClassSources(factory));
     }
@@ -141,9 +144,9 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public Optional<AbstractClassSource> getClassSource(JavaClassSignature signature) {
+  public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature signature) {
     for (AbstractNamespace ns : cpEntries) {
-      final Optional<AbstractClassSource> classSource = ns.getClassSource(signature);
+      final Optional<ClassSource> classSource = ns.getClassSource(signature);
       if (classSource.isPresent()) {
         return classSource;
       }
@@ -151,7 +154,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     return Optional.empty();
   }
 
-  private Optional<AbstractNamespace> nsForPath(Path path) {
+  private @Nonnull Optional<AbstractNamespace> nsForPath(@Nonnull Path path) {
     if (Files.exists(path) && (java.nio.file.Files.isDirectory(path) || PathUtils.isArchive(path))) {
       return Optional.of(PathBasedNamespace.createForClassContainer(path));
     } else {
@@ -166,15 +169,15 @@ public class JavaClassPathNamespace extends AbstractNamespace {
      */
     private static final long serialVersionUID = -5130658516046902470L;
 
-    public InvalidClassPathException(String s) {
-      super(s);
+    public InvalidClassPathException(@Nullable String message) {
+      super(message);
     }
 
-    public InvalidClassPathException(String message, Throwable cause) {
+    public InvalidClassPathException(@Nullable String message, @Nullable Throwable cause) {
       super(message, cause);
     }
 
-    public InvalidClassPathException(Throwable cause) {
+    public InvalidClassPathException(@Nullable Throwable cause) {
       super(cause);
     }
   }

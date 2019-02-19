@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -44,18 +45,18 @@ public class JInvokeStmt extends AbstractStmt {
   private static final long serialVersionUID = 3929309661335452051L;
   final ValueBox invokeExprBox;
 
-  public JInvokeStmt(Value c,PositionInfo positionInfo) {
-    this(Jimple.newInvokeExprBox(c),positionInfo);
+  public JInvokeStmt(Value c, PositionInfo positionInfo) {
+    this(Jimple.newInvokeExprBox(c), positionInfo);
   }
 
-  protected JInvokeStmt(ValueBox invokeExprBox,PositionInfo positionInfo) {
+  protected JInvokeStmt(ValueBox invokeExprBox, PositionInfo positionInfo) {
     super(positionInfo);
     this.invokeExprBox = invokeExprBox;
   }
 
   @Override
   public JInvokeStmt clone() {
-    return new JInvokeStmt(Jimple.cloneIfNecessary(getInvokeExpr()),getPositionInfo().clone());
+    return new JInvokeStmt(Jimple.cloneIfNecessary(getInvokeExpr()), getPositionInfo().clone());
   }
 
   @Override
@@ -89,9 +90,8 @@ public class JInvokeStmt extends AbstractStmt {
 
   @Override
   public List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
 
-    list.addAll(invokeExprBox.getValue().getUseBoxes());
+    List<ValueBox> list = new ArrayList<>(invokeExprBox.getValue().getUseBoxes());
     list.add(invokeExprBox);
 
     return list;
@@ -114,12 +114,13 @@ public class JInvokeStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
+    return JimpleComparator.getInstance().caseInvokeStmt(this, o);
 
-    if (!(o instanceof JInvokeStmt)) {
-      return false;
-    }
+  }
 
-    return getInvokeExpr().equivTo(((JInvokeStmt) o).getInvokeExpr());
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseInvokeStmt(this, o);
   }
 
   @Override

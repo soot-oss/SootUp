@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -27,24 +27,16 @@ package de.upb.soot.jimple.common.type;
 
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
 
 /** Represents the Java void type. */
 @SuppressWarnings("serial")
 public class VoidType extends Type {
 
-  private static VoidType instance;
+  public static final VoidType INSTANCE = new VoidType();
 
-  /**
-   * Get the VoidType instance.
-   * 
-   * @return the VoidType instance.
-   */
-  public static VoidType getInstance() {
-    if (instance == null) {
-      instance = new VoidType();
-    }
-    return instance;
+  private VoidType() {
   }
 
   @Override
@@ -65,6 +57,11 @@ public class VoidType extends Type {
   @Override
   public boolean isAllowedInFinalCode() {
     return true;
+  }
+
+  @Override
+  public TypeSignature getTypeSignature() {
+    return VoidTypeSignature.VOID_TYPE_SIGNATURE;
   }
 
   @Override

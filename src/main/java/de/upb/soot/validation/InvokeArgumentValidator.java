@@ -32,12 +32,7 @@ import java.util.List;
  *
  * @author Steven Arzt
  */
-public enum InvokeArgumentValidator implements BodyValidator {
-  INSTANCE;
-
-  public static InvokeArgumentValidator getInstance() {
-    return INSTANCE;
-  }
+public class InvokeArgumentValidator implements BodyValidator {
 
   @Override
   public void validate(Body body, List<ValidationException> exceptions) {

@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
@@ -34,7 +35,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class JNewExpr implements Expr {
@@ -55,11 +55,12 @@ public class JNewExpr implements Expr {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JNewExpr) {
-      JNewExpr ae = (JNewExpr) o;
-      return type.equals(ae.type);
-    }
-    return false;
+    return JimpleComparator.getInstance().caseNewExpr(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseNewExpr(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -80,6 +81,7 @@ public class JNewExpr implements Expr {
     up.type(type);
   }
 
+  // TODO: duplicate getter? ->getType()
   public RefType getBaseType() {
     return type;
   }
@@ -101,11 +103,6 @@ public class JNewExpr implements Expr {
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNewExpr(this);
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

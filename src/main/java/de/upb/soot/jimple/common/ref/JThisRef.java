@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.common.ref;
 
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
@@ -32,7 +33,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class JThisRef implements IdentityRef {
@@ -48,10 +48,12 @@ public class JThisRef implements IdentityRef {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JThisRef) {
-      return thisType.equals(((JThisRef) o).thisType);
-    }
-    return false;
+    return JimpleComparator.getInstance().caseThisRef(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseThisRef(this, o);
   }
 
   @Override
@@ -87,11 +89,6 @@ public class JThisRef implements IdentityRef {
   @Override
   public Object clone() {
     return new JThisRef(thisType);
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

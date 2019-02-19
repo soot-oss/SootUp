@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
@@ -40,8 +41,6 @@ import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.Comparator;
 
 public class JNegExpr extends AbstractUnopExpr {
   /**
@@ -61,10 +60,12 @@ public class JNegExpr extends AbstractUnopExpr {
   /** Compares the specified object with this one for structural equality. */
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JNegExpr) {
-      return opBox.getValue().equivTo(((JNegExpr) o).opBox.getValue());
-    }
-    return false;
+    return JimpleComparator.getInstance().caseNegExpr(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseNegExpr(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -89,29 +90,24 @@ public class JNegExpr extends AbstractUnopExpr {
   public Type getType() {
     Value op = opBox.getValue();
 
-    if (op.getType().equals(IntType.getInstance()) || op.getType().equals(ByteType.getInstance())
-        || op.getType().equals(ShortType.getInstance()) || op.getType().equals(BooleanType.getInstance())
-        || op.getType().equals(CharType.getInstance())) {
-      return IntType.getInstance();
-    } else if (op.getType().equals(LongType.getInstance())) {
-      return LongType.getInstance();
-    } else if (op.getType().equals(DoubleType.getInstance())) {
-      return DoubleType.getInstance();
-    } else if (op.getType().equals(FloatType.getInstance())) {
-      return FloatType.getInstance();
+    if (op.getType().equals(IntType.INSTANCE) || op.getType().equals(ByteType.INSTANCE)
+        || op.getType().equals(ShortType.INSTANCE) || op.getType().equals(BooleanType.INSTANCE)
+        || op.getType().equals(CharType.INSTANCE)) {
+      return IntType.INSTANCE;
+    } else if (op.getType().equals(LongType.INSTANCE)) {
+      return LongType.INSTANCE;
+    } else if (op.getType().equals(DoubleType.INSTANCE)) {
+      return DoubleType.INSTANCE;
+    } else if (op.getType().equals(FloatType.INSTANCE)) {
+      return FloatType.INSTANCE;
     } else {
-      return UnknownType.getInstance();
+      return UnknownType.INSTANCE;
     }
   }
 
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNegExpr(this);
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

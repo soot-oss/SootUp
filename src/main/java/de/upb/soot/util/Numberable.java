@@ -25,7 +25,7 @@ package de.upb.soot.util;
  * @author Ondrej Lhotak
  */
 public interface Numberable {
-  public void setNumber(int number);
+  void setNumber(int number);
 
-  public int getNumber();
+  int getNumber();
 }

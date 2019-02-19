@@ -79,7 +79,7 @@
 
   Version 1.2.3, 6/26/97, [Raimondas Lencevicius]
    Fixed the yy_nxt[][] assignment that has generated huge code
-   exceeding 64K method size limit. Now the assignment
+   exceeding 64K methodRef size limit. Now the assignment
    is handled by unpacking a string encoding of integer array.
    To achieve that, added
    "private int [][] unpackFromString(int size1, int size2, String st)"

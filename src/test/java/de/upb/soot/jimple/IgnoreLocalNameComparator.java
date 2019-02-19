@@ -1,15 +1,8 @@
-package de.upb.soot.namespaces.classprovider;
-
-import de.upb.soot.core.Body;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.signatures.AbstractClassMemberSignature;
-import de.upb.soot.signatures.MethodSignature;
-
 /*-
  * #%L
- * Soot - a J*va Optimization Framework
+ * Soot
  * %%
- * Copyright (C) 1999 Patrick Lam
+ * Copyright (C) 15.11.2018 Markus Schmidt
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -27,10 +20,18 @@ import de.upb.soot.signatures.MethodSignature;
  * #L%
  */
 
-/** A class which knows how to produce Body's for SootMethods. */
+package de.upb.soot.jimple;
 
-public interface IMethodSource {
-  /** Returns a filled-out body for the given SootMethod. */
-  public Body getBody(SootMethod m);
-  public MethodSignature getSignature();
+import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.Local;
+
+public class IgnoreLocalNameComparator extends JimpleComparator {
+
+    public boolean caseLocal(Local obj, Object o) {
+        if( !(o instanceof Local)){
+            return false;
+        }
+        return obj.getType().equals( ((Local) o).getType());
+
+    }
 }

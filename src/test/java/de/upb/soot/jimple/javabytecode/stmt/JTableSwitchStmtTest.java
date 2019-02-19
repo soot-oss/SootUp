@@ -1,8 +1,36 @@
+/*-
+ * #%L
+ * Soot
+ * %%
+ * Copyright (C) 15.11.2018 Markus Schmidt
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
+
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import de.upb.soot.jimple.common.constant.IntConstant;
+import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.JNopStmt;
+import de.upb.soot.jimple.common.stmt.JReturnStmt;
+import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 
 import java.util.ArrayList;
 
@@ -15,11 +43,12 @@ import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JNopStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
+
 /**
-*
-* @author Markus Schmidt & Linghui Luo
-*
-*/
+ *
+ * @author Markus Schmidt & Linghui Luo
+ *
+ */
 @Category(Java8Test.class)
 public class JTableSwitchStmtTest {
 
@@ -48,7 +77,6 @@ public class JTableSwitchStmtTest {
     IStmt stmt5 = new JTableSwitchStmt(IntConstant.getInstance(123), 1, 5, targets,
         new JReturnStmt(IntConstant.getInstance(666), nop), nop);
     IStmt stmt6 = new JTableSwitchStmt(IntConstant.getInstance(123), 1, 4, targets, new JNopStmt(nop), nop);
-
     // toString
     assertEquals(
         "tableswitch(123) {     case 1: goto return 1;     case 2: goto return 2;     case 3: goto return 3;     case 4: goto nop;     default: goto return 666; }",

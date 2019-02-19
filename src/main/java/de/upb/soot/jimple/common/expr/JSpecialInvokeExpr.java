@@ -28,14 +28,14 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.ImmediateBox;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
@@ -47,7 +47,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   /**
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
-  public JSpecialInvokeExpr(IView view, Local base, MethodSignature method, List<? extends Value> args) {
+  public JSpecialInvokeExpr(IView view, Local base, MethodRef method, List<? extends Value> args) {
     super(view, Jimple.newLocalBox(base), method, new ImmediateBox[args.size()]);
 
     for (int i = 0; i < args.size(); i++) {
@@ -57,24 +57,35 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+    List<Value> clonedArgs = new ArrayList<>(getArgCount());
 
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JSpecialInvokeExpr(this.getView(), (Local) getBase(), methodSignature, clonedArgs);
+    return new JSpecialInvokeExpr(this.getView(), (Local) getBase(), method, clonedArgs);
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    return equivTo(o, JimpleComparator.getInstance());
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseSpecialInvokeExpr(this, o);
   }
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder builder = new StringBuilder();
 
-    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + methodSignature + "(");
-    argBoxesToString(buffer);
-    buffer.append(")");
+    builder.append(Jimple.SPECIALINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(getMethodSignature())
+        .append("(");
+    argBoxesToString(builder);
+    builder.append(")");
 
-    return buffer.toString();
+    return builder.toString();
   }
 
   /**
@@ -87,7 +98,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.methodSignature(methodSignature);
+    up.methodSignature(getMethodSignature());
     up.literal("(");
 
     if (argBoxes != null) {
@@ -101,11 +112,6 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
       }
     }
     up.literal(")");
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

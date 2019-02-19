@@ -57,65 +57,65 @@ import de.upb.soot.jimple.common.expr.JUshrExpr;
 import de.upb.soot.jimple.common.expr.JXorExpr;
 
 public interface IExprVisitor extends IVisitor {
-  public abstract void caseAddExpr(JAddExpr v);
+  void caseAddExpr(JAddExpr v);
 
-  public abstract void caseAndExpr(JAndExpr v);
+  void caseAndExpr(JAndExpr v);
 
-  public abstract void caseCmpExpr(JCmpExpr v);
+  void caseCmpExpr(JCmpExpr v);
 
-  public abstract void caseCmpgExpr(JCmpgExpr v);
+  void caseCmpgExpr(JCmpgExpr v);
 
-  public abstract void caseCmplExpr(JCmplExpr v);
+  void caseCmplExpr(JCmplExpr v);
 
-  public abstract void caseDivExpr(JDivExpr v);
+  void caseDivExpr(JDivExpr v);
 
-  public abstract void caseEqExpr(JEqExpr v);
+  void caseEqExpr(JEqExpr v);
 
-  public abstract void caseNeExpr(JNeExpr v);
+  void caseNeExpr(JNeExpr v);
 
-  public abstract void caseGeExpr(JGeExpr v);
+  void caseGeExpr(JGeExpr v);
 
-  public abstract void caseGtExpr(JGtExpr v);
+  void caseGtExpr(JGtExpr v);
 
-  public abstract void caseLeExpr(JLeExpr v);
+  void caseLeExpr(JLeExpr v);
 
-  public abstract void caseLtExpr(JLtExpr v);
+  void caseLtExpr(JLtExpr v);
 
-  public abstract void caseMulExpr(JMulExpr v);
+  void caseMulExpr(JMulExpr v);
 
-  public abstract void caseOrExpr(JOrExpr v);
+  void caseOrExpr(JOrExpr v);
 
-  public abstract void caseRemExpr(JRemExpr v);
+  void caseRemExpr(JRemExpr v);
 
-  public abstract void caseShlExpr(JShlExpr v);
+  void caseShlExpr(JShlExpr v);
 
-  public abstract void caseShrExpr(JShrExpr v);
+  void caseShrExpr(JShrExpr v);
 
-  public abstract void caseUshrExpr(JUshrExpr v);
+  void caseUshrExpr(JUshrExpr v);
 
-  public abstract void caseSubExpr(JSubExpr v);
+  void caseSubExpr(JSubExpr v);
 
-  public abstract void caseXorExpr(JXorExpr v);
+  void caseXorExpr(JXorExpr v);
 
-  public abstract void caseInstanceInvokeExpr(AbstractInstanceInvokeExpr v);
+  void caseInstanceInvokeExpr(AbstractInstanceInvokeExpr v);
 
-  public abstract void caseStaticInvokeExpr(JStaticInvokeExpr v);
+  void caseStaticInvokeExpr(JStaticInvokeExpr v);
 
-  public abstract void caseDynamicInvokeExpr(JDynamicInvokeExpr v);
+  void caseDynamicInvokeExpr(JDynamicInvokeExpr v);
 
-  public abstract void caseCastExpr(JCastExpr v);
+  void caseCastExpr(JCastExpr v);
 
-  public abstract void caseInstanceOfExpr(JInstanceOfExpr v);
+  void caseInstanceOfExpr(JInstanceOfExpr v);
 
-  public abstract void caseNewArrayExpr(JNewArrayExpr v);
+  void caseNewArrayExpr(JNewArrayExpr v);
 
-  public abstract void caseNewMultiArrayExpr(JNewMultiArrayExpr v);
+  void caseNewMultiArrayExpr(JNewMultiArrayExpr v);
 
-  public abstract void caseNewExpr(JNewExpr v);
+  void caseNewExpr(JNewExpr v);
 
-  public abstract void caseLengthExpr(JLengthExpr v);
+  void caseLengthExpr(JLengthExpr v);
 
-  public abstract void caseNegExpr(JNegExpr v);
+  void caseNegExpr(JNegExpr v);
 
-  public abstract void defaultCase(Object obj);
+  void defaultCase(Object obj);
 }

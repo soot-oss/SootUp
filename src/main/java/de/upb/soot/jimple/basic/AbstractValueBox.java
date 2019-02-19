@@ -28,7 +28,7 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 /**
- * Reference implementation for ValueBox; just add a canContainValue method.
+ * Reference implementation for ValueBox; just add a canContainValue methodRef.
  */
 public abstract class AbstractValueBox implements ValueBox {
   /**

@@ -26,6 +26,8 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
+
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -40,17 +42,17 @@ public class JThrowStmt extends AbstractOpStmt {
    */
   private static final long serialVersionUID = -1145801522928664246L;
 
-  public JThrowStmt(Value op,PositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(op),positionInfo);
+  public JThrowStmt(Value op, PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(op), positionInfo);
   }
 
-  protected JThrowStmt(ValueBox opBox,PositionInfo positionInfo) {
-    super(opBox,positionInfo);
+  protected JThrowStmt(ValueBox opBox, PositionInfo positionInfo) {
+    super(opBox, positionInfo);
   }
 
   @Override
   public JThrowStmt clone() {
-    return new JThrowStmt(Jimple.cloneIfNecessary(getOp()),getPositionInfo().clone());
+    return new JThrowStmt(Jimple.cloneIfNecessary(getOp()), getPositionInfo().clone());
   }
 
   @Override
@@ -82,10 +84,12 @@ public class JThrowStmt extends AbstractOpStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JThrowStmt)) {
-      return false;
-    }
-    return super.equivTo((AbstractOpStmt) o);
+    return JimpleComparator.getInstance().caseThrowStmt(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseThrowStmt(this, o);
   }
 
   @Override

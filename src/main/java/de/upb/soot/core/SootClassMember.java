@@ -47,8 +47,7 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
 
   /** Constructor. */
   public SootClassMember(IView view, JavaClassSignature declaringClass, AbstractClassMemberSignature signature,
-      TypeSignature type,
-      EnumSet<Modifier> modifiers) {
+      TypeSignature type, EnumSet<Modifier> modifiers) {
     super(view);
     this.declaringClassSig = declaringClass;
     this.signature = signature;
@@ -65,33 +64,34 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
   public JavaClassSignature getDeclaringClassSignature() {
     return this.declaringClassSig;
   }
+
   /** Returns true when this object is from a phantom class. */
   public boolean isPhantom() {
     return this.getDeclaringClass().isPresent() && this.getDeclaringClass().get().isPhantomClass();
   }
 
-  /** Convenience method returning true if this class member is protected. */
+  /** Convenience methodRef returning true if this class member is protected. */
   public boolean isProtected() {
     return Modifier.isProtected(this.getModifiers());
   }
 
-  /** Convenience method returning true if this class member is private. */
+  /** Convenience methodRef returning true if this class member is private. */
   public boolean isPrivate() {
     return Modifier.isPrivate(this.getModifiers());
   }
 
-  /** Convenience method returning true if this class member is public. */
+  /** Convenience methodRef returning true if this class member is public. */
   public boolean isPublic() {
     return Modifier.isPublic(this.getModifiers());
   }
 
-  /** Convenience method returning true if this class member is static. */
+  /** Convenience methodRef returning true if this class member is static. */
   public boolean isStatic() {
     return Modifier.isStatic(this.getModifiers());
   }
 
   /**
-   * Convenience method returning true if this field is final.
+   * Convenience methodRef returning true if this field is final.
    */
   public boolean isFinal() {
     return Modifier.isFinal(this.getModifiers());
@@ -112,21 +112,21 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
   }
 
   /**
-   * Returns a hash code for this method consistent with structural equality.
+   * Returns a hash code for this methodRef consistent with structural equality.
    */
   // TODO: check whether modifiers.hashcode() does what its meant for; former: "modifiers"/int bit flags representing the set
   public int equivHashCode() {
     return typeSignature.hashCode() * 101 + modifiers.hashCode() * 17 + signature.hashCode();
   }
 
-  /** Returns the signature of this method. */
+  /** Returns the signature of this methodRef. */
   @Override
   public String toString() {
     return signature.toString();
   }
 
   /**
-   * Returns the Soot signature of this method. Used to refer to methods unambiguously.
+   * Returns the Soot signature of this methodRef. Used to refer to methods unambiguously.
    */
   public AbstractClassMemberSignature getSignature() {
     return signature;

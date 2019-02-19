@@ -28,6 +28,7 @@ package de.upb.soot.jimple.common.type;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 /**
  * Soot representation of the Java built-in type 'double'. Implemented as a singleton.
@@ -35,18 +36,9 @@ import de.upb.soot.signatures.PrimitiveTypeSignature;
 @SuppressWarnings("serial")
 public class DoubleType extends PrimType {
 
-  private static DoubleType instance;
+  public static final DoubleType INSTANCE = new DoubleType();
 
-  /**
-   * Get the DoubleType instance.
-   * 
-   * @return the DoubleType instance.
-   */
-  public static DoubleType getInstance() {
-    if (instance == null) {
-      instance = new DoubleType();
-    }
-    return instance;
+  private DoubleType() {
   }
 
   @Override
@@ -62,6 +54,11 @@ public class DoubleType extends PrimType {
   @Override
   public String toString() {
     return PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE.toString();
+  }
+
+  @Override
+  public TypeSignature getTypeSignature() {
+    return PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
   }
 
   @Override

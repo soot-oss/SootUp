@@ -25,20 +25,20 @@
 
 package de.upb.soot.jimple.common.ref;
 
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
- * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter slots on method entry.
- * <br>
+ * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter slots on methodRef
+ * entry. <br>
  * <p>
- * For instance, in an instance method, the first statement will often be <code> this := @parameter0; </code>
+ * For instance, in an instance methodRef, the first statement will often be <code> this := @parameter0; </code>
  * </p>
  */
 public class JParameterRef implements IdentityRef {
@@ -57,10 +57,12 @@ public class JParameterRef implements IdentityRef {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JParameterRef) {
-      return num == ((JParameterRef) o).num && paramType.equals(((JParameterRef) o).paramType);
-    }
-    return false;
+    return JimpleComparator.getInstance().caseParameterRef(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseParameterRef(this, o);
   }
 
   @Override
@@ -110,11 +112,6 @@ public class JParameterRef implements IdentityRef {
   @Override
   public void accept(IVisitor sw) {
     // TODO
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

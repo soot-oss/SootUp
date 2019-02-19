@@ -1,13 +1,6 @@
 package de.upb.soot.frontends.java;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import com.google.common.annotations.VisibleForTesting;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.IField;
 import de.upb.soot.core.IMethod;
@@ -60,12 +53,21 @@ import soot.jimple.Stmt;
 import soot.jimple.internal.JimpleLocal;
 import soot.util.Chain;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * An IR Converter between old and new soot.
  * 
  * @author Linghui Luo
  *
  */
+@VisibleForTesting
 public class JimpleConverter {
   private Chain<Local> locals = null;
   private Map<IStmt, Stmt> targets;
@@ -92,7 +94,7 @@ public class JimpleConverter {
     if (fromClass.hasSuperclass()) {
       Optional<de.upb.soot.core.SootClass> superClass = fromClass.getSuperclass();
       soot.SootClass s = getSootClass(superClass, fromClass.getSuperclassSignature());
-      toClass.setSuperclass(s); 
+      toClass.setSuperclass(s);
     }
     if (fromClass.hasOuterClass()) {
       Optional<de.upb.soot.core.SootClass> outClass = fromClass.getOuterClass();
@@ -146,7 +148,7 @@ public class JimpleConverter {
     toMethod.setModifiers(convertModifiers(fromMethod.getModifiers()));
     List<soot.SootClass> exceptions = new ArrayList<>();
 
-    for ( de.upb.soot.core.SootClass fromException: fromMethod.getExceptions()) {
+    for (de.upb.soot.core.SootClass fromException : fromMethod.getExceptions()) {
       soot.SootClass exception = convertSootClass(fromException);
       exceptions.add(exception);
     }
@@ -168,9 +170,7 @@ public class JimpleConverter {
   }
 
   public soot.jimple.Stmt convertStmt(IStmt fromStmt) {
-
-    // convert stmts
-    Stmt toStmt = null;
+    Stmt toStmt;
     if (fromStmt instanceof JAssignStmt) {
       toStmt = convertAssignStmt(fromStmt);
     } else if (fromStmt instanceof JIdentityStmt) {
@@ -274,7 +274,8 @@ public class JimpleConverter {
     JTableSwitchStmt stmt = (JTableSwitchStmt) fromStmt;
     List<Stmt> targetList = getSwitchStmtsTargets(stmt);
     Stmt defaultTarget = getTarget(stmt.getDefaultTarget());
-    return Jimple.v().newTableSwitchStmt(convertValue(stmt.getKey()), stmt.getLowIndex(), stmt.getHighIndex(), targetList, defaultTarget);
+    return Jimple.v().newTableSwitchStmt(convertValue(stmt.getKey()), stmt.getLowIndex(), stmt.getHighIndex(), targetList,
+        defaultTarget);
   }
 
   private Stmt convertLookupSwitchStmt(IStmt fromStmt) {

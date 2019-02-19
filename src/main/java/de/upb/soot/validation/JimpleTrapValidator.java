@@ -33,12 +33,7 @@ import java.util.List;
  * @see JimpleTrapValidator#validate(Body, List)
  * @author Marc Miltenberger
  */
-public enum JimpleTrapValidator implements BodyValidator {
-  INSTANCE;
-
-  public static JimpleTrapValidator getInstance() {
-    return INSTANCE;
-  }
+public class JimpleTrapValidator implements BodyValidator {
 
   /**
    * Checks whether all Caught-Exception-References are associated to traps.
@@ -56,7 +51,7 @@ public enum JimpleTrapValidator implements BodyValidator {
      * ValidationException(trap, "Trap handler does not start with caught " + "exception reference")); } } } for (Unit u :
      * body.getUnits()) { if (u instanceof JIdentityStmt) { JIdentityStmt id = (JIdentityStmt) u; if (id.getRightOp()
      * instanceof CaughtExceptionRef) { if (!caughtUnits.contains(id)) { exceptions.add(new ValidationException(id,
-     * "Could not find a corresponding trap using this statement as handler", "Body of method " +
+     * "Could not find a corresponding trap using this statement as handler", "Body of methodRef " +
      * body.getMethod().getSignature() + " contains a caught exception reference," +
      * "but not a corresponding trap using this statement as handler")); } } } }
      */

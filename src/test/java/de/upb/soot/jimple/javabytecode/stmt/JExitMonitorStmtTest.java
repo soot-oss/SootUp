@@ -1,3 +1,24 @@
+/*-
+ * #%L
+ * Soot
+ * %%
+ * Copyright (C) 15.11.2018 Markus Schmidt
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation, either version 2.1 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Lesser Public License for more details.
+ *
+ * You should have received a copy of the GNU General Lesser Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/lgpl-2.1.html>.
+ * #L%
+ */
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
@@ -5,33 +26,35 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import categories.Java8Test;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.IntType;
+
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import categories.Java8Test;
+
 /**
-*
-* @author Markus Schmidt & Linghui Luo
-*
-*/
+ *
+ * @author Markus Schmidt & Linghui Luo
+ *
+ */
 @Category(Java8Test.class)
 public class JExitMonitorStmtTest {
 
   @Test
   public void test() {
-    PositionInfo nop=PositionInfo.createNoPositionInfo();
-    Local sandman = new Local("sandman", IntType.getInstance());
-    Local night = new Local("night", BooleanType.getInstance());
-    Local light = new Local("light", BooleanType.getInstance());
+    PositionInfo nop = PositionInfo.createNoPositionInfo();
+    Local sandman = new Local("sandman", IntType.INSTANCE);
+    Local night = new Local("night", BooleanType.INSTANCE);
+    Local light = new Local("light", BooleanType.INSTANCE);
 
-    IStmt stmt = new JExitMonitorStmt(sandman,nop);
-    IStmt nightStmt = new JExitMonitorStmt(night,nop);
-    IStmt lightStmt = new JExitMonitorStmt(light,nop);
+    IStmt stmt = new JExitMonitorStmt(sandman, nop);
+    IStmt nightStmt = new JExitMonitorStmt(night, nop);
+    IStmt lightStmt = new JExitMonitorStmt(light, nop);
 
     // toString
     assertEquals("exitmonitor sandman", stmt.toString());

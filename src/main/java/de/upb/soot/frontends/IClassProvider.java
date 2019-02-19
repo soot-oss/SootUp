@@ -1,6 +1,5 @@
-package de.upb.soot.namespaces.classprovider;
+package de.upb.soot.frontends;
 
-import de.upb.soot.core.AbstractClass;
 /*-
  * #%L
  * Soot
@@ -11,12 +10,12 @@ import de.upb.soot.core.AbstractClass;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -30,28 +29,22 @@ import de.upb.soot.signatures.JavaClassSignature;
 import java.nio.file.Path;
 
 /**
- * Responsible for creating {@link AbstractClassSource}es based on the handled file type (.class, .jimple, .java, .dex, etc).
+ * Responsible for creating {@link ClassSource}es based on the handled file type (.class, .jimple, .java, .dex, etc).
  *
  * @author Manuel Benz created on 22.05.18
  */
 public interface IClassProvider {
 
-
-  AbstractClassSource createClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature);
+  ClassSource createClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature);
 
   /**
    * Returns the file type that is handled by this provider, e.g. class, jimple, java
-   * 
-   * @return
    */
   FileType getHandledFileType();
 
   /**
    * Create or provide a representation of the actual manifestation of the class.
-   * 
-   * @return
    */
-  de.upb.soot.namespaces.classprovider.ISourceContent getContent(AbstractClassSource classSource);
-
+  IClassSourceContent getContent(ClassSource classSource);
 
 }

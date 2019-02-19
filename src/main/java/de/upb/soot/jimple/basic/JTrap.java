@@ -37,8 +37,7 @@ public class JTrap extends AbstractTrap {
   private static final long serialVersionUID = -1514595956359087470L;
 
   public JTrap(SootClass exception, IStmt beginStmt, IStmt endStmt, IStmt handlerStmt) {
-    super(exception, Jimple.newStmtBox(beginStmt), Jimple.newStmtBox(endStmt),
-        Jimple.newStmtBox(handlerStmt));
+    super(exception, Jimple.newStmtBox(beginStmt), Jimple.newStmtBox(endStmt), Jimple.newStmtBox(handlerStmt));
   }
 
   public JTrap(SootClass exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
@@ -52,7 +51,7 @@ public class JTrap extends AbstractTrap {
 
   @Override
   public String toString() {
-    StringBuffer buf = new StringBuffer("Trap :");
+    StringBuilder buf = new StringBuilder("Trap :");
     buf.append("\nbegin  : ");
     buf.append(getBeginStmt());
     buf.append("\nend    : ");

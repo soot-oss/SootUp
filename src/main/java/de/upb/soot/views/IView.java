@@ -16,6 +16,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import javax.annotation.Nonnull;
+
 /**
  * A view on code.
  *
@@ -27,9 +29,8 @@ public interface IView {
 
   /**
    * Return all classes in the view.
-   * 
-   * @return
    */
+  @Nonnull
   Collection<AbstractClass> getClasses();
 
   /**
@@ -37,6 +38,7 @@ public interface IView {
    * 
    * @return A stream of classes
    */
+  @Nonnull
   Stream<AbstractClass> classes();
 
   /**
@@ -44,13 +46,15 @@ public interface IView {
    * 
    * @return A class with given signature.
    */
-  Optional<AbstractClass> getClass(ISignature signature);
+  @Nonnull
+  Optional<AbstractClass> getClass(@Nonnull ISignature signature);
 
   /**
    * Provides the call graph using the default algorithm.
    * 
    * @return A call graph valid in the view
    */
+  @Nonnull
   ICallGraph createCallGraph();
 
   /**
@@ -60,6 +64,7 @@ public interface IView {
    *          A call graph algorithm
    * @return A call graph valid in the view
    */
+  @Nonnull
   ICallGraph createCallGraph(ICallGraphAlgorithm algorithm);
 
   /**
@@ -67,6 +72,7 @@ public interface IView {
    * 
    * @return A type hierarchy valid in the view
    */
+  @Nonnull
   ITypeHierarchy createTypeHierarchy();
 
   /**
@@ -74,48 +80,42 @@ public interface IView {
    * 
    * @return The scope that led to the view
    */
+  @Nonnull
   Optional<Scope> getScope();
 
   /**
    * Returns the {@link RefType} with given class Signature from the view. If there is no RefType with given className
    * exists, create a new instance.
-   * 
-   * @param className
-   * @return
    */
-  RefType getRefType(TypeSignature classSignature);
+  @Nonnull
+  RefType getRefType(@Nonnull TypeSignature classSignature);
 
   /**
    * Return the {@link Type} wtih given signature from the view. If there is no Type with given signature exists, create a
    * new instance.
-   * 
-   * @param signature
-   * @return
    */
-  Type getType(TypeSignature signature);
+  @Nonnull
+  Type getType(@Nonnull TypeSignature signature);
 
   /**
    * Returns the {@link SignatureFactory} for this view.
-   * 
-   * @return
    */
+  @Nonnull
   SignatureFactory getSignatureFactory();
 
   /**
    * Return the {@link Options} of this view.
-   * 
-   * @return
    */
+  @Nonnull
   Options getOptions();
 
   /**
    * Add given class to the view.
-   * 
-   * @param klass
    */
-  void addClass(AbstractClass klass);
+  void addClass(@Nonnull AbstractClass klass);
 
   boolean doneResolving();
 
-  String quotedNameOf(String name);
+  @Nonnull
+  String quotedNameOf(@Nonnull String name);
 }

@@ -30,7 +30,6 @@ public class Example {
 
     // load basic classes from soot
     Scene.v().loadNecessaryClasses();
-
     String sourceDirPath = args[0];
     String exclusionFilePath = args[1];
     // Use WALA java front-end to load classes and convert to soot classes
