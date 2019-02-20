@@ -12,7 +12,7 @@ import java.util.List;
 
 public class JStaticFieldRef extends FieldRef {
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -8744248848897714882L;
 

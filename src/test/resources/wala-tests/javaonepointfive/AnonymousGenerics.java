@@ -45,8 +45,8 @@ public class AnonymousGenerics {
 	}
 
 	static class StrTripler implements Ops<String> {
-		// if has type parameters, find overriding methodRef and
-		// get erasures for all of those types and make a new methodRef
+		// if has type parameters, find overriding method and
+		// get erasures for all of those types and make a new method
 		// that calls this one (with casts). no worries about return values.
 		
     @Override

@@ -114,8 +114,8 @@ public class ArrayType extends RefLikeType {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append(baseType.toString());
 
+    builder.append(baseType.toString());
     for (int i = 0; i < numDimensions; i++) {
       builder.append("[]");
     }
