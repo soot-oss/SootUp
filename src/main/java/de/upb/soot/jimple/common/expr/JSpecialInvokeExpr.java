@@ -80,7 +80,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   public String toString() {
     StringBuilder builder = new StringBuilder();
 
-    builder.append(Jimple.SPECIALINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(method).append("(");
+    builder.append(Jimple.SPECIALINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(method.getSignature()).append("(");
     argBoxesToString(builder);
     builder.append(")");
 

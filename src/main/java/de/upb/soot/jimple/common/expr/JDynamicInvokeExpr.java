@@ -38,12 +38,11 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
+import org.objectweb.asm.Opcodes;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.objectweb.asm.Opcodes;
 
 public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   /**

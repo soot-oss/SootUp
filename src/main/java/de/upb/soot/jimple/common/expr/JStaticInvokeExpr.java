@@ -91,7 +91,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   public String toString() {
     StringBuilder builder = new StringBuilder();
 
-    builder.append(Jimple.STATICINVOKE + " ").append(method).append("(");
+    builder.append(Jimple.STATICINVOKE + " ").append(method.getSignature()).append("(");
     argBoxesToString(builder);
     builder.append(")");
 
