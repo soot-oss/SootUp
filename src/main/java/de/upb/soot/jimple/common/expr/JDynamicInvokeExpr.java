@@ -35,6 +35,7 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
@@ -59,7 +60,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   public JDynamicInvokeExpr(IView view, MethodRef bootstrapMethodRef, List<? extends Value> bootstrapArgs,
       MethodRef methodRef, int tag, List<? extends Value> methodArgs) {
     super(view, methodRef, new ValueBox[methodArgs.size()]);
-    if (!methodRef.toString().startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
+    JavaClassSignature declClassSignature = methodRef.getSignature().declClassSignature;
+    if (!declClassSignature.getFullyQualifiedName().equals(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME)) {
       throw new IllegalArgumentException(
           "Receiver type of JDynamicInvokeExpr must be " + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + "!");
     }
@@ -136,16 +138,15 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     StringBuilder builder = new StringBuilder();
     builder.append(Jimple.DYNAMICINVOKE);
     builder.append(" \"");
-    builder.append(method); // quoted methodRef name (can be any UTF8
-    // string)
+    builder.append(getMethodRef().getSignature()); // quoted methodRef name (can be any UTF8 string)
     builder.append("\" <");
-    builder.append(method.getSignature());
+    builder.append(method.getSignature().getSubSignature());
     builder.append(">(");
 
     argBoxesToString(builder);
 
     builder.append(") ");
-    builder.append(bsm);
+    builder.append(bsm.getSignature());
     builder.append("(");
     final int len = bsmArgBoxes.length;
     if (0 < len) {
