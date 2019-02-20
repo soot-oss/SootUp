@@ -94,9 +94,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(".");
     up.methodSignature(methodSignature);
     up.literal("(");
-
     argBoxesToPrinter(up);
-
     up.literal(")");
   }
 

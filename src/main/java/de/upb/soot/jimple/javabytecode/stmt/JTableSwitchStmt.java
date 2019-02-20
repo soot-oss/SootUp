@@ -44,9 +44,8 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
    * 
    */
   private static final long serialVersionUID = -4716844468557152732L;
-  // TODO: final -> immutability?
-  int lowIndex;
-  int highIndex;
+  private final int lowIndex;
+  private final int highIndex;
 
   // This method is necessary to deal with constructor-must-be-first-ism.
   private static IStmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
@@ -154,14 +153,6 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     targetBoxes[targetIndex - lowIndex].toString(up);
     up.literal(";");
     up.newline();
-  }
-
-  public void setLowIndex(int lowIndex) {
-    this.lowIndex = lowIndex;
-  }
-
-  public void setHighIndex(int highIndex) {
-    this.highIndex = highIndex;
   }
 
   public int getLowIndex() {

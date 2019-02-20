@@ -123,7 +123,8 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     up.newline();
     up.literal("{");
     up.newline();
-    for (int i = 0; i < lookupValues.size(); i++) {
+    final int size = lookupValues.size();
+    for (int i = 0; i < size; i++) {
       up.literal("    ");
       up.literal(Jimple.CASE);
       up.literal(" ");

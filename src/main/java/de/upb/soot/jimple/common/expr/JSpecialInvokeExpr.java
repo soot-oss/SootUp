@@ -99,17 +99,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(".");
     up.methodSignature(methodSignature);
     up.literal("(");
-
-    if (argBoxes != null) {
-      final int len = argBoxes.length;
-      if (0 < len) {
-        argBoxes[0].toString(up);
-        for (int i = 1; i < len; i++) {
-          up.literal(", ");
-          argBoxes[i].toString(up);
-        }
-      }
-    }
+    argBoxesToPrinter(up);
     up.literal(")");
   }
 
