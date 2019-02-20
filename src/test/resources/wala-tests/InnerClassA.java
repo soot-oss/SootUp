@@ -77,7 +77,7 @@ public class InnerClassA {
 			int mya_x2 = absubaa.getA_X();
 			System.out.println(myaba_x2); // 7
 			System.out.println(mya_x2); // 5
-			// TODO Auto-generated methodRef stub
+			// TODO Auto-generated method stub
 
 			AB.ABA.ABAA abaa = absubaa.makeABAA();
 			int myaba_x3 = abaa.getABA_X();

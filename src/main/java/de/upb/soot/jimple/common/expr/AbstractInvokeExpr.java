@@ -131,7 +131,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
       final int len = argBoxes.length;
       if (0 < len) {
         argBoxes[0].toString(up);
-        for (int i = 1; i < argBoxes.length; i++) {
+        for (int i = 1; i < len; i++) {
           up.literal(", ");
           argBoxes[i].toString(up);
         }

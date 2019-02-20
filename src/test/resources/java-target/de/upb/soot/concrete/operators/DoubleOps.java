@@ -7,10 +7,10 @@ public class DoubleOps {
 
 //  public static void main(String[] args) throws InvocationTargetException, IllegalAccessException {
 //    DoubleOps ops = new DoubleOps();
-//    for (Method methodRef : ops.getClass().getMethods()) {
-//      if (!methodRef.getName().contains("main")) {
-//        final Object invoke = methodRef.invoke(ops);
-//        System.out.println(methodRef.getName());
+//    for (Method method : ops.getClass().getMethods()) {
+//      if (!method.getName().contains("main")) {
+//        final Object invoke = method.invoke(ops);
+//        System.out.println(method.getName());
 //      }
 //    }
 //  }
