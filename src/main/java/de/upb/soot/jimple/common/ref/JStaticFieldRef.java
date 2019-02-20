@@ -22,7 +22,7 @@ public class JStaticFieldRef implements JFieldRef {
   private IView view;
   private final FieldRef fieldSig;
 
-  // FIXME: DO wo really need a view here?
+  // FIXME: [Dann] DO we really need a view here?
   public JStaticFieldRef(IView view, FieldRef fieldSig) {
     this.fieldSig = fieldSig;
     this.view = view;
