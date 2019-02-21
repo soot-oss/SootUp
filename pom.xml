@@ -314,11 +314,11 @@
 		</dependency>
 	</dependencies>
 	<repositories>
-		<!-- <repository>
+	 	<repository>
             <id>wala</id>
             <name>wala snapshots</name>
             <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
-        </repository> -->
+        </repository> 
 		<!-- include old soot repo -->
 		<repository>
 			<id>soot-snapshot</id>
