@@ -263,32 +263,32 @@
 		<dependency>
 			<groupId>com.ibm.wala</groupId>
 			<artifactId>com.ibm.wala.core</artifactId>
-			<version>1.5.1-SNAPSHOT</version>
+			<version>1.5.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.wala</groupId>
 			<artifactId>com.ibm.wala.cast</artifactId>
-			<version>1.5.1-SNAPSHOT</version>
+			<version>1.5.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.wala</groupId>
 			<artifactId>com.ibm.wala.cast.java</artifactId>
-			<version>1.5.1-SNAPSHOT</version>
+			<version>1.5.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.wala</groupId>
 			<artifactId>com.ibm.wala.cast.java.ecj</artifactId>
-			<version>1.5.1-SNAPSHOT</version>
+			<version>1.5.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.wala</groupId>
 			<artifactId>com.ibm.wala.util</artifactId>
-			<version>1.5.1-SNAPSHOT</version>
+			<version>1.5.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ibm.wala</groupId>
 			<artifactId>com.ibm.wala.shrike</artifactId>
-			<version>1.5.1-SNAPSHOT</version>
+			<version>1.5.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.core</groupId>
@@ -314,17 +314,11 @@
 		</dependency>
 	</dependencies>
 	<repositories>
-		<!-- include wala from sonatype public repository -->
-		<!-- repository>
-			<id>sonatype-public-repository</id>
-			<url>https://oss.sonatype.org/content/groups/public</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-		</repository -->
+		<!-- <repository>
+            <id>wala</id>
+            <name>wala snapshots</name>
+            <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
+        </repository> -->
 		<!-- include old soot repo -->
 		<repository>
 			<id>soot-snapshot</id>
