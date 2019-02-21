@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
@@ -40,8 +41,6 @@ import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.Comparator;
 
 public class JNegExpr extends AbstractUnopExpr {
   /**
@@ -61,10 +60,12 @@ public class JNegExpr extends AbstractUnopExpr {
   /** Compares the specified object with this one for structural equality. */
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JNegExpr) {
-      return opBox.getValue().equivTo(((JNegExpr) o).opBox.getValue());
-    }
-    return false;
+    return JimpleComparator.getInstance().caseNegExpr(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseNegExpr(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -107,11 +108,6 @@ public class JNegExpr extends AbstractUnopExpr {
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNegExpr(this);
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

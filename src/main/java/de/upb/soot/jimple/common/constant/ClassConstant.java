@@ -41,8 +41,6 @@ import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.StringTools;
 
-import java.util.Comparator;
-
 @SuppressWarnings("serial")
 public class ClassConstant extends Constant {
   public final String value;
@@ -174,9 +172,4 @@ public class ClassConstant extends Constant {
     return "class " + StringTools.getQuotedStringOf(value);
   }
 
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    // TODO Auto-generated methodRef stub
-    return false;
-  }
 }

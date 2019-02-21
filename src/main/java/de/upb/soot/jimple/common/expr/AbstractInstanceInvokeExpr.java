@@ -27,9 +27,9 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
@@ -43,8 +43,8 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   private static final long serialVersionUID = 5554270441921308784L;
   protected final ValueBox baseBox;
 
-  protected AbstractInstanceInvokeExpr(IView view, ValueBox baseBox, MethodRef method, ValueBox[] argBoxes) {
-    super(view, method, argBoxes);
+  protected AbstractInstanceInvokeExpr(IView view, ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
+    super(view, methodSig, argBoxes);
     this.baseBox = baseBox;
   }
 
@@ -81,26 +81,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseInstanceInvokeExpr(this);
-  }
-
-  @Override
-  public boolean equivTo(Object o) {
-    if (o instanceof AbstractInstanceInvokeExpr) {
-      AbstractInstanceInvokeExpr ie = (AbstractInstanceInvokeExpr) o;
-      if (!(baseBox.getValue().equivTo(ie.baseBox.getValue()) && getMethod().equals(ie.getMethod())
-          && (argBoxes == null ? 0 : argBoxes.length) == (ie.argBoxes == null ? 0 : ie.argBoxes.length))) {
-        return false;
-      }
-      if (argBoxes != null) {
-        for (int i = 0; i < argBoxes.length; i++) {
-          if (!(argBoxes[i]).getValue().equivTo(ie.argBoxes[i].getValue())) {
-            return false;
-          }
-        }
-      }
-      return true;
-    }
-    return false;
   }
 
   /**

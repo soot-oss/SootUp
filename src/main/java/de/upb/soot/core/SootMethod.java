@@ -204,6 +204,10 @@ public class SootMethod extends SootClassMember implements IMethod {
     return ret;
   }
 
+  public Collection<JavaClassSignature> getExceptionSignatures() {
+    return exceptions;
+  }
+
   /**
    * Convenience methodRef returning true if this methodRef is abstract.
    */

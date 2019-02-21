@@ -26,16 +26,16 @@
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractStmt;
-import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class JRetStmt extends AbstractStmt {
@@ -46,18 +46,19 @@ public class JRetStmt extends AbstractStmt {
   final ValueBox stmtAddressBox;
   // List useBoxes;
 
-  public JRetStmt(Value stmtAddress) {
-    this(Jimple.newLocalBox(stmtAddress));
+  public JRetStmt(Value stmtAddress, PositionInfo positionInfo) {
+    this(Jimple.newLocalBox(stmtAddress), positionInfo);
   }
 
-  protected JRetStmt(ValueBox stmtAddressBox) {
+  protected JRetStmt(ValueBox stmtAddressBox, PositionInfo positionInfo) {
+    super(positionInfo);
     this.stmtAddressBox = stmtAddressBox;
 
   }
 
   @Override
   public JRetStmt clone() {
-    return new JRetStmt(Jimple.cloneIfNecessary(getStmtAddress()));
+    return new JRetStmt(Jimple.cloneIfNecessary(getStmtAddress()), getPositionInfo().clone());
   }
 
   @Override
@@ -80,6 +81,7 @@ public class JRetStmt extends AbstractStmt {
     return stmtAddressBox;
   }
 
+  // TODO: remove setter to support immutability?
   public void setStmtAddress(Value stmtAddress) {
     stmtAddressBox.setValue(stmtAddress);
   }
@@ -110,20 +112,18 @@ public class JRetStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JReturnStmt)) {
-      return false;
-    }
-    return stmtAddressBox == ((JRetStmt) o).stmtAddressBox;
+    return JimpleComparator.getInstance().caseRetStmt(this, o);
+
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseRetStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
     return stmtAddressBox.getValue().equivHashCode();
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

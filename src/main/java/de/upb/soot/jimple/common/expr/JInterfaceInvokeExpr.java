@@ -19,7 +19,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.
+ * Modified by the Sable Research Group and others 1997-1999.  
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -30,30 +30,32 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.symbolicreferences.MethodRef;
+import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
-  /** */
+  /**
+   * 
+   */
   private static final long serialVersionUID = 7458533916011927970L;
 
   /**
    * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array argBoxes.
    */
-  public JInterfaceInvokeExpr(IView view, Value base, MethodRef method, List<? extends Value> args) {
+  public JInterfaceInvokeExpr(IView view, Value base, MethodSignature method, List<? extends Value> args) {
     super(view, Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
 
-    // Check that the methodRef's class is resolved enough
+    // Check that the method's class is resolved enough
     // CheckLevel returns without doing anything because we can be not 'done' resolving
-    Optional<AbstractClass> declaringClass = view.getClass(method.getSignature().declClassSignature);
+    Optional<AbstractClass> declaringClass = view.getClass(method.declClassSignature);
     if (declaringClass.isPresent()) {
       SootClass cls = (SootClass) declaringClass.get();
       cls.checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
@@ -70,26 +72,37 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> argList = new ArrayList<>(getArgCount());
+    List<Value> argList = new ArrayList<Value>(getArgCount());
     for (int i = 0; i < getArgCount(); i++) {
       argList.add(i, Jimple.cloneIfNecessary(getArg(i)));
     }
-    return new JInterfaceInvokeExpr(this.getView(), Jimple.cloneIfNecessary(getBase()), method, argList);
+    return new JInterfaceInvokeExpr(this.getView(), Jimple.cloneIfNecessary(getBase()), methodSignature, argList);
+  }
+
+  @Override
+  public boolean equivTo(Object o) {
+    return JimpleComparator.getInstance().caseInterfaceInvokeExpr(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseInterfaceInvokeExpr(this, o);
   }
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    StringBuffer buffer = new StringBuffer();
 
-    builder.append(Jimple.INTERFACEINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(method)
-        .append("(");
-    argBoxesToString(builder);
-    builder.append(")");
+    buffer.append(Jimple.INTERFACEINVOKE + " " + baseBox.getValue().toString() + "." + methodSignature + "(");
+    argBoxesToString(buffer);
+    buffer.append(")");
 
-    return builder.toString();
+    return buffer.toString();
   }
 
-  /** Converts a parameter of type StmtPrinter to a string literal. */
+  /**
+   * Converts a parameter of type StmtPrinter to a string literal.
+   */
   @Override
   public void toString(IStmtPrinter up) {
 
@@ -98,7 +111,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.methodSignature(method.getSignature());
+    up.methodSignature(methodSignature);
     up.literal("(");
 
     argBoxesToPrinter(up);
@@ -106,8 +119,4 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(")");
   }
 
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    return comparator.compare(this, o) == 0;
-  }
 }

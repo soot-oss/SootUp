@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.BooleanType;
@@ -35,7 +36,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class JInstanceOfExpr implements Expr {
@@ -72,11 +72,12 @@ public class JInstanceOfExpr implements Expr {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JInstanceOfExpr) {
-      JInstanceOfExpr aie = (JInstanceOfExpr) o;
-      return opBox.getValue().equivTo(aie.opBox.getValue()) && checkType.equals(aie.checkType);
-    }
-    return false;
+    return JimpleComparator.getInstance().caseInstanceOfExpr(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseInstanceOfExpr(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -122,11 +123,6 @@ public class JInstanceOfExpr implements Expr {
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseInstanceOfExpr(this);
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

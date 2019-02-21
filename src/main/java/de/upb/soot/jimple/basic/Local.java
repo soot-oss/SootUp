@@ -32,7 +32,6 @@ import de.upb.soot.util.Numberable;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -57,11 +56,12 @@ public class Local implements Value, Numberable, Immediate {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof Local) {
-      return this.equivHashCode() == ((Local) o).equivHashCode();
-    } else {
-      return false;
-    }
+    return equivTo(o, JimpleComparator.getInstance());
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseLocal(this, o);
   }
 
   @Override
@@ -135,9 +135,4 @@ public class Local implements Value, Numberable, Immediate {
 
   private int number = 0;
 
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    // TODO Auto-generated methodRef stub
-    return false;
-  }
 }

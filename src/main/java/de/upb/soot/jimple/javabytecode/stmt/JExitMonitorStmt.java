@@ -26,6 +26,8 @@
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
@@ -33,25 +35,23 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
-import java.util.Comparator;
-
 public class JExitMonitorStmt extends AbstractOpStmt {
   /**
    * 
    */
   private static final long serialVersionUID = -1179706103954735007L;
 
-  public JExitMonitorStmt(Value op) {
-    this(Jimple.newImmediateBox(op));
+  public JExitMonitorStmt(Value op, PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(op), positionInfo);
   }
 
-  protected JExitMonitorStmt(ValueBox opBox) {
-    super(opBox);
+  protected JExitMonitorStmt(ValueBox opBox, PositionInfo positionInfo) {
+    super(opBox, positionInfo);
   }
 
   @Override
   public JExitMonitorStmt clone() {
-    return new JExitMonitorStmt(Jimple.cloneIfNecessary(getOp()));
+    return new JExitMonitorStmt(Jimple.cloneIfNecessary(getOp()), getPositionInfo().clone());
   }
 
   @Override
@@ -82,21 +82,19 @@ public class JExitMonitorStmt extends AbstractOpStmt {
     return false;
   }
 
+  @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JExitMonitorStmt)) {
-      return false;
-    }
-    return super.equivTo((AbstractOpStmt) o);
+    return JimpleComparator.getInstance().caseExitMonitorStmt(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseExitMonitorStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
     return super.equivHashCode();
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

@@ -14,6 +14,8 @@ package de.upb.soot.jimple.common.stmt;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Immediate;
+import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.RValueBox;
 import de.upb.soot.jimple.basic.StmtBoxOwner;
 import de.upb.soot.jimple.basic.Value;
@@ -144,8 +146,8 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @param rvalue
    *          the value on the right side of the assign statement.
    */
-  public JAssignStmt(Value variable, Value rvalue) {
-    this(new LinkedVariableBox(variable), new LinkedRValueBox(rvalue));
+  public JAssignStmt(Value variable, Value rvalue, PositionInfo positionInfo) {
+    this(new LinkedVariableBox(variable), new LinkedRValueBox(rvalue), positionInfo);
 
     ((LinkedVariableBox) leftBox).setOtherBox(rightBox);
     ((LinkedRValueBox) rightBox).setOtherBox(leftBox);
@@ -165,8 +167,8 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @param rvalueBox
    *          the rvalue box on the right side of the assign statement.
    */
-  protected JAssignStmt(ValueBox variableBox, ValueBox rvalueBox) {
-    super(variableBox, rvalueBox);
+  protected JAssignStmt(ValueBox variableBox, ValueBox rvalueBox, PositionInfo positionInfo) {
+    super(variableBox, rvalueBox, positionInfo);
   }
 
   /*
@@ -345,7 +347,8 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    */
   @Override
   public JAssignStmt clone() {
-    return new JAssignStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()));
+    return new JAssignStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()),
+        getPositionInfo().clone());
   }
 
   /**
@@ -380,13 +383,12 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   @Override
   public boolean equivTo(Object o) {
+    return JimpleComparator.getInstance().caseAssignStmt(this, o);
+  }
 
-    if (o instanceof JAssignStmt) {
-      JAssignStmt jas = (JAssignStmt) o;
-      return leftBox.getValue().equivTo(jas.leftBox.getValue()) && rightBox.getValue().equivTo(jas.rightBox.getValue());
-    }
-
-    return false;
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseAssignStmt(this, o);
   }
 
   @Override

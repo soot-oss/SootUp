@@ -27,6 +27,8 @@ package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
@@ -47,15 +49,16 @@ public class JIfStmt extends AbstractStmt {
 
   final List<IStmtBox> targetBoxes;
 
-  public JIfStmt(Value condition, IStmt target) {
-    this(condition, Jimple.newStmtBox(target));
+  public JIfStmt(Value condition, IStmt target, PositionInfo positionInfo) {
+    this(condition, Jimple.newStmtBox(target), positionInfo);
   }
 
-  public JIfStmt(Value condition, IStmtBox target) {
-    this(Jimple.newConditionExprBox(condition), target);
+  public JIfStmt(Value condition, IStmtBox target, PositionInfo positionInfo) {
+    this(Jimple.newConditionExprBox(condition), target, positionInfo);
   }
 
-  protected JIfStmt(ValueBox conditionBox, IStmtBox targetBox) {
+  protected JIfStmt(ValueBox conditionBox, IStmtBox targetBox, PositionInfo positionInfo) {
+    super(positionInfo);
     this.conditionBox = conditionBox;
     this.targetBox = targetBox;
 
@@ -64,7 +67,7 @@ public class JIfStmt extends AbstractStmt {
 
   @Override
   public JIfStmt clone() {
-    return new JIfStmt(Jimple.cloneIfNecessary(getCondition()), getTarget());
+    return new JIfStmt(Jimple.cloneIfNecessary(getCondition()), getTarget(), getPositionInfo().clone());
   }
 
   @Override
@@ -143,12 +146,12 @@ public class JIfStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
+    return JimpleComparator.getInstance().caseIfStmt(this, o);
+  }
 
-    if (!(o instanceof JIfStmt)) {
-      return false;
-    }
-    JIfStmt ifStmt = (JIfStmt) o;
-    return ifStmt.getCondition().equivTo(getCondition()) && ifStmt.getTarget().equivTo(getTarget());
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseIfStmt(this, o);
   }
 
   @Override

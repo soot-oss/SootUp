@@ -25,9 +25,8 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
@@ -36,7 +35,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public abstract class AbstractStmt implements IStmt {
@@ -44,7 +42,11 @@ public abstract class AbstractStmt implements IStmt {
    * 
    */
   private static final long serialVersionUID = 8029583017798662173L;
-  private Position position;
+  private final PositionInfo positionInfo;
+
+  public AbstractStmt(PositionInfo positionInfo) {
+    this.positionInfo = positionInfo;
+  }
 
   /** Returns a deep clone of this object. */
   @Override
@@ -200,17 +202,8 @@ public abstract class AbstractStmt implements IStmt {
   }
 
   @Override
-  public void setPosition(Position position) {
-    this.position = position;
-  }
-
-  public Position getPosition() {
-    return position;
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    return comparator.compare(this, o) == 0;
+  public PositionInfo getPositionInfo() {
+    return positionInfo;
   }
 
 }

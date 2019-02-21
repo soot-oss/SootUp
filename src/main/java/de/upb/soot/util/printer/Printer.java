@@ -116,7 +116,7 @@ public class Printer {
     // Print extension
     {
       if (cl.hasSuperclass()) {
-        out.print(" extends " + cl.getView().quotedNameOf(cl.getSuperclass().get().getSignature().toString()) + "");
+        out.print(" extends " + cl.getView().quotedNameOf(cl.getSuperclassSignature().get().toString()) + "");
       }
     }
 

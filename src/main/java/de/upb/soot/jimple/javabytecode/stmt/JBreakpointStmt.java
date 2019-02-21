@@ -26,12 +26,12 @@
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.Comparator;
 
 public class JBreakpointStmt extends AbstractStmt {
   /**
@@ -39,7 +39,8 @@ public class JBreakpointStmt extends AbstractStmt {
    */
   private static final long serialVersionUID = 7082976523552855249L;
 
-  public JBreakpointStmt() {
+  public JBreakpointStmt(PositionInfo positionInfo) {
+    super(positionInfo);
   }
 
   @Override
@@ -59,7 +60,7 @@ public class JBreakpointStmt extends AbstractStmt {
 
   @Override
   public JBreakpointStmt clone() {
-    return new JBreakpointStmt();
+    return new JBreakpointStmt(getPositionInfo().clone());
   }
 
   @Override
@@ -74,22 +75,17 @@ public class JBreakpointStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JBreakpointStmt)) {
-      return false;
-    }
-    return false;
+    return JimpleComparator.getInstance().caseBreakpointStmt(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseBreakpointStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
-    // TODO: implement more?
-
-    return 0;
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    return comparator.compare(this, o) == 0;
+    return 42 + 1;
   }
 
 }

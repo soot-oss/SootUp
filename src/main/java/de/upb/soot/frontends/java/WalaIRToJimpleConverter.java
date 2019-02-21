@@ -20,6 +20,7 @@ import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 
+import de.upb.soot.Project;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -28,9 +29,11 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.ArrayType;
@@ -82,7 +85,7 @@ public class WalaIRToJimpleConverter {
 
   public WalaIRToJimpleConverter(String sourceDirPath) {
     srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
-    view = new JavaView(null);
+    view = new JavaView(new Project(null, new DefaultSignatureFactory()));
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
   }
@@ -146,6 +149,7 @@ public class WalaIRToJimpleConverter {
 
     // convert methods
     Set<SootMethod> sootMethods = new HashSet<>();
+
     new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Application, superClass, interfaces, outerClass,
         sootFields, sootMethods, position, modifiers);
 
@@ -161,13 +165,13 @@ public class WalaIRToJimpleConverter {
   /**
    * Create a {@link JavaClassSource} object for the given walaClass.
    */
-  public ClassSource createClassSource(AstClass walaClass) {
+  public JavaClassSource createClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassSignature classSignature = new DefaultSignatureFactory() {
     }.getClassSignature(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
-    return new ClassSource(srcNamespace, sourcePath, classSignature);
+    return new JavaClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   /**
@@ -399,7 +403,9 @@ public class WalaIRToJimpleConverter {
         if (!sootMethod.isStatic()) {
           RefType thisType = view.getRefType(sootMethod.getDeclaringClassSignature());
           Local thisLocal = localGenerator.generateThisLocal(thisType);
-          stmts.add(Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType)));
+          IStmt stmt = Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType),
+              new PositionInfo(debugInfo.getInstructionPosition(0), null));
+          stmts.add(stmt);
         }
 
         int startPara = 0;
@@ -411,22 +417,20 @@ public class WalaIRToJimpleConverter {
           TypeReference t = walaMethod.getParameterType(startPara);
           Type type = convertType(t);
           Local paraLocal = localGenerator.generateParameterLocal(type, startPara);
-          stmts.add(Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, startPara)));
+          IStmt stmt = Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, startPara - 1),
+              new PositionInfo(debugInfo.getInstructionPosition(0), null));
+          stmts.add(stmt);
         }
 
         // TODO 2. convert traps
         // get exceptions which are not caught
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
-
         InstructionConverter instConverter = new InstructionConverter(this, sootMethod, walaMethod, localGenerator);
         Map<IStmt, Integer> stmt2IIndex = new HashMap<>();
         for (SSAInstruction inst : insts) {
-          List<IStmt> retStmts = instConverter.convertInstruction(inst);
+          List<IStmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
           if (!retStmts.isEmpty()) {
             for (IStmt stmt : retStmts) {
-              // set position for each statement
-              Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
-              stmt.setPosition(stmtPos);
               stmts.add(stmt);
               stmt2IIndex.put(stmt, inst.iindex);
             }
@@ -438,7 +442,7 @@ public class WalaIRToJimpleConverter {
         }
         // add return void stmt for methods with return type beiing void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
-          IStmt ret = Jimple.newReturnVoidStmt();
+          IStmt ret = Jimple.newReturnVoidStmt(new PositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
           instConverter.setTarget(ret, -1);
           stmts.add(ret);
         }

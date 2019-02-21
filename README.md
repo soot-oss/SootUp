@@ -16,14 +16,6 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - Incremental Updates of Program Representation
 - Fully-Parallelized/Distributed Architecture using [Akka](https://akka.io/)
 
-
-
-## Contributors
-- Manuel Benz mbenz@uni-paderborn.de
-- Andreas Dann andreas.dann@uni-paderborn.de
-- Dr. Ben Hermann ben.hermann@uni-paderborn.de
-- Linghui Luo linghui.luo@uni-paderborn.de
-
 ## Coding Guidelines & Misc.
 
 [Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
@@ -33,3 +25,15 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 [Design of update mechanism](../../wiki/Design-of-update-mechanism)
 
 [Actor model for new soot ](../../wiki/Actor-model-for-new-soot)
+
+## Contributors (alphabetized by surname)
+
+- Manuel Benz mbenz@uni-paderborn.de
+- Christian Brüggemann cbruegg@mail.upb.de
+- Andreas Dann andreas.dann@uni-paderborn.de
+- Julian Dolby dolby@us.ibm.com 
+- Ben Hermann ben.hermann@uni-paderborn.de
+- Linghui Luo linghui.luo@uni-paderborn.de
+- Jan Martin Persch jmpersch@hni.upb.de
+- Markus Schmidt smarkus@mail.upb.de
+

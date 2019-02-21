@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
@@ -34,7 +35,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class JCastExpr implements Expr {
@@ -57,11 +57,12 @@ public class JCastExpr implements Expr {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JCastExpr) {
-      JCastExpr ace = (JCastExpr) o;
-      return opBox.getValue().equivTo(ace.opBox.getValue()) && type.equals(ace.type);
-    }
-    return false;
+    return JimpleComparator.getInstance().caseCastExpr(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseCastExpr(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -104,6 +105,7 @@ public class JCastExpr implements Expr {
     return list;
   }
 
+  // TODO: dulicate getter? -> getType()
   public Type getCastType() {
     return type;
   }
@@ -120,11 +122,6 @@ public class JCastExpr implements Expr {
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseCastExpr(this);
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

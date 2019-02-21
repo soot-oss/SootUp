@@ -188,12 +188,12 @@ public class SootClass extends AbstractClass implements Serializable {
     super(builder.view, builder.classSource, builder.methods, builder.fields);
     this.resolvingLevel = builder.resolvingLevel;
     this.classType = builder.classType;
-    this.superClass = builder.superClass;
+    this.superClass = Optional.of(builder.superClass);
     this.interfaces = builder.interfaces;
     this.classSignature = builder.classSource.getClassSignature();
     this.refType = builder.view.getRefType(classSignature);
     refType.setSootClass(this);
-    this.outerClass = builder.outerClass;
+    this.outerClass = Optional.of(builder.outerClass);
     this.position = builder.position;
     this.modifiers = builder.modifiers;
     builder.view.addClass(this);
@@ -213,33 +213,31 @@ public class SootClass extends AbstractClass implements Serializable {
   private final JavaClassSignature classSignature;
   private final Set<JavaClassSignature> interfaces;
 
-  @Nullable
-  private final JavaClassSignature superClass;
-  @Nullable
-  private final JavaClassSignature outerClass;
+  private final Optional<JavaClassSignature> superClass;
+
+  private final Optional<JavaClassSignature> outerClass;
 
   public final static String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, ClassSource classSource, ClassType type,
-      @Nullable JavaClassSignature superClass, Collection<JavaClassSignature> interfaces,
-      @Nullable JavaClassSignature outerClass, Position position, EnumSet<Modifier> modifiers) {
+      JavaClassSignature superClass, Set<JavaClassSignature> interfaces, JavaClassSignature outerClass, Position position,
+      EnumSet<Modifier> modifiers) {
     this(view, resolvingLevel, classSource, type, superClass, interfaces, outerClass, new HashSet<>(), new HashSet<>(),
         position, modifiers);
   }
 
   public SootClass(IView view, ResolvingLevel resolvingLevel, ClassSource classSource, ClassType type,
-      @Nullable JavaClassSignature superClass, Collection<JavaClassSignature> interfaces,
-      @Nullable JavaClassSignature outerClass, Set<SootField> fields, Set<SootMethod> methods, Position position,
-      EnumSet<Modifier> modifiers) {
+      JavaClassSignature superClass, Set<JavaClassSignature> interfaces, JavaClassSignature outerClass,
+      Set<SootField> fields, Set<SootMethod> methods, Position position, EnumSet<Modifier> modifiers) {
     super(view, classSource, methods, fields);
     this.resolvingLevel = resolvingLevel;
     this.classType = type;
-    this.superClass = superClass;
-    this.interfaces = Collections.unmodifiableSet(new HashSet<>(interfaces));
+    this.superClass = Optional.ofNullable(superClass);
+    this.interfaces = Collections.unmodifiableSet(interfaces);
     this.classSignature = classSource.getClassSignature();
     this.refType = view.getRefType(classSignature);
     refType.setSootClass(this);
-    this.outerClass = outerClass;
+    this.outerClass = Optional.ofNullable(outerClass);
     this.position = position;
     this.modifiers = modifiers;
     view.addClass(this);
@@ -551,7 +549,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
   public boolean hasSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return superClass != null && getSuperclass().isPresent();
+    return superClass.isPresent() && getSuperclass().isPresent();
   }
 
   /**
@@ -560,12 +558,12 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   public Optional<SootClass> getSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return superClass != null ? getView().getClass(superClass).map(c -> (SootClass) c) : Optional.empty();
+    return superClass.isPresent() ? getView().getClass(superClass.get()).map(c -> (SootClass) c) : Optional.empty();
   }
 
   public boolean hasOuterClass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return outerClass != null && getOuterClass().isPresent();
+    return outerClass.isPresent();
   }
 
   /**
@@ -573,7 +571,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   public Optional<SootClass> getOuterClass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return outerClass != null ? getView().getClass(outerClass).map(c -> (SootClass) c) : Optional.empty();
+    return outerClass.isPresent() ? getView().getClass(outerClass.get()).map(c -> (SootClass) c) : Optional.empty();
   }
 
   public boolean isInnerClass() {
@@ -749,6 +747,14 @@ public class SootClass extends AbstractClass implements Serializable {
   @Override
   public String getName() {
     return this.classSignature.getFullyQualifiedName();
+  }
+
+  public Optional<JavaClassSignature> getSuperclassSignature() {
+    return superClass;
+  }
+
+  public Optional<JavaClassSignature> getOuterClassSignature() {
+    return outerClass;
   }
 
 }

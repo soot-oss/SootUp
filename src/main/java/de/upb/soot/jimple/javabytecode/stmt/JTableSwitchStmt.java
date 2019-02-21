@@ -27,6 +27,8 @@ package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
@@ -35,40 +37,47 @@ import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class JTableSwitchStmt extends AbstractSwitchStmt {
   /**
    * 
    */
   private static final long serialVersionUID = -4716844468557152732L;
+  // TODO: final -> immutability?
   int lowIndex;
   int highIndex;
 
-  // This methodRef is necessary to deal with constructor-must-be-first-ism.
-  private static List<IStmtBox> getTargetBoxes(List<? extends IStmt> targets) {
-    return targets.stream().map(Jimple::newStmtBox).collect(Collectors.toList());
+  // This method is necessary to deal with constructor-must-be-first-ism.
+  private static IStmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
+    IStmtBox[] targetBoxes = new IStmtBox[targets.size()];
+    for (int i = 0; i < targetBoxes.length; i++) {
+      targetBoxes[i] = Jimple.newStmtBox(targets.get(i));
+    }
+    return targetBoxes;
   }
 
   @Override
   public JTableSwitchStmt clone() {
-    return new JTableSwitchStmt(Jimple.cloneIfNecessary(getKey()), lowIndex, highIndex, getTargets(), getDefaultTarget());
+    return new JTableSwitchStmt(Jimple.cloneIfNecessary(getKey()), lowIndex, highIndex, getTargets(), getDefaultTarget(),
+        getPositionInfo().clone());
   }
 
-  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets, IStmt defaultTarget) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, getTargetBoxes(targets), Jimple.newStmtBox(defaultTarget));
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmt> targets, IStmt defaultTarget,
+      PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, getTargetBoxesArray(targets), Jimple.newStmtBox(defaultTarget),
+        positionInfo);
   }
 
-  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets, IStmtBox defaultTarget) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, new ArrayList<>(targets), defaultTarget);
+  public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets, IStmtBox defaultTarget,
+      PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[targets.size()]), defaultTarget,
+        positionInfo);
   }
 
-  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, List<? extends IStmtBox> targetBoxes,
-      IStmtBox defaultTargetBox) {
-    super(keyBox, defaultTargetBox, targetBoxes);
+  protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, IStmtBox[] targetBoxes, IStmtBox defaultTargetBox,
+      PositionInfo positionInfo) {
+    super(positionInfo, keyBox, defaultTargetBox, targetBoxes);
 
     if (lowIndex > highIndex) {
       throw new RuntimeException(
@@ -81,31 +90,30 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    StringBuffer buffer = new StringBuffer();
     String endOfLine = " ";
 
-    builder.append(Jimple.TABLESWITCH + "(").append(keyBox.getValue().toString()).append(")").append(endOfLine);
+    buffer.append(Jimple.TABLESWITCH + "(" + keyBox.getValue().toString() + ")" + endOfLine);
 
-    builder.append("{").append(endOfLine);
+    buffer.append("{" + endOfLine);
 
     // In this for-loop, we cannot use "<=" since 'i' would wrap around.
     // The case for "i == highIndex" is handled separately after the loop.
     for (int i = lowIndex; i < highIndex; i++) {
       IStmt target = getTarget(i - lowIndex);
-      builder.append("    " + Jimple.CASE + " ").append(i).append(": ").append(Jimple.GOTO).append(" ")
-          .append(target == this ? "self" : target).append(";").append(endOfLine);
+      buffer.append(
+          "    " + Jimple.CASE + " " + i + ": " + Jimple.GOTO + " " + (target == this ? "self" : target) + ";" + endOfLine);
     }
     IStmt target = getTarget(highIndex - lowIndex);
-    builder.append("    " + Jimple.CASE + " ").append(highIndex).append(": ").append(Jimple.GOTO).append(" ")
-        .append(target == this ? "self" : target).append(";").append(endOfLine);
+    buffer.append("    " + Jimple.CASE + " " + highIndex + ": " + Jimple.GOTO + " " + (target == this ? "self" : target)
+        + ";" + endOfLine);
 
     target = getDefaultTarget();
-    builder.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " ").append(target == this ? "self" : target).append(";")
-        .append(endOfLine);
+    buffer.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " " + (target == this ? "self" : target) + ";" + endOfLine);
 
-    builder.append("}");
+    buffer.append("}");
 
-    return builder.toString();
+    return buffer.toString();
   }
 
   @Override
@@ -143,7 +151,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     up.literal(": ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    targetBoxes.get(targetIndex - lowIndex).toString(up);
+    targetBoxes[targetIndex - lowIndex].toString(up);
     up.literal(";");
     up.newline();
   }
@@ -171,15 +179,12 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JTableSwitchStmt)) {
-      return false;
-    }
+    return JimpleComparator.getInstance().caseTableSwitchStmt(this, o);
+  }
 
-    if (lowIndex != ((JTableSwitchStmt) o).lowIndex || highIndex != ((JTableSwitchStmt) o).highIndex) {
-      return false;
-    }
-
-    return super.equivTo((AbstractSwitchStmt) o);
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseTableSwitchStmt(this, o);
   }
 
   @Override
@@ -189,11 +194,6 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     ret = prime * ret + highIndex;
     ret = prime * ret + super.equivHashCode();
     return ret;
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

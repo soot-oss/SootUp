@@ -31,8 +31,6 @@ import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.NullTypeSignature;
 
-import java.util.Comparator;
-
 public class NullConstant extends Constant {
   /**
    * 
@@ -69,9 +67,4 @@ public class NullConstant extends Constant {
     return NullTypeSignature.NULL_TYPE_SIGNATURE.toString();
   }
 
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    // TODO Auto-generated methodRef stub
-    return false;
-  }
 }

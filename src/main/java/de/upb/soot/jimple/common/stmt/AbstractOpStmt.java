@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 
@@ -39,7 +40,8 @@ public abstract class AbstractOpStmt extends AbstractStmt {
   private static final long serialVersionUID = -4223456397801143597L;
   protected final ValueBox opBox;
 
-  protected AbstractOpStmt(ValueBox opBox) {
+  protected AbstractOpStmt(ValueBox opBox, PositionInfo positionInfo) {
+    super(positionInfo);
     this.opBox = opBox;
   }
 
@@ -68,6 +70,7 @@ public abstract class AbstractOpStmt extends AbstractStmt {
     return opBox.getValue().equivTo(o.getOp());
   }
 
+  @Override
   public int equivHashCode() {
     return opBox.getValue().equivHashCode();
   }

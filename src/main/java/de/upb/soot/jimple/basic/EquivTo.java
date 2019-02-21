@@ -25,8 +25,6 @@
 
 package de.upb.soot.jimple.basic;
 
-import java.util.Comparator;
-
 /**
  * An alternate equivalence relation between objects. The standard interpretation will be structural equality. We also demand
  * that if x.equivTo(y), then x.equivHashCode() == y.equivHashCode.
@@ -47,5 +45,5 @@ public interface EquivTo {
   /**
    * Returns true if this object is equivalent to o according to the given comparator.
    */
-  boolean equivTo(Object o, Comparator<Object> comparator);
+  public boolean equivTo(Object o, JimpleComparator comparator);
 }

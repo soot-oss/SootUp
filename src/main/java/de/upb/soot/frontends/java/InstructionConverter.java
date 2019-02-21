@@ -9,6 +9,8 @@ import com.ibm.wala.cast.ir.ssa.CAstBinaryOp;
 import com.ibm.wala.cast.java.ssa.AstJavaInvokeInstruction;
 import com.ibm.wala.cast.java.ssa.EnclosingObjectReference;
 import com.ibm.wala.cast.loader.AstMethod;
+import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import com.ibm.wala.classLoader.CallSiteReference;
 import com.ibm.wala.shrikeBT.IBinaryOpInstruction;
 import com.ibm.wala.shrikeBT.IConditionalBranchInstruction.IOperator;
@@ -49,6 +51,7 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.ClassConstant;
 import de.upb.soot.jimple.common.constant.Constant;
@@ -96,13 +99,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import scala.Char;
+
 /**
  * This class converts wala instruction to jimple statement.
  * 
  * @author Linghui Luo
  *
  */
-class InstructionConverter {
+public class InstructionConverter {
 
   private WalaIRToJimpleConverter converter;
   private SootMethod sootMethod;
@@ -133,63 +138,63 @@ class InstructionConverter {
     this.sigFactory = converter.view.getSignatureFactory();
   }
 
-  public List<IStmt> convertInstruction(SSAInstruction inst) {
+  public List<IStmt> convertInstruction(DebuggingInformation debugInfo, SSAInstruction inst) {
     List<IStmt> stmts = new ArrayList<>();
     // System.out.println(sootMethod.getSignature());
     // System.out.println(inst);
     if (inst instanceof SSAConditionalBranchInstruction) {
-      stmts.add(this.convertBranchInstruction((SSAConditionalBranchInstruction) inst));
+      stmts.add(this.convertBranchInstruction(debugInfo, (SSAConditionalBranchInstruction) inst));
     } else if (inst instanceof SSAGotoInstruction) {
-      stmts.add(this.convertGoToInstruction((SSAGotoInstruction) inst));
+      stmts.add(this.convertGoToInstruction(debugInfo, (SSAGotoInstruction) inst));
     } else if (inst instanceof SSAReturnInstruction) {
-      stmts.add(this.convertReturnInstruction((SSAReturnInstruction) inst));
+      stmts.add(this.convertReturnInstruction(debugInfo, (SSAReturnInstruction) inst));
     } else if (inst instanceof AstJavaInvokeInstruction) {
-      stmts.add(this.convertInvokeInstruction((AstJavaInvokeInstruction) inst));
+      stmts.add(this.convertInvokeInstruction(debugInfo, (AstJavaInvokeInstruction) inst));
     } else if (inst instanceof SSAFieldAccessInstruction) {
       if (inst instanceof SSAGetInstruction) {
-        stmts.add(this.convertGetInstruction((SSAGetInstruction) inst));// field read
+        stmts.add(this.convertGetInstruction(debugInfo, (SSAGetInstruction) inst));// field read
       } else if (inst instanceof SSAPutInstruction) {
-        stmts.add(this.convertPutInstruction((SSAPutInstruction) inst));// field write
+        stmts.add(this.convertPutInstruction(debugInfo, (SSAPutInstruction) inst));// field write
       } else {
         throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
       }
     } else if (inst instanceof SSANewInstruction) {
-      stmts.add(convertNewInstruction((SSANewInstruction) inst));
+      stmts.add(convertNewInstruction(debugInfo, (SSANewInstruction) inst));
     } else if (inst instanceof SSAConversionInstruction) {
-      stmts.add(convertConversionInstruction((SSAConversionInstruction) inst));
+      stmts.add(convertConversionInstruction(debugInfo, (SSAConversionInstruction) inst));
     } else if (inst instanceof SSAInstanceofInstruction) {
-      stmts.add(convertInstanceofInstruction((SSAInstanceofInstruction) inst));
+      stmts.add(convertInstanceofInstruction(debugInfo, (SSAInstanceofInstruction) inst));
     } else if (inst instanceof SSABinaryOpInstruction) {
-      stmts.add(this.convertBinaryOpInstruction((SSABinaryOpInstruction) inst));
+      stmts.add(this.convertBinaryOpInstruction(debugInfo, (SSABinaryOpInstruction) inst));
     } else if (inst instanceof SSAUnaryOpInstruction) {
-      stmts.add(this.convertUnaryOpInstruction((SSAUnaryOpInstruction) inst));
+      stmts.add(this.convertUnaryOpInstruction(debugInfo, (SSAUnaryOpInstruction) inst));
     } else if (inst instanceof SSAThrowInstruction) {
-      stmts.add(this.convertThrowInstruction((SSAThrowInstruction) inst));
+      stmts.add(this.convertThrowInstruction(debugInfo, (SSAThrowInstruction) inst));
     } else if (inst instanceof SSASwitchInstruction) {
-      stmts.add(this.convertSwitchInstruction((SSASwitchInstruction) inst));
+      stmts.add(this.convertSwitchInstruction(debugInfo, (SSASwitchInstruction) inst));
     } else if (inst instanceof SSALoadMetadataInstruction) {
-      stmts.add(this.convertLoadMetadataInstruction((SSALoadMetadataInstruction) inst));
+      stmts.add(this.convertLoadMetadataInstruction(debugInfo, (SSALoadMetadataInstruction) inst));
     } else if (inst instanceof EnclosingObjectReference) {
-      stmts.add(this.convertEnclosingObjectReference((EnclosingObjectReference) inst));
+      stmts.add(this.convertEnclosingObjectReference(debugInfo, (EnclosingObjectReference) inst));
     } else if (inst instanceof AstLexicalRead) {
-      stmts = (this.convertAstLexicalRead((AstLexicalRead) inst));
+      stmts = (this.convertAstLexicalRead(debugInfo, (AstLexicalRead) inst));
     } else if (inst instanceof AstLexicalWrite) {
-      stmts = (this.convertAstLexicalWrite((AstLexicalWrite) inst));
+      stmts = (this.convertAstLexicalWrite(debugInfo, (AstLexicalWrite) inst));
     } else if (inst instanceof AstAssertInstruction) {
-      stmts = this.convertAssertInstruction((AstAssertInstruction) inst);
+      stmts = this.convertAssertInstruction(debugInfo, (AstAssertInstruction) inst);
     } else if (inst instanceof SSACheckCastInstruction) {
-      stmts.add(this.convertCheckCastInstruction((SSACheckCastInstruction) inst));
+      stmts.add(this.convertCheckCastInstruction(debugInfo, (SSACheckCastInstruction) inst));
     } else if (inst instanceof SSAMonitorInstruction) {
-      stmts.add(this.convertMonitorInstruction((SSAMonitorInstruction) inst));// for synchronized statement
+      stmts.add(this.convertMonitorInstruction(debugInfo, (SSAMonitorInstruction) inst));// for synchronized statement
     } else if (inst instanceof SSAGetCaughtExceptionInstruction) {
-      stmts.add(this.convertGetCaughtExceptionInstruction((SSAGetCaughtExceptionInstruction) inst));
+      stmts.add(this.convertGetCaughtExceptionInstruction(debugInfo, (SSAGetCaughtExceptionInstruction) inst));
     } else if (inst instanceof SSAArrayLengthInstruction) {
-      stmts.add(this.convertArrayLengthInstruction((SSAArrayLengthInstruction) inst));
+      stmts.add(this.convertArrayLengthInstruction(debugInfo, (SSAArrayLengthInstruction) inst));
     } else if (inst instanceof SSAArrayReferenceInstruction) {
       if (inst instanceof SSAArrayLoadInstruction) {
-        stmts.add(this.convertArrayLoadInstruction((SSAArrayLoadInstruction) inst));
+        stmts.add(this.convertArrayLoadInstruction(debugInfo, (SSAArrayLoadInstruction) inst));
       } else if (inst instanceof SSAArrayStoreInstruction) {
-        stmts.add(this.convertArrayStoreInstruction((SSAArrayStoreInstruction) inst));
+        stmts.add(this.convertArrayStoreInstruction(debugInfo, (SSAArrayStoreInstruction) inst));
       } else {
         throw new RuntimeException("Unsupported instruction type: " + inst.getClass().toString());
       }
@@ -199,68 +204,68 @@ class InstructionConverter {
     return stmts;
   }
 
-  private IStmt convertArrayStoreInstruction(SSAArrayStoreInstruction inst) {
+  private IStmt convertArrayStoreInstruction(DebuggingInformation debugInfo, SSAArrayStoreInstruction inst) {
     Local base = getLocal(UnknownType.INSTANCE, inst.getArrayRef());
     int i = inst.getIndex();
-    Value index;
+    Value index = null;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
       index = getLocal(IntType.INSTANCE, i);
     }
     JArrayRef arrayRef = Jimple.newArrayRef(base, index);
-    Value rvalue;
+    Value rvalue = null;
     int value = inst.getValue();
     if (symbolTable.isConstant(value)) {
       rvalue = getConstant(value);
     } else {
       rvalue = getLocal(base.getType(), value);
     }
-    return Jimple.newAssignStmt(arrayRef, rvalue);
+    return Jimple.newAssignStmt(arrayRef, rvalue, new PositionInfo(null, null));
   }
 
-  private IStmt convertArrayLoadInstruction(SSAArrayLoadInstruction inst) {
+  private IStmt convertArrayLoadInstruction(DebuggingInformation debugInfo, SSAArrayLoadInstruction inst) {
     Local base = getLocal(UnknownType.INSTANCE, inst.getArrayRef());
     int i = inst.getIndex();
-    Value index;
+    Value index = null;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
       index = getLocal(IntType.INSTANCE, i);
     }
     JArrayRef arrayRef = Jimple.newArrayRef(base, index);
-    Value left;
+    Value left = null;
     int def = inst.getDef();
     left = getLocal(base.getType(), def);
-    return Jimple.newAssignStmt(left, arrayRef);
+    return Jimple.newAssignStmt(left, arrayRef, new PositionInfo(null, null));
   }
 
-  private IStmt convertArrayLengthInstruction(SSAArrayLengthInstruction inst) {
+  private IStmt convertArrayLengthInstruction(DebuggingInformation debugInfo, SSAArrayLengthInstruction inst) {
     int result = inst.getDef();
     Local left = getLocal(IntType.INSTANCE, result);
     int arrayRef = inst.getArrayRef();
     Local arrayLocal = getLocal(UnknownType.INSTANCE, arrayRef);
     Value right = Jimple.newLengthExpr(arrayLocal);
-    return Jimple.newAssignStmt(left, right);
+    return Jimple.newAssignStmt(left, right, new PositionInfo(null, null));
   }
 
-  private IStmt convertGetCaughtExceptionInstruction(SSAGetCaughtExceptionInstruction inst) {
+  private IStmt convertGetCaughtExceptionInstruction(DebuggingInformation debugInfo, SSAGetCaughtExceptionInstruction inst) {
     int exceptionValue = inst.getException();
     Local local = getLocal(RefType.getInstance("java.lang.Throwable"), exceptionValue);
     JCaughtExceptionRef caught = Jimple.newCaughtExceptionRef();
-    return Jimple.newIdentityStmt(local, caught);
+    return Jimple.newIdentityStmt(local, caught, new PositionInfo(null, null));
   }
 
-  private IStmt convertMonitorInstruction(SSAMonitorInstruction inst) {
+  private IStmt convertMonitorInstruction(DebuggingInformation debugInfo, SSAMonitorInstruction inst) {
     Value op = getLocal(UnknownType.INSTANCE, inst.getRef());
     if (inst.isMonitorEnter()) {
-      return Jimple.newEnterMonitorStmt(op);
+      return Jimple.newEnterMonitorStmt(op, new PositionInfo(null, null));
     } else {
-      return Jimple.newExitMonitorStmt(op);
+      return Jimple.newExitMonitorStmt(op, new PositionInfo(null, null));
     }
   }
 
-  private List<IStmt> convertAssertInstruction(AstAssertInstruction inst) {
+  private List<IStmt> convertAssertInstruction(DebuggingInformation debugInfo, AstAssertInstruction inst) {
     List<IStmt> stmts = new ArrayList<>();
     // create a static field for checking if assertion is disabled.
     JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
@@ -271,33 +276,33 @@ class InstructionConverter {
     converter.addSootField(assertionsDisabled);
     Local testLocal = localGenerator.generateLocal(BooleanType.INSTANCE);
     JStaticFieldRef assertFieldRef = Jimple.newStaticFieldRef(converter.view, fieldSig);
-    JAssignStmt assignStmt = Jimple.newAssignStmt(testLocal, assertFieldRef);
+    JAssignStmt assignStmt = Jimple.newAssignStmt(testLocal, assertFieldRef, new PositionInfo(null, null));
     stmts.add(assignStmt);
 
     // add ifStmt for testing assertion is disabled.
     JEqExpr condition = Jimple.newEqExpr(testLocal, IntConstant.getInstance(1));
-    JNopStmt nopStmt = Jimple.newNopStmt();
-    JIfStmt ifStmt = Jimple.newIfStmt(condition, nopStmt);
+    JNopStmt nopStmt = Jimple.newNopStmt(new PositionInfo(null, null));
+    JIfStmt ifStmt = Jimple.newIfStmt(condition, nopStmt, new PositionInfo(null, null));
     stmts.add(ifStmt);
 
     // create ifStmt for the actual assertion.
     Local assertLocal = getLocal(BooleanType.INSTANCE, inst.getUse(0));
     JEqExpr assertionExpr = Jimple.newEqExpr(assertLocal, IntConstant.getInstance(1));
-    JIfStmt assertIfStmt = Jimple.newIfStmt(assertionExpr, nopStmt);
+    JIfStmt assertIfStmt = Jimple.newIfStmt(assertionExpr, nopStmt, new PositionInfo(null, null));
     stmts.add(assertIfStmt);
     // create failed assertion code.
 
     RefType assertionErrorType = RefType.getInstance("java.lang.AssertionError");
     Local failureLocal = localGenerator.generateLocal(assertionErrorType);
     JNewExpr newExpr = Jimple.newNewExpr(assertionErrorType);
-    JAssignStmt newAssignStmt = Jimple.newAssignStmt(failureLocal, newExpr);
+    JAssignStmt newAssignStmt = Jimple.newAssignStmt(failureLocal, newExpr, new PositionInfo(null, null));
     stmts.add(newAssignStmt);
     MethodSignature methodSig
         = sigFactory.getMethodSignature("<init>", "java.lang.AssertionError", "void", Collections.emptyList());
     JSpecialInvokeExpr invoke = Jimple.newSpecialInvokeExpr(converter.view, failureLocal, methodSig);
-    JInvokeStmt invokeStmt = Jimple.newInvokeStmt(invoke);
+    JInvokeStmt invokeStmt = Jimple.newInvokeStmt(invoke, new PositionInfo(null, null));
     stmts.add(invokeStmt);
-    JThrowStmt throwStmt = Jimple.newThrowStmt(failureLocal);
+    JThrowStmt throwStmt = Jimple.newThrowStmt(failureLocal, new PositionInfo(null, null));
     stmts.add(throwStmt);
 
     // add nop in the end
@@ -305,12 +310,12 @@ class InstructionConverter {
     return stmts;
   }
 
-  private List<IStmt> convertAstLexicalWrite(AstLexicalWrite inst) {
+  private List<IStmt> convertAstLexicalWrite(DebuggingInformation debugInfo, AstLexicalWrite inst) {
     List<IStmt> stmts = new ArrayList<>();
     for (int i = 0; i < inst.getAccessCount(); i++) {
       Access access = inst.getAccess(i);
       Type type = converter.convertType(access.type);
-      Value right;
+      Value right = null;
       if (symbolTable.isConstant(access.valueNumber)) {
         right = getConstant(access.valueNumber);
       } else {
@@ -318,7 +323,7 @@ class InstructionConverter {
       }
       JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
       // TODO check modifier
-      Value left;
+      Value left = null;
       if (!walaMethod.isStatic()) {
         FieldSignature fieldSig = sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
         SootField field = new SootField(converter.view, cSig, fieldSig, sigFactory.getTypeSignature(type.toString()),
@@ -329,12 +334,12 @@ class InstructionConverter {
       } else {
         left = localGenerator.generateLocal(type);
       }
-      stmts.add(Jimple.newAssignStmt(left, right));
+      stmts.add(Jimple.newAssignStmt(left, right, new PositionInfo(null, null)));
     }
     return stmts;
   }
 
-  private List<IStmt> convertAstLexicalRead(AstLexicalRead inst) {
+  private List<IStmt> convertAstLexicalRead(DebuggingInformation debugInfo, AstLexicalRead inst) {
     List<IStmt> stmts = new ArrayList<>();
     for (int i = 0; i < inst.getAccessCount(); i++) {
       Access access = inst.getAccess(i);
@@ -342,7 +347,7 @@ class InstructionConverter {
       Local left = getLocal(type, access.valueNumber);
       JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
       // TODO check modifier
-      Value rvalue;
+      Value rvalue = null;
       if (!walaMethod.isStatic()) {
         FieldSignature fieldSig = sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
         SootField field = new SootField(converter.view, cSig, fieldSig, sigFactory.getTypeSignature(type.toString()),
@@ -352,12 +357,12 @@ class InstructionConverter {
       } else {
         rvalue = localGenerator.generateLocal(type);
       }
-      stmts.add(Jimple.newAssignStmt(left, rvalue));
+      stmts.add(Jimple.newAssignStmt(left, rvalue, new PositionInfo(null, null)));
     }
     return stmts;
   }
 
-  private IStmt convertEnclosingObjectReference(EnclosingObjectReference inst) {
+  private IStmt convertEnclosingObjectReference(DebuggingInformation debugInfo, EnclosingObjectReference inst) {
     Type enclosingType = converter.convertType(inst.getEnclosingType());
     Value variable = getLocal(enclosingType, inst.getDef());
     JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
@@ -367,13 +372,13 @@ class InstructionConverter {
     SootField enclosingObject = new SootField(converter.view, cSig, fieldSig,
         sigFactory.getTypeSignature(enclosingType.toString()), EnumSet.of(Modifier.FINAL));
     JInstanceFieldRef rvalue = Jimple.newInstanceFieldRef(converter.view, localGenerator.getThisLocal(), fieldSig);
-    return Jimple.newAssignStmt(variable, rvalue);
+    return Jimple.newAssignStmt(variable, rvalue, new PositionInfo(null, null));
   }
 
-  private IStmt convertCheckCastInstruction(SSACheckCastInstruction inst) {
+  private IStmt convertCheckCastInstruction(DebuggingInformation debugInfo, SSACheckCastInstruction inst) {
     TypeReference[] types = inst.getDeclaredResultTypes();
     Local result = getLocal(converter.convertType(types[0]), inst.getResult());
-    Value rvalue;
+    Value rvalue = null;
     int val = inst.getVal();
     if (symbolTable.isConstant(val)) {
       rvalue = getConstant(val);
@@ -382,17 +387,17 @@ class InstructionConverter {
     }
     // TODO declaredResultType is wrong
     JCastExpr castExpr = Jimple.newCastExpr(rvalue, converter.convertType(types[0]));
-    return Jimple.newAssignStmt(result, castExpr);
+    return Jimple.newAssignStmt(result, castExpr, new PositionInfo(null, null));
   }
 
-  private IStmt convertLoadMetadataInstruction(SSALoadMetadataInstruction inst) {
+  private IStmt convertLoadMetadataInstruction(DebuggingInformation debugInfo, SSALoadMetadataInstruction inst) {
     Local lval = getLocal(converter.convertType(inst.getType()), inst.getDef());
     TypeReference token = (TypeReference) inst.getToken();
     ClassConstant c = ClassConstant.getInstance(token.getName().toString());
-    return Jimple.newAssignStmt(lval, c);
+    return Jimple.newAssignStmt(lval, c, new PositionInfo(null, null));
   }
 
-  private IStmt convertSwitchInstruction(SSASwitchInstruction inst) {
+  private IStmt convertSwitchInstruction(DebuggingInformation debugInfo, SSASwitchInstruction inst) {
     int val = inst.getUse(0);
     Local local = getLocal(UnknownType.INSTANCE, val);
     int[] cases = inst.getCasesAndLabels();
@@ -411,22 +416,23 @@ class InstructionConverter {
       }
     }
     IStmt defaultTarget = null;
-    JLookupSwitchStmt stmt = Jimple.newLookupSwitchStmt(local, lookupValues, targets, defaultTarget);
+    JLookupSwitchStmt stmt
+        = Jimple.newLookupSwitchStmt(local, lookupValues, targets, defaultTarget, new PositionInfo(null, null));
     this.targetsOfLookUpSwitchStmts.put(stmt, targetsList);
     this.defaultOfLookUpSwitchStmts.put(stmt, defaultCase);
     return stmt;
   }
 
-  private IStmt convertThrowInstruction(SSAThrowInstruction inst) {
+  private IStmt convertThrowInstruction(DebuggingInformation debugInfo, SSAThrowInstruction inst) {
     int exception = inst.getException();
     Local local = getLocal(UnknownType.INSTANCE, exception);
-    return Jimple.newThrowStmt(local);
+    return Jimple.newThrowStmt(local, new PositionInfo(null, null));
   }
 
-  private IStmt convertUnaryOpInstruction(SSAUnaryOpInstruction inst) {
+  private IStmt convertUnaryOpInstruction(DebuggingInformation debugInfo, SSAUnaryOpInstruction inst) {
     int def = inst.getDef();
     int use = inst.getUse(0);
-    Value op;
+    Value op = null;
     // TODO: change type
     Type type = UnknownType.INSTANCE;
     if (symbolTable.isConstant(use)) {
@@ -437,20 +443,20 @@ class InstructionConverter {
     }
     Local left = getLocal(type, def);
     if (inst instanceof AssignInstruction) {
-      return Jimple.newAssignStmt(left, op);
+      return Jimple.newAssignStmt(left, op, new PositionInfo(null, null));
     } else {
       JNegExpr expr = Jimple.newNegExpr(op);
-      return Jimple.newAssignStmt(left, expr);
+      return Jimple.newAssignStmt(left, expr, new PositionInfo(null, null));
     }
   }
 
-  private IStmt convertPutInstruction(SSAPutInstruction inst) {
+  private IStmt convertPutInstruction(DebuggingInformation debugInfo, SSAPutInstruction inst) {
     FieldReference fieldRef = inst.getDeclaredField();
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassSignature classSig = sigFactory.getClassSignature(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig = sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
-    Value fieldValue;
+    Value fieldValue = null;
     if (inst.isStatic()) {
       fieldValue = Jimple.newStaticFieldRef(converter.view, fieldSig);
     } else {
@@ -458,24 +464,24 @@ class InstructionConverter {
       Local base = getLocal(converter.view.getRefType(classSig), ref);
       fieldValue = Jimple.newInstanceFieldRef(converter.view, base, fieldSig);
     }
-    Value value;
+    Value value = null;
     int val = inst.getVal();
     if (symbolTable.isConstant(val)) {
       value = getConstant(val);
     } else {
       value = getLocal(fieldType, val);
     }
-    return Jimple.newAssignStmt(fieldValue, value);
+    return Jimple.newAssignStmt(fieldValue, value, new PositionInfo(null, null));
   }
 
-  private IStmt convertNewInstruction(SSANewInstruction inst) {
+  private IStmt convertNewInstruction(DebuggingInformation debugInfo, SSANewInstruction inst) {
     int result = inst.getDef();
     Type type = converter.convertType(inst.getNewSite().getDeclaredType());
     Value var = getLocal(type, result);
-    Value rvalue;
+    Value rvalue = null;
     if (type instanceof ArrayType) {
       int use = inst.getUse(0);
-      Value size;
+      Value size = null;
       if (symbolTable.isConstant(use)) {
         size = getConstant(use);
       } else {
@@ -486,15 +492,15 @@ class InstructionConverter {
     } else {
       rvalue = Jimple.newNewExpr((RefType) type);
     }
-    return Jimple.newAssignStmt(var, rvalue);
+    return Jimple.newAssignStmt(var, rvalue, new PositionInfo(null, null));
   }
 
-  private IStmt convertComparisonInstruction(SSAComparisonInstruction inst) {
+  private IStmt convertComparisonInstruction(DebuggingInformation debugInfo, SSAComparisonInstruction inst) {
     // TODO
-    return Jimple.newNopStmt();
+    return Jimple.newNopStmt(new PositionInfo(null, null));
   }
 
-  private IStmt convertInstanceofInstruction(SSAInstanceofInstruction inst) {
+  private IStmt convertInstanceofInstruction(DebuggingInformation debugInfo, SSAInstanceofInstruction inst) {
     int result = inst.getDef();
     int ref = inst.getRef();
     Type checkedType = converter.convertType(inst.getCheckedType());
@@ -502,27 +508,27 @@ class InstructionConverter {
     Local op = getLocal(UnknownType.INSTANCE, ref);
     JInstanceOfExpr expr = Jimple.newInstanceOfExpr(op, checkedType);
     Value left = getLocal(BooleanType.INSTANCE, result);
-    return Jimple.newAssignStmt(left, expr);
+    return Jimple.newAssignStmt(left, expr, new PositionInfo(null, null));
   }
 
-  private IStmt convertConversionInstruction(SSAConversionInstruction inst) {
+  private IStmt convertConversionInstruction(DebuggingInformation debugInfo, SSAConversionInstruction inst) {
     Type fromType = converter.convertType(inst.getFromType());
     Type toType = converter.convertType(inst.getToType());
     int def = inst.getDef();
     int use = inst.getUse(0);
     Value lvalue = getLocal(toType, def);
-    Value rvalue;
+    Value rvalue = null;
     if (symbolTable.isConstant(use)) {
       rvalue = getConstant(use);
     } else {
       rvalue = getLocal(fromType, use);
     }
     JCastExpr cast = Jimple.newCastExpr(rvalue, toType);
-    return Jimple.newAssignStmt(lvalue, cast);
+    return Jimple.newAssignStmt(lvalue, cast, new PositionInfo(null, null));
   }
 
-  private IStmt convertInvokeInstruction(AstJavaInvokeInstruction invokeInst) {
-    Value invoke;
+  private IStmt convertInvokeInstruction(DebuggingInformation debugInfo, AstJavaInvokeInstruction invokeInst) {
+    Value invoke = null;
     CallSiteReference callee = invokeInst.getCallSite();
     MethodReference target = invokeInst.getDeclaredTarget();
     String declaringClassSignature = converter.convertClassNameFromWala(target.getDeclaringClass().getName().toString());
@@ -541,7 +547,7 @@ class InstructionConverter {
     }
     for (; i < invokeInst.getNumberOfUses(); i++) {
       int use = invokeInst.getUse(i);
-      Value arg;
+      Value arg = null;
       if (symbolTable.isConstant(use)) {
         arg = getConstant(use);
       } else {
@@ -559,7 +565,6 @@ class InstructionConverter {
         declaringClassSignature, returnType, parameters);
 
     if (!callee.isStatic()) {
-
       int receiver = invokeInst.getReceiver();
       Type classType = converter.convertType(target.getDeclaringClass());
       Local base = getLocal(classType, receiver);
@@ -580,30 +585,30 @@ class InstructionConverter {
     }
 
     if (!invokeInst.hasDef()) {
-      return Jimple.newInvokeStmt(invoke);
+      return Jimple.newInvokeStmt(invoke, new PositionInfo(null, null));
     } else {
       Type type = converter.convertType(invokeInst.getDeclaredResultType());
       Local v = getLocal(type, invokeInst.getDef());
-      return Jimple.newAssignStmt(v, invoke);
+      return Jimple.newAssignStmt(v, invoke, new PositionInfo(null, null));
     }
   }
 
-  private IStmt convertBranchInstruction(SSAConditionalBranchInstruction condInst) {
+  private IStmt convertBranchInstruction(DebuggingInformation debugInfo, SSAConditionalBranchInstruction condInst) {
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
-    Value value1;
+    Value value1 = null;
     if (symbolTable.isZero(val1)) {
       value1 = IntConstant.getInstance(0);
     } else {
       value1 = getLocal(IntType.INSTANCE, val1);
     }
-    Value value2;
+    Value value2 = null;
     if (symbolTable.isZero(val2)) {
       value2 = IntConstant.getInstance(0);
     } else {
       value2 = getLocal(IntType.INSTANCE, val1);
     }
-    AbstractConditionExpr condition;
+    AbstractConditionExpr condition = null;
     IOperator op = condInst.getOperator();
     if (op.equals(Operator.EQ)) {
       condition = Jimple.newEqExpr(value1, value2);
@@ -621,33 +626,38 @@ class InstructionConverter {
       throw new RuntimeException("Unsupported conditional operator: " + op);
     }
     JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
-    JIfStmt ifStmt = Jimple.newIfStmt(condition, target);
+    JIfStmt ifStmt = Jimple.newIfStmt(condition, target, new PositionInfo(null, null));
     this.targetsOfIfStmts.put(ifStmt, condInst.getTarget());
     return ifStmt;
   }
 
-  private IStmt convertBinaryOpInstruction(SSABinaryOpInstruction binOpInst) {
+  private IStmt convertBinaryOpInstruction(DebuggingInformation debugInfo, SSABinaryOpInstruction binOpInst) {
+    // TODO. change this
+    Position p1 = debugInfo.getOperandPosition(binOpInst.iindex, 0);
+    // System.out.println("0: "+p1);
+    Position p2 = debugInfo.getOperandPosition(binOpInst.iindex, 1);
+    // System.out.println("1: "+p2);
     int def = binOpInst.getDef();
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
     // TODO: only int type?
     Type type = IntType.INSTANCE;
     Value result = getLocal(type, def);
-    Value op1;
+    Value op1 = null;
     if (symbolTable.isConstant(val1)) {
       op1 = getConstant(val1);
       type = op1.getType();
     } else {
       op1 = getLocal(type, val1);
     }
-    Value op2;
+    Value op2 = null;
     if (symbolTable.isConstant(val2)) {
       op2 = getConstant(val2);
       type = op2.getType();
     } else {
       op2 = getLocal(type, val2);
     }
-    AbstractBinopExpr binExpr;
+    AbstractBinopExpr binExpr = null;
     IBinaryOpInstruction.IOperator operator = binOpInst.getOperator();
     if (operator.equals(IBinaryOpInstruction.Operator.ADD)) {
       binExpr = Jimple.newAddExpr(op1, op2);
@@ -687,14 +697,14 @@ class InstructionConverter {
 
       throw new RuntimeException("Unsupported binary operator: " + operator.getClass());
     }
-    return Jimple.newAssignStmt(result, binExpr);
+    return Jimple.newAssignStmt(result, binExpr, new PositionInfo(null, null));
   }
 
-  private IStmt convertReturnInstruction(SSAReturnInstruction inst) {
+  private IStmt convertReturnInstruction(DebuggingInformation debugInfo, SSAReturnInstruction inst) {
     int result = inst.getResult();
     if (inst.returnsVoid()) {
       // this is return void stmt
-      return Jimple.newReturnVoidStmt();
+      return Jimple.newReturnVoidStmt(new PositionInfo(null, null));
     } else {
       Value ret;
       if (symbolTable.isConstant(result)) {
@@ -703,25 +713,25 @@ class InstructionConverter {
         // TODO. how to get the type of result?
         ret = this.getLocal(UnknownType.INSTANCE, result);
       }
-      return Jimple.newReturnStmt(ret);
+      return Jimple.newReturnStmt(ret, new PositionInfo(null, null));
     }
   }
 
-  private IStmt convertGoToInstruction(SSAGotoInstruction gotoInst) {
+  private IStmt convertGoToInstruction(DebuggingInformation debugInfo, SSAGotoInstruction gotoInst) {
     JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
-    JGotoStmt gotoStmt = Jimple.newGotoStmt(target);
+    JGotoStmt gotoStmt = Jimple.newGotoStmt(target, new PositionInfo(null, null));
     this.targetsOfGotoStmts.put(gotoStmt, gotoInst.getTarget());
     return gotoStmt;
   }
 
-  private IStmt convertGetInstruction(SSAGetInstruction inst) {
+  private IStmt convertGetInstruction(DebuggingInformation debugInfo, SSAGetInstruction inst) {
     int def = inst.getDef(0);
     FieldReference fieldRef = inst.getDeclaredField();
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassSignature classSig = sigFactory.getClassSignature(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig = sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
-    Value rvalue;
+    Value rvalue = null;
     if (inst.isStatic()) {
       rvalue = Jimple.newStaticFieldRef(converter.view, fieldSig);
     } else {
@@ -729,8 +739,11 @@ class InstructionConverter {
       Local base = getLocal(converter.view.getRefType(classSig), ref);
       rvalue = Jimple.newInstanceFieldRef(converter.view, base, fieldSig);
     }
+    // TODO. get the position of ref
+    Position p = debugInfo.getOperandPosition(inst.iindex, 0);
+    // System.out.println("position: "+p);
     Value var = getLocal(fieldType, def);
-    return Jimple.newAssignStmt(var, rvalue);
+    return Jimple.newAssignStmt(var, rvalue, new PositionInfo(null, null));
   }
 
   private Constant getConstant(int valueNumber) {
@@ -741,7 +754,7 @@ class InstructionConverter {
       } else {
         return IntConstant.getInstance(0);
       }
-    } else if (value instanceof Byte || value instanceof Character || value instanceof Short || value instanceof Integer) {
+    } else if (value instanceof Byte || value instanceof Char || value instanceof Short || value instanceof Integer) {
       return IntConstant.getInstance((int) value);
     } else if (symbolTable.isLongConstant(valueNumber)) {
       return LongConstant.getInstance((long) value);

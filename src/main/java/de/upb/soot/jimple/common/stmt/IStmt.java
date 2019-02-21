@@ -1,9 +1,8 @@
 package de.upb.soot.jimple.common.stmt;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-
 import de.upb.soot.jimple.basic.EquivTo;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
@@ -83,5 +82,11 @@ public interface IStmt extends EquivTo, IAcceptor, Serializable {
 
   ValueBox getFieldRefBox();
 
-  void setPosition(Position position);
+  /**
+   * Return the position information of this statement.
+   * 
+   * @return he position information of this statement
+   */
+  public PositionInfo getPositionInfo();
+
 }

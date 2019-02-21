@@ -33,7 +33,7 @@ public abstract class AbstractClassMemberSignature implements ISignature {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    FieldSignature that = (FieldSignature) o;
+    AbstractClassMemberSignature that = (AbstractClassMemberSignature) o;
     return Objects.equal(name, that.name) && Objects.equal(declClassSignature, that.declClassSignature)
         && Objects.equal(typeSignature, that.typeSignature);
   }
@@ -45,7 +45,13 @@ public abstract class AbstractClassMemberSignature implements ISignature {
 
   @Override
   public String toString() {
-    return "<" + declClassSignature.toString() + ": " + getSubSignature() + '>';
+    StringBuilder sb = new StringBuilder();
+    sb.append('<');
+    sb.append(declClassSignature.toString());
+    sb.append(": ");
+    sb.append(getSubSignature());
+    sb.append('>');
+    return sb.toString();
   }
 
 }

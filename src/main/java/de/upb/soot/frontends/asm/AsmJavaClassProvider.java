@@ -3,6 +3,7 @@ package de.upb.soot.frontends.asm;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.IClassSourceContent;
+import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.frontends.asm.modules.AsmModuleClassSourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
@@ -21,7 +22,7 @@ public class AsmJavaClassProvider implements IClassProvider {
   @Override
   public ClassSource createClassSource(@Nonnull INamespace srcNamespace, @Nullable Path sourcePath,
       @Nullable JavaClassSignature classSignature) {
-    return new ClassSource(srcNamespace, sourcePath, classSignature);
+    return new JavaClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   @Override

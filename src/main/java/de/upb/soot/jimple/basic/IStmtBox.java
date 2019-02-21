@@ -38,7 +38,7 @@ public interface IStmtBox extends Serializable {
   void setStmt(IStmt u);
 
   /** Returns the unit contained within this box. */
-  IStmt getStmt();
+  public IStmt getStmt();
 
   /**
    * Returns true if the StmtBox is holding a Stmt that is the target of a branch (ie a Stmt at the beginning of a CFG

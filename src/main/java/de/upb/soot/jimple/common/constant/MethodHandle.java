@@ -25,14 +25,12 @@
 
 package de.upb.soot.jimple.common.constant;
 
+import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.symbolicreferences.FieldRef;
-import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-
-import java.util.Comparator;
+import de.upb.soot.signatures.MethodSignature;
 
 import org.objectweb.asm.Opcodes;
 
@@ -88,12 +86,12 @@ public class MethodHandle extends Constant {
    * 
    */
   private static final long serialVersionUID = 76297846662243365L;
-  public final MethodRef methodRef;
+  public final MethodSignature methodRef;
   private final FieldRef fieldRef;
 
   public int tag;
 
-  private MethodHandle(MethodRef ref, int tag) {
+  private MethodHandle(MethodSignature ref, int tag) {
     this.methodRef = ref;
     this.tag = tag;
     this.fieldRef = null;
@@ -105,7 +103,7 @@ public class MethodHandle extends Constant {
     this.methodRef = null;
   }
 
-  public static MethodHandle getInstance(MethodRef ref, int tag) {
+  public static MethodHandle getInstance(MethodSignature ref, int tag) {
     return new MethodHandle(ref, tag);
   }
 
@@ -129,7 +127,7 @@ public class MethodHandle extends Constant {
     return RefType.getInstance("java.lang.invoke.MethodHandle");
   }
 
-  public MethodRef getMethodRef() {
+  public MethodSignature getMethodRef() {
     return methodRef;
   }
 
@@ -166,11 +164,5 @@ public class MethodHandle extends Constant {
       return false;
     }
     return true;
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    // TODO Auto-generated methodRef stub
-    return false;
   }
 }

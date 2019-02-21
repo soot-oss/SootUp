@@ -26,6 +26,8 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
@@ -39,17 +41,18 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
    */
   private static final long serialVersionUID = -6269380950007213506L;
 
-  public JIdentityStmt(Value local, Value identityValue) {
-    this(Jimple.newLocalBox(local), Jimple.newIdentityRefBox(identityValue));
+  public JIdentityStmt(Value local, Value identityValue, PositionInfo positionInfo) {
+    this(Jimple.newLocalBox(local), Jimple.newIdentityRefBox(identityValue), positionInfo);
   }
 
-  protected JIdentityStmt(ValueBox localBox, ValueBox identityValueBox) {
-    super(localBox, identityValueBox);
+  protected JIdentityStmt(ValueBox localBox, ValueBox identityValueBox, PositionInfo positionInfo) {
+    super(localBox, identityValueBox, positionInfo);
   }
 
   @Override
   public JIdentityStmt clone() {
-    return new JIdentityStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()));
+    return new JIdentityStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()),
+        getPositionInfo().clone());
   }
 
   @Override
@@ -83,13 +86,12 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JIdentityStmt)) {
-      return false;
-    }
+    return JimpleComparator.getInstance().caseIdentityStmt(this, o);
+  }
 
-    JIdentityStmt identityStmt = (JIdentityStmt) o;
-    return leftBox.getValue().equivTo(identityStmt.leftBox.getValue())
-        && rightBox.getValue().equivTo(identityStmt.rightBox.getValue());
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseIdentityStmt(this, o);
   }
 
   @Override

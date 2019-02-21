@@ -6,7 +6,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.TypeSignature;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +26,7 @@ public class MethodType extends Constant {
     return new MethodType(paramaterTypes, returnType);
   }
 
+  @Override
   public Type getType() {
     return RefType.getInstance("java.lang.invoke.MethodType");
   }
@@ -64,8 +64,4 @@ public class MethodType extends Constant {
 
   }
 
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    return false;
-  }
 }

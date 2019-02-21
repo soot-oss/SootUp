@@ -27,6 +27,8 @@ package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -42,18 +44,19 @@ public class JGotoStmt extends AbstractStmt {
   final IStmtBox targetBox;
   final List<IStmtBox> targetBoxes;
 
-  public JGotoStmt(IStmt target) {
-    this(Jimple.newStmtBox(target));
+  public JGotoStmt(IStmt target, PositionInfo positionInfo) {
+    this(Jimple.newStmtBox(target), positionInfo);
   }
 
-  public JGotoStmt(IStmtBox box) {
+  public JGotoStmt(IStmtBox box, PositionInfo positionInfo) {
+    super(positionInfo);
     targetBox = box;
     targetBoxes = Collections.singletonList(box);
   }
 
   @Override
   public JGotoStmt clone() {
-    return new JGotoStmt(getTarget());
+    return new JGotoStmt(getTarget(), getPositionInfo().clone());
   }
 
   @Override
@@ -107,20 +110,17 @@ public class JGotoStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    return o instanceof JGotoStmt && targetBox.getStmt().equivTo(((JGotoStmt) o).targetBox
-        .getStmt());/*
-                     * JGotoStmt gotoStmt = (JGotoStmt) o; List<IStmtBox> gotoStmtBoxes = gotoStmt.getStmtBoxes(); if(
-                     * gotoStmtBoxes.size() != targetBoxes.size() ){ return false; } if( gotoStmt.equivHashCode() !=
-                     * equivHashCode()){ return false; }
-                     */
+    return JimpleComparator.getInstance().caseGotoStmt(this, o);
+
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseGotoStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
-    /*
-     * int res = 7; int prime = 31; for(IStmtBox box : targetBoxes){ res += prime * box.getStmt().equivHashCode(); } return
-     * res + prime * targetBox.getStmt().equivHashCode();
-     */
     return targetBox.getStmt().equivHashCode();
   }
 

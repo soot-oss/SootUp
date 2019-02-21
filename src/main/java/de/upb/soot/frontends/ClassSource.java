@@ -18,7 +18,7 @@ import java.nio.file.Path;
  * @author Linghui Luo
  *
  **/
-public class ClassSource {
+public abstract class ClassSource {
   private final INamespace srcNamespace;
   // TODO: AD unfortunately I need to change it in the ModuleFinder, since I only know a module's name after resolving its
   // module-info.class

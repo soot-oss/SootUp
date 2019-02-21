@@ -5,7 +5,12 @@ import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import soot.tagkit.AttributeValueException;
 import soot.tagkit.Tag;
 
-class DebuggingInformationTag implements Tag {
+/**
+ * 
+ * @author Linghui Luo
+ *
+ */
+public class DebuggingInformationTag implements Tag {
 
   private DebuggingInformation debugInfo;
 
@@ -26,5 +31,10 @@ class DebuggingInformationTag implements Tag {
   public DebuggingInformation getDebugInfo() {
     return this.debugInfo;
 
+  }
+
+  @Override
+  public String toString() {
+    return debugInfo.getCodeBodyPosition().toString();
   }
 }

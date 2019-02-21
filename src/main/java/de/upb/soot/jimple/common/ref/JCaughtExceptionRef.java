@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.common.ref;
 
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
@@ -32,7 +33,6 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class JCaughtExceptionRef implements IdentityRef {
@@ -45,8 +45,13 @@ public class JCaughtExceptionRef implements IdentityRef {
   }
 
   @Override
-  public boolean equivTo(Object c) {
-    return c instanceof JCaughtExceptionRef;
+  public boolean equivTo(Object o) {
+    return JimpleComparator.getInstance().caseCaughtException(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseCaughtException(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -85,8 +90,4 @@ public class JCaughtExceptionRef implements IdentityRef {
     // TODO
   }
 
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    return comparator.compare(this, o) == 0;
-  }
 }

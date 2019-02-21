@@ -30,8 +30,6 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-import java.util.Comparator;
-
 /**
  * Floating point constant with double precision.
  */
@@ -196,12 +194,6 @@ public class DoubleConstant extends RealConstant {
     if (!(constant instanceof DoubleConstant)) {
       throw new IllegalArgumentException("DoubleConstant expected");
     }
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator<Object> comparator) {
-    // TODO Auto-generated methodRef stub
-    return false;
   }
 
 }

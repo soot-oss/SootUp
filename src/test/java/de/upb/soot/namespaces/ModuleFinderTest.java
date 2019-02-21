@@ -1,11 +1,8 @@
 package de.upb.soot.namespaces;
 
-import categories.Java9Test;
+import static org.junit.Assert.assertTrue;
+
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.powermock.reflect.Whitebox;
 
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -13,7 +10,12 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import org.powermock.reflect.Whitebox;
+
+import categories.Java9Test;
 
 @Category(Java9Test.class)
 
@@ -69,7 +71,7 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
     Collection<String> discoveredModules = moduleFinder.discoverAllModules();
     assertTrue(discoveredModules.contains("de.upb.mod"));
   }
-  
+
   @Test
   @SuppressWarnings("unchecked")
   public void explodedModule() throws Exception {

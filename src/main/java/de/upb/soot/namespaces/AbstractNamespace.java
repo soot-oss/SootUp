@@ -5,8 +5,9 @@ import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 
-import javax.annotation.Nonnull;
 import java.util.Optional;
+
+import javax.annotation.Nonnull;
 
 /*-
  * #%L
