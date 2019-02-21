@@ -42,6 +42,6 @@ public class GetInstructionConversionTest {
             sigFactory.getMethodSignature("getA_X", declareClassSig, "int", Arrays.asList()));
      assertTrue(m.isPresent());
      SootMethod method = m.get();
-    Utils.print(method, true);
+    Utils.print(method, false);
    }
 }

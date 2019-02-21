@@ -71,7 +71,7 @@ public class JAssignStmtTest {
     IStmt lStmt = new JAssignStmt(local, numConst1, nop);
     IStmt fStmt = new JAssignStmt(field, numConst1, nop);
     IStmt deepStmt = new JAssignStmt(local, new JAddExpr(numConst1, numConst2), nop);
-    System.out.println(deepStmt.getPositionInfo().toString());
+    
     // equivTo : equals
     Assert.assertTrue(lStmt.equivTo(new JAssignStmt(local, numConst1, nop)));
     Assert.assertTrue(
@@ -100,8 +100,7 @@ public class JAssignStmtTest {
     Assert.assertEquals("$i0 = 42 + 33102", deepStmt.toString());
 
     // equivTo with comparator
-    Assert.assertTrue(lStmt.equivTo(deepStmt, new IgnoreLocalNameComparator()));
-
+    Assert.assertFalse(lStmt.equivTo(deepStmt, new IgnoreLocalNameComparator()));
   }
 
 }
