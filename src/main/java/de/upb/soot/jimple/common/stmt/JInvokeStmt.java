@@ -30,6 +30,7 @@ import java.util.List;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
@@ -114,12 +115,13 @@ public class JInvokeStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
+    return JimpleComparator.getInstance().caseInvokeStmt(this, o);
 
-    if (!(o instanceof JInvokeStmt)) {
-      return false;
-    }
+  }
 
-    return getInvokeExpr().equivTo(((JInvokeStmt) o).getInvokeExpr());
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseInvokeStmt(this, o);
   }
 
   @Override

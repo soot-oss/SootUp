@@ -27,6 +27,7 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
@@ -34,7 +35,6 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
@@ -63,6 +63,16 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   }
 
   @Override
+  public boolean equivTo(Object o) {
+    return equivTo(o, JimpleComparator.getInstance());
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseVirtualInvokeExpr(this, o);
+  }
+
+  @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
 
@@ -88,11 +98,6 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     argBoxesToPrinter(up);
 
     up.literal(")");
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

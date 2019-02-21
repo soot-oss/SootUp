@@ -31,6 +31,7 @@ import de.upb.soot.core.IMethod;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
@@ -41,7 +42,6 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -114,40 +114,20 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JDynamicInvokeExpr) {
-      JDynamicInvokeExpr ie = (JDynamicInvokeExpr) o;
-      if (!(getMethod().equals(ie.getMethod()) && bsmArgBoxes.length == ie.bsmArgBoxes.length)) {
-        return false;
-      }
-      int i = 0;
-      for (ValueBox element : bsmArgBoxes) {
-        if (!(element.getValue().equivTo(ie.getBootstrapArg(i)))) {
-          return false;
-        }
-        i++;
-      }
-      if (!(getMethod().equals(ie.getMethod())
-          && (argBoxes == null ? 0 : argBoxes.length) == (ie.argBoxes == null ? 0 : ie.argBoxes.length))) {
-        return false;
-      }
-      if (argBoxes != null) {
-        i = 0;
-        for (ValueBox element : argBoxes) {
-          if (!(element.getValue().equivTo(ie.getArg(i)))) {
-            return false;
-          }
-          i++;
-        }
-      }
-      if (!methodSignature.equals(ie.methodSignature)) {
-        return false;
-      }
-      if (!bsm.equals(ie.bsm)) {
-        return false;
-      }
-      return true;
-    }
-    return false;
+    return JimpleComparator.getInstance().caseDynamicInvokeExpr(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseDynamicInvokeExpr(this, o);
+  }
+
+  /**
+   * Returns a hash code for this object, consistent with structural equality.
+   */
+  @Override
+  public int equivHashCode() {
+    return bsm.hashCode() * getMethod().hashCode() * 17;
   }
 
   public Optional<SootMethod> getBootstrapMethod() {
@@ -159,14 +139,6 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       return m.map(c -> (SootMethod) c);
     }
     return Optional.empty();
-  }
-
-  /**
-   * Returns a hash code for this object, consistent with structural equality.
-   */
-  @Override
-  public int equivHashCode() {
-    return bsm.hashCode() * getMethod().hashCode() * 17;
   }
 
   @Override
@@ -240,11 +212,6 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
 
   public int getHandleTag() {
     return tag;
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

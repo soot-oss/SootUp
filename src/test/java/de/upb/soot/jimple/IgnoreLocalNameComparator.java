@@ -20,37 +20,18 @@
  * #L%
  */
 
-package de.upb.soot.jimple.javabytecode.stmt;
+package de.upb.soot.jimple;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.Local;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+public class IgnoreLocalNameComparator extends JimpleComparator {
 
-import categories.Java8Test;
-import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.jimple.common.stmt.IStmt;
-/**
-*
-* @author Markus Schmidt & Linghui Luo
-*
-*/
-@Category(Java8Test.class)
-public class JBreakpointStmtTest {
+    public boolean caseLocal(Local obj, Object o) {
+        if( !(o instanceof Local)){
+            return false;
+        }
+        return obj.getType().equals( ((Local) o).getType());
 
-  @Test
-  public void test() {
-    PositionInfo nop=PositionInfo.createNoPositionInfo();
-    IStmt stmt = new JBreakpointStmt(nop);
-    IStmt stmt2 = new JBreakpointStmt(nop);
-
-    // toString
-    assertEquals("breakpoint", stmt.toString());
-
-    // equivTo
-    assertTrue(stmt.equivTo(stmt2));
-
-  }
-
+    }
 }

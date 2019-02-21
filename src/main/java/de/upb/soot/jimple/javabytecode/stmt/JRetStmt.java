@@ -26,10 +26,10 @@
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -81,6 +81,7 @@ public class JRetStmt extends AbstractStmt {
     return stmtAddressBox;
   }
 
+  // TODO: remove setter to support immutability?
   public void setStmtAddress(Value stmtAddress) {
     stmtAddressBox.setValue(stmtAddress);
   }
@@ -112,23 +113,18 @@ public class JRetStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JRetStmt)) {
-      return false;
-    }
-    if (!getStmtAddress().equivTo(((JRetStmt) o).getStmtAddress())) {
-      return false;
-    }
-    return true;
+    return JimpleComparator.getInstance().caseRetStmt(this, o);
+
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseRetStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
     return stmtAddressBox.getValue().equivHashCode();
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

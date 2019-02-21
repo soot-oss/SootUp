@@ -88,7 +88,6 @@ public class LocalGenerator {
     return generate(type, false);
   }
 
-
   public Local generateParameterLocal(Type type, int index) {
     if (!this.paraLocals.containsKey(index)) {
       Local paraLocal = generate(type, false);

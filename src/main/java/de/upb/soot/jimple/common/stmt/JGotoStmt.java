@@ -31,6 +31,7 @@ import java.util.List;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -109,22 +110,17 @@ public class JGotoStmt extends AbstractStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JGotoStmt) || !targetBox.getStmt().equivTo(((JGotoStmt) o).targetBox.getStmt())) {
-      return false;
-    }
-    /*
-     * JGotoStmt gotoStmt = (JGotoStmt) o; List<IStmtBox> gotoStmtBoxes = gotoStmt.getStmtBoxes(); if( gotoStmtBoxes.size()
-     * != targetBoxes.size() ){ return false; } if( gotoStmt.equivHashCode() != equivHashCode()){ return false; }
-     */
-    return true;
+    return JimpleComparator.getInstance().caseGotoStmt(this, o);
+
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseGotoStmt(this, o);
   }
 
   @Override
   public int equivHashCode() {
-    /*
-     * int res = 7; int prime = 31; for(IStmtBox box : targetBoxes){ res += prime * box.getStmt().equivHashCode(); } return
-     * res + prime * targetBox.getStmt().equivHashCode();
-     */
     return targetBox.getStmt().equivHashCode();
   }
 

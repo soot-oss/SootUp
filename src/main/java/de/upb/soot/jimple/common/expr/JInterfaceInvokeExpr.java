@@ -30,6 +30,7 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
@@ -37,7 +38,6 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,6 +80,16 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   }
 
   @Override
+  public boolean equivTo(Object o) {
+    return JimpleComparator.getInstance().caseInterfaceInvokeExpr(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseInterfaceInvokeExpr(this, o);
+  }
+
+  @Override
   public String toString() {
     StringBuffer buffer = new StringBuffer();
 
@@ -107,11 +117,6 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     argBoxesToPrinter(up);
 
     up.literal(")");
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

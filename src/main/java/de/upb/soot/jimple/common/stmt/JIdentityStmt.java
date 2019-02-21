@@ -27,6 +27,7 @@ package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
@@ -84,17 +85,12 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
 
   @Override
   public boolean equivTo(Object o) {
-    if (!(o instanceof JIdentityStmt)) {
-      return false;
-    }
+    return JimpleComparator.getInstance().caseIdentityStmt(this, o);
+  }
 
-    JIdentityStmt identityStmt = (JIdentityStmt) o;
-    if (!(leftBox.getValue().equivTo(identityStmt.leftBox.getValue())
-        && rightBox.getValue().equivTo(identityStmt.rightBox.getValue()))) {
-      return false;
-    }
-
-    return true;
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseIdentityStmt(this, o);
   }
 
   @Override

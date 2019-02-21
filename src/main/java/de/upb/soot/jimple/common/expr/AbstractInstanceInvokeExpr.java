@@ -83,26 +83,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     ((IExprVisitor) sw).caseInstanceInvokeExpr(this);
   }
 
-  @Override
-  public boolean equivTo(Object o) {
-    if (o instanceof AbstractInstanceInvokeExpr) {
-      AbstractInstanceInvokeExpr ie = (AbstractInstanceInvokeExpr) o;
-      if (!(baseBox.getValue().equivTo(ie.baseBox.getValue()) && getMethod().equals(ie.getMethod())
-          && (argBoxes == null ? 0 : argBoxes.length) == (ie.argBoxes == null ? 0 : ie.argBoxes.length))) {
-        return false;
-      }
-      if (argBoxes != null) {
-        for (int i = 0; i < argBoxes.length; i++) {
-          if (!(argBoxes[i]).getValue().equivTo(ie.argBoxes[i].getValue())) {
-            return false;
-          }
-        }
-      }
-      return true;
-    }
-    return false;
-  }
-
   /**
    * Returns a hash code for this object, consistent with structural equality.
    */

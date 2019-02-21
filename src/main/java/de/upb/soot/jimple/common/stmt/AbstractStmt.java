@@ -27,7 +27,6 @@ package de.upb.soot.jimple.common.stmt;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import de.upb.soot.jimple.basic.IStmtBox;
@@ -206,11 +205,6 @@ public abstract class AbstractStmt implements IStmt {
   @Override
   public PositionInfo getPositionInfo() {
     return positionInfo;
-  }
-  
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

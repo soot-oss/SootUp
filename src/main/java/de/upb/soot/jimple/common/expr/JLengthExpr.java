@@ -26,14 +26,13 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
-import java.util.Comparator;
 
 public class JLengthExpr extends AbstractUnopExpr {
   /**
@@ -52,10 +51,12 @@ public class JLengthExpr extends AbstractUnopExpr {
 
   @Override
   public boolean equivTo(Object o) {
-    if (o instanceof JLengthExpr) {
-      return opBox.getValue().equivTo(((JLengthExpr) o).opBox.getValue());
-    }
-    return false;
+    return JimpleComparator.getInstance().caseLengthExpr(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseLengthExpr(this, o);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */
@@ -84,11 +85,6 @@ public class JLengthExpr extends AbstractUnopExpr {
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseLengthExpr(this);
-  }
-
-  @Override
-  public boolean equivTo(Object o, Comparator comparator) {
-    return comparator.compare(this, o) == 0;
   }
 
 }

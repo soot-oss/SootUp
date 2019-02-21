@@ -25,7 +25,7 @@ public abstract class AbstractClassMemberSignature implements ISignature {
   }
 
   public abstract String getSubSignature();
-  
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -34,7 +34,7 @@ public abstract class AbstractClassMemberSignature implements ISignature {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    FieldSignature that = (FieldSignature) o;
+    AbstractClassMemberSignature that = (AbstractClassMemberSignature) o;
     return Objects.equal(name, that.name) && Objects.equal(declClassSignature, that.declClassSignature)
         && Objects.equal(typeSignature, that.typeSignature);
   }
@@ -45,8 +45,7 @@ public abstract class AbstractClassMemberSignature implements ISignature {
   }
 
   @Override
-  public String toString()
-  {
+  public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append('<');
     sb.append(declClassSignature.toString());

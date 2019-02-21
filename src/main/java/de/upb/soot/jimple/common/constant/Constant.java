@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.jimple.basic.Immediate;
+import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.util.printer.IStmtPrinter;
@@ -55,8 +56,13 @@ public abstract class Constant implements Value, Immediate {
    * call equals().
    */
   @Override
-  public boolean equivTo(Object c) {
-    return equals(c);
+  public boolean equivTo(Object o) {
+    return JimpleComparator.getInstance().caseConstant(this, o);
+  }
+
+  @Override
+  public boolean equivTo(Object o, JimpleComparator comparator) {
+    return comparator.caseConstant(this, o);
   }
 
   /**
