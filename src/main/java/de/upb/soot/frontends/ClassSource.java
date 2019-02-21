@@ -2,13 +2,13 @@ package de.upb.soot.frontends;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-
 import com.google.common.base.Objects;
 
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.JavaClassSignature;
+
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 
 /**
  * Basic class for storing information that is needed to reify a {@link de.upb.soot.core.SootClass}.

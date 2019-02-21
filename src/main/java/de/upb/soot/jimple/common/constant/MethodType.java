@@ -1,13 +1,13 @@
 package de.upb.soot.jimple.common.constant;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.TypeSignature;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class MethodType extends Constant {
 
@@ -27,7 +27,7 @@ public class MethodType extends Constant {
   }
 
   @Override
-public Type getType() {
+  public Type getType() {
     return RefType.getInstance("java.lang.invoke.MethodType");
   }
 

@@ -15,10 +15,8 @@ import categories.Java8Test;
 public class ExampleTest {
 
   @Test
-  public void test1()
-  {
-    String srcDir
-        = "src/test/resources/wala-tests/";
+  public void test1() {
+    String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     String[] args = { srcDir, exclusionFilePath };
     // Example.main(args);

@@ -89,8 +89,9 @@ public class PositionInfo {
       for (int i = 0; i < operandPositions.length; i++) {
         s.append(i + ": " + operandPositions[i] + " ");
       }
-    } else
+    } else {
       s.append("No position info");
+    }
     return s.toString();
   }
 }

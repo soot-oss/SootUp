@@ -1,16 +1,18 @@
 package de.upb.soot.buildactor;
 
-import categories.Java9Test;
+import static org.junit.Assert.assertTrue;
+
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
 import de.upb.soot.signatures.JavaClassSignature;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import categories.Java9Test;
 
 @Category(Java9Test.class)
 

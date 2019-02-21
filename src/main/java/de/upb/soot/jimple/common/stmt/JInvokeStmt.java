@@ -25,18 +25,18 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class JInvokeStmt extends AbstractStmt {
   /**
@@ -45,18 +45,18 @@ public class JInvokeStmt extends AbstractStmt {
   private static final long serialVersionUID = 3929309661335452051L;
   final ValueBox invokeExprBox;
 
-  public JInvokeStmt(Value c,PositionInfo positionInfo) {
-    this(Jimple.newInvokeExprBox(c),positionInfo);
+  public JInvokeStmt(Value c, PositionInfo positionInfo) {
+    this(Jimple.newInvokeExprBox(c), positionInfo);
   }
 
-  protected JInvokeStmt(ValueBox invokeExprBox,PositionInfo positionInfo) {
+  protected JInvokeStmt(ValueBox invokeExprBox, PositionInfo positionInfo) {
     super(positionInfo);
     this.invokeExprBox = invokeExprBox;
   }
 
   @Override
   public JInvokeStmt clone() {
-    return new JInvokeStmt(Jimple.cloneIfNecessary(getInvokeExpr()),getPositionInfo().clone());
+    return new JInvokeStmt(Jimple.cloneIfNecessary(getInvokeExpr()), getPositionInfo().clone());
   }
 
   @Override

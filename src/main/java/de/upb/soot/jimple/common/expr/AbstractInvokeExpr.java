@@ -26,11 +26,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.AbstractViewResident;
 import de.upb.soot.core.IMethod;
@@ -42,6 +37,11 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public abstract class AbstractInvokeExpr extends AbstractViewResident implements Expr {
   /**
@@ -122,8 +122,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
     return list;
   }
 
-
-  protected void argBoxesToString( StringBuffer buffer ) {
+  protected void argBoxesToString(StringBuffer buffer) {
     if (argBoxes != null) {
       final int len = argBoxes.length;
       if (0 < len) {

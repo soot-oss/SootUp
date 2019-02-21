@@ -80,12 +80,15 @@ public final class SmallNumberedMap<T> {
       }
     }
 
+    @Override
     public final boolean hasNext() {
       return cur != -1;
     }
 
+    @Override
     public abstract C next();
 
+    @Override
     public void remove() {
       throw new RuntimeException("Not implemented.");
     }
@@ -96,6 +99,7 @@ public final class SmallNumberedMap<T> {
       super(map);
     }
 
+    @Override
     public final Numberable next() {
       Numberable ret = array[cur];
       cur++;
@@ -109,6 +113,7 @@ public final class SmallNumberedMap<T> {
       super(map);
     }
 
+    @Override
     public final T next() {
       Object ret = values[cur];
       cur++;

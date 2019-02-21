@@ -11,13 +11,11 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import java.util.List;
-
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Immediate;
-import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.RValueBox;
 import de.upb.soot.jimple.basic.StmtBoxOwner;
 import de.upb.soot.jimple.basic.Value;
@@ -29,6 +27,8 @@ import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
+
+import java.util.List;
 
 /**
  * The Class JAssignStmt.
@@ -147,7 +147,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    *          the value on the right side of the assign statement.
    */
   public JAssignStmt(Value variable, Value rvalue, PositionInfo positionInfo) {
-    this(new LinkedVariableBox(variable), new LinkedRValueBox(rvalue),positionInfo);
+    this(new LinkedVariableBox(variable), new LinkedRValueBox(rvalue), positionInfo);
 
     ((LinkedVariableBox) leftBox).setOtherBox(rightBox);
     ((LinkedRValueBox) rightBox).setOtherBox(leftBox);
@@ -347,7 +347,8 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    */
   @Override
   public JAssignStmt clone() {
-    return new JAssignStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()), getPositionInfo().clone());
+    return new JAssignStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()),
+        getPositionInfo().clone());
   }
 
   /**

@@ -22,11 +22,11 @@ import soot.options.Options;
 public class Example {
 
   public static void main(String... args) {
+    G.v();
     // set up soot options
-    G.v().reset();
+    G.reset();
     Options.v().set_whole_program(true);
     Options.v().setPhaseOption("cg.spark", "on");
-
 
     // load basic classes from soot
     Scene.v().loadNecessaryClasses();

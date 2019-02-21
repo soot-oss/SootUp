@@ -7,7 +7,6 @@ import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -35,13 +34,11 @@ public class InvokeTest {
     sigFactory = new DefaultSignatureFactory();
   }
 
-
   @Test
   public void testInvokeSpecialInstanceInit() {
     declareClassSig = sigFactory.getClassSignature("InvokeSpecial");
-    Optional<SootMethod> m = loader
-        .getSootMethod(sigFactory.getMethodSignature("specialInvokeInstanceInit", declareClassSig, "void",
-                Collections.emptyList()));
+    Optional<SootMethod> m = loader.getSootMethod(
+        sigFactory.getMethodSignature("specialInvokeInstanceInit", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -60,9 +57,8 @@ public class InvokeTest {
   @Test
   public void testInvokeSpecialSuperClassMethod() {
     declareClassSig = sigFactory.getClassSignature("InvokeSpecial");
-    Optional<SootMethod> m = loader.getSootMethod(
-        sigFactory.getMethodSignature("specialInvokeSupperClassMethod", declareClassSig, "java.lang.String",
-                Collections.emptyList()));
+    Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("specialInvokeSupperClassMethod",
+        declareClassSig, "java.lang.String", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -71,9 +67,8 @@ public class InvokeTest {
   @Test
   public void testInvokeStatic() {
     declareClassSig = sigFactory.getClassSignature("InvokeStatic");
-    Optional<SootMethod> m = loader
-        .getSootMethod(sigFactory.getMethodSignature("<clinit>",
-            declareClassSig, "void", Collections.emptyList()));
+    Optional<SootMethod> m
+        = loader.getSootMethod(sigFactory.getMethodSignature("<clinit>", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -82,9 +77,8 @@ public class InvokeTest {
   @Test
   public void testInvokeVirtual1() {
     declareClassSig = sigFactory.getClassSignature("InvokeVirtual");
-    Optional<SootMethod> m
-        = loader.getSootMethod(
-            sigFactory.getMethodSignature("equals", declareClassSig, "boolean", Collections.singletonList("InvokeVirtual")));
+    Optional<SootMethod> m = loader.getSootMethod(
+        sigFactory.getMethodSignature("equals", declareClassSig, "boolean", Collections.singletonList("InvokeVirtual")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -93,8 +87,8 @@ public class InvokeTest {
   @Test
   public void testInvokeVirtual2() {
     declareClassSig = sigFactory.getClassSignature("InvokeVirtual");
-    Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("interfaceMethod", declareClassSig, "void", Collections.emptyList()));
+    Optional<SootMethod> m = loader
+        .getSootMethod(sigFactory.getMethodSignature("interfaceMethod", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);

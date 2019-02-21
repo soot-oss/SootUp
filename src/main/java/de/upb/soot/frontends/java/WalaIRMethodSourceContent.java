@@ -18,6 +18,7 @@ public class WalaIRMethodSourceContent implements IMethodSourceContent {
     this.methodSignature = methodSignature;
   }
 
+  @Override
   public Body getBody(SootMethod m) {
     // TODO Auto-generated method stub
     return null;

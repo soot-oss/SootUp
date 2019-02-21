@@ -1,12 +1,5 @@
 package de.upb.soot.frontends.java;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.ibm.wala.cast.ir.ssa.AssignInstruction;
 import com.ibm.wala.cast.ir.ssa.AstAssertInstruction;
 import com.ibm.wala.cast.ir.ssa.AstLexicalAccess.Access;
@@ -98,6 +91,14 @@ import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.SignatureFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import scala.Char;
 
 /**
@@ -280,7 +281,7 @@ public class InstructionConverter {
 
     // add ifStmt for testing assertion is disabled.
     JEqExpr condition = Jimple.newEqExpr(testLocal, IntConstant.getInstance(1));
-    JNopStmt nopStmt = Jimple.newNopStmt( new PositionInfo(null, null));
+    JNopStmt nopStmt = Jimple.newNopStmt(new PositionInfo(null, null));
     JIfStmt ifStmt = Jimple.newIfStmt(condition, nopStmt, new PositionInfo(null, null));
     stmts.add(ifStmt);
 
@@ -415,7 +416,8 @@ public class InstructionConverter {
       }
     }
     IStmt defaultTarget = null;
-    JLookupSwitchStmt stmt = Jimple.newLookupSwitchStmt(local, lookupValues, targets, defaultTarget, new PositionInfo(null, null));
+    JLookupSwitchStmt stmt
+        = Jimple.newLookupSwitchStmt(local, lookupValues, targets, defaultTarget, new PositionInfo(null, null));
     this.targetsOfLookUpSwitchStmts.put(stmt, targetsList);
     this.defaultOfLookUpSwitchStmts.put(stmt, defaultCase);
     return stmt;
@@ -495,7 +497,7 @@ public class InstructionConverter {
 
   private IStmt convertComparisonInstruction(DebuggingInformation debugInfo, SSAComparisonInstruction inst) {
     // TODO
-    return Jimple.newNopStmt( new PositionInfo(null, null));
+    return Jimple.newNopStmt(new PositionInfo(null, null));
   }
 
   private IStmt convertInstanceofInstruction(DebuggingInformation debugInfo, SSAInstanceofInstruction inst) {
@@ -632,9 +634,9 @@ public class InstructionConverter {
   private IStmt convertBinaryOpInstruction(DebuggingInformation debugInfo, SSABinaryOpInstruction binOpInst) {
     // TODO. change this
     Position p1 = debugInfo.getOperandPosition(binOpInst.iindex, 0);
-    //System.out.println("0: "+p1);
+    // System.out.println("0: "+p1);
     Position p2 = debugInfo.getOperandPosition(binOpInst.iindex, 1);
-    //System.out.println("1: "+p2);
+    // System.out.println("1: "+p2);
     int def = binOpInst.getDef();
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
@@ -702,7 +704,7 @@ public class InstructionConverter {
     int result = inst.getResult();
     if (inst.returnsVoid()) {
       // this is return void stmt
-      return Jimple.newReturnVoidStmt( new PositionInfo(null, null));
+      return Jimple.newReturnVoidStmt(new PositionInfo(null, null));
     } else {
       Value ret;
       if (symbolTable.isConstant(result)) {
@@ -739,7 +741,7 @@ public class InstructionConverter {
     }
     // TODO. get the position of ref
     Position p = debugInfo.getOperandPosition(inst.iindex, 0);
-    //System.out.println("position: "+p);
+    // System.out.println("position: "+p);
     Value var = getLocal(fieldType, def);
     return Jimple.newAssignStmt(var, rvalue, new PositionInfo(null, null));
   }

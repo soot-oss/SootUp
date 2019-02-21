@@ -25,16 +25,16 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   /**
@@ -43,7 +43,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   private static final long serialVersionUID = 5554270441921308784L;
   protected final ValueBox baseBox;
 
-  protected AbstractInstanceInvokeExpr(IView view, ValueBox baseBox,MethodSignature methodSig, ValueBox[] argBoxes) {
+  protected AbstractInstanceInvokeExpr(IView view, ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
     super(view, methodSig, argBoxes);
     this.baseBox = baseBox;
   }

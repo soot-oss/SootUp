@@ -25,10 +25,6 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.JimpleComparator;
@@ -41,6 +37,10 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class JLookupSwitchStmt extends AbstractSwitchStmt {
   /**
@@ -68,22 +68,25 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     for (int i = 0; i < lookupValueCount; i++) {
       clonedLookupValues.add(i, IntConstant.getInstance(getLookupValue(i)));
     }
-    return new JLookupSwitchStmt(getKey(), clonedLookupValues, getTargets(), getDefaultTarget(),getPositionInfo().clone());
+    return new JLookupSwitchStmt(getKey(), clonedLookupValues, getTargets(), getDefaultTarget(), getPositionInfo().clone());
   }
 
   /** Constructs a new JLookupSwitchStmt. lookupValues should be a list of IntConst s. */
-  public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends IStmt> targets, IStmt defaultTarget,PositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(key), lookupValues, getTargetBoxesArray(targets), Jimple.newStmtBox(defaultTarget),positionInfo);
+  public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends IStmt> targets, IStmt defaultTarget,
+      PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(key), lookupValues, getTargetBoxesArray(targets), Jimple.newStmtBox(defaultTarget),
+        positionInfo);
   }
 
   /** Constructs a new JLookupSwitchStmt. lookupValues should be a list of IntConst s. */
   public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends IStmtBox> targets,
-      IStmtBox defaultTarget,PositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(key), lookupValues, targets.toArray(new IStmtBox[targets.size()]), defaultTarget,positionInfo);
+      IStmtBox defaultTarget, PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(key), lookupValues, targets.toArray(new IStmtBox[targets.size()]), defaultTarget,
+        positionInfo);
   }
 
   protected JLookupSwitchStmt(ValueBox keyBox, List<IntConstant> lookupValues, IStmtBox[] targetBoxes,
-      IStmtBox defaultTargetBox,PositionInfo positionInfo) {
+      IStmtBox defaultTargetBox, PositionInfo positionInfo) {
     super(positionInfo, keyBox, defaultTargetBox, targetBoxes);
     setLookupValues(lookupValues);
   }

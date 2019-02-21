@@ -25,10 +25,6 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -36,6 +32,10 @@ import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.IVisitor;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class AbstractStmt implements IStmt {
   /**
@@ -45,8 +45,9 @@ public abstract class AbstractStmt implements IStmt {
   private final PositionInfo positionInfo;
 
   public AbstractStmt(PositionInfo positionInfo) {
-    this.positionInfo=positionInfo;
+    this.positionInfo = positionInfo;
   }
+
   /** Returns a deep clone of this object. */
   @Override
   public abstract AbstractStmt clone();

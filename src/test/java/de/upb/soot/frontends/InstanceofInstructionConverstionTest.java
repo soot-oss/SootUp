@@ -7,7 +7,6 @@ import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -38,9 +37,8 @@ public class InstanceofInstructionConverstionTest {
 
   @Test
   public void test() {
-    Optional<SootMethod> m = loader
-        .getSootMethod(
-            sigFactory.getMethodSignature("instanceOf", declareClassSig, "boolean", Collections.singletonList("java.lang.Object")));
+    Optional<SootMethod> m = loader.getSootMethod(sigFactory.getMethodSignature("instanceOf", declareClassSig, "boolean",
+        Collections.singletonList("java.lang.Object")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);

@@ -66,8 +66,8 @@ import java.util.Iterator;
 
 /**
  *
- * This class contains the equivalence implementations for the individual equivTo() methods of the Jimple IR.
- * You can use it as your base class if your use case needs an adjustment for checking structural equivalence.
+ * This class contains the equivalence implementations for the individual equivTo() methods of the Jimple IR. You can use it
+ * as your base class if your use case needs an adjustment for checking structural equivalence.
  *
  * @author Markus Schmidt
  *

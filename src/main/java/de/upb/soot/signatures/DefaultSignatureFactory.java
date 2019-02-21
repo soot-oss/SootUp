@@ -160,6 +160,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
     return ret;
   }
 
+  @Override
   public TypeSignature getArrayTypeSignature(TypeSignature baseType, int dim) {
     return new ArrayTypeSignature(baseType, dim);
   }

@@ -32,6 +32,7 @@ public class ArrayNumberer<E extends Numberable> implements IterableNumberer<E> 
     numberToObj = Arrays.copyOf(numberToObj, n);
   }
 
+  @Override
   public synchronized void add(E o) {
     if (o.getNumber() != 0) {
       return;
@@ -45,6 +46,7 @@ public class ArrayNumberer<E extends Numberable> implements IterableNumberer<E> 
     o.setNumber(lastNumber);
   }
 
+  @Override
   public long get(E o) {
     if (o == null) {
       return 0;
@@ -56,6 +58,7 @@ public class ArrayNumberer<E extends Numberable> implements IterableNumberer<E> 
     return ret;
   }
 
+  @Override
   public E get(long number) {
     if (number == 0) {
       return null;
@@ -67,18 +70,22 @@ public class ArrayNumberer<E extends Numberable> implements IterableNumberer<E> 
     return ret;
   }
 
+  @Override
   public int size() {
     return lastNumber;
   }
 
+  @Override
   public Iterator<E> iterator() {
     return new Iterator<E>() {
       int cur = 1;
 
+      @Override
       public final boolean hasNext() {
         return cur <= lastNumber && cur < numberToObj.length && numberToObj[cur] != null;
       }
 
+      @Override
       public final E next() {
         if (hasNext()) {
           return numberToObj[cur++];
@@ -86,6 +93,7 @@ public class ArrayNumberer<E extends Numberable> implements IterableNumberer<E> 
         throw new NoSuchElementException();
       }
 
+      @Override
       public final void remove() {
         throw new UnsupportedOperationException();
       }

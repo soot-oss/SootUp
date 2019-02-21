@@ -25,8 +25,6 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
-import java.util.Comparator;
-
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;

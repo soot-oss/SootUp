@@ -41,17 +41,17 @@ public class JExitMonitorStmt extends AbstractOpStmt {
    */
   private static final long serialVersionUID = -1179706103954735007L;
 
-  public JExitMonitorStmt(Value op,PositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(op),positionInfo);
+  public JExitMonitorStmt(Value op, PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(op), positionInfo);
   }
 
-  protected JExitMonitorStmt(ValueBox opBox,PositionInfo positionInfo) {
-    super(opBox,positionInfo);
+  protected JExitMonitorStmt(ValueBox opBox, PositionInfo positionInfo) {
+    super(opBox, positionInfo);
   }
 
   @Override
   public JExitMonitorStmt clone() {
-    return new JExitMonitorStmt(Jimple.cloneIfNecessary(getOp()),getPositionInfo().clone());
+    return new JExitMonitorStmt(Jimple.cloneIfNecessary(getOp()), getPositionInfo().clone());
   }
 
   @Override

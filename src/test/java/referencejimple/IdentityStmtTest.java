@@ -1,16 +1,5 @@
 package referencejimple;
 
-import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
 import com.ibm.wala.cast.loader.AstMethod;
 
 import de.upb.soot.core.Body;
@@ -40,11 +29,23 @@ import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
+
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 /**
-*
-* @author Markus Schmidt 
-*
-*/
+ *
+ * @author Markus Schmidt
+ *
+ */
 class DummyMethodSource implements IMethodSourceContent {
   private Body body;
   private MethodSignature methodSignature;
@@ -104,9 +105,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     // atExceptionThrow();
     // atExceptionThrowAndCatch();
 
-    sootClass = new SootClass(view, ResolvingLevel.BODIES, javaClassSource, ClassType.Application,
-        superClassSignature, new HashSet<>(), null, fields, methods,
-        new NoPositionInformation(), EnumSet.of(Modifier.PUBLIC));
+    sootClass = new SootClass(view, ResolvingLevel.BODIES, javaClassSource, ClassType.Application, superClassSignature,
+        new HashSet<>(), null, fields, methods, new NoPositionInformation(), EnumSet.of(Modifier.PUBLIC));
 
   }
 
@@ -127,7 +127,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     RefType type = RefType.getInstance("de.upb.soot.instructions.stmt.IdentityStmt");
 
     Local r0 = generator.generateField(type);
-    stmts.add(Jimple.newIdentityStmt(r0, Jimple.newThisRef(type),nop));
+    stmts.add(Jimple.newIdentityStmt(r0, Jimple.newThisRef(type), nop));
 
     // TODO: how to add expr to body?
     // add(Jimple.newSpecialInvokeExpr( r0 , currentMethod ));
@@ -155,8 +155,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * SootMethod currentMethod = new SootMethod(view, "atThis", Arrays.asList(new Type[]{}), VoidType.INSTANCE,
    * EnumSet.of(Modifier.PUBLIC) ); sootClass.addMethod(currentMethod);
    * 
-   * SootMethod println = new SootMethod(view, "println", Arrays.asList(new Type[]{ IntType.INSTANCE} ),
-   * VoidType.INSTANCE, EnumSet.of(Modifier.PUBLIC, Modifier.STATIC) ); println.setDeclaringClass( new SootClass(view,
+   * SootMethod println = new SootMethod(view, "println", Arrays.asList(new Type[]{ IntType.INSTANCE} ), VoidType.INSTANCE,
+   * EnumSet.of(Modifier.PUBLIC, Modifier.STATIC) ); println.setDeclaringClass( new SootClass(view,
    * dsm.getClassSignature("java.lang.System") , EnumSet.of(Modifier.PUBLIC, Modifier.FINAL)) );
    * 
    * Body body = Jimple.newBody(currentMethod); LocalGenerator generator = new LocalGenerator(body);
@@ -183,8 +183,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * Jimple.newVirtualInvokeExpr(r1, println, i0);
    * 
    * 
-   * Local i1 = generator.generateLocal( IntType.INSTANCE); Local i2 = generator.generateLocal( IntType.INSTANCE);
-   * Local i3 = generator.generateLocal( IntType.INSTANCE);
+   * Local i1 = generator.generateLocal( IntType.INSTANCE); Local i2 = generator.generateLocal( IntType.INSTANCE); Local i3 =
+   * generator.generateLocal( IntType.INSTANCE);
    * 
    * Local r2 = generator.generateLocal( printStream); Local r3 = generator.generateLocal( printStream); Local r4 =
    * generator.generateLocal( printStream);
@@ -206,8 +206,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * 
    * Local r0 = generator.generateField( type ); body.addStmt(Jimple.newIdentityStmt( r0 , Jimple.newThisRef(type) ));
    * 
-   * Local i0 = generator.generateField( IntType.INSTANCE); body.addStmt( Jimple.newIdentityStmt( i0,
-   * Jimple.newParameterRef( IntType.INSTANCE, 0)) );
+   * Local i0 = generator.generateField( IntType.INSTANCE); body.addStmt( Jimple.newIdentityStmt( i0, Jimple.newParameterRef(
+   * IntType.INSTANCE, 0)) );
    * 
    * Local z0 = generator.generateField( BooleanType.INSTANCE); body.addStmt( Jimple.newIdentityStmt( z0,
    * Jimple.newParameterRef( BooleanType.INSTANCE, 1)) );
@@ -296,8 +296,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * type = RefType.getInstance("java.io.PrintStream"); Local r1 = generator.generateLocal( type ); Local r2 =
    * generator.generateLocal( type ); Local r3 = generator.generateLocal( type );
    * 
-   * Local i0 = generator.generateLocal( IntType.INSTANCE ); Local i1 = generator.generateLocal( IntType.INSTANCE
-   * ); Local i2 = generator.generateField( IntType.INSTANCE );
+   * Local i0 = generator.generateLocal( IntType.INSTANCE ); Local i1 = generator.generateLocal( IntType.INSTANCE ); Local i2
+   * = generator.generateField( IntType.INSTANCE );
    * 
    * type = RefType.getInstance("java.lang.Exception"); Local r4 = generator.generateLocal( type );
    * body.addStmt(Jimple.newAssignStmt( r4, Jimple.newNewExpr( type)) );

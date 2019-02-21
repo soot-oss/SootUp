@@ -11,9 +11,6 @@
 
 package de.upb.soot.jimple.common.ref;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
@@ -22,6 +19,9 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class JInstanceFieldRef extends FieldRef {
 

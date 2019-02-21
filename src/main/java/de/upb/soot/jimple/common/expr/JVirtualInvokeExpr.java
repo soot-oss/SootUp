@@ -26,9 +26,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
@@ -36,6 +33,9 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   /**

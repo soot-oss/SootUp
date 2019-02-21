@@ -1,10 +1,5 @@
 package de.upb.soot.frontends.asm;
 
-import java.util.ArrayList;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /*-
  * #%L
  * Soot - a J*va Optimization Framework
@@ -34,6 +29,11 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
+
+import java.util.ArrayList;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Frame of stack for an instruction.
@@ -131,7 +131,7 @@ final class StackFrame {
           src.setUnit(newOp.insn, as);
           newOp.updateBoxes();
         } else {
-          JAssignStmt as = Jimple.newAssignStmt(stack, newOp.stackOrValue(),PositionInfo.createNoPositionInfo());
+          JAssignStmt as = Jimple.newAssignStmt(stack, newOp.stackOrValue(), PositionInfo.createNoPositionInfo());
           src.mergeUnits(newOp.insn, as);
           newOp.addBox(as.getRightOpBox());
         }
@@ -158,7 +158,7 @@ final class StackFrame {
           prevOp.removeBox(box);
           if (prevOp.stack == null) {
             prevOp.stack = stack;
-            JAssignStmt as = Jimple.newAssignStmt(stack, prevOp.value,PositionInfo.createNoPositionInfo());
+            JAssignStmt as = Jimple.newAssignStmt(stack, prevOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(prevOp.insn, as);
           } else {
             IStmt u = src.getUnit(prevOp.insn);
@@ -174,7 +174,7 @@ final class StackFrame {
         if (newOp.stack != stack) {
           if (newOp.stack == null) {
             newOp.stack = stack;
-            JAssignStmt as = Jimple.newAssignStmt(stack, newOp.value,PositionInfo.createNoPositionInfo());
+            JAssignStmt as = Jimple.newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(newOp.insn, as);
           } else {
             IStmt u = src.getUnit(newOp.insn);

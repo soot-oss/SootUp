@@ -1,8 +1,5 @@
 package de.upb.soot.jimple.common.ref;
 
-import java.util.Collections;
-import java.util.List;
-
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IVisitor;
@@ -10,12 +7,14 @@ import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
 
+import java.util.Collections;
+import java.util.List;
+
 public class JStaticFieldRef extends FieldRef {
   /**
    * 
    */
   private static final long serialVersionUID = -8744248848897714882L;
-
 
   public JStaticFieldRef(IView view, FieldSignature fieldSig) {
     super(view, fieldSig);

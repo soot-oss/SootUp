@@ -2,15 +2,6 @@ package de.upb.soot.core;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import categories.Java8Test;
 import de.upb.soot.Project;
 import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.frontends.java.WalaIRMethodSourceContent;
@@ -25,6 +16,16 @@ import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import categories.Java8Test;
+
 /**
  * 
  * @author Linghui Luo
@@ -33,36 +34,36 @@ import de.upb.soot.views.JavaView;
 @Category(Java8Test.class)
 public class SootMethodTest {
 
-	@Test
-	public void testCreateMethod() {
-		IView view = new JavaView(new Project(null, new DefaultSignatureFactory()));
-		Type type = view.getType(view.getSignatureFactory().getTypeSignature("java.lang.String"));
+  @Test
+  public void testCreateMethod() {
+    IView view = new JavaView(new Project(null, new DefaultSignatureFactory()));
+    Type type = view.getType(view.getSignatureFactory().getTypeSignature("java.lang.String"));
 
-		List<IStmt> stmts = new ArrayList<>();
-		LocalGenerator generator = new LocalGenerator();
-		stmts.add(Jimple.newIdentityStmt(generator.generateLocal(type), Jimple.newParameterRef(type, 0),
-				PositionInfo.createNoPositionInfo()));
-		stmts.add(Jimple.newAssignStmt(generator.generateLocal(type), Jimple.newNewExpr((RefType) type),
-				PositionInfo.createNoPositionInfo()));
+    List<IStmt> stmts = new ArrayList<>();
+    LocalGenerator generator = new LocalGenerator();
+    stmts.add(Jimple.newIdentityStmt(generator.generateLocal(type), Jimple.newParameterRef(type, 0),
+        PositionInfo.createNoPositionInfo()));
+    stmts.add(Jimple.newAssignStmt(generator.generateLocal(type), Jimple.newNewExpr((RefType) type),
+        PositionInfo.createNoPositionInfo()));
 
-		Body body = new Body(generator.getLocals(), Collections.emptyList(), stmts, null);
+    Body body = new Body(generator.getLocals(), Collections.emptyList(), stmts, null);
 
-		assertEquals(2, body.getLocalCount());
+    assertEquals(2, body.getLocalCount());
 
-		SootMethod dummyMainMethod = new SootMethod(view, null,
-				new WalaIRMethodSourceContent(view.getSignatureFactory().getMethodSignature("main", "dummyMain", "void",
-						Collections.emptyList())),
-				Collections.emptyList(), view.getSignatureFactory().getTypeSignature("void"),
-				EnumSet.of(Modifier.PUBLIC, Modifier.STATIC));
-		dummyMainMethod = new SootMethod(dummyMainMethod, body);
-		assertEquals(true, dummyMainMethod.hasActiveBody());
+    SootMethod dummyMainMethod = new SootMethod(view, null,
+        new WalaIRMethodSourceContent(
+            view.getSignatureFactory().getMethodSignature("main", "dummyMain", "void", Collections.emptyList())),
+        Collections.emptyList(), view.getSignatureFactory().getTypeSignature("void"),
+        EnumSet.of(Modifier.PUBLIC, Modifier.STATIC));
+    dummyMainMethod = new SootMethod(dummyMainMethod, body);
+    assertEquals(true, dummyMainMethod.hasActiveBody());
 
-		SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
-				new JavaClassSource(new JavaSourcePathNamespace(""), null,
-						view.getSignatureFactory().getClassSignature("dummyMain")),
-				ClassType.Application, null, Collections.emptySet(), null, Collections.emptySet(),
-				Collections.singleton(dummyMainMethod), null, EnumSet.of(Modifier.PUBLIC));
+    SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
+        new JavaClassSource(new JavaSourcePathNamespace(""), null,
+            view.getSignatureFactory().getClassSignature("dummyMain")),
+        ClassType.Application, null, Collections.emptySet(), null, Collections.emptySet(),
+        Collections.singleton(dummyMainMethod), null, EnumSet.of(Modifier.PUBLIC));
 
-		assertEquals(mainClass.getMethods().size(), 1);
-	}
+    assertEquals(mainClass.getMethods().size(), 1);
+  }
 }

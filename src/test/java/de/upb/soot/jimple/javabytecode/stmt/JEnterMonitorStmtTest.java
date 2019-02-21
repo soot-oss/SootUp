@@ -20,40 +20,41 @@
  * #L%
  */
 
-
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import categories.Java8Test;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.IntType;
+
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import categories.Java8Test;
+
 /**
-*
-* @author Markus Schmidt & Linghui Luo
-*
-*/
+ *
+ * @author Markus Schmidt & Linghui Luo
+ *
+ */
 @Category(Java8Test.class)
 public class JEnterMonitorStmtTest {
 
   @Test
   public void test() {
-    PositionInfo nop=PositionInfo.createNoPositionInfo();
+    PositionInfo nop = PositionInfo.createNoPositionInfo();
     Local sandman = new Local("sandman", IntType.INSTANCE);
     Local night = new Local("night", BooleanType.INSTANCE);
     Local light = new Local("light", BooleanType.INSTANCE);
 
-    IStmt stmt = new JEnterMonitorStmt(sandman,nop);
-    IStmt nightStmt = new JEnterMonitorStmt(night,nop);
-    IStmt lightStmt = new JEnterMonitorStmt(light,nop);
+    IStmt stmt = new JEnterMonitorStmt(sandman, nop);
+    IStmt nightStmt = new JEnterMonitorStmt(night, nop);
+    IStmt lightStmt = new JEnterMonitorStmt(light, nop);
 
     // toString
     assertEquals("entermonitor sandman", stmt.toString());

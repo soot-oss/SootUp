@@ -1,13 +1,5 @@
 package de.upb.soot.frontends.java;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import de.upb.soot.core.Body;
 import de.upb.soot.core.IField;
 import de.upb.soot.core.IMethod;
@@ -40,6 +32,15 @@ import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import soot.FastHierarchy;
 import soot.Local;
 import soot.PatchingChain;
@@ -92,7 +93,7 @@ public class JimpleConverter {
     if (fromClass.hasSuperclass()) {
       Optional<de.upb.soot.core.SootClass> superClass = fromClass.getSuperclass();
       soot.SootClass s = getSootClass(superClass, fromClass.getSuperclassSignature());
-      toClass.setSuperclass(s); 
+      toClass.setSuperclass(s);
     }
     if (fromClass.hasOuterClass()) {
       Optional<de.upb.soot.core.SootClass> outClass = fromClass.getOuterClass();
@@ -146,7 +147,7 @@ public class JimpleConverter {
     toMethod.setModifiers(convertModifiers(fromMethod.getModifiers()));
     List<soot.SootClass> exceptions = new ArrayList<>();
 
-    for ( de.upb.soot.core.SootClass fromException: fromMethod.getExceptions()) {
+    for (de.upb.soot.core.SootClass fromException : fromMethod.getExceptions()) {
       soot.SootClass exception = convertSootClass(fromException);
       exceptions.add(exception);
     }
@@ -274,7 +275,8 @@ public class JimpleConverter {
     JTableSwitchStmt stmt = (JTableSwitchStmt) fromStmt;
     List<Stmt> targetList = getSwitchStmtsTargets(stmt);
     Stmt defaultTarget = getTarget(stmt.getDefaultTarget());
-    return Jimple.v().newTableSwitchStmt(convertValue(stmt.getKey()), stmt.getLowIndex(), stmt.getHighIndex(), targetList, defaultTarget);
+    return Jimple.v().newTableSwitchStmt(convertValue(stmt.getKey()), stmt.getLowIndex(), stmt.getHighIndex(), targetList,
+        defaultTarget);
   }
 
   private Stmt convertLookupSwitchStmt(IStmt fromStmt) {

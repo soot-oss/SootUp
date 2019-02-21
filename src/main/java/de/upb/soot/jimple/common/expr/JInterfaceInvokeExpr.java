@@ -26,10 +26,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
@@ -40,6 +36,10 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   /**

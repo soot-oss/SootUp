@@ -41,17 +41,17 @@ public class JThrowStmt extends AbstractOpStmt {
    */
   private static final long serialVersionUID = -1145801522928664246L;
 
-  public JThrowStmt(Value op,PositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(op),positionInfo);
+  public JThrowStmt(Value op, PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(op), positionInfo);
   }
 
-  protected JThrowStmt(ValueBox opBox,PositionInfo positionInfo) {
-    super(opBox,positionInfo);
+  protected JThrowStmt(ValueBox opBox, PositionInfo positionInfo) {
+    super(opBox, positionInfo);
   }
 
   @Override
   public JThrowStmt clone() {
-    return new JThrowStmt(Jimple.cloneIfNecessary(getOp()),getPositionInfo().clone());
+    return new JThrowStmt(Jimple.cloneIfNecessary(getOp()), getPositionInfo().clone());
   }
 
   @Override

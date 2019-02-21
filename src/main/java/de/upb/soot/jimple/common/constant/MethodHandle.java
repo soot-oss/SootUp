@@ -25,14 +25,15 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import org.objectweb.asm.Opcodes;
-
 import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.MethodSignature;
+
+import org.objectweb.asm.Opcodes;
+
 public class MethodHandle extends Constant {
 
   public static enum Kind {

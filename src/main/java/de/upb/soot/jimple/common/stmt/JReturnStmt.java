@@ -26,8 +26,8 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.JimpleComparator;
+import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
@@ -40,17 +40,17 @@ public class JReturnStmt extends AbstractOpStmt {
    */
   private static final long serialVersionUID = 4601025616184085996L;
 
-  public JReturnStmt(Value returnValue,PositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(returnValue),positionInfo);
+  public JReturnStmt(Value returnValue, PositionInfo positionInfo) {
+    this(Jimple.newImmediateBox(returnValue), positionInfo);
   }
 
-  protected JReturnStmt(ValueBox returnValueBox,PositionInfo positionInfo) {
-    super(returnValueBox,positionInfo);
+  protected JReturnStmt(ValueBox returnValueBox, PositionInfo positionInfo) {
+    super(returnValueBox, positionInfo);
   }
 
   @Override
   public JReturnStmt clone() {
-    return new JReturnStmt(Jimple.cloneIfNecessary(getOp()),getPositionInfo().clone());
+    return new JReturnStmt(Jimple.cloneIfNecessary(getOp()), getPositionInfo().clone());
   }
 
   @Override

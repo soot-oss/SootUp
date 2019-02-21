@@ -22,11 +22,6 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
-import categories.Java8Test;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
@@ -37,11 +32,18 @@ import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
+import categories.Java8Test;
+
 /**
-*
-* @author Markus Schmidt & Linghui Luo
-*
-*/
+ *
+ * @author Markus Schmidt & Linghui Luo
+ *
+ */
 @Category(Java8Test.class)
 public class JIdentityStmtTest {
 
@@ -77,10 +79,10 @@ public class JIdentityStmtTest {
     Assert.assertFalse(thisIdStmt.equivTo(exceptionIdStmt));
     Assert.assertFalse(thisIdStmt.equivTo(paramIdStmt));
 
-    Assert.assertFalse(thisIdStmt.equivTo(
-        new JIdentityStmt(new Local("$i1", IntType.INSTANCE), new JParameterRef(IntType.INSTANCE, 123), nop)));
-    Assert.assertFalse(thisIdStmt.equivTo(
-        new JIdentityStmt(new Local("$i0", IntType.INSTANCE), new JParameterRef(IntType.INSTANCE, 42), nop)));
+    Assert.assertFalse(thisIdStmt
+        .equivTo(new JIdentityStmt(new Local("$i1", IntType.INSTANCE), new JParameterRef(IntType.INSTANCE, 123), nop)));
+    Assert.assertFalse(thisIdStmt
+        .equivTo(new JIdentityStmt(new Local("$i0", IntType.INSTANCE), new JParameterRef(IntType.INSTANCE, 42), nop)));
     Assert.assertFalse(exceptionIdStmt.equivTo(thisIdStmt));
     Assert.assertTrue(exceptionIdStmt.equivTo(exceptionIdStmt));
     Assert.assertFalse(exceptionIdStmt.equivTo(paramIdStmt));

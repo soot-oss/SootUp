@@ -1,10 +1,10 @@
 package de.upb.soot.jimple.common.type;
 
-import java.io.Serializable;
-
 import de.upb.soot.jimple.visitor.IAcceptor;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.util.Numberable;
+
+import java.io.Serializable;
 
 /** Represents types within Soot, eg <code>int</code>, <code>java.lang.String</code>. */
 @SuppressWarnings("serial")

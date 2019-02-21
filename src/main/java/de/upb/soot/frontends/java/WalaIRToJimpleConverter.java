@@ -4,18 +4,6 @@
  */
 package de.upb.soot.frontends.java;
 
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
 import com.ibm.wala.cast.loader.AstClass;
 import com.ibm.wala.cast.loader.AstField;
@@ -70,6 +58,17 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.JavaView;
 
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Converter which converts WALA IR to jimple.
@@ -86,7 +85,7 @@ public class WalaIRToJimpleConverter {
 
   public WalaIRToJimpleConverter(String sourceDirPath) {
     srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
-    view = new JavaView(new Project(null,new DefaultSignatureFactory()));
+    view = new JavaView(new Project(null, new DefaultSignatureFactory()));
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
   }
@@ -150,7 +149,7 @@ public class WalaIRToJimpleConverter {
 
     // convert methods
     Set<SootMethod> sootMethods = new HashSet<>();
-    
+
     new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Application, superClass, interfaces, outerClass,
         sootFields, sootMethods, position, modifiers);
 
@@ -404,7 +403,8 @@ public class WalaIRToJimpleConverter {
         if (!sootMethod.isStatic()) {
           RefType thisType = view.getRefType(sootMethod.getDeclaringClassSignature());
           Local thisLocal = localGenerator.generateThisLocal(thisType);
-          IStmt stmt = Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType), new PositionInfo(debugInfo.getInstructionPosition(0), null));
+          IStmt stmt = Jimple.newIdentityStmt(thisLocal, Jimple.newThisRef(thisType),
+              new PositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
 
@@ -417,7 +417,8 @@ public class WalaIRToJimpleConverter {
           TypeReference t = walaMethod.getParameterType(startPara);
           Type type = convertType(t);
           Local paraLocal = localGenerator.generateParameterLocal(type, startPara);
-          IStmt stmt = Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, startPara-1), new PositionInfo(debugInfo.getInstructionPosition(0), null));
+          IStmt stmt = Jimple.newIdentityStmt(paraLocal, Jimple.newParameterRef(type, startPara - 1),
+              new PositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
 
@@ -427,7 +428,7 @@ public class WalaIRToJimpleConverter {
         InstructionConverter instConverter = new InstructionConverter(this, sootMethod, walaMethod, localGenerator);
         Map<IStmt, Integer> stmt2IIndex = new HashMap<>();
         for (SSAInstruction inst : insts) {
-          List<IStmt> retStmts = instConverter.convertInstruction(debugInfo,inst);
+          List<IStmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
           if (!retStmts.isEmpty()) {
             for (IStmt stmt : retStmts) {
               stmts.add(stmt);

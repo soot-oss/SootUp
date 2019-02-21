@@ -25,9 +25,6 @@
 
 package de.upb.soot.jimple.javabytecode.stmt;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -37,6 +34,9 @@ import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class JRetStmt extends AbstractStmt {
   /**
