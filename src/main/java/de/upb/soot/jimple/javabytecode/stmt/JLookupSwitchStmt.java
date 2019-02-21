@@ -52,9 +52,13 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
    */
   List<IntConstant> lookupValues;
 
-  // This methodRef is necessary to deal with constructor-must-be-first-ism.
-  private static List<IStmtBox> getTargetBoxes(List<? extends IStmt> targets) {
-    return targets.stream().map(Jimple::newStmtBox).collect(Collectors.toList());
+  // This method is necessary to deal with constructor-must-be-first-ism.
+  private static IStmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
+    IStmtBox[] targetBoxes = new IStmtBox[targets.size()];
+    for (int i = 0; i < targetBoxes.length; i++) {
+      targetBoxes[i] = Jimple.newStmtBox(targets.get(i));
+    }
+    return targetBoxes;
   }
 
   @Override
@@ -86,26 +90,25 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    StringBuffer buffer = new StringBuffer();
     String endOfLine = " ";
 
-    builder.append(Jimple.LOOKUPSWITCH + "(").append(keyBox.getValue().toString()).append(")").append(endOfLine);
+    buffer.append(Jimple.LOOKUPSWITCH + "(" + keyBox.getValue().toString() + ")" + endOfLine);
 
-    builder.append("{").append(endOfLine);
+    buffer.append("{" + endOfLine);
 
     for (int i = 0; i < lookupValues.size(); i++) {
       IStmt target = getTarget(i);
-      builder.append("    " + Jimple.CASE + " ").append(lookupValues.get(i)).append(": ").append(Jimple.GOTO).append(" ")
-          .append(target == this ? "self" : target).append(";").append(endOfLine);
+      buffer.append("    " + Jimple.CASE + " " + lookupValues.get(i) + ": " + Jimple.GOTO + " "
+          + (target == this ? "self" : target) + ";" + endOfLine);
     }
 
     IStmt target = getDefaultTarget();
-    builder.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " ").append(target == this ? "self" : target).append(";")
-        .append(endOfLine);
+    buffer.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " " + (target == this ? "self" : target) + ";" + endOfLine);
 
-    builder.append("}");
+    buffer.append("}");
 
-    return builder.toString();
+    return buffer.toString();
   }
 
   @Override
@@ -125,7 +128,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
       up.literal(": ");
       up.literal(Jimple.GOTO);
       up.literal(" ");
-      targetBoxes.get(i).toString(up);
+      targetBoxes[i].toString(up);
       up.literal(";");
       up.newline();
     }
@@ -142,7 +145,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   }
 
   public void setLookupValues(List<IntConstant> lookupValues) {
-    this.lookupValues = new ArrayList<>(lookupValues);
+    this.lookupValues = new ArrayList<IntConstant>(lookupValues);
   }
 
   public void setLookupValue(int index, int value) {

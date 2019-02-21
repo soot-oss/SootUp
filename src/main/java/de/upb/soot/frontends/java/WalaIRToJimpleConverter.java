@@ -32,6 +32,7 @@ import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 
+import de.upb.soot.Project;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -40,6 +41,7 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -68,6 +70,7 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.JavaView;
 
+
 /**
  * Converter which converts WALA IR to jimple.
  * 
@@ -83,7 +86,7 @@ public class WalaIRToJimpleConverter {
 
   public WalaIRToJimpleConverter(String sourceDirPath) {
     srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
-    view = new JavaView(null);
+    view = new JavaView(new Project(null,new DefaultSignatureFactory()));
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
   }
@@ -147,6 +150,7 @@ public class WalaIRToJimpleConverter {
 
     // convert methods
     Set<SootMethod> sootMethods = new HashSet<>();
+    
     new SootClass(view, ResolvingLevel.SIGNATURES, classSource, ClassType.Application, superClass, interfaces, outerClass,
         sootFields, sootMethods, position, modifiers);
 
@@ -162,13 +166,13 @@ public class WalaIRToJimpleConverter {
   /**
    * Create a {@link JavaClassSource} object for the given walaClass.
    */
-  public ClassSource createClassSource(AstClass walaClass) {
+  public JavaClassSource createClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassSignature classSignature = new DefaultSignatureFactory() {
     }.getClassSignature(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
-    return new ClassSource(srcNamespace, sourcePath, classSignature);
+    return new JavaClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   /**

@@ -20,6 +20,8 @@ import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.frontends.IMethodSourceContent;
+import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -33,8 +35,6 @@ import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
-import de.upb.soot.namespaces.classprovider.IMethodSource;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.JavaClassSignature;
@@ -45,7 +45,7 @@ import de.upb.soot.signatures.TypeSignature;
 * @author Markus Schmidt 
 *
 */
-class DummyMethodSource implements IMethodSource {
+class DummyMethodSource implements IMethodSourceContent {
   private Body body;
   private MethodSignature methodSignature;
 
@@ -86,12 +86,12 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     Set<SootField> fields = new LinkedHashSet<SootField>();
 
     declField = new SootField(view, classSignature,
-        dsm.getFieldSignature("declProperty", classSignature, IntType.getInstance().toString()),
-        dsm.getTypeSignature(IntType.getInstance().toString()));
+        dsm.getFieldSignature("declProperty", classSignature, IntType.INSTANCE.toString()),
+        dsm.getTypeSignature(IntType.INSTANCE.toString()));
     fields.add(declField);
     initField = new SootField(view, classSignature,
-        dsm.getFieldSignature("initProperty", classSignature, IntType.getInstance().toString()),
-        dsm.getTypeSignature(IntType.getInstance().toString()));
+        dsm.getFieldSignature("initProperty", classSignature, IntType.INSTANCE.toString()),
+        dsm.getTypeSignature(IntType.INSTANCE.toString()));
     fields.add(initField);
 
     Set<SootMethod> methods = new LinkedHashSet<>();
@@ -105,7 +105,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     // atExceptionThrowAndCatch();
 
     sootClass = new SootClass(view, ResolvingLevel.BODIES, javaClassSource, ClassType.Application,
-        java.util.Optional.ofNullable(superClassSignature), new HashSet<>(), null, fields, methods,
+        superClassSignature, new HashSet<>(), null, fields, methods,
         new NoPositionInformation(), EnumSet.of(Modifier.PUBLIC));
 
   }
@@ -116,7 +116,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     LocalGenerator generator = new LocalGenerator();
 
     MethodSignature methodSignature
-        = dsm.getMethodSignature("<init>", classSignature, VoidType.getInstance().toString(), Arrays.asList(""));
+        = dsm.getMethodSignature("<init>", classSignature, VoidType.INSTANCE.toString(), Arrays.asList(""));
     AstMethod.DebuggingInformation debugInfo = null;
 
     List<Local> locals = new LinkedList<>();
@@ -139,7 +139,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     stmts.add(Jimple.newReturnVoidStmt(nop));
 
     Body body = new Body(locals, traps, stmts, new NoPositionInformation());
-    IMethodSource methodSource = new DummyMethodSource(methodSignature, body);
+    IMethodSourceContent methodSource = new DummyMethodSource(methodSignature, body);
     SootMethod currentMethod = new SootMethod(view, classSignature, methodSource, Arrays.asList(new TypeSignature[] {}),
         dsm.getTypeSignature("void"), EnumSet.of(Modifier.PUBLIC), debugInfo);
 
@@ -152,11 +152,11 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * 
    * DefaultSignatureFactory dsm = new DefaultSignatureFactory();
    * 
-   * SootMethod currentMethod = new SootMethod(view, "atThis", Arrays.asList(new Type[]{}), VoidType.getInstance(),
+   * SootMethod currentMethod = new SootMethod(view, "atThis", Arrays.asList(new Type[]{}), VoidType.INSTANCE,
    * EnumSet.of(Modifier.PUBLIC) ); sootClass.addMethod(currentMethod);
    * 
-   * SootMethod println = new SootMethod(view, "println", Arrays.asList(new Type[]{ IntType.getInstance()} ),
-   * VoidType.getInstance(), EnumSet.of(Modifier.PUBLIC, Modifier.STATIC) ); println.setDeclaringClass( new SootClass(view,
+   * SootMethod println = new SootMethod(view, "println", Arrays.asList(new Type[]{ IntType.INSTANCE} ),
+   * VoidType.INSTANCE, EnumSet.of(Modifier.PUBLIC, Modifier.STATIC) ); println.setDeclaringClass( new SootClass(view,
    * dsm.getClassSignature("java.lang.System") , EnumSet.of(Modifier.PUBLIC, Modifier.FINAL)) );
    * 
    * Body body = Jimple.newBody(currentMethod); LocalGenerator generator = new LocalGenerator(body);
@@ -178,13 +178,13 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * 
    * 
    * 
-   * Local i0 = generator.generateLocal( IntType.getInstance()); Value value = IntConstant.getInstance( 42 );
+   * Local i0 = generator.generateLocal( IntType.INSTANCE); Value value = IntConstant.getInstance( 42 );
    * body.addStmt(Jimple.newAssignStmt( i0, Jimple.newInstanceFieldRef( r0 , declField ) )); // TODO: add to body //
    * Jimple.newVirtualInvokeExpr(r1, println, i0);
    * 
    * 
-   * Local i1 = generator.generateLocal( IntType.getInstance()); Local i2 = generator.generateLocal( IntType.getInstance());
-   * Local i3 = generator.generateLocal( IntType.getInstance());
+   * Local i1 = generator.generateLocal( IntType.INSTANCE); Local i2 = generator.generateLocal( IntType.INSTANCE);
+   * Local i3 = generator.generateLocal( IntType.INSTANCE);
    * 
    * Local r2 = generator.generateLocal( printStream); Local r3 = generator.generateLocal( printStream); Local r4 =
    * generator.generateLocal( printStream);
@@ -197,8 +197,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * 
    * SootMethod atParameterPrimitive(){
    * 
-   * SootMethod currentMethod = new SootMethod(view, "atParameterPrimitive", Arrays.asList(new Type[]{IntType.getInstance(),
-   * BooleanType.getInstance()}), VoidType.getInstance(), EnumSet.of(Modifier.PUBLIC) ); sootClass.addMethod(currentMethod);
+   * SootMethod currentMethod = new SootMethod(view, "atParameterPrimitive", Arrays.asList(new Type[]{IntType.INSTANCE,
+   * BooleanType.INSTANCE}), VoidType.INSTANCE, EnumSet.of(Modifier.PUBLIC) ); sootClass.addMethod(currentMethod);
    * 
    * Body body = Jimple.newBody(currentMethod); LocalGenerator generator = new LocalGenerator(body);
    * 
@@ -206,11 +206,11 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * 
    * Local r0 = generator.generateField( type ); body.addStmt(Jimple.newIdentityStmt( r0 , Jimple.newThisRef(type) ));
    * 
-   * Local i0 = generator.generateField( IntType.getInstance()); body.addStmt( Jimple.newIdentityStmt( i0,
-   * Jimple.newParameterRef( IntType.getInstance(), 0)) );
+   * Local i0 = generator.generateField( IntType.INSTANCE); body.addStmt( Jimple.newIdentityStmt( i0,
+   * Jimple.newParameterRef( IntType.INSTANCE, 0)) );
    * 
-   * Local z0 = generator.generateField( BooleanType.getInstance()); body.addStmt( Jimple.newIdentityStmt( z0,
-   * Jimple.newParameterRef( BooleanType.getInstance(), 1)) );
+   * Local z0 = generator.generateField( BooleanType.INSTANCE); body.addStmt( Jimple.newIdentityStmt( z0,
+   * Jimple.newParameterRef( BooleanType.INSTANCE, 1)) );
    * 
    * 
    * type = RefType.getInstance("java.io.PrintStream"); Local r1 = generator.generateLocal( type ); Local r2 =
@@ -231,7 +231,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * RefType.getInstance("java.lang.Integer"), RefType.getInstance("java.lang.String"),
    * RefType.getInstance("java.lang.Boolean"), RefType.getInstance("int[]")
    * 
-   * }), VoidType.getInstance(), EnumSet.of(Modifier.PUBLIC) ); sootClass.addMethod(currentMethod);
+   * }), VoidType.INSTANCE, EnumSet.of(Modifier.PUBLIC) ); sootClass.addMethod(currentMethod);
    * 
    * Body body = Jimple.newBody(currentMethod); LocalGenerator generator = new LocalGenerator(body);
    * 
@@ -265,7 +265,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * SootMethod atExceptionThrow(){
    * 
    * SootClass exception = new SootClass(view, new DefaultSignatureFactory().getClassSignature("java.lang.Exception"));
-   * SootMethod currentMethod = new SootMethod(view, "atExceptionThrow", Arrays.asList(new Type[]{}), VoidType.getInstance(),
+   * SootMethod currentMethod = new SootMethod(view, "atExceptionThrow", Arrays.asList(new Type[]{}), VoidType.INSTANCE,
    * EnumSet.of(Modifier.PUBLIC) , Arrays.asList(exception) ); sootClass.addMethod(currentMethod);
    * 
    * Body body = Jimple.newBody(currentMethod); LocalGenerator generator = new LocalGenerator(body);
@@ -286,7 +286,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * SootMethod atExceptionThrowAndCatch() {
    * 
    * SootMethod currentMethod = new SootMethod(view, "atExceptionThrowAndCatch", Arrays.asList(new Type[]{}),
-   * VoidType.getInstance(), EnumSet.of(Modifier.PUBLIC) ); sootClass.addMethod(currentMethod);
+   * VoidType.INSTANCE, EnumSet.of(Modifier.PUBLIC) ); sootClass.addMethod(currentMethod);
    * 
    * Body body = Jimple.newBody(currentMethod); LocalGenerator generator = new LocalGenerator(body);
    * 
@@ -296,8 +296,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
    * type = RefType.getInstance("java.io.PrintStream"); Local r1 = generator.generateLocal( type ); Local r2 =
    * generator.generateLocal( type ); Local r3 = generator.generateLocal( type );
    * 
-   * Local i0 = generator.generateLocal( IntType.getInstance() ); Local i1 = generator.generateLocal( IntType.getInstance()
-   * ); Local i2 = generator.generateField( IntType.getInstance() );
+   * Local i0 = generator.generateLocal( IntType.INSTANCE ); Local i1 = generator.generateLocal( IntType.INSTANCE
+   * ); Local i2 = generator.generateField( IntType.INSTANCE );
    * 
    * type = RefType.getInstance("java.lang.Exception"); Local r4 = generator.generateLocal( type );
    * body.addStmt(Jimple.newAssignStmt( r4, Jimple.newNewExpr( type)) );

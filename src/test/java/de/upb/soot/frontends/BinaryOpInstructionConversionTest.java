@@ -3,6 +3,7 @@ package de.upb.soot.frontends;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -14,8 +15,6 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
-
-import static org.junit.Assert.assertTrue;
 
 /**
  * 

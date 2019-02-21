@@ -43,6 +43,7 @@ import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.NoPositionInformation;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -54,7 +55,6 @@ import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
-import de.upb.soot.namespaces.classprovider.java.JavaClassSource;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
@@ -80,9 +80,9 @@ public class JInvokeStmtTest {
 
     Set<SootField> fields = new LinkedHashSet<SootField>();
     Set<SootMethod> methods = new LinkedHashSet<>();
-
+    
     SootClass sootClass = new SootClass(view, ResolvingLevel.BODIES, javaClassSource, ClassType.Application,
-        java.util.Optional.ofNullable(superClassSignature), new HashSet<>(), null, fields, methods,
+       superClassSignature, new HashSet<>(), null, fields, methods,
         new NoPositionInformation(), EnumSet.of(Modifier.PUBLIC));
 
     // JStaticInvokeExpr

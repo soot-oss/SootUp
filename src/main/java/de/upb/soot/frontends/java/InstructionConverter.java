@@ -106,7 +106,7 @@ import scala.Char;
  * @author Linghui Luo
  *
  */
-class InstructionConverter {
+public class InstructionConverter {
 
   private WalaIRToJimpleConverter converter;
   private SootMethod sootMethod;
@@ -204,16 +204,16 @@ class InstructionConverter {
   }
 
   private IStmt convertArrayStoreInstruction(DebuggingInformation debugInfo, SSAArrayStoreInstruction inst) {
-    Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
+    Local base = getLocal(UnknownType.INSTANCE, inst.getArrayRef());
     int i = inst.getIndex();
-    Value index;
+    Value index = null;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
       index = getLocal(IntType.INSTANCE, i);
     }
     JArrayRef arrayRef = Jimple.newArrayRef(base, index);
-    Value rvalue;
+    Value rvalue = null;
     int value = inst.getValue();
     if (symbolTable.isConstant(value)) {
       rvalue = getConstant(value);
@@ -224,16 +224,16 @@ class InstructionConverter {
   }
 
   private IStmt convertArrayLoadInstruction(DebuggingInformation debugInfo, SSAArrayLoadInstruction inst) {
-    Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
+    Local base = getLocal(UnknownType.INSTANCE, inst.getArrayRef());
     int i = inst.getIndex();
-    Value index;
+    Value index = null;
     if (symbolTable.isConstant(i)) {
       index = getConstant(i);
     } else {
       index = getLocal(IntType.INSTANCE, i);
     }
     JArrayRef arrayRef = Jimple.newArrayRef(base, index);
-    Value left;
+    Value left = null;
     int def = inst.getDef();
     left = getLocal(base.getType(), def);
     return Jimple.newAssignStmt(left, arrayRef, new PositionInfo(null, null));
@@ -256,7 +256,7 @@ class InstructionConverter {
   }
 
   private IStmt convertMonitorInstruction(DebuggingInformation debugInfo, SSAMonitorInstruction inst) {
-    Value op = getLocal(UnknownType.getInstance(), inst.getRef());
+    Value op = getLocal(UnknownType.INSTANCE, inst.getRef());
     if (inst.isMonitorEnter()) {
       return Jimple.newEnterMonitorStmt(op, new PositionInfo(null, null));
     } else {
@@ -314,7 +314,7 @@ class InstructionConverter {
     for (int i = 0; i < inst.getAccessCount(); i++) {
       Access access = inst.getAccess(i);
       Type type = converter.convertType(access.type);
-      Value right;
+      Value right = null;
       if (symbolTable.isConstant(access.valueNumber)) {
         right = getConstant(access.valueNumber);
       } else {
@@ -322,7 +322,7 @@ class InstructionConverter {
       }
       JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
       // TODO check modifier
-      Value left;
+      Value left = null;
       if (!walaMethod.isStatic()) {
         FieldSignature fieldSig = sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
         SootField field = new SootField(converter.view, cSig, fieldSig, sigFactory.getTypeSignature(type.toString()),
@@ -346,7 +346,7 @@ class InstructionConverter {
       Local left = getLocal(type, access.valueNumber);
       JavaClassSignature cSig = sootMethod.getDeclaringClassSignature();
       // TODO check modifier
-      Value rvalue;
+      Value rvalue = null;
       if (!walaMethod.isStatic()) {
         FieldSignature fieldSig = sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
         SootField field = new SootField(converter.view, cSig, fieldSig, sigFactory.getTypeSignature(type.toString()),
@@ -377,7 +377,7 @@ class InstructionConverter {
   private IStmt convertCheckCastInstruction(DebuggingInformation debugInfo, SSACheckCastInstruction inst) {
     TypeReference[] types = inst.getDeclaredResultTypes();
     Local result = getLocal(converter.convertType(types[0]), inst.getResult());
-    Value rvalue;
+    Value rvalue = null;
     int val = inst.getVal();
     if (symbolTable.isConstant(val)) {
       rvalue = getConstant(val);
@@ -423,14 +423,14 @@ class InstructionConverter {
 
   private IStmt convertThrowInstruction(DebuggingInformation debugInfo, SSAThrowInstruction inst) {
     int exception = inst.getException();
-    Local local = getLocal(UnknownType.getInstance(), exception);
+    Local local = getLocal(UnknownType.INSTANCE, exception);
     return Jimple.newThrowStmt(local, new PositionInfo(null, null));
   }
 
   private IStmt convertUnaryOpInstruction(DebuggingInformation debugInfo, SSAUnaryOpInstruction inst) {
     int def = inst.getDef();
     int use = inst.getUse(0);
-    Value op;
+    Value op = null;
     // TODO: change type
     Type type = UnknownType.INSTANCE;
     if (symbolTable.isConstant(use)) {
@@ -454,7 +454,7 @@ class InstructionConverter {
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassSignature classSig = sigFactory.getClassSignature(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig = sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
-    Value fieldValue;
+    Value fieldValue = null;
     if (inst.isStatic()) {
       fieldValue = Jimple.newStaticFieldRef(converter.view, fieldSig);
     } else {
@@ -462,7 +462,7 @@ class InstructionConverter {
       Local base = getLocal(converter.view.getRefType(classSig), ref);
       fieldValue = Jimple.newInstanceFieldRef(converter.view, base, fieldSig);
     }
-    Value value;
+    Value value = null;
     int val = inst.getVal();
     if (symbolTable.isConstant(val)) {
       value = getConstant(val);
@@ -476,10 +476,10 @@ class InstructionConverter {
     int result = inst.getDef();
     Type type = converter.convertType(inst.getNewSite().getDeclaredType());
     Value var = getLocal(type, result);
-    Value rvalue;
+    Value rvalue = null;
     if (type instanceof ArrayType) {
       int use = inst.getUse(0);
-      Value size;
+      Value size = null;
       if (symbolTable.isConstant(use)) {
         size = getConstant(use);
       } else {
@@ -505,7 +505,7 @@ class InstructionConverter {
     // TODO. how to get type of ref?
     Local op = getLocal(UnknownType.INSTANCE, ref);
     JInstanceOfExpr expr = Jimple.newInstanceOfExpr(op, checkedType);
-    Value left = getLocal(BooleanType.getInstance(), result);
+    Value left = getLocal(BooleanType.INSTANCE, result);
     return Jimple.newAssignStmt(left, expr, new PositionInfo(null, null));
   }
 
@@ -515,7 +515,7 @@ class InstructionConverter {
     int def = inst.getDef();
     int use = inst.getUse(0);
     Value lvalue = getLocal(toType, def);
-    Value rvalue;
+    Value rvalue = null;
     if (symbolTable.isConstant(use)) {
       rvalue = getConstant(use);
     } else {
@@ -545,7 +545,7 @@ class InstructionConverter {
     }
     for (; i < invokeInst.getNumberOfUses(); i++) {
       int use = invokeInst.getUse(i);
-      Value arg;
+      Value arg = null;
       if (symbolTable.isConstant(use)) {
         arg = getConstant(use);
       } else {
@@ -563,7 +563,6 @@ class InstructionConverter {
         declaringClassSignature, returnType, parameters);
 
     if (!callee.isStatic()) {
-
       int receiver = invokeInst.getReceiver();
       Type classType = converter.convertType(target.getDeclaringClass());
       Local base = getLocal(classType, receiver);
@@ -595,19 +594,19 @@ class InstructionConverter {
   private IStmt convertBranchInstruction(DebuggingInformation debugInfo, SSAConditionalBranchInstruction condInst) {
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
-    Value value1;
+    Value value1 = null;
     if (symbolTable.isZero(val1)) {
       value1 = IntConstant.getInstance(0);
     } else {
       value1 = getLocal(IntType.INSTANCE, val1);
     }
-    Value value2;
+    Value value2 = null;
     if (symbolTable.isZero(val2)) {
       value2 = IntConstant.getInstance(0);
     } else {
       value2 = getLocal(IntType.INSTANCE, val1);
     }
-    AbstractConditionExpr condition;
+    AbstractConditionExpr condition = null;
     IOperator op = condInst.getOperator();
     if (op.equals(Operator.EQ)) {
       condition = Jimple.newEqExpr(value1, value2);
@@ -642,21 +641,21 @@ class InstructionConverter {
     // TODO: only int type?
     Type type = IntType.INSTANCE;
     Value result = getLocal(type, def);
-    Value op1;
+    Value op1 = null;
     if (symbolTable.isConstant(val1)) {
       op1 = getConstant(val1);
       type = op1.getType();
     } else {
       op1 = getLocal(type, val1);
     }
-    Value op2;
+    Value op2 = null;
     if (symbolTable.isConstant(val2)) {
       op2 = getConstant(val2);
       type = op2.getType();
     } else {
       op2 = getLocal(type, val2);
     }
-    AbstractBinopExpr binExpr;
+    AbstractBinopExpr binExpr = null;
     IBinaryOpInstruction.IOperator operator = binOpInst.getOperator();
     if (operator.equals(IBinaryOpInstruction.Operator.ADD)) {
       binExpr = Jimple.newAddExpr(op1, op2);
@@ -730,7 +729,7 @@ class InstructionConverter {
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassSignature classSig = sigFactory.getClassSignature(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig = sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
-    Value rvalue;
+    Value rvalue = null;
     if (inst.isStatic()) {
       rvalue = Jimple.newStaticFieldRef(converter.view, fieldSig);
     } else {
@@ -753,7 +752,7 @@ class InstructionConverter {
       } else {
         return IntConstant.getInstance(0);
       }
-    } else if (value instanceof Byte || value instanceof Character || value instanceof Short || value instanceof Integer) {
+    } else if (value instanceof Byte || value instanceof Char || value instanceof Short || value instanceof Integer) {
       return IntConstant.getInstance((int) value);
     } else if (symbolTable.isLongConstant(valueNumber)) {
       return LongConstant.getInstance((long) value);

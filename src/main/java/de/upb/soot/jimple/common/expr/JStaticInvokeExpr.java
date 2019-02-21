@@ -26,18 +26,18 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.symbolicreferences.MethodRef;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class JStaticInvokeExpr extends AbstractInvokeExpr {
   /**
@@ -48,7 +48,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   /**
    * Stores the values of new ImmediateBox to the argBoxes array.
    */
-  public JStaticInvokeExpr(IView view, MethodRef method, List<? extends Value> args) {
+  public JStaticInvokeExpr(IView view, MethodSignature method, List<? extends Value> args) {
     super(view, method, new ValueBox[args.size()]);
     this.methodSignature = method;
     for (int i = 0; i < args.size(); i++) {
@@ -59,7 +59,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> clonedArgs = new ArrayList<>(getArgCount());
+    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
 
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
@@ -90,13 +90,13 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
+    StringBuffer buffer = new StringBuffer();
 
     buffer.append(Jimple.STATICINVOKE + " " + methodSignature + "(");
     argBoxesToString(buffer);
     buffer.append(")");
 
-    return builder.toString();
+    return buffer.toString();
   }
 
   /**

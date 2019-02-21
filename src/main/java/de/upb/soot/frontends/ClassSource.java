@@ -2,13 +2,13 @@ package de.upb.soot.frontends;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+
 import com.google.common.base.Objects;
 
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.JavaClassSignature;
-
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
 
 /**
  * Basic class for storing information that is needed to reify a {@link de.upb.soot.core.SootClass}.
@@ -18,7 +18,7 @@ import java.nio.file.Path;
  * @author Linghui Luo
  *
  **/
-public class ClassSource {
+public abstract class ClassSource {
   private final INamespace srcNamespace;
   // TODO: AD unfortunately I need to change it in the ModuleFinder, since I only know a module's name after resolving its
   // module-info.class

@@ -25,6 +25,8 @@
 
 package de.upb.soot.jimple.common.type;
 
+import java.util.ArrayDeque;
+
 import de.upb.soot.core.IViewResident;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.visitor.IVisitor;
@@ -33,8 +35,6 @@ import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
-
-import java.util.ArrayDeque;
 
 /**
  * A class that models Java's reference types. RefTypes are parameterized by a class name. Two RefType are equal iff they are
