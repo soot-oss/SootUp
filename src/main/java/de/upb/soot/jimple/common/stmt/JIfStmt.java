@@ -117,9 +117,8 @@ public class JIfStmt extends AbstractStmt {
 
   @Override
   public List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
-    useBoxes.addAll(conditionBox.getValue().getUseBoxes());
+    List<ValueBox> useBoxes = new ArrayList<>(conditionBox.getValue().getUseBoxes());
     useBoxes.add(conditionBox);
 
     return useBoxes;

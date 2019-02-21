@@ -1,6 +1,6 @@
 package de.upb.soot.concrete.interfaces;
 
 interface I1 {
-  // method signature
+  // methodRef signature
   void printI1();
 }

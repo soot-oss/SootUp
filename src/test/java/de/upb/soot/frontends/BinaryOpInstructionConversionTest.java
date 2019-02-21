@@ -15,6 +15,8 @@ import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * 
  * @author Linghui Luo
@@ -108,7 +110,7 @@ public class BinaryOpInstructionConversionTest {
   public void testIncShort() {
     // TODO: failed test
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("incShort", declareClassSig, "short", Arrays.asList("short")));
+        = loader.getSootMethod(sigFactory.getMethodSignature("incShort", declareClassSig, "short", Collections.singletonList("short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -119,7 +121,7 @@ public class BinaryOpInstructionConversionTest {
   public void testDecInt() {
     // TODO: failed test
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("decInt", declareClassSig, "int", Arrays.asList("int")));
+        = loader.getSootMethod(sigFactory.getMethodSignature("decInt", declareClassSig, "int", Collections.singletonList("int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -159,7 +161,7 @@ public class BinaryOpInstructionConversionTest {
   @Test
   public void testLShiftByte() {
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("lshiftByte", declareClassSig, "byte", Arrays.asList("byte")));
+        = loader.getSootMethod(sigFactory.getMethodSignature("lshiftByte", declareClassSig, "byte", Collections.singletonList("byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -180,7 +182,7 @@ public class BinaryOpInstructionConversionTest {
   public void testNegLong() {
     // TODO: failed test
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("negLong", declareClassSig, "long", Arrays.asList("long")));
+        = loader.getSootMethod(sigFactory.getMethodSignature("negLong", declareClassSig, "long", Collections.singletonList("long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -223,7 +225,7 @@ public class BinaryOpInstructionConversionTest {
   @Test
   public void testNot() {
     Optional<SootMethod> m
-        = loader.getSootMethod(sigFactory.getMethodSignature("not", declareClassSig, "boolean", Arrays.asList("boolean")));
+        = loader.getSootMethod(sigFactory.getMethodSignature("not", declareClassSig, "boolean", Collections.singletonList("boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);

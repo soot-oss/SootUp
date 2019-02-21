@@ -27,16 +27,11 @@ import de.upb.soot.core.SootClass;
 import java.util.List;
 
 /**
- * Validates classes to make sure that all method signatures are valid
+ * Validates classes to make sure that all methodRef signatures are valid
  *
  * @author Steven Arzt
  */
-public enum MethodDeclarationValidator implements ClassValidator {
-  INSTANCE;
-
-  public static MethodDeclarationValidator getInstance() {
-    return INSTANCE;
-  }
+public class MethodDeclarationValidator implements ClassValidator {
 
   @Override
   public void validate(SootClass sc, List<ValidationException> exceptions) {

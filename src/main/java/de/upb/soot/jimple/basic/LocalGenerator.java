@@ -58,14 +58,11 @@ public class LocalGenerator {
   }
 
   protected boolean bodyContainsLocal(String name) {
-    return locals.stream().filter(c -> c.name.equals(name)).findFirst().isPresent();
+    return locals.stream().anyMatch(c -> c.name.equals(name));
   }
 
   /**
    * generate this local with given type
-   * 
-   * @param type
-   * @return
    */
   public Local generateThisLocal(Type type) {
     if (this.thisLocal == null) {
@@ -97,7 +94,7 @@ public class LocalGenerator {
   }
 
   private Local generate(Type type, boolean isField) {
-    String name = "v";
+    String name;
 
     if (type instanceof IntType) {
       do {
@@ -243,8 +240,6 @@ public class LocalGenerator {
 
   /**
    * Return all locals created for the body referenced in this LocalGenrator.
-   * 
-   * @return
    */
   public List<Local> getLocals() {
     return this.locals;

@@ -39,6 +39,7 @@ import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.util.StringTools;
 
 import soot.util.StringTools;
 
@@ -50,9 +51,7 @@ public class ClassConstant extends Constant {
     this.value = s;
   }
 
-  /**
-   * Returns an instance of ClassConstant.
-   */
+  /** Returns an instance of ClassConstant. */
   public static ClassConstant getInstance(String value) {
     if (value.contains(".")) {
       throw new RuntimeException("ClassConstants must use class names separated by '/', not '.'!");
@@ -104,9 +103,7 @@ public class ClassConstant extends Constant {
     return value.startsWith("L") && value.endsWith(";");
   }
 
-  /**
-   * Returns numDimensions.
-   */
+  /** Returns numDimensions. */
   public Type toSootType() {
     int numDimensions = 0;
     String tmp = value;
@@ -115,7 +112,7 @@ public class ClassConstant extends Constant {
       tmp = tmp.substring(1);
     }
 
-    Type baseType = null;
+    Type baseType;
     if (tmp.startsWith("L")) {
       tmp = tmp.substring(1);
       if (tmp.endsWith(";")) {
@@ -124,21 +121,21 @@ public class ClassConstant extends Constant {
       tmp = tmp.replace("/", ".");
       baseType = RefType.getInstance(tmp);
     } else if (tmp.equals("I")) {
-      baseType = IntType.getInstance();
+      baseType = IntType.INSTANCE;
     } else if (tmp.equals("B")) {
-      baseType = ByteType.getInstance();
+      baseType = ByteType.INSTANCE;
     } else if (tmp.equals("C")) {
-      baseType = CharType.getInstance();
+      baseType = CharType.INSTANCE;
     } else if (tmp.equals("D")) {
-      baseType = DoubleType.getInstance();
+      baseType = DoubleType.INSTANCE;
     } else if (tmp.equals("F")) {
-      baseType = FloatType.getInstance();
+      baseType = FloatType.INSTANCE;
     } else if (tmp.equals("L")) {
-      baseType = LongType.getInstance();
+      baseType = LongType.INSTANCE;
     } else if (tmp.equals("S")) {
-      baseType = ShortType.getInstance();
+      baseType = ShortType.INSTANCE;
     } else if (tmp.equals("Z")) {
-      baseType = BooleanType.getInstance();
+      baseType = BooleanType.INSTANCE;
     } else {
       throw new RuntimeException("Unsupported class constant: " + value);
     }

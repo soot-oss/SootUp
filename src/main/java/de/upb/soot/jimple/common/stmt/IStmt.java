@@ -8,79 +8,79 @@ import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.common.ref.JArrayRef;
+import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.IAcceptor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public interface IStmt extends EquivTo, IAcceptor, Serializable {
   /** Returns a list of Boxes containing Values used in this Stmt. */
-  public List<ValueBox> getUseBoxes();
+  List<ValueBox> getUseBoxes();
 
   /** Returns a list of Boxes containing Values defined in this Stmt. */
-  public List<ValueBox> getDefBoxes();
+  List<ValueBox> getDefBoxes();
 
   /**
    * Returns a list of Boxes containing Stmts defined in this Stmt; typically branch targets.
    */
-  public List<IStmtBox> getStmtBoxes();
+  List<IStmtBox> getStmtBoxes();
 
   /** Returns a list of Boxes pointing to this Stmt. */
-  public List<IStmtBox> getBoxesPointingToThis();
+  List<IStmtBox> getBoxesPointingToThis();
 
   /** Adds a box to the list returned by getBoxesPointingToThis. */
-  public void addBoxPointingToThis(IStmtBox b);
+  void addBoxPointingToThis(IStmtBox b);
 
   /** Removes a box from the list returned by getBoxesPointingToThis. */
-  public void removeBoxPointingToThis(IStmtBox b);
+  void removeBoxPointingToThis(IStmtBox b);
 
   /** Clears any pointers to and from this Stmt's StmtBoxes. */
-  public void clearStmtBoxes();
+  void clearStmtBoxes();
 
   /**
    * Returns a list of Boxes containing any Value either used or defined in this Stmt.
    */
-  public List<ValueBox> getUseAndDefBoxes();
+  List<ValueBox> getUseAndDefBoxes();
 
-  public IStmt clone();
+  IStmt clone();
 
   /**
    * Returns true if execution after this statement may continue at the following statement. GotoStmt will return false but
    * IfStmt will return true.
    */
-  public boolean fallsThrough();
+  boolean fallsThrough();
 
   /**
    * Returns true if execution after this statement does not necessarily continue at the following statement. GotoStmt and
    * IfStmt will both return true.
    */
-  public boolean branches();
+  boolean branches();
 
   /**
    * Redirects jumps to this Stmt to newLocation. In general, you shouldn't have to use this directly.
    *
    **/
-  public void redirectJumpsToThisTo(IStmt newLocation);
+  void redirectJumpsToThisTo(IStmt newLocation);
 
-  public void toString(IStmtPrinter up);
+  void toString(IStmtPrinter up);
 
-  public boolean containsInvokeExpr();
+  boolean containsInvokeExpr();
 
-  public AbstractInvokeExpr getInvokeExpr();
+  AbstractInvokeExpr getInvokeExpr();
 
-  public ValueBox getInvokeExprBox();
+  ValueBox getInvokeExprBox();
 
-  public boolean containsArrayRef();
+  boolean containsArrayRef();
 
-  public JArrayRef getArrayRef();
+  JArrayRef getArrayRef();
 
-  public ValueBox getArrayRefBox();
+  ValueBox getArrayRefBox();
 
-  public boolean containsFieldRef();
+  boolean containsFieldRef();
 
-  public FieldRef getFieldRef();
+  JFieldRef getFieldRef();
 
-  public ValueBox getFieldRefBox();
+  ValueBox getFieldRefBox();
 
   /**
    * Return the position information of this statement.

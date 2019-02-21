@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 /**
  * Common functionality useful to cope with {@link Path}s.
  *
@@ -45,7 +47,7 @@ public class PathUtils {
    * @return True if the given {@link Path} has the given {@link FileType}, i.e., the path ends with a dot followed by either
    *         of the extensions defined by the given {@link FileType}s otherwise.
    */
-  public static boolean hasExtension(Path path, FileType... extensions) {
+  public static boolean hasExtension(@Nonnull Path path, @Nonnull FileType... extensions) {
     return hasExtension(path, Arrays.asList(extensions));
   }
 
@@ -54,15 +56,15 @@ public class PathUtils {
    *
    * @see PathUtils#hasExtension(Path, FileType...)
    */
-  public static boolean hasExtension(Path path, Collection<FileType> extensions) {
+  public static boolean hasExtension(@Nonnull Path path, @Nonnull Collection<FileType> extensions) {
     if (Files.isDirectory(path)) {
       return false;
     }
-    final String extensionList = extensions.stream().map(ft -> ft.getExtension()).collect(Collectors.joining(","));
+    final String extensionList = extensions.stream().map(FileType::getExtension).collect(Collectors.joining(","));
     return path.getFileSystem().getPathMatcher("glob:*.{" + extensionList + "}").matches(path.getFileName());
   }
 
-  public static boolean isArchive(Path path) {
+  public static boolean isArchive(@Nonnull Path path) {
     return hasExtension(path, FileType.ARCHIVE_TYPES);
   }
 }

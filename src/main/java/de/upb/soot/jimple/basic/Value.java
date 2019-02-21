@@ -42,13 +42,13 @@ public interface Value extends IAcceptor, EquivTo, Serializable {
   /**
    * Returns a List of boxes corresponding to Values which are used by (ie contained within) this Value.
    */
-  public List<ValueBox> getUseBoxes();
+  List<ValueBox> getUseBoxes();
 
   /** Returns the Soot type of this Value. */
-  public Type getType();
+  Type getType();
 
   /** Returns a clone of this Value. */
-  public Object clone();
+  Object clone();
 
-  public void toString(IStmtPrinter up);
+  void toString(IStmtPrinter up);
 }

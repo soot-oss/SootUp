@@ -20,7 +20,6 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
     super(b);
   }
 
-
   @Override
   public void type(Type t) {
     handleIndent();

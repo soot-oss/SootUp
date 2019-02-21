@@ -3,6 +3,7 @@ package de.upb.soot.frontends;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -39,7 +40,7 @@ public class GetInstructionConversionTest {
    public void test() {
      Optional<SootMethod> m = loader
          .getSootMethod(
-            sigFactory.getMethodSignature("getA_X", declareClassSig, "int", Arrays.asList()));
+            sigFactory.getMethodSignature("getA_X", declareClassSig, "int", Collections.emptyList()));
      assertTrue(m.isPresent());
      SootMethod method = m.get();
     Utils.print(method, false);

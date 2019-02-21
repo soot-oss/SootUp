@@ -70,8 +70,7 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
 
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
-    list.addAll(getLeftOp().getUseBoxes());
+    List<ValueBox> list = new ArrayList<>(getLeftOp().getUseBoxes());
     list.add(rightBox);
     list.addAll(getRightOp().getUseBoxes());
     return list;

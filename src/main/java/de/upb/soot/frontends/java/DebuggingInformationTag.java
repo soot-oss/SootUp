@@ -11,6 +11,8 @@ import soot.tagkit.Tag;
  */
 public class DebuggingInformationTag implements Tag {
 
+class DebuggingInformationTag implements Tag {
+
   private DebuggingInformation debugInfo;
 
   public DebuggingInformationTag(DebuggingInformation debugInfo) {

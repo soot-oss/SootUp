@@ -4,7 +4,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -25,9 +25,7 @@ import java.util.List;
 
 public class JInstanceFieldRef extends FieldRef {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 2900174317359676686L;
 
   private final ValueBox baseBox;
@@ -39,7 +37,7 @@ public class JInstanceFieldRef extends FieldRef {
    *          the view
    * @param base
    *          the base value of the field
-   * @param fieldSig
+   * @param symbolicFieldRef
    *          the field sig
    */
   public JInstanceFieldRef(IView view, Value base, FieldSignature fieldSig) {
@@ -81,10 +79,15 @@ public class JInstanceFieldRef extends FieldRef {
    * Returns a list useBoxes of type ValueBox.
    */
   @Override
-  public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
+  public FieldSignature getFieldSignature() {
+    return symbolicFieldRef.getSignature();
+  }
 
-    useBoxes.addAll(baseBox.getValue().getUseBoxes());
+  /** Returns a list useBoxes of type ValueBox. */
+  @Override
+  public final List<ValueBox> getUseBoxes() {
+
+    List<ValueBox> useBoxes = new ArrayList<>(baseBox.getValue().getUseBoxes());
     useBoxes.add(baseBox);
 
     return useBoxes;

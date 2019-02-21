@@ -174,7 +174,7 @@ public class DoubleConstant extends RealConstant {
 
   @Override
   public Type getType() {
-    return DoubleType.getInstance();
+    return DoubleType.INSTANCE;
   }
 
   @Override

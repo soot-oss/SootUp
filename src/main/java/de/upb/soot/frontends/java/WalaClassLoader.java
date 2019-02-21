@@ -111,8 +111,6 @@ public class WalaClassLoader {
       factory = new ECJClassLoaderFactory(scope.getExclusions());
     } catch (FileNotFoundException e) {
       e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
     }
   }
 
@@ -170,9 +168,6 @@ public class WalaClassLoader {
 
   /**
    * Return a soot class with the given signature converted from a WALA class.
-   * 
-   * @param signature
-   * @return
    */
   public Optional<SootClass> getSootClass(JavaClassSignature signature) {
     if (classHierarchy == null) {

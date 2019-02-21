@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -45,6 +45,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
   /** the class name that parameterizes this RefType. */
   private final TypeSignature typeSignature;
+
   private volatile SootClass sootClass;
   private AnySubType anySubType;
   private static IView view;
@@ -52,7 +53,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
   /**
    * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in
    * {@link JavaView}.
-   * 
+   *
    * @param className
    *          The name of the class used to parameterize the created RefType.
    * @return a RefType for the given class name.
@@ -64,10 +65,17 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
     return view.getRefType(view.getSignatureFactory().getTypeSignature(className));
   }
 
+  public static RefType getInstance(TypeSignature className) {
+    if (view == null) {
+      throw new NullPointerException("View is not set for RefType");
+    }
+    return view.getRefType(className);
+  }
+
   /**
    * Get a RefType for a class. Each class has only one RefType instance. All RefType instances are stored in
    * {@link JavaView}.
-   * 
+   *
    * @param c
    *          A SootClass for which to create a RefType.
    * @return a RefType for the given SootClass.
@@ -78,15 +86,13 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
   /**
    * Create a RefType instance for the given view.
-   * 
-   * @param view
-   * @param typeSignature
    */
   public RefType(IView view, TypeSignature typeSignature) {
     RefType.view = view;
     this.typeSignature = typeSignature;
   }
 
+  @Override
   public TypeSignature getTypeSignature() {
     return typeSignature;
   }
@@ -102,7 +108,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
   /**
    * Set the SootClass object corresponding to this RefType.
-   * 
+   *
    * @param sootClass
    *          The SootClass corresponding to this RefType.
    */
@@ -112,7 +118,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
   /**
    * 2 RefTypes are considered equal if they are parametrized by the same class name String.
-   * 
+   *
    * @param t
    *          an object to test for equality. @ return true if t is a RefType parametrized by the same name as this.
    */
@@ -142,7 +148,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
   /** Returns the least common superclass of this type and other. */
   @Override
   public Type merge(Type other) {
-    if (other.equals(UnknownType.getInstance()) || this.equals(other)) {
+    if (other.equals(UnknownType.INSTANCE) || this.equals(other)) {
       return this;
     }
 
@@ -152,7 +158,8 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
     {
       // Return least common superclass
-      // TODO: This is all highly suspicious. FQCNs should be resolved there through a SignatureFactory.
+      // TODO: This is all highly suspicious. FQCNs should be resolved there through a
+      // SignatureFactory.
       SignatureFactory factory = this.getView().getSignatureFactory();
       SootClass thisClass
           = (SootClass) this.getView().getClass(factory.getClassSignature(this.typeSignature.toString())).get();
@@ -219,13 +226,15 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
         return commonClass.getType();
       }
     }
-
   }
 
   @Override
   public Type getArrayElementType() {
-    if (typeSignature.equals("java.lang.Object") || typeSignature.equals("java.io.Serializable")
-        || typeSignature.equals("java.lang.Cloneable")) {
+    SignatureFactory signatureFactory = getView().getSignatureFactory();
+
+    if (typeSignature.equals(signatureFactory.getClassSignature("java.lang.Object"))
+        || typeSignature.equals(signatureFactory.getClassSignature("java.io.Serializable"))
+        || typeSignature.equals(signatureFactory.getClassSignature("java.lang.Cloneable"))) {
       return RefType.getInstance("java.lang.Object");
     }
     throw new RuntimeException("Attempt to get array base type of a non-array");
@@ -246,7 +255,7 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
 
   @Override
   public void accept(IVisitor sw) {
-    // TODO Auto-generated method stub
+    // TODO Auto-generated methodRef stub
 
   }
 
@@ -254,5 +263,4 @@ public class RefType extends RefLikeType implements IViewResident, Comparable<Re
   public IView getView() {
     return view;
   }
-
 }

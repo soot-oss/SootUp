@@ -12,14 +12,14 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 public interface Trap extends StmtBoxOwner {
 
   /** Performs a shallow clone of this trap. */
-  public Object clone();
+  Object clone();
 
-  public SootClass getException();
+  SootClass getException();
 
-  public IStmt getBeginStmt();
+  IStmt getBeginStmt();
 
-  public IStmt getEndStmt();
+  IStmt getEndStmt();
 
-  public IStmt getHandlerStmt();
+  IStmt getHandlerStmt();
 
 }

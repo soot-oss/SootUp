@@ -6,10 +6,10 @@ public class LongOps {
   //
   // public static void main(String[] args) throws InvocationTargetException, IllegalAccessException {
   // LongOps ops = new LongOps();
-  // for (Method method : ops.getClass().getMethods()) {
-  // if (!method.getName().contains("main")) {
-  // System.out.println(method.getName());
-  // final Object invoke = method.invoke(ops);
+  // for (Method methodRef : ops.getClass().getMethods()) {
+  // if (!methodRef.getName().contains("main")) {
+  // System.out.println(methodRef.getName());
+  // final Object invoke = methodRef.invoke(ops);
   // }
   // }
   // }

@@ -37,7 +37,7 @@ import javax.annotation.concurrent.ThreadSafe;
 // TODO: check copied code from old soot
 
 public class StringNumberer extends ArrayNumberer<NumberedString> {
-  private Map<String, NumberedString> stringToNumbered = new HashMap<String, NumberedString>(1024);
+  private Map<String, NumberedString> stringToNumbered = new HashMap<>(1024);
 
   public synchronized NumberedString findOrAdd(String s) {
     NumberedString ret = stringToNumbered.get(s);

@@ -1,9 +1,10 @@
-package de.upb.soot.namespaces.classprovider;
+package de.upb.soot.frontends;
 
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.signatures.AbstractClassMemberSignature;
 import de.upb.soot.signatures.MethodSignature;
+
+import javax.annotation.Nullable;
 
 /*-
  * #%L
@@ -29,8 +30,10 @@ import de.upb.soot.signatures.MethodSignature;
 
 /** A class which knows how to produce Body's for SootMethods. */
 
-public interface IMethodSource {
+public interface IMethodSourceContent {
   /** Returns a filled-out body for the given SootMethod. */
-  public Body getBody(SootMethod m);
-  public MethodSignature getSignature();
+  @Nullable
+  Body getBody(SootMethod m) throws ResolveException;
+
+  MethodSignature getSignature();
 }

@@ -28,6 +28,7 @@ package de.upb.soot.jimple.common.type;
 import de.upb.soot.jimple.visitor.ITypeVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 /**
  * Soot representation of the Java built-in type 'boolean'. Implemented as a singleton.
@@ -35,18 +36,9 @@ import de.upb.soot.signatures.PrimitiveTypeSignature;
 @SuppressWarnings("serial")
 public class BooleanType extends PrimType {
 
-  private static BooleanType instance;
+  public static final BooleanType INSTANCE = new BooleanType();
 
-  /**
-   * Get the BooleanType instance.
-   * 
-   * @return the BooleanType instance.
-   */
-  public static BooleanType getInstance() {
-    if (instance == null) {
-      instance = new BooleanType();
-    }
-    return instance;
+  private BooleanType() {
   }
 
   @Override
@@ -62,6 +54,11 @@ public class BooleanType extends PrimType {
   @Override
   public String toString() {
     return PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE.toString();
+  }
+
+  @Override
+  public TypeSignature getTypeSignature() {
+    return PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE;
   }
 
   @Override

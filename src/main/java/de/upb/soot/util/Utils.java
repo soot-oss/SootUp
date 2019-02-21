@@ -39,6 +39,8 @@ import java.util.stream.StreamSupport;
  * @author Andreas Dann
  */
 public class Utils {
+
+  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   public static <T> Stream<T> optionalToStream(Optional<T> o) {
     return o.map(Stream::of).orElseGet(Stream::empty);
   }
@@ -50,10 +52,8 @@ public class Utils {
   /**
    * Turns an Optional<T> into a Stream<T> of length zero or one depending upon whether a value is present.
    */
+  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   static <T> Stream<T> streamOpt(Optional<T> opt) {
-    if (opt.isPresent())
-      return Stream.of(opt.get());
-    else
-      return Stream.empty();
+    return opt.map(Stream::of).orElseGet(Stream::empty);
   }
 }

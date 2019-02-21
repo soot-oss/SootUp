@@ -26,15 +26,10 @@ import de.upb.soot.core.Body;
 
 import java.util.List;
 
-public enum ValueBoxesValidator implements BodyValidator {
-  INSTANCE;
+public class ValueBoxesValidator implements BodyValidator {
 
-  public static ValueBoxesValidator getInstance() {
-    return INSTANCE;
-  }
-
-  @Override
   /** Verifies that a ValueBox is not used in more than one place. */
+  @Override
   public void validate(Body body, List<ValidationException> exception) {
     // TODO: check code from old soot below
     /*

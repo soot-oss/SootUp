@@ -28,6 +28,6 @@ package de.upb.soot.jimple.visitor;
 import de.upb.soot.jimple.basic.Local;
 
 public interface IJimpleValueVisitor extends IConstantVisitor, IExprVisitor {
-  public abstract void caseLocal(Local jimpleLocal);
+  void caseLocal(Local jimpleLocal);
 
 }
