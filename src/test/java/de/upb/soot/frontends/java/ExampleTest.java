@@ -1,4 +1,4 @@
-package de.upb.soot.frontends;
+package de.upb.soot.frontends.java;
 
 import org.junit.Ignore;
 import org.junit.Test;

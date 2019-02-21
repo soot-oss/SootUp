@@ -1,4 +1,4 @@
-package de.upb.soot.frontends;
+package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;

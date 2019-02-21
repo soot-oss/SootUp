@@ -1,4 +1,4 @@
-package de.upb.soot.frontends;
+package de.upb.soot.frontends.java;
 
 import static org.junit.Assert.assertEquals;
 
