@@ -93,27 +93,27 @@ public class LocalGenerator {
     }
 
     if (type instanceof IntType) {
-        nextIntName( name );
+        appendNextIntName( name );
     } else if (type instanceof ByteType) {
-        nextByteName( name );
+        appendNextByteName( name );
     } else if (type instanceof ShortType) {
-        nextShortName( name );
+        appendNextShortName( name );
     } else if (type instanceof BooleanType) {
-        nextBooleanName( name );
+        appendNextBooleanName( name );
     } else if (type instanceof VoidType) {
-        nextVoidName( name );
+        appendNextVoidName( name );
     } else if (type instanceof CharType) {
-        nextCharName( name );
+        appendNextCharName( name );
     } else if (type instanceof DoubleType) {
-        nextDoubleName( name );
+        appendNextDoubleName( name );
     } else if (type instanceof FloatType) {
-        nextFloatName( name );
+        appendNextFloatName( name );
     } else if (type instanceof LongType) {
-        nextLongName( name );
+        appendNextLongName( name );
     } else if (type instanceof RefLikeType) {
-        nextRefLikeTypeName( name );
+        appendNextRefLikeTypeName( name );
     } else if (type instanceof UnknownType) {
-        nextUnknownTypeName( name );
+        appendNextUnknownTypeName( name );
     } else {
       throw new RuntimeException("Unhandled Type of Local variable to Generate - Not Implemented");
     }
@@ -132,47 +132,47 @@ public class LocalGenerator {
   private int tempChar = 0;
   private int tempUnknownType = 0;
 
-  private void nextIntName(StringBuilder name) {
+  private void appendNextIntName(StringBuilder name) {
     name.append("i").append(tempInt++);
   }
 
-  private void nextCharName(StringBuilder name) {
+  private void appendNextCharName(StringBuilder name) {
     name.append("c").append(tempChar++);
   }
 
-  private void nextVoidName(StringBuilder name) {
+  private void appendNextVoidName(StringBuilder name) {
     name.append("v").append(tempVoid++);
   }
 
-  private void nextByteName(StringBuilder name) {
+  private void appendNextByteName(StringBuilder name) {
     name.append("b").append(tempByte++);
   }
 
-  private void nextShortName(StringBuilder name) {
+  private void appendNextShortName(StringBuilder name) {
     name.append("s").append(tempShort++);
   }
 
-  private void nextBooleanName(StringBuilder name) {
+  private void appendNextBooleanName(StringBuilder name) {
     name.append("z").append(tempBoolean++);
   }
 
-  private void nextDoubleName(StringBuilder name) {
+  private void appendNextDoubleName(StringBuilder name) {
     name.append("d").append(tempDouble++);
   }
 
-  private void nextFloatName(StringBuilder name) {
+  private void appendNextFloatName(StringBuilder name) {
     name.append("f").append(tempFloat++);
   }
 
-  private void nextLongName(StringBuilder name) {
+  private void appendNextLongName(StringBuilder name) {
     name.append("l").append(tempLong++);
   }
 
-  private void nextRefLikeTypeName(StringBuilder name) {
+  private void appendNextRefLikeTypeName(StringBuilder name) {
     name.append("r").append(tempRefLikeType++);
   }
 
-  private void nextUnknownTypeName(StringBuilder name) {
+  private void appendNextUnknownTypeName(StringBuilder name) {
     name.append("u").append(tempUnknownType++);
   }
 
