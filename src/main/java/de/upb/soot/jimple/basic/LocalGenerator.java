@@ -196,7 +196,7 @@ public class LocalGenerator {
     return this.thisLocal;
   }
 
-  public Local getParemeterLocal(int i) {
+  public Local getParameterLocal(int i) {
     return this.paraLocals.get(i);
   }
 }

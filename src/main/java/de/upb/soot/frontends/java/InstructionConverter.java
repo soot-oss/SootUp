@@ -781,7 +781,7 @@ public class InstructionConverter {
       }
     }
     if (symbolTable.isParameter(valueNumber)) {
-      Local para = localGenerator.getParemeterLocal(valueNumber - 1);
+      Local para = localGenerator.getParameterLocal(valueNumber - 1);
       if (para != null) {
         return para;
       }
