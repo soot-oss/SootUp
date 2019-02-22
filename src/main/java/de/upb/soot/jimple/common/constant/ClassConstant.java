@@ -39,7 +39,8 @@ import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.StringTools;
+
+import soot.util.StringTools;
 
 @SuppressWarnings("serial")
 public class ClassConstant extends Constant {
