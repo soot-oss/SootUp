@@ -114,7 +114,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
     if (argBoxes == null) {
       return Collections.emptyList();
     }
-    List<ValueBox> list = new ArrayList<ValueBox>();
+    List<ValueBox> list = new ArrayList<>();
     Collections.addAll(list, argBoxes);
     for (ValueBox element : argBoxes) {
       list.addAll(element.getValue().getUseBoxes());

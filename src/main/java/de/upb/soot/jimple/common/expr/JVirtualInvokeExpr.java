@@ -55,7 +55,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public Object clone() {
-    ArrayList<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+    ArrayList<Value> clonedArgs = new ArrayList<>(getArgCount());
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }

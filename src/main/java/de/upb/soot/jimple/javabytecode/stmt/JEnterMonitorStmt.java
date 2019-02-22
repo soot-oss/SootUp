@@ -92,8 +92,4 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
     return comparator.caseEnterMonitorStmt(this, o);
   }
 
-  @Override
-  public int equivHashCode() {
-    return super.equivHashCode();
-  }
 }

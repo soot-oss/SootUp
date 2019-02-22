@@ -92,9 +92,4 @@ public class JExitMonitorStmt extends AbstractOpStmt {
     return comparator.caseExitMonitorStmt(this, o);
   }
 
-  @Override
-  public int equivHashCode() {
-    return super.equivHashCode();
-  }
-
 }

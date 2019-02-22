@@ -64,7 +64,7 @@ public class ClassConstant extends Constant {
 
   private static String sootTypeToString(Type tp) {
     if (tp instanceof RefType) {
-      return "L" + ((RefType) tp).getTypeSignature().toString().replaceAll("\\.", "/") + ";";
+      return "L" + tp.getTypeSignature().toString().replaceAll("\\.", "/") + ";";
     } else if (tp instanceof ArrayType) {
       ArrayType at = (ArrayType) tp;
       return "[" + sootTypeToString(at.getElementType());
