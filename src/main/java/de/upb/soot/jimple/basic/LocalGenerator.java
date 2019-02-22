@@ -50,12 +50,9 @@ import java.util.Map;
 public class LocalGenerator {
   private List<Local> locals = new ArrayList<>();
   private Local thisLocal;
-  private Map<Integer, Local> paraLocals;
+  private Map<Integer, Local> paraLocals = new HashMap<>();
 
-  public LocalGenerator() {
-    this.locals = new ArrayList<>();
-    this.paraLocals = new HashMap<>();
-  }
+  public LocalGenerator() { }
 
   /**
    * generate this local with given type

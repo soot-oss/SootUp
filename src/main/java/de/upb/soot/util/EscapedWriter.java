@@ -50,7 +50,6 @@ public class EscapedWriter extends FilterWriter {
 
   /** Write a segment of the given String. */
   public void write(String s, int off, int len) throws IOException {
-    // PTODO: possible Performance+: less calls/loopbranch/synchronizedcalls/ -> sequence of Strings to super.write(String, start, len).
     final int end = off + len;
     for (int i = off; i < end; i++) {
       write(s.charAt(i));
