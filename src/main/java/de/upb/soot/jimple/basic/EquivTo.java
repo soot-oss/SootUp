@@ -45,5 +45,5 @@ public interface EquivTo {
   /**
    * Returns true if this object is equivalent to o according to the given comparator.
    */
-  public boolean equivTo(Object o, JimpleComparator comparator);
+  boolean equivTo(Object o, JimpleComparator comparator);
 }

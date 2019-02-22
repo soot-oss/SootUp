@@ -600,7 +600,7 @@ public class JimpleConverter {
     String className = methodSig.declClassSignature.getFullyQualifiedName();
     SootClass declaringClass = null;
     if (!Scene.v().containsClass(className)) {
-      if (fromClasses.stream().filter(c -> c.getName().equals(className)).findFirst().isPresent()) {
+      if (fromClasses.stream().anyMatch(c -> c.getName().equals(className))) {
         declaringClass = new SootClass(className);
         Scene.v().addClass(declaringClass);
       } else {

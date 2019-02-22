@@ -87,6 +87,6 @@ public interface IStmt extends EquivTo, IAcceptor, Serializable {
    * 
    * @return he position information of this statement
    */
-  public PositionInfo getPositionInfo();
+  PositionInfo getPositionInfo();
 
 }

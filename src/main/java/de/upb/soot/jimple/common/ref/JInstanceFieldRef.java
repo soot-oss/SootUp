@@ -44,8 +44,7 @@ public class JInstanceFieldRef extends FieldRef {
    */
   public JInstanceFieldRef(IView view, Value base, FieldSignature fieldSig) {
     super(view, fieldSig);
-    ValueBox baseBox = Jimple.newLocalBox(base);
-    this.baseBox = baseBox;
+    this.baseBox = Jimple.newLocalBox(base);
   }
 
   @Override
@@ -82,9 +81,8 @@ public class JInstanceFieldRef extends FieldRef {
    */
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>();
 
-    useBoxes.addAll(baseBox.getValue().getUseBoxes());
+    List<ValueBox> useBoxes = new ArrayList<ValueBox>(baseBox.getValue().getUseBoxes());
     useBoxes.add(baseBox);
 
     return useBoxes;
