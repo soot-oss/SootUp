@@ -75,11 +75,10 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-
-    builder.append(Jimple.VIRTUALINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(methodSignature).append("(");
+    builder.append(Jimple.VIRTUALINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(methodSignature)
+        .append("(");
     argBoxesToString(builder);
     builder.append(")");
-
     return builder.toString();
   }
 

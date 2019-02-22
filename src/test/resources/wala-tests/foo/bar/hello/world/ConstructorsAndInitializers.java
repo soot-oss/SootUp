@@ -38,71 +38,71 @@
 package foo.bar.hello.world;
 
 class Super {
-	String s;
+  String s;
 
-	Super(String x) {
-		super();
-		s = x;
-	}
+  Super(String x) {
+    super();
+    s = x;
+  }
 }
 
 public class ConstructorsAndInitializers extends Super {
-	static int iX;
-	static int sX;
+  static int iX;
+  static int sX;
 
-	Object x;
+  Object x;
 
-	static {
-		sX = 11;
-	}
+  static {
+    sX = 11;
+  }
 
-	{
-		iX = 55 + 33;
-		sX = 6;
-	}
+  {
+    iX = 55 + 33;
+    sX = 6;
+  }
 
-	ConstructorsAndInitializers() {
-		this("hello");
-	}
+  ConstructorsAndInitializers() {
+    this("hello");
+  }
 
-	{
-		int y = 5;
-		iX = y + 9;
+  {
+    int y = 5;
+    iX = y + 9;
 
-		x = new Super("yo wassup") {
+    x = new Super("yo wassup") {
 
-			{
-				s += " i say wassup!";
-				iX = 55 + 12;
-			}
+      {
+        s += " i say wassup!";
+        iX = 55 + 12;
+      }
 
       @Override
       public String toString() {
-				return s + " -- from an anon class in " + iX + "," + sX + ": " + ConstructorsAndInitializers.this.s;
-			}
-			
-			{
-				s += " i say i say";
-			}
-		};
-	}
+        return s + " -- from an anon class in " + iX + "," + sX + ": " + ConstructorsAndInitializers.this.s;
+      }
 
-	protected ConstructorsAndInitializers(String x) {
-		super("yo");
-		iX = 99;
-	}
+      {
+        s += " i say i say";
+      }
+    };
+  }
 
-	static {
-		sX = 22;
-	}
+  protected ConstructorsAndInitializers(String x) {
+    super("yo");
+    iX = 99;
+  }
 
-	public static void main(String args[]) {
-		System.out.println(new ConstructorsAndInitializers().x.toString()); // yo wassup i say wassup! i say i say -- from an anon class in 99,6: yo
+  static {
+    sX = 22;
+  }
 
-		class T{
-			
-		}
-		T t = new T();
-	}
+  public static void main(String args[]) {
+    System.out.println(new ConstructorsAndInitializers().x.toString()); // yo wassup i say wassup! i say i say -- from an
+                                                                        // anon class in 99,6: yo
+
+    class T {
+
+    }
+    T t = new T();
+  }
 }
-

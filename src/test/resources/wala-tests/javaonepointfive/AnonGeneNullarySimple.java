@@ -39,28 +39,28 @@ package javaonepointfive;
 
 public class AnonGeneNullarySimple {
 
-	static interface Ops<E> {
-		public E nullary();
-	}
+  static interface Ops<E> {
+    public E nullary();
+  }
 
-	static class StrTripler implements Ops<String> {
-		
+  static class StrTripler implements Ops<String> {
+
     @Override
     public String nullary() {
-			String x = "talk about it ";
-			return x+x+x;
-		}
-	}		
+      String x = "talk about it ";
+      return x + x + x;
+    }
+  }
 
-	public static void main(String args[]) {
-		(new AnonGeneNullarySimple()).doit();
-	}
-	
-	private void doit() {
-		Ops<String> ops = new StrTripler();
-		String globalEconomy = ops.nullary();
-		String localEconomy = new StrTripler().nullary();
-		System.out.println(globalEconomy+localEconomy);
-		
-	}
+  public static void main(String args[]) {
+    (new AnonGeneNullarySimple()).doit();
+  }
+
+  private void doit() {
+    Ops<String> ops = new StrTripler();
+    String globalEconomy = ops.nullary();
+    String localEconomy = new StrTripler().nullary();
+    System.out.println(globalEconomy + localEconomy);
+
+  }
 }

@@ -16,4 +16,3 @@ public class TypeInferencePrimAndStringOp {
     String result = "a" + a;
   }
 }
-

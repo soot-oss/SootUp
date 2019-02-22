@@ -41,18 +41,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GenericArrays {
-	public static void main(String args[]) {
-		(new GenericArrays()).doit();
-	}
-	
-	private void doit() {
-		List<?>[] lsa = new List<?>[10]; // ok, array of unbounded wildcard type
-		Object o = lsa;
-		Object[] oa = (Object[]) o;
-		List<Integer> li = new ArrayList<>();
-		li.add(Integer.valueOf(3));
-		oa[1] = li; // correct
-		String s = (String) lsa[1].get(0); // run time error, but cast is explicit
+  public static void main(String args[]) {
+    (new GenericArrays()).doit();
+  }
 
-	}
+  private void doit() {
+    List<?>[] lsa = new List<?>[10]; // ok, array of unbounded wildcard type
+    Object o = lsa;
+    Object[] oa = (Object[]) o;
+    List<Integer> li = new ArrayList<>();
+    li.add(Integer.valueOf(3));
+    oa[1] = li; // correct
+    String s = (String) lsa[1].get(0); // run time error, but cast is explicit
+
+  }
 }

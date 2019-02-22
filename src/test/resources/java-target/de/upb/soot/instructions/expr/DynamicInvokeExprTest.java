@@ -6,7 +6,6 @@ import java.lang.invoke.MethodType;
 
 public class DynamicInvokeExprTest {
 
-
   String sth() {
     return "something";
   }

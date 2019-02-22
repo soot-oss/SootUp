@@ -58,13 +58,13 @@ public class EscapedWriter extends FilterWriter {
 
   private final StringBuilder mini = new StringBuilder(8);
 
-  private boolean isClean( int ch ){
-      return ch >= 32 && ch <= 126 || ch == cr || ch == lf;
+  private boolean isClean(int ch) {
+    return ch >= 32 && ch <= 126 || ch == cr || ch == lf;
   }
 
   /** Write a single character. */
   public void write(int ch) throws IOException {
-    if ( isClean(ch) ) {
+    if (isClean(ch)) {
       super.write(ch);
       return;
     }
@@ -74,7 +74,7 @@ public class EscapedWriter extends FilterWriter {
     final int len = mini.length();
 
     // prepend \\u + [0]{0,4} to hex string so it writes "\\u" + "minimum 4 alphanumeric chars and max. 8"
-    int cutPos = ( len < 4 )? 2+4-len : 2;
+    int cutPos = (len < 4) ? 2 + 4 - len : 2;
     super.write("\\u0000", 0, cutPos);
     super.write(mini.toString(), 0, len);
   }

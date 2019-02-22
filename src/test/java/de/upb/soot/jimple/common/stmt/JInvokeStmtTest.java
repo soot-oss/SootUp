@@ -63,10 +63,10 @@ import org.junit.experimental.categories.Category;
 import categories.Java8Test;
 
 /**
-*
-* @author Markus Schmidt & Linghui Luo
-*
-*/
+ *
+ * @author Markus Schmidt & Linghui Luo
+ *
+ */
 @Category(Java8Test.class)
 public class JInvokeStmtTest {
 

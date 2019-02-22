@@ -38,21 +38,21 @@
 package foo.bar.hello.world;
 
 public class DefaultCtorInitializerTest {
-	String x;
+  String x;
 
-	public static void main(String args[]) {
-		// MAKE SURE initializer added to default ctor!!!
-		System.out.println(new DefaultCtorInitializerTest().x + z); // hellohellogoodbye
-	}
+  public static void main(String args[]) {
+    // MAKE SURE initializer added to default ctor!!!
+    System.out.println(new DefaultCtorInitializerTest().x + z); // hellohellogoodbye
+  }
 
-	static String z;
-	static {
-		z = "goodbye"; 
-	}
-	
-	{
-		String y = "hello";
-		x = y + y;
-	}
+  static String z;
+  static {
+    z = "goodbye";
+  }
+
+  {
+    String y = "hello";
+    x = y + y;
+  }
 
 }

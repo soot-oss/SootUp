@@ -39,61 +39,62 @@ package javaonepointfive;
 
 public class AnonymousGenerics {
 
-	static interface Ops<E> {
-		public E nullary();
-		public E unary(E x);
-	}
+  static interface Ops<E> {
+    public E nullary();
 
-	static class StrTripler implements Ops<String> {
-		// if has type parameters, find overriding method and
-		// get erasures for all of those types and make a new method
-		// that calls this one (with casts). no worries about return values.
-		
+    public E unary(E x);
+  }
+
+  static class StrTripler implements Ops<String> {
+    // if has type parameters, find overriding method and
+    // get erasures for all of those types and make a new method
+    // that calls this one (with casts). no worries about return values.
+
     @Override
     public String unary(String x) {
-			return x + x + x;
-		}
-		
+      return x + x + x;
+    }
+
     @Override
     public String nullary() {
-			String x = "talk about it ";
-			return x+x+x;
-		}
-	}		
+      String x = "talk about it ";
+      return x + x + x;
+    }
+  }
 
-	public static void main(String args[]) {
-		(new AnonymousGenerics()).doit();
-	}
-	
-	private void doit() {
-		Ops<String> strQuadrupler = new Ops<String>() {
-			
+  public static void main(String args[]) {
+    (new AnonymousGenerics()).doit();
+  }
+
+  private void doit() {
+    Ops<String> strQuadrupler = new Ops<String>() {
+
       @Override
       public String unary(String x) {
-				return x+x+x+x;
-			}
-			
+        return x + x + x + x;
+      }
+
       @Override
       public String nullary() {
-				String x = "time to make a move to the global economy ";
-				return x+x+x+x;
-			}
-		};
-		System.out.println(strQuadrupler.unary("hi"));
-		System.out.println(new StrTripler().unary("hi"));
-		
-		String globalEconomy = strQuadrupler.nullary();
-		System.out.println(globalEconomy);
-		
-		Ops<String> ops = new StrTripler();
-		globalEconomy = ops.nullary();
-		System.out.println(globalEconomy);
-		
-		Ops<String> hack = ops;
-		hack.unary("whatever");
-		hack.nullary();
-		hack = strQuadrupler;
-		hack.unary("whatever");
-		hack.nullary();
-	}
+        String x = "time to make a move to the global economy ";
+        return x + x + x + x;
+      }
+    };
+    System.out.println(strQuadrupler.unary("hi"));
+    System.out.println(new StrTripler().unary("hi"));
+
+    String globalEconomy = strQuadrupler.nullary();
+    System.out.println(globalEconomy);
+
+    Ops<String> ops = new StrTripler();
+    globalEconomy = ops.nullary();
+    System.out.println(globalEconomy);
+
+    Ops<String> hack = ops;
+    hack.unary("whatever");
+    hack.nullary();
+    hack = strQuadrupler;
+    hack.unary("whatever");
+    hack.nullary();
+  }
 }

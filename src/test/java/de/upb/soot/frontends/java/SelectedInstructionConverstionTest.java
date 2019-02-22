@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 

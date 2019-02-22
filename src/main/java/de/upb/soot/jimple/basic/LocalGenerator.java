@@ -52,7 +52,8 @@ public class LocalGenerator {
   private Local thisLocal;
   private Map<Integer, Local> paraLocals = new HashMap<>();
 
-  public LocalGenerator() { }
+  public LocalGenerator() {
+  }
 
   /**
    * generate this local with given type
@@ -88,32 +89,32 @@ public class LocalGenerator {
 
   private Local generate(Type type, boolean isField) {
     StringBuilder name = new StringBuilder(7);
-    if(!isField){
-        name.append("$");
+    if (!isField) {
+      name.append("$");
     }
 
     if (type instanceof IntType) {
-        appendNextIntName( name );
+      appendNextIntName(name);
     } else if (type instanceof ByteType) {
-        appendNextByteName( name );
+      appendNextByteName(name);
     } else if (type instanceof ShortType) {
-        appendNextShortName( name );
+      appendNextShortName(name);
     } else if (type instanceof BooleanType) {
-        appendNextBooleanName( name );
+      appendNextBooleanName(name);
     } else if (type instanceof VoidType) {
-        appendNextVoidName( name );
+      appendNextVoidName(name);
     } else if (type instanceof CharType) {
-        appendNextCharName( name );
+      appendNextCharName(name);
     } else if (type instanceof DoubleType) {
-        appendNextDoubleName( name );
+      appendNextDoubleName(name);
     } else if (type instanceof FloatType) {
-        appendNextFloatName( name );
+      appendNextFloatName(name);
     } else if (type instanceof LongType) {
-        appendNextLongName( name );
+      appendNextLongName(name);
     } else if (type instanceof RefLikeType) {
-        appendNextRefLikeTypeName( name );
+      appendNextRefLikeTypeName(name);
     } else if (type instanceof UnknownType) {
-        appendNextUnknownTypeName( name );
+      appendNextUnknownTypeName(name);
     } else {
       throw new RuntimeException("Unhandled Type of Local variable to Generate - Not Implemented");
     }

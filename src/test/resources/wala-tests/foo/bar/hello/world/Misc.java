@@ -39,20 +39,20 @@ package foo.bar.hello.world;
 
 public class Misc {
 
-	public static void main(String args[]) {
-		if ( "hello" instanceof Object ) {
-			System.out.println("strings are objects in java");
-			Object x = (Object) "hello";
-			String y = (String) x;
-			String z = (String) null;
-			x = (String) null;
-			char a = 'a';
-			switch (a) {
-			case 'c':
-			case 'b':
-			case 'a':
-				break;
-			}
-		}
-	}
+  public static void main(String args[]) {
+    if ("hello" instanceof Object) {
+      System.out.println("strings are objects in java");
+      Object x = (Object) "hello";
+      String y = (String) x;
+      String z = (String) null;
+      x = (String) null;
+      char a = 'a';
+      switch (a) {
+        case 'c':
+        case 'b':
+        case 'a':
+          break;
+      }
+    }
+  }
 }

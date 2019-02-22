@@ -39,40 +39,40 @@ package foo.bar.hello.world;
 
 public class ArraysAndSuch {
 
-	public static void main(String args[]) {
-		ArraysAndSuch.main();
-	}
-	public static void main() {
-		Object o1 = null;
-		Object[] os1 = new Object[] { null, o1, null };
-		Object[] os2 = { null };
-		os1 = new Object[] { null };
-		os1 = new String[][] { { null, null }, { null} };
-		os1 = new Object[][] { { null, o1 }, { null}, {os2}, {null,os1,null} };
-		System.out.println(os1[1]);
-		os1[1] = null;
+  public static void main(String args[]) {
+    ArraysAndSuch.main();
+  }
 
-		os1.clone();
-		if ( os1.equals(os2) ) {
-			Class<? extends Object[]> x = os1.getClass();
-			os1.notify();
-			os1.toString();
-			try {
-				x.getClasses().wait(x.getClasses().length,o1.hashCode());
-				os1.wait(os1.length);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		float x[] = new float[4+5];
-		int[][][][] y = new int[2][x.length][1][1+1];
-		int z[] = new int[] { 2+3, 4+3 };
-		boolean[] a = new boolean[] { };
-		Object b = new String[] { };
-		Object c[] = new String[] {};
-		String d[] = new String[3];
-	}
-	
-	
+  public static void main() {
+    Object o1 = null;
+    Object[] os1 = new Object[] { null, o1, null };
+    Object[] os2 = { null };
+    os1 = new Object[] { null };
+    os1 = new String[][] { { null, null }, { null } };
+    os1 = new Object[][] { { null, o1 }, { null }, { os2 }, { null, os1, null } };
+    System.out.println(os1[1]);
+    os1[1] = null;
+
+    os1.clone();
+    if (os1.equals(os2)) {
+      Class<? extends Object[]> x = os1.getClass();
+      os1.notify();
+      os1.toString();
+      try {
+        x.getClasses().wait(x.getClasses().length, o1.hashCode());
+        os1.wait(os1.length);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
+    float x[] = new float[4 + 5];
+    int[][][][] y = new int[2][x.length][1][1 + 1];
+    int z[] = new int[] { 2 + 3, 4 + 3 };
+    boolean[] a = new boolean[] {};
+    Object b = new String[] {};
+    Object c[] = new String[] {};
+    String d[] = new String[3];
+  }
+
 }

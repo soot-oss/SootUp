@@ -1,19 +1,16 @@
 package de.upb.soot.concrete.operators;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 public class DoubleOps {
 
-//  public static void main(String[] args) throws InvocationTargetException, IllegalAccessException {
-//    DoubleOps ops = new DoubleOps();
-//    for (Method method : ops.getClass().getMethods()) {
-//      if (!method.getName().contains("main")) {
-//        final Object invoke = method.invoke(ops);
-//        System.out.println(method.getName());
-//      }
-//    }
-//  }
+  // public static void main(String[] args) throws InvocationTargetException, IllegalAccessException {
+  // DoubleOps ops = new DoubleOps();
+  // for (Method method : ops.getClass().getMethods()) {
+  // if (!method.getName().contains("main")) {
+  // final Object invoke = method.invoke(ops);
+  // System.out.println(method.getName());
+  // }
+  // }
+  // }
 
   public void addition() {
     double a = 16777217d;

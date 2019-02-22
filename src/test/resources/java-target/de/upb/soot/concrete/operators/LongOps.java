@@ -2,7 +2,6 @@ package de.upb.soot.concrete.operators;
 
 public class LongOps {
 
-
   //
   // public static void main(String[] args) throws InvocationTargetException, IllegalAccessException {
   // LongOps ops = new LongOps();

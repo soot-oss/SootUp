@@ -38,34 +38,35 @@
 package javaonepointfive;
 
 public class Varargs {
-	public Varargs(int... x) {
-		System.out.println(x[0]==x[1]);
-	}
-	public Varargs() {
-		this(1,1);
-	}
-	
-	public static void varargs(int x, int y, Object... foo) {
-		System.out.println(x);
-		System.out.println(y);
-		for (int i = 0; i < foo.length; i++)
-			System.out.println(foo[i]);
-		
-		new Varargs();
-	}
+  public Varargs(int... x) {
+    System.out.println(x[0] == x[1]);
+  }
 
-	// try overriding a function and causing havoc (i assume it knows at compile time whether to expand varargs)
-	public static void varargs(int x, int y, String foo, String xa, String ya, String z) {
-		System.out.println("gotcha!");
-	}
+  public Varargs() {
+    this(1, 1);
+  }
 
-	public static void main(String args[]) {
-		varargs(2, 3, new String[] { "hello", "world" });
-		varargs(2, 3, (Object) new String[] { "hello", "world" });
-		varargs(2, 3, (Object[]) new String[] { "hello", "world" });
-		varargs(2, 3);
-		varargs(2, 3, "hi");
-		varargs(2, 3, "hello", "there");
-		varargs(4, 5, "coucou", "monde", "shalom", "'olam");
-	}
+  public static void varargs(int x, int y, Object... foo) {
+    System.out.println(x);
+    System.out.println(y);
+    for (int i = 0; i < foo.length; i++)
+      System.out.println(foo[i]);
+
+    new Varargs();
+  }
+
+  // try overriding a function and causing havoc (i assume it knows at compile time whether to expand varargs)
+  public static void varargs(int x, int y, String foo, String xa, String ya, String z) {
+    System.out.println("gotcha!");
+  }
+
+  public static void main(String args[]) {
+    varargs(2, 3, new String[] { "hello", "world" });
+    varargs(2, 3, (Object) new String[] { "hello", "world" });
+    varargs(2, 3, (Object[]) new String[] { "hello", "world" });
+    varargs(2, 3);
+    varargs(2, 3, "hi");
+    varargs(2, 3, "hello", "there");
+    varargs(4, 5, "coucou", "monde", "shalom", "'olam");
+  }
 }

@@ -38,33 +38,32 @@
 package foo.bar.hello.world;
 
 public class SwitchCase {
-	
-	public static final int X = 10;
-	
-	public static void main(String args[]) {
-		
-		
-		int x = 5+X;
-//		int y =6 +7;
-		switch (x) {
-		case 0:
-		case 32:
-			System.out.println("escucha");
-		case 2:
-			System.out.println("ve");
-			break;
-		case X:
-			if ( false ) {
-				System.out.println("Hello world");
-			}
-			break;
-		case 4: {
-			int z = 3;
-			System.out.println("es un charm la vez " + z + "a");
-			break;
-		}
-		default:
-			System.out.println("default");
-		}
-	}
+
+  public static final int X = 10;
+
+  public static void main(String args[]) {
+
+    int x = 5 + X;
+    // int y =6 +7;
+    switch (x) {
+      case 0:
+      case 32:
+        System.out.println("escucha");
+      case 2:
+        System.out.println("ve");
+        break;
+      case X:
+        if (false) {
+          System.out.println("Hello world");
+        }
+        break;
+      case 4: {
+        int z = 3;
+        System.out.println("es un charm la vez " + z + "a");
+        break;
+      }
+      default:
+        System.out.println("default");
+    }
+  }
 }

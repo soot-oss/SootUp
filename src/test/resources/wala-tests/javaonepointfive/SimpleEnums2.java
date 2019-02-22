@@ -38,49 +38,46 @@
 package javaonepointfive;
 
 public class SimpleEnums2 {
-	public enum Direction {
-	    NORTH,
-	    EAST,
-	    SOUTH,
-	    WEST;
-	    public static void hello() {
-	    	System.out.println(NORTH);
-	    }
-	    
-	    public static Direction[] myValues() {
-	    	return new Direction[] { NORTH, EAST, SOUTH, WEST };
-	    }
-	}
+  public enum Direction {
+    NORTH, EAST, SOUTH, WEST;
+    public static void hello() {
+      System.out.println(NORTH);
+    }
 
-	public static void main(String args[]) {
-		(new SimpleEnums2()).doit();
-	}
-	
-	private void doit() {
-		System.out.println("never eat shredded wheat");
-		System.out.println(Direction.NORTH);
-		System.out.println(Direction.EAST);
-		System.out.println(Direction.SOUTH);
-		System.out.println(Direction.WEST);
-		
-		Direction abc = Enum.valueOf(Direction.class, "NORTH");
-		Direction efg = Direction.valueOf("NORTH");
-		System.out.println(abc);
-		System.out.println(efg);
-		
-		Direction x = Direction.values()[0];
-		System.out.println(x);
-		Direction y = Direction.myValues()[0];
-		System.out.println(y);
-	}
-	
-//	public static class Foo {
-//		public static final Foo foo = new Foo("NORTH",1);
-//		public Foo(String string, int i) {
-//		}
-//	}
-//	public static void main(String args[]) {
-//		System.out.println(Foo.foo);
-//	}
-	
+    public static Direction[] myValues() {
+      return new Direction[] { NORTH, EAST, SOUTH, WEST };
+    }
+  }
+
+  public static void main(String args[]) {
+    (new SimpleEnums2()).doit();
+  }
+
+  private void doit() {
+    System.out.println("never eat shredded wheat");
+    System.out.println(Direction.NORTH);
+    System.out.println(Direction.EAST);
+    System.out.println(Direction.SOUTH);
+    System.out.println(Direction.WEST);
+
+    Direction abc = Enum.valueOf(Direction.class, "NORTH");
+    Direction efg = Direction.valueOf("NORTH");
+    System.out.println(abc);
+    System.out.println(efg);
+
+    Direction x = Direction.values()[0];
+    System.out.println(x);
+    Direction y = Direction.myValues()[0];
+    System.out.println(y);
+  }
+
+  // public static class Foo {
+  // public static final Foo foo = new Foo("NORTH",1);
+  // public Foo(String string, int i) {
+  // }
+  // }
+  // public static void main(String args[]) {
+  // System.out.println(Foo.foo);
+  // }
+
 }

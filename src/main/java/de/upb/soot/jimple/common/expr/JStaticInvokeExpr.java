@@ -91,14 +91,9 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-
-    builder.append(Jimple.STATICINVOKE)
-            .append(" ")
-            .append(methodSignature)
-            .append("(");
+    builder.append(Jimple.STATICINVOKE).append(" ").append(methodSignature).append("(");
     argBoxesToString(builder);
     builder.append(")");
-
     return builder.toString();
   }
 

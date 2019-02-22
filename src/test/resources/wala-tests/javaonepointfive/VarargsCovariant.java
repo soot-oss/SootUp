@@ -38,31 +38,31 @@
 package javaonepointfive;
 
 public class VarargsCovariant {
-	static class A { 
-		A hello(int... x) {
-			System.out.println("a hello");
-			return this;
-		} 
-	}
+  static class A {
+    A hello(int... x) {
+      System.out.println("a hello");
+      return this;
+    }
+  }
 
-	static class B extends A { 
-		
+  static class B extends A {
+
     @Override
     B hello(int... x) {
-			System.out.println("b hello");
-			return this;
-		}
-	}
+      System.out.println("b hello");
+      return this;
+    }
+  }
 
-	public static void main(String args[]) {
-		(new VarargsCovariant()).doit();
-	}
-	
-	private void doit() {
-		A a = new A();
-		a.hello(3114, 35, 74, 51617054);
-		a = new B();
-		a.hello(3114, 35, 74, 51617054);
-	}
+  public static void main(String args[]) {
+    (new VarargsCovariant()).doit();
+  }
+
+  private void doit() {
+    A a = new A();
+    a.hello(3114, 35, 74, 51617054);
+    a = new B();
+    a.hello(3114, 35, 74, 51617054);
+  }
 
 }

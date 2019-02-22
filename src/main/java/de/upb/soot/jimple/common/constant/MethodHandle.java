@@ -158,6 +158,8 @@ public class MethodHandle extends Constant {
     MethodHandle other = (MethodHandle) obj;
     if (methodRef == null) {
       return other.methodRef == null;
-    } else return methodRef.equals(other.methodRef);
+    } else {
+        return methodRef.equals(other.methodRef);
+    }
   }
 }

@@ -70,8 +70,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
 
   public JTableSwitchStmt(Value key, int lowIndex, int highIndex, List<? extends IStmtBox> targets, IStmtBox defaultTarget,
       PositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[0]), defaultTarget,
-        positionInfo);
+    this(Jimple.newImmediateBox(key), lowIndex, highIndex, targets.toArray(new IStmtBox[0]), defaultTarget, positionInfo);
   }
 
   protected JTableSwitchStmt(ValueBox keyBox, int lowIndex, int highIndex, IStmtBox[] targetBoxes, IStmtBox defaultTargetBox,
@@ -100,13 +99,16 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     // The case for "i == highIndex" is handled separately after the loop.
     for (int i = lowIndex; i < highIndex; i++) {
       IStmt target = getTarget(i - lowIndex);
-      builder.append("    " + Jimple.CASE + " ").append(i).append(": ").append(Jimple.GOTO).append(" ").append(target == this ? "self" : target).append(";").append(endOfLine);
+      builder.append("    " + Jimple.CASE + " ").append(i).append(": ").append(Jimple.GOTO).append(" ")
+          .append(target == this ? "self" : target).append(";").append(endOfLine);
     }
     IStmt target = getTarget(highIndex - lowIndex);
-    builder.append("    " + Jimple.CASE + " ").append(highIndex).append(": ").append(Jimple.GOTO).append(" ").append(target == this ? "self" : target).append(";").append(endOfLine);
+    builder.append("    " + Jimple.CASE + " ").append(highIndex).append(": ").append(Jimple.GOTO).append(" ")
+        .append(target == this ? "self" : target).append(";").append(endOfLine);
 
     target = getDefaultTarget();
-    builder.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " ").append(target == this ? "self" : target).append(";").append(endOfLine);
+    builder.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " ").append(target == this ? "self" : target).append(";")
+        .append(endOfLine);
 
     builder.append("}");
 

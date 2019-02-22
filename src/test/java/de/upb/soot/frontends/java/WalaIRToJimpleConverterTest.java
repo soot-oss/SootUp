@@ -2,8 +2,6 @@ package de.upb.soot.frontends.java;
 
 import static org.junit.Assert.assertEquals;
 
-import de.upb.soot.frontends.java.WalaIRToJimpleConverter;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
