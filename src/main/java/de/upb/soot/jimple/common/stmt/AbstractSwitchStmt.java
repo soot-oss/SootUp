@@ -165,24 +165,6 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return true;
   }
 
-  protected boolean equivTo(AbstractSwitchStmt o) {
-    if (keyBox != o.keyBox || defaultTargetBox != o.defaultTargetBox) {
-      return false;
-    }
-
-    if (targetBoxes.length != o.targetBoxes.length) {
-      return false;
-    }
-    int i = 0;
-    for (IStmtBox boxOther : o.targetBoxes) {
-      if (!boxOther.getStmt().equivTo(targetBoxes[i++].getStmt())) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   @Override
   public int equivHashCode() {
     int prime = 31;
