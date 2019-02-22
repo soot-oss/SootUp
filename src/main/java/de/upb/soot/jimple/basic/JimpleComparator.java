@@ -371,7 +371,7 @@ public class JimpleComparator {
   }
 
   public boolean caseCaughtException(JCaughtExceptionRef obj, Object o) {
-    return obj instanceof JCaughtExceptionRef;
+    return o instanceof JCaughtExceptionRef;
   }
 
   public boolean caseInstanceFieldRef(JInstanceFieldRef obj, Object o) {
