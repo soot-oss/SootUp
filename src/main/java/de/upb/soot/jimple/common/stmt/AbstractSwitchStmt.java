@@ -90,9 +90,8 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
 
-    list.addAll(keyBox.getValue().getUseBoxes());
+    List<ValueBox> list = new ArrayList<ValueBox>(keyBox.getValue().getUseBoxes());
     list.add(keyBox);
 
     return list;
@@ -171,7 +170,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
       return false;
     }
 
-    if (targetBoxes.length != targetBoxes.length) {
+    if (targetBoxes.length != o.targetBoxes.length) {
       return false;
     }
     int i = 0;
