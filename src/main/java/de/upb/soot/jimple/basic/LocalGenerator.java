@@ -48,17 +48,13 @@ import java.util.Map;
  *
  */
 public class LocalGenerator {
-  private List<Local> locals;
+  private List<Local> locals = new ArrayList<>();
   private Local thisLocal;
   private Map<Integer, Local> paraLocals;
 
   public LocalGenerator() {
     this.locals = new ArrayList<>();
     this.paraLocals = new HashMap<>();
-  }
-
-  protected boolean bodyContainsLocal(String name) {
-    return locals.stream().anyMatch(c -> c.name.equals(name));
   }
 
   /**
@@ -94,142 +90,93 @@ public class LocalGenerator {
   }
 
   private Local generate(Type type, boolean isField) {
-    String name;
+    StringBuilder name = new StringBuilder(7);
+    if(!isField){
+        name.append("$");
+    }
 
     if (type instanceof IntType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextIntName();
-      } while (bodyContainsLocal(name));
+        nextIntName( name );
     } else if (type instanceof ByteType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextByteName();
-      } while (bodyContainsLocal(name));
-
+        nextByteName( name );
     } else if (type instanceof ShortType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextShortName();
-      } while (bodyContainsLocal(name));
-
+        nextShortName( name );
     } else if (type instanceof BooleanType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextBooleanName();
-      } while (bodyContainsLocal(name));
-
+        nextBooleanName( name );
     } else if (type instanceof VoidType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextVoidName();
-      } while (bodyContainsLocal(name));
-
+        nextVoidName( name );
     } else if (type instanceof CharType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextCharName();
-      } while (bodyContainsLocal(name));
-
+        nextCharName( name );
     } else if (type instanceof DoubleType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextDoubleName();
-      } while (bodyContainsLocal(name));
-
+        nextDoubleName( name );
     } else if (type instanceof FloatType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextFloatName();
-      } while (bodyContainsLocal(name));
+        nextFloatName( name );
     } else if (type instanceof LongType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextLongName();
-      } while (bodyContainsLocal(name));
+        nextLongName( name );
     } else if (type instanceof RefLikeType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextRefLikeTypeName();
-      } while (bodyContainsLocal(name));
+        nextRefLikeTypeName( name );
     } else if (type instanceof UnknownType) {
-
-      do {
-        name = isField ? "" : "$";
-        name += nextUnknownTypeName();
-      } while (bodyContainsLocal(name));
-
+        nextUnknownTypeName( name );
     } else {
       throw new RuntimeException("Unhandled Type of Local variable to Generate - Not Implemented");
     }
-    return createLocal(name, type);
+    return createLocal(name.toString(), type);
   }
 
-  private int tempInt = -1;
-  private int tempVoid = -1;
-  private int tempBoolean = -1;
-  private int tempLong = -1;
-  private int tempDouble = -1;
-  private int tempFloat = -1;
-  private int tempRefLikeType = -1;
-  private int tempByte = -1;
-  private int tempShort = -1;
-  private int tempChar = -1;
-  private int tempUnknownType = -1;
+  private int tempInt = 0;
+  private int tempVoid = 0;
+  private int tempBoolean = 0;
+  private int tempLong = 0;
+  private int tempDouble = 0;
+  private int tempFloat = 0;
+  private int tempRefLikeType = 0;
+  private int tempByte = 0;
+  private int tempShort = 0;
+  private int tempChar = 0;
+  private int tempUnknownType = 0;
 
-  private String nextIntName() {
-    tempInt++;
-    return "i" + tempInt;
+  private void nextIntName(StringBuilder name) {
+    name.append("i").append(tempInt++);
   }
 
-  private String nextCharName() {
-    tempChar++;
-    return "c" + tempChar;
+  private void nextCharName(StringBuilder name) {
+    name.append("c").append(tempChar++);
   }
 
-  private String nextVoidName() {
-    tempVoid++;
-    return "v" + tempVoid;
+  private void nextVoidName(StringBuilder name) {
+    name.append("v").append(tempVoid++);
   }
 
-  private String nextByteName() {
-    tempByte++;
-    return "b" + tempByte;
+  private void nextByteName(StringBuilder name) {
+    name.append("b").append(tempByte++);
   }
 
-  private String nextShortName() {
-    tempShort++;
-    return "s" + tempShort;
+  private void nextShortName(StringBuilder name) {
+    name.append("s").append(tempShort++);
   }
 
-  private String nextBooleanName() {
-    tempBoolean++;
-    return "z" + tempBoolean;
+  private void nextBooleanName(StringBuilder name) {
+    name.append("z").append(tempBoolean++);
   }
 
-  private String nextDoubleName() {
-    tempDouble++;
-    return "d" + tempDouble;
+  private void nextDoubleName(StringBuilder name) {
+    name.append("d").append(tempDouble++);
   }
 
-  private String nextFloatName() {
-    tempFloat++;
-    return "f" + tempFloat;
+  private void nextFloatName(StringBuilder name) {
+    name.append("f").append(tempFloat++);
   }
 
-  private String nextLongName() {
-    tempLong++;
-    return "l" + tempLong;
+  private void nextLongName(StringBuilder name) {
+    name.append("l").append(tempLong++);
   }
 
-  private String nextRefLikeTypeName() {
-    tempRefLikeType++;
-    return "r" + tempRefLikeType;
+  private void nextRefLikeTypeName(StringBuilder name) {
+    name.append("r").append(tempRefLikeType++);
   }
 
-  private String nextUnknownTypeName() {
-    tempUnknownType++;
-    return "u" + tempUnknownType;
+  private void nextUnknownTypeName(StringBuilder name) {
+    name.append("u").append(tempUnknownType++);
   }
 
   private Local createLocal(String name, Type sootType) {
