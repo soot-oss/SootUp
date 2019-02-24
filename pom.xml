@@ -13,10 +13,9 @@
 		<maven.compiler.version>3.8.0</maven.compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-<!--    <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
-		<checkstyle.version>8.9</checkstyle.version>
-		<checkstyle.dir.path>${basedir}/codingstyle</checkstyle.dir.path>
-		<checkstyle.file.path>${checkstyle.dir.path}/google_checkstyle.xml</checkstyle.file.path> -->
+		<!-- <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version> 
+			<checkstyle.version>8.9</checkstyle.version> <checkstyle.dir.path>${basedir}/codingstyle</checkstyle.dir.path> 
+			<checkstyle.file.path>${checkstyle.dir.path}/google_checkstyle.xml</checkstyle.file.path> -->
 		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
 		<jacoco-maven-plugin.version>0.8.1</jacoco-maven-plugin.version>
 		<jacoco-badge-maven-plugin.version>0.1.3</jacoco-badge-maven-plugin.version>
@@ -31,7 +30,7 @@
 		<test.sourceDir>${project.basedir}/src/test/java</test.sourceDir>
 		<test.outDir>${project.build.directory}/test-classes-java</test.outDir>
 		<checkstyle.failOnViolation>true</checkstyle.failOnViolation>
-        <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
+		<licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
 	</properties>
 
 	<profiles>
@@ -59,131 +58,66 @@
 
 	<build>
 		<plugins>
-			<!-- plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven.compiler.version}</version>
-				<configuration>
-					<source>${maven.compiler.source}</source>
-					<target>${maven.compiler.target}</target>
-				</configuration>
-			</plugin>
+			<!-- plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-compiler-plugin</artifactId> 
+				<version>${maven.compiler.version}</version> <configuration> <source>${maven.compiler.source}</source> 
+				<target>${maven.compiler.target}</target> </configuration> </plugin> <plugin> 
+				<groupId>org.apache.maven.plugins</groupId> <artifactId>maven-checkstyle-plugin</artifactId> 
+				<version>${maven-checkstyle-plugin.version}</version> <dependencies> <dependency> 
+				<groupId>com.puppycrawl.tools</groupId> <artifactId>checkstyle</artifactId> 
+				<version>${checkstyle.version}</version> </dependency> </dependencies> <executions> 
+				<execution> <id>checkstyle</id> <phase>verify</phase> <goals> <goal>check</goal> 
+				</goals> </execution> </executions> <configuration> <propertyExpansion>config_loc=${checkstyle.dir.path}</propertyExpansion> 
+				<configLocation>${checkstyle.file.path}</configLocation> <suppressionsLocation>${checkstyle.dir.path}/checkstyle_supressions.xml</suppressionsLocation> 
+				<encoding>UTF-8</encoding> <logViolationsToConsole>true</logViolationsToConsole> 
+				<failOnViolation>true</failOnViolation> <violationSeverity>warning</violationSeverity> 
+				</configuration> </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>${maven-checkstyle-plugin.version}</version>
-				<dependencies>
-					<dependency>
-						<groupId>com.puppycrawl.tools</groupId>
-						<artifactId>checkstyle</artifactId>
-						<version>${checkstyle.version}</version>
-					</dependency>
-				</dependencies>
-				<executions>
-					<execution>
-						<id>checkstyle</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
 				<configuration>
-					<propertyExpansion>config_loc=${checkstyle.dir.path}</propertyExpansion>
-					<configLocation>${checkstyle.file.path}</configLocation>
-					<suppressionsLocation>${checkstyle.dir.path}/checkstyle_supressions.xml</suppressionsLocation>
-					<encoding>UTF-8</encoding>
-					<logViolationsToConsole>true</logViolationsToConsole>
-					<failOnViolation>true</failOnViolation>
-					<violationSeverity>warning</violationSeverity>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+								<exclude>META-INF/*.RSA</exclude>
+							</excludes>
+						</filter>
+					</filters>
+					<!-- Additional configuration. -->
 				</configuration>
-			</plugin> -->
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-shade-plugin</artifactId>
-            <version>2.3</version>
-            <configuration>
-              <filters>
-                    <filter>
-                      <artifact>*:*</artifact>
-                      <excludes>
-                        <exclude>META-INF/*.SF</exclude>
-                        <exclude>META-INF/*.DSA</exclude>
-                        <exclude>META-INF/*.RSA</exclude>
-                      </excludes>
-                    </filter>
-              </filters>
-              <!-- Additional configuration. -->
-            </configuration>
-            <executions>
-              <!-- Run shade goal on package phase -->
-              <execution>
-                    <phase>package</phase>
-                    <goals>
-                      <goal>shade</goal>
-                    </goals>
-              </execution>
-            </executions>
-          </plugin>
-<!--
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>${jacoco-maven-plugin.version}</version>
 				<executions>
-					<!- -Prepares the property pointing to the JaCoCo runtime agent which
-						is passed as VM argument when Maven the Surefire plugin is executed. - ->
+					<!-- Run shade goal on package phase -->
 					<execution>
-						<id>pre-unit-test</id>
+						<phase>package</phase>
 						<goals>
-							<goal>prepare-agent</goal>
+							<goal>shade</goal>
 						</goals>
-						<configuration>
-							<!- - Sets the path to the file which contains the execution data. - ->
-							<destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-							<!- -Sets the name of the property containing the settings for JaCoCo
-								runtime agent. - ->
-							<propertyName>surefireArgLine</propertyName>
-						</configuration>
-					</execution>
-					<!- -Ensures that the code coverage report for unit tests is created
-						after unit tests have been run. - ->
-					<execution>
-						<id>post-unit-test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-						<configuration>
-							<!- - Sets the path to the file which contains the execution data. - ->
-							<dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-							<!- - Sets the output directory for the code coverage report. - ->
-							<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>com.sigpwned</groupId>
-				<artifactId>jacoco-badge-maven-plugin</artifactId>
-				<version>${jacoco-badge-maven-plugin.version}</version>
-				<executions>
-					<execution>
-						<id>generate-jacoco-badge</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>badge</goal>
-						</goals>
-						<configuration>
-							<reportFile>${project.reporting.outputDirectory}/jacoco-ut/jacoco.csv</reportFile>
-							<!- - <passing>70</passing>
-							 Legal values: instruction, branch, line, method. Optional, default
-								instruction. - ->
-							<metric>method</metric>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>-->
+			<!-- <plugin> <groupId>org.jacoco</groupId> <artifactId>jacoco-maven-plugin</artifactId> 
+				<version>${jacoco-maven-plugin.version}</version> <executions> <!- -Prepares 
+				the property pointing to the JaCoCo runtime agent which is passed as VM argument 
+				when Maven the Surefire plugin is executed. - -> <execution> <id>pre-unit-test</id> 
+				<goals> <goal>prepare-agent</goal> </goals> <configuration> <!- - Sets the 
+				path to the file which contains the execution data. - -> <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile> 
+				<!- -Sets the name of the property containing the settings for JaCoCo runtime 
+				agent. - -> <propertyName>surefireArgLine</propertyName> </configuration> 
+				</execution> <!- -Ensures that the code coverage report for unit tests is 
+				created after unit tests have been run. - -> <execution> <id>post-unit-test</id> 
+				<phase>test</phase> <goals> <goal>report</goal> </goals> <configuration> 
+				<!- - Sets the path to the file which contains the execution data. - -> <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile> 
+				<!- - Sets the output directory for the code coverage report. - -> <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory> 
+				</configuration> </execution> </executions> </plugin> <plugin> <groupId>com.sigpwned</groupId> 
+				<artifactId>jacoco-badge-maven-plugin</artifactId> <version>${jacoco-badge-maven-plugin.version}</version> 
+				<executions> <execution> <id>generate-jacoco-badge</id> <phase>verify</phase> 
+				<goals> <goal>badge</goal> </goals> <configuration> <reportFile>${project.reporting.outputDirectory}/jacoco-ut/jacoco.csv</reportFile> 
+				<!- - <passing>70</passing> Legal values: instruction, branch, line, method. 
+				Optional, default instruction. - -> <metric>method</metric> </configuration> 
+				</execution> </executions> </plugin> -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -195,16 +129,16 @@
 				</configuration>
 			</plugin>
 			<plugin>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <groupId>org.apache.maven.plugins</groupId>
-                <version>2.10.3</version>
-                <configuration>
-                    <fixTags>author</fixTags>
-                    <force>true</force>
-                    <fixFieldComment>false</fixFieldComment>
-                    <fixMethodComment>false</fixMethodComment>
-                </configuration>
-            </plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<version>2.10.3</version>
+				<configuration>
+					<fixTags>author</fixTags>
+					<force>true</force>
+					<fixFieldComment>false</fixFieldComment>
+					<fixMethodComment>false</fixMethodComment>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -309,7 +243,7 @@
 		<dependency>
 			<groupId>org.eclipse.jdt</groupId>
 			<artifactId>org.eclipse.jdt.core</artifactId>
-			<version>3.15.0</version>
+			<version>3.10.0</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor -->
@@ -332,11 +266,11 @@
 		</dependency>
 	</dependencies>
 	<repositories>
-	 	<repository>
-            <id>wala</id>
-            <name>wala snapshots</name>
-            <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
-        </repository> 
+		<repository>
+			<id>wala</id>
+			<name>wala snapshots</name>
+			<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
+		</repository>
 		<!-- include old soot repo -->
 		<repository>
 			<id>swt-upb</id>
