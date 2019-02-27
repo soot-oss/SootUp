@@ -60,7 +60,7 @@ public class SootMethodTest {
     assertTrue(dummyMainMethod.hasActiveBody());
 
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
-        new JavaClassSource(new JavaSourcePathNamespace(""), null,
+        new JavaClassSource(new JavaSourcePathNamespace(Collections.EMPTY_SET), null,
             view.getSignatureFactory().getClassSignature("dummyMain")),
         ClassType.Application, null, Collections.emptySet(), null, Collections.emptySet(),
         Collections.singleton(dummyMainMethod), null, EnumSet.of(Modifier.PUBLIC));

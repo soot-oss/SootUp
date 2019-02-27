@@ -7,6 +7,7 @@ import de.upb.soot.util.NotYetImplementedException;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
@@ -18,7 +19,7 @@ import javax.annotation.Nonnull;
  */
 public class JavaSourcePathNamespace extends AbstractNamespace {
 
-  private final @Nonnull String sourcePath;
+  private final @Nonnull Set<String> sourcePath;
 
   /**
    * Create a {@link JavaSourcePathNamespace} which locates java source code in the given source path.
@@ -26,7 +27,7 @@ public class JavaSourcePathNamespace extends AbstractNamespace {
    * @param sourcePath
    *          the source code path to search in
    */
-  public JavaSourcePathNamespace(@Nonnull String sourcePath) {
+  public JavaSourcePathNamespace(@Nonnull Set<String> sourcePath) {
     // FIXME: [JMP] Is `null` intended here?
     super(null);
     this.sourcePath = sourcePath;

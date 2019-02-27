@@ -47,7 +47,7 @@ public class JFieldRefTest {
         = new SootField(view, declaringClassSignature, fieldSig, fact.getTypeSignature("int"), EnumSet.of(Modifier.FINAL));
 
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
-        new JavaClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application, null,
+        new JavaClassSource(new JavaSourcePathNamespace(Collections.EMPTY_SET), null, declaringClassSignature), ClassType.Application, null,
         Collections.emptySet(), null, Collections.singleton(field), Collections.emptySet(), null,
         EnumSet.of(Modifier.PUBLIC));
     JStaticFieldRef ref = Jimple.newStaticFieldRef(view, fieldSig);
@@ -66,7 +66,7 @@ public class JFieldRefTest {
     SootField field
         = new SootField(view, declaringClassSignature, fieldSig, fact.getTypeSignature("int"), EnumSet.of(Modifier.FINAL));
     SootClass mainClass = new SootClass(view, ResolvingLevel.BODIES,
-        new JavaClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature), ClassType.Application, null,
+        new JavaClassSource(new JavaSourcePathNamespace(Collections.EMPTY_SET), null, declaringClassSignature), ClassType.Application, null,
         Collections.emptySet(), null, Collections.singleton(field), Collections.emptySet(), null,
         EnumSet.of(Modifier.PUBLIC));
     Local base = new Local("obj", RefType.getInstance(mainClass));

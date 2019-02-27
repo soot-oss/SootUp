@@ -9,6 +9,8 @@ import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.views.IView;
 
+import java.util.Collections;
+
 /**
  * A sample application to illustrate a potential client's path through the API
  *
@@ -23,7 +25,7 @@ public class SimpleSootClient {
 
     INamespace cpBased = new JavaClassPathNamespace(javaClassPath);
 
-    INamespace walaSource = new JavaSourcePathNamespace(javaSourcePath);
+    INamespace walaSource = new JavaSourcePathNamespace(Collections.singleton(javaSourcePath));
 
     Project p = new Project(walaSource);
 
