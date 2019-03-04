@@ -19,7 +19,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -33,20 +33,16 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 8767212132509253058L;
 
-  /**
-   * Stores the values of new ImmediateBox to the argBoxes array.
-   */
-  public JVirtualInvokeExpr(IView view, Value base, MethodSignature method, List<? extends Value> args) {
+  /** Stores the values of new ImmediateBox to the argBoxes array. */
+  public JVirtualInvokeExpr(
+      IView view, Value base, MethodSignature method, List<? extends Value> args) {
     super(view, Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
@@ -75,16 +71,18 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append(Jimple.VIRTUALINVOKE + " ").append(baseBox.getValue().toString()).append(".").append(methodSignature)
+    builder
+        .append(Jimple.VIRTUALINVOKE + " ")
+        .append(baseBox.getValue().toString())
+        .append(".")
+        .append(methodSignature)
         .append("(");
     argBoxesToString(builder);
     builder.append(")");
     return builder.toString();
   }
 
-  /**
-   * Converts a parameter of type StmtPrinter to a string literal.
-   */
+  /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.VIRTUALINVOKE);
@@ -96,5 +94,4 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     argBoxesToPrinter(up);
     up.literal(")");
   }
-
 }

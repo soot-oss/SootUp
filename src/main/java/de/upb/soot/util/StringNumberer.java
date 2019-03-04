@@ -24,7 +24,6 @@ package de.upb.soot.util;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.concurrent.ThreadSafe;
 
 /**
@@ -32,7 +31,6 @@ import javax.annotation.concurrent.ThreadSafe;
  *
  * @author Ondrej Lhotak
  */
-
 @ThreadSafe
 // TODO: check copied code from old soot
 
@@ -52,5 +50,4 @@ public class StringNumberer extends ArrayNumberer<NumberedString> {
   public NumberedString find(String s) {
     return stringToNumbered.get(s);
   }
-
 }

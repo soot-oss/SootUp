@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -30,16 +30,13 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.signatures.TypeSignature;
 
-/**
- * Soot representation of the Java built-in type 'char'. Implemented as a singleton.
- */
+/** Soot representation of the Java built-in type 'char'. Implemented as a singleton. */
 @SuppressWarnings("serial")
 public class CharType extends PrimType {
 
   public static final CharType INSTANCE = new CharType();
 
-  private CharType() {
-  }
+  private CharType() {}
 
   @Override
   public boolean equals(Object t) {

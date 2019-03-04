@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -27,14 +27,11 @@ package de.upb.soot.jimple.basic;
 
 import de.upb.soot.util.printer.IStmtPrinter;
 
-/**
- * Reference implementation for ValueBox; just add a canContainValue methodRef.
- */
+/** Reference implementation for ValueBox; just add a canContainValue methodRef. */
 public abstract class AbstractValueBox implements ValueBox {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -796126298513013484L;
+
   private Value value;
 
   public AbstractValueBox(Value value) {
@@ -49,7 +46,8 @@ public abstract class AbstractValueBox implements ValueBox {
     if (canContainValue(value)) {
       this.value = value;
     } else {
-      throw new RuntimeException("Box " + this + " cannot contain value: " + value + "(" + value.getClass() + ")");
+      throw new RuntimeException(
+          "Box " + this + " cannot contain value: " + value + "(" + value.getClass() + ")");
     }
   }
 

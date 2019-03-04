@@ -13,7 +13,6 @@ import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.common.type.VoidType;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,21 +42,17 @@ import java.util.Map;
 
 /**
  * Generates locals for Body.
- * 
- * @author Linghui Luo
  *
+ * @author Linghui Luo
  */
 public class LocalGenerator {
   private List<Local> locals = new ArrayList<>();
   private Local thisLocal;
   private Map<Integer, Local> paraLocals = new HashMap<>();
 
-  public LocalGenerator() {
-  }
+  public LocalGenerator() {}
 
-  /**
-   * generate this local with given type
-   */
+  /** generate this local with given type */
   public Local generateThisLocal(Type type) {
     if (this.thisLocal == null) {
       this.thisLocal = generateField(type);
@@ -65,16 +60,12 @@ public class LocalGenerator {
     return this.thisLocal;
   }
 
-  /**
-   * generates a new @Local given the type for field.
-   */
+  /** generates a new @Local given the type for field. */
   public Local generateField(Type type) {
     return generate(type, true);
   }
 
-  /**
-   * generates a new @Local given the type for local.
-   */
+  /** generates a new @Local given the type for local. */
   public Local generateLocal(Type type) {
     return generate(type, false);
   }
@@ -183,9 +174,7 @@ public class LocalGenerator {
     return sootLocal;
   }
 
-  /**
-   * Return all locals created for the body referenced in this LocalGenrator.
-   */
+  /** Return all locals created for the body referenced in this LocalGenrator. */
   public List<Local> getLocals() {
     return this.locals;
   }

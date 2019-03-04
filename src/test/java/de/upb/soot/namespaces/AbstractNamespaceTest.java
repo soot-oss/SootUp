@@ -1,22 +1,19 @@
 package de.upb.soot.namespaces;
 
+import categories.Java8Test;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
-
 import java.util.Collection;
 import java.util.Optional;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.experimental.categories.Category;
 import org.mockito.internal.matchers.GreaterOrEqual;
 import org.mockito.internal.matchers.LessOrEqual;
-
-import categories.Java8Test;
 
 /*-
  * #%L
@@ -40,9 +37,7 @@ import categories.Java8Test;
  * #L%
  */
 
-/**
- * @author Manuel Benz created on 07.06.18
- */
+/** @author Manuel Benz created on 07.06.18 */
 @Category(Java8Test.class)
 public abstract class AbstractNamespaceTest {
 
@@ -65,19 +60,20 @@ public abstract class AbstractNamespaceTest {
   }
 
   protected SignatureFactory createSignatureFactory() {
-    return new DefaultSignatureFactory() {
-    };
+    return new DefaultSignatureFactory() {};
   }
 
   protected IClassProvider createClassProvider() {
     return new AsmJavaClassProvider();
   }
 
-  protected void testClassReceival(AbstractNamespace ns, JavaClassSignature sig, int minClassesFound) {
+  protected void testClassReceival(
+      AbstractNamespace ns, JavaClassSignature sig, int minClassesFound) {
     testClassReceival(ns, sig, minClassesFound, -1);
   }
 
-  protected void testClassReceival(AbstractNamespace ns, JavaClassSignature sig, int minClassesFound, int maxClassesFound) {
+  protected void testClassReceival(
+      AbstractNamespace ns, JavaClassSignature sig, int minClassesFound, int maxClassesFound) {
     final Optional<ClassSource> clazz = ns.getClassSource(sig);
 
     Assert.assertTrue(clazz.isPresent());

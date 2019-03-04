@@ -4,7 +4,6 @@ import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.TypeSignature;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -22,7 +21,8 @@ public class MethodType extends Constant {
     this.parameterTypes = parameterTypes;
   }
 
-  public static MethodType getInstance(List<TypeSignature> paramaterTypes, TypeSignature returnType) {
+  public static MethodType getInstance(
+      List<TypeSignature> paramaterTypes, TypeSignature returnType) {
     return new MethodType(paramaterTypes, returnType);
   }
 
@@ -56,12 +56,10 @@ public class MethodType extends Constant {
       return false;
     }
     MethodType other = (MethodType) obj;
-    return Objects.equals(returnType, other.returnType) && Objects.equals(parameterTypes, other.parameterTypes);
+    return Objects.equals(returnType, other.returnType)
+        && Objects.equals(parameterTypes, other.parameterTypes);
   }
 
   @Override
-  public void accept(IVisitor v) {
-
-  }
-
+  public void accept(IVisitor v) {}
 }

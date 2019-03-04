@@ -13,9 +13,7 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 
-/**
- * IStmtPrinter implementation for normal Jimple
- */
+/** IStmtPrinter implementation for normal Jimple */
 public class BriefStmtPrinter extends LabeledStmtPrinter {
   public BriefStmtPrinter(Body body) {
     super(body);
@@ -75,7 +73,9 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
       return;
     }
     eatSpace = false;
-    if (s.equals(Jimple.STATICINVOKE) || s.equals(Jimple.VIRTUALINVOKE) || s.equals(Jimple.INTERFACEINVOKE)) {
+    if (s.equals(Jimple.STATICINVOKE)
+        || s.equals(Jimple.VIRTUALINVOKE)
+        || s.equals(Jimple.INTERFACEINVOKE)) {
       eatSpace = true;
       return;
     }
@@ -98,5 +98,4 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   public void fieldSignature(FieldSignature fieldSig) {
     output.append(fieldSig.toString());
   }
-
 }

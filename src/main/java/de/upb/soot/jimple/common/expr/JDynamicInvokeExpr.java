@@ -19,7 +19,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -40,31 +40,33 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.objectweb.asm.Opcodes;
 
 public class JDynamicInvokeExpr extends AbstractInvokeExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 8212277443400470834L;
+
   protected MethodSignature bsm;
   protected ValueBox[] bsmArgBoxes;
   protected int tag;
 
-  /**
-   * Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox.
-   */
-  public JDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef, int tag, List<? extends Value> methodArgs) {
+  /** Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox. */
+  public JDynamicInvokeExpr(
+      IView view,
+      MethodSignature bootstrapMethodRef,
+      List<? extends Value> bootstrapArgs,
+      MethodSignature methodRef,
+      int tag,
+      List<? extends Value> methodArgs) {
     super(view, methodRef, new ValueBox[methodArgs.size()]);
     if (!methodRef.toString().startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
       throw new IllegalArgumentException(
-          "Receiver type of JDynamicInvokeExpr must be " + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + "!");
+          "Receiver type of JDynamicInvokeExpr must be "
+              + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME
+              + "!");
     }
     this.bsm = bootstrapMethodRef;
     this.bsmArgBoxes = new ValueBox[bootstrapArgs.size()];
@@ -78,11 +80,13 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     }
   }
 
-  /**
-   * Makes a parameterized call to JDynamicInvokeExpr method.
-   */
-  public JDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef, List<? extends Value> methodArgs) {
+  /** Makes a parameterized call to JDynamicInvokeExpr method. */
+  public JDynamicInvokeExpr(
+      IView view,
+      MethodSignature bootstrapMethodRef,
+      List<? extends Value> bootstrapArgs,
+      MethodSignature methodRef,
+      List<? extends Value> methodArgs) {
     /*
      * Here the static-handle is chosen as default value, because this works for Java.
      */
@@ -109,7 +113,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JDynamicInvokeExpr(this.getView(), bsm, clonedBsmArgs, methodSignature, tag, clonedArgs);
+    return new JDynamicInvokeExpr(
+        this.getView(), bsm, clonedBsmArgs, methodSignature, tag, clonedArgs);
   }
 
   @Override
@@ -122,9 +127,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     return comparator.caseDynamicInvokeExpr(this, o);
   }
 
-  /**
-   * Returns a hash code for this object, consistent with structural equality.
-   */
+  /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
     return bsm.hashCode() * getMethod().hashCode() * 17;
@@ -195,9 +198,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     ((IExprVisitor) sw).caseDynamicInvokeExpr(this);
   }
 
-  /**
-   * Returns a list containing elements of type ValueBox.
-   */
+  /** Returns a list containing elements of type ValueBox. */
   public List<Value> getBootstrapArgs() {
     List<Value> l = new ArrayList<>();
     for (ValueBox element : bsmArgBoxes) {
@@ -210,5 +211,4 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   public int getHandleTag() {
     return tag;
   }
-
 }

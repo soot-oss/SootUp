@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -30,14 +30,11 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.Collections;
 import java.util.List;
 
 public abstract class Constant implements Value, Immediate {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -6401333027090308367L;
 
   @Override
@@ -52,8 +49,8 @@ public abstract class Constant implements Value, Immediate {
   }
 
   /**
-   * Returns true if this object is structurally equivalent to c. For Constants, equality is structural equality, so we just
-   * call equals().
+   * Returns true if this object is structurally equivalent to c. For Constants, equality is
+   * structural equality, so we just call equals().
    */
   @Override
   public boolean equivTo(Object o) {
@@ -66,8 +63,8 @@ public abstract class Constant implements Value, Immediate {
   }
 
   /**
-   * Returns a hash code consistent with structural equality for this object. For Constants, equality is structural equality;
-   * we hope that each subclass defines hashCode() correctly.
+   * Returns a hash code consistent with structural equality for this object. For Constants,
+   * equality is structural equality; we hope that each subclass defines hashCode() correctly.
    */
   @Override
   public int equivHashCode() {

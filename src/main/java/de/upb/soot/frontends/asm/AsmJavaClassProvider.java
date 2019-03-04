@@ -8,19 +8,18 @@ import de.upb.soot.frontends.asm.modules.AsmModuleClassSourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.JavaClassSignature;
-
 import java.nio.file.Path;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class AsmJavaClassProvider implements IClassProvider {
 
-  public AsmJavaClassProvider() {
-  }
+  public AsmJavaClassProvider() {}
 
   @Override
-  public ClassSource createClassSource(@Nonnull INamespace srcNamespace, @Nullable Path sourcePath,
+  public ClassSource createClassSource(
+      @Nonnull INamespace srcNamespace,
+      @Nullable Path sourcePath,
       @Nullable JavaClassSignature classSignature) {
     return new JavaClassSource(srcNamespace, sourcePath, classSignature);
   }
@@ -33,8 +32,7 @@ public class AsmJavaClassProvider implements IClassProvider {
   /**
    * Provide the ASM representation of the class file.
    *
-   * @param classSource
-   *          The source to be read.
+   * @param classSource The source to be read.
    * @return A representation of the class file.
    */
   @Override

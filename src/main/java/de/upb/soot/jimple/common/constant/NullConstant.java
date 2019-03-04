@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -32,14 +32,12 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.NullTypeSignature;
 
 public class NullConstant extends Constant {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 8286431855238615958L;
+
   public static final NullConstant INSTANCE = new NullConstant();
 
-  private NullConstant() {
-  }
+  private NullConstant() {}
 
   @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
   @Override
@@ -66,5 +64,4 @@ public class NullConstant extends Constant {
   public String toString() {
     return NullTypeSignature.NULL_TYPE_SIGNATURE.toString();
   }
-
 }

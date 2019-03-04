@@ -25,18 +25,15 @@ package de.upb.soot.jimple.common;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import de.upb.soot.jimple.IgnoreLocalNameComparator;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.IntType;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
 import soot.jimple.internal.JBreakpointStmt;
-
-import categories.Java8Test;
 
 @Category(Java8Test.class)
 public class LocalTest {
@@ -63,6 +60,5 @@ public class LocalTest {
     assertFalse(l2.equivTo(l3, comparator));
 
     assertFalse(l1.equivTo(new JBreakpointStmt(), comparator));
-
   }
 }

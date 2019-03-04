@@ -10,12 +10,12 @@ package de.upb.soot.util;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -29,8 +29,8 @@ import java.text.StringCharacterIterator;
 public class StringTools {
 
   /**
-   * Returns fromString, but with non-isalpha() characters printed as <code>'\\unnnn'</code>. Used by SootClass to generate
-   * output.
+   * Returns fromString, but with non-isalpha() characters printed as <code>'\\unnnn'</code>. Used
+   * by SootClass to generate output.
    */
   public static java.lang.String getEscapedStringOf(String fromString) {
     char[] fromStringArray;
@@ -75,8 +75,8 @@ public class StringTools {
   public static final String lineSeparator = System.getProperty("line.separator");
 
   /**
-   * Returns fromString, but with certain characters printed as if they were in a Java string literal. Used by
-   * StringConstant.toString()
+   * Returns fromString, but with certain characters printed as if they were in a Java string
+   * literal. Used by StringConstant.toString()
    */
   public static String getQuotedStringOf(String fromString) {
     // We definitely need fromString.length + 2, but let's have some
@@ -119,7 +119,8 @@ public class StringTools {
   }
 
   /**
-   * Returns a String containing the escaped <code>\\unnnn</code> representation for <code>ch</code>.
+   * Returns a String containing the escaped <code>\\unnnn</code> representation for <code>ch</code>
+   * .
    */
   public static String getUnicodeStringFromChar(char ch) {
     String s = Integer.toHexString(ch);
@@ -144,7 +145,8 @@ public class StringTools {
   }
 
   /**
-   * Returns a String de-escaping the <code>\\unnnn</code> representation for any escaped characters in the string.
+   * Returns a String de-escaping the <code>\\unnnn</code> representation for any escaped characters
+   * in the string.
    */
   public static String getUnEscapedStringOf(String str) {
     StringBuilder buf = new StringBuilder();
@@ -210,5 +212,4 @@ public class StringTools {
     }
     return res;
   }
-
 }

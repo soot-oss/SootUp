@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -32,16 +32,14 @@ import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.IVisitor;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractStmt implements IStmt {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 8029583017798662173L;
+
   private final PositionInfo positionInfo;
 
   public AbstractStmt(PositionInfo positionInfo) {
@@ -53,8 +51,9 @@ public abstract class AbstractStmt implements IStmt {
   public abstract AbstractStmt clone();
 
   /**
-   * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically updated as the structure
-   * changes. Note that they are returned in usual evaluation order. (this is important for aggregation)
+   * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically
+   * updated as the structure changes. Note that they are returned in usual evaluation order. (this
+   * is important for aggregation)
    */
   @Override
   public List<ValueBox> getUseBoxes() {
@@ -62,8 +61,8 @@ public abstract class AbstractStmt implements IStmt {
   }
 
   /**
-   * Returns a list of Boxes containing Values defined in this Unit. The list of boxes is dynamically updated as the
-   * structure changes.
+   * Returns a list of Boxes containing Values defined in this Unit. The list of boxes is
+   * dynamically updated as the structure changes.
    */
   @Override
   public List<ValueBox> getDefBoxes() {
@@ -71,8 +70,8 @@ public abstract class AbstractStmt implements IStmt {
   }
 
   /**
-   * Returns a list of Boxes containing Units defined in this Unit; typically branch targets. The list of boxes is
-   * dynamically updated as the structure changes.
+   * Returns a list of Boxes containing Units defined in this Unit; typically branch targets. The
+   * list of boxes is dynamically updated as the structure changes.
    */
   @Override
   public List<IStmtBox> getStmtBoxes() {
@@ -134,8 +133,7 @@ public abstract class AbstractStmt implements IStmt {
 
   /** Used to implement the Switchable construct. */
   @Override
-  public void accept(IVisitor sw) {
-  }
+  public void accept(IVisitor sw) {}
 
   @Override
   public void redirectJumpsToThisTo(IStmt newLocation) {
@@ -153,7 +151,6 @@ public abstract class AbstractStmt implements IStmt {
         box.setStmt(newLocation);
       }
     }
-
   }
 
   @Override
@@ -205,5 +202,4 @@ public abstract class AbstractStmt implements IStmt {
   public PositionInfo getPositionInfo() {
     return positionInfo;
   }
-
 }

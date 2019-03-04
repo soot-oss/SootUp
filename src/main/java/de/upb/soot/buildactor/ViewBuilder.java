@@ -8,7 +8,6 @@ import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaOnDemandView;
 import de.upb.soot.views.JavaView;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -17,7 +16,6 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  * @author Andreas Dann
- *
  */
 public class ViewBuilder {
   private @Nonnull Project project;
@@ -35,7 +33,8 @@ public class ViewBuilder {
     // e.g. by calling the ClassBuilder
     // compose View
 
-    for (ClassSource cs : this.project.getNamespace().getClassSources(result.getSignatureFactory())) {
+    for (ClassSource cs :
+        this.project.getNamespace().getClassSources(result.getSignatureFactory())) {
       try {
         AbstractClass abstactClass = cs.getContent().resolve(ResolvingLevel.BODIES, result);
       } catch (ResolveException e) {

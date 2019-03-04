@@ -10,12 +10,12 @@ package de.upb.soot.frontends.asm;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -29,9 +29,7 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
-
 import java.util.ArrayList;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -51,16 +49,13 @@ final class StackFrame {
   /**
    * Constructs a new stack frame.
    *
-   * @param src
-   *          source the frame belongs to.
+   * @param src source the frame belongs to.
    */
   StackFrame(@Nonnull AsmMethodSourceContent src) {
     this.src = src;
   }
 
-  /**
-   * @return operands produced by this frame.
-   */
+  /** @return operands produced by this frame. */
   @Nullable
   Operand[] out() {
     return out;
@@ -69,8 +64,7 @@ final class StackFrame {
   /**
    * Sets the operands used by this frame.
    *
-   * @param oprs
-   *          the operands.
+   * @param oprs the operands.
    */
   void in(@Nonnull Operand... oprs) {
     ArrayList<Operand[]> in = this.in;
@@ -86,8 +80,7 @@ final class StackFrame {
   /**
    * Sets the value boxes corresponding to the operands used by this frame.
    *
-   * @param boxes
-   *          the boxes.
+   * @param boxes the boxes.
    */
   void boxes(ValueBox... boxes) {
     this.boxes = boxes;
@@ -96,8 +89,7 @@ final class StackFrame {
   /**
    * Sets the operands produced by this frame.
    *
-   * @param oprs
-   *          the operands.
+   * @param oprs the operands.
    */
   void out(Operand... oprs) {
     out = oprs;
@@ -106,10 +98,9 @@ final class StackFrame {
   /**
    * Merges the specified operands with the operands used by this frame.
    *
-   * @param oprs
-   *          the new operands.
-   * @throws IllegalArgumentException
-   *           if the number of new operands is not equal to the number of old operands.
+   * @param oprs the new operands.
+   * @throws IllegalArgumentException if the number of new operands is not equal to the number of
+   *     old operands.
    */
   void mergeIn(@Nonnull Operand... oprs) {
     ArrayList<Operand[]> in = this.in;
@@ -127,11 +118,14 @@ final class StackFrame {
       if (stack != null) {
         if (newOp.stack == null) {
           newOp.stack = stack;
-          JAssignStmt as = Jimple.newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
+          JAssignStmt as =
+              Jimple.newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
           src.setUnit(newOp.insn, as);
           newOp.updateBoxes();
         } else {
-          JAssignStmt as = Jimple.newAssignStmt(stack, newOp.stackOrValue(), PositionInfo.createNoPositionInfo());
+          JAssignStmt as =
+              Jimple.newAssignStmt(
+                  stack, newOp.stackOrValue(), PositionInfo.createNoPositionInfo());
           src.mergeUnits(newOp.insn, as);
           newOp.addBox(as.getRightOpBox());
         }
@@ -158,12 +152,14 @@ final class StackFrame {
           prevOp.removeBox(box);
           if (prevOp.stack == null) {
             prevOp.stack = stack;
-            JAssignStmt as = Jimple.newAssignStmt(stack, prevOp.value, PositionInfo.createNoPositionInfo());
+            JAssignStmt as =
+                Jimple.newAssignStmt(stack, prevOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(prevOp.insn, as);
           } else {
             IStmt u = src.getUnit(prevOp.insn);
-            AbstractDefinitionStmt as
-                = (AbstractDefinitionStmt) (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
+            AbstractDefinitionStmt as =
+                (AbstractDefinitionStmt)
+                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == prevOp.stack : "Invalid stack local!";
             lvb.setValue(stack);
@@ -174,19 +170,20 @@ final class StackFrame {
         if (newOp.stack != stack) {
           if (newOp.stack == null) {
             newOp.stack = stack;
-            JAssignStmt as = Jimple.newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
+            JAssignStmt as =
+                Jimple.newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(newOp.insn, as);
           } else {
             IStmt u = src.getUnit(newOp.insn);
-            AbstractDefinitionStmt as
-                = (AbstractDefinitionStmt) (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
+            AbstractDefinitionStmt as =
+                (AbstractDefinitionStmt)
+                    (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == newOp.stack : "Invalid stack local!";
             lvb.setValue(stack);
             newOp.stack = stack;
           }
           newOp.updateBoxes();
-
         }
         if (box != null) {
           box.setValue(stack);

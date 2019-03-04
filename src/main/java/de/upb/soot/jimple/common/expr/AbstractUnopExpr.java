@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -27,7 +27,6 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,9 +53,7 @@ public abstract class AbstractUnopExpr implements Expr {
     return opBox;
   }
 
-  /**
-   * Returns a list of type ValueBox that contains values of type ValueBox.
-   */
+  /** Returns a list of type ValueBox that contains values of type ValueBox. */
   @Override
   public final List<ValueBox> getUseBoxes() {
 
@@ -65,5 +62,4 @@ public abstract class AbstractUnopExpr implements Expr {
 
     return list;
   }
-
 }

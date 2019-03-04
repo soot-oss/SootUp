@@ -5,9 +5,8 @@ import com.ibm.wala.cast.tree.impl.LineNumberPosition;
 
 /**
  * This class stores position information stored for a statement.
- * 
- * @author Linghui Luo
  *
+ * @author Linghui Luo
  */
 public class PositionInfo {
   private final Position stmtPosition;
@@ -15,7 +14,7 @@ public class PositionInfo {
 
   /**
    * Create an instance with no position information.
-   * 
+   *
    * @return an instance with no position information.
    */
   public static PositionInfo createNoPositionInfo() {
@@ -24,9 +23,8 @@ public class PositionInfo {
 
   /**
    * Create an instance only from line number, this is usually the case from byte code front-end.
-   * 
-   * @param lineNumber
-   *          the line number of the statement.
+   *
+   * @param lineNumber the line number of the statement.
    */
   public PositionInfo(int lineNumber) {
     this.stmtPosition = new LineNumberPosition(null, null, lineNumber);
@@ -35,11 +33,9 @@ public class PositionInfo {
 
   /**
    * Create an instance from given statement position and operand positions.
-   * 
-   * @param stmtPosition
-   *          the position of the statement
-   * @param operandPositions
-   *          the operand positions
+   *
+   * @param stmtPosition the position of the statement
+   * @param operandPositions the operand positions
    */
   public PositionInfo(Position stmtPosition, Position[] operandPositions) {
     this.stmtPosition = stmtPosition;
@@ -48,7 +44,7 @@ public class PositionInfo {
 
   /**
    * Return the position of the statement.
-   * 
+   *
    * @return the position of the statement
    */
   public Position getStmtPosition() {
@@ -61,9 +57,8 @@ public class PositionInfo {
 
   /**
    * Return the precise position of the given operand in the statement.
-   * 
-   * @param index
-   *          the operand index
+   *
+   * @param index the operand index
    * @return the position of the given operand
    */
   public Position getOperandPosition(int index) {

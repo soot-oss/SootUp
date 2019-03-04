@@ -36,8 +36,7 @@ public class VoidType extends Type {
 
   public static final VoidType INSTANCE = new VoidType();
 
-  private VoidType() {
-  }
+  private VoidType() {}
 
   @Override
   public int hashCode() {

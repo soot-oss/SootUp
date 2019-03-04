@@ -23,18 +23,14 @@ package de.upb.soot.validation;
  */
 
 import de.upb.soot.core.SootClass;
-
 import java.util.List;
 
-/**
- * Implement this interface if you want to provide your own class validator
- */
+/** Implement this interface if you want to provide your own class validator */
 public interface ClassValidator {
   /**
    * Validates the given class and saves all validation errors in the given list.
-   * 
-   * @param sc
-   *          the class to check
+   *
+   * @param sc the class to check
    */
   void validate(SootClass sc, List<ValidationException> exceptions);
 

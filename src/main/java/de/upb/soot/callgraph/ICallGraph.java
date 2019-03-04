@@ -5,7 +5,5 @@ package de.upb.soot.callgraph;
  *
  * @author Linghui Luo
  * @author Ben Hermann
- *
  */
-public interface ICallGraph {
-}
+public interface ICallGraph {}

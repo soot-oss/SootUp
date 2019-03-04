@@ -27,13 +27,13 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * A FilterWriter which catches to-be-escaped characters (<code>\\unnnn</code>) in the input and substitutes their escaped
- * representation. Used for Soot output.
+ * A FilterWriter which catches to-be-escaped characters (<code>\\unnnn</code>) in the input and
+ * substitutes their escaped representation. Used for Soot output.
  */
-
 public class EscapedWriter extends FilterWriter {
   /** Convenience field containing the system's line separator. */
   public final String lineSeparator = System.getProperty("line.separator");
+
   private final int cr = lineSeparator.charAt(0);
   private final int lf = (lineSeparator.length() == 2) ? lineSeparator.charAt(1) : -1;
 
@@ -73,7 +73,8 @@ public class EscapedWriter extends FilterWriter {
     mini.append(Integer.toHexString(ch));
     final int len = mini.length();
 
-    // prepend \\u + [0]{0,4} to hex string so it writes "\\u" + "minimum 4 alphanumeric chars and max. 8"
+    // prepend \\u + [0]{0,4} to hex string so it writes "\\u" + "minimum 4 alphanumeric chars and
+    // max. 8"
     int cutPos = (len < 4) ? 2 + 4 - len : 2;
     super.write("\\u0000", 0, cutPos);
     super.write(mini.toString(), 0, len);

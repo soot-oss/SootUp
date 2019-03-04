@@ -13,23 +13,17 @@ import de.upb.soot.util.NotYetImplementedException;
  */
 public class Scope {
 
-  /**
-   * Define a scope consists of multiple namespaces.
-   */
+  /** Define a scope consists of multiple namespaces. */
   public Scope(INamespace... namespaces) {
     // TODO Auto-generated constructor stub
   }
 
-  /**
-   * Define a scope consists of multiple packages.
-   */
+  /** Define a scope consists of multiple packages. */
   public Scope(PackageSignature... packages) {
     // TODO Auto-generated constructor stub
   }
 
-  /**
-   * Define a scope consists of multiple classes.
-   */
+  /** Define a scope consists of multiple classes. */
   public Scope(JavaClassSignature... classSignatures) {
     // TODO Auto-generated constructor stub
   }

@@ -23,7 +23,6 @@ package de.upb.soot.validation;
  */
 
 import de.upb.soot.core.Body;
-
 import java.util.List;
 
 public class CheckInitValidator implements BodyValidator {
@@ -34,7 +33,7 @@ public class CheckInitValidator implements BodyValidator {
     // TODO: check code copied from old soot
     /*
      * ExceptionalUnitGraph g = new ExceptionalUnitGraph(body, ThrowAnalysisFactory.checkInitThrowAnalysis(), false);
-     * 
+     *
      * InitAnalysis analysis = new InitAnalysis(g); for (Unit s : body.getUnits()) { FlowSet<Local> init =
      * analysis.getFlowBefore(s); for (ValueBox vBox : s.getUseBoxes()) { Value v = vBox.getValue(); if (v instanceof Local)
      * { Local l = (Local) v; if (!init.contains(l)) { throw new ValidationException(s,

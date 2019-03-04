@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -30,16 +30,13 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.signatures.TypeSignature;
 
-/**
- * Soot representation of the Java built-in type 'int'. Implemented as a singleton.
- */
+/** Soot representation of the Java built-in type 'int'. Implemented as a singleton. */
 @SuppressWarnings("serial")
 public class IntType extends PrimType {
 
   public static final IntType INSTANCE = new IntType();
 
-  private IntType() {
-  }
+  private IntType() {}
 
   @Override
   public void accept(IVisitor v) {
@@ -47,7 +44,8 @@ public class IntType extends PrimType {
   }
 
   /**
-   * Returns true if the given object is equal to this one. Since IntType is a singleton, object equality is fine.
+   * Returns true if the given object is equal to this one. Since IntType is a singleton, object
+   * equality is fine.
    */
   @Override
   public boolean equals(Object t) {

@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -31,9 +31,7 @@ import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JGtExpr extends AbstractConditionExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 8003288012761788899L;
 
   public JGtExpr(Value op1, Value op2) {
@@ -54,5 +52,4 @@ public class JGtExpr extends AbstractConditionExpr {
   public Object clone() {
     return new JGtExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
-
 }
