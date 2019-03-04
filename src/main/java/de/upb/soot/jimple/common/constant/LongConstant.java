@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -31,10 +31,9 @@ import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 public class LongConstant extends ArithmeticConstant {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -3227009524415387793L;
+
   public final long value;
 
   private LongConstant(long value) {
@@ -145,9 +144,7 @@ public class LongConstant extends ArithmeticConstant {
     return IntConstant.getInstance((this.value >= ((LongConstant) c).value) ? 1 : 0);
   }
 
-  /**
-   * Compares the value of LongConstant.
-   */
+  /** Compares the value of LongConstant. */
   public IntConstant cmp(LongConstant c) {
     if (this.value > c.value) {
       return IntConstant.getInstance(1);
@@ -228,5 +225,4 @@ public class LongConstant extends ArithmeticConstant {
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseLongConstant(this);
   }
-
 }

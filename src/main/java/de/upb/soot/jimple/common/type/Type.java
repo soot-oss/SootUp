@@ -3,7 +3,6 @@ package de.upb.soot.jimple.common.type;
 import de.upb.soot.jimple.visitor.IAcceptor;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.util.Numberable;
-
 import java.io.Serializable;
 
 /** Represents types within Soot, eg <code>int</code>, <code>java.lang.String</code>. */
@@ -14,7 +13,8 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
   public abstract String toString();
 
   /**
-   * Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to .jimple format
+   * Returns a textual (and quoted as needed) representation of this type for serialization, e.g. to
+   * .jimple format
    */
   public String toQuotedString() {
     return toString();
@@ -22,7 +22,9 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /** Converts the int-like types (short, byte, boolean and char) to IntType. */
   public static Type toMachineType(Type t) {
-    if (t.equals(ShortType.INSTANCE) || t.equals(ByteType.INSTANCE) || t.equals(BooleanType.INSTANCE)
+    if (t.equals(ShortType.INSTANCE)
+        || t.equals(ByteType.INSTANCE)
+        || t.equals(BooleanType.INSTANCE)
         || t.equals(CharType.INSTANCE)) {
       return IntType.INSTANCE;
     } else {
@@ -48,9 +50,7 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
     return ArrayType.getInstance(this, 1);
   }
 
-  /**
-   * Returns <code>true</code> if this type is allowed to appear in final (clean) Jimple code.
-   */
+  /** Returns <code>true</code> if this type is allowed to appear in final (clean) Jimple code. */
   public boolean isAllowedInFinalCode() {
     return false;
   }

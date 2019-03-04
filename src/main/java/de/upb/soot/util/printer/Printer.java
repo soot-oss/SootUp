@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -34,7 +34,6 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.Type;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,19 +45,17 @@ import java.util.StringTokenizer;
 
 /**
  * Prints out a class and all its methods.
- * 
- * modified by Linghui Luo, 11.10.2018
- * 
+ *
+ * <p>modified by Linghui Luo, 11.10.2018
  */
 public class Printer {
 
-  private final static int USE_ABBREVIATIONS = 0x0001;
-  private final static int ADD_JIMPLE_LN = 0x0010;
+  private static final int USE_ABBREVIATIONS = 0x0001;
+  private static final int ADD_JIMPLE_LN = 0x0010;
   private int options = 0;
   private static int jimpleLnNum = 0; // actual line number
 
-  public Printer() {
-  }
+  public Printer() {}
 
   public boolean useAbbreviations() {
     return (options & USE_ABBREVIATIONS) != 0;
@@ -116,7 +113,10 @@ public class Printer {
     // Print extension
     {
       if (cl.hasSuperclass()) {
-        out.print(" extends " + cl.getView().quotedNameOf(cl.getSuperclassSignature().get().toString()) + "");
+        out.print(
+            " extends "
+                + cl.getView().quotedNameOf(cl.getSuperclassSignature().get().toString())
+                + "");
       }
     }
 
@@ -127,11 +127,13 @@ public class Printer {
       if (interfaceIt.hasNext()) {
         out.print(" implements ");
 
-        out.print("" + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
+        out.print(
+            "" + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
 
         while (interfaceIt.hasNext()) {
           out.print(",");
-          out.print(" " + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
+          out.print(
+              " " + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
         }
       }
     }
@@ -182,7 +184,8 @@ public class Printer {
           continue;
         }
 
-        if (!Modifier.isAbstract(method.getModifiers()) && !Modifier.isNative(method.getModifiers())) {
+        if (!Modifier.isAbstract(method.getModifiers())
+            && !Modifier.isNative(method.getModifiers())) {
           if (!method.hasActiveBody()) {
             // methodRef.retrieveActiveBody(); // force loading the body
             if (!method.hasActiveBody()) {
@@ -210,11 +213,10 @@ public class Printer {
   }
 
   /**
-   * Prints out the methodRef corresponding to b Body, (declaration and body), in the textual format corresponding to the IR
-   * used to encode b body.
+   * Prints out the methodRef corresponding to b Body, (declaration and body), in the textual format
+   * corresponding to the IR used to encode b body.
    *
-   * @param out
-   *          a PrintWriter instance to print to.
+   * @param out a PrintWriter instance to print to.
    */
   public void printTo(Body b, PrintWriter out) {
 
@@ -246,11 +248,11 @@ public class Printer {
 
     out.println("    }");
     incJimpleLnNum();
-
   }
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
-  private void printStatementsInBody(Body body, PrintWriter out, LabeledStmtPrinter up, AbstractStmtGraph unitGraph) {
+  private void printStatementsInBody(
+      Body body, PrintWriter out, LabeledStmtPrinter up, AbstractStmtGraph unitGraph) {
     Collection<IStmt> units = body.getStmts();
     IStmt previousStmt;
 
@@ -264,7 +266,8 @@ public class Printer {
         // body statement has a label on it
 
         if (currentStmt != units.iterator().next()) {
-          if (unitGraph.getSuccsOf(previousStmt).size() != 1 || unitGraph.getPredsOf(currentStmt).size() != 1
+          if (unitGraph.getSuccsOf(previousStmt).size() != 1
+              || unitGraph.getPredsOf(currentStmt).size() != 1
               || up.labels().containsKey(currentStmt)) {
             up.newline();
           } else {
@@ -295,7 +298,6 @@ public class Printer {
 
       up.literal(";");
       up.newline();
-
     }
     out.print(up.toString());
 
@@ -311,15 +313,22 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        out.println("        catch " + body.getMethod().getView().quotedNameOf(trap.getException().getSignature().toString())
-            + " from " + up.labels().get(trap.getBeginStmt()) + " to " + up.labels().get(trap.getEndStmt()) + " with "
-            + up.labels().get(trap.getHandlerStmt()) + ";");
+        out.println(
+            "        catch "
+                + body.getMethod()
+                    .getView()
+                    .quotedNameOf(trap.getException().getSignature().toString())
+                + " from "
+                + up.labels().get(trap.getBeginStmt())
+                + " to "
+                + up.labels().get(trap.getEndStmt())
+                + " with "
+                + up.labels().get(trap.getHandlerStmt())
+                + ";");
 
         incJimpleLnNum();
-
       }
     }
-
   }
 
   private int addJimpleLnTags(int lnNum, SootMethod meth) {
@@ -340,7 +349,6 @@ public class Printer {
 
       // Collect locals
       {
-
         for (Local local : body.getLocals()) {
           List<Local> localList;
 
@@ -359,7 +367,6 @@ public class Printer {
 
       // Print locals
       {
-
         for (Type type : typeToLocals.keySet()) {
           List<Local> localList = typeToLocals.get(type);
           List<Local> localsCopy = new ArrayList<>(localList);

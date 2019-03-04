@@ -1,4 +1,3 @@
 package de.upb.soot.buildactor;
 
-public final class ResolveMessage {
-}
+public final class ResolveMessage {}

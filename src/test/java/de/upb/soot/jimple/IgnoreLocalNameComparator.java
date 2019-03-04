@@ -32,6 +32,5 @@ public class IgnoreLocalNameComparator extends JimpleComparator {
       return false;
     }
     return obj.getType().equals(((Local) o).getType());
-
   }
 }

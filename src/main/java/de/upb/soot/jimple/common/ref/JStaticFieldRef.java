@@ -6,14 +6,11 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
-
 import java.util.Collections;
 import java.util.List;
 
 public class JStaticFieldRef extends FieldRef {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -8744248848897714882L;
 
   public JStaticFieldRef(IView view, FieldSignature fieldSig) {
@@ -63,5 +60,4 @@ public class JStaticFieldRef extends FieldRef {
   public void accept(IVisitor v) {
     // TODO Auto-generated methodRef stub
   }
-
 }

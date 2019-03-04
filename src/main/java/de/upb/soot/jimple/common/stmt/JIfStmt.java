@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -34,16 +34,14 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class JIfStmt extends AbstractStmt {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -5625186075843518011L;
+
   final ValueBox conditionBox;
   final IStmtBox targetBox;
 
@@ -67,7 +65,8 @@ public class JIfStmt extends AbstractStmt {
 
   @Override
   public JIfStmt clone() {
-    return new JIfStmt(Jimple.cloneIfNecessary(getCondition()), getTarget(), getPositionInfo().clone());
+    return new JIfStmt(
+        Jimple.cloneIfNecessary(getCondition()), getTarget(), getPositionInfo().clone());
   }
 
   @Override
@@ -158,5 +157,4 @@ public class JIfStmt extends AbstractStmt {
   public int equivHashCode() {
     return conditionBox.getValue().equivHashCode() + 31 * targetBox.getStmt().equivHashCode();
   }
-
 }

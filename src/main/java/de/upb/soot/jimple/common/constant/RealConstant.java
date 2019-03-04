@@ -33,29 +33,26 @@ package de.upb.soot.jimple.common.constant;
  */
 public abstract class RealConstant extends NumericConstant {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 2653018621773414519L;
 
   /**
-   * Performs the indicated floating point comparison. For {@code NaN} comparisons {@code -1} is returned.
+   * Performs the indicated floating point comparison. For {@code NaN} comparisons {@code -1} is
+   * returned.
    *
-   * @param constant
-   *          the value to compare with
-   * @return {@code 0} if values are equal, {@code 1} if passed value less, or {@code -1} if passed value greater. When any
-   *         of the values is {@code NaN} methodRef returns {@code -1}.
+   * @param constant the value to compare with
+   * @return {@code 0} if values are equal, {@code 1} if passed value less, or {@code -1} if passed
+   *     value greater. When any of the values is {@code NaN} methodRef returns {@code -1}.
    */
   public abstract IntConstant cmpl(RealConstant constant);
 
   /**
-   * Performs the indicated floating point comparison. For {@code NaN} comparisons {@code 1} is returned.
+   * Performs the indicated floating point comparison. For {@code NaN} comparisons {@code 1} is
+   * returned.
    *
-   * @param constant
-   *          the value to compare with
-   * @return {@code 0} if values are equal, {@code 1} if passed value less, or {@code -1} if passed value greater. When any
-   *         of the values is {@code NaN} methodRef returns {@code 1}.
+   * @param constant the value to compare with
+   * @return {@code 0} if values are equal, {@code 1} if passed value less, or {@code -1} if passed
+   *     value greater. When any of the values is {@code NaN} methodRef returns {@code 1}.
    */
   public abstract IntConstant cmpg(RealConstant constant);
-
 }

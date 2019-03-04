@@ -9,12 +9,12 @@ package de.upb.soot.core;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -22,7 +22,6 @@ package de.upb.soot.core;
  */
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.jimple.common.type.RefType;
@@ -35,7 +34,6 @@ import de.upb.soot.validation.MethodDeclarationValidator;
 import de.upb.soot.validation.OuterClassValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.views.IView;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,7 +45,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
 
 /*
@@ -67,29 +64,33 @@ import javax.annotation.Nullable;
  */
 
 /**
- * Soot's counterpart of the source languages class concept. Soot representation of a Java class. They are usually created by
- * a Scene, but can also be constructed manually through the given constructors.
+ * Soot's counterpart of the source languages class concept. Soot representation of a Java class.
+ * They are usually created by a Scene, but can also be constructed manually through the given
+ * constructors.
  *
  * @author Manuel Benz created on 06.06.18.
  * @author Linghui Luo
  */
-
 public class SootClass extends AbstractClass implements Serializable {
 
   // implementation of StepBuilder Pattern to create SootClasses consistent
   // http://www.svlada.com/step-builder-pattern/
 
   /**
-   * Creates a SootClass with a fluent interfaces and enforces at compile team a clean order to ensure a consistent state of
-   * the soot class Therefore, a different Interface is returned after each step.. (therby order is enforced)
+   * Creates a SootClass with a fluent interfaces and enforces at compile team a clean order to
+   * ensure a consistent state of the soot class Therefore, a different Interface is returned after
+   * each step.. (therby order is enforced)
    */
   public interface DanglingStep extends Build {
     HierachyStep dangling(IView view, ClassSource source, ClassType classType);
   }
 
   public interface HierachyStep extends Build {
-    SignatureStep hierachy(@Nullable JavaClassSignature superclass, Set<JavaClassSignature> interfaces,
-        EnumSet<Modifier> modifiers, @Nullable JavaClassSignature outerClass);
+    SignatureStep hierachy(
+        @Nullable JavaClassSignature superclass,
+        Set<JavaClassSignature> interfaces,
+        EnumSet<Modifier> modifiers,
+        @Nullable JavaClassSignature outerClass);
   }
 
   public interface SignatureStep extends Build {
@@ -104,7 +105,8 @@ public class SootClass extends AbstractClass implements Serializable {
     SootClass build();
   }
 
-  public static class SootClassBuilder implements DanglingStep, HierachyStep, SignatureStep, BodyStep, Build {
+  public static class SootClassBuilder
+      implements DanglingStep, HierachyStep, SignatureStep, BodyStep, Build {
     private ResolvingLevel resolvingLevel;
     private ClassType classType;
     private Position position;
@@ -114,16 +116,13 @@ public class SootClass extends AbstractClass implements Serializable {
     private Set<? extends IMethod> methods;
     private Set<JavaClassSignature> interfaces;
 
-    @Nullable
-    private JavaClassSignature superClass;
-    @Nullable
-    private JavaClassSignature outerClass;
+    @Nullable private JavaClassSignature superClass;
+    @Nullable private JavaClassSignature outerClass;
 
     private ClassSource classSource;
     private IView view;
 
-    public SootClassBuilder() {
-    }
+    public SootClassBuilder() {}
 
     @Override
     public HierachyStep dangling(IView view, ClassSource source, ClassType classType) {
@@ -136,8 +135,11 @@ public class SootClass extends AbstractClass implements Serializable {
 
     // FIXME: decided what a Class at Hierachy Level must have resoled...
     @Override
-    public SignatureStep hierachy(JavaClassSignature superclass, Set<JavaClassSignature> interfaces,
-        EnumSet<Modifier> modifiers, JavaClassSignature outerClass) {
+    public SignatureStep hierachy(
+        JavaClassSignature superclass,
+        Set<JavaClassSignature> interfaces,
+        EnumSet<Modifier> modifiers,
+        JavaClassSignature outerClass) {
 
       this.superClass = superclass;
       this.interfaces = interfaces;
@@ -163,7 +165,6 @@ public class SootClass extends AbstractClass implements Serializable {
     public SootClass build() {
       return new SootClass(this);
     }
-
   }
 
   public static DanglingStep builder() {
@@ -197,12 +198,9 @@ public class SootClass extends AbstractClass implements Serializable {
     this.position = builder.position;
     this.modifiers = builder.modifiers;
     builder.view.addClass(this);
-
   }
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -4145583783298080555L;
 
   private final ResolvingLevel resolvingLevel;
@@ -217,18 +215,44 @@ public class SootClass extends AbstractClass implements Serializable {
 
   private final Optional<JavaClassSignature> outerClass;
 
-  public final static String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
+  public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
-  public SootClass(IView view, ResolvingLevel resolvingLevel, ClassSource classSource, ClassType type,
-      JavaClassSignature superClass, Set<JavaClassSignature> interfaces, JavaClassSignature outerClass, Position position,
+  public SootClass(
+      IView view,
+      ResolvingLevel resolvingLevel,
+      ClassSource classSource,
+      ClassType type,
+      JavaClassSignature superClass,
+      Set<JavaClassSignature> interfaces,
+      JavaClassSignature outerClass,
+      Position position,
       EnumSet<Modifier> modifiers) {
-    this(view, resolvingLevel, classSource, type, superClass, interfaces, outerClass, new HashSet<>(), new HashSet<>(),
-        position, modifiers);
+    this(
+        view,
+        resolvingLevel,
+        classSource,
+        type,
+        superClass,
+        interfaces,
+        outerClass,
+        new HashSet<>(),
+        new HashSet<>(),
+        position,
+        modifiers);
   }
 
-  public SootClass(IView view, ResolvingLevel resolvingLevel, ClassSource classSource, ClassType type,
-      JavaClassSignature superClass, Set<JavaClassSignature> interfaces, JavaClassSignature outerClass,
-      Set<SootField> fields, Set<SootMethod> methods, Position position, EnumSet<Modifier> modifiers) {
+  public SootClass(
+      IView view,
+      ResolvingLevel resolvingLevel,
+      ClassSource classSource,
+      ClassType type,
+      JavaClassSignature superClass,
+      Set<JavaClassSignature> interfaces,
+      JavaClassSignature outerClass,
+      Set<SootField> fields,
+      Set<SootMethod> methods,
+      Position position,
+      EnumSet<Modifier> modifiers) {
     super(view, classSource, methods, fields);
     this.resolvingLevel = resolvingLevel;
     this.classType = type;
@@ -253,13 +277,11 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Checks if the class has at lease the resolving level specified. This check does nothing is the class resolution process
-   * is not completed.
+   * Checks if the class has at lease the resolving level specified. This check does nothing is the
+   * class resolution process is not completed.
    *
-   * @param level
-   *          the resolution level, one of DANGLING, HIERARCHY, SIGNATURES, and BODIES
-   * @throws java.lang.RuntimeException
-   *           if the resolution is at an insufficient level
+   * @param level the resolution level, one of DANGLING, HIERARCHY, SIGNATURES, and BODIES
+   * @throws java.lang.RuntimeException if the resolution is at an insufficient level
    */
   public void checkLevel(ResolvingLevel level) {
     // Fast check: e.g. FastHierarchy.canStoreClass calls this methodRef quite
@@ -276,21 +298,31 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Checks if the class has at lease the resolving level specified. This check ignores the resolution completeness.
+   * Checks if the class has at lease the resolving level specified. This check ignores the
+   * resolution completeness.
    *
-   * @param level
-   *          the resolution level, one of DANGLING, HIERARCHY, SIGNATURES, and BODIES
-   * @throws java.lang.RuntimeException
-   *           if the resolution is at an insufficient level
+   * @param level the resolution level, one of DANGLING, HIERARCHY, SIGNATURES, and BODIES
+   * @throws java.lang.RuntimeException if the resolution is at an insufficient level
    */
   public void checkLevelIgnoreResolving(ResolvingLevel level) {
     ResolvingLevel currentLevel = resolvingLevel();
     if (currentLevel.ordinal() < level.ordinal()) {
-      String hint = "\nIf you are extending Soot, try to add the following call before calling soot.Main.main(..):\n"
-          + "Scene.getInstance().addBasicClass(" + classSignature + "," + level + ");\n"
-          + "Otherwise, try whole-program mode (-w).";
-      throw new RuntimeException("This operation requires resolving level " + level + " but " + classSignature.className
-          + " is at resolving level " + currentLevel + hint);
+      String hint =
+          "\nIf you are extending Soot, try to add the following call before calling soot.Main.main(..):\n"
+              + "Scene.getInstance().addBasicClass("
+              + classSignature
+              + ","
+              + level
+              + ");\n"
+              + "Otherwise, try whole-program mode (-w).";
+      throw new RuntimeException(
+          "This operation requires resolving level "
+              + level
+              + " but "
+              + classSignature.className
+              + " is at resolving level "
+              + currentLevel
+              + hint);
     }
   }
 
@@ -298,17 +330,15 @@ public class SootClass extends AbstractClass implements Serializable {
     return resolvingLevel;
   }
 
-  /**
-   * Returns the number of fields in this class.
-   */
-
+  /** Returns the number of fields in this class. */
   public int getFieldCount() {
     checkLevel(ResolvingLevel.SIGNATURES);
     return fields == null ? 0 : fields.size();
   }
 
   /**
-   * Returns the field of this class with the given name and type. If the field cannot be found, an exception is thrown.
+   * Returns the field of this class with the given name and type. If the field cannot be found, an
+   * exception is thrown.
    */
   public SootField getField(String name, Type type) {
     SootField sf = getFieldUnsafe(name, type);
@@ -319,7 +349,8 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Returns the field of this class with the given name and type. If the field cannot be found, null is returned.
+   * Returns the field of this class with the given name and type. If the field cannot be found,
+   * null is returned.
    */
   public SootField getFieldUnsafe(String name, Type type) {
     checkLevel(ResolvingLevel.SIGNATURES);
@@ -336,8 +367,8 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Returns the field of this class with the given name. Throws a RuntimeException if there is more than one field with the
-   * given name or if no such field exists at all.
+   * Returns the field of this class with the given name. Throws a RuntimeException if there is more
+   * than one field with the given name or if no such field exists at all.
    */
   public SootField getFieldByName(String name) {
     SootField foundField = getFieldByNameUnsafe(name);
@@ -348,8 +379,8 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Returns the field of this class with the given name. Throws a RuntimeException if there is more than one field with the
-   * given name. Returns null if no field with the given name exists.
+   * Returns the field of this class with the given name. Throws a RuntimeException if there is more
+   * than one field with the given name. Returns null if no field with the given name exists.
    */
   public SootField getFieldByNameUnsafe(String name) {
     checkLevel(ResolvingLevel.SIGNATURES);
@@ -371,7 +402,8 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Returns the field of this class with the given subsignature. If such a field does not exist, an exception is thrown.
+   * Returns the field of this class with the given subsignature. If such a field does not exist, an
+   * exception is thrown.
    */
   public SootField getField(String subsignature) {
     SootField sf = getFieldUnsafe(subsignature);
@@ -382,7 +414,8 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Returns the field of this class with the given subsignature. If such a field does not exist, null is returned.
+   * Returns the field of this class with the given subsignature. If such a field does not exist,
+   * null is returned.
    */
   public SootField getFieldUnsafe(String subsignature) {
     checkLevel(ResolvingLevel.SIGNATURES);
@@ -399,8 +432,8 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given signature, parameters and return type. If no matching methodRef can be
-   * found, an exception is thrown.
+   * Attempts to retrieve the methodRef with the given signature, parameters and return type. If no
+   * matching methodRef can be found, an exception is thrown.
    */
   public SootMethod getMethod(MethodSignature signature) {
     SootMethod sm = getMethodUnsafe(signature);
@@ -412,8 +445,8 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given signature, parameters and return type. If no matching methodRef can be
-   * found, null is returned.
+   * Attempts to retrieve the methodRef with the given signature, parameters and return type. If no
+   * matching methodRef can be found, null is returned.
    */
   @Nullable
   public SootMethod getMethodUnsafe(MethodSignature signature) {
@@ -422,15 +455,18 @@ public class SootClass extends AbstractClass implements Serializable {
       return null;
     }
 
-    return methods.stream().map(m -> (SootMethod) m).filter(method -> method.getSignature().equals(signature)).findFirst()
+    return methods.stream()
+        .map(m -> (SootMethod) m)
+        .filter(method -> method.getSignature().equals(signature))
+        .findFirst()
         .orElse(null);
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given name and parameters. This methodRef may throw an
-   * AmbiguousMethodException if there is more than one methodRef with the given name and parameter.
+   * Attempts to retrieve the methodRef with the given name and parameters. This methodRef may throw
+   * an AmbiguousMethodException if there is more than one methodRef with the given name and
+   * parameter.
    */
-
   public SootMethod getMethod(String name, List<Type> parameterTypes) {
     checkLevel(ResolvingLevel.SIGNATURES);
     SootMethod foundMethod = null;
@@ -451,15 +487,16 @@ public class SootClass extends AbstractClass implements Serializable {
     }
 
     if (foundMethod == null) {
-      throw new RuntimeException("couldn't find methodRef " + name + "(" + parameterTypes + ") in " + this);
+      throw new RuntimeException(
+          "couldn't find methodRef " + name + "(" + parameterTypes + ") in " + this);
     }
     return foundMethod;
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given subSignature. This methodRef may throw an AmbiguousMethodException if
-   * there are more than one methodRef with the given subSignature. If no methodRef with the given is found, null is
-   * returned.
+   * Attempts to retrieve the methodRef with the given subSignature. This methodRef may throw an
+   * AmbiguousMethodException if there are more than one methodRef with the given subSignature. If
+   * no methodRef with the given is found, null is returned.
    */
   public SootMethod getMethodBySubSignature(String subSignature) {
     checkLevel(ResolvingLevel.SIGNATURES);
@@ -481,9 +518,9 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given name. This methodRef may throw an AmbiguousMethodException if there
-   * are more than one methodRef with the given name. If no methodRef with the given is found, an exception is thrown as
-   * well.
+   * Attempts to retrieve the methodRef with the given name. This methodRef may throw an
+   * AmbiguousMethodException if there are more than one methodRef with the given name. If no
+   * methodRef with the given is found, an exception is thrown as well.
    */
   public SootMethod getMethodByName(String name) {
     SootMethod foundMethod = getMethodBySubSignature(name);
@@ -493,26 +530,25 @@ public class SootClass extends AbstractClass implements Serializable {
     return foundMethod;
   }
 
-  /**
-   * Returns the modifiers of this class.
-   */
+  /** Returns the modifiers of this class. */
   public EnumSet<Modifier> getModifiers() {
     return modifiers;
   }
 
   /**
-   * Returns the number of interfaces being directly implemented by this class. Note that direct implementation corresponds
-   * to an "implements" keyword in the Java class file and that this class may still be implementing additional interfaces in
-   * the usual sense by being a subclass of a class which directly implements some interfaces.
+   * Returns the number of interfaces being directly implemented by this class. Note that direct
+   * implementation corresponds to an "implements" keyword in the Java class file and that this
+   * class may still be implementing additional interfaces in the usual sense by being a subclass of
+   * a class which directly implements some interfaces.
    */
-
   public int getInterfaceCount() {
     checkLevel(ResolvingLevel.HIERARCHY);
     return interfaces == null ? 0 : interfaces.size();
   }
 
   /**
-   * Returns a backed Chain of the interfaces that are directly implemented by this class. (see getInterfaceCount())
+   * Returns a backed Chain of the interfaces that are directly implemented by this class. (see
+   * getInterfaceCount())
    */
   public Collection<SootClass> getInterfaces() {
     checkLevel(ResolvingLevel.HIERARCHY);
@@ -524,10 +560,7 @@ public class SootClass extends AbstractClass implements Serializable {
     return ret;
   }
 
-  /**
-   * Does this class directly implement the given interface? (see getInterfaceCount())
-   */
-
+  /** Does this class directly implement the given interface? (see getInterfaceCount()) */
   public boolean implementsInterface(JavaClassSignature classSignature) {
     checkLevel(ResolvingLevel.HIERARCHY);
     if (interfaces == null) {
@@ -543,22 +576,24 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * WARNING: interfaces are subclasses of the java.lang.Object class! Does this class have a superclass? False implies that
-   * this is the java.lang.Object class. Note that interfaces are subclasses of the java.lang.Object class.
+   * WARNING: interfaces are subclasses of the java.lang.Object class! Does this class have a
+   * superclass? False implies that this is the java.lang.Object class. Note that interfaces are
+   * subclasses of the java.lang.Object class.
    */
-
   public boolean hasSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
     return superClass.isPresent() && getSuperclass().isPresent();
   }
 
   /**
-   * WARNING: interfaces are subclasses of the java.lang.Object class! Returns the superclass of this class. (see
-   * hasSuperclass())
+   * WARNING: interfaces are subclasses of the java.lang.Object class! Returns the superclass of
+   * this class. (see hasSuperclass())
    */
   public Optional<SootClass> getSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return superClass.isPresent() ? getView().getClass(superClass.get()).map(c -> (SootClass) c) : Optional.empty();
+    return superClass.isPresent()
+        ? getView().getClass(superClass.get()).map(c -> (SootClass) c)
+        : Optional.empty();
   }
 
   public boolean hasOuterClass() {
@@ -566,21 +601,19 @@ public class SootClass extends AbstractClass implements Serializable {
     return outerClass.isPresent();
   }
 
-  /**
-   * This methodRef returns the outer class.
-   */
+  /** This methodRef returns the outer class. */
   public Optional<SootClass> getOuterClass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return outerClass.isPresent() ? getView().getClass(outerClass.get()).map(c -> (SootClass) c) : Optional.empty();
+    return outerClass.isPresent()
+        ? getView().getClass(outerClass.get()).map(c -> (SootClass) c)
+        : Optional.empty();
   }
 
   public boolean isInnerClass() {
     return hasOuterClass();
   }
 
-  /**
-   * Returns the ClassSignature of this class.
-   */
+  /** Returns the ClassSignature of this class. */
   @Override
   public JavaClassSignature getSignature() {
     return classSignature;
@@ -629,89 +662,68 @@ public class SootClass extends AbstractClass implements Serializable {
     return classSignature.toString();
   }
 
-  /**
-   * Returns true if this class is an application class.
-   *
-   * 
-   */
+  /** Returns true if this class is an application class. */
   public boolean isApplicationClass() {
     return classType.equals(ClassType.Application);
   }
 
-  /**
-   * Returns true if this class is a library class.
-   *
-   */
+  /** Returns true if this class is a library class. */
   public boolean isLibraryClass() {
     return classType.equals(ClassType.Library);
   }
 
   /**
-   * Sometimes we need to know which class is a JDK class. There is no simple way to distinguish a user class and a JDK
-   * class, here we use the package prefix as the heuristic.
+   * Sometimes we need to know which class is a JDK class. There is no simple way to distinguish a
+   * user class and a JDK class, here we use the package prefix as the heuristic.
    */
-  private static final Pattern libraryClassPattern
-      = Pattern.compile("^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");
+  private static final Pattern libraryClassPattern =
+      Pattern.compile(
+          "^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");
 
   public boolean isJavaLibraryClass() {
     return libraryClassPattern.matcher(classSignature.className).find();
   }
 
-  /**
-   * Returns true if this class is a phantom class.
-   *
-   * 
-   */
+  /** Returns true if this class is a phantom class. */
   public boolean isPhantomClass() {
     return classType.equals(ClassType.Phantom);
   }
 
-  /**
-   * Convenience methodRef returning true if this class is private.
-   */
+  /** Convenience methodRef returning true if this class is private. */
   public boolean isPrivate() {
     return Modifier.isPrivate(this.getModifiers());
   }
 
-  /**
-   * Convenience methodRef returning true if this class is protected.
-   */
+  /** Convenience methodRef returning true if this class is protected. */
   public boolean isProtected() {
     return Modifier.isProtected(this.getModifiers());
   }
 
-  /**
-   * Convenience methodRef returning true if this class is abstract.
-   */
+  /** Convenience methodRef returning true if this class is abstract. */
   public boolean isAbstract() {
     return Modifier.isAbstract(this.getModifiers());
   }
 
-  /**
-   * Convenience methodRef returning true if this class is final.
-   */
+  /** Convenience methodRef returning true if this class is final. */
   public boolean isFinal() {
     return Modifier.isFinal(this.getModifiers());
   }
 
-  /**
-   * Convenience methodRef returning true if this class is static.
-   */
+  /** Convenience methodRef returning true if this class is static. */
   public boolean isStatic() {
     return Modifier.isStatic(this.getModifiers());
   }
 
   protected int number = 0;
 
-  /**
-   * An array containing some validators in order to validate the SootClass
-   */
-  private static final List<ClassValidator> validators
-      = Arrays.asList(new OuterClassValidator(), new MethodDeclarationValidator(), new ClassFlagsValidator());
+  /** An array containing some validators in order to validate the SootClass */
+  private static final List<ClassValidator> validators =
+      Arrays.asList(
+          new OuterClassValidator(), new MethodDeclarationValidator(), new ClassFlagsValidator());
 
   /**
-   * Validates this SootClass for logical errors. Note that this does not validate the methodRef bodies, only the class
-   * structure.
+   * Validates this SootClass for logical errors. Note that this does not validate the methodRef
+   * bodies, only the class structure.
    */
   public void validate() {
     final List<ValidationException> exceptionList = new ArrayList<>();
@@ -722,11 +734,12 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /**
-   * Validates this SootClass for logical errors. Note that this does not validate the methodRef bodies, only the class
-   * structure. All found errors are saved into the given list.
+   * Validates this SootClass for logical errors. Note that this does not validate the methodRef
+   * bodies, only the class structure. All found errors are saved into the given list.
    */
   public void validate(List<ValidationException> exceptionList) {
-    final boolean runAllValidators = this.getView().getOptions().debug() || this.getView().getOptions().validate();
+    final boolean runAllValidators =
+        this.getView().getOptions().debug() || this.getView().getOptions().validate();
     for (ClassValidator validator : validators) {
       if (!validator.isBasicValidator() && !runAllValidators) {
         continue;
@@ -756,5 +769,4 @@ public class SootClass extends AbstractClass implements Serializable {
   public Optional<JavaClassSignature> getOuterClassSignature() {
     return outerClass;
   }
-
 }

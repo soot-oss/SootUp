@@ -4,9 +4,8 @@ import de.upb.soot.signatures.ISignature;
 
 /**
  * Interface for methodRef.
- * 
- * @author Linghui Luo
  *
+ * @author Linghui Luo
  */
 public interface IMethod {
   ISignature getSignature();

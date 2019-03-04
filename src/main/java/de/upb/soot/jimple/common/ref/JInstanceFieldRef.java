@@ -4,7 +4,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -19,15 +19,12 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class JInstanceFieldRef extends FieldRef {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 2900174317359676686L;
 
   private final ValueBox baseBox;
@@ -35,12 +32,9 @@ public class JInstanceFieldRef extends FieldRef {
   /**
    * Create a reference to a class' instance field.
    *
-   * @param view
-   *          the view
-   * @param base
-   *          the base value of the field
-   * @param fieldSig
-   *          the field sig
+   * @param view the view
+   * @param base the base value of the field
+   * @param fieldSig the field sig
    */
   public JInstanceFieldRef(IView view, Value base, FieldSignature fieldSig) {
     super(view, fieldSig);
@@ -77,9 +71,7 @@ public class JInstanceFieldRef extends FieldRef {
     baseBox.setValue(base);
   }
 
-  /**
-   * Returns a list useBoxes of type ValueBox.
-   */
+  /** Returns a list useBoxes of type ValueBox. */
   @Override
   public final List<ValueBox> getUseBoxes() {
     List<ValueBox> useBoxes = new ArrayList<ValueBox>();
@@ -114,5 +106,4 @@ public class JInstanceFieldRef extends FieldRef {
       return 16;
     }
   }
-
 }

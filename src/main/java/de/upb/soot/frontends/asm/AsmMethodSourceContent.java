@@ -22,7 +22,6 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
-
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootClass;
@@ -91,7 +90,6 @@ import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
-
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,10 +103,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
@@ -130,7 +126,8 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 /** @author Andreas Dann */
-class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter implements IMethodSourceContent {
+class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
+    implements IMethodSourceContent {
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
 
@@ -173,7 +170,11 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
 
   private final @Nonnull CastAndReturnInliner castAndReturnInliner = new CastAndReturnInliner();
 
-  public AsmMethodSourceContent(int access, @Nonnull String name, @Nonnull String desc, @Nonnull String signature,
+  public AsmMethodSourceContent(
+      int access,
+      @Nonnull String name,
+      @Nonnull String desc,
+      @Nonnull String signature,
       @Nonnull String[] exceptions) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
   }
@@ -473,7 +474,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     if (out == null) {
       // SootClass declClass =
       // Scene.v().getSootClass(AsmUtil.toQualifiedName(insn.owner));
-      JavaClassSignature declClass = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(insn.owner));
+      JavaClassSignature declClass =
+          view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(insn.owner));
       // type = AsmUtil.toJimpleType(insn.desc);
       type = view.getSignatureFactory().getTypeSignature((AsmUtil.toQualifiedName(insn.desc)));
       Value val;
@@ -514,7 +516,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     if (out == null) {
       // SootClass declClass =
       // Scene.v().getSootClass(AsmUtil.toQualifiedName(insn.owner));
-      JavaClassSignature declClass = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(insn.owner));
+      JavaClassSignature declClass =
+          view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(insn.owner));
       // type = AsmUtil.toJimpleType(insn.desc);
       type = view.getSignatureFactory().getTypeSignature((AsmUtil.toQualifiedName(insn.desc)));
 
@@ -537,7 +540,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       }
       opr = new Operand(insn, val);
       frame.out(opr);
-      JAssignStmt as = Jimple.newAssignStmt(val, rvalue.stackOrValue(), PositionInfo.createNoPositionInfo());
+      JAssignStmt as =
+          Jimple.newAssignStmt(val, rvalue.stackOrValue(), PositionInfo.createNoPositionInfo());
       rvalue.addBox(as.getRightOpBox());
       if (!instance) {
         frame.boxes(as.getRightOpBox());
@@ -746,14 +750,32 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
 
   private void convertBinopInsn(@Nonnull InsnNode insn) {
     int op = insn.getOpcode();
-    boolean dword = op == DADD || op == LADD || op == DSUB || op == LSUB || op == DMUL || op == LMUL || op == DDIV
-        || op == LDIV || op == DREM || op == LREM || op == LSHL || op == LSHR || op == LUSHR || op == LAND || op == LOR
-        || op == LXOR || op == LCMP || op == DCMPL || op == DCMPG;
+    boolean dword =
+        op == DADD
+            || op == LADD
+            || op == DSUB
+            || op == LSUB
+            || op == DMUL
+            || op == LMUL
+            || op == DDIV
+            || op == LDIV
+            || op == DREM
+            || op == LREM
+            || op == LSHL
+            || op == LSHR
+            || op == LUSHR
+            || op == LAND
+            || op == LOR
+            || op == LXOR
+            || op == LCMP
+            || op == DCMPL
+            || op == DCMPG;
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.out();
     Operand opr;
     if (out == null) {
-      Operand op2 = (dword && op != LSHL && op != LSHR && op != LUSHR) ? popImmediateDual() : popImmediate();
+      Operand op2 =
+          (dword && op != LSHL && op != LSHR && op != LUSHR) ? popImmediateDual() : popImmediate();
       Operand op1 = dword ? popImmediateDual() : popImmediate();
       Value v1 = op1.stackOrValue();
       Value v2 = op2.stackOrValue();
@@ -897,7 +919,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     StackFrame frame = getFrame(insn);
     if (!units.containsKey(insn)) {
       Operand val = dword ? popImmediateDual() : popImmediate();
-      JReturnStmt ret = Jimple.newReturnStmt(val.stackOrValue(), PositionInfo.createNoPositionInfo());
+      JReturnStmt ret =
+          Jimple.newReturnStmt(val.stackOrValue(), PositionInfo.createNoPositionInfo());
       val.addBox(ret.getOpBox());
       frame.in(val);
       frame.boxes(ret.getOpBox());
@@ -938,7 +961,9 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       Operand o2 = popImmediate();
       push(o1);
       push(o2);
-    } else if ((op >= IADD && op <= DREM) || (op >= ISHL && op <= LXOR) || (op >= LCMP && op <= DCMPG)) {
+    } else if ((op >= IADD && op <= DREM)
+        || (op >= ISHL && op <= LXOR)
+        || (op >= LCMP && op <= DCMPG)) {
       convertBinopInsn(insn);
     } else if ((op >= INEG && op <= DNEG) || op == ARRAYLENGTH) {
       convertUnopInsn(insn);
@@ -955,7 +980,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       Operand opr;
       if (!units.containsKey(insn)) {
         opr = popImmediate();
-        JThrowStmt ts = Jimple.newThrowStmt(opr.stackOrValue(), PositionInfo.createNoPositionInfo());
+        JThrowStmt ts =
+            Jimple.newThrowStmt(opr.stackOrValue(), PositionInfo.createNoPositionInfo());
         opr.addBox(ts.getOpBox());
         frame.in(opr);
         frame.out(opr);
@@ -970,9 +996,12 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       StackFrame frame = getFrame(insn);
       if (!units.containsKey(insn)) {
         Operand opr = popStackConst();
-        AbstractOpStmt ts
-            = op == MONITORENTER ? Jimple.newEnterMonitorStmt(opr.stackOrValue(), PositionInfo.createNoPositionInfo())
-                : Jimple.newExitMonitorStmt(opr.stackOrValue(), PositionInfo.createNoPositionInfo());
+        AbstractOpStmt ts =
+            op == MONITORENTER
+                ? Jimple.newEnterMonitorStmt(
+                    opr.stackOrValue(), PositionInfo.createNoPositionInfo())
+                : Jimple.newExitMonitorStmt(
+                    opr.stackOrValue(), PositionInfo.createNoPositionInfo());
         opr.addBox(ts.getOpBox());
         frame.in(opr);
         frame.boxes(ts.getOpBox());
@@ -1156,7 +1185,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     } else if (val instanceof org.objectweb.asm.Type) {
       org.objectweb.asm.Type t = (org.objectweb.asm.Type) val;
       if (t.getSort() == org.objectweb.asm.Type.METHOD) {
-        List<TypeSignature> paramTypes = AsmUtil.toJimpleSignatureDesc(((org.objectweb.asm.Type) val).getDescriptor(), view);
+        List<TypeSignature> paramTypes =
+            AsmUtil.toJimpleSignatureDesc(((org.objectweb.asm.Type) val).getDescriptor(), view);
         TypeSignature returnType = paramTypes.remove(paramTypes.size() - 1);
         v = MethodType.getInstance(paramTypes, returnType);
       } else {
@@ -1207,8 +1237,9 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       keys.add(IntConstant.getInstance(i));
     }
 
-    JLookupSwitchStmt lss
-        = Jimple.newLookupSwitchStmt(key.stackOrValue(), keys, targets, dflt, PositionInfo.createNoPositionInfo());
+    JLookupSwitchStmt lss =
+        Jimple.newLookupSwitchStmt(
+            key.stackOrValue(), keys, targets, dflt, PositionInfo.createNoPositionInfo());
     key.addBox(lss.getKeyBox());
     frame.in(key);
     frame.boxes(lss.getKeyBox());
@@ -1229,7 +1260,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
         clsName = "java.lang.Object";
       }
       // SootClass cls = Scene.v().getSootClass(clsName);
-      JavaClassSignature cls = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(clsName));
+      JavaClassSignature cls =
+          view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(clsName));
       // List<Type> sigTypes = AsmUtil.toJimpleDesc(insn.desc);
       List<TypeSignature> sigTypes = AsmUtil.toJimpleSignatureDesc(insn.desc, view);
       // returnType = sigTypes.remove(sigTypes.size() - 1);
@@ -1237,7 +1269,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       // SootMethodRef ref = Scene.v().makeMethodRef(cls, insn.name, sigTypes,
       // returnType,
       // !instance);
-      MethodSignature methodSignature = view.getSignatureFactory().getMethodSignature(insn.name, cls, returnType, sigTypes);
+      MethodSignature methodSignature =
+          view.getSignatureFactory().getMethodSignature(insn.name, cls, returnType, sigTypes);
       // MethodRef ref = Jimple.newMethodRef(view, methodSignature, !instance);
       int nrArgs = sigTypes.size();
       final Operand[] args;
@@ -1392,7 +1425,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
   // JavaClassSignature bsmCls = view.getSignatureFactory().getClassSignature(bsmClsName);
   // List<TypeSignature> bsmSigTypes = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc(), view);
   // TypeSignature returnType = bsmSigTypes.remove(bsmSigTypes.size() - 1);
-  // MethodSignature methodSignature = view.getSignatureFactory().getMethodSignature(methodHandle.getName(), bsmCls,
+  // MethodSignature methodSignature =
+  // view.getSignatureFactory().getMethodSignature(methodHandle.getName(), bsmCls,
   // returnType, bsmSigTypes);
   // boolean isStatic = methodHandle.getTag() == MethodHandle.Kind.REF_INVOKE_STATIC.getValue();
   // return Jimple.createSymbolicMethodRef(methodSignature, isStatic);
@@ -1407,7 +1441,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
   // boolean isStatic = kind == MethodHandle.Kind.REF_GET_FIELD_STATIC.getValue()
   // || kind == MethodHandle.Kind.REF_PUT_FIELD_STATIC.getValue();
   //
-  // FieldSignature fieldSignature = view.getSignatureFactory().getFieldSignature(methodHandle.getName(), bsmCls, t);
+  // FieldSignature fieldSignature =
+  // view.getSignatureFactory().getFieldSignature(methodHandle.getName(), bsmCls, t);
   // return Jimple.createSymbolicFieldRef(fieldSignature, isStatic);
   // }
 
@@ -1463,8 +1498,14 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       targets.add(box);
       labels.put(ln, box);
     }
-    JTableSwitchStmt tss = Jimple.newTableSwitchStmt(key.stackOrValue(), insn.min, insn.max, targets, dflt,
-        PositionInfo.createNoPositionInfo());
+    JTableSwitchStmt tss =
+        Jimple.newTableSwitchStmt(
+            key.stackOrValue(),
+            insn.min,
+            insn.max,
+            targets,
+            dflt,
+            PositionInfo.createNoPositionInfo());
     key.addBox(tss.getKeyBox());
     frame.in(key);
     frame.boxes(tss.getKeyBox());
@@ -1543,7 +1584,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     Operand opr = dword ? popDual() : pop();
     Local local = getLocal(insn.var);
     if (!units.containsKey(insn)) {
-      AbstractDefinitionStmt as = Jimple.newAssignStmt(local, opr.stackOrValue(), PositionInfo.createNoPositionInfo());
+      AbstractDefinitionStmt as =
+          Jimple.newAssignStmt(local, opr.stackOrValue(), PositionInfo.createNoPositionInfo());
       opr.addBox(as.getRightOpBox());
       frame.boxes(as.getRightOpBox());
       frame.in(opr);
@@ -1592,7 +1634,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     if (out == null) {
       JCaughtExceptionRef ref = Jimple.newCaughtExceptionRef();
       Local stack = newStackLocal();
-      AbstractDefinitionStmt as = Jimple.newIdentityStmt(stack, ref, PositionInfo.createNoPositionInfo());
+      AbstractDefinitionStmt as =
+          Jimple.newIdentityStmt(stack, ref, PositionInfo.createNoPositionInfo());
       opr = new Operand(ln, ref);
       opr.stack = stack;
       frame.out(opr);
@@ -1632,12 +1675,16 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
   private Table<AbstractInsnNode, AbstractInsnNode, Edge> edges;
   private ArrayDeque<Edge> conversionWorklist;
 
-  private void addEdges(@Nonnull AbstractInsnNode cur, @Nonnull AbstractInsnNode tgt1, @Nullable List<LabelNode> tgts) {
+  private void addEdges(
+      @Nonnull AbstractInsnNode cur,
+      @Nonnull AbstractInsnNode tgt1,
+      @Nullable List<LabelNode> tgts) {
     int lastIdx = tgts == null ? -1 : tgts.size() - 1;
     Operand[] stackss = (new ArrayList<>(stack)).toArray(new Operand[stack.size()]);
     AbstractInsnNode tgt = tgt1;
     int i = 0;
-    tgt_loop: do {
+    tgt_loop:
+    do {
       Edge edge = edges.get(cur, tgt);
       if (edge == null) {
         edge = new Edge(tgt);
@@ -1763,7 +1810,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     // Catch the exception
     JCaughtExceptionRef ref = Jimple.newCaughtExceptionRef();
     Local local = newStackLocal();
-    AbstractDefinitionStmt as = Jimple.newIdentityStmt(local, ref, PositionInfo.createNoPositionInfo());
+    AbstractDefinitionStmt as =
+        Jimple.newIdentityStmt(local, ref, PositionInfo.createNoPositionInfo());
 
     Operand opr = new Operand(ln, ref);
     opr.stack = local;
@@ -1781,7 +1829,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     // code, we have to split the exceptional case (with the exception on
     // the stack) from the normal fall-through case without anything on the
     // stack.
-    for (Iterator<AbstractInsnNode> it = instructions.iterator(); it.hasNext();) {
+    for (Iterator<AbstractInsnNode> it = instructions.iterator(); it.hasNext(); ) {
       AbstractInsnNode node = it.next();
       if (node instanceof JumpInsnNode) {
         if (((JumpInsnNode) node).label == ln) {
@@ -1803,22 +1851,29 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     return false;
   }
 
-  private void emitLocals(@Nonnull SootMethod m, @Nonnull Collection<Local> jbl, @Nonnull Collection<IStmt> jbu)
+  private void emitLocals(
+      @Nonnull SootMethod m, @Nonnull Collection<Local> jbl, @Nonnull Collection<IStmt> jbu)
       throws AsmFrontendException {
     int iloc = 0;
     if (!m.isStatic()) {
       Local l = getLocal(iloc++);
       Optional<SootClass> declaringClass = m.getDeclaringClass();
       if (!declaringClass.isPresent()) {
-        throw new AsmFrontendException(String.format("Error resoling declaring class %s of method %s", declaringClass, m));
+        throw new AsmFrontendException(
+            String.format("Error resoling declaring class %s of method %s", declaringClass, m));
       }
       jbu.add(
-          Jimple.newIdentityStmt(l, Jimple.newThisRef(declaringClass.get().getType()), PositionInfo.createNoPositionInfo()));
+          Jimple.newIdentityStmt(
+              l,
+              Jimple.newThisRef(declaringClass.get().getType()),
+              PositionInfo.createNoPositionInfo()));
     }
     int nrp = 0;
     for (Type ot : m.getParameterTypes()) {
       Local l = getLocal(iloc);
-      jbu.add(Jimple.newIdentityStmt(l, Jimple.newParameterRef(ot, nrp++), PositionInfo.createNoPositionInfo()));
+      jbu.add(
+          Jimple.newIdentityStmt(
+              l, Jimple.newParameterRef(ot, nrp++), PositionInfo.createNoPositionInfo()));
       if (AsmUtil.isDWord(ot.getTypeSignature())) {
         iloc += 2;
       } else {
@@ -1830,7 +1885,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
 
   private void emitTraps(@Nonnull Collection<Trap> traps) throws AsmFrontendException {
     // SootClass throwable = Scene.v().getSootClass("java.lang.Throwable");
-    JavaClassSignature throwableSig = view.getSignatureFactory().getClassSignature("java.lang.Throwable");
+    JavaClassSignature throwableSig =
+        view.getSignatureFactory().getClassSignature("java.lang.Throwable");
 
     Optional<AbstractClass> aClass = view.getClass(throwableSig);
     if (!aClass.isPresent()) {
@@ -1852,7 +1908,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
         cls = throwable;
       } else {
         // Scene.v().getSootClass(AsmUtil.toQualifiedName(tc.type));
-        JavaClassSignature classSignature = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(tc.type));
+        JavaClassSignature classSignature =
+            view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(tc.type));
         Optional<AbstractClass> aClass1 = view.getClass(classSignature);
         if (!aClass1.isPresent()) {
 
@@ -1905,7 +1962,9 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
           caughtEx = getIdentityRefFromContrainer((StmtContainer) u);
         }
 
-        if (insn instanceof LabelNode && caughtEx != null && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
+        if (insn instanceof LabelNode
+            && caughtEx != null
+            && caughtEx.getRightOp() instanceof JCaughtExceptionRef) {
           // We directly place this label
           Collection<IStmtBox> traps = trapHandlers.get((LabelNode) insn);
           for (IStmtBox ub : traps) {

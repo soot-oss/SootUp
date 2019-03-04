@@ -19,7 +19,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -37,17 +37,15 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractInvokeExpr extends AbstractViewResident implements Expr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 1796920588315752175L;
+
   protected MethodSignature methodSignature;
   protected final ValueBox[] argBoxes;
 
@@ -79,9 +77,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
     return argBoxes[index].getValue();
   }
 
-  /**
-   * Returns a list of arguments, consisting of values contained in the box.
-   */
+  /** Returns a list of arguments, consisting of values contained in the box. */
   public List<Value> getArgs() {
     List<Value> l = new ArrayList<>();
     if (argBoxes != null) {
@@ -147,5 +143,4 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
       }
     }
   }
-
 }

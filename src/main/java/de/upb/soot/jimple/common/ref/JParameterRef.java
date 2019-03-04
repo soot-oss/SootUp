@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -30,26 +30,27 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.Collections;
 import java.util.List;
 
 /**
- * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter slots on methodRef
- * entry. <br>
- * <p>
- * For instance, in an instance methodRef, the first statement will often be <code> this := @parameter0; </code>
- * </p>
+ * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter
+ * slots on methodRef entry. <br>
+ *
+ * <p>For instance, in an instance methodRef, the first statement will often be <code>
+ *  this := @parameter0; </code>
  */
 public class JParameterRef implements IdentityRef {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -5198809451267425640L;
+
   private int num;
   private Type paramType;
 
-  /** Constructs a ParameterRef object of the specified type, representing the specified parameter number. */
+  /**
+   * Constructs a ParameterRef object of the specified type, representing the specified parameter
+   * number.
+   */
   public JParameterRef(Type paramType, int number) {
     this.num = number;
     this.paramType = paramType;
@@ -113,5 +114,4 @@ public class JParameterRef implements IdentityRef {
   public void accept(IVisitor sw) {
     // TODO
   }
-
 }

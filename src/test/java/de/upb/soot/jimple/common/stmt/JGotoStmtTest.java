@@ -22,6 +22,7 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import categories.Java8Test;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.JStmtBox;
 import de.upb.soot.jimple.basic.Local;
@@ -30,18 +31,11 @@ import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java8Test;
-
-/**
- *
- * @author Markus Schmidt & Linghui Luo
- *
- */
+/** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
 public class JGotoStmtTest {
 
@@ -51,8 +45,11 @@ public class JGotoStmtTest {
     IView view = new JavaView(null);
     DefaultSignatureFactory factory = new DefaultSignatureFactory();
 
-    Local local1 = new Local("$r0", new RefType(view, factory.getTypeSignature("java.lang.Exception")));
-    Local local2 = new Local("$r0", new RefType(view, factory.getTypeSignature("somepackage.dummy.Exception")));
+    Local local1 =
+        new Local("$r0", new RefType(view, factory.getTypeSignature("java.lang.Exception")));
+    Local local2 =
+        new Local(
+            "$r0", new RefType(view, factory.getTypeSignature("somepackage.dummy.Exception")));
 
     // IStmt
     IStmt targetStmt = new JThrowStmt(local1, nop);
@@ -72,7 +69,5 @@ public class JGotoStmtTest {
 
     Assert.assertTrue(gStmt.equivTo(new JGotoStmt(new JThrowStmt(local1, nop), nop)));
     Assert.assertFalse(gStmt.equivTo(new JGotoStmt(new JThrowStmt(local2, nop), nop)));
-
   }
-
 }

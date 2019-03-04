@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -30,7 +30,6 @@ package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.io.Serializable;
 
 public interface IStmtBox extends Serializable {
@@ -41,14 +40,12 @@ public interface IStmtBox extends Serializable {
   public IStmt getStmt();
 
   /**
-   * Returns true if the StmtBox is holding a Stmt that is the target of a branch (ie a Stmt at the beginning of a CFG
-   * block). This is the default case.
+   * Returns true if the StmtBox is holding a Stmt that is the target of a branch (ie a Stmt at the
+   * beginning of a CFG block). This is the default case.
    *
-   * <p>
-   * Returns false if the StmtBox is holding a Stmt that indicates the end of a CFG block and may require specialised
-   * processing for SSA.
-   * </p>
-   **/
+   * <p>Returns false if the StmtBox is holding a Stmt that indicates the end of a CFG block and may
+   * require specialised processing for SSA.
+   */
   boolean isBranchTarget();
 
   void toString(IStmtPrinter up);

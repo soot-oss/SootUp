@@ -171,5 +171,4 @@ public class ClassConstant extends Constant {
   public String toString() {
     return "class " + StringTools.getQuotedStringOf(value);
   }
-
 }

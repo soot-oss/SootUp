@@ -10,12 +10,12 @@ package de.upb.soot.validation;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -26,7 +26,6 @@ import de.upb.soot.core.Body;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-
 import java.util.List;
 
 public class LocalsValidator implements BodyValidator {
@@ -46,7 +45,9 @@ public class LocalsValidator implements BodyValidator {
     Value value;
     if ((value = vb.getValue()) instanceof Local) {
       if (!body.getLocals().contains(value)) {
-        exception.add(new ValidationException(value, "Local not in chain : " + value + " in " + body.getMethod()));
+        exception.add(
+            new ValidationException(
+                value, "Local not in chain : " + value + " in " + body.getMethod()));
       }
     }
   }

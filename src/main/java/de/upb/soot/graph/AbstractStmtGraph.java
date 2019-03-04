@@ -4,7 +4,6 @@ import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.common.stmt.IStmt;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,14 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
- * Represents a CFG where the nodes are {@link IStmt} instances and edges represent unexceptional and (possibly) exceptional
- * control flow between <tt>IStmt</tt>s.
- * </p>
+ * Represents a CFG where the nodes are {@link IStmt} instances and edges represent unexceptional
+ * and (possibly) exceptional control flow between <tt>IStmt</tt>s.
  *
- * <p>
- * This is an abstract class, providing the facilities used to build CFGs for specific purposes.
- * </p>
+ * <p>This is an abstract class, providing the facilities used to build CFGs for specific purposes.
  */
 public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   protected List<IStmt> heads;
@@ -36,8 +31,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   /**
    * Performs the work that is required to construct any sort of <tt>IStmtGraph</tt>.
    *
-   * @param body
-   *          The body of the methodRef for which to construct a control flow graph.
+   * @param body The body of the methodRef for which to construct a control flow graph.
    */
   protected AbstractStmtGraph(Body body) {
     this.body = body;
@@ -46,20 +40,20 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   }
 
   /**
-   * Utility methodRef for <tt>IStmtGraph</tt> constructors. It computes the edges corresponding to unexceptional control
-   * flow.
+   * Utility methodRef for <tt>IStmtGraph</tt> constructors. It computes the edges corresponding to
+   * unexceptional control flow.
    *
-   * @param stmtToSuccs
-   *          A {@link Map} from {@link IStmt}s to {@link List}s of {@link IStmt}s. This is an ``out parameter''; callers
-   *          must pass an empty {@link Map}. <tt>buildUnexceptionalEdges</tt> will add a mapping for every <tt>IStmt</tt> in
-   *          the body to a list of its unexceptional successors.
-   *
-   * @param stmtToPreds
-   *          A {@link Map} from {@link IStmt}s to {@link List}s of {@link IStmt}s. This is an ``out parameter''; callers
-   *          must pass an empty {@link Map}. <tt>buildUnexceptionalEdges</tt> will add a mapping for every <tt>IStmt</tt> in
-   *          the body to a list of its unexceptional predecessors.
+   * @param stmtToSuccs A {@link Map} from {@link IStmt}s to {@link List}s of {@link IStmt}s. This
+   *     is an ``out parameter''; callers must pass an empty {@link Map}.
+   *     <tt>buildUnexceptionalEdges</tt> will add a mapping for every <tt>IStmt</tt> in the body to
+   *     a list of its unexceptional successors.
+   * @param stmtToPreds A {@link Map} from {@link IStmt}s to {@link List}s of {@link IStmt}s. This
+   *     is an ``out parameter''; callers must pass an empty {@link Map}.
+   *     <tt>buildUnexceptionalEdges</tt> will add a mapping for every <tt>IStmt</tt> in the body to
+   *     a list of its unexceptional predecessors.
    */
-  protected void buildUnexceptionalEdges(Map<IStmt, List<IStmt>> stmtToSuccs, Map<IStmt, List<IStmt>> stmtToPreds) {
+  protected void buildUnexceptionalEdges(
+      Map<IStmt, List<IStmt>> stmtToSuccs, Map<IStmt, List<IStmt>> stmtToPreds) {
     Iterator<IStmt> stmtIt = orderedStmts.iterator();
     IStmt currentIStmt, nextIStmt;
 
@@ -104,17 +98,14 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   }
 
   /**
-   * <p>
-   * Utility methodRef used in the construction of {@link IStmtGraph}s, to be called only after the stmtToPreds and
-   * stmtToSuccs maps have been built.
-   * </p>
+   * Utility methodRef used in the construction of {@link IStmtGraph}s, to be called only after the
+   * stmtToPreds and stmtToSuccs maps have been built.
    *
-   * <p>
-   * <code>IStmtGraph</code> provides an implementation of <code>buildHeadsAndTails()</code> which defines the graph's set of
-   * heads to include the first {@link IStmt} in the graph's body, together with any other <tt>IStmt</tt> which has no
-   * predecessors. It defines the graph's set of tails to include all <tt>IStmt</tt>s with no successors. Subclasses of
-   * <code>IStmtGraph</code> may override this methodRef to change the criteria for classifying a node as a head or tail.
-   * </p>
+   * <p><code>IStmtGraph</code> provides an implementation of <code>buildHeadsAndTails()</code>
+   * which defines the graph's set of heads to include the first {@link IStmt} in the graph's body,
+   * together with any other <tt>IStmt</tt> which has no predecessors. It defines the graph's set of
+   * tails to include all <tt>IStmt</tt>s with no successors. Subclasses of <code>IStmtGraph</code>
+   * may override this methodRef to change the criteria for classifying a node as a head or tail.
    */
   protected void buildHeadsAndTails() {
     tails = new ArrayList<>();
@@ -139,22 +130,20 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
         heads.add(entryPoint);
       }
     }
-
   }
 
   /**
-   * Utility methodRef that produces a new map from the {@link IStmt}s of this graph's body to the union of the values stored
-   * in the two argument {@link Map}s, used to combine the maps of exceptional and unexceptional predecessors and successors
-   * into maps of all predecessors and successors. The values stored in both argument maps must be {@link List}s of
-   * {@link IStmt}s, which are assumed not to contain any duplicate <tt>IStmt</tt>s.
+   * Utility methodRef that produces a new map from the {@link IStmt}s of this graph's body to the
+   * union of the values stored in the two argument {@link Map}s, used to combine the maps of
+   * exceptional and unexceptional predecessors and successors into maps of all predecessors and
+   * successors. The values stored in both argument maps must be {@link List}s of {@link IStmt}s,
+   * which are assumed not to contain any duplicate <tt>IStmt</tt>s.
    *
-   * @param mapA
-   *          The first map to be combined.
-   *
-   * @param mapB
-   *          The second map to be combined.
+   * @param mapA The first map to be combined.
+   * @param mapB The second map to be combined.
    */
-  protected Map<IStmt, List<IStmt>> combineMapValues(Map<IStmt, List<IStmt>> mapA, Map<IStmt, List<IStmt>> mapB) {
+  protected Map<IStmt, List<IStmt>> combineMapValues(
+      Map<IStmt, List<IStmt>> mapA, Map<IStmt, List<IStmt>> mapB) {
     // The duplicate screen
     Map<IStmt, List<IStmt>> result = new HashMap<>(mapA.size() * 2 + 1, 0.7f);
     for (IStmt stmt : orderedStmts) {
@@ -203,19 +192,16 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   /**
    * Utility methodRef for adding an edge to maps representing the CFG.
    *
-   * @param stmtToSuccs
-   *          The {@link Map} from {@link IStmt}s to {@link List}s of their successors.
-   *
-   * @param stmtToPreds
-   *          The {@link Map} from {@link IStmt}s to {@link List}s of their successors.
-   *
-   * @param head
-   *          The {@link IStmt} from which the edge starts.
-   *
-   * @param tail
-   *          The {@link IStmt} to which the edge flows.
+   * @param stmtToSuccs The {@link Map} from {@link IStmt}s to {@link List}s of their successors.
+   * @param stmtToPreds The {@link Map} from {@link IStmt}s to {@link List}s of their successors.
+   * @param head The {@link IStmt} from which the edge starts.
+   * @param tail The {@link IStmt} to which the edge flows.
    */
-  protected void addEdge(Map<IStmt, List<IStmt>> stmtToSuccs, Map<IStmt, List<IStmt>> stmtToPreds, IStmt head, IStmt tail) {
+  protected void addEdge(
+      Map<IStmt, List<IStmt>> stmtToSuccs,
+      Map<IStmt, List<IStmt>> stmtToPreds,
+      IStmt head,
+      IStmt tail) {
     List<IStmt> headsSuccs = stmtToSuccs.computeIfAbsent(head, k -> new ArrayList<>(3));
     // We expect this list to
     // remain short.
@@ -228,7 +214,6 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
 
   /**
    * @return The body from which this IStmtGraph was built.
-   *
    * @see Body
    */
   public Body getBody() {
@@ -236,13 +221,11 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   }
 
   /**
-   * Look for a path in graph, from def to use. This path has to lie inside an extended basic block (and this property
-   * implies uniqueness.). The path returned includes from and to.
+   * Look for a path in graph, from def to use. This path has to lie inside an extended basic block
+   * (and this property implies uniqueness.). The path returned includes from and to.
    *
-   * @param from
-   *          start point for the path.
-   * @param to
-   *          end point for the path.
+   * @param from start point for the path.
+   * @param to end point for the path.
    * @return null if there is no such path.
    */
   public List<IStmt> getExtendedBasicBlockPathBetween(IStmt from, IStmt to) {

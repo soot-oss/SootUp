@@ -5,7 +5,5 @@ package de.upb.soot.typehierarchy;
  *
  * @author Linghui Luo
  * @author Ben Hermann
- *
  */
-public interface ITypeHierarchy {
-}
+public interface ITypeHierarchy {}

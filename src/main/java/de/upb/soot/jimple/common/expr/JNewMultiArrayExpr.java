@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -34,27 +34,22 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class JNewMultiArrayExpr implements Expr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -473132292740722571L;
+
   private ArrayType baseType;
   protected final ValueBox[] sizeBoxes;
 
   /**
    * Initiates a JNewMultiArrayExpr.
-   * 
-   * @param type
-   *          the type of the array
-   * @param sizes
-   *          the sizes
-   * 
+   *
+   * @param type the type of the array
+   * @param sizes the sizes
    */
   public JNewMultiArrayExpr(ArrayType type, List<? extends Value> sizes) {
     this.baseType = type;
@@ -149,9 +144,7 @@ public class JNewMultiArrayExpr implements Expr {
     return sizeBoxes[index].getValue();
   }
 
-  /**
-   * Returns a list of values of sizeBoxes.
-   */
+  /** Returns a list of values of sizeBoxes. */
   public List<Value> getSizes() {
     List<Value> toReturn = new ArrayList<>();
 
@@ -187,5 +180,4 @@ public class JNewMultiArrayExpr implements Expr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNewMultiArrayExpr(this);
   }
-
 }

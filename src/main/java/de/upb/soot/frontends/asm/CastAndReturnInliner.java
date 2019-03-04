@@ -29,24 +29,19 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
-
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 /**
  * Transformers that inlines returns that cast and return an object. We take a = .. goto l0;
  *
- * <p>
- * l0: b = (B) a; return b;
+ * <p>l0: b = (B) a; return b;
  *
- * <p>
- * and transform it into a = .. return a;
+ * <p>and transform it into a = .. return a;
  *
- * <p>
- * This makes it easier for the local splitter to split distinct uses of the same variable. Imagine that "a" can come from
- * different parts of the code and have different types. To be able to find a valid typing at all, we must break apart the
- * uses of "a".
+ * <p>This makes it easier for the local splitter to split distinct uses of the same variable.
+ * Imagine that "a" can come from different parts of the code and have different types. To be able
+ * to find a valid typing at all, we must break apart the uses of "a".
  *
  * @author Steven Arzt
  */

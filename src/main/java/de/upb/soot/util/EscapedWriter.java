@@ -10,12 +10,12 @@ package de.upb.soot.util;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -27,14 +27,15 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * A FilterWriter which catches to-be-escaped characters (<code>\\unnnn</code>) in the input and substitutes their escaped
- * representation. Used for Soot output.
+ * A FilterWriter which catches to-be-escaped characters (<code>\\unnnn</code>) in the input and
+ * substitutes their escaped representation. Used for Soot output.
  */
 
 // TODO: check code copied from old soot
 public class EscapedWriter extends FilterWriter {
   /** Convenience field containing the system's line separator. */
   public final String lineSeparator = System.getProperty("line.separator");
+
   private final int cr = lineSeparator.charAt(0);
   private final int lf = (lineSeparator.length() == 2) ? lineSeparator.charAt(1) : -1;
 

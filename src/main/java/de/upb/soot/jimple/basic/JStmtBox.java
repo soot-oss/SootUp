@@ -17,10 +17,10 @@
  * Boston, MA 02111-1307, USA.
  */
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
- * 
+ *
  *
  */
 /*
@@ -31,18 +31,14 @@ package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class JStmtBox implements IStmtBox {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 7292172470036407386L;
 
-  @Nullable
-  protected IStmt stmt;
+  @Nullable protected IStmt stmt;
 
   public JStmtBox(@Nullable IStmt stmt) {
     this.stmt = stmt;

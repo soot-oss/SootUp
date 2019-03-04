@@ -11,7 +11,6 @@ import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,14 +18,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-
 import javax.annotation.Nonnull;
 
 /**
  * Abstract class for view.
- * 
- * @author Linghui Luo
  *
+ * @author Linghui Luo
  */
 public abstract class AbstractView implements IView {
 
@@ -52,7 +49,8 @@ public abstract class AbstractView implements IView {
 
   @Override
   public @Nonnull RefType getRefType(@Nonnull TypeSignature classSignature) {
-    Optional<RefType> op = this.refTypes.stream().filter(r -> r.getTypeSignature().equals(classSignature)).findFirst();
+    Optional<RefType> op =
+        this.refTypes.stream().filter(r -> r.getTypeSignature().equals(classSignature)).findFirst();
     if (!op.isPresent()) {
       RefType refType = new RefType(this, classSignature);
       this.refTypes.add(refType);
@@ -137,9 +135,7 @@ public abstract class AbstractView implements IView {
     return res.toString();
   }
 
-  /**
-   * Set a list of reserved names. The list can be different in different programming languages.
-   */
+  /** Set a list of reserved names. The list can be different in different programming languages. */
   protected abstract void setReservedNames();
 
   @Override

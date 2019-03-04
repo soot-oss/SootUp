@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -34,15 +34,13 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class JNewArrayExpr implements Expr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 4481534412297120257L;
+
   private Type baseType;
   private final ValueBox sizeBox;
 
@@ -56,9 +54,7 @@ public class JNewArrayExpr implements Expr {
     return new JNewArrayExpr(getBaseType(), Jimple.cloneIfNecessary(getSize()));
   }
 
-  /**
-   * Returns a value of sizeBox if o is an instance of AbstractNewArrayExpr, else returns false.
-   */
+  /** Returns a value of sizeBox if o is an instance of AbstractNewArrayExpr, else returns false. */
   @Override
   public boolean equivTo(Object o) {
     return JimpleComparator.getInstance().caseNewArrayExpr(this, o);
@@ -77,12 +73,15 @@ public class JNewArrayExpr implements Expr {
 
   @Override
   public String toString() {
-    return (Jimple.NEWARRAY + " (") + getBaseTypeString() + ")" + "[" + sizeBox.getValue().toString() + "]";
+    return (Jimple.NEWARRAY + " (")
+        + getBaseTypeString()
+        + ")"
+        + "["
+        + sizeBox.getValue().toString()
+        + "]";
   }
 
-  /**
-   * Converts a parameter of type StmtPrinter to a string literal.
-   */
+  /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.NEWARRAY);
@@ -119,9 +118,7 @@ public class JNewArrayExpr implements Expr {
     sizeBox.setValue(size);
   }
 
-  /**
-   * Returns a list of type ValueBox, contains a list of values of sizeBox.
-   */
+  /** Returns a list of type ValueBox, contains a list of values of sizeBox. */
   @Override
   public final List<ValueBox> getUseBoxes() {
 
@@ -131,13 +128,12 @@ public class JNewArrayExpr implements Expr {
     return useBoxes;
   }
 
-  /**
-   * Returns an instance of ArrayType().
-   */
+  /** Returns an instance of ArrayType(). */
   @Override
   public Type getType() {
     if (baseType instanceof ArrayType) {
-      return ArrayType.getInstance(((ArrayType) baseType).baseType, ((ArrayType) baseType).numDimensions + 1);
+      return ArrayType.getInstance(
+          ((ArrayType) baseType).baseType, ((ArrayType) baseType).numDimensions + 1);
     } else {
       return ArrayType.getInstance(baseType, 1);
     }
@@ -147,5 +143,4 @@ public class JNewArrayExpr implements Expr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNewArrayExpr(this);
   }
-
 }

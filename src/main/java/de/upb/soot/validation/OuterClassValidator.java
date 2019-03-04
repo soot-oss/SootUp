@@ -23,7 +23,6 @@ package de.upb.soot.validation;
  */
 
 import de.upb.soot.core.SootClass;
-
 import java.util.List;
 
 /**
@@ -50,5 +49,4 @@ public class OuterClassValidator implements ClassValidator {
     // TODO: check code from old soot n the comment
     return true;
   }
-
 }

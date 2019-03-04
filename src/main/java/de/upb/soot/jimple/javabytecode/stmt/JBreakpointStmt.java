@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -34,9 +34,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JBreakpointStmt extends AbstractStmt {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 7082976523552855249L;
 
   public JBreakpointStmt(PositionInfo positionInfo) {
@@ -87,5 +85,4 @@ public class JBreakpointStmt extends AbstractStmt {
   public int equivHashCode() {
     return 42 + 1;
   }
-
 }

@@ -10,12 +10,12 @@ package de.upb.soot.signatures;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -23,7 +23,6 @@ package de.upb.soot.signatures;
  */
 
 import com.google.common.base.Preconditions;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,8 +33,8 @@ import java.util.Map;
  */
 public class ModuleSignatureFactory extends DefaultSignatureFactory {
 
-  public static final JavaClassSignature MODULE_INFO_CLASS
-      = new JavaClassSignature("module-info", PackageSignature.DEFAULT_PACKAGE);
+  public static final JavaClassSignature MODULE_INFO_CLASS =
+      new JavaClassSignature("module-info", PackageSignature.DEFAULT_PACKAGE);
 
   private static final Map<String, ModuleSignature> modules = new HashMap<>();
 
@@ -51,24 +50,22 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
   }
 
   /**
-   * FIXME: Check with mbenz if it is easer (and makes more sense), to make a module signature a decorator for a class
-   * signature..., IMHO: easier Factory to create module signatures.
+   * FIXME: Check with mbenz if it is easer (and makes more sense), to make a module signature a
+   * decorator for a class signature..., IMHO: easier Factory to create module signatures.
    */
-  public ModuleSignatureFactory() {
-
-  }
+  public ModuleSignatureFactory() {}
 
   /**
-   * Returns a unique ModuleSignature. The methodRef looks up a cache if it already contains a signature with the given
-   * module name. If the cache lookup fails a new signature is created. Returns a unique ModuleSignature. The methodRef looks
-   * up a cache if it already contains a signature with the given module name. If the cache lookup fails a new signature is
-   * created.
+   * Returns a unique ModuleSignature. The methodRef looks up a cache if it already contains a
+   * signature with the given module name. If the cache lookup fails a new signature is created.
+   * Returns a unique ModuleSignature. The methodRef looks up a cache if it already contains a
+   * signature with the given module name. If the cache lookup fails a new signature is created.
    *
-   * @param moduleName
-   *          the module name; Must not be null. Use the empty string for the unnamed module
+   * @param moduleName the module name; Must not be null. Use the empty string for the unnamed
+   *     module
    * @return a ModuleSignature
-   * @throws NullPointerException
-   *           if the given module name is null. Use the empty string to denote the unnamed module.
+   * @throws NullPointerException if the given module name is null. Use the empty string to denote
+   *     the unnamed module.
    */
   public static ModuleSignature getModuleSignature(final String moduleName) {
     Preconditions.checkNotNull(moduleName);
@@ -86,20 +83,19 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
   }
 
   /**
-   * Returns a unique PackageSignature. The methodRef looks up a cache if it already contains a signature with the given
-   * package and module name. If the cache lookup fails a new signature is created.
+   * Returns a unique PackageSignature. The methodRef looks up a cache if it already contains a
+   * signature with the given package and module name. If the cache lookup fails a new signature is
+   * created.
    *
-   * @param packageName
-   *          the package name; must not be null use empty string for the default package
-   * @param moduleName
-   *          the module containing the package; must not be null use empty string for the unnamed module
-   *          {@link ModuleSignature#UNNAMED_MODULE}
+   * @param packageName the package name; must not be null use empty string for the default package
+   * @param moduleName the module containing the package; must not be null use empty string for the
+   *     unnamed module {@link ModuleSignature#UNNAMED_MODULE}
    * @return a ModulePackageSignature
-   * @throws NullPointerException
-   *           if the given module name or package name is null. Use the empty string to denote the unnamed module or the
-   *           default package.
+   * @throws NullPointerException if the given module name or package name is null. Use the empty
+   *     string to denote the unnamed module or the default package.
    */
-  public ModulePackageSignature getPackageSignature(final String packageName, final String moduleName) {
+  public ModulePackageSignature getPackageSignature(
+      final String packageName, final String moduleName) {
     Preconditions.checkNotNull(moduleName);
     Preconditions.checkNotNull(packageName);
     String fqId = moduleName + "." + packageName;
@@ -118,23 +114,20 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
   }
 
   /**
-   * Always creates a new ClassSignature. In opposite to PackageSignatures and ModuleSignatures, ClassSignatures are not
-   * cached because the are unique per class, and thus reusing them does not make sense.
+   * Always creates a new ClassSignature. In opposite to PackageSignatures and ModuleSignatures,
+   * ClassSignatures are not cached because the are unique per class, and thus reusing them does not
+   * make sense.
    *
-   * @param className
-   *          the simple name of the class
-   * @param packageName
-   *          the declaring package
-   * @param moduleName
-   *          the declaring module
+   * @param className the simple name of the class
+   * @param packageName the declaring package
+   * @param moduleName the declaring module
    * @return a ClassSignature for a Java 9 class
-   * @throws NullPointerException
-   *           if the given module name or package name is null. Use the empty string to denote the unnamed module or the
-   *           default package.
+   * @throws NullPointerException if the given module name or package name is null. Use the empty
+   *     string to denote the unnamed module or the default package.
    */
-  public JavaClassSignature getClassSignature(final String className, final String packageName, final String moduleName) {
+  public JavaClassSignature getClassSignature(
+      final String className, final String packageName, final String moduleName) {
     PackageSignature packageSignature = getPackageSignature(packageName, moduleName);
     return new JavaClassSignature(className, packageSignature);
   }
-
 }

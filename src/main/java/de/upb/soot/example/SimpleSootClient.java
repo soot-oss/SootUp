@@ -44,5 +44,4 @@ public class SimpleSootClient {
 
     // here goes my own analysis
   }
-
 }

@@ -2,7 +2,6 @@ package de.upb.soot.graph;
 
 import de.upb.soot.core.Body;
 import de.upb.soot.jimple.common.stmt.IStmt;
-
 import java.util.HashMap;
 
 /*-
@@ -28,8 +27,8 @@ import java.util.HashMap;
  */
 
 /**
- * Represents a CFG where the nodes are IStmt instances, and where no edges are included to account for control flow
- * associated with exceptions.
+ * Represents a CFG where the nodes are IStmt instances, and where no edges are included to account
+ * for control flow associated with exceptions.
  *
  * @see IStmt
  * @see AbstractStmtGraph
@@ -39,8 +38,7 @@ public class BriefStmtGraph extends AbstractStmtGraph {
   /**
    * Constructs a BriefUnitGraph given a Body instance.
    *
-   * @param body
-   *          The underlying body we want to make a graph for.
+   * @param body The underlying body we want to make a graph for.
    */
   public BriefStmtGraph(Body body) {
     super(body);
@@ -50,5 +48,4 @@ public class BriefStmtGraph extends AbstractStmtGraph {
     buildUnexceptionalEdges(stmtToSuccs, stmtToPreds);
     buildHeadsAndTails();
   }
-
 }

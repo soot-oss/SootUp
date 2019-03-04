@@ -4,9 +4,8 @@ import de.upb.soot.views.IView;
 
 /**
  * Abstract class for anything lives in a View
- * 
- * @author Linghui Luo
  *
+ * @author Linghui Luo
  */
 public class AbstractViewResident implements IViewResident {
 
