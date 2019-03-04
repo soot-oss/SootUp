@@ -38,21 +38,22 @@
 package bugfixes;
 
 public class VarDeclInSwitch {
-	static int y = 7;
-	public static void main(String args[]) {
-		int x = 5;
-		x = x + x;
-		switch ( x ) {
-		case 5:
-			break;
-		case 10:
-			int y = 6;
-			System.out.println(y);
-		default:
-			y = 7;
-			System.out.println(y);
-			break;
-	
-		}
-	}
+  static int y = 7;
+
+  public static void main(String args[]) {
+    int x = 5;
+    x = x + x;
+    switch (x) {
+      case 5:
+        break;
+      case 10:
+        int y = 6;
+        System.out.println(y);
+      default:
+        y = 7;
+        System.out.println(y);
+        break;
+
+    }
+  }
 }

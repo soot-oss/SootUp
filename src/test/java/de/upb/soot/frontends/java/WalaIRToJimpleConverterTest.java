@@ -3,13 +3,14 @@ package de.upb.soot.frontends.java;
 import static org.junit.Assert.assertEquals;
 
 import categories.Java8Test;
+import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Linghui Luo */
 @Category(Java8Test.class)
 public class WalaIRToJimpleConverterTest {
-  private WalaIRToJimpleConverter converter = new WalaIRToJimpleConverter("");
+  private WalaIRToJimpleConverter converter = new WalaIRToJimpleConverter(Collections.EMPTY_SET);
 
   @Test
   public void testConvertClassName1() {

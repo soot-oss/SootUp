@@ -105,7 +105,7 @@ public class SootMethod extends SootClassMember implements IMethod {
         source,
         source.getSignature(),
         modifiers,
-        Collections.<JavaClassSignature>emptyList(),
+        Collections.emptyList(),
         null);
   }
 
@@ -115,14 +115,7 @@ public class SootMethod extends SootClassMember implements IMethod {
       IMethodSourceContent source,
       MethodSignature signature,
       EnumSet<Modifier> modifiers) {
-    this(
-        view,
-        declaringClass,
-        source,
-        signature,
-        modifiers,
-        Collections.<JavaClassSignature>emptyList(),
-        null);
+    this(view, declaringClass, source, signature, modifiers, Collections.emptyList(), null);
   }
 
   /** Constructs a SootMethod object with the given attributes. */

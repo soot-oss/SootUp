@@ -57,7 +57,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     this.targetBoxes = targetBoxes;
 
     // Build up stmtBoxes
-    List<IStmtBox> list = new ArrayList<IStmtBox>();
+    List<IStmtBox> list = new ArrayList<>();
     stmtBoxes = Collections.unmodifiableList(list);
 
     Collections.addAll(list, targetBoxes);
@@ -90,9 +90,8 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   @Override
   public final List<ValueBox> getUseBoxes() {
-    List<ValueBox> list = new ArrayList<ValueBox>();
 
-    list.addAll(keyBox.getValue().getUseBoxes());
+    List<ValueBox> list = new ArrayList<ValueBox>(keyBox.getValue().getUseBoxes());
     list.add(keyBox);
 
     return list;
@@ -116,7 +115,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   /** Returns a list targets of type Stmt. */
   public final List<IStmt> getTargets() {
-    List<IStmt> targets = new ArrayList<IStmt>();
+    List<IStmt> targets = new ArrayList<>();
 
     for (IStmtBox element : targetBoxes) {
       targets.add(element.getStmt());
@@ -159,24 +158,6 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   @Override
   public final boolean branches() {
-    return true;
-  }
-
-  protected boolean equivTo(AbstractSwitchStmt o) {
-    if (keyBox != o.keyBox || defaultTargetBox != o.defaultTargetBox) {
-      return false;
-    }
-
-    if (targetBoxes.length != targetBoxes.length) {
-      return false;
-    }
-    int i = 0;
-    for (IStmtBox boxOther : o.targetBoxes) {
-      if (!boxOther.getStmt().equivTo(targetBoxes[i++].getStmt())) {
-        return false;
-      }
-    }
-
     return true;
   }
 

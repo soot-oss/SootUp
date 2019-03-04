@@ -39,40 +39,37 @@ package javaonepointfive;
 
 import java.util.Iterator;
 
-public class GenericMemberClasses<T> 
-{
-    protected class A implements Iterator<T> 
-    {
-    	T x = null;
-        private int localChangeID;
-		
+public class GenericMemberClasses<T> {
+  protected class A implements Iterator<T> {
+    T x = null;
+    private int localChangeID;
+
     @Override
     public boolean hasNext() {
-			return ( localChangeID == 5 );
-		}
+      return (localChangeID == 5);
+    }
 
-		
     @Override
     public T next() {
-			localChangeID = 5;
-			return x;
-		}
+      localChangeID = 5;
+      return x;
+    }
 
-		
     @Override
     public void remove() {
-		}
     }
-    public static void main(String args[]) {
-    	(new GenericMemberClasses<>()).doit();
+  }
+
+  public static void main(String args[]) {
+    (new GenericMemberClasses<>()).doit();
+  }
+
+  private void doit() {
+    A a = new A();
+    while (a.hasNext()) {
+      Object x = a.next();
+      a.remove();
+      System.out.println(x);
     }
-    
-    private void doit() {
-    	A a = new A();
-    	while (a.hasNext()) {
-    		Object x = a.next();
-    		a.remove();
-    		System.out.println(x);
-    	}
-    }
+  }
 }

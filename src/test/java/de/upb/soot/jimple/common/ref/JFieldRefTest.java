@@ -1,6 +1,7 @@
 package de.upb.soot.jimple.common.ref;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.soot.Project;
@@ -47,7 +48,8 @@ public class JFieldRefTest {
         new SootClass(
             view,
             ResolvingLevel.BODIES,
-            new JavaClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature),
+            new JavaClassSource(
+                new JavaSourcePathNamespace(Collections.EMPTY_SET), null, declaringClassSignature),
             ClassType.Application,
             null,
             Collections.emptySet(),
@@ -58,7 +60,7 @@ public class JFieldRefTest {
             EnumSet.of(Modifier.PUBLIC));
     JStaticFieldRef ref = Jimple.newStaticFieldRef(view, fieldSig);
     assertEquals("<dummyMainClass: int dummyField>", ref.toString());
-    assertEquals(true, ref.getField().isPresent());
+    assertTrue(ref.getField().isPresent());
     assertEquals(field, ref.getField().get());
     assertEquals(EnumSet.of(Modifier.FINAL), ref.getField().get().getModifiers());
   }
@@ -80,7 +82,8 @@ public class JFieldRefTest {
         new SootClass(
             view,
             ResolvingLevel.BODIES,
-            new JavaClassSource(new JavaSourcePathNamespace(""), null, declaringClassSignature),
+            new JavaClassSource(
+                new JavaSourcePathNamespace(Collections.EMPTY_SET), null, declaringClassSignature),
             ClassType.Application,
             null,
             Collections.emptySet(),
@@ -92,7 +95,7 @@ public class JFieldRefTest {
     Local base = new Local("obj", RefType.getInstance(mainClass));
     JInstanceFieldRef ref = Jimple.newInstanceFieldRef(view, base, fieldSig);
     assertEquals("obj.<dummyMainClass: int dummyField>", ref.toString());
-    assertEquals(true, ref.getField().isPresent());
+    assertTrue(ref.getField().isPresent());
     assertEquals(field, ref.getField().get());
     assertEquals(EnumSet.of(Modifier.FINAL), ref.getField().get().getModifiers());
   }

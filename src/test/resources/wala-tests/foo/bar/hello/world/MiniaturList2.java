@@ -39,11 +39,10 @@ package foo.bar.hello.world;
 
 public class MiniaturList2 {
 
-        public static void main(String[] args) {
-        	int a;
-            for ( ;; ) {
-                            break;
-            }
-        }
+  public static void main(String[] args) {
+    int a;
+    for (;;) {
+      break;
+    }
+  }
 }
-

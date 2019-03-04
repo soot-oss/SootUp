@@ -77,12 +77,12 @@ public class PositionInfo {
   @Override
   public String toString() {
     StringBuilder s = new StringBuilder();
-    s.append("stmtPosition: " + getStmtPosition().toString() + "\n");
+    s.append("stmtPosition: ").append(getStmtPosition().toString()).append("\n");
     s.append("operandPositions: ");
     if (operandPositions != null) {
       s.append("\n");
       for (int i = 0; i < operandPositions.length; i++) {
-        s.append(i + ": " + operandPositions[i] + " ");
+        s.append(i).append(": ").append(operandPositions[i]).append(" ");
       }
     } else {
       s.append("No position info");

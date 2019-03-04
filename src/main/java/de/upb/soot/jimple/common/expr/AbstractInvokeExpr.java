@@ -110,7 +110,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
     if (argBoxes == null) {
       return Collections.emptyList();
     }
-    List<ValueBox> list = new ArrayList<ValueBox>();
+    List<ValueBox> list = new ArrayList<>();
     Collections.addAll(list, argBoxes);
     for (ValueBox element : argBoxes) {
       list.addAll(element.getValue().getUseBoxes());
@@ -118,14 +118,14 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
     return list;
   }
 
-  protected void argBoxesToString(StringBuffer buffer) {
+  protected void argBoxesToString(StringBuilder builder) {
     if (argBoxes != null) {
       final int len = argBoxes.length;
       if (0 < len) {
-        buffer.append(argBoxes[0].getValue().toString());
+        builder.append(argBoxes[0].getValue().toString());
         for (int i = 1; i < len; i++) {
-          buffer.append(", ");
-          buffer.append(argBoxes[i].getValue().toString());
+          builder.append(", ");
+          builder.append(argBoxes[i].getValue().toString());
         }
       }
     }
@@ -136,7 +136,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
       final int len = argBoxes.length;
       if (0 < len) {
         argBoxes[0].toString(up);
-        for (int i = 1; i < argBoxes.length; i++) {
+        for (int i = 1; i < len; i++) {
           up.literal(", ");
           argBoxes[i].toString(up);
         }

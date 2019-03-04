@@ -73,7 +73,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> argList = new ArrayList<Value>(getArgCount());
+    List<Value> argList = new ArrayList<>(getArgCount());
     for (int i = 0; i < getArgCount(); i++) {
       argList.add(i, Jimple.cloneIfNecessary(getArg(i)));
     }
@@ -93,30 +93,29 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-
-    buffer.append(
-        Jimple.INTERFACEINVOKE + " " + baseBox.getValue().toString() + "." + methodSignature + "(");
-    argBoxesToString(buffer);
-    buffer.append(")");
-
-    return buffer.toString();
+    StringBuilder builder = new StringBuilder();
+    builder
+        .append(Jimple.INTERFACEINVOKE)
+        .append(" ")
+        .append(baseBox.getValue().toString())
+        .append(".")
+        .append(methodSignature)
+        .append("(");
+    argBoxesToString(builder);
+    builder.append(")");
+    return builder.toString();
   }
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
   public void toString(IStmtPrinter up) {
-
     up.literal(Jimple.INTERFACEINVOKE);
-
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
     up.methodSignature(methodSignature);
     up.literal("(");
-
     argBoxesToPrinter(up);
-
     up.literal(")");
   }
 }

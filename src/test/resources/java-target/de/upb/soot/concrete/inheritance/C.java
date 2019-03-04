@@ -12,7 +12,7 @@ public class C extends B {
     System.out.println("methodAinC");
   }
 
-  public void methodC(){
+  public void methodC() {
     System.out.println("methodC");
   }
 }

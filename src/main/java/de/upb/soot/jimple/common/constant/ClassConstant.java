@@ -39,7 +39,7 @@ import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.StringTools;
+import soot.util.StringTools;
 
 @SuppressWarnings("serial")
 public class ClassConstant extends Constant {
@@ -63,7 +63,7 @@ public class ClassConstant extends Constant {
 
   private static String sootTypeToString(Type tp) {
     if (tp instanceof RefType) {
-      return "L" + ((RefType) tp).getTypeSignature().toString().replaceAll("\\.", "/") + ";";
+      return "L" + tp.getTypeSignature().toString().replaceAll("\\.", "/") + ";";
     } else if (tp instanceof ArrayType) {
       ArrayType at = (ArrayType) tp;
       return "[" + sootTypeToString(at.getElementType());

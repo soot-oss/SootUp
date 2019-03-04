@@ -39,25 +39,25 @@ package javaonepointfive;
 
 public class ExplicitBoxingTest {
 
-	public static void main(String[] args) {
-		(new ExplicitBoxingTest()).doit();
-	}
-	
-	private void doit() {
-		int a = 6;
-		a = a + a;
-		System.out.println(a);
-		Integer useless1 = Integer.valueOf(5+6);
-		Integer aa = Integer.valueOf(a+a);
-		int aaa = aa.intValue();
-		System.out.println(aaa);
+  public static void main(String[] args) {
+    (new ExplicitBoxingTest()).doit();
+  }
 
-		int b = 6;
-		b = b + b;
-		System.out.println(b);
-		Integer useless2 = 5+6;
-		Integer bb = b+b;
-		int bbb = bb;
-		System.out.println(bbb);
-	}
+  private void doit() {
+    int a = 6;
+    a = a + a;
+    System.out.println(a);
+    Integer useless1 = Integer.valueOf(5 + 6);
+    Integer aa = Integer.valueOf(a + a);
+    int aaa = aa.intValue();
+    System.out.println(aaa);
+
+    int b = 6;
+    b = b + b;
+    System.out.println(b);
+    Integer useless2 = 5 + 6;
+    Integer bb = b + b;
+    int bbb = bb;
+    System.out.println(bbb);
+  }
 }

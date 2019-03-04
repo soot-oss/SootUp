@@ -59,6 +59,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
 public class JInvokeStmtTest {
 
@@ -77,9 +78,8 @@ public class JInvokeStmtTest {
             dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
 
     JavaClassSignature superClassSignature = dsm.getClassSignature("java.lang.Object");
-    JavaClassSignature classSignature = dsm.getClassSignature("java.lang.LinkedHashSet");
 
-    Set<SootField> fields = new LinkedHashSet<SootField>();
+    Set<SootField> fields = new LinkedHashSet<>();
     Set<SootMethod> methods = new LinkedHashSet<>();
 
     SootClass sootClass =

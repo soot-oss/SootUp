@@ -6,7 +6,6 @@ import java.lang.invoke.MethodType;
 
 public class DynamicInvokeExprTest {
 
-
   String sth() {
     return "something";
   }
@@ -17,7 +16,7 @@ public class DynamicInvokeExprTest {
     MethodType methodType = MethodType.methodType(String.class);
     MethodHandle methodHandle = lookup.findVirtual(DynamicInvokeExprTest.class, "sth", methodType);
     String result = (String) methodHandle.invokeExact(new DynamicInvokeExprTest());
-    System.out.println("dynamic invoked methodRef returned: " + result);
+    System.out.println("dynamic invoked method returned: " + result);
 
   }
 }

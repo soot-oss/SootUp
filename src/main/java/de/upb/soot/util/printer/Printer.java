@@ -368,17 +368,17 @@ public class Printer {
       // Print locals
       {
         for (Type type : typeToLocals.keySet()) {
-          List<Local> localList = typeToLocals.get(type);
-          List<Local> localsCopy = new ArrayList<>(localList);
+          List<Local> localList = new ArrayList<>(typeToLocals.get(type));
           up.type(type);
           up.literal(" ");
 
-          for (int k = 0; k < localsCopy.size(); k++) {
-            if (k != 0) {
+          final int len = localList.size();
+          if (0 < len) {
+            up.local(localList.get(0));
+            for (int k = 1; k < len; k++) {
               up.literal(", ");
+              up.local(localList.get(k));
             }
-
-            up.local(localsCopy.get(k));
           }
 
           up.literal(";");

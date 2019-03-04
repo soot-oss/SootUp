@@ -40,43 +40,45 @@ package foo;
 // need inner classes to run this test
 
 public class SimpleNames {
-	int f;
-	static int s;
-	public void hello() {
-		f = 3; // this.f = 3
-		s = 4; // SimpleNames.f = 4
-		
-		SimpleNames.s = foo.SimpleNames.s;
-		if ( false ) {
-			foo.SimpleNames.this.hello();
-			hello();
-			this.hello();
-		}
-		
-		final int i = 5;
-		new Object() {
-			
+  int f;
+  static int s;
+
+  public void hello() {
+    f = 3; // this.f = 3
+    s = 4; // SimpleNames.f = 4
+
+    SimpleNames.s = foo.SimpleNames.s;
+    if (false) {
+      foo.SimpleNames.this.hello();
+      hello();
+      this.hello();
+    }
+
+    final int i = 5;
+    new Object() {
+
       @Override
       public int hashCode() {
-				f = 5; // SimpleNames.this = 5
-				s = 6; // SimpleNames.s = 6
-				
-				SimpleNames.this.f = 5;
-				SimpleNames.s = 6;
+        f = 5; // SimpleNames.this = 5
+        s = 6; // SimpleNames.s = 6
 
-				if ( false ) {
-					foo.SimpleNames.this.hello();
-					SimpleNames.this.hello();
-					hello(); // this should expand to above
-					this.hashCode();
-					hashCode(); // should expand to above
-				}
+        SimpleNames.this.f = 5;
+        SimpleNames.s = 6;
 
-				return i; // just plain "i" in polyglot, treats like local.
-			}
-		};
-	}
-	public static void main(String args[]) {
-		new SimpleNames().hello();
-	}
+        if (false) {
+          foo.SimpleNames.this.hello();
+          SimpleNames.this.hello();
+          hello(); // this should expand to above
+          this.hashCode();
+          hashCode(); // should expand to above
+        }
+
+        return i; // just plain "i" in polyglot, treats like local.
+      }
+    };
+  }
+
+  public static void main(String args[]) {
+    new SimpleNames().hello();
+  }
 }

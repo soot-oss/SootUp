@@ -30,8 +30,6 @@ import java.io.Writer;
  * A FilterWriter which catches to-be-escaped characters (<code>\\unnnn</code>) in the input and
  * substitutes their escaped representation. Used for Soot output.
  */
-
-// TODO: check code copied from old soot
 public class EscapedWriter extends FilterWriter {
   /** Convenience field containing the system's line separator. */
   public final String lineSeparator = System.getProperty("line.separator");
@@ -44,8 +42,6 @@ public class EscapedWriter extends FilterWriter {
     super(fos);
   }
 
-  private final StringBuilder mini = new StringBuilder();
-
   /** Print a single character (unsupported). */
   public void print(int ch) throws IOException {
     write(ch);
@@ -53,31 +49,34 @@ public class EscapedWriter extends FilterWriter {
   }
 
   /** Write a segment of the given String. */
-  @Override
   public void write(String s, int off, int len) throws IOException {
-    for (int i = off; i < off + len; i++) {
+    final int end = off + len;
+    for (int i = off; i < end; i++) {
       write(s.charAt(i));
     }
   }
 
+  private final StringBuilder mini = new StringBuilder(8);
+
+  private boolean isClean(int ch) {
+    return ch >= 32 && ch <= 126 || ch == cr || ch == lf;
+  }
+
   /** Write a single character. */
-  @Override
   public void write(int ch) throws IOException {
-    if (ch >= 32 && ch <= 126 || ch == cr || ch == lf) {
+    if (isClean(ch)) {
       super.write(ch);
       return;
     }
 
     mini.setLength(0);
     mini.append(Integer.toHexString(ch));
+    final int len = mini.length();
 
-    while (mini.length() < 4) {
-      mini.insert(0, "0");
-    }
-
-    mini.insert(0, "\\u");
-    for (int i = 0; i < mini.length(); i++) {
-      super.write(mini.charAt(i));
-    }
+    // prepend \\u + [0]{0,4} to hex string so it writes "\\u" + "minimum 4 alphanumeric chars and
+    // max. 8"
+    int cutPos = (len < 4) ? 2 + 4 - len : 2;
+    super.write("\\u0000", 0, cutPos);
+    super.write(mini.toString(), 0, len);
   }
 }

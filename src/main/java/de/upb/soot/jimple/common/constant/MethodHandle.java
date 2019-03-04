@@ -35,7 +35,7 @@ import org.objectweb.asm.Opcodes;
 
 public class MethodHandle extends Constant {
 
-  public static enum Kind {
+  public enum Kind {
     REF_GET_FIELD(Opcodes.H_GETFIELD, "REF_GET_FIELD"),
     REF_GET_FIELD_STATIC(Opcodes.H_GETSTATIC, "REF_GET_FIELD_STATIC"),
     REF_PUT_FIELD(Opcodes.H_PUTFIELD, "REF_PUT_FIELD"),
@@ -49,7 +49,7 @@ public class MethodHandle extends Constant {
     private final int val;
     private final String valStr;
 
-    private Kind(int val, String valStr) {
+    Kind(int val, String valStr) {
       this.val = val;
       this.valStr = valStr;
     }
@@ -158,12 +158,9 @@ public class MethodHandle extends Constant {
     }
     MethodHandle other = (MethodHandle) obj;
     if (methodRef == null) {
-      if (other.methodRef != null) {
-        return false;
-      }
-    } else if (!methodRef.equals(other.methodRef)) {
-      return false;
+      return other.methodRef == null;
+    } else {
+      return methodRef.equals(other.methodRef);
     }
-    return true;
   }
 }

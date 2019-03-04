@@ -1,6 +1,6 @@
 package de.upb.soot.instructions.expr;
 
-public class InstanceOfExprTest{
+public class InstanceOfExprTest {
 
   void isObject() {
 

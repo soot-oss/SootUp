@@ -38,62 +38,63 @@
 package javaonepointfive;
 
 class Alef {
-	void foo(String... args) {
-		System.out.println("var args not overridden");
-	}
+  void foo(String... args) {
+    System.out.println("var args not overridden");
+  }
 }
 
 class Bet extends Alef {
-	void foo(String a, String b) {
-		System.out.println("non-varargs overrides varargs");
-	}
+  void foo(String a, String b) {
+    System.out.println("non-varargs overrides varargs");
+  }
 }
 
 class Alpha {
-	void foo(String a, String b) {
-		System.out.println("non-varargs not overridden");
-	}
+  void foo(String a, String b) {
+    System.out.println("non-varargs not overridden");
+  }
 }
 
 class Beta extends Alpha {
-	void foo(String... args) {
-		System.out.println("varargs overrides non-varargs");
-	}
+  void foo(String... args) {
+    System.out.println("varargs overrides non-varargs");
+  }
 }
-
 
 ////
 
 class VarityTestSuper {
-	void bar(String... args) {}
+  void bar(String... args) {
+  }
 }
 
 class VarityTestSub extends VarityTestSuper {
-	
+
   @Override
-  void bar(String... args) {}
+  void bar(String... args) {
+  }
 }
 
 public class VarargsOverriding {
-	public static void main(String args[]) {
-		(new VarargsOverriding()).doit();
-	}
-	
-	private void doit() {
-		Bet b = new Bet();
-		Alef a = b;
-		a.foo("hello", "world");
-		b.foo("hello", "world");
+  public static void main(String args[]) {
+    (new VarargsOverriding()).doit();
+  }
 
-		Beta bb = new Beta();
-		Alpha aa = bb;
-		aa.foo("hello", "world");
-		bb.foo("hello", "world");
-		bb.foo("hello", "world", "and", "more");
+  private void doit() {
+    Bet b = new Bet();
+    Alef a = b;
+    a.foo("hello", "world");
+    b.foo("hello", "world");
 
-		VarityTestSuper x = new VarityTestSuper();
-		x.bar("Hello", "world", "howareya");
-		x = new VarityTestSub();
-		x.bar("Hello", "world", "howareya");
-	}
+    Beta bb = new Beta();
+    Alpha aa = bb;
+    aa.foo("hello", "world");
+    bb.foo("hello", "world");
+    bb.foo("hello", "world", "and", "more");
+
+    VarityTestSuper x = new VarityTestSuper();
+    x.bar("Hello", "world", "howareya");
+    x = new VarityTestSub();
+    x.bar("Hello", "world", "howareya");
+  }
 }

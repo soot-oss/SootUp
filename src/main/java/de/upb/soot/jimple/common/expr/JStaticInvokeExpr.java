@@ -53,7 +53,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public Object clone() {
-    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+    List<Value> clonedArgs = new ArrayList<>(getArgCount());
 
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
@@ -80,13 +80,11 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-
-    buffer.append(Jimple.STATICINVOKE + " " + methodSignature + "(");
-    argBoxesToString(buffer);
-    buffer.append(")");
-
-    return buffer.toString();
+    StringBuilder builder = new StringBuilder();
+    builder.append(Jimple.STATICINVOKE).append(" ").append(methodSignature).append("(");
+    argBoxesToString(builder);
+    builder.append(")");
+    return builder.toString();
   }
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
@@ -96,9 +94,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     up.literal(" ");
     up.methodSignature(methodSignature);
     up.literal("(");
-
     argBoxesToPrinter(up);
-
     up.literal(")");
   }
 

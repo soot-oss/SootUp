@@ -41,22 +41,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class GenericSuperSink {
-	public static void main(String args[]) {
-		(new GenericSuperSink()).doit();
-	}
-	
-	private void doit() {
-		Collection<? super String> sink;
-		Collection<String> cs = new ArrayList<>();
-		cs.add("hello");
-		
-		sink = new ArrayList<Object>();
-		sink.add(cs.iterator().next());
-		System.out.println(sink);
+  public static void main(String args[]) {
+    (new GenericSuperSink()).doit();
+  }
 
-		sink = new ArrayList<>();
-		sink.add(cs.iterator().next());
-		System.out.println(sink);
-	}
+  private void doit() {
+    Collection<? super String> sink;
+    Collection<String> cs = new ArrayList<>();
+    cs.add("hello");
+
+    sink = new ArrayList<Object>();
+    sink.add(cs.iterator().next());
+    System.out.println(sink);
+
+    sink = new ArrayList<>();
+    sink.add(cs.iterator().next());
+    System.out.println(sink);
+  }
 
 }

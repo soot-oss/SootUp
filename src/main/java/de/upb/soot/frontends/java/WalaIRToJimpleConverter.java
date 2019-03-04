@@ -80,7 +80,7 @@ public class WalaIRToJimpleConverter {
   private HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
 
-  public WalaIRToJimpleConverter(String sourceDirPath) {
+  public WalaIRToJimpleConverter(Set<String> sourceDirPath) {
     srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
     view = new JavaView(new Project(null, new DefaultSignatureFactory()));
     clsWithInnerCls = new HashMap<>();

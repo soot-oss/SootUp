@@ -38,34 +38,41 @@
 package foo;
 
 public class QualifiedNames {
-        static int field;
-        int x;
-        public QualifiedNames(int xx) {
-        	x = xx;
-        }
-        public static void main(String args[]) {
-        	QualifiedNames qn = new QualifiedNames(5);
-        	int y = 3;
-        	y = y + qn.x;
-        }
-        public void test() {
-                int x = 2;
-                x = x / x / x;
+  static int field;
+  int x;
 
-                field = 5;
-                field = QualifiedNames.field + field;
-                this.x = 6;
-                QualifiedNames.field = 6;
-                QualifiedNames.this.x = 6;
-                
-                foo.QualifiedNames.field = 6;
-                foo.QualifiedNames.this.x = 7;
+  public QualifiedNames(int xx) {
+    x = xx;
+  }
 
-//              TODO FIXME IMPORTANT: ENABLE WHEN WE SUPPORT FUNCTIONSIN JDT BRIDGE!!!
-                foo.QualifiedNames.empty();
-                emptyInstance();
-                foo.QualifiedNames.this.emptyInstance();
-        }
-        public static void empty() {}
-        public void emptyInstance() {}
+  public static void main(String args[]) {
+    QualifiedNames qn = new QualifiedNames(5);
+    int y = 3;
+    y = y + qn.x;
+  }
+
+  public void test() {
+    int x = 2;
+    x = x / x / x;
+
+    field = 5;
+    field = QualifiedNames.field + field;
+    this.x = 6;
+    QualifiedNames.field = 6;
+    QualifiedNames.this.x = 6;
+
+    foo.QualifiedNames.field = 6;
+    foo.QualifiedNames.this.x = 7;
+
+    // TODO FIXME IMPORTANT: ENABLE WHEN WE SUPPORT FUNCTIONSIN JDT BRIDGE!!!
+    foo.QualifiedNames.empty();
+    emptyInstance();
+    foo.QualifiedNames.this.emptyInstance();
+  }
+
+  public static void empty() {
+  }
+
+  public void emptyInstance() {
+  }
 }

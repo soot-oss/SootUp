@@ -41,75 +41,76 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class BasicsGenerics {
-	
-	static ArrayList<String> strs = new ArrayList<>();
-	static ArrayList<Integer> ints = new ArrayList<>();
-	
-	public BasicsGenerics() {
-		strs.add("Coucou, monde!");
-	}
 
-	public BasicsGenerics(String s) {
-		strs.add(s);
-	}
-	
-	public static void main(String args[]) {
-		BasicsGenerics a = new BasicsGenerics();
-		String frenchy = a.part1();
-//		
-//		
-		String s = "mondo";
-		String sicilian = new BasicsGenerics("ciao "+s).part2();
-//		
-		System.out.println(frenchy);
-		System.out.println(sicilian);
-		strs.add("hello");
-		ints.add(Integer.valueOf(3));
-		
-		String qqq;
-		
-		for (Iterator iter = ((Iterable)ints).iterator(); iter.hasNext(); iter.next());
-		
-		for (Iterator<String> iter = strs.iterator(); iter.hasNext();) {
-			qqq = iter.next();
-			System.out.println(qqq);
-		}
-		
-		Iterable s1 = strs;
-		for (Iterator itertmp = s1.iterator(); itertmp.hasNext();) {
-			String rrr = (String) itertmp.next();
-			{
-				System.out.println("la vida pasaba y sentia " + rrr);
-			}
-		}
-		
-		for (String rrr: strs) {
-			System.out.println("la vida pasaba y sentia " + rrr);
-		}
+  static ArrayList<String> strs = new ArrayList<>();
+  static ArrayList<Integer> ints = new ArrayList<>();
 
-		for (String rrr: strs) {
-			System.out.println("la vida pasaba y sentia " + rrr);
-		}
+  public BasicsGenerics() {
+    strs.add("Coucou, monde!");
+  }
 
-		for ( String x: makeArray() )
-			System.out.println(x);
-//		
-//		System.out.println("---break time---");
-//		for ( int i = 0; i < makeArray().length; i++ )
-//			System.out.println(makeArray()[i]);
-	}
+  public BasicsGenerics(String s) {
+    strs.add(s);
+  }
 
-	public static String[] makeArray() {
-		String[] hey = {"hey","whats","up"};
-		System.out.println("give a hoot");
-		return hey;
-	}
-	
-	public String part1() {
-		return strs.get(0);
-	}
+  public static void main(String args[]) {
+    BasicsGenerics a = new BasicsGenerics();
+    String frenchy = a.part1();
+    //
+    //
+    String s = "mondo";
+    String sicilian = new BasicsGenerics("ciao " + s).part2();
+    //
+    System.out.println(frenchy);
+    System.out.println(sicilian);
+    strs.add("hello");
+    ints.add(Integer.valueOf(3));
 
-	public String part2() {
-		return strs.get(0);
-	}
+    String qqq;
+
+    for (Iterator iter = ((Iterable) ints).iterator(); iter.hasNext(); iter.next())
+      ;
+
+    for (Iterator<String> iter = strs.iterator(); iter.hasNext();) {
+      qqq = iter.next();
+      System.out.println(qqq);
+    }
+
+    Iterable s1 = strs;
+    for (Iterator itertmp = s1.iterator(); itertmp.hasNext();) {
+      String rrr = (String) itertmp.next();
+      {
+        System.out.println("la vida pasaba y sentia " + rrr);
+      }
+    }
+
+    for (String rrr : strs) {
+      System.out.println("la vida pasaba y sentia " + rrr);
+    }
+
+    for (String rrr : strs) {
+      System.out.println("la vida pasaba y sentia " + rrr);
+    }
+
+    for (String x : makeArray())
+      System.out.println(x);
+    //
+    // System.out.println("---break time---");
+    // for ( int i = 0; i < makeArray().length; i++ )
+    // System.out.println(makeArray()[i]);
+  }
+
+  public static String[] makeArray() {
+    String[] hey = { "hey", "whats", "up" };
+    System.out.println("give a hoot");
+    return hey;
+  }
+
+  public String part1() {
+    return strs.get(0);
+  }
+
+  public String part2() {
+    return strs.get(0);
+  }
 }

@@ -1,8 +1,7 @@
 package de.upb.soot.concrete.inheritance;
 
 /**
- * @author Manuel Benz
- * created on 12.07.18
+ * @author Manuel Benz created on 12.07.18
  */
 public class SuperConstructor {
 

@@ -51,7 +51,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public Object clone() {
-    ArrayList<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+    ArrayList<Value> clonedArgs = new ArrayList<>(getArgCount());
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
@@ -70,14 +70,16 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-
-    buffer.append(
-        Jimple.VIRTUALINVOKE + " " + baseBox.getValue().toString() + "." + methodSignature + "(");
-    argBoxesToString(buffer);
-    buffer.append(")");
-
-    return buffer.toString();
+    StringBuilder builder = new StringBuilder();
+    builder
+        .append(Jimple.VIRTUALINVOKE + " ")
+        .append(baseBox.getValue().toString())
+        .append(".")
+        .append(methodSignature)
+        .append("(");
+    argBoxesToString(builder);
+    builder.append(")");
+    return builder.toString();
   }
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
@@ -89,9 +91,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(".");
     up.methodSignature(methodSignature);
     up.literal("(");
-
     argBoxesToPrinter(up);
-
     up.literal(")");
   }
 }
