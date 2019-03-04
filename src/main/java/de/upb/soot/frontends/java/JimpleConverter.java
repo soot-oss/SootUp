@@ -601,9 +601,11 @@ public class JimpleConverter {
     SootClass declaringClass = null;
     if (!Scene.v().containsClass(className)) {
       if (fromClasses.stream().anyMatch(c -> c.getName().equals(className))) {
+        //application class
         declaringClass = new SootClass(className);
         Scene.v().addClass(declaringClass);
       } else {
+        //library class
         declaringClass = Scene.v().forceResolve(className, soot.SootClass.SIGNATURES);
       }
     }

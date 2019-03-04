@@ -71,7 +71,7 @@ public class WalaClassLoader {
   }
 
   public WalaClassLoader(Set<String> sourcePath) {
-    this(sourcePath, null);
+    this(sourcePath, "");
   }
 
   public WalaClassLoader(Set<String> sourcePath, String exclusionFilePath) {
@@ -97,22 +97,31 @@ public class WalaClassLoader {
     }
   }
 
-  public WalaClassLoader(String sourceDirPath, String androidJar, boolean android) {
-    // disable System.err messages generated from eclipse jdt
-    System.setProperty("wala.jdt.quiet", "true");
-    scope = new JavaSourceAnalysisScope();
-    this.sourcePath = Collections.singleton(sourceDirPath);
+  public WalaClassLoader(Set<String> sourcePath, Set<String> libPath, String exclusionFilePath) {
+    addScopesForJava();
+    this.sourcePath = sourcePath;
     try {
-      String[] stdlibs = WalaProperties.getJ2SEJarFiles();
-      for (String stdlib : stdlibs) {
-        scope.addToScope(ClassLoaderReference.Primordial, new JarFile(stdlib));
+      // add the source directory to scope
+      for (String path : sourcePath) {
+        scope.addToScope(JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(path)));
       }
-      scope.addToScope(ClassLoaderReference.Primordial, new JarFile(androidJar));
-      scope.addToScope(JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(sourceDirPath)));
+      // add Jars to scope
+      for (String libJar : libPath) {
+        scope.addToScope(ClassLoaderReference.Primordial, new JarFile(libJar));
+      }      
+      // set exclusions
+      if (exclusionFilePath != null) {
+        File exclusionFile = new File(exclusionFilePath);
+        if (exclusionFile.isFile()) {
+          FileOfClasses classes;
+          classes = new FileOfClasses(new FileInputStream(exclusionFile));
+          scope.setExclusions(classes);
+        }
+      }
+      factory = new ECJClassLoaderFactory(scope.getExclusions());
     } catch (IOException e) {
       e.printStackTrace();
     }
-    factory = new ECJClassLoaderFactory(scope.getExclusions());
   }
 
   /**
