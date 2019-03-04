@@ -53,7 +53,7 @@ pipeline {
 
             steps {
               sh 'mvn test -PJava8'
-
+              sh 'mvn com.coveo:fmt-maven-plugin:check'
             }
 
             post {
@@ -76,7 +76,7 @@ pipeline {
 
             steps {
               sh 'mvn test -PJava9'
-
+              sh 'mvn com.coveo:fmt-maven-plugin:check'
             }
             post {
               always {
