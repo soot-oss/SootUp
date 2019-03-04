@@ -22,23 +22,17 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import categories.Java8Test;
 import de.upb.soot.jimple.basic.ConditionExprBox;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.Expr;
 import de.upb.soot.jimple.common.expr.JEqExpr;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java8Test;
-
-/**
- *
- * @author Markus Schmidt & Linghui Luo
- *
- */
+/** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
 public class JIfStmtTest {
 
@@ -60,11 +54,17 @@ public class JIfStmtTest {
     Assert.assertTrue(ifStmt.equivTo(ifStmt));
     Assert.assertTrue(ifStmt.equivTo(new JIfStmt(conditionBox.getValue(), target, nop)));
     Assert.assertTrue(
-        ifStmt.equivTo(new JIfStmt(new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123)), target, nop)));
+        ifStmt.equivTo(
+            new JIfStmt(
+                new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123)),
+                target,
+                nop)));
 
     Assert.assertFalse(
-        ifStmt.equivTo(new JIfStmt(new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(666)), target, nop)));
-
+        ifStmt.equivTo(
+            new JIfStmt(
+                new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(666)),
+                target,
+                nop)));
   }
-
 }

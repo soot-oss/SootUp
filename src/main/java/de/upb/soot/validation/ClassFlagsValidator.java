@@ -23,14 +23,12 @@ package de.upb.soot.validation;
  */
 
 import de.upb.soot.core.SootClass;
-
 import java.util.List;
 
 /**
  * Validator that checks for impossible combinations of class flags
  *
  * @author Steven Arzt
- *
  */
 public class ClassFlagsValidator implements ClassValidator {
 
@@ -49,5 +47,4 @@ public class ClassFlagsValidator implements ClassValidator {
   public boolean isBasicValidator() {
     return true;
   }
-
 }

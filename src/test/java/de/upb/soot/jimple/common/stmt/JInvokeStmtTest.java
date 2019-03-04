@@ -22,6 +22,7 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import categories.Java8Test;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.ResolvingLevel;
@@ -45,7 +46,6 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
-
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,18 +55,11 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java8Test;
-
-/**
- *
- * @author Markus Schmidt & Linghui Luo
- *
- */
+/** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
 public class JInvokeStmtTest {
 
@@ -78,63 +71,102 @@ public class JInvokeStmtTest {
     DefaultSignatureFactory dsm = new DefaultSignatureFactory();
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
-    JavaClassSource javaClassSource = new JavaClassSource(new JavaClassPathNamespace("src/main/java/de/upb/soot"), dummyPath,
-        dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
+    JavaClassSource javaClassSource =
+        new JavaClassSource(
+            new JavaClassPathNamespace("src/main/java/de/upb/soot"),
+            dummyPath,
+            dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
 
     JavaClassSignature superClassSignature = dsm.getClassSignature("java.lang.Object");
 
     Set<SootField> fields = new LinkedHashSet<>();
     Set<SootMethod> methods = new LinkedHashSet<>();
 
-    SootClass sootClass
-        = new SootClass(view, ResolvingLevel.BODIES, javaClassSource, ClassType.Application, superClassSignature,
-            new HashSet<>(), null, fields, methods, new NoPositionInformation(), EnumSet.of(Modifier.PUBLIC));
+    SootClass sootClass =
+        new SootClass(
+            view,
+            ResolvingLevel.BODIES,
+            javaClassSource,
+            ClassType.Application,
+            superClassSignature,
+            new HashSet<>(),
+            null,
+            fields,
+            methods,
+            new NoPositionInformation(),
+            EnumSet.of(Modifier.PUBLIC));
 
     // JStaticInvokeExpr
-    MethodSignature statMethodSig = dsm.getMethodSignature("print", "java.system.Out", "void", Arrays.asList("String"));
-    IStmt staticInvokeStmt = new JInvokeStmt(
-        new JStaticInvokeExpr(view, statMethodSig, Arrays.asList(StringConstant.getInstance("Towel"))), nop);
+    MethodSignature statMethodSig =
+        dsm.getMethodSignature("print", "java.system.Out", "void", Arrays.asList("String"));
+    IStmt staticInvokeStmt =
+        new JInvokeStmt(
+            new JStaticInvokeExpr(
+                view, statMethodSig, Arrays.asList(StringConstant.getInstance("Towel"))),
+            nop);
 
     // toString
-    Assert.assertEquals("staticinvoke <java.system.Out: void print(String)>(\"Towel\")", staticInvokeStmt.toString());
+    Assert.assertEquals(
+        "staticinvoke <java.system.Out: void print(String)>(\"Towel\")",
+        staticInvokeStmt.toString());
 
     // equivTo
     Assert.assertFalse(staticInvokeStmt.equivTo(new JNopStmt(nop)));
     Assert.assertTrue(staticInvokeStmt.equivTo(staticInvokeStmt));
 
     // JSpecialInvoke
-    MethodSignature smethodSig = dsm.getMethodSignature("<init>", "java.lang.Object", "void", Arrays.asList());
-    IStmt specialInvokeStmt = new JInvokeStmt(new JSpecialInvokeExpr(view,
-        new Local("$r0", new RefType(view, sootClass.getSignature())), smethodSig, Arrays.asList()), nop);
+    MethodSignature smethodSig =
+        dsm.getMethodSignature("<init>", "java.lang.Object", "void", Arrays.asList());
+    IStmt specialInvokeStmt =
+        new JInvokeStmt(
+            new JSpecialInvokeExpr(
+                view,
+                new Local("$r0", new RefType(view, sootClass.getSignature())),
+                smethodSig,
+                Arrays.asList()),
+            nop);
 
     // toString
-    Assert.assertEquals("specialinvoke $r0.<java.lang.Object: void <init>()>()", specialInvokeStmt.toString());
+    Assert.assertEquals(
+        "specialinvoke $r0.<java.lang.Object: void <init>()>()", specialInvokeStmt.toString());
 
     // equivTo
     Assert.assertFalse(specialInvokeStmt.equivTo(new JNopStmt(nop)));
     Assert.assertTrue(specialInvokeStmt.equivTo(specialInvokeStmt));
 
     // JInterfaceInvoke
-    MethodSignature imethodSig = dsm.getMethodSignature("remove", "java.util.Iterator", "void", Arrays.asList());
-    IStmt interfaceInvokeStmt = new JInvokeStmt(new JInterfaceInvokeExpr(view,
-        new Local("r2", new RefType(view, sootClass.getSignature())), imethodSig, Arrays.asList()), nop);
+    MethodSignature imethodSig =
+        dsm.getMethodSignature("remove", "java.util.Iterator", "void", Arrays.asList());
+    IStmt interfaceInvokeStmt =
+        new JInvokeStmt(
+            new JInterfaceInvokeExpr(
+                view,
+                new Local("r2", new RefType(view, sootClass.getSignature())),
+                imethodSig,
+                Arrays.asList()),
+            nop);
 
     // toString
-    Assert.assertEquals("interfaceinvoke r2.<java.util.Iterator: void remove()>()", interfaceInvokeStmt.toString());
+    Assert.assertEquals(
+        "interfaceinvoke r2.<java.util.Iterator: void remove()>()", interfaceInvokeStmt.toString());
 
     // equivTo
     Assert.assertFalse(interfaceInvokeStmt.equivTo(new JNopStmt(nop)));
     Assert.assertTrue(interfaceInvokeStmt.equivTo(interfaceInvokeStmt));
 
     // JDynamicInvoke
-    MethodSignature dmethodSig
-        = dsm.getMethodSignature("mylambda", SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME, "void", Arrays.asList());
-    MethodSignature bootstrapMethodSig = dsm.getMethodSignature("run", "Runnable", "void", Arrays.asList());
+    MethodSignature dmethodSig =
+        dsm.getMethodSignature(
+            "mylambda", SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME, "void", Arrays.asList());
+    MethodSignature bootstrapMethodSig =
+        dsm.getMethodSignature("run", "Runnable", "void", Arrays.asList());
     List<? extends Value> bootstrapArgs = Arrays.asList();
     List<? extends Value> methodArgs = Arrays.asList();
 
-    IStmt dynamicInvokeStmt
-        = new JInvokeStmt(new JDynamicInvokeExpr(view, bootstrapMethodSig, bootstrapArgs, dmethodSig, methodArgs), nop);
+    IStmt dynamicInvokeStmt =
+        new JInvokeStmt(
+            new JDynamicInvokeExpr(view, bootstrapMethodSig, bootstrapArgs, dmethodSig, methodArgs),
+            nop);
 
     // toString
     Assert.assertEquals(
@@ -161,7 +193,5 @@ public class JInvokeStmtTest {
     Assert.assertFalse(dynamicInvokeStmt.equivTo(staticInvokeStmt));
     Assert.assertFalse(dynamicInvokeStmt.equivTo(specialInvokeStmt));
     Assert.assertFalse(dynamicInvokeStmt.equivTo(interfaceInvokeStmt));
-
   }
-
 }

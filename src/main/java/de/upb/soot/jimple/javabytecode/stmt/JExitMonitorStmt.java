@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -36,9 +36,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JExitMonitorStmt extends AbstractOpStmt {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -1179706103954735007L;
 
   public JExitMonitorStmt(Value op, PositionInfo positionInfo) {
@@ -69,7 +67,6 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   @Override
   public void accept(IVisitor sw) {
     ((IStmtVisitor) sw).caseExitMonitorStmt(this);
-
   }
 
   @Override
@@ -91,5 +88,4 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseExitMonitorStmt(this, o);
   }
-
 }

@@ -35,8 +35,7 @@ public class UnknownType extends Type {
 
   public static final UnknownType INSTANCE = new UnknownType();
 
-  private UnknownType() {
-  }
+  private UnknownType() {}
 
   @Override
   public void accept(IVisitor v) {

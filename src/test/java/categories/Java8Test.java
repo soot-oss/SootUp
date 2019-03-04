@@ -1,6 +1,5 @@
 package categories;
 
-public interface Java8Test
+public interface Java8Test {
 
-{
   /* category marker */ }

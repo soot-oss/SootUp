@@ -23,7 +23,6 @@ package de.upb.soot.validation;
  */
 
 import de.upb.soot.core.SootClass;
-
 import java.util.List;
 
 /**
@@ -49,5 +48,4 @@ public class MethodDeclarationValidator implements ClassValidator {
   public boolean isBasicValidator() {
     return true;
   }
-
 }

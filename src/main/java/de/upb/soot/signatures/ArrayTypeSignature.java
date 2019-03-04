@@ -41,5 +41,4 @@ public class ArrayTypeSignature extends TypeSignature {
   public int hashCode() {
     return Objects.hashCode(baseType, dimension);
   }
-
 }

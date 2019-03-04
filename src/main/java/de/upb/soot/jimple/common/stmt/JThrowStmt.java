@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -36,9 +36,7 @@ import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JThrowStmt extends AbstractOpStmt {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -1145801522928664246L;
 
   public JThrowStmt(Value op, PositionInfo positionInfo) {
@@ -95,5 +93,4 @@ public class JThrowStmt extends AbstractOpStmt {
   public int equivHashCode() {
     return super.equivHashCode();
   }
-
 }

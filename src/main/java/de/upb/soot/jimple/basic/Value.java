@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -28,19 +28,19 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IAcceptor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * Data used as, for instance, arguments to instructions; typical implementations are constants or expressions.
- * <p>
- * Values are typed, clonable and must declare which other Values they use (contain).
- * </p>
+ * Data used as, for instance, arguments to instructions; typical implementations are constants or
+ * expressions.
+ *
+ * <p>Values are typed, clonable and must declare which other Values they use (contain).
  */
 public interface Value extends IAcceptor, EquivTo, Serializable {
   /**
-   * Returns a List of boxes corresponding to Values which are used by (ie contained within) this Value.
+   * Returns a List of boxes corresponding to Values which are used by (ie contained within) this
+   * Value.
    */
   List<ValueBox> getUseBoxes();
 

@@ -26,24 +26,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JNopStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
-
 import java.util.ArrayList;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java8Test;
-
-/**
- *
- * @author Markus Schmidt & Linghui Luo
- *
- */
+/** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
 public class JTableSwitchStmtTest {
 
@@ -55,23 +48,54 @@ public class JTableSwitchStmtTest {
     targets.add(new JReturnStmt(IntConstant.getInstance(2), nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(3), nop));
     targets.add(new JNopStmt(nop));
-    IStmt stmt = new JTableSwitchStmt(IntConstant.getInstance(123), 1, 4, targets,
-        new JReturnStmt(IntConstant.getInstance(666), nop), nop);
+    IStmt stmt =
+        new JTableSwitchStmt(
+            IntConstant.getInstance(123),
+            1,
+            4,
+            targets,
+            new JReturnStmt(IntConstant.getInstance(666), nop),
+            nop);
 
     ArrayList<IStmt> targets2 = new ArrayList<>();
     targets.add(new JReturnStmt(IntConstant.getInstance(1), nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(2), nop));
     targets.add(new JNopStmt(nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(3), nop));
-    IStmt stmt2 = new JTableSwitchStmt(IntConstant.getInstance(123), 1, 4, targets2,
-        new JReturnStmt(IntConstant.getInstance(666), nop), nop);
-    IStmt stmt3 = new JTableSwitchStmt(IntConstant.getInstance(456), 1, 4, targets,
-        new JReturnStmt(IntConstant.getInstance(666), nop), nop);
-    IStmt stmt4 = new JTableSwitchStmt(IntConstant.getInstance(123), 2, 4, targets,
-        new JReturnStmt(IntConstant.getInstance(666), nop), nop);
-    IStmt stmt5 = new JTableSwitchStmt(IntConstant.getInstance(123), 1, 5, targets,
-        new JReturnStmt(IntConstant.getInstance(666), nop), nop);
-    IStmt stmt6 = new JTableSwitchStmt(IntConstant.getInstance(123), 1, 4, targets, new JNopStmt(nop), nop);
+    IStmt stmt2 =
+        new JTableSwitchStmt(
+            IntConstant.getInstance(123),
+            1,
+            4,
+            targets2,
+            new JReturnStmt(IntConstant.getInstance(666), nop),
+            nop);
+    IStmt stmt3 =
+        new JTableSwitchStmt(
+            IntConstant.getInstance(456),
+            1,
+            4,
+            targets,
+            new JReturnStmt(IntConstant.getInstance(666), nop),
+            nop);
+    IStmt stmt4 =
+        new JTableSwitchStmt(
+            IntConstant.getInstance(123),
+            2,
+            4,
+            targets,
+            new JReturnStmt(IntConstant.getInstance(666), nop),
+            nop);
+    IStmt stmt5 =
+        new JTableSwitchStmt(
+            IntConstant.getInstance(123),
+            1,
+            5,
+            targets,
+            new JReturnStmt(IntConstant.getInstance(666), nop),
+            nop);
+    IStmt stmt6 =
+        new JTableSwitchStmt(IntConstant.getInstance(123), 1, 4, targets, new JNopStmt(nop), nop);
 
     // toString
     assertEquals(
@@ -88,7 +112,5 @@ public class JTableSwitchStmtTest {
     assertFalse(stmt.equivTo(stmt4));
     assertFalse(stmt.equivTo(stmt5));
     assertFalse(stmt.equivTo(stmt6));
-
   }
-
 }

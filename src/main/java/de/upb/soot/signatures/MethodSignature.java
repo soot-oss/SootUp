@@ -10,12 +10,12 @@ package de.upb.soot.signatures;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -23,9 +23,7 @@ package de.upb.soot.signatures;
  */
 
 import com.google.common.base.Objects;
-
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 
 /** Represents the fully qualified signature of a methodRef. */
@@ -35,14 +33,16 @@ public class MethodSignature extends AbstractClassMemberSignature {
   public final List<TypeSignature> parameterSignatures;
 
   /**
-   * Internal: Constructs a MethodSignature. Instances should only be created by a {@link DefaultSignatureFactory}
+   * Internal: Constructs a MethodSignature. Instances should only be created by a {@link
+   * DefaultSignatureFactory}
    *
-   * @param methodName
-   *          the signature
-   * @param declaringClass
-   *          the declaring class signature
+   * @param methodName the signature
+   * @param declaringClass the declaring class signature
    */
-  protected MethodSignature(final String methodName, final JavaClassSignature declaringClass, final TypeSignature returnType,
+  protected MethodSignature(
+      final String methodName,
+      final JavaClassSignature declaringClass,
+      final TypeSignature returnType,
       final List<TypeSignature> parameters) {
     super(methodName, declaringClass, returnType);
     this.parameterSignatures = parameters;
@@ -57,8 +57,10 @@ public class MethodSignature extends AbstractClassMemberSignature {
       return false;
     }
     MethodSignature that = (MethodSignature) o;
-    return Objects.equal(name, that.name) && Objects.equal(declClassSignature, that.declClassSignature)
-        && Objects.equal(parameterSignatures, that.parameterSignatures) && Objects.equal(typeSignature, that.typeSignature);
+    return Objects.equal(name, that.name)
+        && Objects.equal(declClassSignature, that.declClassSignature)
+        && Objects.equal(parameterSignatures, that.parameterSignatures)
+        && Objects.equal(typeSignature, that.typeSignature);
   }
 
   @Override
@@ -73,6 +75,11 @@ public class MethodSignature extends AbstractClassMemberSignature {
    */
   @Override
   public String getSubSignature() {
-    return typeSignature.toString() + ' ' + name + '(' + StringUtils.join(parameterSignatures, ", ") + ')';
+    return typeSignature.toString()
+        + ' '
+        + name
+        + '('
+        + StringUtils.join(parameterSignatures, ", ")
+        + ')';
   }
 }

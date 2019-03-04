@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -31,9 +31,7 @@ import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
 public class JXorExpr extends AbstractIntLongBinopExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 3643447972252206400L;
 
   public JXorExpr(Value op1, Value op2) {
@@ -54,5 +52,4 @@ public class JXorExpr extends AbstractIntLongBinopExpr {
   public Object clone() {
     return new JXorExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
-
 }

@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -26,24 +26,20 @@
 package de.upb.soot.jimple.basic;
 
 /**
- * An alternate equivalence relation between objects. The standard interpretation will be structural equality. We also demand
- * that if x.equivTo(y), then x.equivHashCode() == y.equivHashCode.
+ * An alternate equivalence relation between objects. The standard interpretation will be structural
+ * equality. We also demand that if x.equivTo(y), then x.equivHashCode() == y.equivHashCode.
  */
 public interface EquivTo {
 
-  /**
-   * Returns true if this object is equivalent to o.
-   */
+  /** Returns true if this object is equivalent to o. */
   boolean equivTo(Object o);
 
   /**
-   * Returns a (not necessarily fixed) hash code for this object. This hash code coincides with equivTo; it is undefined in
-   * the presence of mutable objects.
+   * Returns a (not necessarily fixed) hash code for this object. This hash code coincides with
+   * equivTo; it is undefined in the presence of mutable objects.
    */
   int equivHashCode();
 
-  /**
-   * Returns true if this object is equivalent to o according to the given comparator.
-   */
+  /** Returns true if this object is equivalent to o according to the given comparator. */
   boolean equivTo(Object o, JimpleComparator comparator);
 }

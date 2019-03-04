@@ -22,25 +22,21 @@ import de.upb.soot.signatures.NullTypeSignature;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-
 import javax.annotation.Nonnull;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
- * 
+ *
  * @author Linghui Luo created on 31.07.2018
  */
 public class JavaView extends AbstractView {
 
   private Set<ArrayType> arrayTypes;
 
-  /**
-   * Instantiates a new view.
-   */
+  /** Instantiates a new view. */
   public JavaView(@Nonnull Project project) {
     super(project);
     this.arrayTypes = new HashSet<>();
@@ -115,10 +111,14 @@ public class JavaView extends AbstractView {
   }
 
   private ArrayType getArrayType(ArrayTypeSignature arrayTypeSignature) {
-    Optional<ArrayType> op
-        = this.arrayTypes.stream().filter(r -> r.toString().equals(arrayTypeSignature.toString())).findFirst();
+    Optional<ArrayType> op =
+        this.arrayTypes.stream()
+            .filter(r -> r.toString().equals(arrayTypeSignature.toString()))
+            .findFirst();
     if (!op.isPresent()) {
-      ArrayType arrayType = ArrayType.getInstance(getRefType(arrayTypeSignature.baseType), arrayTypeSignature.dimension);
+      ArrayType arrayType =
+          ArrayType.getInstance(
+              getRefType(arrayTypeSignature.baseType), arrayTypeSignature.dimension);
       this.arrayTypes.add(arrayType);
       return arrayType;
     }
@@ -127,7 +127,9 @@ public class JavaView extends AbstractView {
 
   @Override
   public @Nonnull Optional<AbstractClass> getClass(@Nonnull ISignature signature) {
-    return this.classes().filter(c -> c.getClassSource().getClassSignature().equals(signature)).findFirst();
+    return this.classes()
+        .filter(c -> c.getClassSource().getClassSignature().equals(signature))
+        .findFirst();
   }
 
   @Override
@@ -164,5 +166,4 @@ public class JavaView extends AbstractView {
       return UnknownType.INSTANCE;
     }
   }
-
 }

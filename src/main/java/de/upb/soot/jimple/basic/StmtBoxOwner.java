@@ -26,13 +26,12 @@ import java.util.List;
 
 /**
  * An implementor of this interface indicates that it may contain UnitBoxes.
- * 
- * <p>
- * Currently this is implemented by soot.shimple.PhiExpr and used by soot.jimple.internal.JAssignStmt.
- * </p>
+ *
+ * <p>Currently this is implemented by soot.shimple.PhiExpr and used by
+ * soot.jimple.internal.JAssignStmt.
  *
  * @author Navindra Umanee
- **/
+ */
 public interface StmtBoxOwner {
 
   List<IStmtBox> getStmtBoxes();

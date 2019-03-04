@@ -1,10 +1,8 @@
 package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.SootClass;
-
 import java.util.List;
 import java.util.Map;
-
 import soot.G;
 import soot.PackManager;
 import soot.Scene;
@@ -14,10 +12,10 @@ import soot.Transformer;
 import soot.options.Options;
 
 /**
- * This example demonstrate how we use WALA java source code fronend-end to generate jimple in old soot and perform analysis.
- * 
- * @author Linghui Luo
+ * This example demonstrate how we use WALA java source code fronend-end to generate jimple in old
+ * soot and perform analysis.
  *
+ * @author Linghui Luo
  */
 public class Example {
 
@@ -41,18 +39,18 @@ public class Example {
     JimpleConverter jimpleConverter = new JimpleConverter(sootClasses);
     jimpleConverter.convertAllClasses();
     // TODO. implement your analysis in transform, source code location info are stored in tag
-    Transformer t = new SceneTransformer() {
-      @Override
-      protected void internalTransform(String phaseName, Map<String, String> options) {
-        // TODO your analysis
+    Transformer t =
+        new SceneTransformer() {
+          @Override
+          protected void internalTransform(String phaseName, Map<String, String> options) {
+            // TODO your analysis
 
-      }
-    };
+          }
+        };
     // build call graph and run analysis
     PackManager.v().getPack("cg").apply();
     // add your analysis to wjtp pack
     PackManager.v().getPack("wjtp").add(new Transform("wjtp.dummyAnalysis", t));
     PackManager.v().getPack("wjtp").apply();
   }
-
 }

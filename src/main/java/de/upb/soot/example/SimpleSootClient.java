@@ -8,7 +8,6 @@ import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.views.IView;
-
 import java.util.Collections;
 
 /**
@@ -46,5 +45,4 @@ public class SimpleSootClient {
 
     // here goes my own analysis
   }
-
 }

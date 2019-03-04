@@ -5,9 +5,8 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 
 /**
  * A trap is an exception catcher.
- * 
- * @author Linghui Luo
  *
+ * @author Linghui Luo
  */
 public interface Trap extends StmtBoxOwner {
 
@@ -21,5 +20,4 @@ public interface Trap extends StmtBoxOwner {
   IStmt getEndStmt();
 
   IStmt getHandlerStmt();
-
 }

@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -57,10 +57,16 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
     Value op2 = op2Box.getValue();
     Type op1t = op1.getType();
     Type op2t = op2.getType();
-    if ((op1t.equals(IntType.INSTANCE) || op1t.equals(ByteType.INSTANCE) || op1t.equals(ShortType.INSTANCE)
-        || op1t.equals(CharType.INSTANCE) || op1t.equals(BooleanType.INSTANCE))
-        && (op2t.equals(IntType.INSTANCE) || op2t.equals(ByteType.INSTANCE) || op2t.equals(ShortType.INSTANCE)
-            || op2t.equals(CharType.INSTANCE) || op2t.equals(BooleanType.INSTANCE))) {
+    if ((op1t.equals(IntType.INSTANCE)
+            || op1t.equals(ByteType.INSTANCE)
+            || op1t.equals(ShortType.INSTANCE)
+            || op1t.equals(CharType.INSTANCE)
+            || op1t.equals(BooleanType.INSTANCE))
+        && (op2t.equals(IntType.INSTANCE)
+            || op2t.equals(ByteType.INSTANCE)
+            || op2t.equals(ShortType.INSTANCE)
+            || op2t.equals(CharType.INSTANCE)
+            || op2t.equals(BooleanType.INSTANCE))) {
       return IntType.INSTANCE;
     } else if (op1t.equals(LongType.INSTANCE) || op2t.equals(LongType.INSTANCE)) {
       return LongType.INSTANCE;

@@ -22,20 +22,14 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import categories.Java8Test;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.constant.IntConstant;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java8Test;
-
-/**
- *
- * @author Markus Schmidt & Linghui Luo
- *
- */
+/** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
 public class JReturnStmtTest {
 
@@ -54,5 +48,4 @@ public class JReturnStmtTest {
     // toString
     Assert.assertEquals("return 42", rStmt.toString());
   }
-
 }

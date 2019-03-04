@@ -5,7 +5,6 @@ import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.Utils;
-
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -14,7 +13,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import javax.annotation.Nonnull;
 
 /*-
@@ -57,12 +55,12 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
   }
 
   /**
-   * Creates a {@link PathBasedNamespace} depending on the given {@link Path}, e.g., differs between directories, archives
-   * (and possibly network path's in the future).
-   * 
-   * @param path
-   *          The path to search in
-   * @return A {@link PathBasedNamespace} implementation dependent on the given {@link Path}'s {@link FileSystem}
+   * Creates a {@link PathBasedNamespace} depending on the given {@link Path}, e.g., differs between
+   * directories, archives (and possibly network path's in the future).
+   *
+   * @param path The path to search in
+   * @return A {@link PathBasedNamespace} implementation dependent on the given {@link Path}'s
+   *     {@link FileSystem}
    */
   public static @Nonnull PathBasedNamespace createForClassContainer(@Nonnull Path path) {
     if (Files.isDirectory(path)) {
@@ -75,12 +73,17 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
   }
 
-  protected @Nonnull Collection<ClassSource> walkDirectory(@Nonnull Path dirPath, @Nonnull SignatureFactory factory) {
+  protected @Nonnull Collection<ClassSource> walkDirectory(
+      @Nonnull Path dirPath, @Nonnull SignatureFactory factory) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
 
-      return Files.walk(dirPath).filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
-          .flatMap(p -> Utils.optionalToStream(Optional.of(classProvider.createClassSource(this, p, factory.fromPath(p)))))
+      return Files.walk(dirPath)
+          .filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
+          .flatMap(
+              p ->
+                  Utils.optionalToStream(
+                      Optional.of(classProvider.createClassSource(this, p, factory.fromPath(p)))))
           .collect(Collectors.toList());
 
     } catch (IOException e) {
@@ -88,9 +91,10 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
   }
 
-  protected @Nonnull Optional<ClassSource> getClassSourceInternal(@Nonnull JavaClassSignature signature,
-      @Nonnull Path path) {
-    Path pathToClass = path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
+  protected @Nonnull Optional<ClassSource> getClassSourceInternal(
+      @Nonnull JavaClassSignature signature, @Nonnull Path path) {
+    Path pathToClass =
+        path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
 
     if (!Files.exists(pathToClass)) {
       return Optional.empty();

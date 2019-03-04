@@ -1,5 +1,3 @@
 package de.upb.soot.buildactor;
 
-public final class ReifyMessage {
-
-}
+public final class ReifyMessage {}

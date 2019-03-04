@@ -1,7 +1,10 @@
 package de.upb.soot.core;
 
 public enum ResolvingLevel {
-  DANGLING(0), HIERARCHY(1), SIGNATURES(2), BODIES(3);
+  DANGLING(0),
+  HIERARCHY(1),
+  SIGNATURES(2),
+  BODIES(3);
 
   private final int level;
 

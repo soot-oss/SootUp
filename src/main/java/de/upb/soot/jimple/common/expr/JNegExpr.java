@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -43,9 +43,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JNegExpr extends AbstractUnopExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -5215362038683846098L;
 
   public JNegExpr(Value op) {
@@ -90,8 +88,10 @@ public class JNegExpr extends AbstractUnopExpr {
   public Type getType() {
     Value op = opBox.getValue();
 
-    if (op.getType().equals(IntType.INSTANCE) || op.getType().equals(ByteType.INSTANCE)
-        || op.getType().equals(ShortType.INSTANCE) || op.getType().equals(BooleanType.INSTANCE)
+    if (op.getType().equals(IntType.INSTANCE)
+        || op.getType().equals(ByteType.INSTANCE)
+        || op.getType().equals(ShortType.INSTANCE)
+        || op.getType().equals(BooleanType.INSTANCE)
         || op.getType().equals(CharType.INSTANCE)) {
       return IntType.INSTANCE;
     } else if (op.getType().equals(LongType.INSTANCE)) {
@@ -109,5 +109,4 @@ public class JNegExpr extends AbstractUnopExpr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNegExpr(this);
   }
-
 }
