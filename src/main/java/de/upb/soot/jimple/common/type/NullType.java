@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -30,16 +30,13 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.NullTypeSignature;
 import de.upb.soot.signatures.TypeSignature;
 
-/**
- * Soot representation of the Java type 'null'. Implemented as a singleton.
- */
+/** Soot representation of the Java type 'null'. Implemented as a singleton. */
 @SuppressWarnings("serial")
 public class NullType extends RefLikeType {
 
   public static final NullType INSTANCE = new NullType();
 
-  private NullType() {
-  }
+  private NullType() {}
 
   @Override
   public int hashCode() {

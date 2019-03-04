@@ -10,12 +10,12 @@ package de.upb.soot.signatures;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -24,9 +24,7 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
-
 import de.upb.soot.namespaces.FileType;
-
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -40,17 +38,15 @@ public class JavaClassSignature extends TypeSignature {
   /** The package in which the class resides. */
   public final PackageSignature packageSignature;
 
-  /** Whether the class is an inner class **/
+  /** Whether the class is an inner class * */
   public final boolean isInnerClass;
 
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
    * {@link DefaultSignatureFactory}
    *
-   * @param className
-   *          the simple name of the class, e.g., ClassA NOT my.package.ClassA
-   * @param packageSignature
-   *          the corresponding package
+   * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
+   * @param packageSignature the corresponding package
    */
   protected JavaClassSignature(final String className, final PackageSignature packageSignature) {
     String realClassName = className;
@@ -77,7 +73,8 @@ public class JavaClassSignature extends TypeSignature {
       return false;
     }
     JavaClassSignature that = (JavaClassSignature) o;
-    return Objects.equal(className, that.className) && Objects.equal(packageSignature, that.packageSignature)
+    return Objects.equal(className, that.className)
+        && Objects.equal(packageSignature, that.packageSignature)
         && isInnerClass == that.isInnerClass;
   }
 
@@ -87,7 +84,8 @@ public class JavaClassSignature extends TypeSignature {
   }
 
   /**
-   * The fully-qualified name of the class. Concat package and class name , e.g., "java.lang.System".
+   * The fully-qualified name of the class. Concat package and class name , e.g.,
+   * "java.lang.System".
    *
    * @return fully-qualified name
    */

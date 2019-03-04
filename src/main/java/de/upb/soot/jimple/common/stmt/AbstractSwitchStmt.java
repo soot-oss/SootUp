@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -29,16 +29,13 @@ import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractSwitchStmt extends AbstractStmt {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -828246813006451813L;
 
   protected final IStmtBox defaultTargetBox;
@@ -49,7 +46,10 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   protected final IStmtBox[] targetBoxes;
 
-  protected AbstractSwitchStmt(PositionInfo positionInfo, ValueBox keyBox, IStmtBox defaultTargetBox,
+  protected AbstractSwitchStmt(
+      PositionInfo positionInfo,
+      ValueBox keyBox,
+      IStmtBox defaultTargetBox,
       IStmtBox... targetBoxes) {
     super(positionInfo);
     this.keyBox = keyBox;
@@ -114,9 +114,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     targetBoxes[index].setStmt(target);
   }
 
-  /**
-   * Returns a list targets of type Stmt.
-   */
+  /** Returns a list targets of type Stmt. */
   public final List<IStmt> getTargets() {
     List<IStmt> targets = new ArrayList<IStmt>();
 
@@ -129,9 +127,8 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   /**
    * Sets the setStmt box for targetBoxes array.
-   * 
-   * @param targets
-   *          A list of type Stmt.
+   *
+   * @param targets A list of type Stmt.
    */
   public final void setTargets(List<? extends IStmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
@@ -141,9 +138,8 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   /**
    * Sets the setStmt box for targetBoxes array.
-   * 
-   * @param targets
-   *          An array of type Stmt.
+   *
+   * @param targets An array of type Stmt.
    */
   public final void setTargets(IStmt[] targets) {
     for (int i = 0; i < targets.length; i++) {
@@ -187,7 +183,8 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     int prime = 31;
-    int res = defaultTargetBox.getStmt().equivHashCode() + prime * keyBox.getValue().equivHashCode();
+    int res =
+        defaultTargetBox.getStmt().equivHashCode() + prime * keyBox.getValue().equivHashCode();
 
     for (IStmtBox lv : targetBoxes) {
       res = prime * res + lv.getStmt().equivHashCode();
@@ -195,5 +192,4 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
     return res;
   }
-
 }

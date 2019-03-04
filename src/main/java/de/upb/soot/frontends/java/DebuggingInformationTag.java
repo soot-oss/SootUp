@@ -1,15 +1,10 @@
 package de.upb.soot.frontends.java;
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-
 import soot.tagkit.AttributeValueException;
 import soot.tagkit.Tag;
 
-/**
- * 
- * @author Linghui Luo
- *
- */
+/** @author Linghui Luo */
 public class DebuggingInformationTag implements Tag {
 
   private DebuggingInformation debugInfo;
@@ -30,7 +25,6 @@ public class DebuggingInformationTag implements Tag {
 
   public DebuggingInformation getDebugInfo() {
     return this.debugInfo;
-
   }
 
   @Override

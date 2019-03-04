@@ -2,32 +2,22 @@ package de.upb.soot.frontends.java;
 
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.frontends.java.JimpleConverter;
-import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
-
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Optional;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
 import soot.G;
 import soot.Scene;
 import soot.options.Options;
 
-import categories.Java8Test;
-
-/**
- * 
- * @author Linghui Luo
- *
- */
+/** @author Linghui Luo */
 @Category(Java8Test.class)
 public class JimpleConverterTest {
 
@@ -41,7 +31,6 @@ public class JimpleConverterTest {
     String srcDir = "src/test/resources/wala-tests/";
     loader = new WalaClassLoader(srcDir, null);
     sigFactory = new DefaultSignatureFactory();
-
   }
 
   @After
@@ -78,5 +67,4 @@ public class JimpleConverterTest {
     klass = c.get();
     // Utils.print(klass, true);
   }
-
 }

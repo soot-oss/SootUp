@@ -4,9 +4,7 @@ import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.JavaClassSignature;
-
 import java.util.Optional;
-
 import javax.annotation.Nonnull;
 
 /*-
@@ -32,8 +30,9 @@ import javax.annotation.Nonnull;
  */
 
 /**
- * Basic implementation of {@link INamespace}, encapsulating common behavior. Also used to keep the {@link INamespace}
- * interface clean from internal methods like {@link AbstractNamespace#getClassSource(JavaClassSignature)}.
+ * Basic implementation of {@link INamespace}, encapsulating common behavior. Also used to keep the
+ * {@link INamespace} interface clean from internal methods like {@link
+ * AbstractNamespace#getClassSource(JavaClassSignature)}.
  *
  * @author Manuel Benz created on 22.05.18
  */
@@ -42,9 +41,8 @@ public abstract class AbstractNamespace implements INamespace {
 
   /**
    * Create the namespace.
-   * 
-   * @param classProvider
-   *          The class provider to be used
+   *
+   * @param classProvider The class provider to be used
    */
   public AbstractNamespace(@Nonnull IClassProvider classProvider) {
     this.classProvider = classProvider;
@@ -52,7 +50,7 @@ public abstract class AbstractNamespace implements INamespace {
 
   /**
    * Returns the {@link IClassProvider} instance for this namespace.
-   * 
+   *
    * @return The class provider for this namespace
    */
   @Override
@@ -62,19 +60,20 @@ public abstract class AbstractNamespace implements INamespace {
 
   /*
    * @Override public Collection<SootClass> getClasses(SignatureFactory factory) {
-   * 
+   *
    * // FIXME: here we must take the classSources and invoke akka... return getClassSources(factory).stream().map(cs ->
    * classProvider.getSootClass(cs)).collect(Collectors.toList()); }
-   * 
+   *
    * @Override public Optional<SootClass> getClass(ClassSignature classSignature) { // FIXME: here we must take the
    * classSources and invoke akka...
-   * 
+   *
    * return getClassSource(classSignature).map(cs -> classProvider.getSootClass(cs)); }
    */
 
   /**
-   * Constructs a default class provider for use with namespaces. Currently, this provides an instance of
-   * {@link AsmJavaClassProvider} to read Java Bytecode. This might be more brilliant in the future.
+   * Constructs a default class provider for use with namespaces. Currently, this provides an
+   * instance of {@link AsmJavaClassProvider} to read Java Bytecode. This might be more brilliant in
+   * the future.
    *
    * @return An instance of {@link IClassProvider} to be used.
    */
@@ -83,5 +82,6 @@ public abstract class AbstractNamespace implements INamespace {
   }
 
   @Override
-  public abstract @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature classSignature);
+  public abstract @Nonnull Optional<ClassSource> getClassSource(
+      @Nonnull JavaClassSignature classSignature);
 }

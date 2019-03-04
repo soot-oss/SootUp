@@ -26,7 +26,6 @@ package de.upb.soot.util;
  *
  * @author Ondrej Lhotak
  */
-
 public final class NumberedString implements Numberable {
   public NumberedString(String s) {
     this.s = s;
@@ -54,7 +53,7 @@ public final class NumberedString implements Numberable {
     return number;
   }
 
-  final private String s;
+  private final String s;
   private volatile int number;
 
   @Override

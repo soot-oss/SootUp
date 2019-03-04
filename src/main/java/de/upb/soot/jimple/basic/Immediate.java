@@ -2,10 +2,7 @@ package de.upb.soot.jimple.basic;
 
 /**
  * Immediate is a local or a constant.
- * 
- * @author Linghui Luo
  *
+ * @author Linghui Luo
  */
-public interface Immediate {
-
-}
+public interface Immediate {}

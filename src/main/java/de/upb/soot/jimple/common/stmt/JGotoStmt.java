@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -32,15 +32,13 @@ import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.Collections;
 import java.util.List;
 
 public class JGotoStmt extends AbstractStmt {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -7771670610404109177L;
+
   final IStmtBox targetBox;
   final List<IStmtBox> targetBoxes;
 
@@ -111,7 +109,6 @@ public class JGotoStmt extends AbstractStmt {
   @Override
   public boolean equivTo(Object o) {
     return JimpleComparator.getInstance().caseGotoStmt(this, o);
-
   }
 
   @Override
@@ -123,5 +120,4 @@ public class JGotoStmt extends AbstractStmt {
   public int equivHashCode() {
     return targetBox.getStmt().equivHashCode();
   }
-
 }

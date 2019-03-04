@@ -7,7 +7,6 @@ import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.Type;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,9 +14,9 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
-  /** branch targets **/
+  /** branch targets * */
   protected Map<IStmt, String> labels;
-  /** for unit references in Phi nodes **/
+  /** for unit references in Phi nodes * */
   protected Map<IStmt, String> references;
 
   protected String labelIndent = "\u0020\u0020\u0020\u0020\u0020";
@@ -121,5 +120,4 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       }
     }
   }
-
 }

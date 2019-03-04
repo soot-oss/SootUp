@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -30,21 +30,19 @@ import de.upb.soot.jimple.visitor.IJimpleValueVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.Numberable;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Local variable in {@link de.upb.soot.core.Body}. Use {@link de.upb.soot.jimple.basic.LocalGenerator} to generate locals.
- * 
- * @author Linghui Luo
+ * Local variable in {@link de.upb.soot.core.Body}. Use {@link
+ * de.upb.soot.jimple.basic.LocalGenerator} to generate locals.
  *
+ * @author Linghui Luo
  */
 public class Local implements Value, Numberable, Immediate {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 4469815713329368282L;
+
   protected String name;
   Type type;
 
@@ -134,5 +132,4 @@ public class Local implements Value, Numberable, Immediate {
   }
 
   private int number = 0;
-
 }

@@ -19,7 +19,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -34,20 +34,16 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import de.upb.soot.views.IView;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 9170581307891035087L;
 
-  /**
-   * Stores the values of new ImmediateBox to the argBoxes array.
-   */
-  public JSpecialInvokeExpr(IView view, Local base, MethodSignature method, List<? extends Value> args) {
+  /** Stores the values of new ImmediateBox to the argBoxes array. */
+  public JSpecialInvokeExpr(
+      IView view, Local base, MethodSignature method, List<? extends Value> args) {
     super(view, Jimple.newLocalBox(base), method, new ImmediateBox[args.size()]);
 
     for (int i = 0; i < args.size(); i++) {
@@ -80,16 +76,15 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   public String toString() {
     StringBuffer buffer = new StringBuffer();
 
-    buffer.append(Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + methodSignature + "(");
+    buffer.append(
+        Jimple.SPECIALINVOKE + " " + baseBox.getValue().toString() + "." + methodSignature + "(");
     argBoxesToString(buffer);
     buffer.append(")");
 
     return buffer.toString();
   }
 
-  /**
-   * Converts a parameter of type StmtPrinter to a string literal.
-   */
+  /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
   public void toString(IStmtPrinter up) {
 
@@ -112,5 +107,4 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
     }
     up.literal(")");
   }
-
 }

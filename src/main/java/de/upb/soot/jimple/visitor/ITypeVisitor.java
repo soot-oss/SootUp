@@ -1,7 +1,6 @@
 package de.upb.soot.jimple.visitor;
 
 import com.google.common.graph.ElementOrder.Type;
-
 import de.upb.soot.jimple.common.type.AnySubType;
 import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;

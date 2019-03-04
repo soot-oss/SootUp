@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -34,15 +34,13 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class JInstanceOfExpr implements Expr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -3584505247110961970L;
+
   private final ValueBox opBox;
   private Type checkType;
 
@@ -124,5 +122,4 @@ public class JInstanceOfExpr implements Expr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseInstanceOfExpr(this);
   }
-
 }

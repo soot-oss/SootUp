@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -29,15 +29,13 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractBinopExpr implements Expr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -4967924464687577438L;
+
   protected ValueBox op1Box;
   protected ValueBox op2Box;
 
@@ -90,7 +88,8 @@ public abstract class AbstractBinopExpr implements Expr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return op1Box.getValue().equivHashCode() * 101 + op2Box.getValue().equivHashCode() + 17 ^ getSymbol().hashCode();
+    return op1Box.getValue().equivHashCode() * 101 + op2Box.getValue().equivHashCode() + 17
+        ^ getSymbol().hashCode();
   }
 
   /** Returns the unique symbol for an operator. */
@@ -114,5 +113,4 @@ public abstract class AbstractBinopExpr implements Expr {
     up.literal(getSymbol());
     op2Box.toString(up);
   }
-
 }

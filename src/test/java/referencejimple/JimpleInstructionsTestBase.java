@@ -26,12 +26,10 @@ import de.upb.soot.Project;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.util.printer.Printer;
 import de.upb.soot.views.JavaView;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -41,7 +39,8 @@ public abstract class JimpleInstructionsTestBase {
 
   public JavaView view;
   protected SootClass sootClass;
-  String JimpleReferencePathPrefix = "src/test/java8/resources/reference-jimple/de.upb.soot.instructions.";
+  String JimpleReferencePathPrefix =
+      "src/test/java8/resources/reference-jimple/de.upb.soot.instructions.";
 
   protected void build() {
     Assume.assumeTrue(false);
@@ -77,10 +76,9 @@ public abstract class JimpleInstructionsTestBase {
     printWriter.flush();
     printWriter.close();
 
-    String referencJimple
-        = FileUtils.readFileToString(new File(JimpleReferencePathPrefix + directory + "." + name + ".jimple"), "UTF-8");
+    String referencJimple =
+        FileUtils.readFileToString(
+            new File(JimpleReferencePathPrefix + directory + "." + name + ".jimple"), "UTF-8");
     Assert.assertEquals(referencJimple, output.toString());
-
   }
-
 }

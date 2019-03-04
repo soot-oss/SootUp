@@ -19,7 +19,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -27,7 +27,6 @@
 package de.upb.soot.jimple.common.ref;
 
 import com.google.common.base.Optional;
-
 import de.upb.soot.core.SootField;
 import de.upb.soot.signatures.FieldSignature;
 
@@ -36,5 +35,4 @@ public interface JFieldRef extends ConcreteRef {
   Optional<SootField> getField();
 
   FieldSignature getFieldSignature();
-
 }

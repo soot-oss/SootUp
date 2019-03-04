@@ -5,11 +5,7 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.IMethodSourceContent;
 import de.upb.soot.signatures.MethodSignature;
 
-/**
- * 
- * @author Linghui Luo
- *
- */
+/** @author Linghui Luo */
 public class WalaIRMethodSourceContent implements IMethodSourceContent {
 
   private MethodSignature methodSignature;
@@ -28,5 +24,4 @@ public class WalaIRMethodSourceContent implements IMethodSourceContent {
   public MethodSignature getSignature() {
     return methodSignature;
   }
-
 }

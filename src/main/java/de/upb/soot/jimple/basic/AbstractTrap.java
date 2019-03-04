@@ -2,7 +2,6 @@ package de.upb.soot.jimple.basic;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.common.stmt.IStmt;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -31,14 +30,12 @@ import java.util.List;
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
-/**
- * Partial implementation of trap (exception catcher), used within Body classes.
- */
+/** Partial implementation of trap (exception catcher), used within Body classes. */
 @SuppressWarnings("serial")
 public class AbstractTrap implements Trap, Serializable {
   /** The exception being caught. */
@@ -58,7 +55,8 @@ public class AbstractTrap implements Trap, Serializable {
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
-    // TODO: Use of FQDNs in implementations should be discouraged. They need to be parsed through a SignatureFactory object.
+    // TODO: Use of FQDNs in implementations should be discouraged. They need to be parsed through a
+    // SignatureFactory object.
     exception = null; // this.getView().getSootClass((String) in.readObject());
   }
 
@@ -68,12 +66,14 @@ public class AbstractTrap implements Trap, Serializable {
   }
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
-  protected AbstractTrap(SootClass exception, IStmtBox beginStmtBox, IStmtBox endStmtBox, IStmtBox handlerStmtBox) {
+  protected AbstractTrap(
+      SootClass exception, IStmtBox beginStmtBox, IStmtBox endStmtBox, IStmtBox handlerStmtBox) {
     this.exception = exception;
     this.beginStmtBox = beginStmtBox;
     this.endStmtBox = endStmtBox;
     this.handlerStmtBox = handlerStmtBox;
-    this.unitBoxes = Collections.unmodifiableList(Arrays.asList(beginStmtBox, endStmtBox, handlerStmtBox));
+    this.unitBoxes =
+        Collections.unmodifiableList(Arrays.asList(beginStmtBox, endStmtBox, handlerStmtBox));
   }
 
   @Override
@@ -140,5 +140,4 @@ public class AbstractTrap implements Trap, Serializable {
   public Object clone() {
     throw new RuntimeException();
   }
-
 }

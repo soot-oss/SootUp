@@ -9,12 +9,12 @@ package de.upb.soot.core;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -22,7 +22,6 @@ package de.upb.soot.core;
  */
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-
 import de.upb.soot.frontends.IMethodSourceContent;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.jimple.common.type.Type;
@@ -30,7 +29,6 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,22 +38,18 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringTokenizer;
-
 import javax.annotation.Nullable;
 
 /**
- * Soot's counterpart of th import java.util.stream.Collectors;e source language's methodRef concept. Soot representation of
- * a Java methodRef. Can be declared to belong to a SootClass. Does not contain the actual code, which belongs to a Body. The
- * getActiveBody() methodRef points to the currently-active body.
+ * Soot's counterpart of th import java.util.stream.Collectors;e source language's methodRef
+ * concept. Soot representation of a Java methodRef. Can be declared to belong to a SootClass. Does
+ * not contain the actual code, which belongs to a Body. The getActiveBody() methodRef points to the
+ * currently-active body.
  *
- * Modified by Linghui Luo
- *
+ * <p>Modified by Linghui Luo
  */
-
 public class SootMethod extends SootClassMember implements IMethod {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -7438746401781827520L;
 
   private static final String constructorName = "<init>";
@@ -76,34 +70,69 @@ public class SootMethod extends SootClassMember implements IMethod {
   /** Tells this methodRef how to find out where its body lives. */
   private final IMethodSourceContent methodSource;
 
-  // FIXME: remove Wala DebuggingInformation from this Class, IMHO it does not belong to a sootmethod
-  /**
-   * Constructs a SootMethod object with the given attributes. It contains no active body.
-   */
-  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSourceContent source,
-      List<TypeSignature> parameterTypes, TypeSignature returnType, EnumSet<Modifier> modifiers,
+  // FIXME: remove Wala DebuggingInformation from this Class, IMHO it does not belong to a
+  // sootmethod
+  /** Constructs a SootMethod object with the given attributes. It contains no active body. */
+  public SootMethod(
+      IView view,
+      JavaClassSignature declaringClass,
+      IMethodSourceContent source,
+      List<TypeSignature> parameterTypes,
+      TypeSignature returnType,
+      EnumSet<Modifier> modifiers,
       DebuggingInformation debugInfo) {
-    this(view, declaringClass, source, source.getSignature(), modifiers, Collections.emptyList(), debugInfo);
+    this(
+        view,
+        declaringClass,
+        source,
+        source.getSignature(),
+        modifiers,
+        Collections.emptyList(),
+        debugInfo);
   }
 
-  /**
-   * Constructs a SootMethod object with the given attributes. It contains no active body.
-   */
-  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSourceContent source,
-      List<TypeSignature> parameterTypes, TypeSignature returnType, EnumSet<Modifier> modifiers) {
-    this(view, declaringClass, source, source.getSignature(), modifiers, Collections.<JavaClassSignature>emptyList(), null);
-  }
-
-  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSourceContent source, MethodSignature signature,
+  /** Constructs a SootMethod object with the given attributes. It contains no active body. */
+  public SootMethod(
+      IView view,
+      JavaClassSignature declaringClass,
+      IMethodSourceContent source,
+      List<TypeSignature> parameterTypes,
+      TypeSignature returnType,
       EnumSet<Modifier> modifiers) {
-    this(view, declaringClass, source, signature, modifiers, Collections.<JavaClassSignature>emptyList(), null);
+    this(
+        view,
+        declaringClass,
+        source,
+        source.getSignature(),
+        modifiers,
+        Collections.<JavaClassSignature>emptyList(),
+        null);
   }
 
-  /**
-   * Constructs a SootMethod object with the given attributes.
-   */
-  public SootMethod(IView view, JavaClassSignature declaringClass, IMethodSourceContent source,
-      MethodSignature methodSignature, EnumSet<Modifier> modifiers, List<JavaClassSignature> thrownExceptions,
+  public SootMethod(
+      IView view,
+      JavaClassSignature declaringClass,
+      IMethodSourceContent source,
+      MethodSignature signature,
+      EnumSet<Modifier> modifiers) {
+    this(
+        view,
+        declaringClass,
+        source,
+        signature,
+        modifiers,
+        Collections.<JavaClassSignature>emptyList(),
+        null);
+  }
+
+  /** Constructs a SootMethod object with the given attributes. */
+  public SootMethod(
+      IView view,
+      JavaClassSignature declaringClass,
+      IMethodSourceContent source,
+      MethodSignature methodSignature,
+      EnumSet<Modifier> modifiers,
+      List<JavaClassSignature> thrownExceptions,
       DebuggingInformation debugInfo) {
     super(view, declaringClass, methodSignature, methodSignature.typeSignature, modifiers);
     Body myActiveBody = null;
@@ -122,17 +151,18 @@ public class SootMethod extends SootClassMember implements IMethod {
     } catch (ResolveException e) {
       myActiveBody = null;
       e.printStackTrace();
-
     }
     activeBody = myActiveBody;
-
   }
 
-  /**
-   * Construct a SootMethod object with the attributes of given methodRef and activeBody.
-   */
+  /** Construct a SootMethod object with the attributes of given methodRef and activeBody. */
   public SootMethod(SootMethod method, Body activeBody) {
-    super(method.getView(), method.getDeclaringClassSignature(), method.signature, method.typeSignature, method.modifiers);
+    super(
+        method.getView(),
+        method.getDeclaringClassSignature(),
+        method.signature,
+        method.typeSignature,
+        method.modifiers);
     this.methodSource = method.methodSource;
     this.parameterTypes = Collections.unmodifiableList(method.parameterTypes);
     this.exceptions = Collections.unmodifiableList(method.exceptions);
@@ -144,7 +174,8 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   /**
-   * Returns true if this methodRef is not phantom, abstract or native, i.e. this methodRef can have a body.
+   * Returns true if this methodRef is not phantom, abstract or native, i.e. this methodRef can have
+   * a body.
    */
   public boolean isConcrete() {
     return !isPhantom() && !isAbstract() && !isNative();
@@ -165,18 +196,14 @@ public class SootMethod extends SootClassMember implements IMethod {
     return this.getView().getType(parameterTypes.get(n));
   }
 
-  /**
-   * Returns a read-only list of the parameter types of this methodRef.
-   */
+  /** Returns a read-only list of the parameter types of this methodRef. */
   public Collection<Type> getParameterTypes() {
     List<Type> ret = new ArrayList<>();
     parameterTypes.forEach(t -> ret.add(this.getView().getType(t)));
     return ret;
   }
 
-  /**
-   * Retrieves the active body for this methodRef.
-   */
+  /** Retrieves the active body for this methodRef. */
   public Body getActiveBody() {
     return this.activeBody;
   }
@@ -193,13 +220,12 @@ public class SootMethod extends SootClassMember implements IMethod {
     return exceptions != null && exceptions.contains(e.getSignature());
   }
 
-  /**
-   * Returns a backed list of the exceptions thrown by this methodRef.
-   */
+  /** Returns a backed list of the exceptions thrown by this methodRef. */
   public Collection<SootClass> getExceptions() {
     // FIXME: `Collections.emptySet()` is immutable, this it can't be modified!
     Collection<SootClass> ret = new HashSet<>();
-    exceptions.stream().filter(e -> this.getView().getClass(e).isPresent())
+    exceptions.stream()
+        .filter(e -> this.getView().getClass(e).isPresent())
         .forEach(e -> ret.add((SootClass) this.getView().getClass(e).get()));
     return ret;
   }
@@ -208,31 +234,22 @@ public class SootMethod extends SootClassMember implements IMethod {
     return exceptions;
   }
 
-  /**
-   * Convenience methodRef returning true if this methodRef is abstract.
-   */
+  /** Convenience methodRef returning true if this methodRef is abstract. */
   public boolean isAbstract() {
     return Modifier.isAbstract(this.getModifiers());
   }
 
-  /**
-   * Convenience methodRef returning true if this methodRef is native.
-   */
+  /** Convenience methodRef returning true if this methodRef is native. */
   public boolean isNative() {
     return Modifier.isNative(this.getModifiers());
   }
 
-  /**
-   * Convenience methodRef returning true if this methodRef is synchronized.
-   */
+  /** Convenience methodRef returning true if this methodRef is synchronized. */
   public boolean isSynchronized() {
     return Modifier.isSynchronized(this.getModifiers());
   }
 
-  /**
-   *
-   * @return yes if this is the main methodRef
-   */
+  /** @return yes if this is the main methodRef */
   public boolean isMain() {
     if (isPublic() && isStatic()) {
       return this.getSubSignature().equals("void main(java.lang.String[])");
@@ -241,25 +258,19 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   /**
-   *
-   * @return yes, if this function is a constructor. Please not that <clinit> methods are not treated as constructors in this
-   *         methodRef.
+   * @return yes, if this function is a constructor. Please not that <clinit> methods are not
+   *     treated as constructors in this methodRef.
    */
   public boolean isConstructor() {
     return this.signature.name.equals(constructorName);
   }
 
-  /**
-   *
-   * @return yes, if this function is a static initializer.
-   */
+  /** @return yes, if this function is a static initializer. */
   public boolean isStaticInitializer() {
     return this.signature.name.equals(staticInitializerName);
   }
 
-  /**
-   * We rely on the JDK class recognition to decide if a methodRef is JDK methodRef.
-   */
+  /** We rely on the JDK class recognition to decide if a methodRef is JDK methodRef. */
   public boolean isJavaLibraryMethod() {
     Optional<SootClass> op = getDeclaringClass();
     if (op.isPresent()) {
@@ -271,8 +282,8 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   /**
-   * Returns the declaration of this methodRef, as used at the top of textual body representations (before the {}'s
-   * containing the code for representation.)
+   * Returns the declaration of this methodRef, as used at the top of textual body representations
+   * (before the {}'s containing the code for representation.)
    */
   public String getDeclaration() {
     StringBuilder builder = new StringBuilder();
@@ -315,10 +326,14 @@ public class SootMethod extends SootClassMember implements IMethod {
       Iterator<SootClass> exceptionIt = this.getExceptions().iterator();
 
       if (exceptionIt.hasNext()) {
-        builder.append(" throws ").append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
+        builder
+            .append(" throws ")
+            .append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
 
         while (exceptionIt.hasNext()) {
-          builder.append(", ").append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
+          builder
+              .append(", ")
+              .append(this.getView().quotedNameOf(exceptionIt.next().getSignature().toString()));
         }
       }
     }
@@ -333,5 +348,4 @@ public class SootMethod extends SootClassMember implements IMethod {
   public DebuggingInformation getDebugInfo() {
     return this.debugInfo;
   }
-
 }

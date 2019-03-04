@@ -30,15 +30,12 @@ import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 
-/**
- * Floating point constant with double precision.
- */
+/** Floating point constant with double precision. */
 public class DoubleConstant extends RealConstant {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -6608501059585159445L;
+
   public final double value;
 
   private DoubleConstant(double value) {
@@ -51,12 +48,11 @@ public class DoubleConstant extends RealConstant {
 
   @Override
   public boolean equals(Object c) {
-    return (c instanceof DoubleConstant && Double.compare(((DoubleConstant) c).value, this.value) == 0);
+    return (c instanceof DoubleConstant
+        && Double.compare(((DoubleConstant) c).value, this.value) == 0);
   }
 
-  /**
-   * Returns a hash code for this DoubleConstant object.
-   */
+  /** Returns a hash code for this DoubleConstant object. */
   @Override
   public int hashCode() {
     long v = Double.doubleToLongBits(value);
@@ -97,37 +93,43 @@ public class DoubleConstant extends RealConstant {
   @Override
   public NumericConstant equalEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) == 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Double.compare(this.value, ((DoubleConstant) c).value) == 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant notEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) != 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Double.compare(this.value, ((DoubleConstant) c).value) != 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant lessThan(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) < 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Double.compare(this.value, ((DoubleConstant) c).value) < 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant lessThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) <= 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Double.compare(this.value, ((DoubleConstant) c).value) <= 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant greaterThan(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) > 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Double.compare(this.value, ((DoubleConstant) c).value) > 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant greaterThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) >= 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Double.compare(this.value, ((DoubleConstant) c).value) >= 0 ? 1 : 0);
   }
 
   @Override
@@ -165,7 +167,9 @@ public class DoubleConstant extends RealConstant {
   public String toString() {
     String doubleString = Double.toString(value);
 
-    if (doubleString.equals("NaN") || doubleString.equals("Infinity") || doubleString.equals("-Infinity")) {
+    if (doubleString.equals("NaN")
+        || doubleString.equals("Infinity")
+        || doubleString.equals("-Infinity")) {
       return "#" + doubleString;
     } else {
       return doubleString;
@@ -185,15 +189,12 @@ public class DoubleConstant extends RealConstant {
   /**
    * Checks if passed argument is instance of expected class.
    *
-   * @param constant
-   *          the instance to check
-   * @throws IllegalArgumentException
-   *           when check fails
+   * @param constant the instance to check
+   * @throws IllegalArgumentException when check fails
    */
   private void assertInstanceOf(NumericConstant constant) {
     if (!(constant instanceof DoubleConstant)) {
       throw new IllegalArgumentException("DoubleConstant expected");
     }
   }
-
 }

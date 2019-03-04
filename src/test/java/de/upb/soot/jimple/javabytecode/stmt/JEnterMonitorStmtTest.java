@@ -26,22 +26,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.IntType;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java8Test;
-
-/**
- *
- * @author Markus Schmidt & Linghui Luo
- *
- */
+/** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
 public class JEnterMonitorStmtTest {
 
@@ -73,7 +67,5 @@ public class JEnterMonitorStmtTest {
     assertFalse(lightStmt.equivTo(stmt));
     assertFalse(lightStmt.equivTo(nightStmt));
     assertTrue(lightStmt.equivTo(lightStmt));
-
   }
-
 }

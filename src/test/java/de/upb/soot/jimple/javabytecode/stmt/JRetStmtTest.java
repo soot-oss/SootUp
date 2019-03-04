@@ -26,21 +26,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import de.upb.soot.jimple.basic.ImmediateBox;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.stmt.IStmt;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java8Test;
-
-/**
- *
- * @author Markus Schmidt & Linghui Luo
- *
- */
+/** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
 public class JRetStmtTest {
 
@@ -57,7 +51,5 @@ public class JRetStmtTest {
     assertFalse(stmt.equivTo(this));
     assertTrue(stmt.equivTo(stmt));
     assertFalse(stmt.equivTo(stmt2));
-
   }
-
 }

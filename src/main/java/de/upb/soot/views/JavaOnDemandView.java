@@ -5,23 +5,19 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.JavaClassSignature;
-
 import java.util.Optional;
-
 import javax.annotation.Nonnull;
 
 /**
  * The Class JavaOnDemandView loads Java Source Files on Demand.
- * 
+ *
  * @author Andreas Dann created on 31.10.2018
  */
 public class JavaOnDemandView extends JavaView {
 
   private final AkkaClassResolver akkaClassResolver = new AkkaClassResolver();
 
-  /**
-   * Instantiates a new view.
-   */
+  /** Instantiates a new view. */
   public JavaOnDemandView(@Nonnull Project project) {
     super(project);
   }
@@ -34,12 +30,15 @@ public class JavaOnDemandView extends JavaView {
       throw new IllegalArgumentException("The signature must be a `JavaClassSignature`.");
     }
 
-    Optional<AbstractClass> foundClass
-        = this.classes().filter(c -> c.getClassSource().getClassSignature().equals(signature)).findFirst();
+    Optional<AbstractClass> foundClass =
+        this.classes()
+            .filter(c -> c.getClassSource().getClassSignature().equals(signature))
+            .findFirst();
 
     if (!foundClass.isPresent()) {
       // query the namespace for the class source
-      Optional<ClassSource> source = this.project.getNamespace().getClassSource((JavaClassSignature) signature);
+      Optional<ClassSource> source =
+          this.project.getNamespace().getClassSource((JavaClassSignature) signature);
 
       if (source.isPresent()) {
         // resolve it ... using akka
@@ -50,10 +49,8 @@ public class JavaOnDemandView extends JavaView {
 
         return resolvedClass;
       }
-
     }
 
     return foundClass;
   }
-
 }
