@@ -146,10 +146,10 @@ public class JArrayRef implements ConcreteRef {
         arrayType = type.makeArrayType();
       }
 
-      if (arrayType.numDimensions == 1) {
-        return arrayType.baseType;
+      if (arrayType.getNumDimensions() == 1) {
+        return arrayType.getBaseType();
       } else {
-        return ArrayType.getInstance(arrayType.baseType, arrayType.numDimensions - 1);
+        return ArrayType.getInstance(arrayType.getBaseType(), arrayType.getNumDimensions() - 1);
       }
     }
   }

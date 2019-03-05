@@ -37,16 +37,9 @@ import de.upb.soot.util.printer.IStmtPrinter;
  */
 @SuppressWarnings("serial")
 public class ArrayType extends RefLikeType {
-  /**
-   * baseType can be any type except for an array type, null and void. What is the base type of the
-   * array? That is, for an array of type A[][][], how do I find out what the A is? The accepted way
-   * of doing this has always been to look at the public field baseType in ArrayType, ever since the
-   * very beginning of Soot.
-   */
-  public final Type baseType;
+  private final Type baseType;
 
-  /** dimension count for the array type. */
-  public final int numDimensions;
+  private final int numDimensions;
 
   private ArrayType(Type baseType, int numDimensions) {
     if (!(baseType instanceof PrimType
@@ -190,5 +183,20 @@ public class ArrayType extends RefLikeType {
   @Override
   public void accept(IVisitor sw) {
     ((ITypeVisitor) sw).caseArrayType(this);
+  }
+
+  /**
+   * baseType can be any type except for an array type, null and void. What is the base type of the
+   * array? That is, for an array of type A[][][], how do I find out what the A is? The accepted way
+   * of doing this has always been to look at the public field baseType in ArrayType, ever since the
+   * very beginning of Soot.
+   */
+  public Type getBaseType() {
+    return baseType;
+  }
+
+  /** dimension count for the array type. */
+  public int getNumDimensions() {
+    return numDimensions;
   }
 }

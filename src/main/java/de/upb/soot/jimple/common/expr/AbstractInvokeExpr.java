@@ -56,7 +56,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
   }
 
   public Optional<SootMethod> getMethod() {
-    JavaClassSignature signature = methodSignature.declClassSignature;
+    JavaClassSignature signature = methodSignature.getDeclClassSignature();
     Optional<AbstractClass> op = this.getView().getClass(signature);
     if (op.isPresent()) {
       AbstractClass klass = op.get();
@@ -102,7 +102,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
 
   @Override
   public Type getType() {
-    return this.getView().getType(methodSignature.typeSignature);
+    return this.getView().getType(methodSignature.getTypeSignature());
   }
 
   @Override

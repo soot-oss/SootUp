@@ -134,7 +134,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   public Optional<SootMethod> getBootstrapMethod() {
-    JavaClassSignature signature = bsm.declClassSignature;
+    JavaClassSignature signature = bsm.getDeclClassSignature();
     Optional<AbstractClass> op = this.getView().getClass(signature);
     if (op.isPresent()) {
       AbstractClass klass = op.get();
@@ -175,7 +175,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
-    up.literal(" \"" + methodSignature.name + "\" <" + methodSignature.getSubSignature() + ">(");
+    up.literal(" \"" + methodSignature.getName() + "\" <" + methodSignature.getSubSignature() + ">(");
     argBoxesToPrinter(up);
 
     up.literal(") ");

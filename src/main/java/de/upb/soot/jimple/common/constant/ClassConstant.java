@@ -43,7 +43,7 @@ import soot.util.StringTools;
 
 @SuppressWarnings("serial")
 public class ClassConstant extends Constant {
-  public final String value;
+  private final String value;
 
   private ClassConstant(String s) {
     this.value = s;

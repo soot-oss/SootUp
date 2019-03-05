@@ -85,7 +85,7 @@ public class MethodHandle extends Constant {
   /** */
   private static final long serialVersionUID = 76297846662243365L;
 
-  public final MethodSignature methodRef;
+  private final MethodSignature methodRef;
   private final FieldRef fieldRef;
 
   public int tag;

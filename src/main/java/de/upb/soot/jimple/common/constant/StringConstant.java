@@ -35,7 +35,7 @@ public class StringConstant extends Constant {
   /** */
   private static final long serialVersionUID = -1247456329894136483L;
 
-  public final String value;
+  private final String value;
 
   private StringConstant(String s) {
     this.value = s;
@@ -70,5 +70,9 @@ public class StringConstant extends Constant {
   @Override
   public String toString() {
     return StringTools.getQuotedStringOf(value);
+  }
+
+  public String getValue() {
+    return value;
   }
 }

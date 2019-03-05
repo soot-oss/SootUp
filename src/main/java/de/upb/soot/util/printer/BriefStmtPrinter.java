@@ -33,7 +33,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
       }
       literal(".");
     }
-    output.append(m.getSignature().name);
+    output.append(m.getSignature().getName());
   }
 
   @Override
@@ -45,7 +45,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
       }
       literal(".");
     }
-    output.append(f.getSignature().name);
+    output.append(f.getSignature().getName());
   }
 
   @Override

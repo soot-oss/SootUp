@@ -34,8 +34,7 @@ public class ModuleSignature implements ISignature {
    */
   public static final ModuleSignature UNNAMED_MODULE = new ModuleSignature("");
 
-  /** The name of the module. */
-  public final String moduleName;
+  private final String moduleName;
 
   /**
    * Construct Module Signature of a Java 9 module. Instances should only be created a {@link
@@ -66,6 +65,11 @@ public class ModuleSignature implements ISignature {
 
   @Override
   public String toString() {
+    return moduleName;
+  }
+
+  /** The name of the module. */
+  public String getModuleName() {
     return moduleName;
   }
 }

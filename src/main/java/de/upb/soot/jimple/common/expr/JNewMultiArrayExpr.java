@@ -90,14 +90,14 @@ public class JNewMultiArrayExpr implements Expr {
   public String toString() {
     StringBuilder builder = new StringBuilder();
 
-    Type t = baseType.baseType;
+    Type t = baseType.getBaseType();
     builder.append(Jimple.NEWMULTIARRAY + " (").append(t.toString()).append(")");
 
     for (ValueBox element : sizeBoxes) {
       builder.append("[").append(element.getValue().toString()).append("]");
     }
 
-    for (int i = 0; i < baseType.numDimensions - sizeBoxes.length; i++) {
+    for (int i = 0; i < baseType.getNumDimensions() - sizeBoxes.length; i++) {
       builder.append("[]");
     }
 
@@ -106,7 +106,7 @@ public class JNewMultiArrayExpr implements Expr {
 
   @Override
   public void toString(IStmtPrinter up) {
-    Type t = baseType.baseType;
+    Type t = baseType.getBaseType();
 
     up.literal(Jimple.NEWMULTIARRAY);
     up.literal(" (");
@@ -119,7 +119,7 @@ public class JNewMultiArrayExpr implements Expr {
       up.literal("]");
     }
 
-    for (int i = 0; i < baseType.numDimensions - sizeBoxes.length; i++) {
+    for (int i = 0; i < baseType.getNumDimensions() - sizeBoxes.length; i++) {
       up.literal("[]");
     }
   }

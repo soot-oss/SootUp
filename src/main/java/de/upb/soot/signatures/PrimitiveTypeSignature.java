@@ -48,8 +48,7 @@ public class PrimitiveTypeSignature extends TypeSignature {
   public static final PrimitiveTypeSignature BOOLEAN_TYPE_SIGNATURE =
       new PrimitiveTypeSignature("boolean");
 
-  /** The primitive type's name. */
-  public final String name;
+  private final String name;
 
   /**
    * Signatures of primitive types are unique and should not be created from the outside, thus the
@@ -63,6 +62,11 @@ public class PrimitiveTypeSignature extends TypeSignature {
 
   @Override
   public String toString() {
+    return name;
+  }
+
+  /** The primitive type's name. */
+  public String getName() {
     return name;
   }
 }

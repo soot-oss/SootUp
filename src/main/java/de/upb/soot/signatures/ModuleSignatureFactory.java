@@ -46,7 +46,7 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
      *
      * <p>{@link ModuleSignature#UNNAMED_MODULE}
      */
-    modules.put(ModuleSignature.UNNAMED_MODULE.moduleName, ModuleSignature.UNNAMED_MODULE);
+    modules.put(ModuleSignature.UNNAMED_MODULE.getModuleName(), ModuleSignature.UNNAMED_MODULE);
   }
 
   /**
@@ -79,7 +79,7 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
 
   @Override
   public ModulePackageSignature getPackageSignature(final String packageName) {
-    return getPackageSignature(packageName, ModuleSignature.UNNAMED_MODULE.moduleName);
+    return getPackageSignature(packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
   }
 
   /**
@@ -110,7 +110,7 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
 
   @Override
   public JavaClassSignature getClassSignature(final String className, final String packageName) {
-    return getClassSignature(className, packageName, ModuleSignature.UNNAMED_MODULE.moduleName);
+    return getClassSignature(className, packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
   }
 
   /**

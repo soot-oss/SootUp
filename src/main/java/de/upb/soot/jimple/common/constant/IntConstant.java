@@ -34,7 +34,7 @@ public class IntConstant extends ArithmeticConstant {
   /** */
   private static final long serialVersionUID = 1266232311067376706L;
 
-  public final int value;
+  private final int value;
 
   protected IntConstant(int value) {
     this.value = value;
@@ -209,5 +209,9 @@ public class IntConstant extends ArithmeticConstant {
   @Override
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseIntConstant(this);
+  }
+
+  public int getValue() {
+    return value;
   }
 }

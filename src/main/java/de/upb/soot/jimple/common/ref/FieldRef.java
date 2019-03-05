@@ -48,7 +48,7 @@ public abstract class FieldRef implements ConcreteRef {
   }
 
   public Optional<SootField> getField() {
-    Optional<AbstractClass> declClass = view.getClass(fieldSignature.declClassSignature);
+    Optional<AbstractClass> declClass = view.getClass(fieldSignature.getDeclClassSignature());
     if (declClass.isPresent()) {
       Optional<? extends IField> f = declClass.get().getField(fieldSignature);
       return f.map(c -> (SootField) c);
@@ -62,7 +62,7 @@ public abstract class FieldRef implements ConcreteRef {
 
   @Override
   public Type getType() {
-    return view.getType(fieldSignature.typeSignature);
+    return view.getType(fieldSignature.getTypeSignature());
   }
 
   @Override

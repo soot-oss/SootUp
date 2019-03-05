@@ -32,7 +32,7 @@ import java.io.Writer;
  */
 public class EscapedWriter extends FilterWriter {
   /** Convenience field containing the system's line separator. */
-  public final String lineSeparator = System.getProperty("line.separator");
+  private final String lineSeparator = System.getProperty("line.separator");
 
   private final int cr = lineSeparator.charAt(0);
   private final int lf = (lineSeparator.length() == 2) ? lineSeparator.charAt(1) : -1;

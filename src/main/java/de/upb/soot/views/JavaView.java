@@ -118,7 +118,7 @@ public class JavaView extends AbstractView {
     if (!op.isPresent()) {
       ArrayType arrayType =
           ArrayType.getInstance(
-              getRefType(arrayTypeSignature.baseType), arrayTypeSignature.dimension);
+              getRefType(arrayTypeSignature.getBaseType()), arrayTypeSignature.getDimension());
       this.arrayTypes.add(arrayType);
       return arrayType;
     }

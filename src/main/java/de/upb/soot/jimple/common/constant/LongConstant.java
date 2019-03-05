@@ -34,7 +34,7 @@ public class LongConstant extends ArithmeticConstant {
   /** */
   private static final long serialVersionUID = -3227009524415387793L;
 
-  public final long value;
+  private final long value;
 
   private LongConstant(long value) {
     this.value = value;
@@ -192,7 +192,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return LongConstant.getInstance(this.value << ((IntConstant) c).value);
+    return LongConstant.getInstance(this.value << ((IntConstant) c).getValue());
   }
 
   @Override
@@ -200,7 +200,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return LongConstant.getInstance(this.value >> ((IntConstant) c).value);
+    return LongConstant.getInstance(this.value >> ((IntConstant) c).getValue());
   }
 
   @Override
@@ -208,7 +208,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return LongConstant.getInstance(this.value >>> ((IntConstant) c).value);
+    return LongConstant.getInstance(this.value >>> ((IntConstant) c).getValue());
   }
 
   @Override
@@ -224,5 +224,9 @@ public class LongConstant extends ArithmeticConstant {
   @Override
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseLongConstant(this);
+  }
+
+  public long getValue() {
+    return value;
   }
 }

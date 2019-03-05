@@ -213,7 +213,7 @@ public class SootModuleInfo extends AbstractClass {
 
   @Override
   public String getName() {
-    return moduleSignature.className;
+    return moduleSignature.getClassName();
   }
 
   @Override

@@ -499,7 +499,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       frame.out(opr);
     } else {
       opr = out[0];
-      type = opr.<JFieldRef>value().getFieldSignature().typeSignature;
+      type = opr.<JFieldRef>value().getFieldSignature().getTypeSignature();
       if (insn.getOpcode() == GETFIELD) {
         frame.mergeIn(pop());
       }
@@ -551,7 +551,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       setUnit(insn, as);
     } else {
       opr = out[0];
-      type = opr.<JFieldRef>value().getFieldSignature().typeSignature;
+      type = opr.<JFieldRef>value().getFieldSignature().getTypeSignature();
       rvalue = pop(type);
       if (!instance) {
         /* PUTSTATIC only needs one operand on the stack, the rvalue */
@@ -1329,7 +1329,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     } else {
       opr = out[0];
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
-      List<TypeSignature> types = expr.getMethodSignature().parameterSignatures;
+      List<TypeSignature> types = expr.getMethodSignature().getParameterSignatures();
       Operand[] oprs;
       int nrArgs = types.size();
       if (expr.getMethod().get().isStatic()) {
@@ -1347,7 +1347,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
         frame.mergeIn(oprs);
         nrArgs = types.size();
       }
-      returnType = expr.getMethodSignature().typeSignature;
+      returnType = expr.getMethodSignature().getTypeSignature();
     }
     if (AsmUtil.isDWord(returnType)) {
       pushDual(opr);

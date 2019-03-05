@@ -29,8 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 /** Represents the fully qualified signature of a methodRef. */
 public class MethodSignature extends AbstractClassMemberSignature {
 
-  /** The methodRef's parameters' signatures. */
-  public final List<TypeSignature> parameterSignatures;
+  private final List<TypeSignature> parameterSignatures;
 
   /**
    * Internal: Constructs a MethodSignature. Instances should only be created by a {@link
@@ -57,15 +56,15 @@ public class MethodSignature extends AbstractClassMemberSignature {
       return false;
     }
     MethodSignature that = (MethodSignature) o;
-    return Objects.equal(name, that.name)
-        && Objects.equal(declClassSignature, that.declClassSignature)
+    return Objects.equal(getName(), that.getName())
+        && Objects.equal(getDeclClassSignature(), that.getDeclClassSignature())
         && Objects.equal(parameterSignatures, that.parameterSignatures)
-        && Objects.equal(typeSignature, that.typeSignature);
+        && Objects.equal(getTypeSignature(), that.getTypeSignature());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(name, declClassSignature, parameterSignatures);
+    return Objects.hashCode(getName(), getDeclClassSignature(), parameterSignatures);
   }
 
   /**
@@ -75,11 +74,16 @@ public class MethodSignature extends AbstractClassMemberSignature {
    */
   @Override
   public String getSubSignature() {
-    return typeSignature.toString()
+    return getTypeSignature().toString()
         + ' '
-        + name
+        + getName()
         + '('
         + StringUtils.join(parameterSignatures, ", ")
         + ')';
+  }
+
+  /** The methodRef's parameters' signatures. */
+  public List<TypeSignature> getParameterSignatures() {
+    return parameterSignatures;
   }
 }
