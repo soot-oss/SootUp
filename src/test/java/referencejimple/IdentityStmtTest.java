@@ -86,15 +86,15 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
         new SootField(
             view,
             classSignature,
-            dsm.getFieldSignature("declProperty", classSignature, IntType.INSTANCE.toString()),
-            dsm.getTypeSignature(IntType.INSTANCE.toString()));
+            dsm.getFieldSignature("declProperty", classSignature, IntType.getInstance().toString()),
+            dsm.getTypeSignature(IntType.getInstance().toString()));
     fields.add(declField);
     initField =
         new SootField(
             view,
             classSignature,
-            dsm.getFieldSignature("initProperty", classSignature, IntType.INSTANCE.toString()),
-            dsm.getTypeSignature(IntType.INSTANCE.toString()));
+            dsm.getFieldSignature("initProperty", classSignature, IntType.getInstance().toString()),
+            dsm.getTypeSignature(IntType.getInstance().toString()));
     fields.add(initField);
 
     Set<SootMethod> methods = new LinkedHashSet<>();
@@ -129,7 +129,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     MethodSignature methodSignature =
         dsm.getMethodSignature(
-            "<init>", classSignature, VoidType.INSTANCE.toString(), Arrays.asList(""));
+            "<init>", classSignature, VoidType.getInstance().toString(), Arrays.asList(""));
     AstMethod.DebuggingInformation debugInfo = null;
 
     List<Local> locals = new LinkedList<>();

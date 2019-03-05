@@ -34,9 +34,13 @@ import de.upb.soot.signatures.TypeSignature;
 @SuppressWarnings("serial")
 public class NullType extends RefLikeType {
 
-  public static final NullType INSTANCE = new NullType();
+  private static final NullType INSTANCE = new NullType();
 
   private NullType() {}
+
+  public static NullType getInstance() {
+    return INSTANCE;
+  }
 
   @Override
   public int hashCode() {

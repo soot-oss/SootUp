@@ -34,9 +34,13 @@ import de.upb.soot.signatures.TypeSignature;
 @SuppressWarnings("serial")
 public class ShortType extends PrimType {
 
-  public static final ShortType INSTANCE = new ShortType();
+  private static final ShortType INSTANCE = new ShortType();
 
   private ShortType() {}
+
+  public static ShortType getInstance() {
+    return INSTANCE;
+  }
 
   @Override
   public int hashCode() {

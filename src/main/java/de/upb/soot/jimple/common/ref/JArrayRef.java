@@ -130,10 +130,10 @@ public class JArrayRef implements ConcreteRef {
     Value base = baseBox.getValue();
     Type type = base.getType();
 
-    if (type.equals(UnknownType.INSTANCE)) {
-      return UnknownType.INSTANCE;
-    } else if (type.equals(NullType.INSTANCE)) {
-      return NullType.INSTANCE;
+    if (type.equals(UnknownType.getInstance())) {
+      return UnknownType.getInstance();
+    } else if (type.equals(NullType.getInstance())) {
+      return NullType.getInstance();
     } else {
       // use makeArrayType on non-array type references when they propagate to this point.
       // kludge, most likely not correct.

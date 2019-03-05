@@ -136,34 +136,34 @@ public class JavaView extends AbstractView {
   public @Nonnull Type getType(@Nonnull TypeSignature signature) {
     if (signature instanceof PrimitiveTypeSignature) {
       if (signature.equals(PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE)) {
-        return ByteType.INSTANCE;
+        return ByteType.getInstance();
       } else if (signature.equals(PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE)) {
-        return ShortType.INSTANCE;
+        return ShortType.getInstance();
       } else if (signature.equals(PrimitiveTypeSignature.INT_TYPE_SIGNATURE)) {
-        return IntType.INSTANCE;
+        return IntType.getInstance();
       } else if (signature.equals(PrimitiveTypeSignature.LONG_TYPE_SIGNATURE)) {
-        return LongType.INSTANCE;
+        return LongType.getInstance();
       } else if (signature.equals(PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE)) {
-        return FloatType.INSTANCE;
+        return FloatType.getInstance();
       } else if (signature.equals(PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE)) {
-        return DoubleType.INSTANCE;
+        return DoubleType.getInstance();
       } else if (signature.equals(PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE)) {
-        return BooleanType.INSTANCE;
+        return BooleanType.getInstance();
       } else if (signature.equals(PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE)) {
-        return CharType.INSTANCE;
+        return CharType.getInstance();
       } else {
         throw new RuntimeException("Unsupported PrimitiveTypeSignature: " + signature.toString());
       }
     } else if (signature instanceof VoidTypeSignature) {
-      return VoidType.INSTANCE;
+      return VoidType.getInstance();
     } else if (signature instanceof NullTypeSignature) {
-      return NullType.INSTANCE;
+      return NullType.getInstance();
     } else if (signature instanceof JavaClassSignature) {
       return getRefType(signature);
     } else if (signature instanceof ArrayTypeSignature) {
       return getArrayType((ArrayTypeSignature) signature);
     } else {
-      return UnknownType.INSTANCE;
+      return UnknownType.getInstance();
     }
   }
 }

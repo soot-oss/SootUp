@@ -43,9 +43,9 @@ public class LocalTest {
 
     JimpleComparator comparator = new IgnoreLocalNameComparator();
 
-    Local l1 = new Local("$i1", IntType.INSTANCE);
-    Local l2 = new Local("$i2", IntType.INSTANCE);
-    Local l3 = new Local("$i1", BooleanType.INSTANCE);
+    Local l1 = new Local("$i1", IntType.getInstance());
+    Local l2 = new Local("$i2", IntType.getInstance());
+    Local l3 = new Local("$i1", BooleanType.getInstance());
 
     assertTrue(l1.equivTo(l1));
     assertTrue(l1.equivTo(l1, comparator));

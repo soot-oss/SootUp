@@ -119,21 +119,21 @@ public class ClassConstant extends Constant {
       tmp = tmp.replace("/", ".");
       baseType = RefType.getInstance(tmp);
     } else if (tmp.equals("I")) {
-      baseType = IntType.INSTANCE;
+      baseType = IntType.getInstance();
     } else if (tmp.equals("B")) {
-      baseType = ByteType.INSTANCE;
+      baseType = ByteType.getInstance();
     } else if (tmp.equals("C")) {
-      baseType = CharType.INSTANCE;
+      baseType = CharType.getInstance();
     } else if (tmp.equals("D")) {
-      baseType = DoubleType.INSTANCE;
+      baseType = DoubleType.getInstance();
     } else if (tmp.equals("F")) {
-      baseType = FloatType.INSTANCE;
+      baseType = FloatType.getInstance();
     } else if (tmp.equals("L")) {
-      baseType = LongType.INSTANCE;
+      baseType = LongType.getInstance();
     } else if (tmp.equals("S")) {
-      baseType = ShortType.INSTANCE;
+      baseType = ShortType.getInstance();
     } else if (tmp.equals("Z")) {
-      baseType = BooleanType.INSTANCE;
+      baseType = BooleanType.getInstance();
     } else {
       throw new RuntimeException("Unsupported class constant: " + value);
     }

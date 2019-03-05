@@ -176,7 +176,7 @@ public class FloatConstant extends RealConstant {
 
   @Override
   public Type getType() {
-    return FloatType.INSTANCE;
+    return FloatType.getInstance();
   }
 
   @Override

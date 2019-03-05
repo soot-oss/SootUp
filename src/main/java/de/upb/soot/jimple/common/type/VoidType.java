@@ -34,9 +34,13 @@ import de.upb.soot.signatures.VoidTypeSignature;
 @SuppressWarnings("serial")
 public class VoidType extends Type {
 
-  public static final VoidType INSTANCE = new VoidType();
+  private static final VoidType INSTANCE = new VoidType();
 
   private VoidType() {}
+
+  public static VoidType getInstance() {
+    return INSTANCE;
+  }
 
   @Override
   public int hashCode() {

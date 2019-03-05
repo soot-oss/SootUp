@@ -33,9 +33,13 @@ import de.upb.soot.signatures.TypeSignature;
 @SuppressWarnings("serial")
 public class UnknownType extends Type {
 
-  public static final UnknownType INSTANCE = new UnknownType();
+  private static final UnknownType INSTANCE = new UnknownType();
 
   private UnknownType() {}
+
+  public static UnknownType getInstance() {
+    return INSTANCE;
+  }
 
   @Override
   public void accept(IVisitor v) {

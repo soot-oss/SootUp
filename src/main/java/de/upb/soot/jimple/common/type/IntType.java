@@ -34,9 +34,13 @@ import de.upb.soot.signatures.TypeSignature;
 @SuppressWarnings("serial")
 public class IntType extends PrimType {
 
-  public static final IntType INSTANCE = new IntType();
+  private static final IntType INSTANCE = new IntType();
 
   private IntType() {}
+
+  public static IntType getInstance() {
+    return INSTANCE;
+  }
 
   @Override
   public void accept(IVisitor v) {

@@ -22,11 +22,11 @@ public abstract class Type implements IAcceptor, Serializable, Numberable {
 
   /** Converts the int-like types (short, byte, boolean and char) to IntType. */
   public static Type toMachineType(Type t) {
-    if (t.equals(ShortType.INSTANCE)
-        || t.equals(ByteType.INSTANCE)
-        || t.equals(BooleanType.INSTANCE)
-        || t.equals(CharType.INSTANCE)) {
-      return IntType.INSTANCE;
+    if (t.equals(ShortType.getInstance())
+        || t.equals(ByteType.getInstance())
+        || t.equals(BooleanType.getInstance())
+        || t.equals(CharType.getInstance())) {
+      return IntType.getInstance();
     } else {
       return t;
     }

@@ -203,7 +203,7 @@ public class IntConstant extends ArithmeticConstant {
 
   @Override
   public Type getType() {
-    return IntType.INSTANCE;
+    return IntType.getInstance();
   }
 
   @Override
