@@ -110,7 +110,8 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
 
   @Override
   public JavaClassSignature getClassSignature(final String className, final String packageName) {
-    return getClassSignature(className, packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
+    return getClassSignature(
+        className, packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
   }
 
   /**

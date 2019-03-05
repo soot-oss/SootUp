@@ -244,7 +244,8 @@ public class WalaClassLoader {
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
     String className =
-        walaToSoot.convertClassNameFromSoot(signature.getDeclClassSignature().getFullyQualifiedName());
+        walaToSoot.convertClassNameFromSoot(
+            signature.getDeclClassSignature().getFullyQualifiedName());
     JavaClass walaClass =
         (JavaClass)
             classHierarchy

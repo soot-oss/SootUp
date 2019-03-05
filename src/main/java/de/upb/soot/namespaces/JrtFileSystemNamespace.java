@@ -67,15 +67,16 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   private @Nonnull Optional<ClassSource> getClassSourceInternalForModule(
       @Nonnull JavaClassSignature classSignature) {
-    Preconditions.checkArgument(classSignature.getPackageSignature() instanceof ModulePackageSignature);
+    Preconditions.checkArgument(
+        classSignature.getPackageSignature() instanceof ModulePackageSignature);
 
     ModulePackageSignature modulePackageSignature =
         (ModulePackageSignature) classSignature.getPackageSignature();
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path module =
-        theFileSystem.getPath("modules",
-            modulePackageSignature.getModuleSignature().getModuleName());
+        theFileSystem.getPath(
+            "modules", modulePackageSignature.getModuleSignature().getModuleName());
     Path foundClass = module.resolve(filepath);
 
     if (Files.isRegularFile(foundClass)) {
@@ -161,7 +162,8 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
       JavaClassSignature sig = factory.fromPath(filename);
 
       return ((ModuleSignatureFactory) factory)
-          .getClassSignature(sig.getClassName(), sig.getPackageSignature().getPackageName(), moduleDir.toString());
+          .getClassSignature(
+              sig.getClassName(), sig.getPackageSignature().getPackageName(), moduleDir.toString());
     }
 
     // if we are using the normal signature factory, than trim the module from the path

@@ -175,7 +175,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
-    up.literal(" \"" + methodSignature.getName() + "\" <" + methodSignature.getSubSignature() + ">(");
+    up.literal(
+        " \"" + methodSignature.getName() + "\" <" + methodSignature.getSubSignature() + ">(");
     argBoxesToPrinter(up);
 
     up.literal(") ");

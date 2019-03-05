@@ -72,7 +72,8 @@ public class JAssignStmtTest {
     Assert.assertTrue(lStmt.equivTo(new JAssignStmt(local, numConst1, nop)));
     Assert.assertTrue(
         lStmt.equivTo(
-            new JAssignStmt(new Local("$i0", IntType.getInstance()), IntConstant.getInstance(42), nop)));
+            new JAssignStmt(
+                new Local("$i0", IntType.getInstance()), IntConstant.getInstance(42), nop)));
 
     Assert.assertTrue(
         deepStmt.equivTo(

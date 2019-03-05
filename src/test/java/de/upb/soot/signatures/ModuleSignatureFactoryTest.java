@@ -100,8 +100,8 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
         signatureFactory.getPackageSignature("java.lang", "myModule2");
     boolean samePackage = packageSignature1 == packageSignature2;
     assertFalse(samePackage);
-    boolean sameObject = packageSignature1.getModuleSignature() == packageSignature2
-        .getModuleSignature();
+    boolean sameObject =
+        packageSignature1.getModuleSignature() == packageSignature2.getModuleSignature();
     assertFalse(sameObject);
   }
 
