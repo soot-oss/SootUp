@@ -130,20 +130,16 @@ public class JimpleConverter {
   }
 
   public soot.SootField convertSootField(de.upb.soot.core.SootField fromField) {
-    return new soot.SootField(
-        fromField.getName(),
-        convertType(fromField.getType()),
+    return new soot.SootField(fromField.getName(), convertType(fromField.getType()),
         convertModifiers(fromField.getModifiers()));
   }
 
-  public soot.SootMethod convertSootMethod(
-      SootClass toClass, de.upb.soot.core.SootMethod fromMethod) {
+  public soot.SootMethod convertSootMethod(SootClass toClass, de.upb.soot.core.SootMethod fromMethod) {
     List<soot.Type> types = new ArrayList<>();
     for (Type type : fromMethod.getParameterTypes()) {
       types.add(convertType(type));
     }
-    soot.SootMethod toMethod =
-        new SootMethod(fromMethod.getName(), types, convertType(fromMethod.getReturnType()));
+    soot.SootMethod toMethod = new SootMethod(fromMethod.getName(), types, convertType(fromMethod.getReturnType()));
     toMethod.setModifiers(convertModifiers(fromMethod.getModifiers()));
     List<soot.SootClass> exceptions = new ArrayList<>();
 
@@ -275,13 +271,8 @@ public class JimpleConverter {
     JTableSwitchStmt stmt = (JTableSwitchStmt) fromStmt;
     List<Stmt> targetList = getSwitchStmtsTargets(stmt);
     Stmt defaultTarget = getTarget(stmt.getDefaultTarget());
-    return Jimple.v()
-        .newTableSwitchStmt(
-            convertValue(stmt.getKey()),
-            stmt.getLowIndex(),
-            stmt.getHighIndex(),
-            targetList,
-            defaultTarget);
+    return Jimple.v().newTableSwitchStmt(convertValue(stmt.getKey()), stmt.getLowIndex(), stmt.getHighIndex(), targetList,
+        defaultTarget);
   }
 
   private Stmt convertLookupSwitchStmt(IStmt fromStmt) {
@@ -292,8 +283,7 @@ public class JimpleConverter {
     }
     List<Stmt> targetList = getSwitchStmtsTargets(stmt);
     Stmt defaultTarget = getTarget(stmt.getDefaultTarget());
-    return Jimple.v()
-        .newLookupSwitchStmt(convertValue(stmt.getKey()), lookupValues, targetList, defaultTarget);
+    return Jimple.v().newLookupSwitchStmt(convertValue(stmt.getKey()), lookupValues, targetList, defaultTarget);
   }
 
   private List<Stmt> getSwitchStmtsTargets(AbstractSwitchStmt fromStmt) {
@@ -353,14 +343,12 @@ public class JimpleConverter {
 
   private Stmt convertIdentityStmt(IStmt fromStmt) {
     JIdentityStmt stmt = (JIdentityStmt) fromStmt;
-    return Jimple.v()
-        .newIdentityStmt(convertValue(stmt.getLeftOp()), convertValue(stmt.getRightOp()));
+    return Jimple.v().newIdentityStmt(convertValue(stmt.getLeftOp()), convertValue(stmt.getRightOp()));
   }
 
   private Stmt convertAssignStmt(IStmt fromStmt) {
     JAssignStmt stmt = (JAssignStmt) fromStmt;
-    return soot.jimple.Jimple.v()
-        .newAssignStmt(convertValue(stmt.getLeftOp()), convertValue(stmt.getRightOp()));
+    return soot.jimple.Jimple.v().newAssignStmt(convertValue(stmt.getLeftOp()), convertValue(stmt.getRightOp()));
   }
 
   public soot.Value convertValue(de.upb.soot.jimple.basic.Value from) {
@@ -391,11 +379,8 @@ public class JimpleConverter {
       SootFieldRef field = createSootFieldRef(ref.getFieldSignature(), false);
       to = Jimple.v().newInstanceFieldRef(convertValue(ref.getBase()), field);
     } else if (from instanceof de.upb.soot.jimple.common.ref.JParameterRef) {
-      to =
-          Jimple.v()
-              .newParameterRef(
-                  convertType(from.getType()),
-                  ((de.upb.soot.jimple.common.ref.JParameterRef) from).getIndex());
+      to = Jimple.v().newParameterRef(convertType(from.getType()),
+          ((de.upb.soot.jimple.common.ref.JParameterRef) from).getIndex());
     } else if (from instanceof de.upb.soot.jimple.common.ref.JThisRef) {
       to = Jimple.v().newThisRef((RefType) convertType(from.getType()));
     } else if (from instanceof de.upb.soot.jimple.common.ref.JCaughtExceptionRef) {
@@ -413,12 +398,10 @@ public class JimpleConverter {
       de.upb.soot.jimple.common.expr.JCmpExpr expr = (de.upb.soot.jimple.common.expr.JCmpExpr) from;
       to = Jimple.v().newCmpExpr(convertValue(expr.getOp1()), convertValue(expr.getOp2()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.JCmpgExpr) {
-      de.upb.soot.jimple.common.expr.JCmpgExpr expr =
-          (de.upb.soot.jimple.common.expr.JCmpgExpr) from;
+      de.upb.soot.jimple.common.expr.JCmpgExpr expr = (de.upb.soot.jimple.common.expr.JCmpgExpr) from;
       to = Jimple.v().newCmpgExpr(convertValue(expr.getOp1()), convertValue(expr.getOp2()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.JCmplExpr) {
-      de.upb.soot.jimple.common.expr.JCmplExpr expr =
-          (de.upb.soot.jimple.common.expr.JCmplExpr) from;
+      de.upb.soot.jimple.common.expr.JCmplExpr expr = (de.upb.soot.jimple.common.expr.JCmplExpr) from;
       to = Jimple.v().newCmplExpr(convertValue(expr.getOp1()), convertValue(expr.getOp2()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.JGeExpr) {
       de.upb.soot.jimple.common.expr.JGeExpr expr = (de.upb.soot.jimple.common.expr.JGeExpr) from;
@@ -466,52 +449,42 @@ public class JimpleConverter {
       de.upb.soot.jimple.common.expr.JShrExpr expr = (de.upb.soot.jimple.common.expr.JShrExpr) from;
       to = Jimple.v().newShrExpr(convertValue(expr.getOp1()), convertValue(expr.getOp2()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.JUshrExpr) {
-      de.upb.soot.jimple.common.expr.JUshrExpr expr =
-          (de.upb.soot.jimple.common.expr.JUshrExpr) from;
+      de.upb.soot.jimple.common.expr.JUshrExpr expr = (de.upb.soot.jimple.common.expr.JUshrExpr) from;
       to = Jimple.v().newUshrExpr(convertValue(expr.getOp1()), convertValue(expr.getOp2()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.JXorExpr) {
       de.upb.soot.jimple.common.expr.JXorExpr expr = (de.upb.soot.jimple.common.expr.JXorExpr) from;
       to = Jimple.v().newXorExpr(convertValue(expr.getOp1()), convertValue(expr.getOp2()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.JCastExpr) {
-      de.upb.soot.jimple.common.expr.JCastExpr expr =
-          (de.upb.soot.jimple.common.expr.JCastExpr) from;
+      de.upb.soot.jimple.common.expr.JCastExpr expr = (de.upb.soot.jimple.common.expr.JCastExpr) from;
       to = Jimple.v().newCastExpr(convertValue(expr.getOp()), convertType(expr.getCastType()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.JInstanceOfExpr) {
-      de.upb.soot.jimple.common.expr.JInstanceOfExpr expr =
-          (de.upb.soot.jimple.common.expr.JInstanceOfExpr) from;
-      to =
-          Jimple.v()
-              .newInstanceOfExpr(convertValue(expr.getOp()), convertType(expr.getCheckType()));
+      de.upb.soot.jimple.common.expr.JInstanceOfExpr expr = (de.upb.soot.jimple.common.expr.JInstanceOfExpr) from;
+      to = Jimple.v().newInstanceOfExpr(convertValue(expr.getOp()), convertType(expr.getCheckType()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.AbstractInvokeExpr) {
-      de.upb.soot.jimple.common.expr.AbstractInvokeExpr e =
-          (de.upb.soot.jimple.common.expr.AbstractInvokeExpr) from;
+      de.upb.soot.jimple.common.expr.AbstractInvokeExpr e = (de.upb.soot.jimple.common.expr.AbstractInvokeExpr) from;
       List<soot.Value> args = new ArrayList<>();
       for (de.upb.soot.jimple.basic.Value arg : e.getArgs()) {
         args.add(convertValue(arg));
       }
       if (from instanceof de.upb.soot.jimple.common.expr.JSpecialInvokeExpr) {
-        de.upb.soot.jimple.common.expr.JSpecialInvokeExpr expr =
-            (de.upb.soot.jimple.common.expr.JSpecialInvokeExpr) from;
+        de.upb.soot.jimple.common.expr.JSpecialInvokeExpr expr = (de.upb.soot.jimple.common.expr.JSpecialInvokeExpr) from;
         SootMethodRef method = createSootMethodRef(expr.getMethodSignature(), false);
         to = Jimple.v().newSpecialInvokeExpr((Local) convertValue(expr.getBase()), method, args);
       } else if (from instanceof de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr) {
-        de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr expr =
-            (de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr) from;
+        de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr expr
+            = (de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr) from;
         SootMethodRef method = createSootMethodRef(expr.getMethodSignature(), false);
         if (method.declaringClass().isInterface()) {
-          to =
-              Jimple.v().newInterfaceInvokeExpr((Local) convertValue(expr.getBase()), method, args);
+          to = Jimple.v().newInterfaceInvokeExpr((Local) convertValue(expr.getBase()), method, args);
         } else {
           to = Jimple.v().newSpecialInvokeExpr((Local) convertValue(expr.getBase()), method, args);
         }
       } else if (from instanceof de.upb.soot.jimple.common.expr.JVirtualInvokeExpr) {
-        de.upb.soot.jimple.common.expr.JVirtualInvokeExpr expr =
-            (de.upb.soot.jimple.common.expr.JVirtualInvokeExpr) from;
+        de.upb.soot.jimple.common.expr.JVirtualInvokeExpr expr = (de.upb.soot.jimple.common.expr.JVirtualInvokeExpr) from;
         SootMethodRef method = createSootMethodRef(expr.getMethodSignature(), false);
         to = Jimple.v().newVirtualInvokeExpr((Local) convertValue(expr.getBase()), method, args);
       } else if (from instanceof de.upb.soot.jimple.common.expr.JStaticInvokeExpr) {
-        de.upb.soot.jimple.common.expr.JStaticInvokeExpr expr =
-            (de.upb.soot.jimple.common.expr.JStaticInvokeExpr) from;
+        de.upb.soot.jimple.common.expr.JStaticInvokeExpr expr = (de.upb.soot.jimple.common.expr.JStaticInvokeExpr) from;
         SootMethodRef method = createSootMethodRef(expr.getMethodSignature(), true);
         to = Jimple.v().newStaticInvokeExpr(method, args);
       } else if (from instanceof de.upb.soot.jimple.common.expr.JDynamicInvokeExpr) {
@@ -521,21 +494,17 @@ public class JimpleConverter {
       de.upb.soot.jimple.common.expr.JNewExpr expr = (de.upb.soot.jimple.common.expr.JNewExpr) from;
       to = Jimple.v().newNewExpr((RefType) convertType(expr.getType()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.JNewArrayExpr) {
-      de.upb.soot.jimple.common.expr.JNewArrayExpr expr =
-          (de.upb.soot.jimple.common.expr.JNewArrayExpr) from;
-      to =
-          Jimple.v().newNewArrayExpr(convertType(expr.getBaseType()), convertValue(expr.getSize()));
+      de.upb.soot.jimple.common.expr.JNewArrayExpr expr = (de.upb.soot.jimple.common.expr.JNewArrayExpr) from;
+      to = Jimple.v().newNewArrayExpr(convertType(expr.getBaseType()), convertValue(expr.getSize()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.JNewMultiArrayExpr) {
-      de.upb.soot.jimple.common.expr.JNewMultiArrayExpr expr =
-          (de.upb.soot.jimple.common.expr.JNewMultiArrayExpr) from;
+      de.upb.soot.jimple.common.expr.JNewMultiArrayExpr expr = (de.upb.soot.jimple.common.expr.JNewMultiArrayExpr) from;
       List<soot.Value> sizes = new ArrayList<>();
       for (de.upb.soot.jimple.basic.Value s : expr.getSizes()) {
         sizes.add(convertValue(s));
       }
       to = Jimple.v().newNewMultiArrayExpr((soot.ArrayType) convertType(expr.getBaseType()), sizes);
     } else if (from instanceof de.upb.soot.jimple.common.expr.JLengthExpr) {
-      de.upb.soot.jimple.common.expr.JLengthExpr expr =
-          (de.upb.soot.jimple.common.expr.JLengthExpr) from;
+      de.upb.soot.jimple.common.expr.JLengthExpr expr = (de.upb.soot.jimple.common.expr.JLengthExpr) from;
       to = Jimple.v().newLengthExpr(convertValue(expr.getOp()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.JNegExpr) {
       de.upb.soot.jimple.common.expr.JNegExpr expr = (de.upb.soot.jimple.common.expr.JNegExpr) from;
@@ -549,28 +518,22 @@ public class JimpleConverter {
 
   public soot.jimple.Constant convertConstant(Constant from) {
     if (from instanceof de.upb.soot.jimple.common.constant.IntConstant) {
-      de.upb.soot.jimple.common.constant.IntConstant constant =
-          (de.upb.soot.jimple.common.constant.IntConstant) from;
+      de.upb.soot.jimple.common.constant.IntConstant constant = (de.upb.soot.jimple.common.constant.IntConstant) from;
       return soot.jimple.IntConstant.v(constant.value);
     } else if (from instanceof de.upb.soot.jimple.common.constant.LongConstant) {
-      de.upb.soot.jimple.common.constant.LongConstant constant =
-          (de.upb.soot.jimple.common.constant.LongConstant) from;
+      de.upb.soot.jimple.common.constant.LongConstant constant = (de.upb.soot.jimple.common.constant.LongConstant) from;
       return soot.jimple.LongConstant.v(constant.value);
     } else if (from instanceof de.upb.soot.jimple.common.constant.DoubleConstant) {
-      de.upb.soot.jimple.common.constant.DoubleConstant constant =
-          (de.upb.soot.jimple.common.constant.DoubleConstant) from;
+      de.upb.soot.jimple.common.constant.DoubleConstant constant = (de.upb.soot.jimple.common.constant.DoubleConstant) from;
       return soot.jimple.DoubleConstant.v(constant.value);
     } else if (from instanceof de.upb.soot.jimple.common.constant.FloatConstant) {
-      de.upb.soot.jimple.common.constant.FloatConstant constant =
-          (de.upb.soot.jimple.common.constant.FloatConstant) from;
+      de.upb.soot.jimple.common.constant.FloatConstant constant = (de.upb.soot.jimple.common.constant.FloatConstant) from;
       return soot.jimple.FloatConstant.v(constant.value);
     } else if (from instanceof de.upb.soot.jimple.common.constant.StringConstant) {
-      de.upb.soot.jimple.common.constant.StringConstant constant =
-          (de.upb.soot.jimple.common.constant.StringConstant) from;
+      de.upb.soot.jimple.common.constant.StringConstant constant = (de.upb.soot.jimple.common.constant.StringConstant) from;
       return soot.jimple.StringConstant.v(constant.value);
     } else if (from instanceof de.upb.soot.jimple.common.constant.ClassConstant) {
-      de.upb.soot.jimple.common.constant.ClassConstant constant =
-          (de.upb.soot.jimple.common.constant.ClassConstant) from;
+      de.upb.soot.jimple.common.constant.ClassConstant constant = (de.upb.soot.jimple.common.constant.ClassConstant) from;
       return soot.jimple.ClassConstant.v(constant.value);
     } else if (from instanceof de.upb.soot.jimple.common.constant.NullConstant) {
       return soot.jimple.NullConstant.v();
@@ -601,8 +564,7 @@ public class JimpleConverter {
       } else if (from instanceof de.upb.soot.jimple.common.type.DoubleType) {
         return soot.DoubleType.v();
       } else if (from instanceof de.upb.soot.jimple.common.type.ArrayType) {
-        de.upb.soot.jimple.common.type.ArrayType type =
-            (de.upb.soot.jimple.common.type.ArrayType) from;
+        de.upb.soot.jimple.common.type.ArrayType type = (de.upb.soot.jimple.common.type.ArrayType) from;
         return soot.ArrayType.v(convertType(type.baseType), type.numDimensions);
       } else if (from instanceof de.upb.soot.jimple.common.type.RefType) {
         de.upb.soot.jimple.common.type.RefType type = (de.upb.soot.jimple.common.type.RefType) from;
@@ -611,8 +573,7 @@ public class JimpleConverter {
       } else if (from instanceof de.upb.soot.jimple.common.type.NullType) {
         return soot.NullType.v();
       } else if (from instanceof de.upb.soot.jimple.common.type.AnySubType) {
-        de.upb.soot.jimple.common.type.AnySubType type =
-            (de.upb.soot.jimple.common.type.AnySubType) from;
+        de.upb.soot.jimple.common.type.AnySubType type = (de.upb.soot.jimple.common.type.AnySubType) from;
         return soot.AnySubType.v((soot.RefType) convertType(type.getBase()));
       } else if (from instanceof de.upb.soot.jimple.common.type.VoidType) {
         return soot.VoidType.v();
@@ -654,13 +615,11 @@ public class JimpleConverter {
       parameterTypes.add(Scene.v().getType(typeName));
     }
     soot.Type returnType = Scene.v().getType(methodSig.typeSignature.toString());
-    return Scene.v()
-        .makeMethodRef(declaringClass, methodSig.name, parameterTypes, returnType, isStatic);
+    return Scene.v().makeMethodRef(declaringClass, methodSig.name, parameterTypes, returnType, isStatic);
   }
 
   private SootFieldRef createSootFieldRef(FieldSignature fieldSig, boolean isStatic) {
-    SootClass declaringClass =
-        SootResolver.v().makeClassRef(fieldSig.declClassSignature.getFullyQualifiedName());
+    SootClass declaringClass = SootResolver.v().makeClassRef(fieldSig.declClassSignature.getFullyQualifiedName());
     soot.Type type = Scene.v().getType(fieldSig.typeSignature.toString());
     return Scene.v().makeFieldRef(declaringClass, fieldSig.name, type, isStatic);
   }
@@ -681,16 +640,17 @@ public class JimpleConverter {
     return target;
   }
 
-  private soot.SootClass getSootClass(
-      Optional<de.upb.soot.core.SootClass> op, Optional<JavaClassSignature> sigOp) {
+  private soot.SootClass getSootClass(Optional<de.upb.soot.core.SootClass> op, Optional<JavaClassSignature> sigOp) {
     String className = sigOp.get().getFullyQualifiedName();
     if (!Scene.v().containsClass(className)) {
+      // class not in Scene, either is from source code or need to be forced to resolve
       if (op.isPresent()) {
         return convertSootClass(op.get());
-      } else {
-        return Scene.v().getSootClass(className);
+      } else { 
+        return Scene.v().forceResolve(className, SootClass.SIGNATURES);
       }
     } else {
+      // if the class is already in Scene, directly return it
       return Scene.v().getSootClass(className);
     }
   }
