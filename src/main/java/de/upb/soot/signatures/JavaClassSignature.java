@@ -32,14 +32,11 @@ import java.nio.file.Path;
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
 public class JavaClassSignature extends TypeSignature {
 
-  /** The simple class name. */
-  public final String className;
+  private final String className;
 
-  /** The package in which the class resides. */
-  public final PackageSignature packageSignature;
+  private final PackageSignature packageSignature;
 
-  /** Whether the class is an inner class * */
-  public final boolean isInnerClass;
+  private final boolean isInnerClass;
 
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
@@ -91,7 +88,7 @@ public class JavaClassSignature extends TypeSignature {
    */
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
-    if (!Strings.isNullOrEmpty(packageSignature.packageName)) {
+    if (!Strings.isNullOrEmpty(packageSignature.getPackageName())) {
       sb.append(packageSignature.toString());
       sb.append('.');
     }
@@ -124,5 +121,20 @@ public class JavaClassSignature extends TypeSignature {
 
   public boolean isModuleInfo() {
     return this.className.equals(ModuleSignatureFactory.MODULE_INFO_CLASS.className);
+  }
+
+  /** The simple class name. */
+  public String getClassName() {
+    return className;
+  }
+
+  /** The package in which the class resides. */
+  public PackageSignature getPackageSignature() {
+    return packageSignature;
+  }
+
+  /** Whether the class is an inner class * */
+  public boolean isInnerClass() {
+    return isInnerClass;
   }
 }

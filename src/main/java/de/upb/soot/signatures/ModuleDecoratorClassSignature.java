@@ -17,7 +17,7 @@ public class ModuleDecoratorClassSignature extends JavaClassSignature {
    */
   public ModuleDecoratorClassSignature(
       JavaClassSignature classSignature, ModuleSignature moduleSignature) {
-    super(classSignature.className, classSignature.packageSignature);
+    super(classSignature.getClassName(), classSignature.getPackageSignature());
     this.wrappedSignature = classSignature;
     // FIXME: use factory
     this.moduleSignature = moduleSignature;

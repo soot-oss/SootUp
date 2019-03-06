@@ -54,7 +54,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
 
     // Check that the method's class is resolved enough
     // CheckLevel returns without doing anything because we can be not 'done' resolving
-    Optional<AbstractClass> declaringClass = view.getClass(method.declClassSignature);
+    Optional<AbstractClass> declaringClass = view.getClass(method.getDeclClassSignature());
     if (declaringClass.isPresent()) {
       SootClass cls = (SootClass) declaringClass.get();
       cls.checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);

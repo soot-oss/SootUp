@@ -37,7 +37,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   @Override
   public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature signature) {
-    if (signature.packageSignature instanceof ModulePackageSignature) {
+    if (signature.getPackageSignature() instanceof ModulePackageSignature) {
       return this.getClassSourceInternalForModule(signature);
     }
     return this.getClassSourceInternalForClassPath(signature);
@@ -67,14 +67,16 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   private @Nonnull Optional<ClassSource> getClassSourceInternalForModule(
       @Nonnull JavaClassSignature classSignature) {
-    Preconditions.checkArgument(classSignature.packageSignature instanceof ModulePackageSignature);
+    Preconditions.checkArgument(
+        classSignature.getPackageSignature() instanceof ModulePackageSignature);
 
     ModulePackageSignature modulePackageSignature =
-        (ModulePackageSignature) classSignature.packageSignature;
+        (ModulePackageSignature) classSignature.getPackageSignature();
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path module =
-        theFileSystem.getPath("modules", modulePackageSignature.moduleSignature.moduleName);
+        theFileSystem.getPath(
+            "modules", modulePackageSignature.getModuleSignature().getModuleName());
     Path foundClass = module.resolve(filepath);
 
     if (Files.isRegularFile(foundClass)) {
@@ -160,7 +162,8 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
       JavaClassSignature sig = factory.fromPath(filename);
 
       return ((ModuleSignatureFactory) factory)
-          .getClassSignature(sig.className, sig.packageSignature.packageName, moduleDir.toString());
+          .getClassSignature(
+              sig.getClassName(), sig.getPackageSignature().getPackageName(), moduleDir.toString());
     }
 
     // if we are using the normal signature factory, than trim the module from the path

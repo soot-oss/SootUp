@@ -127,10 +127,10 @@ public class SootMethod extends SootClassMember implements IMethod {
       EnumSet<Modifier> modifiers,
       List<JavaClassSignature> thrownExceptions,
       DebuggingInformation debugInfo) {
-    super(view, declaringClass, methodSignature, methodSignature.typeSignature, modifiers);
+    super(view, declaringClass, methodSignature, methodSignature.getTypeSignature(), modifiers);
     Body myActiveBody = null;
     this.methodSource = source;
-    this.parameterTypes = Collections.unmodifiableList(methodSignature.parameterSignatures);
+    this.parameterTypes = Collections.unmodifiableList(methodSignature.getParameterSignatures());
     this.exceptions = Collections.unmodifiableList(thrownExceptions);
     this.debugInfo = debugInfo;
     try {
@@ -255,12 +255,12 @@ public class SootMethod extends SootClassMember implements IMethod {
    *     treated as constructors in this methodRef.
    */
   public boolean isConstructor() {
-    return this.signature.name.equals(constructorName);
+    return this.signature.getName().equals(constructorName);
   }
 
   /** @return yes, if this function is a static initializer. */
   public boolean isStaticInitializer() {
-    return this.signature.name.equals(staticInitializerName);
+    return this.signature.getName().equals(staticInitializerName);
   }
 
   /** We rely on the JDK class recognition to decide if a methodRef is JDK methodRef. */
@@ -298,7 +298,7 @@ public class SootMethod extends SootClassMember implements IMethod {
     // return type + name
 
     builder.append(this.getReturnType().toQuotedString()).append(" ");
-    builder.append(this.getView().quotedNameOf(this.getSignature().name));
+    builder.append(this.getView().quotedNameOf(this.getSignature().getName()));
 
     builder.append("(");
 

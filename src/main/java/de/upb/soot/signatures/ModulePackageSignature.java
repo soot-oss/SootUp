@@ -27,8 +27,7 @@ import com.google.common.base.Objects;
 /** Represents the signature of a Java 9 package, referencing its module. */
 public class ModulePackageSignature extends PackageSignature {
 
-  /** The module in which this package resides. */
-  public final ModuleSignature moduleSignature;
+  private final ModuleSignature moduleSignature;
 
   /**
    * Internal: Constructs a Package Signature for Java 9 Packages. Instances should only be created
@@ -56,11 +55,16 @@ public class ModulePackageSignature extends PackageSignature {
     }
     ModulePackageSignature that = (ModulePackageSignature) o;
     return Objects.equal(moduleSignature, that.moduleSignature)
-        && Objects.equal(packageName, that.packageName);
+        && Objects.equal(getPackageName(), that.getPackageName());
   }
 
   @Override
   public int hashCode() {
     return Objects.hashCode(super.hashCode(), moduleSignature);
+  }
+
+  /** The module in which this package resides. */
+  public ModuleSignature getModuleSignature() {
+    return moduleSignature;
   }
 }

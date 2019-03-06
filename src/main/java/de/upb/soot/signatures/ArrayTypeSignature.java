@@ -4,9 +4,9 @@ import com.google.common.base.Objects;
 
 public class ArrayTypeSignature extends TypeSignature {
 
-  public final TypeSignature baseType;
+  private final TypeSignature baseType;
 
-  public final int dimension;
+  private final int dimension;
 
   protected ArrayTypeSignature(TypeSignature baseType, int dimension) {
     this.baseType = baseType;
@@ -40,5 +40,13 @@ public class ArrayTypeSignature extends TypeSignature {
   @Override
   public int hashCode() {
     return Objects.hashCode(baseType, dimension);
+  }
+
+  public TypeSignature getBaseType() {
+    return baseType;
+  }
+
+  public int getDimension() {
+    return dimension;
   }
 }

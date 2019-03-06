@@ -45,11 +45,11 @@ public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
   }
 
   public static boolean isIntLikeType(Type t) {
-    return t.equals(IntType.INSTANCE)
-        || t.equals(ByteType.INSTANCE)
-        || t.equals(ShortType.INSTANCE)
-        || t.equals(CharType.INSTANCE)
-        || t.equals(BooleanType.INSTANCE);
+    return t.equals(IntType.getInstance())
+        || t.equals(ByteType.getInstance())
+        || t.equals(ShortType.getInstance())
+        || t.equals(CharType.getInstance())
+        || t.equals(BooleanType.getInstance());
   }
 
   @Override
@@ -58,11 +58,12 @@ public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
     Value op2 = op2Box.getValue();
 
     if (isIntLikeType(op1.getType()) && isIntLikeType(op2.getType())) {
-      return IntType.INSTANCE;
-    } else if (op1.getType().equals(LongType.INSTANCE) && op2.getType().equals(LongType.INSTANCE)) {
-      return LongType.INSTANCE;
+      return IntType.getInstance();
+    } else if (op1.getType().equals(LongType.getInstance())
+        && op2.getType().equals(LongType.getInstance())) {
+      return LongType.getInstance();
     } else {
-      return UnknownType.INSTANCE;
+      return UnknownType.getInstance();
     }
   }
 }

@@ -36,7 +36,7 @@ public class DoubleConstant extends RealConstant {
   /** */
   private static final long serialVersionUID = -6608501059585159445L;
 
-  public final double value;
+  private final double value;
 
   private DoubleConstant(double value) {
     this.value = value;
@@ -178,7 +178,7 @@ public class DoubleConstant extends RealConstant {
 
   @Override
   public Type getType() {
-    return DoubleType.INSTANCE;
+    return DoubleType.getInstance();
   }
 
   @Override
@@ -196,5 +196,9 @@ public class DoubleConstant extends RealConstant {
     if (!(constant instanceof DoubleConstant)) {
       throw new IllegalArgumentException("DoubleConstant expected");
     }
+  }
+
+  public double getValue() {
+    return value;
   }
 }

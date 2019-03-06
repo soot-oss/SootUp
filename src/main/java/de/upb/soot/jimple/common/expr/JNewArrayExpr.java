@@ -133,7 +133,7 @@ public class JNewArrayExpr implements Expr {
   public Type getType() {
     if (baseType instanceof ArrayType) {
       return ArrayType.getInstance(
-          ((ArrayType) baseType).baseType, ((ArrayType) baseType).numDimensions + 1);
+          ((ArrayType) baseType).getBaseType(), ((ArrayType) baseType).getNumDimensions() + 1);
     } else {
       return ArrayType.getInstance(baseType, 1);
     }

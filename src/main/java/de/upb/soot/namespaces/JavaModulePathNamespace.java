@@ -83,7 +83,9 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature signature) {
 
     String modulename =
-        ((ModulePackageSignature) signature.packageSignature).moduleSignature.moduleName;
+        ((ModulePackageSignature) signature.getPackageSignature())
+            .getModuleSignature()
+            .getModuleName();
     // lookup the ns for the class provider from the cache and use him...
     AbstractNamespace ns = moduleFinder.discoverModule(modulename);
 

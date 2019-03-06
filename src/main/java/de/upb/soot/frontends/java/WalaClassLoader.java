@@ -244,7 +244,8 @@ public class WalaClassLoader {
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
     String className =
-        walaToSoot.convertClassNameFromSoot(signature.declClassSignature.getFullyQualifiedName());
+        walaToSoot.convertClassNameFromSoot(
+            signature.getDeclClassSignature().getFullyQualifiedName());
     JavaClass walaClass =
         (JavaClass)
             classHierarchy
@@ -258,7 +259,7 @@ public class WalaClassLoader {
       while (it.hasNext()) {
         JavaClass c = (JavaClass) it.next();
         String cname = walaToSoot.convertClassNameFromWala(c.getName().toString());
-        if (cname.equals(signature.declClassSignature.getFullyQualifiedName())) {
+        if (cname.equals(signature.getDeclClassSignature().getFullyQualifiedName())) {
           walaClass = c;
         }
       }
@@ -268,13 +269,13 @@ public class WalaClassLoader {
     }
 
     for (IMethod walaMethod : walaClass.getAllMethods()) {
-      TypeSignature ret = signature.typeSignature;
+      TypeSignature ret = signature.getTypeSignature();
       Type retType = walaToSoot.convertType(walaMethod.getReturnType());
-      if (walaMethod.getName().toString().equals(signature.name)) {
+      if (walaMethod.getName().toString().equals(signature.getName())) {
         if (retType.toString().equals(ret.toString())) {
           // compare parameter types
           boolean paraMatch = true;
-          List<TypeSignature> paras = signature.parameterSignatures;
+          List<TypeSignature> paras = signature.getParameterSignatures();
           int numParas = walaMethod.getNumberOfParameters();
           if (walaMethod.isStatic()) {
             if (paras.size() != numParas) {
@@ -303,7 +304,7 @@ public class WalaClassLoader {
           }
           if (paraMatch) {
             SootMethod method =
-                walaToSoot.convertMethod(signature.declClassSignature, (AstMethod) walaMethod);
+                walaToSoot.convertMethod(signature.getDeclClassSignature(), (AstMethod) walaMethod);
             return Optional.ofNullable(method);
           }
         }

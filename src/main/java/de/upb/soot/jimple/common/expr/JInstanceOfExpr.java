@@ -107,7 +107,7 @@ public class JInstanceOfExpr implements Expr {
 
   @Override
   public Type getType() {
-    return BooleanType.INSTANCE;
+    return BooleanType.getInstance();
   }
 
   public Type getCheckType() {

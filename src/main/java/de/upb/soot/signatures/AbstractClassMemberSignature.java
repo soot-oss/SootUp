@@ -10,11 +10,10 @@ import de.upb.soot.core.SootClassMember;
  */
 public abstract class AbstractClassMemberSignature implements ISignature {
 
-  /** The signature of the declaring class. */
-  public final JavaClassSignature declClassSignature;
+  private final JavaClassSignature declClassSignature;
 
-  public final TypeSignature typeSignature;
-  public final String name;
+  private final TypeSignature typeSignature;
+  private final String name;
 
   public AbstractClassMemberSignature(
       String name, JavaClassSignature klass, TypeSignature returnType) {
@@ -47,5 +46,18 @@ public abstract class AbstractClassMemberSignature implements ISignature {
   @Override
   public String toString() {
     return "<" + declClassSignature.toString() + ": " + getSubSignature() + '>';
+  }
+
+  /** The signature of the declaring class. */
+  public JavaClassSignature getDeclClassSignature() {
+    return declClassSignature;
+  }
+
+  public TypeSignature getTypeSignature() {
+    return typeSignature;
+  }
+
+  public String getName() {
+    return name;
   }
 }

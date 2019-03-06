@@ -133,6 +133,6 @@ public abstract class SootClassMember extends AbstractViewResident implements Se
   }
 
   public String getName() {
-    return this.signature.name;
+    return this.signature.getName();
   }
 }

@@ -61,8 +61,8 @@ public class JAssignStmtTest {
     Value numConst1 = IntConstant.getInstance(42);
     Value numConst2 = IntConstant.getInstance(33102);
 
-    Local local = new Local("$i0", IntType.INSTANCE);
-    Local field = new Local("i2", IntType.INSTANCE);
+    Local local = new Local("$i0", IntType.getInstance());
+    Local field = new Local("i2", IntType.getInstance());
 
     IStmt lStmt = new JAssignStmt(local, numConst1, nop);
     IStmt fStmt = new JAssignStmt(field, numConst1, nop);
@@ -72,12 +72,13 @@ public class JAssignStmtTest {
     Assert.assertTrue(lStmt.equivTo(new JAssignStmt(local, numConst1, nop)));
     Assert.assertTrue(
         lStmt.equivTo(
-            new JAssignStmt(new Local("$i0", IntType.INSTANCE), IntConstant.getInstance(42), nop)));
+            new JAssignStmt(
+                new Local("$i0", IntType.getInstance()), IntConstant.getInstance(42), nop)));
 
     Assert.assertTrue(
         deepStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", IntType.INSTANCE), new JAddExpr(numConst1, numConst2), nop)));
+                new Local("$i0", IntType.getInstance()), new JAddExpr(numConst1, numConst2), nop)));
 
     // equivTo: switched operands
     Assert.assertFalse(lStmt.equivTo(new JAssignStmt(local, numConst2, nop)));
@@ -89,13 +90,13 @@ public class JAssignStmtTest {
     Assert.assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i100differentname", IntType.INSTANCE),
+                new Local("$i100differentname", IntType.getInstance()),
                 IntConstant.getInstance(42),
                 nop)));
     Assert.assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", LongType.INSTANCE), LongConstant.getInstance(42), nop)));
+                new Local("$i0", LongType.getInstance()), LongConstant.getInstance(42), nop)));
 
     // equivTo: different depth
     Assert.assertFalse(

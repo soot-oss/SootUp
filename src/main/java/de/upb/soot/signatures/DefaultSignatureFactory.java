@@ -22,7 +22,8 @@ public class DefaultSignatureFactory implements SignatureFactory {
 
   public DefaultSignatureFactory() {
     /* Represents the default package. */
-    packages.put(PackageSignature.DEFAULT_PACKAGE.packageName, PackageSignature.DEFAULT_PACKAGE);
+    packages.put(
+        PackageSignature.DEFAULT_PACKAGE.getPackageName(), PackageSignature.DEFAULT_PACKAGE);
   }
 
   /**

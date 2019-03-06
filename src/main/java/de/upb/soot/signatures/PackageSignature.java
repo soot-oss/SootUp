@@ -34,8 +34,7 @@ public class PackageSignature {
   /** Represents the default package. */
   public static final PackageSignature DEFAULT_PACKAGE = new PackageSignature("");
 
-  /** The name of the package. */
-  public final String packageName;
+  private final String packageName;
 
   /**
    * Internal: Constructs a Package Signature of a Java package. Instances should only be created by
@@ -66,6 +65,11 @@ public class PackageSignature {
 
   @Override
   public String toString() {
+    return packageName;
+  }
+
+  /** The name of the package. */
+  public String getPackageName() {
     return packageName;
   }
 }
