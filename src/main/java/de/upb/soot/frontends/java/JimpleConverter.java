@@ -551,27 +551,27 @@ public class JimpleConverter {
     if (from instanceof de.upb.soot.jimple.common.constant.IntConstant) {
       de.upb.soot.jimple.common.constant.IntConstant constant =
           (de.upb.soot.jimple.common.constant.IntConstant) from;
-      return soot.jimple.IntConstant.v(constant.value);
+      return soot.jimple.IntConstant.v(constant.getValue());
     } else if (from instanceof de.upb.soot.jimple.common.constant.LongConstant) {
       de.upb.soot.jimple.common.constant.LongConstant constant =
           (de.upb.soot.jimple.common.constant.LongConstant) from;
-      return soot.jimple.LongConstant.v(constant.value);
+      return soot.jimple.LongConstant.v(constant.getValue());
     } else if (from instanceof de.upb.soot.jimple.common.constant.DoubleConstant) {
       de.upb.soot.jimple.common.constant.DoubleConstant constant =
           (de.upb.soot.jimple.common.constant.DoubleConstant) from;
-      return soot.jimple.DoubleConstant.v(constant.value);
+      return soot.jimple.DoubleConstant.v(constant.getValue());
     } else if (from instanceof de.upb.soot.jimple.common.constant.FloatConstant) {
       de.upb.soot.jimple.common.constant.FloatConstant constant =
           (de.upb.soot.jimple.common.constant.FloatConstant) from;
-      return soot.jimple.FloatConstant.v(constant.value);
+      return soot.jimple.FloatConstant.v(constant.getValue());
     } else if (from instanceof de.upb.soot.jimple.common.constant.StringConstant) {
       de.upb.soot.jimple.common.constant.StringConstant constant =
           (de.upb.soot.jimple.common.constant.StringConstant) from;
-      return soot.jimple.StringConstant.v(constant.value);
+      return soot.jimple.StringConstant.v(constant.getValue());
     } else if (from instanceof de.upb.soot.jimple.common.constant.ClassConstant) {
       de.upb.soot.jimple.common.constant.ClassConstant constant =
           (de.upb.soot.jimple.common.constant.ClassConstant) from;
-      return soot.jimple.ClassConstant.v(constant.value);
+      return soot.jimple.ClassConstant.v(constant.getValue());
     } else if (from instanceof de.upb.soot.jimple.common.constant.NullConstant) {
       return soot.jimple.NullConstant.v();
     } else if (from instanceof de.upb.soot.jimple.common.constant.MethodHandle) {
@@ -603,7 +603,7 @@ public class JimpleConverter {
       } else if (from instanceof de.upb.soot.jimple.common.type.ArrayType) {
         de.upb.soot.jimple.common.type.ArrayType type =
             (de.upb.soot.jimple.common.type.ArrayType) from;
-        return soot.ArrayType.v(convertType(type.baseType), type.numDimensions);
+        return soot.ArrayType.v(convertType(type.getBaseType()), type.getNumDimensions());
       } else if (from instanceof de.upb.soot.jimple.common.type.RefType) {
         de.upb.soot.jimple.common.type.RefType type = (de.upb.soot.jimple.common.type.RefType) from;
         String className = type.getTypeSignature().toString();
@@ -632,7 +632,7 @@ public class JimpleConverter {
   }
 
   private SootMethodRef createSootMethodRef(MethodSignature methodSig, boolean isStatic) {
-    String className = methodSig.declClassSignature.getFullyQualifiedName();
+    String className = methodSig.getDeclClassSignature().getFullyQualifiedName();
     SootClass declaringClass = null;
     if (!Scene.v().containsClass(className)) {
       if (fromClasses.stream().anyMatch(c -> c.getName().equals(className))) {
@@ -646,7 +646,7 @@ public class JimpleConverter {
     }
     declaringClass = Scene.v().getSootClass(className);
     List<soot.Type> parameterTypes = new ArrayList<>();
-    for (de.upb.soot.signatures.TypeSignature typeSig : methodSig.parameterSignatures) {
+    for (de.upb.soot.signatures.TypeSignature typeSig : methodSig.getParameterSignatures()) {
       String typeName = typeSig.toString();
       if (Scene.v().getTypeUnsafe(typeName) == null) { // check if type is in scene
         if (!Scene.v().containsType(typeName)) {
@@ -655,7 +655,7 @@ public class JimpleConverter {
       }
       parameterTypes.add(Scene.v().getType(typeName));
     }
-    String returnTypeName = methodSig.typeSignature.toString();
+    String returnTypeName = methodSig.getTypeSignature().toString();
     if (Scene.v().getTypeUnsafe(returnTypeName) == null) // check if type is in scene
     {
       if (!Scene.v().containsType(returnTypeName)) {
@@ -665,14 +665,14 @@ public class JimpleConverter {
 
     soot.Type returnType = Scene.v().getType(returnTypeName);
     return Scene.v()
-        .makeMethodRef(declaringClass, methodSig.name, parameterTypes, returnType, isStatic);
+        .makeMethodRef(declaringClass, methodSig.getName(), parameterTypes, returnType, isStatic);
   }
 
   private SootFieldRef createSootFieldRef(FieldSignature fieldSig, boolean isStatic) {
     SootClass declaringClass =
-        SootResolver.v().makeClassRef(fieldSig.declClassSignature.getFullyQualifiedName());
-    soot.Type type = Scene.v().getType(fieldSig.typeSignature.toString());
-    return Scene.v().makeFieldRef(declaringClass, fieldSig.name, type, isStatic);
+        SootResolver.v().makeClassRef(fieldSig.getDeclClassSignature().getFullyQualifiedName());
+    soot.Type type = Scene.v().getType(fieldSig.getTypeSignature().toString());
+    return Scene.v().makeFieldRef(declaringClass, fieldSig.getName(), type, isStatic);
   }
 
   private Stmt getTarget(IStmt key) {

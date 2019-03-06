@@ -34,9 +34,13 @@ import de.upb.soot.signatures.TypeSignature;
 @SuppressWarnings("serial")
 public class FloatType extends PrimType {
 
-  public static final FloatType INSTANCE = new FloatType();
+  private static final FloatType INSTANCE = new FloatType();
 
   private FloatType() {}
+
+  public static FloatType getInstance() {
+    return INSTANCE;
+  }
 
   @Override
   public boolean equals(Object t) {

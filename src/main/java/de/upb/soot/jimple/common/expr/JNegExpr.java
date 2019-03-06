@@ -88,20 +88,20 @@ public class JNegExpr extends AbstractUnopExpr {
   public Type getType() {
     Value op = opBox.getValue();
 
-    if (op.getType().equals(IntType.INSTANCE)
-        || op.getType().equals(ByteType.INSTANCE)
-        || op.getType().equals(ShortType.INSTANCE)
-        || op.getType().equals(BooleanType.INSTANCE)
-        || op.getType().equals(CharType.INSTANCE)) {
-      return IntType.INSTANCE;
-    } else if (op.getType().equals(LongType.INSTANCE)) {
-      return LongType.INSTANCE;
-    } else if (op.getType().equals(DoubleType.INSTANCE)) {
-      return DoubleType.INSTANCE;
-    } else if (op.getType().equals(FloatType.INSTANCE)) {
-      return FloatType.INSTANCE;
+    if (op.getType().equals(IntType.getInstance())
+        || op.getType().equals(ByteType.getInstance())
+        || op.getType().equals(ShortType.getInstance())
+        || op.getType().equals(BooleanType.getInstance())
+        || op.getType().equals(CharType.getInstance())) {
+      return IntType.getInstance();
+    } else if (op.getType().equals(LongType.getInstance())) {
+      return LongType.getInstance();
+    } else if (op.getType().equals(DoubleType.getInstance())) {
+      return DoubleType.getInstance();
+    } else if (op.getType().equals(FloatType.getInstance())) {
+      return FloatType.getInstance();
     } else {
-      return UnknownType.INSTANCE;
+      return UnknownType.getInstance();
     }
   }
 

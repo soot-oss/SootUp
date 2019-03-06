@@ -132,10 +132,10 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   public JAssignStmt(Value variable, Value rvalue, PositionInfo positionInfo) {
     this(new LinkedVariableBox(variable), new LinkedRValueBox(rvalue), positionInfo);
 
-    ((LinkedVariableBox) leftBox).setOtherBox(rightBox);
-    ((LinkedRValueBox) rightBox).setOtherBox(leftBox);
+    ((LinkedVariableBox) getLeftBox()).setOtherBox(getRightBox());
+    ((LinkedRValueBox) getRightBox()).setOtherBox(getLeftBox());
 
-    if (!leftBox.canContainValue(variable) || !rightBox.canContainValue(rvalue)) {
+    if (!getLeftBox().canContainValue(variable) || !getRightBox().canContainValue(rvalue)) {
       throw new RuntimeException(
           "Illegal assignment statement.  Make sure that either left side or right hand side has a local or constant.");
     }
@@ -172,7 +172,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
     }
 
-    return (AbstractInvokeExpr) rightBox.getValue();
+    return (AbstractInvokeExpr) getRightBox().getValue();
   }
 
   /*
@@ -186,7 +186,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
     }
 
-    return rightBox;
+    return getRightBox();
   }
 
   /*
@@ -211,10 +211,10 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
     }
 
-    if (leftBox.getValue() instanceof JArrayRef) {
-      return (JArrayRef) leftBox.getValue();
+    if (getLeftBox().getValue() instanceof JArrayRef) {
+      return (JArrayRef) getLeftBox().getValue();
     } else {
-      return (JArrayRef) rightBox.getValue();
+      return (JArrayRef) getRightBox().getValue();
     }
   }
 
@@ -229,10 +229,10 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getArrayRefBox() called with no ArrayRef present!");
     }
 
-    if (leftBox.getValue() instanceof JArrayRef) {
-      return leftBox;
+    if (getLeftBox().getValue() instanceof JArrayRef) {
+      return getLeftBox();
     } else {
-      return rightBox;
+      return getRightBox();
     }
   }
 
@@ -257,10 +257,10 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
     }
 
-    if (leftBox.getValue() instanceof JFieldRef) {
-      return (JFieldRef) leftBox.getValue();
+    if (getLeftBox().getValue() instanceof JFieldRef) {
+      return (JFieldRef) getLeftBox().getValue();
     } else {
-      return (JFieldRef) rightBox.getValue();
+      return (JFieldRef) getRightBox().getValue();
     }
   }
 
@@ -275,10 +275,10 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
     }
 
-    if (leftBox.getValue() instanceof JFieldRef) {
-      return leftBox;
+    if (getLeftBox().getValue() instanceof JFieldRef) {
+      return getLeftBox();
     } else {
-      return rightBox;
+      return getRightBox();
     }
   }
 
@@ -290,7 +290,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   @Override
   public List<IStmtBox> getStmtBoxes() {
     // handle possible PhiExpr's
-    Value rvalue = rightBox.getValue();
+    Value rvalue = getRightBox().getValue();
     if (rvalue instanceof StmtBoxOwner) {
       return ((StmtBoxOwner) rvalue).getStmtBoxes();
     }
@@ -305,7 +305,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    */
   @Override
   public String toString() {
-    return leftBox.getValue().toString() + " = " + rightBox.getValue().toString();
+    return getLeftBox().getValue().toString() + " = " + getRightBox().getValue().toString();
   }
 
   /*
@@ -315,9 +315,9 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    */
   @Override
   public void toString(IStmtPrinter up) {
-    leftBox.toString(up);
+    getLeftBox().toString(up);
     up.literal(" = ");
-    rightBox.toString(up);
+    getRightBox().toString(up);
   }
 
   /*
@@ -373,6 +373,6 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   @Override
   public int equivHashCode() {
-    return leftBox.getValue().equivHashCode() + 31 * rightBox.getValue().equivHashCode();
+    return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
   }
 }

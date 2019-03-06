@@ -194,7 +194,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   }
 
   public int getLookupValue(int index) {
-    return lookupValues.get(index).value;
+    return lookupValues.get(index).getValue();
   }
 
   public List<IntConstant> getLookupValues() {

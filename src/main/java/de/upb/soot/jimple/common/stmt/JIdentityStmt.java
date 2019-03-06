@@ -57,22 +57,22 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
 
   @Override
   public String toString() {
-    return leftBox.getValue().toString() + " := " + rightBox.getValue().toString();
+    return getLeftBox().getValue().toString() + " := " + getRightBox().getValue().toString();
   }
 
   @Override
   public void toString(IStmtPrinter up) {
-    leftBox.toString(up);
+    getLeftBox().toString(up);
     up.literal(" := ");
-    rightBox.toString(up);
+    getRightBox().toString(up);
   }
 
   public void setLeftOp(Value local) {
-    leftBox.setValue(local);
+    getLeftBox().setValue(local);
   }
 
   public void setRightOp(Value identityRef) {
-    rightBox.setValue(identityRef);
+    getRightBox().setValue(identityRef);
   }
 
   @Override
@@ -81,7 +81,7 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   }
 
   public Type getType() {
-    return leftBox.getValue().getType();
+    return getLeftBox().getValue().getType();
   }
 
   @Override
@@ -96,6 +96,6 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
 
   @Override
   public int equivHashCode() {
-    return leftBox.getValue().equivHashCode() + 31 * rightBox.getValue().equivHashCode();
+    return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
   }
 }

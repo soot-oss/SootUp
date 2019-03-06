@@ -319,7 +319,7 @@ public class SootClass extends AbstractClass implements Serializable {
           "This operation requires resolving level "
               + level
               + " but "
-              + classSignature.className
+              + classSignature.getClassName()
               + " is at resolving level "
               + currentLevel
               + hint);
@@ -390,7 +390,7 @@ public class SootClass extends AbstractClass implements Serializable {
     SootField foundField = null;
     for (IField f : fields) {
       SootField field = (SootField) f;
-      if (field.getSignature().name.equals(name)) {
+      if (field.getSignature().getName().equals(name)) {
         if (foundField == null) {
           foundField = field;
         } else {
@@ -681,7 +681,7 @@ public class SootClass extends AbstractClass implements Serializable {
           "^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");
 
   public boolean isJavaLibraryClass() {
-    return libraryClassPattern.matcher(classSignature.className).find();
+    return libraryClassPattern.matcher(classSignature.getClassName()).find();
   }
 
   /** Returns true if this class is a phantom class. */

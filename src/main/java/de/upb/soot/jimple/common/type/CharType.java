@@ -34,9 +34,13 @@ import de.upb.soot.signatures.TypeSignature;
 @SuppressWarnings("serial")
 public class CharType extends PrimType {
 
-  public static final CharType INSTANCE = new CharType();
+  private static final CharType INSTANCE = new CharType();
 
   private CharType() {}
+
+  public static CharType getInstance() {
+    return INSTANCE;
+  }
 
   @Override
   public boolean equals(Object t) {

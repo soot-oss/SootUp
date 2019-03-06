@@ -42,9 +42,9 @@ public class JEnterMonitorStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    Local sandman = new Local("sandman", IntType.INSTANCE);
-    Local night = new Local("night", BooleanType.INSTANCE);
-    Local light = new Local("light", BooleanType.INSTANCE);
+    Local sandman = new Local("sandman", IntType.getInstance());
+    Local night = new Local("night", BooleanType.getInstance());
+    Local light = new Local("light", BooleanType.getInstance());
 
     IStmt stmt = new JEnterMonitorStmt(sandman, nop);
     IStmt nightStmt = new JEnterMonitorStmt(night, nop);

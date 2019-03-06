@@ -57,25 +57,25 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
     Value op2 = op2Box.getValue();
     Type op1t = op1.getType();
     Type op2t = op2.getType();
-    if ((op1t.equals(IntType.INSTANCE)
-            || op1t.equals(ByteType.INSTANCE)
-            || op1t.equals(ShortType.INSTANCE)
-            || op1t.equals(CharType.INSTANCE)
-            || op1t.equals(BooleanType.INSTANCE))
-        && (op2t.equals(IntType.INSTANCE)
-            || op2t.equals(ByteType.INSTANCE)
-            || op2t.equals(ShortType.INSTANCE)
-            || op2t.equals(CharType.INSTANCE)
-            || op2t.equals(BooleanType.INSTANCE))) {
-      return IntType.INSTANCE;
-    } else if (op1t.equals(LongType.INSTANCE) || op2t.equals(LongType.INSTANCE)) {
-      return LongType.INSTANCE;
-    } else if (op1t.equals(DoubleType.INSTANCE) || op2t.equals(DoubleType.INSTANCE)) {
-      return DoubleType.INSTANCE;
-    } else if (op1t.equals(FloatType.INSTANCE) || op2t.equals(FloatType.INSTANCE)) {
-      return FloatType.INSTANCE;
+    if ((op1t.equals(IntType.getInstance())
+            || op1t.equals(ByteType.getInstance())
+            || op1t.equals(ShortType.getInstance())
+            || op1t.equals(CharType.getInstance())
+            || op1t.equals(BooleanType.getInstance()))
+        && (op2t.equals(IntType.getInstance())
+            || op2t.equals(ByteType.getInstance())
+            || op2t.equals(ShortType.getInstance())
+            || op2t.equals(CharType.getInstance())
+            || op2t.equals(BooleanType.getInstance()))) {
+      return IntType.getInstance();
+    } else if (op1t.equals(LongType.getInstance()) || op2t.equals(LongType.getInstance())) {
+      return LongType.getInstance();
+    } else if (op1t.equals(DoubleType.getInstance()) || op2t.equals(DoubleType.getInstance())) {
+      return DoubleType.getInstance();
+    } else if (op1t.equals(FloatType.getInstance()) || op2t.equals(FloatType.getInstance())) {
+      return FloatType.getInstance();
     } else {
-      return UnknownType.INSTANCE;
+      return UnknownType.getInstance();
     }
   }
 }

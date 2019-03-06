@@ -46,8 +46,8 @@ public class JNopStmtTest {
     Assert.assertFalse(
         nop.equivTo(
             new JIdentityStmt(
-                new Local("$i0", IntType.INSTANCE),
-                new JParameterRef(IntType.INSTANCE, 123),
+                new Local("$i0", IntType.getInstance()),
+                new JParameterRef(IntType.getInstance(), 123),
                 nopos)));
 
     Assert.assertEquals("nop", nop.toString());

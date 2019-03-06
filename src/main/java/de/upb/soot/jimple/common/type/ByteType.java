@@ -34,9 +34,13 @@ import de.upb.soot.signatures.TypeSignature;
 @SuppressWarnings("serial")
 public class ByteType extends PrimType {
 
-  public static final ByteType INSTANCE = new ByteType();
+  private static final ByteType INSTANCE = new ByteType();
 
   private ByteType() {}
+
+  public static ByteType getInstance() {
+    return INSTANCE;
+  }
 
   @Override
   public int hashCode() {

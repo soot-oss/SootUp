@@ -286,23 +286,23 @@ public class WalaIRToJimpleConverter {
   public Type convertType(TypeReference type) {
     if (type.isPrimitiveType()) {
       if (type.equals(TypeReference.Boolean)) {
-        return BooleanType.INSTANCE;
+        return BooleanType.getInstance();
       } else if (type.equals(TypeReference.Byte)) {
-        return ByteType.INSTANCE;
+        return ByteType.getInstance();
       } else if (type.equals(TypeReference.Char)) {
-        return CharType.INSTANCE;
+        return CharType.getInstance();
       } else if (type.equals(TypeReference.Short)) {
-        return ShortType.INSTANCE;
+        return ShortType.getInstance();
       } else if (type.equals(TypeReference.Int)) {
-        return IntType.INSTANCE;
+        return IntType.getInstance();
       } else if (type.equals(TypeReference.Long)) {
-        return LongType.INSTANCE;
+        return LongType.getInstance();
       } else if (type.equals(TypeReference.Float)) {
-        return FloatType.INSTANCE;
+        return FloatType.getInstance();
       } else if (type.equals(TypeReference.Double)) {
-        return DoubleType.INSTANCE;
+        return DoubleType.getInstance();
       } else if (type.equals(TypeReference.Void)) {
-        return VoidType.INSTANCE;
+        return VoidType.getInstance();
       }
     } else if (type.isReferenceType()) {
       if (type.isArrayType()) {
@@ -312,7 +312,7 @@ public class WalaIRToJimpleConverter {
         return ArrayType.getInstance(baseType, dim);
       } else if (type.isClassType()) {
         if (type.equals(TypeReference.Null)) {
-          return NullType.INSTANCE;
+          return NullType.getInstance();
         } else {
           String className = convertClassNameFromWala(type.getName().toString());
           return view.getRefType(this.view.getSignatureFactory().getClassSignature(className));

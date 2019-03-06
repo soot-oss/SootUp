@@ -282,7 +282,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       } else {
         name = "l" + idx;
       }
-      l = Jimple.newLocal(name, UnknownType.INSTANCE);
+      l = Jimple.newLocal(name, UnknownType.getInstance());
       locals.put(i, l);
     }
     return l;
@@ -422,7 +422,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
   @Nonnull
   Local newStackLocal() {
     int idx = nextLocal++;
-    Local l = Jimple.newLocal("$stack" + idx, UnknownType.INSTANCE);
+    Local l = Jimple.newLocal("$stack" + idx, UnknownType.getInstance());
     locals.put(idx, l);
     return l;
   }
@@ -499,7 +499,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       frame.out(opr);
     } else {
       opr = out[0];
-      type = opr.<JFieldRef>value().getFieldSignature().typeSignature;
+      type = opr.<JFieldRef>value().getFieldSignature().getTypeSignature();
       if (insn.getOpcode() == GETFIELD) {
         frame.mergeIn(pop());
       }
@@ -551,7 +551,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       setUnit(insn, as);
     } else {
       opr = out[0];
-      type = opr.<JFieldRef>value().getFieldSignature().typeSignature;
+      type = opr.<JFieldRef>value().getFieldSignature().getTypeSignature();
       rvalue = pop(type);
       if (!instance) {
         /* PUTSTATIC only needs one operand on the stack, the rvalue */
@@ -594,7 +594,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     if (out == null) {
       Value v;
       if (op == ACONST_NULL) {
-        v = NullConstant.INSTANCE;
+        v = NullConstant.getInstance();
       } else if (op >= ICONST_M1 && op <= ICONST_5) {
         v = IntConstant.getInstance(op - ICONST_0);
       } else if (op == LCONST_0 || op == LCONST_1) {
@@ -879,19 +879,19 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     if (out == null) {
       Type totype;
       if (op == I2L || op == F2L || op == D2L) {
-        totype = LongType.INSTANCE;
+        totype = LongType.getInstance();
       } else if (op == L2I || op == F2I || op == D2I) {
-        totype = IntType.INSTANCE;
+        totype = IntType.getInstance();
       } else if (op == I2F || op == L2F || op == D2F) {
-        totype = FloatType.INSTANCE;
+        totype = FloatType.getInstance();
       } else if (op == I2D || op == L2D || op == F2D) {
-        totype = DoubleType.INSTANCE;
+        totype = DoubleType.getInstance();
       } else if (op == I2B) {
-        totype = ByteType.INSTANCE;
+        totype = ByteType.getInstance();
       } else if (op == I2S) {
-        totype = ShortType.INSTANCE;
+        totype = ShortType.getInstance();
       } else if (op == I2C) {
-        totype = CharType.INSTANCE;
+        totype = CharType.getInstance();
       } else {
         throw new AssertionError("Unknonw prim cast op: " + op);
       }
@@ -1027,28 +1027,28 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
         Type type;
         switch (insn.operand) {
           case T_BOOLEAN:
-            type = BooleanType.INSTANCE;
+            type = BooleanType.getInstance();
             break;
           case T_CHAR:
-            type = CharType.INSTANCE;
+            type = CharType.getInstance();
             break;
           case T_FLOAT:
-            type = FloatType.INSTANCE;
+            type = FloatType.getInstance();
             break;
           case T_DOUBLE:
-            type = DoubleType.INSTANCE;
+            type = DoubleType.getInstance();
             break;
           case T_BYTE:
-            type = ByteType.INSTANCE;
+            type = ByteType.getInstance();
             break;
           case T_SHORT:
-            type = ShortType.INSTANCE;
+            type = ShortType.getInstance();
             break;
           case T_INT:
-            type = IntType.INSTANCE;
+            type = IntType.getInstance();
             break;
           case T_LONG:
-            type = LongType.INSTANCE;
+            type = LongType.getInstance();
             break;
           default:
             throw new AssertionError("Unknown NEWARRAY type!");
@@ -1128,9 +1128,9 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
         } else if (op == IFLE) {
           cond = Jimple.newLeExpr(v, IntConstant.getInstance(0));
         } else if (op == IFNULL) {
-          cond = Jimple.newEqExpr(v, NullConstant.INSTANCE);
+          cond = Jimple.newEqExpr(v, NullConstant.getInstance());
         } else if (op == IFNONNULL) {
-          cond = Jimple.newNeExpr(v, NullConstant.INSTANCE);
+          cond = Jimple.newNeExpr(v, NullConstant.getInstance());
         } else {
           throw new AssertionError("Unknown if op: " + op);
         }
@@ -1329,7 +1329,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     } else {
       opr = out[0];
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
-      List<TypeSignature> types = expr.getMethodSignature().parameterSignatures;
+      List<TypeSignature> types = expr.getMethodSignature().getParameterSignatures();
       Operand[] oprs;
       int nrArgs = types.size();
       if (expr.getMethod().get().isStatic()) {
@@ -1347,7 +1347,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
         frame.mergeIn(oprs);
         nrArgs = types.size();
       }
-      returnType = expr.getMethodSignature().typeSignature;
+      returnType = expr.getMethodSignature().getTypeSignature();
     }
     if (AsmUtil.isDWord(returnType)) {
       pushDual(opr);

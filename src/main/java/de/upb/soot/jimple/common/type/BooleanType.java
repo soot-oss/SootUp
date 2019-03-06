@@ -34,9 +34,13 @@ import de.upb.soot.signatures.TypeSignature;
 @SuppressWarnings("serial")
 public class BooleanType extends PrimType {
 
-  public static final BooleanType INSTANCE = new BooleanType();
+  private static final BooleanType INSTANCE = new BooleanType();
 
   private BooleanType() {}
+
+  public static BooleanType getInstance() {
+    return INSTANCE;
+  }
 
   @Override
   public boolean equals(Object t) {
