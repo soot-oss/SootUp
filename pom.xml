@@ -19,6 +19,7 @@
     <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
     <jacoco-maven-plugin.version>0.8.1</jacoco-maven-plugin.version>
     <jacoco-badge-maven-plugin.version>0.1.3</jacoco-badge-maven-plugin.version>
+    <jacoco-badge-phase>verify</jacoco-badge-phase>
     <slf4j.version>1.7.25</slf4j.version>
     <slf4j-simple.version>1.7.25</slf4j-simple.version>
     <guava.version>25.1-jre</guava.version>
@@ -53,6 +54,18 @@
       <activation>
         <jdk>[1.9, )</jdk>
       </activation>
+    </profile>
+    <profile>
+      <id>skipTestProfile</id>
+      <activation>
+        <property>
+          <name>skipTests</name>
+          <value>!false</value>
+        </property>
+      </activation>
+      <properties>
+        <jacoco-badge-phase>none</jacoco-badge-phase>
+      </properties>
     </profile>
   </profiles>
 
@@ -171,7 +184,7 @@
         <executions>
           <execution>
             <id>generate-jacoco-badge</id>
-            <phase>verify</phase>
+            <phase>${jacoco-badge-phase}</phase>
             <goals>
               <goal>badge</goal>
             </goals>
