@@ -327,10 +327,15 @@
   </dependencies>
   <repositories>
     <!-- include old soot repo & wala repo -->
-    <repository>
-      <id>swt-upb</id>
-      <name>soot snapshots</name>
-      <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/swt-upb/</url>
-    </repository>
+   	<repository>
+		<id>wala</id>
+		<name>wala snapshots</name>
+		<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
+	</repository>
+	<repository>
+		<id>soot-snapshot</id>
+		<name>soot snapshots</name>
+		<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-snapshot/</url>
+	</repository>
   </repositories>
 </project>
