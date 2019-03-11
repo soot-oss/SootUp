@@ -899,7 +899,10 @@ public class InstructionConverter {
     if (locals.containsKey(valueNumber)) {
       return locals.get(valueNumber);
     }
-    if (type.toString().equals(sootMethod.getDeclaringClassSignature().toString())) {
+    if (valueNumber == 1
+        || type.toString().equals(sootMethod.getDeclaringClassSignature().toString())) {
+      // in wala symbol numbers start at 1 ... the "this" parameter will be symbol number 1 in a
+      // non-static method.
       if (!walaMethod.isStatic()) {
         return localGenerator.getThisLocal();
       }
