@@ -29,8 +29,8 @@ import soot.options.Options;
 public class WalaClassLoaderTest {
   private List<String> classesNew = new ArrayList<>();
   private List<String> classesOld = new ArrayList<>();
-  private List<String> applicationClassesNew = new ArrayList();
-  private List<String> applicationClassesOld = new ArrayList();
+  private List<String> applicationClassesNew = new ArrayList<>();
+  private List<String> applicationClassesOld = new ArrayList<>();
 
   private StringBuilder future = new StringBuilder();
   private StringBuilder old = new StringBuilder();
