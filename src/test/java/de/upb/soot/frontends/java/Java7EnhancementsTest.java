@@ -2,14 +2,17 @@ package de.upb.soot.frontends.java;
 
 import static org.junit.Assert.assertTrue;
 
+import categories.Java8Test;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /** @author Linghui Luo */
+@Category(Java8Test.class)
 public class Java7EnhancementsTest {
   private WalaClassLoader loader;
   private DefaultSignatureFactory sigFactory;
