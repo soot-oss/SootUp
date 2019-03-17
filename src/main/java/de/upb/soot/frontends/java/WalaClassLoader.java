@@ -9,6 +9,7 @@ import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.Module;
 import com.ibm.wala.classLoader.SourceDirectoryTreeModule;
+import com.ibm.wala.dalvik.classLoader.DexFileModule;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.ipa.cha.ClassHierarchyFactory;
@@ -118,6 +119,36 @@ public class WalaClassLoader {
         }
       }
       factory = new ECJClassLoaderFactory(scope.getExclusions());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public WalaClassLoader(
+      Set<String> sourcePath, String apkPath, String androidJar, String exclusionFilePath) {
+    addScopesForJava();
+    this.sourcePath = sourcePath;
+    try {
+      // add the source directory to scope
+      for (String path : sourcePath) {
+        scope.addToScope(
+            JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(path)));
+      }
+      // add androidJar and apkPath to scope
+      scope.addToScope(ClassLoaderReference.Primordial, new JarFile(androidJar));
+      scope.addToScope(ClassLoaderReference.Primordial, DexFileModule.make(new File(apkPath)));
+      // set exclusions
+      if (exclusionFilePath != null) {
+        File exclusionFile = new File(exclusionFilePath);
+        if (exclusionFile.isFile()) {
+          FileOfClasses classes;
+          classes = new FileOfClasses(new FileInputStream(exclusionFile));
+          scope.setExclusions(classes);
+        }
+      }
+      factory = new ECJClassLoaderFactory(scope.getExclusions());
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
     } catch (IOException e) {
       e.printStackTrace();
     }
