@@ -134,9 +134,11 @@ public class WalaClassLoader {
         scope.addToScope(
             JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(path)));
       }
+      scope.setLoaderImpl(
+          ClassLoaderReference.Application, "com.ibm.wala.dalvik.classLoader.WDexClassLoaderImpl");
       // add androidJar and apkPath to scope
       scope.addToScope(ClassLoaderReference.Primordial, new JarFile(androidJar));
-      scope.addToScope(ClassLoaderReference.Primordial, DexFileModule.make(new File(apkPath)));
+      scope.addToScope(ClassLoaderReference.Application, DexFileModule.make(new File(apkPath)));
       // set exclusions
       if (exclusionFilePath != null) {
         File exclusionFile = new File(exclusionFilePath);
@@ -192,7 +194,6 @@ public class WalaClassLoader {
     for (Module m : moduleFiles) {
       scope.addToScope(JavaSourceAnalysisScope.SOURCE, m);
     }
-    // factory = new ClassLoaderFactoryImpl(scope.getExclusions());
     factory = new ECJClassLoaderFactory(scope.getExclusions());
   }
 
