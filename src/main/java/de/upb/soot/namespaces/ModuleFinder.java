@@ -59,6 +59,7 @@ public class ModuleFinder {
     this.modulePathEntries =
         JavaClassPathNamespace.explode(modulePath).collect(Collectors.toList());
     // add the namespace for the jrt virtual file system
+    // FIXME: Set Jrt File namespace by default?
     jrtFileSystemNamespace = new JrtFileSystemNamespace(classProvider);
 
     // discover all system's modules

@@ -3,10 +3,12 @@ package de.upb.soot.buildactor;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
+import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
 import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.ModuleSignatureFactory;
 import java.util.Optional;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,8 +21,9 @@ public class ModuleBuilderActorTest {
 
     final JavaModulePathNamespace javaClassPathNamespace =
         new JavaModulePathNamespace("target/test-classes/de/upb/soot/namespaces/modules");
+    ModuleSignatureFactory moduleSignatureFactory = new ModuleSignatureFactory();
 
-    de.upb.soot.Project project = new de.upb.soot.Project(javaClassPathNamespace);
+    Project project = new Project(javaClassPathNamespace, moduleSignatureFactory);
 
     // de.upb.soot.views.JavaView view = new de.upb.soot.views.JavaView(project);
 
@@ -45,6 +48,7 @@ public class ModuleBuilderActorTest {
 
     // assertTrue(source.isPresent());
 
+    // Resolve signature to `SootClass`
     Optional<AbstractClass> result = iView.getClass(sig);
     // stuffAViewNeeds.reifyClass(source.get(), iView);
 
