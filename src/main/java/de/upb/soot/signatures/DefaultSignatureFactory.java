@@ -2,7 +2,6 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Preconditions;
 import de.upb.soot.core.SootClass;
-import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -608,8 +607,12 @@ public class DefaultSignatureFactory implements SignatureFactory {
 
   @Override
   public JavaClassSignature fromPath(final Path file) {
+    String path = file.toString();
+
     String fullyQualifiedName =
-        FilenameUtils.removeExtension(file.toString()).replace(File.separatorChar, '.');
+        FilenameUtils.removeExtension(path.startsWith("/") ? path.substring(1) : path)
+            .replace('/', '.');
+    
     return this.getClassSignature(fullyQualifiedName);
   }
 }

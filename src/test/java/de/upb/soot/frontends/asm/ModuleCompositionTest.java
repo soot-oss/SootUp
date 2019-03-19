@@ -58,7 +58,7 @@ public class ModuleCompositionTest {
 
     // Create java class signature
     JavaClassSignature utilsClassSignature =
-        p.getSignatureFactory().getClassSignature("/de/upb/soot/Utils");
+        p.getSignatureFactory().getClassSignature("de.upb.soot.Utils");
 
     // Resolve signature to `SootClass`
     SootClass utilsClass =
