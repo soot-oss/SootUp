@@ -606,12 +606,15 @@ public class DefaultSignatureFactory implements SignatureFactory {
   }
 
   @Override
-  public JavaClassSignature fromPath(final Path file) {
+  @Nonnull
+  public JavaClassSignature fromPath(@Nonnull final Path file) {
+    String separator = file.getFileSystem().getSeparator();
     String path = file.toString();
 
     String fullyQualifiedName =
-        FilenameUtils.removeExtension(path.startsWith("/") ? path.substring(1) : path)
-            .replace('/', '.');
+        FilenameUtils.removeExtension(
+                path.startsWith(separator) ? path.substring(separator.length()) : path)
+            .replace(separator, ".");
 
     return this.getClassSignature(fullyQualifiedName);
   }

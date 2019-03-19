@@ -146,6 +146,14 @@ public class SignatureFactoryTest {
   }
 
   @Test
+  public void sigFromPathStartsWithSlash() {
+    SignatureFactory signatureFactory = new DefaultSignatureFactory();
+    Path p = Paths.get("/java/lang/System.class");
+    JavaClassSignature classSignature = signatureFactory.fromPath(p);
+    assertEquals(classSignature.toString(), "java.lang.System");
+  }
+
+  @Test
   public void getClassSignatureEmptyPackage() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
     JavaClassSignature classSignature1 = signatureFactory.getClassSignature("A", "");
