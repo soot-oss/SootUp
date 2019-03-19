@@ -41,6 +41,7 @@ import java.util.List;
 public class JNewMultiArrayExpr implements Expr {
   /** */
   private static final long serialVersionUID = -473132292740722571L;
+
   private ArrayTypeSignature baseType;
   protected final ValueBox[] sizeBoxes;
 

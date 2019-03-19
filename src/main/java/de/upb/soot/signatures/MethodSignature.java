@@ -22,21 +22,20 @@ package de.upb.soot.signatures;
  * #L%
  */
 
-import javax.annotation.Nonnull;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /** Represents the fully qualified signature of a methodRef. */
 public class MethodSignature extends AbstractClassMemberSignature {
-  
+
   protected MethodSignature(
       JavaClassSignature declaringClassSignature,
       String methodName,
       Iterable<TypeSignature> parameters,
-      TypeSignature fqReturnType
-  ) {
+      TypeSignature fqReturnType) {
     this(declaringClassSignature, new MethodSubSignature(methodName, parameters, fqReturnType));
   }
-  
+
   /**
    * Internal: Constructs a MethodSignature. Instances should only be created by a {@link
    * DefaultSignatureFactory}
@@ -45,16 +44,15 @@ public class MethodSignature extends AbstractClassMemberSignature {
    * @param subSignature the sub-signature
    */
   protected MethodSignature(
-    final @Nonnull JavaClassSignature declaringClass,
-    final @Nonnull MethodSubSignature subSignature
-  ) {
+      final @Nonnull JavaClassSignature declaringClass,
+      final @Nonnull MethodSubSignature subSignature) {
     super(declaringClass, subSignature);
-    
+
     this._subSignature = subSignature;
   }
 
   private final @Nonnull MethodSubSignature _subSignature;
-  
+
   @Override
   @Nonnull
   public MethodSubSignature getSubSignature() {
@@ -66,5 +64,4 @@ public class MethodSignature extends AbstractClassMemberSignature {
   public List<TypeSignature> getParameterSignatures() {
     return this.getSubSignature().getParameterSignatures();
   }
-  
 }

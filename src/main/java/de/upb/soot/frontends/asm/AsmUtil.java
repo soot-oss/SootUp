@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
+
 public final class AsmUtil {
 
   private AsmUtil() {}
@@ -96,7 +97,8 @@ public final class AsmUtil {
    * @return {@code true} if its a dword type.
    */
   public static boolean isDWord(@Nonnull TypeSignature type) {
-    return type == PrimitiveTypeSignature.getLongSignature() || type == PrimitiveTypeSignature.getDoubleSignature();
+    return type == PrimitiveTypeSignature.getLongSignature()
+        || type == PrimitiveTypeSignature.getDoubleSignature();
   }
 
   /**
@@ -174,7 +176,9 @@ public final class AsmUtil {
     if (!(baseType instanceof JavaClassSignature) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
-    return nrDims > 0 ? DefaultSignatureFactory.getInstance().getArrayTypeSignature(baseType, nrDims) : baseType;
+    return nrDims > 0
+        ? DefaultSignatureFactory.getInstance().getArrayTypeSignature(baseType, nrDims)
+        : baseType;
   }
 
   @Nonnull
@@ -250,12 +254,14 @@ public final class AsmUtil {
   }
 
   @Nonnull
-  public static Collection<JavaClassSignature> asmIdToSignature(@Nullable Iterable<String> modules) {
+  public static Collection<JavaClassSignature> asmIdToSignature(
+      @Nullable Iterable<String> modules) {
     if (modules == null) {
       return Collections.emptyList();
     }
 
     return StreamSupport.stream(modules.spliterator(), false)
-        .map(p -> (DefaultSignatureFactory.getInstance().getClassSignature(toQualifiedName(p)))).collect(Collectors.toList());
+        .map(p -> (DefaultSignatureFactory.getInstance().getClassSignature(toQualifiedName(p))))
+        .collect(Collectors.toList());
   }
 }

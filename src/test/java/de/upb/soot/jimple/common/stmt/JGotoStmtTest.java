@@ -28,8 +28,6 @@ import de.upb.soot.jimple.basic.JStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.views.IView;
-import de.upb.soot.views.JavaView;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -43,11 +41,8 @@ public class JGotoStmtTest {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
     DefaultSignatureFactory factory = new DefaultSignatureFactory();
 
-    Local local1 =
-        new Local("$r0", factory.getTypeSignature("java.lang.Exception"));
-    Local local2 =
-        new Local(
-            "$r0", factory.getTypeSignature("somepackage.dummy.Exception"));
+    Local local1 = new Local("$r0", factory.getTypeSignature("java.lang.Exception"));
+    Local local2 = new Local("$r0", factory.getTypeSignature("somepackage.dummy.Exception"));
 
     // IStmt
     IStmt targetStmt = new JThrowStmt(local1, nop);

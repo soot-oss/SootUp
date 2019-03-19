@@ -42,48 +42,46 @@ import javax.annotation.Nullable;
  */
 public abstract class SootClassMember implements Serializable {
   private static final long serialVersionUID = -7201796736790814208L;
-  
+
   @Nonnull private final AbstractClassMemberSignature _signature;
   @Nonnull private final ImmutableSet<Modifier> _modifiers;
 
   /** Constructor. */
   public SootClassMember(
-      @Nonnull AbstractClassMemberSignature signature,
-      @Nonnull Iterable<Modifier> modifiers
-  ) {
+      @Nonnull AbstractClassMemberSignature signature, @Nonnull Iterable<Modifier> modifiers) {
     this._signature = signature;
     this._modifiers = immutableEnumSetOf(modifiers);
   }
 
-  @Nullable
-  private volatile SootClass _declaringClass;
-  
+  @Nullable private volatile SootClass _declaringClass;
+
   /** Returns the SootClass declaring this one. */
   @Nonnull
   public SootClass getDeclaringClass() {
     SootClass owner = this._declaringClass;
-  
+
     if (owner == null) {
-      throw new IllegalStateException("The declaring class of this soot class member has not been set yet.");
+      throw new IllegalStateException(
+          "The declaring class of this soot class member has not been set yet.");
     }
-    
+
     return owner;
   }
-  
-  protected synchronized final void setDeclaringClass(@Nonnull SootClass value) {
+
+  protected final synchronized void setDeclaringClass(@Nonnull SootClass value) {
     if (this._declaringClass != null) {
-      throw new IllegalStateException("The declaring class of this soot class member has already been set.");
+      throw new IllegalStateException(
+          "The declaring class of this soot class member has already been set.");
     }
-    
-    if(!value.getSignature().equals(this.getSignature().getDeclClassSignature())) {
+
+    if (!value.getSignature().equals(this.getSignature().getDeclClassSignature())) {
       throw new IllegalArgumentException(
-          "The signature of the specified declaring class does not match to the declaring class " + 
-          "signature of this soot class member");
+          "The signature of the specified declaring class does not match to the declaring class "
+              + "signature of this soot class member");
     }
-    
+
     this._declaringClass = value;
   }
-
 
   /** Returns true when this object is from a phantom class. */
   public boolean isPhantom() {
@@ -154,38 +152,38 @@ public abstract class SootClassMember implements Serializable {
   public String getName() {
     return this._signature.getName();
   }
-  
+
   /**
    * Defines the base interface for {@link SootClassMember} builders.
-   * 
+   *
    * @param <T> The type of the class to build.
    * @author Jan Martin Persch
    */
   public interface Builder<T extends SootClassMember> {
-    
+
     interface ModifiersStep<B> {
       /**
        * Sets the {@link Modifier modifiers}.
-       * 
+       *
        * @param value The value to set.
        * @return This fluent builder.
        */
       @Nonnull
       B withModifiers(@Nonnull Iterable<Modifier> value);
-      
+
       /**
        * Sets the {@link Modifier modifiers}.
-       * 
+       *
        * @param first The first value.
        * @param rest The rest values.
        * @return This fluent builder.
        */
       @Nonnull
-      default B withModifiers(@Nonnull Modifier first, @Nonnull Modifier... rest){
+      default B withModifiers(@Nonnull Modifier first, @Nonnull Modifier... rest) {
         return this.withModifiers(EnumSet.of(first, rest));
       }
     }
-    
+
     /**
      * Builds the {@link SootMethod}.
      *
@@ -195,40 +193,37 @@ public abstract class SootClassMember implements Serializable {
     @Nonnull
     T build();
   }
-  
+
   /**
    * Defines base class for {@link SootClassMember} builders.
    *
    * @author Jan Martin Persch
    */
-  protected static abstract class SootClassMemberBuilder<T extends SootClassMember>
-      extends AbstractBuilder<T>
-  {
+  protected abstract static class SootClassMemberBuilder<T extends SootClassMember>
+      extends AbstractBuilder<T> {
     // region Fields
-    
+
     // endregion /Fields/
-    
+
     // region Constructor
-    
+
     /**
      * Creates a new instance of the {@link SootMethod.SootMethodBuilder} class.
-     * 
+     *
      * @param buildableClass The type of the class to build.
      */
-    protected SootClassMemberBuilder(
-        @Nonnull Class<T> buildableClass
-    ) {
+    protected SootClassMemberBuilder(@Nonnull Class<T> buildableClass) {
       super(buildableClass);
     }
-    
+
     // endregion /Constructor/
-    
+
     // region Properties
-    
+
     // endregion /Properties/
-    
+
     // region Methods
-    
+
     // endregion /Methods/
   }
 }

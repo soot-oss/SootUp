@@ -9,15 +9,14 @@ import de.upb.soot.frontends.asm.AsmFrontendException;
 import de.upb.soot.frontends.asm.AsmUtil;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
+import java.util.ArrayList;
+import java.util.Optional;
+import javax.annotation.Nonnull;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.ModuleExportNode;
 import org.objectweb.asm.tree.ModuleOpenNode;
 import org.objectweb.asm.tree.ModuleProvideNode;
 import org.objectweb.asm.tree.ModuleRequireNode;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Optional;
 
 public class AsmModuleClassSourceContent extends ClassNode implements IClassSourceContent {
 
@@ -32,8 +31,9 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
   }
 
   @Override
-  @Nonnull 
-  public AbstractClass resolveClass(@Nonnull ResolvingLevel level, @Nonnull IView view) throws AsmFrontendException {
+  @Nonnull
+  public AbstractClass resolveClass(@Nonnull ResolvingLevel level, @Nonnull IView view)
+      throws AsmFrontendException {
     JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
     SootModuleInfo.SootModuleInfoBuilder builder = null;
     if (module == null) {
@@ -50,7 +50,7 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
         builder = (SootModuleInfo.SootModuleInfoBuilder) resolveHierarchy(view, cs);
         break;
 
-      // lower steps, don't make sense for modules ?
+        // lower steps, don't make sense for modules ?
 
       case SIGNATURES:
         builder = (SootModuleInfo.SootModuleInfoBuilder) resolveSignature(view, cs);
@@ -65,7 +65,8 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
   }
 
   @Nonnull
-  private SootModuleInfo.HierachyStep resolveDangling(@Nonnull IView view, @Nonnull JavaClassSignature cs) {
+  private SootModuleInfo.HierachyStep resolveDangling(
+      @Nonnull IView view, @Nonnull JavaClassSignature cs) {
     // sootClass.setModifiers(AsmUtil.getModifiers(access & ~org.objectweb.asm.Opcodes.ACC_SUPER));
     return SootModuleInfo.builder().dangling(view, this.classSource, null, this.module.name);
   }
@@ -102,8 +103,9 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
         }
         // FIXME: create constructs here
         // sootModuleInfo.addExport(exportNode.packaze, exportNode.access, modules);
-        SootModuleInfo.PackageReference reference
-            = new SootModuleInfo.PackageReference(exportNode.packaze, AsmUtil.getModifiers(exportNode.access), modules);
+        SootModuleInfo.PackageReference reference =
+            new SootModuleInfo.PackageReference(
+                exportNode.packaze, AsmUtil.getModifiers(exportNode.access), modules);
         opens.add(reference);
       }
     }
@@ -119,8 +121,9 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
           }
         }
 
-        SootModuleInfo.PackageReference reference = new SootModuleInfo.PackageReference(moduleOpenNode.packaze,
-            AsmUtil.getModifiers(moduleOpenNode.access), modules);
+        SootModuleInfo.PackageReference reference =
+            new SootModuleInfo.PackageReference(
+                moduleOpenNode.packaze, AsmUtil.getModifiers(moduleOpenNode.access), modules);
         opens.add(reference);
       }
     }
@@ -128,13 +131,15 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
     {
       // add requies
       for (ModuleRequireNode moduleRequireNode : module.requires) {
-        JavaClassSignature classSignature
-            = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(moduleRequireNode.module));
+        JavaClassSignature classSignature =
+            view.getSignatureFactory()
+                .getClassSignature(AsmUtil.toQualifiedName(moduleRequireNode.module));
         if (classSignature.isModuleInfo()) {
           // sootModuleInfo.addRequire(sootClassOptional.get(), moduleRequireNode.access,
           // moduleRequireNode.version);
-          SootModuleInfo.ModuleReference reference
-              = new SootModuleInfo.ModuleReference(classSignature, AsmUtil.getModifiers(moduleRequireNode.access));
+          SootModuleInfo.ModuleReference reference =
+              new SootModuleInfo.ModuleReference(
+                  classSignature, AsmUtil.getModifiers(moduleRequireNode.access));
           requieres.add(reference);
         }
       }
@@ -143,9 +148,11 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
     {
       // add provides
       for (ModuleProvideNode moduleProvideNode : module.provides) {
-        JavaClassSignature serviceSignature
-            = view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(moduleProvideNode.service));
-        Iterable<JavaClassSignature> providersSignatures = AsmUtil.asmIdToSignature(moduleProvideNode.providers);
+        JavaClassSignature serviceSignature =
+            view.getSignatureFactory()
+                .getClassSignature(AsmUtil.toQualifiedName(moduleProvideNode.service));
+        Iterable<JavaClassSignature> providersSignatures =
+            AsmUtil.asmIdToSignature(moduleProvideNode.providers);
         for (JavaClassSignature sootClassSignature : providersSignatures) {
           providers.add(sootClassSignature);
         }

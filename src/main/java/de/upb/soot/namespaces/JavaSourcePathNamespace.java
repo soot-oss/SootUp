@@ -4,11 +4,10 @@ import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.NotYetImplementedException;
-
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 /**
  * An implementation of the {@link INamespace} interface for the Java source code path.
@@ -28,7 +27,7 @@ public class JavaSourcePathNamespace extends AbstractNamespace {
   public JavaSourcePathNamespace(@Nonnull Set<String> sourcePath) {
     // FIXME: [JMP] Is `null` intended here?
     super(null);
-    
+
     this.sourcePath = sourcePath;
   }
 

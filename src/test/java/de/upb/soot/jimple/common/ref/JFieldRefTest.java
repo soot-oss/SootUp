@@ -53,7 +53,7 @@ public class JFieldRefTest {
             EnumSet.of(Modifier.PUBLIC));
     JStaticFieldRef ref = Jimple.newStaticFieldRef(fieldSig);
     assertEquals("<dummyMainClass: int dummyField>", ref.toString());
-    
+
     // FIXME: [JMP] This assert always fails, because the view does not contain any class.
     assertTrue(ref.getField(view).isPresent());
     assertEquals(field, ref.getField(view).get());
@@ -66,8 +66,8 @@ public class JFieldRefTest {
     SignatureFactory fact = view.getSignatureFactory();
     JavaClassSignature declaringClassSignature = fact.getClassSignature("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
-    SootField field =  new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
-    
+    SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
+
     // FIXME: [JMP] This instance is never used.
     SootClass mainClass =
         new SootClass(
@@ -85,7 +85,7 @@ public class JFieldRefTest {
     Local base = new Local("obj", declaringClassSignature);
     JInstanceFieldRef ref = Jimple.newInstanceFieldRef(base, fieldSig);
     assertEquals("obj.<dummyMainClass: int dummyField>", ref.toString());
-    
+
     // FIXME: [JMP] This assert always fails, because the view does not contain any class.
     assertTrue(ref.getField(view).isPresent());
     assertEquals(fieldSig, ref.getField(view).get().getSignature());

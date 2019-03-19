@@ -24,7 +24,7 @@ public class ArrayTypeSignature extends ReferenceTypeSignature {
     }
     return sb.toString();
   }
-  
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

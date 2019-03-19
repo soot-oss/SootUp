@@ -17,14 +17,12 @@ public class AsmJavaClassProvider implements IClassProvider {
 
   @Override
   public ClassSource createClassSource(
-      INamespace srcNamespace,
-      Path sourcePath,
-      JavaClassSignature classSignature) {
+      INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {
     return new JavaClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   @Override
-  @Nonnull 
+  @Nonnull
   public FileType getHandledFileType() {
     return FileType.CLASS;
   }
@@ -36,7 +34,7 @@ public class AsmJavaClassProvider implements IClassProvider {
    * @return A representation of the class file.
    */
   @Override
-  @Nonnull 
+  @Nonnull
   public IClassSourceContent getContent(@Nonnull ClassSource classSource) {
 
     IClassSourceContent classNode;

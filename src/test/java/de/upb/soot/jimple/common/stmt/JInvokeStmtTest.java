@@ -43,10 +43,6 @@ import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,6 +52,9 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 /** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
@@ -116,9 +115,7 @@ public class JInvokeStmtTest {
     IStmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
-                new Local("$r0", sootClass.getSignature()),
-                smethodSig,
-                Arrays.asList()),
+                new Local("$r0", sootClass.getSignature()), smethodSig, Arrays.asList()),
             nop);
 
     // toString
@@ -135,9 +132,7 @@ public class JInvokeStmtTest {
     IStmt interfaceInvokeStmt =
         new JInvokeStmt(
             new JInterfaceInvokeExpr(
-                new Local("r2", sootClass.getSignature()),
-                imethodSig,
-                Arrays.asList()),
+                new Local("r2", sootClass.getSignature()), imethodSig, Arrays.asList()),
             nop);
 
     // toString
@@ -159,8 +154,7 @@ public class JInvokeStmtTest {
 
     IStmt dynamicInvokeStmt =
         new JInvokeStmt(
-            new JDynamicInvokeExpr(bootstrapMethodSig, bootstrapArgs, dmethodSig, methodArgs),
-            nop);
+            new JDynamicInvokeExpr(bootstrapMethodSig, bootstrapArgs, dmethodSig, methodArgs), nop);
 
     // toString
     Assert.assertEquals(

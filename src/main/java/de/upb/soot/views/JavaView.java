@@ -5,10 +5,9 @@ import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.util.Utils;
-
-import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
@@ -17,10 +16,9 @@ import java.util.regex.Pattern;
  * @author Jan Martin Persch
  */
 public class JavaView extends AbstractView {
-  /**
-   * Defines Java's reserved names.
-   */
-  @Nonnull public static final ImmutableSet<String> RESERVED_NAMES =
+  /** Defines Java's reserved names. */
+  @Nonnull
+  public static final ImmutableSet<String> RESERVED_NAMES =
       Utils.immutableSet(
           "newarray",
           "newmultiarray",
@@ -84,8 +82,7 @@ public class JavaView extends AbstractView {
           "with",
           "cls",
           "dynamicinvoke",
-          "strictfp"
-      );
+          "strictfp");
 
   /** Instantiates a new view. */
   public JavaView(@Nonnull Project project) {
@@ -95,28 +92,29 @@ public class JavaView extends AbstractView {
   @Override
   @Nonnull
   public Optional<AbstractClass> getClass(@Nonnull ISignature signature) {
-    return
-        this.classes()
-            .filter(c -> c.getClassSource().getClassSignature().equals(signature)).findFirst();
+    return this.classes()
+        .filter(c -> c.getClassSource().getClassSignature().equals(signature))
+        .findFirst();
   }
 
   private static final class SplitPatternHolder {
     private static final char SPLIT_CHAR = '.';
-    
-    @Nonnull private static final Pattern SPLIT_PATTERN =
+
+    @Nonnull
+    private static final Pattern SPLIT_PATTERN =
         Pattern.compile(Character.toString(SPLIT_CHAR), Pattern.LITERAL);
   }
-  
+
   @Override
   @Nonnull
   public String quotedNameOf(@Nonnull String s) {
     StringBuilder res = new StringBuilder(s.length() + 16);
-    
+
     for (String part : SplitPatternHolder.SPLIT_PATTERN.split(s)) {
       if (res.length() > 0) {
         res.append(SplitPatternHolder.SPLIT_CHAR);
       }
-      
+
       if (part.startsWith("-") || RESERVED_NAMES.contains(part)) {
         res.append('\'');
         res.append(part);
@@ -125,7 +123,7 @@ public class JavaView extends AbstractView {
         res.append(part);
       }
     }
-    
+
     return res.toString();
   }
 }

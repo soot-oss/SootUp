@@ -151,7 +151,8 @@ public class JArrayRef implements ConcreteRef {
       if (arrayType.getDimension() == 1) {
         return arrayType.getBaseType();
       } else {
-        return DefaultSignatureFactory.getInstance().getArrayTypeSignature(arrayType.getBaseType(), arrayType.getDimension() - 1);
+        return DefaultSignatureFactory.getInstance()
+            .getArrayTypeSignature(arrayType.getBaseType(), arrayType.getDimension() - 1);
       }
     }
   }

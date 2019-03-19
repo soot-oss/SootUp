@@ -4,7 +4,6 @@ import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.IMethodSourceContent;
 import de.upb.soot.signatures.MethodSignature;
-
 import javax.annotation.Nonnull;
 
 /** @author Linghui Luo */

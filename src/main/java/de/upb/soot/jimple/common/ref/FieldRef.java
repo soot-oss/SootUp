@@ -30,8 +30,8 @@ import de.upb.soot.core.SootField;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
-import javax.annotation.Nonnull;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 
 public abstract class FieldRef implements ConcreteRef {
 
@@ -46,8 +46,8 @@ public abstract class FieldRef implements ConcreteRef {
 
   public @Nonnull Optional<SootField> getField(@Nonnull IView view) {
     return view.getClass(fieldSignature.getDeclClassSignature())
-             .map(it -> it.getField(fieldSignature))
-             .map(SootField.class::cast);
+        .map(it -> it.getField(fieldSignature))
+        .map(SootField.class::cast);
   }
 
   public FieldSignature getFieldSignature() {

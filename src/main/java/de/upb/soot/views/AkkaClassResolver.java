@@ -9,12 +9,11 @@ import de.upb.soot.buildactor.ResolveMessage;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.JavaClassSignature;
-import scala.concurrent.Future;
-import scala.concurrent.duration.Duration;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import scala.concurrent.Future;
+import scala.concurrent.duration.Duration;
 
 public class AkkaClassResolver {
 
@@ -35,8 +34,8 @@ public class AkkaClassResolver {
    * @param signature the signature of the class to resolve
    * @return the initial resolved SootClass or an empty optional, if resolving fails
    */
-  public Optional<AbstractClass> getClass(JavaClassSignature signature,
-                                          IView view, ClassSource source) {
+  public Optional<AbstractClass> getClass(
+      JavaClassSignature signature, IView view, ClassSource source) {
     // TODO: cache
 
     // TODO: decide for phantom ---> That's a good question, and how to create them ...
@@ -51,7 +50,8 @@ public class AkkaClassResolver {
     Timeout timeout = new akka.util.Timeout(Duration.create(5, "seconds"));
     Future<Object> cbFuture = Patterns.ask(cb, new ResolveMessage(), timeout);
     try {
-      return Optional.of((de.upb.soot.core.SootClass) scala.concurrent.Await.result(cbFuture, timeout.duration()));
+      return Optional.of(
+          (de.upb.soot.core.SootClass) scala.concurrent.Await.result(cbFuture, timeout.duration()));
     } catch (Exception e) {
       // TODO: Do something meaningful here
     }
@@ -69,7 +69,8 @@ public class AkkaClassResolver {
     Timeout timeout = new Timeout(Duration.create(5, "seconds"));
     scala.concurrent.Future<Object> cbFuture = Patterns.ask(cb, new ReifyMessage(), timeout);
     try {
-      return Optional.of((AbstractClass) scala.concurrent.Await.result(cbFuture, timeout.duration()));
+      return Optional.of(
+          (AbstractClass) scala.concurrent.Await.result(cbFuture, timeout.duration()));
     } catch (Exception e) {
       // TODO: Do something meaningful here
     }

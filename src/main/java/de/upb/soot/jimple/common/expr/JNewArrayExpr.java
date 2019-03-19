@@ -41,6 +41,7 @@ import java.util.List;
 public class JNewArrayExpr implements Expr {
   /** */
   private static final long serialVersionUID = 4481534412297120257L;
+
   private TypeSignature baseType;
   private final ValueBox sizeBox;
 
@@ -132,7 +133,10 @@ public class JNewArrayExpr implements Expr {
   @Override
   public TypeSignature getSignature() {
     if (baseType instanceof ArrayTypeSignature) {
-      return DefaultSignatureFactory.getInstance().getArrayTypeSignature(((ArrayTypeSignature) baseType).getBaseType(), ((ArrayTypeSignature) baseType).getDimension() + 1);
+      return DefaultSignatureFactory.getInstance()
+          .getArrayTypeSignature(
+              ((ArrayTypeSignature) baseType).getBaseType(),
+              ((ArrayTypeSignature) baseType).getDimension() + 1);
     } else {
       return DefaultSignatureFactory.getInstance().getArrayTypeSignature(baseType, 1);
     }

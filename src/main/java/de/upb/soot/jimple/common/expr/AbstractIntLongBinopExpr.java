@@ -40,8 +40,11 @@ public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
   }
 
   public static boolean isIntLikeType(TypeSignature t) {
-    return t.equals(PrimitiveTypeSignature.getIntSignature()) || t.equals(PrimitiveTypeSignature.getByteSignature()) || t.equals(PrimitiveTypeSignature.getShortSignature())
-        || t.equals(PrimitiveTypeSignature.getCharSignature()) || t.equals(PrimitiveTypeSignature.getBooleanSignature());
+    return t.equals(PrimitiveTypeSignature.getIntSignature())
+        || t.equals(PrimitiveTypeSignature.getByteSignature())
+        || t.equals(PrimitiveTypeSignature.getShortSignature())
+        || t.equals(PrimitiveTypeSignature.getCharSignature())
+        || t.equals(PrimitiveTypeSignature.getBooleanSignature());
   }
 
   @Override
@@ -51,7 +54,8 @@ public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
 
     if (isIntLikeType(op1.getSignature()) && isIntLikeType(op2.getSignature())) {
       return PrimitiveTypeSignature.getIntSignature();
-    } else if (op1.getSignature().equals(PrimitiveTypeSignature.getLongSignature()) && op2.getSignature().equals(PrimitiveTypeSignature.getLongSignature())) {
+    } else if (op1.getSignature().equals(PrimitiveTypeSignature.getLongSignature())
+        && op2.getSignature().equals(PrimitiveTypeSignature.getLongSignature())) {
       return PrimitiveTypeSignature.getLongSignature();
     } else {
       return UnknownTypeSignature.getInstance();

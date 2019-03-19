@@ -27,16 +27,15 @@ import javax.annotation.Nonnull;
 /** Represents a signature for a <code>null</code>-reference. */
 public class NullTypeSignature extends ReferenceTypeSignature {
 
-  @Nonnull
-  private static final NullTypeSignature INSTANCE = new NullTypeSignature();
-  
+  @Nonnull private static final NullTypeSignature INSTANCE = new NullTypeSignature();
+
   @Nonnull
   public static NullTypeSignature getInstance() {
     return INSTANCE;
   }
 
   private NullTypeSignature() {}
-  
+
   @Override
   public String toString() {
     return "null";

@@ -2,7 +2,6 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 import de.upb.soot.core.SootClassMember;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -15,13 +14,11 @@ public abstract class AbstractClassMemberSignature implements ISignature {
 
   /** The signature of the declaring class. */
   @Nonnull private final JavaClassSignature declClassSignature;
-  
+
   @Nonnull private final AbstractClassMemberSubSignature subSignature;
 
   public AbstractClassMemberSignature(
-      @Nonnull JavaClassSignature klass,
-      @Nonnull AbstractClassMemberSubSignature subSignature
-  ) {
+      @Nonnull JavaClassSignature klass, @Nonnull AbstractClassMemberSubSignature subSignature) {
     this.declClassSignature = klass;
     this.subSignature = subSignature;
   }
@@ -67,10 +64,9 @@ public abstract class AbstractClassMemberSignature implements ISignature {
   public String getName() {
     return subSignature.getName();
   }
-  
+
   @Nonnull
   public String toQuotedString() {
     return this.toString();
   }
-  
 }

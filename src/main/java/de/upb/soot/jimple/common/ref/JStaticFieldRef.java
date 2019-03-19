@@ -48,7 +48,7 @@ public class JStaticFieldRef extends FieldRef {
 
   @Override
   public int equivHashCode() {
-      return getFieldSignature().hashCode() * 23;
+    return getFieldSignature().hashCode() * 23;
   }
 
   @Override

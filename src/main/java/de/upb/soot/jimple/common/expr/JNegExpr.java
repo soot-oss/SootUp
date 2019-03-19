@@ -81,8 +81,10 @@ public class JNegExpr extends AbstractUnopExpr {
   public TypeSignature getSignature() {
     Value op = opBox.getValue();
 
-    if (op.getSignature().equals(PrimitiveTypeSignature.getIntSignature()) || op.getSignature().equals(PrimitiveTypeSignature.getByteSignature())
-        || op.getSignature().equals(PrimitiveTypeSignature.getShortSignature()) || op.getSignature().equals(PrimitiveTypeSignature.getBooleanSignature())
+    if (op.getSignature().equals(PrimitiveTypeSignature.getIntSignature())
+        || op.getSignature().equals(PrimitiveTypeSignature.getByteSignature())
+        || op.getSignature().equals(PrimitiveTypeSignature.getShortSignature())
+        || op.getSignature().equals(PrimitiveTypeSignature.getBooleanSignature())
         || op.getSignature().equals(PrimitiveTypeSignature.getCharSignature())) {
       return PrimitiveTypeSignature.getIntSignature();
     } else if (op.getSignature().equals(PrimitiveTypeSignature.getLongSignature())) {

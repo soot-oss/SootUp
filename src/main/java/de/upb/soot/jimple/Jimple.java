@@ -100,7 +100,6 @@ import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.signatures.ReferenceTypeSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -256,7 +255,9 @@ public class Jimple {
 
   public static boolean isJavaKeywordType(TypeSignature t) {
     // TODO: Ensure that the check is complete.
-    return t instanceof PrimitiveTypeSignature || t instanceof VoidTypeSignature || t instanceof NullTypeSignature;
+    return t instanceof PrimitiveTypeSignature
+        || t instanceof VoidTypeSignature
+        || t instanceof NullTypeSignature;
   }
 
   public static Value cloneIfNecessary(Value val) {
@@ -389,10 +390,9 @@ public class Jimple {
     return new JNewArrayExpr(type, size);
   }
 
-  /**
-   * Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk.
-   */
-  public static JStaticInvokeExpr newStaticInvokeExpr(MethodSignature method, List<? extends Value> args) {
+  /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */
+  public static JStaticInvokeExpr newStaticInvokeExpr(
+      MethodSignature method, List<? extends Value> args) {
     return new JStaticInvokeExpr(method, args);
   }
 
@@ -412,8 +412,8 @@ public class Jimple {
    * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
    * chunk.
    */
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(Local base, MethodSignature method,
-      List<? extends Value> args) {
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(
+      Local base, MethodSignature method, List<? extends Value> args) {
     return new JSpecialInvokeExpr(base, method, args);
   }
 
@@ -421,11 +421,13 @@ public class Jimple {
    * Constructs a NewSpecialInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
    * chunk.
    */
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(Local base, MethodSignature method, Value... args) {
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(
+      Local base, MethodSignature method, Value... args) {
     return newSpecialInvokeExpr(base, method, Arrays.asList(args));
   }
 
-  public static JSpecialInvokeExpr newSpecialInvokeExpr(Local base, MethodSignature method, Value arg) {
+  public static JSpecialInvokeExpr newSpecialInvokeExpr(
+      Local base, MethodSignature method, Value arg) {
     return newSpecialInvokeExpr(base, method, Collections.singletonList(arg));
   }
 
@@ -437,8 +439,11 @@ public class Jimple {
    * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod
    * methodRef, List args) grammar chunk.
    */
-  public static JDynamicInvokeExpr newDynamicInvokeExpr(MethodSignature bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs, MethodSignature methodRef, List<? extends Value> args) {
+  public static JDynamicInvokeExpr newDynamicInvokeExpr(
+      MethodSignature bootstrapMethodRef,
+      List<? extends Value> bootstrapArgs,
+      MethodSignature methodRef,
+      List<? extends Value> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, args);
   }
 
@@ -446,8 +451,12 @@ public class Jimple {
    * Constructs a NewDynamicInvokeExpr(SootMethod bootstrapMethodRef, List bootstrapArgs, SootMethod
    * methodRef, List args) grammar chunk.
    */
-  public static JDynamicInvokeExpr newDynamicInvokeExpr(MethodSignature bootstrapMethodRef,
-      List<? extends Value> bootstrapArgs, MethodSignature methodRef, int tag, List<? extends Value> args) {
+  public static JDynamicInvokeExpr newDynamicInvokeExpr(
+      MethodSignature bootstrapMethodRef,
+      List<? extends Value> bootstrapArgs,
+      MethodSignature methodRef,
+      int tag,
+      List<? extends Value> args) {
     return new JDynamicInvokeExpr(bootstrapMethodRef, bootstrapArgs, methodRef, tag, args);
   }
 
@@ -455,8 +464,8 @@ public class Jimple {
    * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
    * chunk.
    */
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(Local base, MethodSignature method,
-      List<? extends Value> args) {
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(
+      Local base, MethodSignature method, List<? extends Value> args) {
     return new JVirtualInvokeExpr(base, method, args);
   }
 
@@ -464,11 +473,13 @@ public class Jimple {
    * Constructs a NewVirtualInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
    * chunk.
    */
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(Local base, MethodSignature method, Value... args) {
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(
+      Local base, MethodSignature method, Value... args) {
     return newVirtualInvokeExpr(base, method, Arrays.asList(args));
   }
 
-  public static JVirtualInvokeExpr newVirtualInvokeExpr(Local base, MethodSignature method, Value arg) {
+  public static JVirtualInvokeExpr newVirtualInvokeExpr(
+      Local base, MethodSignature method, Value arg) {
     return newVirtualInvokeExpr(base, method, Collections.singletonList(arg));
   }
 
@@ -480,8 +491,8 @@ public class Jimple {
    * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
    * chunk.
    */
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, MethodSignature method,
-      List<? extends Value> args) {
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
+      Local base, MethodSignature method, List<? extends Value> args) {
     return new JInterfaceInvokeExpr(base, method, args);
   }
 
@@ -489,11 +500,13 @@ public class Jimple {
    * Constructs a NewInterfaceInvokeExpr(Local base, SootMethod method, List of Immediate) grammar
    * chunk.
    */
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, MethodSignature method, Value... args) {
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
+      Local base, MethodSignature method, Value... args) {
     return newInterfaceInvokeExpr(base, method, Arrays.asList(args));
   }
 
-  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(Local base, MethodSignature method, Value arg) {
+  public static JInterfaceInvokeExpr newInterfaceInvokeExpr(
+      Local base, MethodSignature method, Value arg) {
     return newInterfaceInvokeExpr(base, method, Collections.singletonList(arg));
   }
 
@@ -686,11 +699,13 @@ public class Jimple {
     return new JNewExpr(type);
   }
 
-  public static JNewMultiArrayExpr newNewMultiArrayExpr(ArrayTypeSignature type, List<? extends Value> sizes) {
+  public static JNewMultiArrayExpr newNewMultiArrayExpr(
+      ArrayTypeSignature type, List<? extends Value> sizes) {
     return new JNewMultiArrayExpr(type, sizes);
   }
 
-  public static JTrap newTrap(JavaClassSignature exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
+  public static JTrap newTrap(
+      JavaClassSignature exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
     return new JTrap(exception, beginStmt, endStmt, handlerStmt);
   }
 }

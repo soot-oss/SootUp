@@ -6,9 +6,8 @@ import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.views.IView;
-
-import javax.annotation.Nonnull;
 import java.util.Collections;
+import javax.annotation.Nonnull;
 
 /**
  * Converts a single source into Soot IR (Jimple).
@@ -19,22 +18,20 @@ import java.util.Collections;
  * @author Manuel Benz
  */
 public interface IClassSourceContent {
-  
+
   @Nonnull
   AbstractClass resolveClass(@Nonnull ResolvingLevel level, @Nonnull IView view)
       throws ResolveException;
-  
+
   @Nonnull
-  default Iterable<SootMethod> resolveMethods(
-      @Nonnull JavaClassSignature signature
-  ) throws ResolveException {
+  default Iterable<SootMethod> resolveMethods(@Nonnull JavaClassSignature signature)
+      throws ResolveException {
     return Collections.emptyList();
   }
-  
+
   @Nonnull
-  default Iterable<SootField> resolveFields(
-      @Nonnull JavaClassSignature signature
-  ) throws ResolveException {
+  default Iterable<SootField> resolveFields(@Nonnull JavaClassSignature signature)
+      throws ResolveException {
     return Collections.emptyList();
   }
 }

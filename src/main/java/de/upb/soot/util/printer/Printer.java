@@ -35,7 +35,6 @@ import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.TypeSignature;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -116,8 +115,9 @@ public class Printer {
     // Print extension
     {
       Optional<JavaClassSignature> superclassSignature = cl.getSuperclassSignature();
-  
-      superclassSignature.ifPresent(javaClassSignature -> out.print(" extends " + javaClassSignature.toQuotedString()));
+
+      superclassSignature.ifPresent(
+          javaClassSignature -> out.print(" extends " + javaClassSignature.toQuotedString()));
     }
 
     // Print interfaces
@@ -311,14 +311,16 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        out.println("        catch "
-            + trap.getException().toQuotedString()
-            + " from "
-            + up.labels().get(trap.getBeginStmt())
-            + " to "
-            + up.labels().get(trap.getEndStmt())
-            + " with "
-            + up.labels().get(trap.getHandlerStmt()) + ";");
+        out.println(
+            "        catch "
+                + trap.getException().toQuotedString()
+                + " from "
+                + up.labels().get(trap.getBeginStmt())
+                + " to "
+                + up.labels().get(trap.getEndStmt())
+                + " with "
+                + up.labels().get(trap.getHandlerStmt())
+                + ";");
 
         incJimpleLnNum();
       }
@@ -339,7 +341,8 @@ public class Printer {
   private void printLocalsInBody(Body body, IStmtPrinter up) {
     // Print out local variables
     {
-      Map<TypeSignature, List<Local>> typeToLocals = new LinkedHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
+      Map<TypeSignature, List<Local>> typeToLocals =
+          new LinkedHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
 
       // Collect locals
       {

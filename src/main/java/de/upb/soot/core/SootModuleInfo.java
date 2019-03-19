@@ -5,11 +5,11 @@ import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.util.Utils;
 import de.upb.soot.views.IView;
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 public class SootModuleInfo extends AbstractClass {
 
@@ -221,12 +221,16 @@ public class SootModuleInfo extends AbstractClass {
   public ISignature getSignature() {
     return this.moduleSignature;
   }
-  
-  @Nonnull @Override public Set<IMethod> getMethods() {
+
+  @Nonnull
+  @Override
+  public Set<IMethod> getMethods() {
     return Utils.emptyImmutableSet();
   }
-  
-  @Nonnull @Override public Set<IField> getFields() {
+
+  @Nonnull
+  @Override
+  public Set<IField> getFields() {
     return Utils.emptyImmutableSet();
   }
 }

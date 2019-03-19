@@ -3,7 +3,6 @@ package de.upb.soot.frontends;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.MethodSignature;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

@@ -8,11 +8,10 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
-
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
 /**
  * A view on code.
@@ -75,12 +74,13 @@ public interface IView {
   @Nonnull
   Optional<Scope> getScope();
 
-//  /**
-//   * Returns the {@link JavaClassSignature} with given class Signature from the view. If there is no RefType with given className
-//   * exists, create a new instance.
-//   */
-//  @Nonnull
-//  JavaClassSignature getRefType(@Nonnull TypeSignature classSignature);
+  //  /**
+  //   * Returns the {@link JavaClassSignature} with given class Signature from the view. If there
+  // is no RefType with given className
+  //   * exists, create a new instance.
+  //   */
+  //  @Nonnull
+  //  JavaClassSignature getRefType(@Nonnull TypeSignature classSignature);
 
   /** Returns the {@link SignatureFactory} for this view. */
   @Nonnull
@@ -91,36 +91,34 @@ public interface IView {
   Options getOptions();
 
   // FIXME: [JMP] Adding classes violates the immutability rule!
-  /**
-   * Add given class to the view.
-   */
+  /** Add given class to the view. */
   void addClass(@Nonnull AbstractClass klass);
 
   boolean doneResolving();
 
   @Nonnull
   String quotedNameOf(@Nonnull String name);
-  
-//  // TODO: [JMP] Move type resolving into view.
-//  /**
-//   * Returns a backed list of the exceptions thrown by this methodRef.
-//   */
-//  public @Nonnull Collection<SootClass> getExceptions() {
-//    return this.exceptions.stream()
-//             .map(e -> this.getView().getClass(e))
-//             .filter(Optional::isPresent).map(Optional::get)
-//             .map(it -> (SootClass) it).collect(Collectors.toSet());
-//  }
-  
-//  // TODO: This was placed in `JDynamicInvokeExpr`
-//  public Optional<SootMethod> getBootstrapMethod() {
-//    JavaClassSignature signature = bsm.declClassSignature;
-//    Optional<AbstractClass> op = this.getView().getClass(signature);
-//    if (op.isPresent()) {
-//      AbstractClass klass = op.get();
-//      Optional<? extends IMethod> m = klass.getMethod(bsm);
-//      return m.map(c -> (SootMethod) c);
-//    }
-//    return Optional.empty();
-//  }
+
+  //  // TODO: [JMP] Move type resolving into view.
+  //  /**
+  //   * Returns a backed list of the exceptions thrown by this methodRef.
+  //   */
+  //  public @Nonnull Collection<SootClass> getExceptions() {
+  //    return this.exceptions.stream()
+  //             .map(e -> this.getView().getClass(e))
+  //             .filter(Optional::isPresent).map(Optional::get)
+  //             .map(it -> (SootClass) it).collect(Collectors.toSet());
+  //  }
+
+  //  // TODO: This was placed in `JDynamicInvokeExpr`
+  //  public Optional<SootMethod> getBootstrapMethod() {
+  //    JavaClassSignature signature = bsm.declClassSignature;
+  //    Optional<AbstractClass> op = this.getView().getClass(signature);
+  //    if (op.isPresent()) {
+  //      AbstractClass klass = op.get();
+  //      Optional<? extends IMethod> m = klass.getMethod(bsm);
+  //      return m.map(c -> (SootMethod) c);
+  //    }
+  //    return Optional.empty();
+  //  }
 }

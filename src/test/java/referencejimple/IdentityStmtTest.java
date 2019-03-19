@@ -85,16 +85,14 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     // Decl field
     fields.add(
         new SootField(
-                dsm.getFieldSignature(
-                    "declProperty",
-                    classSignature,
-                    PrimitiveTypeSignature.getIntSignature()),
+            dsm.getFieldSignature(
+                "declProperty", classSignature, PrimitiveTypeSignature.getIntSignature()),
             EnumSet.noneOf(Modifier.class)));
-  
-    FieldSignature initFieldSignature = dsm.getFieldSignature("initProperty",
-                                                        classSignature,
-                                                        PrimitiveTypeSignature.getIntSignature());
-    
+
+    FieldSignature initFieldSignature =
+        dsm.getFieldSignature(
+            "initProperty", classSignature, PrimitiveTypeSignature.getIntSignature());
+
     // Init field
     fields.add(new SootField(initFieldSignature, EnumSet.noneOf(Modifier.class)));
 
@@ -129,16 +127,20 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     MethodSignature methodSignature =
         dsm.getMethodSignature(
-          "<init>", classSignature, VoidTypeSignature.getInstance().toString(), Arrays.asList(""));
+            "<init>",
+            classSignature,
+            VoidTypeSignature.getInstance().toString(),
+            Arrays.asList(""));
     AstMethod.DebuggingInformation debugInfo = null;
 
     List<Local> locals = new LinkedList<>();
     List<Trap> traps = new LinkedList<>();
     List<IStmt> stmts = new LinkedList<>();
-  
-    JavaClassSignature typeSignature = dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt");
-//    new RefType(view, dsm.getTypeSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
-//    RefType type = RefType.getInstance("de.upb.soot.instructions.stmt.IdentityStmt");
+
+    JavaClassSignature typeSignature =
+        dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt");
+    //    new RefType(view, dsm.getTypeSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
+    //    RefType type = RefType.getInstance("de.upb.soot.instructions.stmt.IdentityStmt");
 
     Local r0 = generator.generateField(typeSignature);
     stmts.add(Jimple.newIdentityStmt(r0, Jimple.newThisRef(typeSignature), nop));
@@ -147,24 +149,19 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     // add(Jimple.newSpecialInvokeExpr( r0 , currentMethod ));
 
     Value value = IntConstant.getInstance(42);
-    stmts.add(
-        Jimple.newAssignStmt(
-            Jimple.newInstanceFieldRef(r0, initFieldSignature),
-            value,
-            nop));
+    stmts.add(Jimple.newAssignStmt(Jimple.newInstanceFieldRef(r0, initFieldSignature), value, nop));
 
     stmts.add(Jimple.newReturnVoidStmt(nop));
 
     Body body = new Body(locals, traps, stmts, new NoPositionInformation());
     IMethodSourceContent methodSource = new DummyMethodSource(methodSignature, body);
-    
-    return
-        new SootMethod(
-            methodSource,
-            methodSignature,
-            EnumSet.of(Modifier.PUBLIC),
-            Collections.emptyList(),
-            debugInfo);
+
+    return new SootMethod(
+        methodSource,
+        methodSignature,
+        EnumSet.of(Modifier.PUBLIC),
+        Collections.emptyList(),
+        debugInfo);
   }
 
   /*

@@ -43,20 +43,17 @@ public class JIdentityStmtTest {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
     DefaultSignatureFactory factory = new DefaultSignatureFactory();
 
-    Local thiz =
-        new Local("$r0", factory.getTypeSignature("somepackage.dummy.MyClass"));
+    Local thiz = new Local("$r0", factory.getTypeSignature("somepackage.dummy.MyClass"));
     IStmt thisIdStmt =
         new JIdentityStmt(
-            thiz,
-            new JThisRef(factory.getClassSignature("somepackage.dummy.MyClass")),
-            nop);
+            thiz, new JThisRef(factory.getClassSignature("somepackage.dummy.MyClass")), nop);
 
     Local param = new Local("$i0", PrimitiveTypeSignature.getIntSignature());
     IStmt paramIdStmt =
-        new JIdentityStmt(param, new JParameterRef(PrimitiveTypeSignature.getIntSignature(), 123), nop);
+        new JIdentityStmt(
+            param, new JParameterRef(PrimitiveTypeSignature.getIntSignature(), 123), nop);
 
-    Local exception =
-        new Local("$r1", factory.getTypeSignature("java.lang.Exception"));
+    Local exception = new Local("$r1", factory.getTypeSignature("java.lang.Exception"));
     IStmt exceptionIdStmt = new JIdentityStmt(exception, new JCaughtExceptionRef(), nop);
 
     // toString
@@ -68,18 +65,14 @@ public class JIdentityStmtTest {
     Assert.assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
-                new Local(
-                    "$r5", factory.getTypeSignature("somepackage.NotMyClass")),
+                new Local("$r5", factory.getTypeSignature("somepackage.NotMyClass")),
                 new JThisRef(factory.getClassSignature("somepackage.NotMyClass")),
                 nop)));
     Assert.assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
-                new Local(
-                    "$r42",
-                    factory.getTypeSignature("somepackage.dummy.MyClass")),
-                new JThisRef(
-                    factory.getClassSignature("somepackage.dummy.MyClass")),
+                new Local("$r42", factory.getTypeSignature("somepackage.dummy.MyClass")),
+                new JThisRef(factory.getClassSignature("somepackage.dummy.MyClass")),
                 nop)));
     Assert.assertTrue(thisIdStmt.equivTo(thisIdStmt));
     Assert.assertFalse(thisIdStmt.equivTo(exceptionIdStmt));
@@ -104,8 +97,7 @@ public class JIdentityStmtTest {
     Assert.assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
-                new Local(
-                    "$r1", factory.getTypeSignature("somepckg.NotMyException")),
+                new Local("$r1", factory.getTypeSignature("somepckg.NotMyException")),
                 new JCaughtExceptionRef(),
                 nop)));
     Assert.assertFalse(paramIdStmt.equivTo(thisIdStmt));

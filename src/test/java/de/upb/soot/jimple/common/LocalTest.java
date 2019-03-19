@@ -22,6 +22,9 @@
 
 package de.upb.soot.jimple.common;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import categories.Java8Test;
 import de.upb.soot.jimple.IgnoreLocalNameComparator;
 import de.upb.soot.jimple.basic.JimpleComparator;
@@ -30,9 +33,6 @@ import de.upb.soot.signatures.PrimitiveTypeSignature;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import soot.jimple.internal.JBreakpointStmt;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 @Category(Java8Test.class)
 public class LocalTest {

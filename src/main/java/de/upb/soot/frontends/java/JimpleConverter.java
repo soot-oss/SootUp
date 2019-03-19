@@ -38,6 +38,12 @@ import de.upb.soot.signatures.ReferenceTypeSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.UnknownTypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import soot.FastHierarchy;
 import soot.Local;
 import soot.PatchingChain;
@@ -57,13 +63,6 @@ import soot.jimple.JimpleBody;
 import soot.jimple.Stmt;
 import soot.jimple.internal.JimpleLocal;
 import soot.util.Chain;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * An IR Converter between old and new soot.
@@ -149,12 +148,13 @@ public class JimpleConverter {
       types.add(convertType(type));
     }
     soot.SootMethod toMethod =
-        new SootMethod(fromMethod.getName(), types, convertType(fromMethod.getReturnTypeSignature()));
+        new SootMethod(
+            fromMethod.getName(), types, convertType(fromMethod.getReturnTypeSignature()));
     toMethod.setModifiers(convertModifiers(fromMethod.getModifiers()));
     List<soot.SootClass> exceptions = new ArrayList<>();
 
     for (JavaClassSignature fromException : fromMethod.getExceptionSignatures()) {
-//      soot.SootClass exception = convertSootClass(fromException);
+      //      soot.SootClass exception = convertSootClass(fromException);
       soot.SootClass exception = this.getSootClass(Optional.empty(), Optional.of(fromException));
       exceptions.add(exception);
     }
@@ -591,7 +591,7 @@ public class JimpleConverter {
   public soot.Type convertType(TypeSignature from) {
     soot.Type to = UnknownType.v();
     if (!(from instanceof UnknownTypeSignature)) {
-      if(from instanceof PrimitiveTypeSignature) {
+      if (from instanceof PrimitiveTypeSignature) {
         if (from.equals(PrimitiveTypeSignature.getBooleanSignature())) {
           return soot.BooleanType.v();
         } else if (from.equals(PrimitiveTypeSignature.getByteSignature())) {
@@ -620,10 +620,10 @@ public class JimpleConverter {
         return soot.RefType.v(className);
       } else if (from instanceof NullTypeSignature) {
         return soot.NullType.v();
-//      } else if (from instanceof de.upb.soot.jimple.common.type.AnySubType) {
-//        de.upb.soot.jimple.common.type.AnySubType type =
-//            (de.upb.soot.jimple.common.type.AnySubType) from;
-//        return soot.AnySubType.v((soot.RefType) convertType(type.getBase()));
+        //      } else if (from instanceof de.upb.soot.jimple.common.type.AnySubType) {
+        //        de.upb.soot.jimple.common.type.AnySubType type =
+        //            (de.upb.soot.jimple.common.type.AnySubType) from;
+        //        return soot.AnySubType.v((soot.RefType) convertType(type.getBase()));
       } else if (from instanceof VoidTypeSignature) {
         return soot.VoidType.v();
       } else {
@@ -695,9 +695,10 @@ public class JimpleConverter {
       Optional<JavaClassSignature> op, Optional<JavaClassSignature> sigOp) {
     String className = sigOp.get().getFullyQualifiedName();
     if (!Scene.v().containsClass(className) && op.isPresent()) {
-//      return convertSootClass(op.get());
-      Optional<de.upb.soot.core.SootClass> any = fromClasses.stream().filter(it -> it.getSignature().equals(op.get())).findAny();
-      
+      //      return convertSootClass(op.get());
+      Optional<de.upb.soot.core.SootClass> any =
+          fromClasses.stream().filter(it -> it.getSignature().equals(op.get())).findAny();
+
       return any.map(this::convertSootClass).orElseGet(() -> Scene.v().getSootClass(className));
     } else {
       return Scene.v().getSootClass(className);

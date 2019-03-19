@@ -97,6 +97,6 @@ public class JInstanceFieldRef extends FieldRef {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-      return getFieldSignature().hashCode() * 101 + baseBox.getValue().hashCode() + 17;
+    return getFieldSignature().hashCode() * 101 + baseBox.getValue().hashCode() + 17;
   }
 }

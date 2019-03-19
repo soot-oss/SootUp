@@ -27,8 +27,8 @@
 
 package de.upb.soot.core;
 
-import javax.annotation.Nonnull;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 /**
  * An Enum that provides static methods and constants to represent and work with with Java modifiers

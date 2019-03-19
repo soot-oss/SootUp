@@ -138,8 +138,7 @@ public class MethodHandle extends Constant {
   }
 
   @Override
-  public int hashCode()
-  {
+  public int hashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((methodRef == null) ? 0 : methodRef.hashCode());

@@ -46,20 +46,22 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   public JInterfaceInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
     super(Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
 
-    // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are available
-//    // Check that the method's class is resolved enough
-//    // CheckLevel returns without doing anything because we can be not 'done' resolving
-//    Optional<AbstractClass> declaringClass = view.getClass(method.declClassSignature);
-//    if (declaringClass.isPresent()) {
-//      SootClass cls = (SootClass) declaringClass.get();
-//      cls.checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
-//      // now check if the class is valid
-//      if (!cls.isInterface() && !cls.isPhantomClass()) {
-//        throw new RuntimeException("Trying to create interface invoke expression for non-interface type: " + cls
-//            + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
-//      }
-//    }
-    
+    // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
+    // available
+    //    // Check that the method's class is resolved enough
+    //    // CheckLevel returns without doing anything because we can be not 'done' resolving
+    //    Optional<AbstractClass> declaringClass = view.getClass(method.declClassSignature);
+    //    if (declaringClass.isPresent()) {
+    //      SootClass cls = (SootClass) declaringClass.get();
+    //      cls.checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
+    //      // now check if the class is valid
+    //      if (!cls.isInterface() && !cls.isPhantomClass()) {
+    //        throw new RuntimeException("Trying to create interface invoke expression for
+    // non-interface type: " + cls
+    //            + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
+    //      }
+    //    }
+
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }

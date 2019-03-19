@@ -24,45 +24,60 @@ package de.upb.soot.signatures;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
-
-import javax.annotation.Nonnull;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 
 /** Represents Java's primitive types. */
 public class PrimitiveTypeSignature extends TypeSignature {
-  
-  @Nonnull private static final PrimitiveTypeSignature BYTE_TYPE_SIGNATURE = new PrimitiveTypeSignature("byte");
 
-  @Nonnull private static final PrimitiveTypeSignature SHORT_TYPE_SIGNATURE = new PrimitiveTypeSignature("short");
+  @Nonnull
+  private static final PrimitiveTypeSignature BYTE_TYPE_SIGNATURE =
+      new PrimitiveTypeSignature("byte");
 
-  @Nonnull private static final PrimitiveTypeSignature INT_TYPE_SIGNATURE = new PrimitiveTypeSignature("int");
+  @Nonnull
+  private static final PrimitiveTypeSignature SHORT_TYPE_SIGNATURE =
+      new PrimitiveTypeSignature("short");
 
-  @Nonnull private static final PrimitiveTypeSignature LONG_TYPE_SIGNATURE = new PrimitiveTypeSignature("long");
+  @Nonnull
+  private static final PrimitiveTypeSignature INT_TYPE_SIGNATURE =
+      new PrimitiveTypeSignature("int");
 
-  @Nonnull private static final PrimitiveTypeSignature FLOAT_TYPE_SIGNATURE = new PrimitiveTypeSignature("float");
+  @Nonnull
+  private static final PrimitiveTypeSignature LONG_TYPE_SIGNATURE =
+      new PrimitiveTypeSignature("long");
 
-  @Nonnull private static final PrimitiveTypeSignature DOUBLE_TYPE_SIGNATURE = new PrimitiveTypeSignature("double");
+  @Nonnull
+  private static final PrimitiveTypeSignature FLOAT_TYPE_SIGNATURE =
+      new PrimitiveTypeSignature("float");
 
-  @Nonnull private static final PrimitiveTypeSignature CHAR_TYPE_SIGNATURE = new PrimitiveTypeSignature("char");
+  @Nonnull
+  private static final PrimitiveTypeSignature DOUBLE_TYPE_SIGNATURE =
+      new PrimitiveTypeSignature("double");
 
-  @Nonnull private static final PrimitiveTypeSignature BOOLEAN_TYPE_SIGNATURE = new PrimitiveTypeSignature("boolean");
+  @Nonnull
+  private static final PrimitiveTypeSignature CHAR_TYPE_SIGNATURE =
+      new PrimitiveTypeSignature("char");
+
+  @Nonnull
+  private static final PrimitiveTypeSignature BOOLEAN_TYPE_SIGNATURE =
+      new PrimitiveTypeSignature("boolean");
 
   @Nonnull private static final ImmutableMap<String, PrimitiveTypeSignature> CACHED_SIGNATURES;
-  
+
   static {
     CACHED_SIGNATURES =
-      ImmutableMap.<String, PrimitiveTypeSignature>builder()
-        .put(BYTE_TYPE_SIGNATURE.getName(), BYTE_TYPE_SIGNATURE)
-        .put(SHORT_TYPE_SIGNATURE.getName(), SHORT_TYPE_SIGNATURE)
-        .put(INT_TYPE_SIGNATURE.getName(), INT_TYPE_SIGNATURE)
-        .put(LONG_TYPE_SIGNATURE.getName(), LONG_TYPE_SIGNATURE)
-        .put(FLOAT_TYPE_SIGNATURE.getName(), FLOAT_TYPE_SIGNATURE)
-        .put(DOUBLE_TYPE_SIGNATURE.getName(), DOUBLE_TYPE_SIGNATURE)
-        .put(CHAR_TYPE_SIGNATURE.getName(), CHAR_TYPE_SIGNATURE)
-        .put(BOOLEAN_TYPE_SIGNATURE.getName(), BOOLEAN_TYPE_SIGNATURE)
-        .build();
+        ImmutableMap.<String, PrimitiveTypeSignature>builder()
+            .put(BYTE_TYPE_SIGNATURE.getName(), BYTE_TYPE_SIGNATURE)
+            .put(SHORT_TYPE_SIGNATURE.getName(), SHORT_TYPE_SIGNATURE)
+            .put(INT_TYPE_SIGNATURE.getName(), INT_TYPE_SIGNATURE)
+            .put(LONG_TYPE_SIGNATURE.getName(), LONG_TYPE_SIGNATURE)
+            .put(FLOAT_TYPE_SIGNATURE.getName(), FLOAT_TYPE_SIGNATURE)
+            .put(DOUBLE_TYPE_SIGNATURE.getName(), DOUBLE_TYPE_SIGNATURE)
+            .put(CHAR_TYPE_SIGNATURE.getName(), CHAR_TYPE_SIGNATURE)
+            .put(BOOLEAN_TYPE_SIGNATURE.getName(), BOOLEAN_TYPE_SIGNATURE)
+            .build();
   }
-  
+
   /**
    * Signatures of primitive types are unique and should not be created from the outside, thus the
    * constructor is private.
@@ -74,80 +89,80 @@ public class PrimitiveTypeSignature extends TypeSignature {
   }
 
   @Nonnull private final String _name;
-  
+
   /**
    * Gets the primitive type's name.
-   * 
+   *
    * @return The value to get.
    */
   @Nonnull
-  public String getName()
-  {
-  	return this._name;
+  public String getName() {
+    return this._name;
   }
-  
+
   @Override
   @Nonnull
   public String toString() {
     return _name;
   }
-  
+
   @Override
   @Nonnull
   public String toQuotedString() {
     return "'" + this._name + "'";
   }
-  
+
   @Nonnull
   public static ImmutableCollection<PrimitiveTypeSignature> all() {
     return CACHED_SIGNATURES.values();
   }
-  
+
   @Nonnull
   public static PrimitiveTypeSignature of(@Nonnull String name) {
-    return find(name).orElseThrow(() -> new IllegalArgumentException("Name of primitive type not found."));
+    return find(name)
+        .orElseThrow(() -> new IllegalArgumentException("Name of primitive type not found."));
   }
-  
+
   @Nonnull
   public static Optional<PrimitiveTypeSignature> find(@Nonnull String name) {
     return Optional.ofNullable(CACHED_SIGNATURES.get(name));
   }
-  
+
   @Nonnull
   public static PrimitiveTypeSignature getByteSignature() {
     return BYTE_TYPE_SIGNATURE;
   }
-  
+
   @Nonnull
   public static PrimitiveTypeSignature getShortSignature() {
     return SHORT_TYPE_SIGNATURE;
   }
-  
+
   @Nonnull
   public static PrimitiveTypeSignature getIntSignature() {
     return INT_TYPE_SIGNATURE;
   }
-  
+
   @Nonnull
   public static PrimitiveTypeSignature getLongSignature() {
     return LONG_TYPE_SIGNATURE;
   }
-  
+
   @Nonnull
   public static PrimitiveTypeSignature getFloatSignature() {
     return FLOAT_TYPE_SIGNATURE;
   }
-  
+
   @Nonnull
   public static PrimitiveTypeSignature getDoubleSignature() {
     return DOUBLE_TYPE_SIGNATURE;
   }
-  
+
   @Nonnull
   public static PrimitiveTypeSignature getCharSignature() {
     return CHAR_TYPE_SIGNATURE;
   }
-  
+
   @Nonnull
   public static PrimitiveTypeSignature getBooleanSignature() {
     return BOOLEAN_TYPE_SIGNATURE;

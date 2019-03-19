@@ -7,7 +7,6 @@ import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.signatures.TypeSignature;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;

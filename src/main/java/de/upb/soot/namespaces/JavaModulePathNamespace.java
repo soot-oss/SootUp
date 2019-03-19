@@ -16,17 +16,16 @@ import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
-import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the {@link INamespace} interface for the Java modulepath. Handles
@@ -139,14 +138,16 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     public @Nonnull TypeSignature getTypeSignature(@Nonnull String typeName) {
       return factory.getTypeSignature(typeName);
     }
-  
+
     @Override
-    public @Nonnull Optional<PrimitiveTypeSignature> getPrimitiveTypeSignature(@Nonnull String typeName) {
+    public @Nonnull Optional<PrimitiveTypeSignature> getPrimitiveTypeSignature(
+        @Nonnull String typeName) {
       return factory.getPrimitiveTypeSignature(typeName);
     }
-  
+
     @Override
-    public @Nonnull ArrayTypeSignature getArrayTypeSignature(@Nonnull TypeSignature baseType, int dim) {
+    public @Nonnull ArrayTypeSignature getArrayTypeSignature(
+        @Nonnull TypeSignature baseType, int dim) {
       return factory.getArrayTypeSignature(baseType, dim);
     }
 
@@ -179,49 +180,47 @@ public class JavaModulePathNamespace extends AbstractNamespace {
       return factory.getMethodSignature(
           methodName, declaringClassSignature, fqReturnType, parameters);
     }
-  
+
     @Nonnull
     @Override
-    public MethodSignature getMethodSignature(@Nonnull SootClass declaringClass,
-                                              @Nonnull MethodSubSignature subSignature) {
+    public MethodSignature getMethodSignature(
+        @Nonnull SootClass declaringClass, @Nonnull MethodSubSignature subSignature) {
       return this.factory.getMethodSignature(declaringClass, subSignature);
     }
-  
+
     @Nonnull
     @Override
     public MethodSignature getMethodSignature(
         @Nonnull JavaClassSignature declaringClassSignature,
-        @Nonnull MethodSubSignature subSignature
-    ) {
+        @Nonnull MethodSubSignature subSignature) {
       return this.factory.getMethodSignature(declaringClassSignature, subSignature);
     }
-  
+
     @Override
     public @Nonnull MethodSignature parseMethodSignature(@Nonnull String methodSignature) {
       return factory.parseMethodSignature(methodSignature);
     }
-  
+
     @Nonnull
     @Override
     public MethodSubSignature getMethodSubSignature(
         @Nonnull String name,
         @Nonnull Iterable<? extends TypeSignature> parameterSignatures,
-        @Nonnull TypeSignature returnTypeSignature
-    ) {
+        @Nonnull TypeSignature returnTypeSignature) {
       return this.factory.getMethodSubSignature(name, parameterSignatures, returnTypeSignature);
     }
-  
+
     @Nonnull
     @Override
     public MethodSubSignature parseMethodSubSignature(@Nonnull String methodSubSignature) {
       return this.factory.parseMethodSubSignature(methodSubSignature);
     }
-  
+
     @Override
     public @Nonnull FieldSignature parseFieldSignature(@Nonnull String fieldSignature) {
       return factory.parseFieldSignature(fieldSignature);
     }
-  
+
     @Override
     public @Nonnull JavaClassSignature fromPath(@Nonnull Path file) {
       if (factory instanceof ModuleSignatureFactory) {
@@ -255,25 +254,22 @@ public class JavaModulePathNamespace extends AbstractNamespace {
         @Nonnull TypeSignature fieldType) {
       return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
     }
-  
+
     @Nonnull
     @Override
     public FieldSignature getFieldSignature(
         @Nonnull JavaClassSignature declaringClassSignature,
-        @Nonnull FieldSubSignature subSignature
-    ) {
+        @Nonnull FieldSubSignature subSignature) {
       return this.factory.getFieldSignature(declaringClassSignature, subSignature);
     }
-  
+
     @Nonnull
     @Override
     public FieldSubSignature getFieldSubSignature(
-        @Nonnull String name,
-        @Nonnull TypeSignature typeSignature
-    ) {
+        @Nonnull String name, @Nonnull TypeSignature typeSignature) {
       return this.factory.getFieldSubSignature(name, typeSignature);
     }
-    
+
     @Nonnull
     @Override
     public FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature) {

@@ -8,7 +8,6 @@ import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -41,8 +40,9 @@ public class ViewBuilder {
     for (ClassSource cs :
         this.project.getNamespace().getClassSources(result.getSignatureFactory())) {
       try {
-        AbstractClass abstractClass = cs.getContent().resolveClass(ResolvingLevel.HIERARCHY, result);
-        
+        AbstractClass abstractClass =
+            cs.getContent().resolveClass(ResolvingLevel.HIERARCHY, result);
+
         result.addClass(abstractClass);
       } catch (ResolveException e) {
         e.printStackTrace();

@@ -46,9 +46,6 @@ import de.upb.soot.validation.TrapsValidator;
 import de.upb.soot.validation.UsesValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.validation.ValueBoxesValidator;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -58,6 +55,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class that models the Jimple body (code attribute) of a methodRef.
@@ -80,7 +79,8 @@ public class Body implements Serializable {
   @Nullable private final Position position;
 
   /** An array containing some validators in order to validate the JimpleBody */
-  @Nonnull private static final List<BodyValidator> validators =
+  @Nonnull
+  private static final List<BodyValidator> validators =
       Utils.immutableList(
           new LocalsValidator(),
           new TrapsValidator(),
@@ -97,19 +97,22 @@ public class Body implements Serializable {
    *
    * @param locals please use {@link LocalGenerator} to generate local for a body.
    */
-  public Body(@Nonnull List<Local> locals, @Nonnull List<Trap> traps, @Nonnull List<IStmt> stmts, @Nullable Position position) {
+  public Body(
+      @Nonnull List<Local> locals,
+      @Nonnull List<Trap> traps,
+      @Nonnull List<IStmt> stmts,
+      @Nullable Position position) {
     this.locals = Collections.unmodifiableList(locals);
     this.traps = Collections.unmodifiableList(traps);
     this.stmts = Collections.unmodifiableList(stmts);
     this.position = position;
-    
+
     // FIXME: [JMP] Virtual method call in constructor
     checkInit();
   }
 
   /** The methodRef associated with this Body. */
-  @Nullable
-  private volatile SootMethod _method;
+  @Nullable private volatile SootMethod _method;
 
   /**
    * Returns the methodRef associated with this Body.
@@ -118,11 +121,12 @@ public class Body implements Serializable {
    */
   public SootMethod getMethod() {
     SootMethod owner = this._method;
-    
+
     if (owner == null) {
-      throw new IllegalStateException("The owning method of this body instance has not been not set yet.");
+      throw new IllegalStateException(
+          "The owning method of this body instance has not been not set yet.");
     }
-    
+
     return owner;
   }
 
@@ -133,9 +137,10 @@ public class Body implements Serializable {
    */
   protected synchronized void setMethod(@Nullable SootMethod value) {
     if (this._method != null) {
-      throw new IllegalStateException("The declaring class of this soot class member has already been set.");
+      throw new IllegalStateException(
+          "The declaring class of this soot class member has already been set.");
     }
-    
+
     this._method = value;
   }
 
@@ -281,34 +286,36 @@ public class Body implements Serializable {
     return new Body(this.locals, this.traps, this.stmts, this.position);
   }
 
-//  /**
-//   * Make sure that the JimpleBody is well formed. If not, throw an exception. Right now, performs only a handful of checks.
-//   */
-//  public void validate() {
-//    final List<ValidationException> exceptionList = new ArrayList<>();
-//    validate(exceptionList);
-//    if (!exceptionList.isEmpty()) {
-//      throw exceptionList.get(0);
-//    }
-//  }
+  //  /**
+  //   * Make sure that the JimpleBody is well formed. If not, throw an exception. Right now,
+  // performs only a handful of checks.
+  //   */
+  //  public void validate() {
+  //    final List<ValidationException> exceptionList = new ArrayList<>();
+  //    validate(exceptionList);
+  //    if (!exceptionList.isEmpty()) {
+  //      throw exceptionList.get(0);
+  //    }
+  //  }
 
-//  /**
-//   * Validates the jimple body and saves a list of all validation errors
-//   *
-//   * @param exceptionList
-//   *          the list of validation errors
-//   */
-//  public void validate(List<ValidationException> exceptionList) {
-//    validate(exceptionList);
-//    final boolean runAllValidators
-//        = this.method.getView().getOptions().debug() || this.method.getView().getOptions().validate();
-//    for (BodyValidator validator : validators) {
-//      if (!validator.isBasicValidator() && !runAllValidators) {
-//        continue;
-//      }
-//      validator.validate(this, exceptionList);
-//    }
-//  }
+  //  /**
+  //   * Validates the jimple body and saves a list of all validation errors
+  //   *
+  //   * @param exceptionList
+  //   *          the list of validation errors
+  //   */
+  //  public void validate(List<ValidationException> exceptionList) {
+  //    validate(exceptionList);
+  //    final boolean runAllValidators
+  //        = this.method.getView().getOptions().debug() ||
+  // this.method.getView().getOptions().validate();
+  //    for (BodyValidator validator : validators) {
+  //      if (!validator.isBasicValidator() && !runAllValidators) {
+  //        continue;
+  //      }
+  //      validator.validate(this, exceptionList);
+  //    }
+  //  }
 
   public void validateIdentityStatements() {
     runValidation(new IdentityStatementsValidator());

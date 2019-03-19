@@ -27,10 +27,10 @@ public interface ITypeVisitor {
   void caseArrayType(PrimitiveTypeSignature t);
 
   void caseRefType(JavaClassSignature t);
-  
+
   void caseNullType(NullTypeSignature t);
 
-  void caseUnknownType(/*UnknownType t*/);
+  void caseUnknownType(/*UnknownType t*/ );
 
   void caseVoidType(VoidTypeSignature t);
 

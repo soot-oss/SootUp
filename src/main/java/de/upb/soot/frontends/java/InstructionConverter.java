@@ -89,14 +89,14 @@ import de.upb.soot.signatures.ReferenceTypeSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.UnknownTypeSignature;
-import scala.Char;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import scala.Char;
+
 /**
  * This class converts wala instruction to jimple statement.
  *
@@ -118,8 +118,11 @@ public class InstructionConverter {
   private Map<Integer, Local> locals;
   private SignatureFactory sigFactory;
 
-  public InstructionConverter(WalaIRToJimpleConverter converter, MethodSignature methodSignature, AstMethod walaMethod,
-                              LocalGenerator localGenerator) {
+  public InstructionConverter(
+      WalaIRToJimpleConverter converter,
+      MethodSignature methodSignature,
+      AstMethod walaMethod,
+      LocalGenerator localGenerator) {
     this.converter = converter;
     this.methodSignature = methodSignature;
     this.walaMethod = walaMethod;
@@ -203,7 +206,8 @@ public class InstructionConverter {
     return stmts;
   }
 
-  private IStmt convertArrayStoreInstruction(DebuggingInformation debugInfo, SSAArrayStoreInstruction inst) {
+  private IStmt convertArrayStoreInstruction(
+      DebuggingInformation debugInfo, SSAArrayStoreInstruction inst) {
     Local base = getLocal(UnknownTypeSignature.getInstance(), inst.getArrayRef());
     int i = inst.getIndex();
     Value index = null;
@@ -224,7 +228,8 @@ public class InstructionConverter {
         arrayRef, rvalue, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
   }
 
-  private IStmt convertArrayLoadInstruction(DebuggingInformation debugInfo, SSAArrayLoadInstruction inst) {
+  private IStmt convertArrayLoadInstruction(
+      DebuggingInformation debugInfo, SSAArrayLoadInstruction inst) {
     Local base = getLocal(UnknownTypeSignature.getInstance(), inst.getArrayRef());
     int i = inst.getIndex();
     Value index = null;
@@ -255,13 +260,17 @@ public class InstructionConverter {
   private IStmt convertGetCaughtExceptionInstruction(
       DebuggingInformation debugInfo, SSAGetCaughtExceptionInstruction inst) {
     int exceptionValue = inst.getException();
-    Local local = getLocal(DefaultSignatureFactory.getInstance().getClassSignature("java.lang.Throwable"), exceptionValue);
+    Local local =
+        getLocal(
+            DefaultSignatureFactory.getInstance().getClassSignature("java.lang.Throwable"),
+            exceptionValue);
     JCaughtExceptionRef caught = Jimple.newCaughtExceptionRef();
     return Jimple.newIdentityStmt(
         local, caught, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
   }
 
-  private IStmt convertMonitorInstruction(DebuggingInformation debugInfo, SSAMonitorInstruction inst) {
+  private IStmt convertMonitorInstruction(
+      DebuggingInformation debugInfo, SSAMonitorInstruction inst) {
     Value op = getLocal(UnknownTypeSignature.getInstance(), inst.getRef());
     if (inst.isMonitorEnter()) {
       return Jimple.newEnterMonitorStmt(
@@ -280,7 +289,7 @@ public class InstructionConverter {
     FieldSignature fieldSig = sigFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean");
     SootField assertionsDisabled =
         new SootField(fieldSig, EnumSet.of(Modifier.FINAL, Modifier.STATIC));
-    
+
     converter.addSootField(assertionsDisabled);
     Local testLocal = localGenerator.generateLocal(PrimitiveTypeSignature.getBooleanSignature());
     JStaticFieldRef assertFieldRef = Jimple.newStaticFieldRef(fieldSig);
@@ -313,7 +322,8 @@ public class InstructionConverter {
     stmts.add(assertIfStmt);
     // create failed assertion code.
 
-    ReferenceTypeSignature assertionErrorType = DefaultSignatureFactory.getInstance().getClassSignature("java.lang.AssertionError");
+    ReferenceTypeSignature assertionErrorType =
+        DefaultSignatureFactory.getInstance().getClassSignature("java.lang.AssertionError");
     Local failureLocal = localGenerator.generateLocal(assertionErrorType);
     JNewExpr newExpr = Jimple.newNewExpr(assertionErrorType);
     JAssignStmt newAssignStmt =
@@ -322,11 +332,13 @@ public class InstructionConverter {
             newExpr,
             new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
     stmts.add(newAssignStmt);
-    MethodSignature methodSig
-        = sigFactory.getMethodSignature("<init>", "java.lang.AssertionError", "void", Collections.emptyList());
+    MethodSignature methodSig =
+        sigFactory.getMethodSignature(
+            "<init>", "java.lang.AssertionError", "void", Collections.emptyList());
     JSpecialInvokeExpr invoke = Jimple.newSpecialInvokeExpr(failureLocal, methodSig);
-    JInvokeStmt invokeStmt
-        = Jimple.newInvokeStmt(invoke, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
+    JInvokeStmt invokeStmt =
+        Jimple.newInvokeStmt(
+            invoke, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
     stmts.add(invokeStmt);
     JThrowStmt throwStmt =
         Jimple.newThrowStmt(
@@ -353,7 +365,8 @@ public class InstructionConverter {
       // TODO check modifier
       Value left = null;
       if (!walaMethod.isStatic()) {
-        FieldSignature fieldSig = sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
+        FieldSignature fieldSig =
+            sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
         SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
         left = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
@@ -378,10 +391,11 @@ public class InstructionConverter {
       // TODO check modifier
       Value rvalue = null;
       if (!walaMethod.isStatic()) {
-        FieldSignature fieldSig = sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
+        FieldSignature fieldSig =
+            sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
         SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
         rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
-        converter.addSootField(field);// add this field to class
+        converter.addSootField(field); // add this field to class
       } else {
         rvalue = localGenerator.generateLocal(type);
       }
@@ -399,13 +413,15 @@ public class InstructionConverter {
     JavaClassSignature cSig = methodSignature.getDeclClassSignature();
 
     // TODO check modifier
-    FieldSignature fieldSig = sigFactory.getFieldSignature("this$0", cSig, enclosingType.toString());
-    
-    // FIXME: [JMP] The `enclosingObject` is never used 
-//    SootField enclosingObject = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
-    
+    FieldSignature fieldSig =
+        sigFactory.getFieldSignature("this$0", cSig, enclosingType.toString());
+
+    // FIXME: [JMP] The `enclosingObject` is never used
+    //    SootField enclosingObject = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
+
     JInstanceFieldRef rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
-    return Jimple.newAssignStmt(variable, rvalue, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
+    return Jimple.newAssignStmt(
+        variable, rvalue, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
   }
 
   private IStmt convertCheckCastInstruction(
@@ -469,7 +485,8 @@ public class InstructionConverter {
   private IStmt convertThrowInstruction(DebuggingInformation debugInfo, SSAThrowInstruction inst) {
     int exception = inst.getException();
     Local local = getLocal(UnknownTypeSignature.getInstance(), exception);
-    return Jimple.newThrowStmt(local, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
+    return Jimple.newThrowStmt(
+        local, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
   }
 
   private IStmt convertUnaryOpInstruction(
@@ -560,7 +577,8 @@ public class InstructionConverter {
     Local op = getLocal(UnknownTypeSignature.getInstance(), ref);
     JInstanceOfExpr expr = Jimple.newInstanceOfExpr(op, checkedType);
     Value left = getLocal(UnknownTypeSignature.getInstance(), result);
-    return Jimple.newAssignStmt(left, expr, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
+    return Jimple.newAssignStmt(
+        left, expr, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
   }
 
   private IStmt convertConversionInstruction(
@@ -593,7 +611,7 @@ public class InstructionConverter {
     List<TypeSignature> paraTypes = new ArrayList<>();
     List<Value> args = new ArrayList<>();
     for (int i = 0; i < target.getNumberOfParameters(); i++) {
-      TypeSignature paraType = converter.convertType(target.getParameterType(i));// note
+      TypeSignature paraType = converter.convertType(target.getParameterType(i)); // note
       // the
       // parameters
       // do

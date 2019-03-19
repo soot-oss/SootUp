@@ -39,9 +39,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   /** */
   private static final long serialVersionUID = 8767212132509253058L;
 
-  /**
-   * Stores the values of new ImmediateBox to the argBoxes array.
-   */
+  /** Stores the values of new ImmediateBox to the argBoxes array. */
   public JVirtualInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
     super(Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
     for (int i = 0; i < args.size(); i++) {

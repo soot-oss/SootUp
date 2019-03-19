@@ -31,11 +31,10 @@ import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.constant.LongConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
+import java.util.Comparator;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
-import java.util.Comparator;
 
 /** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
@@ -73,12 +72,16 @@ public class JAssignStmtTest {
     Assert.assertTrue(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", PrimitiveTypeSignature.getIntSignature()), IntConstant.getInstance(42), nop)));
+                new Local("$i0", PrimitiveTypeSignature.getIntSignature()),
+                IntConstant.getInstance(42),
+                nop)));
 
     Assert.assertTrue(
         deepStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", PrimitiveTypeSignature.getIntSignature()), new JAddExpr(numConst1, numConst2), nop)));
+                new Local("$i0", PrimitiveTypeSignature.getIntSignature()),
+                new JAddExpr(numConst1, numConst2),
+                nop)));
 
     // equivTo: switched operands
     Assert.assertFalse(lStmt.equivTo(new JAssignStmt(local, numConst2, nop)));
@@ -96,7 +99,9 @@ public class JAssignStmtTest {
     Assert.assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", PrimitiveTypeSignature.getLongSignature()), LongConstant.getInstance(42), nop)));
+                new Local("$i0", PrimitiveTypeSignature.getLongSignature()),
+                LongConstant.getInstance(42),
+                nop)));
 
     // equivTo: different depth
     Assert.assertFalse(

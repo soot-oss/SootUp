@@ -146,8 +146,17 @@ public class WalaIRToJimpleConverter {
       sootMethods.add(sootMethod);
     }
 
-    return new SootClass(ResolvingLevel.BODIES, classSource, ClassType.Application, superClass, interfaces, outerClass,
-        sootFields, sootMethods, position, modifiers);
+    return new SootClass(
+        ResolvingLevel.BODIES,
+        classSource,
+        ClassType.Application,
+        superClass,
+        interfaces,
+        outerClass,
+        sootFields,
+        sootMethods,
+        position,
+        modifiers);
   }
 
   /** Create a {@link JavaClassSource} object for the given walaClass. */
@@ -170,8 +179,9 @@ public class WalaIRToJimpleConverter {
   public SootField convertField(JavaClassSignature classSig, AstField walaField) {
     TypeSignature type = convertType(walaField.getFieldTypeReference());
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
-    FieldSignature signature
-        = view.getSignatureFactory().getFieldSignature(walaField.getName().toString(), classSig, type);
+    FieldSignature signature =
+        view.getSignatureFactory()
+            .getFieldSignature(walaField.getName().toString(), classSig, type);
     return new SootField(signature, modifiers);
   }
 
@@ -222,15 +232,14 @@ public class WalaIRToJimpleConverter {
             .getSignatureFactory()
             .getMethodSignature(
                 walaMethod.getName().toString(), classSig, returnType.toString(), sigs);
-  
-    return
-        new SootMethod(
-            new WalaIRMethodSourceContent(methodSig),
-            methodSig,
-            modifiers,
-            thrownExceptions,
-            createBody(methodSig, modifiers, walaMethod),
-            debugInfo);
+
+    return new SootMethod(
+        new WalaIRMethodSourceContent(methodSig),
+        methodSig,
+        modifiers,
+        thrownExceptions,
+        createBody(methodSig, modifiers, walaMethod),
+        debugInfo);
   }
 
   public TypeSignature convertType(TypeReference type) {
@@ -363,12 +372,13 @@ public class WalaIRToJimpleConverter {
     return modifiers;
   }
 
-  private @Nullable Body createBody(MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
+  private @Nullable Body createBody(
+      MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
 
-    if(walaMethod.isAbstract()) {
+    if (walaMethod.isAbstract()) {
       return null;
     }
-    
+
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
       List<Trap> traps = new ArrayList<>();
@@ -439,11 +449,11 @@ public class WalaIRToJimpleConverter {
           instConverter.setTarget(ret, -1);
           stmts.add(ret);
         }
-  
+
         return new Body(localGenerator.getLocals(), traps, stmts, bodyPos);
       }
     }
-    
+
     return null;
   }
 

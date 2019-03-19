@@ -29,10 +29,9 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
-
+import java.util.ArrayList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 
 /**
  * Frame of stack for an instruction.

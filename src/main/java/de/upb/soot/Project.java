@@ -51,9 +51,9 @@ public class Project {
    */
   @Nonnull
   public IView createFullView() {
-//    ViewBuilder vb = new ViewBuilder(this);
-//    return vb.buildComplete();
-  
+    //    ViewBuilder vb = new ViewBuilder(this);
+    //    return vb.buildComplete();
+
     throw new NotYetImplementedException();
   }
 

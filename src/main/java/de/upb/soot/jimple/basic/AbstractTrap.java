@@ -2,7 +2,6 @@ package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.signatures.JavaClassSignature;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -67,7 +66,11 @@ public class AbstractTrap implements Trap, Serializable {
   }
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
-  protected AbstractTrap(JavaClassSignature exception, IStmtBox beginStmtBox, IStmtBox endStmtBox, IStmtBox handlerStmtBox) {
+  protected AbstractTrap(
+      JavaClassSignature exception,
+      IStmtBox beginStmtBox,
+      IStmtBox endStmtBox,
+      IStmtBox handlerStmtBox) {
     this.exception = exception;
     this.beginStmtBox = beginStmtBox;
     this.endStmtBox = endStmtBox;

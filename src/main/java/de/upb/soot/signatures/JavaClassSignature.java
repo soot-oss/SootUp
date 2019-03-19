@@ -145,24 +145,25 @@ public class JavaClassSignature extends ReferenceTypeSignature {
   public boolean isInnerClass() {
     return isInnerClass;
   }
-  
+
   private static final class SplitPatternHolder {
     private static final char SPLIT_CHAR = '.';
-    
-    @Nonnull private static final Pattern SPLIT_PATTERN =
+
+    @Nonnull
+    private static final Pattern SPLIT_PATTERN =
         Pattern.compile(Character.toString(SPLIT_CHAR), Pattern.LITERAL);
   }
-  
+
   @Override
   public @Nonnull String toQuotedString() {
     String s = this.getFullyQualifiedName();
     StringBuilder res = new StringBuilder(s.length() + 16);
-    
+
     for (String part : SplitPatternHolder.SPLIT_PATTERN.split(s)) {
       if (res.length() > 0) {
         res.append(SplitPatternHolder.SPLIT_CHAR);
       }
-      
+
       if (part.startsWith("-") || JavaView.RESERVED_NAMES.contains(part)) {
         res.append('\'');
         res.append(part);
@@ -171,16 +172,16 @@ public class JavaClassSignature extends ReferenceTypeSignature {
         res.append(part);
       }
     }
-    
+
     return res.toString();
   }
-  
+
   /**
    * Tries to resolve this {@link JavaClassSignature} to the corresponding {@link SootClass}.
    *
    * @param view The {@link IView} to resolve with.
-   * @return An {@link Optional} containing the {@link SootClass}, if the resolution
-   *         was successful; otherwise, an {@link Optional#empty() empty Optional}.
+   * @return An {@link Optional} containing the {@link SootClass}, if the resolution was successful;
+   *     otherwise, an {@link Optional#empty() empty Optional}.
    */
   @Nonnull
   public Optional<SootClass> resolve(@Nonnull IView view) {

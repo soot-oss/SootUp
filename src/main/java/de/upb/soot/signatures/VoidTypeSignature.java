@@ -27,16 +27,15 @@ import javax.annotation.Nonnull;
 /** Represents Java's 'void' type as methods return's type. */
 public class VoidTypeSignature extends TypeSignature {
 
-  @Nonnull
-  private static final VoidTypeSignature INSTANCE = new VoidTypeSignature();
-  
+  @Nonnull private static final VoidTypeSignature INSTANCE = new VoidTypeSignature();
+
   @Nonnull
   public static VoidTypeSignature getInstance() {
     return INSTANCE;
   }
 
   private VoidTypeSignature() {}
-  
+
   @Override
   @Nonnull
   public String toString() {

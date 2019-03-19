@@ -49,9 +49,10 @@ public class SootMethodTest {
     Body body = new Body(generator.getLocals(), Collections.emptyList(), stmts, null);
 
     assertEquals(2, body.getLocalCount());
-  
-    MethodSignature methodSignature = view.getSignatureFactory()
-                                        .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
+
+    MethodSignature methodSignature =
+        view.getSignatureFactory()
+            .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     SootMethod dummyMainMethod =
         new SootMethod(
             new WalaIRMethodSourceContent(methodSignature),
@@ -76,8 +77,12 @@ public class SootMethodTest {
             Collections.singleton(dummyMainMethod),
             null,
             EnumSet.of(Modifier.PUBLIC));
-  
+
     assertEquals(mainClass.getMethods().size(), 1);
-    assertTrue(mainClass.getMethod(methodSignature).orElseThrow(() -> new RuntimeException("Failed getting method " + methodSignature)).hasActiveBody());
+    assertTrue(
+        mainClass
+            .getMethod(methodSignature)
+            .orElseThrow(() -> new RuntimeException("Failed getting method " + methodSignature))
+            .hasActiveBody());
   }
 }

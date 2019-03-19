@@ -26,10 +26,10 @@ import javax.annotation.Nonnull;
 
 /** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
 public abstract class TypeSignature implements ISignature {
-  
+
   /**
    * Gets the type name as quoted string.
-   * 
+   *
    * @return The type name as quoted string.
    */
   @Nonnull

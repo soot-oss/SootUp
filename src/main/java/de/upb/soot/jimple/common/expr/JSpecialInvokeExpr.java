@@ -40,9 +40,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   /** */
   private static final long serialVersionUID = 9170581307891035087L;
 
-  /**
-   * Stores the values of new ImmediateBox to the argBoxes array.
-   */
+  /** Stores the values of new ImmediateBox to the argBoxes array. */
   public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
     super(Jimple.newLocalBox(base), method, new ImmediateBox[args.size()]);
 
