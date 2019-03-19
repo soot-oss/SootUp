@@ -8,6 +8,7 @@ import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
 import de.upb.soot.signatures.JavaClassSignature;
 import java.util.Optional;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -33,6 +34,7 @@ public class ModuleBuilderActorTest {
   }
 
   @Test
+  @Ignore
   public void refiyMessageModuleInfoTest() {
     de.upb.soot.views.IView iView = createNewScene();
 
@@ -51,6 +53,7 @@ public class ModuleBuilderActorTest {
   }
 
   @Test
+  @Ignore
   public void resolveMessageModuleInfoTest() {
     de.upb.soot.views.IView iView = createNewScene();
 
