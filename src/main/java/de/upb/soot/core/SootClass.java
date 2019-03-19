@@ -296,6 +296,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
       // TODO: [JMP] Exception handling
       e.printStackTrace();
+      throw new IllegalStateException(e);
     }
 
     return this.initializeClassMembers(fields);
@@ -312,6 +313,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
       // TODO: [JMP] Exception handling
       e.printStackTrace();
+      throw new IllegalStateException(e);
     }
 
     return this.initializeClassMembers(methods);

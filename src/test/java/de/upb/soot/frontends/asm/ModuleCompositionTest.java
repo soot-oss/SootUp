@@ -1,5 +1,7 @@
 package de.upb.soot.frontends.asm;
 
+import static org.junit.Assert.assertTrue;
+
 import categories.Java8Test;
 import de.upb.soot.Project;
 import de.upb.soot.core.Body;
@@ -19,6 +21,7 @@ import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.views.IView;
+import java.io.File;
 import java.util.Collections;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -40,11 +43,15 @@ public class ModuleCompositionTest {
     System.out.println("--- EXAMPLE 1: On-Demand Loading ---");
     System.out.println();
 
+    String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
+    
+    assertTrue(new File(jarFile).exists());
+    
     // Create a project
     Project p =
         new Project(
             new JavaClassPathNamespace(
-                "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar"));
+                jarFile));
 
     // Get the view
     IView view = p.createOnDemandView();
