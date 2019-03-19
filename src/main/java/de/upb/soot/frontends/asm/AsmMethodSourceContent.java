@@ -1430,6 +1430,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
      *
      * assignReadOps(null);
      */
+    throw new NotYetImplementedException("InvokeDynamic is not implemented yet.");
   }
 
   // private @Nonnull MethodRef toSootMethodRef(@Nonnull Handle methodHandle) {

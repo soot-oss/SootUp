@@ -612,7 +612,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
     String fullyQualifiedName =
         FilenameUtils.removeExtension(path.startsWith("/") ? path.substring(1) : path)
             .replace('/', '.');
-    
+
     return this.getClassSignature(fullyQualifiedName);
   }
 }

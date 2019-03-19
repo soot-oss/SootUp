@@ -23,7 +23,6 @@ import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.views.IView;
 import java.io.File;
 import java.util.Collections;
-import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.junit.Test;
@@ -44,14 +43,11 @@ public class ModuleCompositionTest {
     System.out.println();
 
     String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
-    
+
     assertTrue(new File(jarFile).exists());
-    
+
     // Create a project
-    Project p =
-        new Project(
-            new JavaClassPathNamespace(
-                jarFile));
+    Project p = new Project(new JavaClassPathNamespace(jarFile));
 
     // Get the view
     IView view = p.createOnDemandView();
@@ -74,16 +70,24 @@ public class ModuleCompositionTest {
     MethodSubSignature optionalToStreamMethodSubSignature =
         DefaultSignatureFactory.getInstance()
             .parseMethodSubSignature(
-                "java.util.stream.Stream optionalToStream(java.util.Optional)");
+                "java.util.stream.Stream iteratorToStream(java.util.Iterator)");
 
     // Print sub-signature
     System.out.println("Method to find: " + optionalToStreamMethodSubSignature);
 
     // Get method for sub-signature
-    Optional<SootMethod> foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature);
+    SootMethod foundMethod =
+        utilsClass
+            .getMethod(optionalToStreamMethodSubSignature)
+            .orElseThrow(IllegalStateException::new);
 
     // Print method
-    System.out.println("Found method:   " + foundMethod.map(Object::toString).orElse("<none>"));
+    System.out.println("Found method:   " + foundMethod);
+    System.out.println();
+
+    // Print method content
+    System.out.println("Method body:   " + foundMethod);
+    System.out.println(foundMethod.getActiveBody());
 
     System.out.println();
     System.out.println("--- EXAMPLE 2: Using Builders ---");
