@@ -39,13 +39,14 @@ import de.upb.soot.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr;
 import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.views.IView;
-import de.upb.soot.views.JavaView;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,9 +56,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
 /** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
@@ -67,7 +65,6 @@ public class JInvokeStmtTest {
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
 
-    IView view = new JavaView(null);
     DefaultSignatureFactory dsm = new DefaultSignatureFactory();
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
@@ -84,7 +81,6 @@ public class JInvokeStmtTest {
 
     SootClass sootClass =
         new SootClass(
-            view,
             ResolvingLevel.BODIES,
             javaClassSource,
             ClassType.Application,
@@ -102,7 +98,7 @@ public class JInvokeStmtTest {
     IStmt staticInvokeStmt =
         new JInvokeStmt(
             new JStaticInvokeExpr(
-                view, statMethodSig, Arrays.asList(StringConstant.getInstance("Towel"))),
+                statMethodSig, Arrays.asList(StringConstant.getInstance("Towel"))),
             nop);
 
     // toString
@@ -120,8 +116,7 @@ public class JInvokeStmtTest {
     IStmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
-                view,
-                new Local("$r0", new RefType(view, sootClass.getSignature())),
+                new Local("$r0", sootClass.getSignature()),
                 smethodSig,
                 Arrays.asList()),
             nop);
@@ -140,8 +135,7 @@ public class JInvokeStmtTest {
     IStmt interfaceInvokeStmt =
         new JInvokeStmt(
             new JInterfaceInvokeExpr(
-                view,
-                new Local("r2", new RefType(view, sootClass.getSignature())),
+                new Local("r2", sootClass.getSignature()),
                 imethodSig,
                 Arrays.asList()),
             nop);
@@ -165,7 +159,7 @@ public class JInvokeStmtTest {
 
     IStmt dynamicInvokeStmt =
         new JInvokeStmt(
-            new JDynamicInvokeExpr(view, bootstrapMethodSig, bootstrapArgs, dmethodSig, methodArgs),
+            new JDynamicInvokeExpr(bootstrapMethodSig, bootstrapArgs, dmethodSig, methodArgs),
             nop);
 
     // toString

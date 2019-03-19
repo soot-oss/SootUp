@@ -33,7 +33,9 @@ import de.upb.soot.graph.BriefStmtGraph;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.TypeSignature;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +43,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringTokenizer;
 
 /**
@@ -107,33 +110,28 @@ public class Printer {
         classPrefix = classPrefix.trim();
       }
 
-      out.print(classPrefix + " " + cl.getView().quotedNameOf(cl.getSignature().toString()) + "");
+      out.print(classPrefix + " " + cl.getSignature().toQuotedString() + "");
     }
 
     // Print extension
     {
-      if (cl.hasSuperclass()) {
-        out.print(
-            " extends "
-                + cl.getView().quotedNameOf(cl.getSuperclassSignature().get().toString())
-                + "");
-      }
+      Optional<JavaClassSignature> superclassSignature = cl.getSuperclassSignature();
+  
+      superclassSignature.ifPresent(javaClassSignature -> out.print(" extends " + javaClassSignature.toQuotedString()));
     }
 
     // Print interfaces
     {
-      Iterator<SootClass> interfaceIt = cl.getInterfaces().iterator();
+      Iterator<JavaClassSignature> interfaceIt = cl.getInterfaces().iterator();
 
       if (interfaceIt.hasNext()) {
         out.print(" implements ");
 
-        out.print(
-            "" + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
+        out.print(interfaceIt.next().toQuotedString());
 
         while (interfaceIt.hasNext()) {
           out.print(",");
-          out.print(
-              " " + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
+          out.print(" " + interfaceIt.next().toQuotedString());
         }
       }
     }
@@ -313,18 +311,14 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        out.println(
-            "        catch "
-                + body.getMethod()
-                    .getView()
-                    .quotedNameOf(trap.getException().getSignature().toString())
-                + " from "
-                + up.labels().get(trap.getBeginStmt())
-                + " to "
-                + up.labels().get(trap.getEndStmt())
-                + " with "
-                + up.labels().get(trap.getHandlerStmt())
-                + ";");
+        out.println("        catch "
+            + trap.getException().toQuotedString()
+            + " from "
+            + up.labels().get(trap.getBeginStmt())
+            + " to "
+            + up.labels().get(trap.getEndStmt())
+            + " with "
+            + up.labels().get(trap.getHandlerStmt()) + ";");
 
         incJimpleLnNum();
       }
@@ -345,14 +339,14 @@ public class Printer {
   private void printLocalsInBody(Body body, IStmtPrinter up) {
     // Print out local variables
     {
-      Map<Type, List<Local>> typeToLocals = new LinkedHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
+      Map<TypeSignature, List<Local>> typeToLocals = new LinkedHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
 
       // Collect locals
       {
         for (Local local : body.getLocals()) {
           List<Local> localList;
 
-          Type t = local.getType();
+          TypeSignature t = local.getSignature();
 
           if (typeToLocals.containsKey(t)) {
             localList = typeToLocals.get(t);
@@ -367,9 +361,9 @@ public class Printer {
 
       // Print locals
       {
-        for (Type type : typeToLocals.keySet()) {
+        for (TypeSignature type : typeToLocals.keySet()) {
           List<Local> localList = new ArrayList<>(typeToLocals.get(type));
-          up.type(type);
+          up.typeSignature(type);
           up.literal(" ");
 
           final int len = localList.size();

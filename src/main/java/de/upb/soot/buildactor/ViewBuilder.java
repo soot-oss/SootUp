@@ -5,9 +5,10 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
+import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
-import de.upb.soot.views.JavaOnDemandView;
 import de.upb.soot.views.JavaView;
+
 import javax.annotation.Nonnull;
 
 /**
@@ -25,6 +26,10 @@ public class ViewBuilder {
   }
 
   public @Nonnull IView buildComplete() {
+    throw new NotYetImplementedException();
+  }
+
+  public @Nonnull IView buildOnDemand() {
     IView result = new JavaView(this.project);
 
     // create a starting view
@@ -36,16 +41,14 @@ public class ViewBuilder {
     for (ClassSource cs :
         this.project.getNamespace().getClassSources(result.getSignatureFactory())) {
       try {
-        AbstractClass abstactClass = cs.getContent().resolve(ResolvingLevel.BODIES, result);
+        AbstractClass abstractClass = cs.getContent().resolveClass(ResolvingLevel.HIERARCHY, result);
+        
+        result.addClass(abstractClass);
       } catch (ResolveException e) {
         e.printStackTrace();
       }
       // Populate view
     }
     return result;
-  }
-
-  public @Nonnull IView buildOnDemand() {
-    return new JavaOnDemandView(this.project);
   }
 }

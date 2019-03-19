@@ -22,22 +22,23 @@ package de.upb.soot.signatures;
  * #L%
  */
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-
 import categories.Java8Test;
 import de.upb.soot.namespaces.FileType;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
+
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 @Category(Java8Test.class)
 public class SignatureFactoryTest {
@@ -215,7 +216,7 @@ public class SignatureFactoryTest {
     MethodSignature methodSignature =
         signatureFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
     assertEquals(declClass, methodSignature.getDeclClassSignature());
-    assertEquals(returnType, methodSignature.getTypeSignature());
+    assertEquals(returnType, methodSignature.getSignature());
     assertEquals(parameter, methodSignature.getParameterSignatures().get(0));
   }
 
@@ -318,43 +319,43 @@ public class SignatureFactoryTest {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
 
     TypeSignature byteSig = signatureFactory.getTypeSignature("byte");
-    assertSame(byteSig, PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE);
+    assertSame(byteSig, PrimitiveTypeSignature.getByteSignature());
     assertSame("byte", byteSig.toString());
 
     TypeSignature shortSig = signatureFactory.getTypeSignature("SHORT");
-    assertSame(shortSig, PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE);
+    assertSame(shortSig, PrimitiveTypeSignature.getShortSignature());
     assertSame("short", shortSig.toString());
 
     TypeSignature intSig = signatureFactory.getTypeSignature("int");
-    assertSame(intSig, PrimitiveTypeSignature.INT_TYPE_SIGNATURE);
+    assertSame(intSig, PrimitiveTypeSignature.getIntSignature());
     assertSame("int", intSig.toString());
 
     TypeSignature longSig = signatureFactory.getTypeSignature("loNg");
-    assertSame(longSig, PrimitiveTypeSignature.LONG_TYPE_SIGNATURE);
+    assertSame(longSig, PrimitiveTypeSignature.getLongSignature());
     assertSame("long", longSig.toString());
 
     TypeSignature floatSig = signatureFactory.getTypeSignature("floAt");
-    assertSame(floatSig, PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE);
+    assertSame(floatSig, PrimitiveTypeSignature.getFloatSignature());
     assertSame("float", floatSig.toString());
 
     TypeSignature doubleSig = signatureFactory.getTypeSignature("doUble");
-    assertSame(doubleSig, PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE);
+    assertSame(doubleSig, PrimitiveTypeSignature.getDoubleSignature());
     assertSame("double", doubleSig.toString());
 
     TypeSignature charSig = signatureFactory.getTypeSignature("chaR");
-    assertSame(charSig, PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE);
+    assertSame(charSig, PrimitiveTypeSignature.getCharSignature());
     assertSame("char", charSig.toString());
 
     TypeSignature boolSig = signatureFactory.getTypeSignature("boolean");
-    assertSame(boolSig, PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE);
+    assertSame(boolSig, PrimitiveTypeSignature.getBooleanSignature());
     assertSame("boolean", boolSig.toString());
 
     TypeSignature nullSig = signatureFactory.getTypeSignature("nuLl");
-    assertSame(nullSig, NullTypeSignature.NULL_TYPE_SIGNATURE);
+    assertSame(nullSig, NullTypeSignature.getInstance());
     assertSame("null", nullSig.toString());
 
     TypeSignature voidSig = signatureFactory.getTypeSignature("void");
-    assertSame(voidSig, VoidTypeSignature.VOID_TYPE_SIGNATURE);
+    assertSame(voidSig, VoidTypeSignature.getInstance());
     assertSame("void", voidSig.toString());
   }
 

@@ -25,11 +25,10 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.NullType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.NullTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 public class NullConstant extends Constant {
   /** */
@@ -55,8 +54,8 @@ public class NullConstant extends Constant {
   }
 
   @Override
-  public Type getType() {
-    return NullType.getInstance();
+  public TypeSignature getSignature() {
+    return NullTypeSignature.getInstance();
   }
 
   @Override
@@ -66,6 +65,6 @@ public class NullConstant extends Constant {
 
   @Override
   public String toString() {
-    return NullTypeSignature.NULL_TYPE_SIGNATURE.toString();
+    return this.getSignature().toString();
   }
 }

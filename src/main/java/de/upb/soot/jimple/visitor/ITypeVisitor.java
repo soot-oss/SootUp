@@ -1,50 +1,38 @@
 package de.upb.soot.jimple.visitor;
 
 import com.google.common.graph.ElementOrder.Type;
-import de.upb.soot.jimple.common.type.AnySubType;
-import de.upb.soot.jimple.common.type.ArrayType;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.NullType;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.UnknownType;
-import de.upb.soot.jimple.common.type.VoidType;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.NullTypeSignature;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.VoidTypeSignature;
 
 public interface ITypeVisitor {
 
-  void caseBooleanType(BooleanType t);
+  void caseBooleanType(PrimitiveTypeSignature t);
 
-  void caseByteType(ByteType t);
+  void caseByteType(PrimitiveTypeSignature t);
 
-  void caseCharType(CharType t);
+  void caseCharType(PrimitiveTypeSignature t);
 
-  void caseShortType(ShortType t);
+  void caseShortType(PrimitiveTypeSignature t);
 
-  void caseIntType(IntType t);
+  void caseIntType(PrimitiveTypeSignature t);
 
-  void caseLongType(LongType t);
+  void caseLongType(PrimitiveTypeSignature t);
 
-  void caseDoubleType(DoubleType t);
+  void caseDoubleType(PrimitiveTypeSignature t);
 
-  void caseFloatType(FloatType t);
+  void caseFloatType(PrimitiveTypeSignature t);
 
-  void caseArrayType(ArrayType t);
+  void caseArrayType(PrimitiveTypeSignature t);
 
-  void caseRefType(RefType t);
+  void caseRefType(JavaClassSignature t);
+  
+  void caseNullType(NullTypeSignature t);
 
-  void caseAnySubType(AnySubType t);
+  void caseUnknownType(/*UnknownType t*/);
 
-  void caseNullType(NullType t);
-
-  void caseUnknownType(UnknownType t);
-
-  void caseVoidType(VoidType t);
+  void caseVoidType(VoidTypeSignature t);
 
   void caseDefault(Type t);
 }

@@ -7,6 +7,7 @@ import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.JavaClassSignature;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import javax.annotation.Nullable;
 
 /**
  * Basic class for storing information that is needed to reify a {@link de.upb.soot.core.SootClass}.
@@ -74,7 +75,7 @@ public abstract class ClassSource {
    * @return both objects are logically equal
    */
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(@Nullable Object o) {
     if (this == o) {
       return true;
     }

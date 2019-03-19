@@ -20,7 +20,6 @@ import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.TypeSignature;
@@ -269,8 +268,8 @@ public class WalaClassLoader {
     }
 
     for (IMethod walaMethod : walaClass.getAllMethods()) {
-      TypeSignature ret = signature.getTypeSignature();
-      Type retType = walaToSoot.convertType(walaMethod.getReturnType());
+      TypeSignature ret = signature.getSignature();
+      TypeSignature retType = walaToSoot.convertType(walaMethod.getReturnType());
       if (walaMethod.getName().toString().equals(signature.getName())) {
         if (retType.toString().equals(ret.toString())) {
           // compare parameter types

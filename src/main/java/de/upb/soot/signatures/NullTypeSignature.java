@@ -22,12 +22,21 @@ package de.upb.soot.signatures;
  * #L%
  */
 
-public class NullTypeSignature extends TypeSignature {
+import javax.annotation.Nonnull;
 
-  public static final NullTypeSignature NULL_TYPE_SIGNATURE = new NullTypeSignature();
+/** Represents a signature for a <code>null</code>-reference. */
+public class NullTypeSignature extends ReferenceTypeSignature {
+
+  @Nonnull
+  private static final NullTypeSignature INSTANCE = new NullTypeSignature();
+  
+  @Nonnull
+  public static NullTypeSignature getInstance() {
+    return INSTANCE;
+  }
 
   private NullTypeSignature() {}
-
+  
   @Override
   public String toString() {
     return "null";

@@ -28,18 +28,11 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.UnknownTypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JNegExpr extends AbstractUnopExpr {
@@ -85,23 +78,21 @@ public class JNegExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public Type getType() {
+  public TypeSignature getSignature() {
     Value op = opBox.getValue();
 
-    if (op.getType().equals(IntType.getInstance())
-        || op.getType().equals(ByteType.getInstance())
-        || op.getType().equals(ShortType.getInstance())
-        || op.getType().equals(BooleanType.getInstance())
-        || op.getType().equals(CharType.getInstance())) {
-      return IntType.getInstance();
-    } else if (op.getType().equals(LongType.getInstance())) {
-      return LongType.getInstance();
-    } else if (op.getType().equals(DoubleType.getInstance())) {
-      return DoubleType.getInstance();
-    } else if (op.getType().equals(FloatType.getInstance())) {
-      return FloatType.getInstance();
+    if (op.getSignature().equals(PrimitiveTypeSignature.getIntSignature()) || op.getSignature().equals(PrimitiveTypeSignature.getByteSignature())
+        || op.getSignature().equals(PrimitiveTypeSignature.getShortSignature()) || op.getSignature().equals(PrimitiveTypeSignature.getBooleanSignature())
+        || op.getSignature().equals(PrimitiveTypeSignature.getCharSignature())) {
+      return PrimitiveTypeSignature.getIntSignature();
+    } else if (op.getSignature().equals(PrimitiveTypeSignature.getLongSignature())) {
+      return PrimitiveTypeSignature.getLongSignature();
+    } else if (op.getSignature().equals(PrimitiveTypeSignature.getDoubleSignature())) {
+      return PrimitiveTypeSignature.getDoubleSignature();
+    } else if (op.getSignature().equals(PrimitiveTypeSignature.getFloatSignature())) {
+      return PrimitiveTypeSignature.getFloatSignature();
     } else {
-      return UnknownType.getInstance();
+      return UnknownTypeSignature.getInstance();
     }
   }
 

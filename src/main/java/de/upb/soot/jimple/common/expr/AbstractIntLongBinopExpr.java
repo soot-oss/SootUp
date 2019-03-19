@@ -27,14 +27,9 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.UnknownTypeSignature;
 
 @SuppressWarnings("serial")
 public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
@@ -44,26 +39,22 @@ public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
     this.op2Box = Jimple.newArgBox(op2);
   }
 
-  public static boolean isIntLikeType(Type t) {
-    return t.equals(IntType.getInstance())
-        || t.equals(ByteType.getInstance())
-        || t.equals(ShortType.getInstance())
-        || t.equals(CharType.getInstance())
-        || t.equals(BooleanType.getInstance());
+  public static boolean isIntLikeType(TypeSignature t) {
+    return t.equals(PrimitiveTypeSignature.getIntSignature()) || t.equals(PrimitiveTypeSignature.getByteSignature()) || t.equals(PrimitiveTypeSignature.getShortSignature())
+        || t.equals(PrimitiveTypeSignature.getCharSignature()) || t.equals(PrimitiveTypeSignature.getBooleanSignature());
   }
 
   @Override
-  public Type getType() {
+  public TypeSignature getSignature() {
     Value op1 = op1Box.getValue();
     Value op2 = op2Box.getValue();
 
-    if (isIntLikeType(op1.getType()) && isIntLikeType(op2.getType())) {
-      return IntType.getInstance();
-    } else if (op1.getType().equals(LongType.getInstance())
-        && op2.getType().equals(LongType.getInstance())) {
-      return LongType.getInstance();
+    if (isIntLikeType(op1.getSignature()) && isIntLikeType(op2.getSignature())) {
+      return PrimitiveTypeSignature.getIntSignature();
+    } else if (op1.getSignature().equals(PrimitiveTypeSignature.getLongSignature()) && op2.getSignature().equals(PrimitiveTypeSignature.getLongSignature())) {
+      return PrimitiveTypeSignature.getLongSignature();
     } else {
-      return UnknownType.getInstance();
+      return UnknownTypeSignature.getInstance();
     }
   }
 }

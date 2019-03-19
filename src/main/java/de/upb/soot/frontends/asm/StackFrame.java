@@ -29,9 +29,10 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
-import java.util.ArrayList;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 
 /**
  * Frame of stack for an instruction.
@@ -40,11 +41,11 @@ import javax.annotation.Nullable;
  */
 final class StackFrame {
 
-  private @Nullable Operand[] out;
-  private @Nullable Local[] inStackLocals;
-  private @Nullable ValueBox[] boxes;
-  private @Nullable ArrayList<Operand[]> in;
-  private final @Nonnull AsmMethodSourceContent src;
+  @Nullable private Operand[] out;
+  @Nullable private Local[] inStackLocals;
+  @Nullable private ValueBox[] boxes;
+  @Nullable private ArrayList<Operand[]> in;
+  @Nonnull private final AsmMethodSourceContent src;
 
   /**
    * Constructs a new stack frame.

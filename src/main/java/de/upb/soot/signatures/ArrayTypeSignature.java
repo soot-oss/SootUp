@@ -2,7 +2,7 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 
-public class ArrayTypeSignature extends TypeSignature {
+public class ArrayTypeSignature extends ReferenceTypeSignature {
 
   private final TypeSignature baseType;
 
@@ -24,7 +24,7 @@ public class ArrayTypeSignature extends TypeSignature {
     }
     return sb.toString();
   }
-
+  
   @Override
   public boolean equals(Object o) {
     if (this == o) {

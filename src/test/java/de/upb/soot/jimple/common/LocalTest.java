@@ -22,18 +22,17 @@
 
 package de.upb.soot.jimple.common;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import categories.Java8Test;
 import de.upb.soot.jimple.IgnoreLocalNameComparator;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import soot.jimple.internal.JBreakpointStmt;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @Category(Java8Test.class)
 public class LocalTest {
@@ -43,9 +42,9 @@ public class LocalTest {
 
     JimpleComparator comparator = new IgnoreLocalNameComparator();
 
-    Local l1 = new Local("$i1", IntType.getInstance());
-    Local l2 = new Local("$i2", IntType.getInstance());
-    Local l3 = new Local("$i1", BooleanType.getInstance());
+    Local l1 = new Local("$i1", PrimitiveTypeSignature.getIntSignature());
+    Local l2 = new Local("$i2", PrimitiveTypeSignature.getIntSignature());
+    Local l3 = new Local("$i1", PrimitiveTypeSignature.getBooleanSignature());
 
     assertTrue(l1.equivTo(l1));
     assertTrue(l1.equivTo(l1, comparator));

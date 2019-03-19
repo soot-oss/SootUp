@@ -5,7 +5,6 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-import de.upb.soot.views.IView;
 import java.util.Collections;
 import java.util.List;
 
@@ -13,13 +12,13 @@ public class JStaticFieldRef extends FieldRef {
   /** */
   private static final long serialVersionUID = -8744248848897714882L;
 
-  public JStaticFieldRef(IView view, FieldSignature fieldSig) {
-    super(view, fieldSig);
+  public JStaticFieldRef(FieldSignature fieldSig) {
+    super(fieldSig);
   }
 
   @Override
   public Object clone() {
-    return new JStaticFieldRef(this.view, fieldSignature);
+    return new JStaticFieldRef(fieldSignature);
   }
 
   @Override
@@ -49,11 +48,7 @@ public class JStaticFieldRef extends FieldRef {
 
   @Override
   public int equivHashCode() {
-    if (getField().isPresent()) {
-      return getField().get().equivHashCode() * 23;
-    } else {
-      return 22;
-    }
+      return getFieldSignature().hashCode() * 23;
   }
 
   @Override

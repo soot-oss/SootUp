@@ -1,42 +1,144 @@
-/*
- * Copyright © 2019 Jan Martin Persch
- * All rights reserved.
- */
-
 package de.upb.soot.frontends.asm;
 
 import categories.Java8Test;
 import de.upb.soot.Project;
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.namespaces.INamespace;
+import de.upb.soot.core.Body;
+import de.upb.soot.core.ClassType;
+import de.upb.soot.core.Modifier;
+import de.upb.soot.core.ResolvingLevel;
+import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootField;
+import de.upb.soot.core.SootMethod;
+import de.upb.soot.frontends.IMethodSourceContent;
+import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
+import de.upb.soot.namespaces.JavaSourcePathNamespace;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.FieldSubSignature;
+import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.views.IView;
+import java.util.Collections;
 import java.util.Optional;
-import org.junit.Ignore;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /**
- * Defines the {@link ModuleCompositionTest} class.
+ * Defines tests for module composition.
  *
  * @author Jan Martin Persch
  */
 @Category(Java8Test.class)
 public class ModuleCompositionTest {
-  @Ignore
-  public void testModuleComposition() {
+    
+    @Test
+    public void apiExamples() {
+        
+        System.out.println("--- EXAMPLE 1: On-Demand Loading ---");
+        System.out.println();
+        
+        // Create a project
+        Project p =
+            new Project(
+                new JavaClassPathNamespace(
+                    "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar"));
+        
+        // Get the view
+        IView view = p.createOnDemandView();
+        
+        // Create java class signature
+        JavaClassSignature utilsClassSignature = 
+            p.getSignatureFactory().getClassSignature("/de/upb/soot/Utils");
+    
+        // Resolve signature to `SootClass`
+        SootClass utilsClass =
+            utilsClassSignature.resolve(view).orElseThrow(IllegalStateException::new);
+        
+        // Print all methods that are loaded on-demand
+        System.out.println("Methods of " + utilsClassSignature + " class:");
+        utilsClass.getMethods().stream().map(it -> " - " + it).forEach(System.out::println);
+        
+        System.out.println();
+        
+        // Parse sub-signature for "optionalToStream" method
+        MethodSubSignature optionalToStreamMethodSubSignature =
+            DefaultSignatureFactory.getInstance()
+                .parseMethodSubSignature(
+                    "java.util.stream.Stream optionalToStream(java.util.Optional)");
+        
+        // Print sub-signature
+        System.out.println("Method to find: " + optionalToStreamMethodSubSignature);
+        
+        // Get method for sub-signature
+        Optional<SootMethod> foundMethod = utilsClass.getMethod(optionalToStreamMethodSubSignature);
+        
+        // Print method
+        System.out.println("Found method:   " + foundMethod.map(Object::toString).orElse("<none>"));
 
-    // TODO. you should fix it after merge (Linghui)
-    String javaClassPath = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
-
-    INamespace cpBased = new JavaClassPathNamespace(javaClassPath);
-
-    Project p = new Project(cpBased);
-
-    IView view = p.createFullView();
-
-    Optional<AbstractClass> sootClass =
-        view.getClass(p.getSignatureFactory().getClassSignature("de.upb.soot.Utils"));
-
-    System.out.println(sootClass);
-  }
+        System.out.println();
+        System.out.println("--- EXAMPLE 2: Using Builders ---");
+        System.out.println();
+        
+        // Parse sub-signature for "name" field
+        FieldSubSignature nameFieldSubSignature =
+            DefaultSignatureFactory.getInstance()
+                .parseFieldSubSignature("java.lang.String name");
+        
+        // Create the class signature
+        JavaClassSignature classSignature =
+            view.getSignatureFactory().getClassSignature("x.y.z.foo.Bar");
+        
+        // Build a soot class
+        SootClass c =
+            SootClass.builder()
+                .withResolvingLevel(ResolvingLevel.BODIES)
+                .withClassSource(
+                    new JavaClassSource(
+                        new JavaSourcePathNamespace(Collections.emptySet()),
+                        null,
+                        classSignature))
+                .withClassType(ClassType.Application)
+                .withModifiers(Modifier.PUBLIC)
+                .withFields(
+                    SootField.builder()
+                        .withSignature(nameFieldSubSignature.toFullSignature(classSignature))
+                        .withModifiers(Modifier.PUBLIC)
+                        .build())
+                .withMethods(
+                    SootMethod.builder()
+                        .withSource(
+                            new IMethodSourceContent() {
+                                @Override
+                                @Nullable
+                                public Body resolveBody(@Nonnull SootMethod m) {
+                                    return null;
+                                }
+                                
+                                @Override
+                                @Nonnull
+                                public MethodSignature getSignature() {
+                                    return
+                                        DefaultSignatureFactory.getInstance()
+                                            .getMethodSignature(
+                                                utilsClass,
+                                                optionalToStreamMethodSubSignature);
+                                }
+                            })
+                        .withSignature(
+                            optionalToStreamMethodSubSignature.toFullSignature(classSignature))
+                        .withModifiers(Modifier.PUBLIC)
+                        .build())
+                .build();
+        
+        // Print some information
+        System.out.println("Field sub-signature: " + nameFieldSubSignature);
+        System.out.println("Class signature:     " + c);
+        System.out.println();
+        System.out.println("Field:         " + c.getField(nameFieldSubSignature));
+        System.out.println("Field by name: " + c.getField(nameFieldSubSignature.getName()));
+        System.out.println("Method:        " + c.getMethod(optionalToStreamMethodSubSignature));
+    }
 }

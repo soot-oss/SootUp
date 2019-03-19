@@ -27,8 +27,8 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.Collections;
 import java.util.List;
@@ -45,13 +45,13 @@ public class JParameterRef implements IdentityRef {
   private static final long serialVersionUID = -5198809451267425640L;
 
   private int num;
-  private Type paramType;
+  private TypeSignature paramType;
 
   /**
    * Constructs a ParameterRef object of the specified type, representing the specified parameter
    * number.
    */
-  public JParameterRef(Type paramType, int number) {
+  public JParameterRef(TypeSignature paramType, int number) {
     this.num = number;
     this.paramType = paramType;
   }
@@ -105,7 +105,7 @@ public class JParameterRef implements IdentityRef {
 
   /** Returns the type of this ParameterRef. */
   @Override
-  public Type getType() {
+  public TypeSignature getSignature() {
     return paramType;
   }
 

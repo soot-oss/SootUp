@@ -1,18 +1,11 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.RefLikeType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
-import de.upb.soot.jimple.common.type.VoidType;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.ReferenceTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.UnknownTypeSignature;
+import de.upb.soot.signatures.VoidTypeSignature;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +46,7 @@ public class LocalGenerator {
   public LocalGenerator() {}
 
   /** generate this local with given type */
-  public Local generateThisLocal(Type type) {
+  public Local generateThisLocal(TypeSignature type) {
     if (this.thisLocal == null) {
       this.thisLocal = generateField(type);
     }
@@ -61,16 +54,16 @@ public class LocalGenerator {
   }
 
   /** generates a new @Local given the type for field. */
-  public Local generateField(Type type) {
+  public Local generateField(TypeSignature type) {
     return generate(type, true);
   }
 
   /** generates a new @Local given the type for local. */
-  public Local generateLocal(Type type) {
+  public Local generateLocal(TypeSignature type) {
     return generate(type, false);
   }
 
-  public Local generateParameterLocal(Type type, int index) {
+  public Local generateParameterLocal(TypeSignature type, int index) {
     if (!this.paraLocals.containsKey(index)) {
       Local paraLocal = generate(type, false);
       this.paraLocals.put(index, paraLocal);
@@ -78,33 +71,33 @@ public class LocalGenerator {
     return this.paraLocals.get(index);
   }
 
-  private Local generate(Type type, boolean isField) {
+  private Local generate(TypeSignature type, boolean isField) {
     StringBuilder name = new StringBuilder(7);
     if (!isField) {
       name.append("$");
     }
 
-    if (type instanceof IntType) {
+    if (type.equals(PrimitiveTypeSignature.getIntSignature())) {
       appendNextIntName(name);
-    } else if (type instanceof ByteType) {
+    } else if (type.equals(PrimitiveTypeSignature.getByteSignature())) {
       appendNextByteName(name);
-    } else if (type instanceof ShortType) {
+    } else if (type.equals(PrimitiveTypeSignature.getShortSignature())) {
       appendNextShortName(name);
-    } else if (type instanceof BooleanType) {
+    } else if (type.equals(PrimitiveTypeSignature.getBooleanSignature())) {
       appendNextBooleanName(name);
-    } else if (type instanceof VoidType) {
+    } else if (type.equals(VoidTypeSignature.getInstance())) {
       appendNextVoidName(name);
-    } else if (type instanceof CharType) {
+    } else if (type.equals(PrimitiveTypeSignature.getCharSignature())) {
       appendNextCharName(name);
-    } else if (type instanceof DoubleType) {
+    } else if (type.equals(PrimitiveTypeSignature.getDoubleSignature())) {
       appendNextDoubleName(name);
-    } else if (type instanceof FloatType) {
+    } else if (type.equals(PrimitiveTypeSignature.getFloatSignature())) {
       appendNextFloatName(name);
-    } else if (type instanceof LongType) {
+    } else if (type.equals(PrimitiveTypeSignature.getLongSignature())) {
       appendNextLongName(name);
-    } else if (type instanceof RefLikeType) {
+    } else if (type instanceof ReferenceTypeSignature) {
       appendNextRefLikeTypeName(name);
-    } else if (type instanceof UnknownType) {
+    } else if (type.equals(UnknownTypeSignature.getInstance())) {
       appendNextUnknownTypeName(name);
     } else {
       throw new RuntimeException("Unhandled Type of Local variable to Generate - Not Implemented");
@@ -168,7 +161,7 @@ public class LocalGenerator {
     name.append("u").append(tempUnknownType++);
   }
 
-  private Local createLocal(String name, Type sootType) {
+  private Local createLocal(String name, TypeSignature sootType) {
     Local sootLocal = Jimple.newLocal(name, sootType);
     locals.add(sootLocal);
     return sootLocal;

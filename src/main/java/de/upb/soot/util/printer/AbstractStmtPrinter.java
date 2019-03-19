@@ -30,7 +30,8 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.TypeSignature;
+
 import java.util.HashSet;
 
 /** Partial default IStmtPrinter implementation. */
@@ -96,7 +97,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   public abstract void literal(String s);
 
   @Override
-  public abstract void type(Type t);
+  public abstract void typeSignature(TypeSignature t);
 
   @Override
   public abstract void method(SootMethod m);

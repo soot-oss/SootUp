@@ -29,7 +29,7 @@ public class ModuleBuilderActorTest {
 
     // 1. simple case
 
-    return project.createDemandView();
+    return project.createOnDemandView();
   }
 
   @Test

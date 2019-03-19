@@ -27,12 +27,11 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.UnknownTypeSignature;
 
 public class JUshrExpr extends AbstractIntLongBinopExpr {
   /** */
@@ -53,22 +52,22 @@ public class JUshrExpr extends AbstractIntLongBinopExpr {
   }
 
   @Override
-  public Type getType() {
+  public TypeSignature getSignature() {
     Value op1 = op1Box.getValue();
     Value op2 = op2Box.getValue();
 
-    if (!isIntLikeType(op2.getType())) {
-      return UnknownType.getInstance();
+    if (!isIntLikeType(op2.getSignature())) {
+      return UnknownTypeSignature.getInstance();
     }
 
-    if (isIntLikeType(op1.getType())) {
-      return IntType.getInstance();
+    if (isIntLikeType(op1.getSignature())) {
+      return PrimitiveTypeSignature.getIntSignature();
     }
-    if (op1.getType().equals(LongType.getInstance())) {
-      return LongType.getInstance();
+    if (op1.getSignature().equals(PrimitiveTypeSignature.getLongSignature())) {
+      return PrimitiveTypeSignature.getLongSignature();
     }
 
-    return UnknownType.getInstance();
+    return UnknownTypeSignature.getInstance();
   }
 
   @Override

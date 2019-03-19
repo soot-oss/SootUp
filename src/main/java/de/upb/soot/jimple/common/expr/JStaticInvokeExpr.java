@@ -34,7 +34,6 @@ import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +42,8 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   private static final long serialVersionUID = -8705816067828505717L;
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */
-  public JStaticInvokeExpr(IView view, MethodSignature method, List<? extends Value> args) {
-    super(view, method, new ValueBox[args.size()]);
+  public JStaticInvokeExpr(MethodSignature method, List<? extends Value> args) {
+    super(method, new ValueBox[args.size()]);
     this.methodSignature = method;
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
@@ -58,7 +57,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
-    return new JStaticInvokeExpr(this.getView(), methodSignature, clonedArgs);
+    return new JStaticInvokeExpr(methodSignature, clonedArgs);
   }
 
   /** Returns true if object o is an instance of AbstractStaticInvokeExpr else returns false. */
@@ -75,7 +74,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return getMethod().hashCode();
+    return getMethodSignature().hashCode();
   }
 
   @Override

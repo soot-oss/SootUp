@@ -25,10 +25,10 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 /** Floating point constant with double precision. */
 public class DoubleConstant extends RealConstant {
@@ -177,8 +177,8 @@ public class DoubleConstant extends RealConstant {
   }
 
   @Override
-  public Type getType() {
-    return DoubleType.getInstance();
+  public TypeSignature getSignature() {
+    return PrimitiveTypeSignature.getDoubleSignature();
   }
 
   @Override

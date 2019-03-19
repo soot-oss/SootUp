@@ -59,7 +59,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     // FIXME: somewhere a soot class needs to be created or returned???
     AbstractClass sootClass = null;
     try {
-      sootClass = content.resolve(ResolvingLevel.DANGLING, view);
+      sootClass = content.resolveClass(ResolvingLevel.DANGLING, view);
     } catch (ResolveException e) {
       e.printStackTrace();
       // FIXME: error handling

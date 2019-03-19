@@ -25,11 +25,12 @@ package de.upb.soot.frontends.asm;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import java.util.ArrayList;
-import java.util.List;
+import org.objectweb.asm.tree.AbstractInsnNode;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.objectweb.asm.tree.AbstractInsnNode;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Stack operand.
@@ -38,10 +39,10 @@ import org.objectweb.asm.tree.AbstractInsnNode;
  */
 final class Operand {
 
-  final @Nonnull AbstractInsnNode insn;
-  final @Nonnull Value value;
+  @Nonnull final AbstractInsnNode insn;
+  @Nonnull final Value value;
   @Nullable Local stack;
-  private @Nullable Object boxes;
+  @Nullable private Object boxes;
 
   /**
    * Constructs a new stack operand.

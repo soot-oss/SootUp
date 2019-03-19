@@ -1,7 +1,11 @@
 package de.upb.soot.signatures;
 
+import de.upb.soot.core.SootClass;
+
+import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 /*-
  * #%L
@@ -33,8 +37,11 @@ public interface SignatureFactory {
   JavaClassSignature getClassSignature(String fullyQualifiedClassName);
 
   TypeSignature getTypeSignature(String typeName);
+  
+  @Nonnull
+  Optional<PrimitiveTypeSignature> getPrimitiveTypeSignature(@Nonnull String typeName);
 
-  TypeSignature getArrayTypeSignature(TypeSignature baseType, int dim);
+  ArrayTypeSignature getArrayTypeSignature(TypeSignature baseType, int dim);
 
   MethodSignature getMethodSignature(
       String methodName,
@@ -53,12 +60,48 @@ public interface SignatureFactory {
       JavaClassSignature declaringClassSignature,
       TypeSignature fqReturnType,
       List<TypeSignature> parameters);
+  
+  @Nonnull
+  MethodSignature getMethodSignature(
+      @Nonnull SootClass declaringClass,
+      @Nonnull MethodSubSignature subSignature);
+  
+  @Nonnull
+  MethodSignature getMethodSignature(
+      @Nonnull JavaClassSignature declaringClassSignature,
+      @Nonnull MethodSubSignature subSignature);
+  
+  @Nonnull
+  MethodSignature parseMethodSignature(@Nonnull String methodSignature);
+  
+  @Nonnull
+  MethodSubSignature getMethodSubSignature(
+      @Nonnull String name,
+      @Nonnull Iterable<? extends TypeSignature> parameterSignatures,
+      @Nonnull TypeSignature returnTypeSignature);
+  
+  @Nonnull
+  MethodSubSignature parseMethodSubSignature(@Nonnull String methodSubSignature);
+  
+  @Nonnull
+  FieldSignature parseFieldSignature(@Nonnull String fieldSignature);
 
   FieldSignature getFieldSignature(
       String fieldName, JavaClassSignature declaringClassSignature, String fieldType);
 
   FieldSignature getFieldSignature(
       String fieldName, JavaClassSignature declaringClassSignature, TypeSignature fieldType);
-
+  
+  @Nonnull
+  FieldSignature getFieldSignature(
+      @Nonnull JavaClassSignature declaringClassSignature,
+      @Nonnull FieldSubSignature subSignature);
+  
+  @Nonnull
+  FieldSubSignature getFieldSubSignature(@Nonnull String name, @Nonnull TypeSignature typeSignature);
+  
+  @Nonnull
+  FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature);
+  
   JavaClassSignature fromPath(Path file);
 }

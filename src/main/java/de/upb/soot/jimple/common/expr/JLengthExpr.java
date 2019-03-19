@@ -28,10 +28,9 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JLengthExpr extends AbstractUnopExpr {
@@ -76,8 +75,8 @@ public class JLengthExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public Type getType() {
-    return IntType.getInstance();
+  public PrimitiveTypeSignature getSignature() {
+    return PrimitiveTypeSignature.getIntSignature();
   }
 
   @Override

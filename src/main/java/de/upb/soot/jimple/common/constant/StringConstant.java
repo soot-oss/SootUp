@@ -25,10 +25,10 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.TypeSignature;
 import soot.util.StringTools;
 
 public class StringConstant extends Constant {
@@ -58,8 +58,9 @@ public class StringConstant extends Constant {
   }
 
   @Override
-  public Type getType() {
-    return RefType.getInstance("java.lang.String");
+  public TypeSignature getSignature() {
+    // TODO: [JMP] Use cached type from somewhere.
+    return DefaultSignatureFactory.getInstance().getTypeSignature("java.lang.String");
   }
 
   @Override

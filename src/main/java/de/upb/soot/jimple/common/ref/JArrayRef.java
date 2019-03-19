@@ -30,11 +30,12 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.ArrayType;
-import de.upb.soot.jimple.common.type.NullType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.ArrayTypeSignature;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.NullTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.UnknownTypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,30 +127,31 @@ public class JArrayRef implements ConcreteRef {
   }
 
   @Override
-  public Type getType() {
+  public TypeSignature getSignature() {
     Value base = baseBox.getValue();
-    Type type = base.getType();
+    TypeSignature type = base.getSignature();
 
-    if (type.equals(UnknownType.getInstance())) {
-      return UnknownType.getInstance();
-    } else if (type.equals(NullType.getInstance())) {
-      return NullType.getInstance();
+    if (type.equals(UnknownTypeSignature.getInstance())) {
+      return UnknownTypeSignature.getInstance();
+    } else if (type.equals(NullTypeSignature.getInstance())) {
+      return NullTypeSignature.getInstance();
     } else {
       // use makeArrayType on non-array type references when they propagate to this point.
       // kludge, most likely not correct.
       // may stop spark from complaining when it gets passed phantoms.
       // ideally I'd want to find out just how they manage to get this far.
-      ArrayType arrayType;
-      if (type instanceof ArrayType) {
-        arrayType = (ArrayType) type;
+      ArrayTypeSignature arrayType;
+      if (type instanceof ArrayTypeSignature) {
+        arrayType = (ArrayTypeSignature) type;
       } else {
-        arrayType = type.makeArrayType();
+        arrayType = DefaultSignatureFactory.getInstance().getArrayTypeSignature(type, 1);
       }
 
-      if (arrayType.getNumDimensions() == 1) {
+      // FIXME: [JMP] Should unwrapping not be done by the `ArrayTypeSignature` itself?
+      if (arrayType.getDimension() == 1) {
         return arrayType.getBaseType();
       } else {
-        return ArrayType.getInstance(arrayType.getBaseType(), arrayType.getNumDimensions() - 1);
+        return DefaultSignatureFactory.getInstance().getArrayTypeSignature(arrayType.getBaseType(), arrayType.getDimension() - 1);
       }
     }
   }

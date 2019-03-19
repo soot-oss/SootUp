@@ -18,7 +18,6 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,14 +35,14 @@ public class JInstanceFieldRef extends FieldRef {
    * @param base the base value of the field
    * @param fieldSig the field sig
    */
-  public JInstanceFieldRef(IView view, Value base, FieldSignature fieldSig) {
-    super(view, fieldSig);
+  public JInstanceFieldRef(Value base, FieldSignature fieldSig) {
+    super(fieldSig);
     this.baseBox = Jimple.newLocalBox(base);
   }
 
   @Override
   public Object clone() {
-    return new JInstanceFieldRef(this.view, Jimple.cloneIfNecessary(getBase()), fieldSignature);
+    return new JInstanceFieldRef(Jimple.cloneIfNecessary(getBase()), fieldSignature);
   }
 
   @Override
@@ -98,10 +97,6 @@ public class JInstanceFieldRef extends FieldRef {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    if (getField().isPresent()) {
-      return getField().get().equivHashCode() * 101 + baseBox.getValue().equivHashCode() + 17;
-    } else {
-      return 16;
-    }
+      return getFieldSignature().hashCode() * 101 + baseBox.getValue().hashCode() + 17;
   }
 }

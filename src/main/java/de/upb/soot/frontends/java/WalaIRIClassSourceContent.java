@@ -23,7 +23,7 @@ class WalaIRIClassSourceContent implements IClassSourceContent {
   }
 
   @Override
-  public AbstractClass resolve(ResolvingLevel level, IView view) {
+  public AbstractClass resolveClass(ResolvingLevel level, IView view) {
     switch (level) {
       case HIERARCHY:
         break;

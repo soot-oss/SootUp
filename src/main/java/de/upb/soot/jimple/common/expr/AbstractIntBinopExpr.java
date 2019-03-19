@@ -27,8 +27,8 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 public abstract class AbstractIntBinopExpr extends AbstractBinopExpr {
 
@@ -41,7 +41,7 @@ public abstract class AbstractIntBinopExpr extends AbstractBinopExpr {
   }
 
   @Override
-  public Type getType() {
-    return IntType.getInstance();
+  public TypeSignature getSignature() {
+    return PrimitiveTypeSignature.getIntSignature();
   }
 }

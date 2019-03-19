@@ -26,11 +26,11 @@
 package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.jimple.common.ref.FieldRef;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.TypeSignature;
 import org.objectweb.asm.Opcodes;
 
 public class MethodHandle extends Constant {
@@ -124,8 +124,8 @@ public class MethodHandle extends Constant {
   }
 
   @Override
-  public Type getType() {
-    return RefType.getInstance("java.lang.invoke.MethodHandle");
+  public TypeSignature getSignature() {
+    return DefaultSignatureFactory.getInstance().getTypeSignature("java.lang.invoke.MethodHandle");
   }
 
   public MethodSignature getMethodRef() {
@@ -138,7 +138,8 @@ public class MethodHandle extends Constant {
   }
 
   @Override
-  public int hashCode() {
+  public int hashCode()
+  {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((methodRef == null) ? 0 : methodRef.hashCode());

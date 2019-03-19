@@ -3,9 +3,10 @@ package de.upb.soot.core;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.util.Utils;
 import de.upb.soot.views.IView;
+import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
@@ -110,7 +111,7 @@ public class SootModuleInfo extends AbstractClass {
 
   // FIXME: add missing statementss
   private SootModuleInfo(SootModuleInfoBuilder builder) {
-    super(builder.view, builder.classSource, Collections.emptySet(), Collections.emptySet());
+    super(builder.classSource);
     this.resolvingLevel = builder.resolvingLevel;
     this.moduleSignature = builder.classSource.getClassSignature();
     this.modifiers = builder.modifiers;
@@ -195,7 +196,7 @@ public class SootModuleInfo extends AbstractClass {
       EnumSet<Modifier> access,
       String version,
       ResolvingLevel resolvingLevel) {
-    super(view, cs, Collections.emptySet(), Collections.emptySet());
+    super(cs);
     this.moduleSignature = moduleSignature;
     this.resolvingLevel = resolvingLevel;
     this.modifiers = null;
@@ -219,5 +220,13 @@ public class SootModuleInfo extends AbstractClass {
   @Override
   public ISignature getSignature() {
     return this.moduleSignature;
+  }
+  
+  @Nonnull @Override public Set<IMethod> getMethods() {
+    return Utils.emptyImmutableSet();
+  }
+  
+  @Nonnull @Override public Set<IField> getFields() {
+    return Utils.emptyImmutableSet();
   }
 }

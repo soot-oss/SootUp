@@ -30,12 +30,12 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.constant.LongConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import java.util.Comparator;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.util.Comparator;
 
 /** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
@@ -61,8 +61,8 @@ public class JAssignStmtTest {
     Value numConst1 = IntConstant.getInstance(42);
     Value numConst2 = IntConstant.getInstance(33102);
 
-    Local local = new Local("$i0", IntType.getInstance());
-    Local field = new Local("i2", IntType.getInstance());
+    Local local = new Local("$i0", PrimitiveTypeSignature.getIntSignature());
+    Local field = new Local("i2", PrimitiveTypeSignature.getIntSignature());
 
     IStmt lStmt = new JAssignStmt(local, numConst1, nop);
     IStmt fStmt = new JAssignStmt(field, numConst1, nop);
@@ -73,12 +73,12 @@ public class JAssignStmtTest {
     Assert.assertTrue(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", IntType.getInstance()), IntConstant.getInstance(42), nop)));
+                new Local("$i0", PrimitiveTypeSignature.getIntSignature()), IntConstant.getInstance(42), nop)));
 
     Assert.assertTrue(
         deepStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", IntType.getInstance()), new JAddExpr(numConst1, numConst2), nop)));
+                new Local("$i0", PrimitiveTypeSignature.getIntSignature()), new JAddExpr(numConst1, numConst2), nop)));
 
     // equivTo: switched operands
     Assert.assertFalse(lStmt.equivTo(new JAssignStmt(local, numConst2, nop)));
@@ -90,13 +90,13 @@ public class JAssignStmtTest {
     Assert.assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i100differentname", IntType.getInstance()),
+                new Local("$i100differentname", PrimitiveTypeSignature.getIntSignature()),
                 IntConstant.getInstance(42),
                 nop)));
     Assert.assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", LongType.getInstance()), LongConstant.getInstance(42), nop)));
+                new Local("$i0", PrimitiveTypeSignature.getLongSignature()), LongConstant.getInstance(42), nop)));
 
     // equivTo: different depth
     Assert.assertFalse(

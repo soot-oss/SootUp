@@ -3,26 +3,33 @@ package de.upb.soot.signatures;
 import com.google.common.base.Objects;
 import de.upb.soot.core.SootClassMember;
 
+import javax.annotation.Nonnull;
+
 /**
  * Abstract class for the signature of a {@link SootClassMember}
  *
  * @author Linghui Luo
+ * @author Jan Martin Persch
  */
 public abstract class AbstractClassMemberSignature implements ISignature {
 
-  private final JavaClassSignature declClassSignature;
-
-  private final TypeSignature typeSignature;
-  private final String name;
+  /** The signature of the declaring class. */
+  @Nonnull private final JavaClassSignature declClassSignature;
+  
+  @Nonnull private final AbstractClassMemberSubSignature subSignature;
 
   public AbstractClassMemberSignature(
-      String name, JavaClassSignature klass, TypeSignature returnType) {
-    this.name = name;
+      @Nonnull JavaClassSignature klass,
+      @Nonnull AbstractClassMemberSubSignature subSignature
+  ) {
     this.declClassSignature = klass;
-    this.typeSignature = returnType;
+    this.subSignature = subSignature;
   }
 
-  public abstract String getSubSignature();
+  @Nonnull
+  public AbstractClassMemberSubSignature getSubSignature() {
+    return subSignature;
+  }
 
   @Override
   public boolean equals(Object o) {
@@ -33,14 +40,13 @@ public abstract class AbstractClassMemberSignature implements ISignature {
       return false;
     }
     AbstractClassMemberSignature that = (AbstractClassMemberSignature) o;
-    return Objects.equal(name, that.name)
-        && Objects.equal(declClassSignature, that.declClassSignature)
-        && Objects.equal(typeSignature, that.typeSignature);
+    return Objects.equal(declClassSignature, that.declClassSignature)
+        && Objects.equal(subSignature, that.subSignature);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(name, declClassSignature);
+    return Objects.hashCode(declClassSignature, subSignature);
   }
 
   @Override
@@ -49,15 +55,22 @@ public abstract class AbstractClassMemberSignature implements ISignature {
   }
 
   /** The signature of the declaring class. */
+  @Nonnull
   public JavaClassSignature getDeclClassSignature() {
     return declClassSignature;
   }
 
-  public TypeSignature getTypeSignature() {
-    return typeSignature;
+  public TypeSignature getSignature() {
+    return subSignature.getSignature();
   }
 
   public String getName() {
-    return name;
+    return subSignature.getName();
   }
+  
+  @Nonnull
+  public String toQuotedString() {
+    return this.toString();
+  }
+  
 }

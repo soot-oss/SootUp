@@ -19,6 +19,7 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  * @author Ben Hermann
+ * @author Jan Martin Persch
  */
 public class CompositeNamespace implements INamespace {
   private @Nonnull List<INamespace> namespaces;
