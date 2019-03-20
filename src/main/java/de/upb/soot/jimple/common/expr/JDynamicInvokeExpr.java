@@ -110,7 +110,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JDynamicInvokeExpr(bootstrapMethodSignature, clonedBsmArgs, methodSignature, tag, clonedArgs);
+    return new JDynamicInvokeExpr(
+        bootstrapMethodSignature, clonedBsmArgs, methodSignature, tag, clonedArgs);
   }
 
   @Override
