@@ -44,8 +44,8 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   /** */
   private static final long serialVersionUID = 8212277443400470834L;
 
-  protected MethodSignature bsm;
-  protected ValueBox[] bsmArgBoxes;
+  protected MethodSignature bootstrapMethodSignature;
+  protected ValueBox[] bootstrapMethodSignatureArgBoxes;
   protected int tag;
 
   /** Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox. */
@@ -62,12 +62,12 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
               + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME
               + "!");
     }
-    this.bsm = bootstrapMethodRef;
-    this.bsmArgBoxes = new ValueBox[bootstrapArgs.size()];
+    this.bootstrapMethodSignature = bootstrapMethodRef;
+    this.bootstrapMethodSignatureArgBoxes = new ValueBox[bootstrapArgs.size()];
     this.tag = tag;
 
     for (int i = 0; i < bootstrapArgs.size(); i++) {
-      this.bsmArgBoxes[i] = Jimple.newImmediateBox(bootstrapArgs.get(i));
+      this.bootstrapMethodSignatureArgBoxes[i] = Jimple.newImmediateBox(bootstrapArgs.get(i));
     }
     for (int i = 0; i < methodArgs.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(methodArgs.get(i));
@@ -87,15 +87,15 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   public @Nonnull MethodSignature getBootstrapMethodSignature() {
-    return this.bsm;
+    return this.bootstrapMethodSignature;
   }
 
   public int getBootstrapArgCount() {
-    return bsmArgBoxes.length;
+    return bootstrapMethodSignatureArgBoxes.length;
   }
 
   public Value getBootstrapArg(int index) {
-    return bsmArgBoxes[index].getValue();
+    return bootstrapMethodSignatureArgBoxes[index].getValue();
   }
 
   @Override
@@ -110,7 +110,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JDynamicInvokeExpr(bsm, clonedBsmArgs, methodSignature, tag, clonedArgs);
+    return new JDynamicInvokeExpr(bootstrapMethodSignature, clonedBsmArgs, methodSignature, tag, clonedArgs);
   }
 
   @Override
@@ -126,7 +126,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return bsm.hashCode() * getMethodSignature().hashCode() * 17;
+    return bootstrapMethodSignature.hashCode() * getMethodSignature().hashCode() * 17;
   }
 
   @Override
@@ -144,12 +144,12 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     builder.append(") ");
     builder.append(this.getBootstrapMethodSignature());
     builder.append("(");
-    final int len = bsmArgBoxes.length;
+    final int len = bootstrapMethodSignatureArgBoxes.length;
     if (0 < len) {
-      builder.append(bsmArgBoxes[0].getValue().toString());
+      builder.append(bootstrapMethodSignatureArgBoxes[0].getValue().toString());
       for (int i = 1; i < len; i++) {
         builder.append(", ");
-        builder.append(bsmArgBoxes[i].getValue().toString());
+        builder.append(bootstrapMethodSignatureArgBoxes[i].getValue().toString());
       }
     }
     builder.append(")");
@@ -165,15 +165,15 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     argBoxesToPrinter(up);
 
     up.literal(") ");
-    MethodSignature op = this.bsm;
+    MethodSignature op = this.bootstrapMethodSignature;
     up.methodSignature(op);
     up.literal("(");
-    final int len = bsmArgBoxes.length;
+    final int len = bootstrapMethodSignatureArgBoxes.length;
     if (0 < len) {
-      bsmArgBoxes[0].toString(up);
+      bootstrapMethodSignatureArgBoxes[0].toString(up);
       for (int i = 1; i < len; i++) {
         up.literal(", ");
-        bsmArgBoxes[i].toString(up);
+        bootstrapMethodSignatureArgBoxes[i].toString(up);
       }
     }
     up.literal(")");
@@ -187,7 +187,7 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   /** Returns a list containing elements of type ValueBox. */
   public List<Value> getBootstrapArgs() {
     List<Value> l = new ArrayList<>();
-    for (ValueBox element : bsmArgBoxes) {
+    for (ValueBox element : bootstrapMethodSignatureArgBoxes) {
       l.add(element.getValue());
     }
 
