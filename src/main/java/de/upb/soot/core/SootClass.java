@@ -402,6 +402,9 @@ public class SootClass extends AbstractClass implements Serializable {
 
   /** Returns the number of fields in this class. */
   public int getFieldCount() {
+    // FIXME "This has to be refactored later. I'm unsure whether we still need the resolving levels."
+    //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r267007069
+    //   This also applies to every other commented-out occurrence of checkLevel(...) in this class.
     //    checkLevel(ResolvingLevel.SIGNATURES);
     return getFields().size();
   }
@@ -655,6 +658,10 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   protected int number = 0;
+
+  // FIXME The following code is commented out due to incompatibility, but
+  //   may still be needed.
+  //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r266971653
 
   //  /**
   //   * An array containing some validators in order to validate the SootClass

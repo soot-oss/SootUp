@@ -286,6 +286,9 @@ public class Body implements Serializable {
     return new Body(this.locals, this.traps, this.stmts, this.position);
   }
 
+  // FIXME "This code does not work and has to be adapted in future features."
+  //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r267259693
+  //
   //  /**
   //   * Make sure that the JimpleBody is well formed. If not, throw an exception. Right now,
   // performs only a handful of checks.

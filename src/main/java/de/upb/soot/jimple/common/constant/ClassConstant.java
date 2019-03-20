@@ -47,6 +47,10 @@ public class ClassConstant extends Constant {
     return new ClassConstant(value);
   }
 
+  // FIXME The following code is commented out due to incompatibility, but
+  //   may still be needed.
+  //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r266982906
+
   //  public static ClassConstant fromType(TypeSignature tp) {
   //    return getInstance(sootTypeToString(tp));
   //  }
