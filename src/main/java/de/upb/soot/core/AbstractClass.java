@@ -18,7 +18,6 @@ public abstract class AbstractClass {
   protected final ClassSource classSource;
 
   public AbstractClass(ClassSource cs) {
-    super();
     this.classSource = cs;
   }
 

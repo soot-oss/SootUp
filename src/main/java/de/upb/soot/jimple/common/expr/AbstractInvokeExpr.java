@@ -43,7 +43,6 @@ public abstract class AbstractInvokeExpr implements Expr {
   protected final ValueBox[] argBoxes;
 
   protected AbstractInvokeExpr(MethodSignature method, ValueBox[] argBoxes) {
-    super();
     this.methodSignature = method;
     this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
   }
