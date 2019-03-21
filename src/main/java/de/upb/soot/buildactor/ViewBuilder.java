@@ -1,11 +1,8 @@
 package de.upb.soot.buildactor;
 
+import static de.upb.soot.util.Utils.peek;
+
 import de.upb.soot.Project;
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.ResolvingLevel;
-import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 import javax.annotation.Nonnull;
@@ -24,31 +21,18 @@ public class ViewBuilder {
     this.project = project;
   }
 
-  public @Nonnull IView buildComplete() {
-    throw new NotYetImplementedException();
+  @Nonnull
+  private JavaView buildJavaView() {
+    return new JavaView(this.project);
   }
 
-  public @Nonnull IView buildOnDemand() {
-    IView result = new JavaView(this.project);
+  @Nonnull
+  public IView buildComplete() {
+    return peek(this.buildJavaView(), JavaView::resolveAll);
+  }
 
-    // create a starting view
-    // iterate over everything in the namespace
-    // convert source representation to IR (Jimple) representation
-    // e.g. by calling the ClassBuilder
-    // compose View
-
-    for (ClassSource cs :
-        this.project.getNamespace().getClassSources(result.getSignatureFactory())) {
-      try {
-        AbstractClass abstractClass =
-            cs.getContent().resolveClass(ResolvingLevel.HIERARCHY, result);
-
-        result.addClass(abstractClass);
-      } catch (ResolveException e) {
-        e.printStackTrace();
-      }
-      // Populate view
-    }
-    return result;
+  @Nonnull
+  public IView buildOnDemand() {
+    return this.buildJavaView();
   }
 }
