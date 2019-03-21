@@ -35,6 +35,7 @@ import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.soot.jimple.common.type.ArrayType;
 import de.upb.soot.jimple.common.type.BooleanType;
 import de.upb.soot.jimple.common.type.ByteType;
@@ -477,13 +478,16 @@ public class WalaIRToJimpleConverter {
         for (IStmt stmt : stmt2IIndex.keySet()) {
           instConverter.setTarget(stmt, stmt2IIndex.get(stmt));
         }
-        // add return void stmt for methods with return type beiing void
+        // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
-          IStmt ret =
-              Jimple.newReturnVoidStmt(
-                  new PositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-          instConverter.setTarget(ret, -1);
-          stmts.add(ret);
+          // TODO? [ms] check whether last stmts are branching->check all branches too?
+          if (!stmts.isEmpty() && !(stmts.get(stmts.size() - 1) instanceof JReturnVoidStmt)) {
+            // TODO? [ms] InstructionPosition of last line in the method seems strange to me -> maybe use lastLine with
+            // startcol: -1 because it does not exist in the source explicitly?
+            IStmt ret = Jimple.newReturnVoidStmt(new PositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
+            instConverter.setTarget(ret, -1);
+            stmts.add(ret);
+          }
         }
         Body body = new Body(sootMethod, localGenerator.getLocals(), traps, stmts, bodyPos);
         return Optional.of(body);
