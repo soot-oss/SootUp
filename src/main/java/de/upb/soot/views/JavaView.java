@@ -99,7 +99,7 @@ public class JavaView extends AbstractView {
           "dynamicinvoke",
           "strictfp");
 
-  @Nonnull protected final Map<ISignature, SootClass> map = new HashMap<>();
+  @Nonnull private final Map<ISignature, SootClass> map = new HashMap<>();
 
   // endregion /Fields/
 
@@ -114,20 +114,20 @@ public class JavaView extends AbstractView {
 
   // region Properties
 
-  private volatile boolean _isFullyResolved;
+  private volatile boolean _isEntirelyResolved;
 
   /**
-   * Gets a value, indicating whether all classes have been initialized.
+   * Gets a value, indicating whether all classes have been loaded.
    *
    * @return The value to get.
    */
-  public boolean isFullyResolved() {
-    return this._isFullyResolved;
+  protected boolean isEntirelyResolved() {
+    return this._isEntirelyResolved;
   }
 
-  /** Sets a value, indicating whether all classes have been initialized. */
-  private void __setFullyResolved() {
-    this._isFullyResolved = true;
+  /** Sets a value, indicating whether all classes have been loaded. */
+  private void __setEntirelyResolved() {
+    this._isEntirelyResolved = true;
   }
 
   // endregion /Properties/
@@ -169,7 +169,7 @@ public class JavaView extends AbstractView {
     SootClass sootClass = this.map.get(signature);
 
     if (sootClass != null) return Optional.of(sootClass);
-    else if (this.isFullyResolved()) return Optional.empty();
+    else if (this.isEntirelyResolved()) return Optional.empty();
     else return Optional.ofNullable(this.__resolveSootClass((JavaClassSignature) signature));
   }
 
@@ -192,11 +192,11 @@ public class JavaView extends AbstractView {
   }
 
   public synchronized void resolveAll() {
-    if (this.isFullyResolved()) {
+    if (this.isEntirelyResolved()) {
       return;
     }
 
-    this.__setFullyResolved();
+    this.__setEntirelyResolved();
 
     for (ClassSource cs :
         this.getProject().getNamespace().getClassSources(this.getSignatureFactory())) {
