@@ -99,8 +99,7 @@ public class JavaView extends AbstractView {
           "dynamicinvoke",
           "strictfp");
 
-  @Nonnull
-  protected final Map<ISignature, SootClass> map = new HashMap<>();
+  @Nonnull protected final Map<ISignature, SootClass> map = new HashMap<>();
 
   // endregion /Fields/
 

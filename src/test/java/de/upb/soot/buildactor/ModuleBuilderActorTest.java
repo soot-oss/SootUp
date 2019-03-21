@@ -37,7 +37,6 @@ public class ModuleBuilderActorTest {
   }
 
   @Test
-  @Ignore
   public void refiyMessageModuleInfoTest() {
     de.upb.soot.views.IView iView = createNewScene();
 

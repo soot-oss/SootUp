@@ -111,9 +111,18 @@ public class Utils {
     return stream.filter(clazz::isInstance).map(clazz::cast);
   }
 
+  /**
+   * Returns the <i>value</i>, if it is not <tt>null</tt>; otherwise, it returns <i>other</i>.
+   *
+   * @param value The value to get, if it is not <tt>null</tt>.
+   * @param other The other to get, if <i>value</i> is <tt>null</tt>.
+   * @param <T> The type of the value.
+   * @return <i>value</i>, if it is not <tt>null</tt>; otherwise, <i>other</i>.
+   * @see Optional#orElse(Object)
+   */
   @Nonnull
-  public static <T> T valueOrElse(@Nullable T value, @Nonnull T elseValue) {
-    return value != null ? value : elseValue;
+  public static <T> T valueOrElse(@Nullable T value, @Nonnull T other) {
+    return value != null ? value : other;
   }
 
   /**
