@@ -101,11 +101,12 @@ public class JimpleConverter {
     // convert fields
     Collection<? extends IField> fields = fromClass.getFields();
     for (IField fromField : fields) {
-
       soot.SootField f = convertSootField((SootField) fromField);
-      toClass.addField(f);
-      f.setDeclaringClass(toClass);
-      f.setDeclared(true);
+      if (toClass.getFieldByNameUnsafe(f.getName()) == null) {
+        toClass.addField(f);
+        f.setDeclaringClass(toClass);
+        f.setDeclared(true);
+      }
     }
 
     // convert methods

@@ -65,7 +65,7 @@ public class PositionInfoTest {
     assertEquals(14, stmtPos.getFirstLine());
     assertEquals(14, stmtPos.getLastLine());
     assertEquals(17, stmtPos.getLastCol());
-    // FIX ME
+    // FIXME
     // assertEquals(4, stmtPos.getFirstCol());
   }
 }
