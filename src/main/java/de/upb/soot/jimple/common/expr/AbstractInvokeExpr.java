@@ -19,53 +19,32 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.AbstractViewResident;
-import de.upb.soot.core.IMethod;
-import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-import de.upb.soot.views.IView;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-public abstract class AbstractInvokeExpr extends AbstractViewResident implements Expr {
-  /**
-   * 
-   */
+public abstract class AbstractInvokeExpr implements Expr {
+  /** */
   private static final long serialVersionUID = 1796920588315752175L;
+
   protected MethodSignature methodSignature;
   protected final ValueBox[] argBoxes;
 
-  protected AbstractInvokeExpr(IView view, MethodSignature method, ValueBox[] argBoxes) {
-    super(view);
+  protected AbstractInvokeExpr(MethodSignature method, ValueBox[] argBoxes) {
     this.methodSignature = method;
     this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
-  }
-
-  public Optional<SootMethod> getMethod() {
-    JavaClassSignature signature = methodSignature.declClassSignature;
-    Optional<AbstractClass> op = this.getView().getClass(signature);
-    if (op.isPresent()) {
-      AbstractClass klass = op.get();
-      Optional<? extends IMethod> m = klass.getMethod(methodSignature);
-      return m.map(c -> (SootMethod) c);
-    }
-    return Optional.empty();
   }
 
   public MethodSignature getMethodSignature() {
@@ -79,9 +58,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
     return argBoxes[index].getValue();
   }
 
-  /**
-   * Returns a list of arguments, consisting of values contained in the box.
-   */
+  /** Returns a list of arguments, consisting of values contained in the box. */
   public List<Value> getArgs() {
     List<Value> l = new ArrayList<>();
     if (argBoxes != null) {
@@ -105,8 +82,8 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
   }
 
   @Override
-  public Type getType() {
-    return this.getView().getType(methodSignature.typeSignature);
+  public TypeSignature getSignature() {
+    return methodSignature.getSignature();
   }
 
   @Override
@@ -114,7 +91,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
     if (argBoxes == null) {
       return Collections.emptyList();
     }
-    List<ValueBox> list = new ArrayList<ValueBox>();
+    List<ValueBox> list = new ArrayList<>();
     Collections.addAll(list, argBoxes);
     for (ValueBox element : argBoxes) {
       list.addAll(element.getValue().getUseBoxes());
@@ -122,14 +99,14 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
     return list;
   }
 
-  protected void argBoxesToString(StringBuffer buffer) {
+  protected void argBoxesToString(StringBuilder builder) {
     if (argBoxes != null) {
       final int len = argBoxes.length;
       if (0 < len) {
-        buffer.append(argBoxes[0].getValue().toString());
+        builder.append(argBoxes[0].getValue().toString());
         for (int i = 1; i < len; i++) {
-          buffer.append(", ");
-          buffer.append(argBoxes[i].getValue().toString());
+          builder.append(", ");
+          builder.append(argBoxes[i].getValue().toString());
         }
       }
     }
@@ -140,12 +117,11 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
       final int len = argBoxes.length;
       if (0 < len) {
         argBoxes[0].toString(up);
-        for (int i = 1; i < argBoxes.length; i++) {
+        for (int i = 1; i < len; i++) {
           up.literal(", ");
           argBoxes[i].toString(up);
         }
       }
     }
   }
-
 }

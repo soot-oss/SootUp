@@ -9,13 +9,11 @@ import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.TypeSignature;
 
-/**
- * IStmtPrinter implementation for normal Jimple
- */
+/** IStmtPrinter implementation for normal Jimple */
 public class BriefStmtPrinter extends LabeledStmtPrinter {
   public BriefStmtPrinter(Body body) {
     super(body);
@@ -30,24 +28,20 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   public void method(SootMethod m) {
     handleIndent();
     if (m.isStatic()) {
-      if (m.getDeclaringClass().isPresent()) {
-        output.append(m.getDeclaringClass().get().getName());
-      }
+      output.append(m.getDeclaringClass().getName());
       literal(".");
     }
-    output.append(m.getSignature().name);
+    output.append(m.getSignature().getName());
   }
 
   @Override
   public void field(SootField f) {
     handleIndent();
     if (f.isStatic()) {
-      if (f.getDeclaringClass().isPresent()) {
-        output.append(f.getDeclaringClass().get().getName());
-      }
+      output.append(f.getDeclaringClass().getName());
       literal(".");
     }
-    output.append(f.getSignature().name);
+    output.append(f.getSignature().getName());
   }
 
   @Override
@@ -75,7 +69,9 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
       return;
     }
     eatSpace = false;
-    if (s.equals(Jimple.STATICINVOKE) || s.equals(Jimple.VIRTUALINVOKE) || s.equals(Jimple.INTERFACEINVOKE)) {
+    if (s.equals(Jimple.STATICINVOKE)
+        || s.equals(Jimple.VIRTUALINVOKE)
+        || s.equals(Jimple.INTERFACEINVOKE)) {
       eatSpace = true;
       return;
     }
@@ -84,7 +80,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   }
 
   @Override
-  public void type(Type t) {
+  public void typeSignature(TypeSignature t) {
     handleIndent();
     output.append(t.toString());
   }
@@ -98,5 +94,4 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   public void fieldSignature(FieldSignature fieldSig) {
     output.append(fieldSig.toString());
   }
-
 }

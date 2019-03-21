@@ -2,7 +2,6 @@ package de.upb.soot.buildactor;
 
 import akka.actor.AbstractLoggingActor;
 import akka.actor.Props;
-
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.IMethod;
 import de.upb.soot.core.ResolvingLevel;
@@ -15,8 +14,7 @@ import de.upb.soot.views.IView;
 
 public class ClassBuilderActor extends AbstractLoggingActor {
 
-  private final class ResolveMethodMessage {
-  }
+  private final class ResolveMethodMessage {}
 
   private final IView view;
   private final ClassSource classSource;
@@ -31,17 +29,22 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     return Props.create(ClassBuilderActor.class, view, classSource);
   }
 
-  public static Props props(de.upb.soot.core.AbstractClass sootClass, de.upb.soot.core.SootMethod sootMethod) {
+  public static Props props(
+      de.upb.soot.core.AbstractClass sootClass, de.upb.soot.core.SootMethod sootMethod) {
     return Props.create(MethodBuilderActor.class, sootClass, sootMethod);
   }
 
-  // this should become just logic for akka, e.g., when to create new actors, etc, the resolving should happen in the
+  // this should become just logic for akka, e.g., when to create new actors, etc, the resolving
+  // should happen in the
   // classprovider
 
   @Override
   public Receive createReceive() {
-    return receiveBuilder().match(ReifyMessage.class, this::reify).match(ResolveMessage.class, this::resolve)
-        .matchEquals("done", m -> getContext().stop(getSelf())).build();
+    return receiveBuilder()
+        .match(ReifyMessage.class, this::reify)
+        .match(ResolveMessage.class, this::resolve)
+        .matchEquals("done", m -> getContext().stop(getSelf()))
+        .build();
   }
 
   private void reify(ReifyMessage m) {
@@ -56,7 +59,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     // FIXME: somewhere a soot class needs to be created or returned???
     AbstractClass sootClass = null;
     try {
-      sootClass = content.resolve(ResolvingLevel.DANGLING, view);
+      sootClass = content.resolveClass(ResolvingLevel.DANGLING, view);
     } catch (ResolveException e) {
       e.printStackTrace();
       // FIXME: error handling
@@ -75,10 +78,12 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
     for (IMethod i : sootClass.getMethods()) {
       SootMethod method = (SootMethod) i;
-      akka.actor.ActorRef methodActor
-          = getContext().actorOf(de.upb.soot.buildactor.ClassBuilderActor.props(sootClass, method));
-      akka.util.Timeout timeout = new akka.util.Timeout(scala.concurrent.duration.Duration.create(5, "seconds"));
-      scala.concurrent.Future<Object> cbFuture = akka.pattern.Patterns.ask(methodActor, new ResolveMethodMessage(), timeout);
+      akka.actor.ActorRef methodActor =
+          getContext().actorOf(de.upb.soot.buildactor.ClassBuilderActor.props(sootClass, method));
+      akka.util.Timeout timeout =
+          new akka.util.Timeout(scala.concurrent.duration.Duration.create(5, "seconds"));
+      scala.concurrent.Future<Object> cbFuture =
+          akka.pattern.Patterns.ask(methodActor, new ResolveMethodMessage(), timeout);
     }
 
     sender().tell(sootClass, this.getSelf());
@@ -94,15 +99,18 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     private final de.upb.soot.core.SootClass sootClass;
     private de.upb.soot.core.SootMethod method;
 
-    public MethodBuilderActor(de.upb.soot.core.SootClass sootClass, de.upb.soot.core.SootMethod method) {
+    public MethodBuilderActor(
+        de.upb.soot.core.SootClass sootClass, de.upb.soot.core.SootMethod method) {
       this.sootClass = sootClass;
       this.method = method;
     }
 
     @Override
     public Receive createReceive() {
-      return receiveBuilder().match(ResolveMethodMessage.class, this::resolveMethod)
-          .matchEquals("done", m -> getContext().stop(getSelf())).build();
+      return receiveBuilder()
+          .match(ResolveMethodMessage.class, this::resolveMethod)
+          .matchEquals("done", m -> getContext().stop(getSelf()))
+          .build();
     }
 
     private void resolveMethod(ResolveMethodMessage m) {
@@ -114,7 +122,5 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
       log().info("Completed reifying methodRef [{}].", method.getSignature().toString());
     }
-
   }
-
 }

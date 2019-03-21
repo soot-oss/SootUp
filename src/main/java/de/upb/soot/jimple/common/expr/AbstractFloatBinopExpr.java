@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -28,16 +28,9 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.UnknownTypeSignature;
 
 @SuppressWarnings("serial")
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
@@ -52,24 +45,33 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
   }
 
   @Override
-  public Type getType() {
+  public TypeSignature getSignature() {
     Value op1 = op1Box.getValue();
     Value op2 = op2Box.getValue();
-    Type op1t = op1.getType();
-    Type op2t = op2.getType();
-    if ((op1t.equals(IntType.INSTANCE) || op1t.equals(ByteType.INSTANCE) || op1t.equals(ShortType.INSTANCE)
-        || op1t.equals(CharType.INSTANCE) || op1t.equals(BooleanType.INSTANCE))
-        && (op2t.equals(IntType.INSTANCE) || op2t.equals(ByteType.INSTANCE) || op2t.equals(ShortType.INSTANCE)
-            || op2t.equals(CharType.INSTANCE) || op2t.equals(BooleanType.INSTANCE))) {
-      return IntType.INSTANCE;
-    } else if (op1t.equals(LongType.INSTANCE) || op2t.equals(LongType.INSTANCE)) {
-      return LongType.INSTANCE;
-    } else if (op1t.equals(DoubleType.INSTANCE) || op2t.equals(DoubleType.INSTANCE)) {
-      return DoubleType.INSTANCE;
-    } else if (op1t.equals(FloatType.INSTANCE) || op2t.equals(FloatType.INSTANCE)) {
-      return FloatType.INSTANCE;
+    TypeSignature op1t = op1.getSignature();
+    TypeSignature op2t = op2.getSignature();
+    if ((op1t.equals(PrimitiveTypeSignature.getIntSignature())
+            || op1t.equals(PrimitiveTypeSignature.getByteSignature())
+            || op1t.equals(PrimitiveTypeSignature.getShortSignature())
+            || op1t.equals(PrimitiveTypeSignature.getCharSignature())
+            || op1t.equals(PrimitiveTypeSignature.getBooleanSignature()))
+        && (op2t.equals(PrimitiveTypeSignature.getIntSignature())
+            || op2t.equals(PrimitiveTypeSignature.getByteSignature())
+            || op2t.equals(PrimitiveTypeSignature.getShortSignature())
+            || op2t.equals(PrimitiveTypeSignature.getCharSignature())
+            || op2t.equals(PrimitiveTypeSignature.getBooleanSignature()))) {
+      return PrimitiveTypeSignature.getIntSignature();
+    } else if (op1t.equals(PrimitiveTypeSignature.getLongSignature())
+        || op2t.equals(PrimitiveTypeSignature.getLongSignature())) {
+      return PrimitiveTypeSignature.getLongSignature();
+    } else if (op1t.equals(PrimitiveTypeSignature.getDoubleSignature())
+        || op2t.equals(PrimitiveTypeSignature.getDoubleSignature())) {
+      return PrimitiveTypeSignature.getDoubleSignature();
+    } else if (op1t.equals(PrimitiveTypeSignature.getFloatSignature())
+        || op2t.equals(PrimitiveTypeSignature.getFloatSignature())) {
+      return PrimitiveTypeSignature.getFloatSignature();
     } else {
-      return UnknownType.INSTANCE;
+      return UnknownTypeSignature.getInstance();
     }
   }
 }

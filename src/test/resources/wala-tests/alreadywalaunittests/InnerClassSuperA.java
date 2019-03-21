@@ -38,21 +38,24 @@
 package alreadywalaunittests;
 
 public class InnerClassSuperA {
-	int x = 5;
-	class SuperOuter {
-		public void test() {
-			System.out.println(x);
-		}
-	}
-	public static void main(String args[]) {
-		new Sub().new SubInner();
-	}
+  int x = 5;
+
+  class SuperOuter {
+    public void test() {
+      System.out.println(x);
+    }
+  }
+
+  public static void main(String args[]) {
+    new Sub().new SubInner();
+  }
 }
+
 class Sub extends InnerClassSuperA {
-	class SubInner {
-		public SubInner() {
-			InnerClassSuperA.SuperOuter so = new InnerClassSuperA.SuperOuter();
-			so.test();
-		}
-	}
+  class SubInner {
+    public SubInner() {
+      InnerClassSuperA.SuperOuter so = new InnerClassSuperA.SuperOuter();
+      so.test();
+    }
+  }
 }

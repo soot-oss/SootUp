@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -30,21 +30,19 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.views.IView;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 5554270441921308784L;
+
   protected final ValueBox baseBox;
 
-  protected AbstractInstanceInvokeExpr(IView view, ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
-    super(view, methodSig, argBoxes);
+  protected AbstractInstanceInvokeExpr(
+      ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
+    super(methodSig, argBoxes);
     this.baseBox = baseBox;
   }
 
@@ -83,11 +81,9 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     ((IExprVisitor) sw).caseInstanceInvokeExpr(this);
   }
 
-  /**
-   * Returns a hash code for this object, consistent with structural equality.
-   */
+  /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return baseBox.getValue().equivHashCode() * 101 + getMethod().hashCode() * 17;
+    return baseBox.getValue().equivHashCode() * 101 + getMethodSignature().hashCode() * 17;
   }
 }

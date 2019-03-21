@@ -10,12 +10,12 @@ package de.upb.soot.validation;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -23,18 +23,19 @@ package de.upb.soot.validation;
  */
 
 import de.upb.soot.core.Body;
-
 import java.util.List;
 
 public class IdentityStatementsValidator implements BodyValidator {
 
   /**
    * Checks the following invariants on this Jimple body:
+   *
    * <ol>
-   * <li>this-references may only occur in instance methods
-   * <li>this-references may only occur as the first statement in a methodRef, if they occur at all
-   * <li>param-references must precede all statements that are not themselves param-references or this-references, if they
-   * occur at all
+   *   <li>this-references may only occur in instance methods
+   *   <li>this-references may only occur as the first statement in a methodRef, if they occur at
+   *       all
+   *   <li>param-references must precede all statements that are not themselves param-references or
+   *       this-references, if they occur at all
    * </ol>
    */
   @Override
@@ -42,11 +43,11 @@ public class IdentityStatementsValidator implements BodyValidator {
     // TODO: check copied code from old soot
     /*
      * SootMethod methodRef = body.getMethod(); if (methodRef.isAbstract()) { return; }
-     * 
+     *
      * Chain<Unit> units = body.getUnits().getNonPatchingChain();
-     * 
+     *
      * boolean foundNonThisOrParamIdentityStatement = false; boolean firstStatement = true;
-     * 
+     *
      * for (Unit unit : units) { if (unit instanceof IdentityStmt) { IdentityStmt identityStmt = (IdentityStmt) unit; if
      * (identityStmt.getRightOp() instanceof ThisRef) { if (methodRef.isStatic()) { exceptions.add(new
      * ValidationException(identityStmt, "@this-assignment in a static methodRef!")); } if (!firstStatement) {
@@ -63,5 +64,4 @@ public class IdentityStatementsValidator implements BodyValidator {
   public boolean isBasicValidator() {
     return true;
   }
-
 }

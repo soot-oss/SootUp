@@ -2,11 +2,11 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 
-public class ArrayTypeSignature extends TypeSignature {
+public class ArrayTypeSignature extends ReferenceTypeSignature {
 
-  public final TypeSignature baseType;
+  private final TypeSignature baseType;
 
-  public final int dimension;
+  private final int dimension;
 
   protected ArrayTypeSignature(TypeSignature baseType, int dimension) {
     this.baseType = baseType;
@@ -42,4 +42,11 @@ public class ArrayTypeSignature extends TypeSignature {
     return Objects.hashCode(baseType, dimension);
   }
 
+  public TypeSignature getBaseType() {
+    return baseType;
+  }
+
+  public int getDimension() {
+    return dimension;
+  }
 }

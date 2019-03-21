@@ -11,14 +11,13 @@ public class ModuleDecoratorClassSignature extends JavaClassSignature {
 
   /**
    * Decorator for a ClassSignature to add module information.
-   * 
-   * @param classSignature
-   *          the singature to decorate
-   * @param moduleSignature
-   *          the module signature to add
+   *
+   * @param classSignature the singature to decorate
+   * @param moduleSignature the module signature to add
    */
-  public ModuleDecoratorClassSignature(JavaClassSignature classSignature, ModuleSignature moduleSignature) {
-    super(classSignature.className, classSignature.packageSignature);
+  public ModuleDecoratorClassSignature(
+      JavaClassSignature classSignature, ModuleSignature moduleSignature) {
+    super(classSignature.getClassName(), classSignature.getPackageSignature());
     this.wrappedSignature = classSignature;
     // FIXME: use factory
     this.moduleSignature = moduleSignature;
@@ -41,7 +40,8 @@ public class ModuleDecoratorClassSignature extends JavaClassSignature {
     }
     ModuleDecoratorClassSignature that = (ModuleDecoratorClassSignature) o;
     boolean moduleEqual = Objects.equal(moduleSignature, that.moduleSignature);
-    return moduleEqual && ((ModuleDecoratorClassSignature) o).wrappedSignature.equals(that.wrappedSignature);
+    return moduleEqual
+        && ((ModuleDecoratorClassSignature) o).wrappedSignature.equals(that.wrappedSignature);
   }
 
   @Override

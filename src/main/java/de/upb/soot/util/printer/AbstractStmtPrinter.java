@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -30,14 +30,10 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.Type;
-
+import de.upb.soot.signatures.TypeSignature;
 import java.util.HashSet;
 
-/**
- * Partial default IStmtPrinter implementation.
- */
-
+/** Partial default IStmtPrinter implementation. */
 public abstract class AbstractStmtPrinter implements IStmtPrinter {
 
   protected boolean startOfLine = true;
@@ -51,8 +47,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   }
 
   @Override
-  public void endStmt(IStmt u) {
-  }
+  public void endStmt(IStmt u) {}
 
   @Override
   public void startStmtBox(IStmtBox ub) {
@@ -60,8 +55,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   }
 
   @Override
-  public void endStmtBox(IStmtBox ub) {
-  }
+  public void endStmtBox(IStmtBox ub) {}
 
   @Override
   public void startValueBox(ValueBox vb) {
@@ -69,8 +63,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   }
 
   @Override
-  public void endValueBox(ValueBox vb) {
-  }
+  public void endValueBox(ValueBox vb) {}
 
   @Override
   public void noIndent() {
@@ -103,7 +96,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   public abstract void literal(String s);
 
   @Override
-  public abstract void type(Type t);
+  public abstract void typeSignature(TypeSignature t);
 
   @Override
   public abstract void method(SootMethod m);
@@ -165,5 +158,4 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
     quotableLocals = new HashSet<>();
     quotableLocals.addAll(Jimple.jimpleKeywordList());
   }
-
 }

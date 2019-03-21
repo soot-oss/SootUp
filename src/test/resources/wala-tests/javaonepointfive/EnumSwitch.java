@@ -38,49 +38,49 @@
 package javaonepointfive;
 
 public class EnumSwitch {
-	public enum Palo {
-		OROS,
-		COPAS,
-		ESPADAS,
-		BASTOS;
-	}
-	
-	public static void main(String args[]) {
-		for(Palo p : Palo.values()) {
-			(new EnumSwitch()).doit(p);
-		}
-		
-	} 
-	
-	private void doit(Palo caballo) {
-		int x = 5;
-		int y = 3, z = 2;
-		int total = 0;
-		switch ( caballo ) {
-		case OROS:
-			total = x - y;
-			System.out.println("gold"); break;
-		case COPAS:
-			total = x * x;
-			y = y + y;
-			System.out.println("cups"); break;
-		case ESPADAS:
-			total = z + z;
-			y = 2 + 4;
-			System.out.println("swords"); break;
-		case BASTOS:
-			total = x / y + z;
-			z = x + y;
-			System.out.println("clubs"); break;
-		default:
-			total = x + x + x + x;
-			System.out.println("baraja inglesa");
-		}
-		System.out.println(x);
-		System.out.println(y);
-		System.out.println(z);
-		System.out.println(total);
-		System.out.println(Palo.valueOf(caballo.toString()));
-	}
-}
+  public enum Palo {
+    OROS, COPAS, ESPADAS, BASTOS;
+  }
 
+  public static void main(String args[]) {
+    for (Palo p : Palo.values()) {
+      (new EnumSwitch()).doit(p);
+    }
+
+  }
+
+  private void doit(Palo caballo) {
+    int x = 5;
+    int y = 3, z = 2;
+    int total = 0;
+    switch (caballo) {
+      case OROS:
+        total = x - y;
+        System.out.println("gold");
+        break;
+      case COPAS:
+        total = x * x;
+        y = y + y;
+        System.out.println("cups");
+        break;
+      case ESPADAS:
+        total = z + z;
+        y = 2 + 4;
+        System.out.println("swords");
+        break;
+      case BASTOS:
+        total = x / y + z;
+        z = x + y;
+        System.out.println("clubs");
+        break;
+      default:
+        total = x + x + x + x;
+        System.out.println("baraja inglesa");
+    }
+    System.out.println(x);
+    System.out.println(y);
+    System.out.println(z);
+    System.out.println(total);
+    System.out.println(Palo.valueOf(caballo.toString()));
+  }
+}

@@ -38,35 +38,44 @@
 package javaonepointfive;
 
 public class Cocovariant {
-        static class A {
-                A foo(String x) { return null; }
-        }
-        static class B extends A {
-                
-                @Override
-                B foo(String x) { return null; }
-        }
-        static class C extends B {
-                
-                @Override
-                C foo(String x) { return null; }
-        }
-        public static void main(String[] args) {
-        	(new Cocovariant()).doit();
-        }
-        
-        private void doit() {
-        	A a = new A();
-        	a.foo("");
-        	a = new B();
-        	a.foo("");
-        	a = new C();
-        	a.foo("");
-        	B b = new B();
-        	b.foo("");
-        	b = new C();
-        	b.foo("");
-        	C c = new C();
-        	c.foo("");
-        }
+  static class A {
+    A foo(String x) {
+      return null;
+    }
+  }
+
+  static class B extends A {
+
+    @Override
+    B foo(String x) {
+      return null;
+    }
+  }
+
+  static class C extends B {
+
+    @Override
+    C foo(String x) {
+      return null;
+    }
+  }
+
+  public static void main(String[] args) {
+    (new Cocovariant()).doit();
+  }
+
+  private void doit() {
+    A a = new A();
+    a.foo("");
+    a = new B();
+    a.foo("");
+    a = new C();
+    a.foo("");
+    B b = new B();
+    b.foo("");
+    b = new C();
+    b.foo("");
+    C c = new C();
+    c.foo("");
+  }
 }

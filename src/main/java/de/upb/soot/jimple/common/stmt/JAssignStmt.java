@@ -4,7 +4,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -27,27 +27,18 @@ import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.List;
 
-/**
- * The Class JAssignStmt.
- */
+/** The Class JAssignStmt. */
 public class JAssignStmt extends AbstractDefinitionStmt {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -4560269896679815285L;
 
-  /**
-   * The Class LinkedVariableBox.
-   */
+  /** The Class LinkedVariableBox. */
   private static class LinkedVariableBox extends VariableBox {
 
-    /**
-     * 
-     */
+    /** */
     private static final long serialVersionUID = -249895672780916220L;
     /** The other box. */
     ValueBox otherBox = null;
@@ -55,8 +46,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     /**
      * Instantiates a new linked variable box.
      *
-     * @param v
-     *          the v
+     * @param v the v
      */
     private LinkedVariableBox(Value v) {
       super(v);
@@ -65,8 +55,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     /**
      * Sets the other box.
      *
-     * @param otherBox
-     *          the new other box
+     * @param otherBox the new other box
      */
     public void setOtherBox(ValueBox otherBox) {
       this.otherBox = otherBox;
@@ -74,7 +63,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see de.upb.soot.jimple.VariableBox#canContainValue(de.upb.soot.jimple.Value)
      */
     @Override
@@ -91,9 +80,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     }
   }
 
-  /**
-   * The Class LinkedRValueBox.
-   */
+  /** The Class LinkedRValueBox. */
   private static class LinkedRValueBox extends RValueBox {
 
     /** The other box. */
@@ -102,8 +89,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     /**
      * Instantiates a new linked R value box.
      *
-     * @param v
-     *          the v
+     * @param v the v
      */
     private LinkedRValueBox(Value v) {
       super(v);
@@ -112,8 +98,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     /**
      * Sets the other box.
      *
-     * @param otherBox
-     *          the new other box
+     * @param otherBox the new other box
      */
     public void setOtherBox(ValueBox otherBox) {
       this.otherBox = otherBox;
@@ -121,7 +106,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see de.upb.soot.jimple.RValueBox#canContainValue(de.upb.soot.jimple.Value)
      */
     @Override
@@ -141,31 +126,26 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   /**
    * Instantiates a new JAssignStmt.
    *
-   * @param variable
-   *          the variable on the left side of the assign statement.
-   * @param rvalue
-   *          the value on the right side of the assign statement.
+   * @param variable the variable on the left side of the assign statement.
+   * @param rvalue the value on the right side of the assign statement.
    */
   public JAssignStmt(Value variable, Value rvalue, PositionInfo positionInfo) {
     this(new LinkedVariableBox(variable), new LinkedRValueBox(rvalue), positionInfo);
 
-    ((LinkedVariableBox) leftBox).setOtherBox(rightBox);
-    ((LinkedRValueBox) rightBox).setOtherBox(leftBox);
+    ((LinkedVariableBox) getLeftBox()).setOtherBox(getRightBox());
+    ((LinkedRValueBox) getRightBox()).setOtherBox(getLeftBox());
 
-    if (!leftBox.canContainValue(variable) || !rightBox.canContainValue(rvalue)) {
+    if (!getLeftBox().canContainValue(variable) || !getRightBox().canContainValue(rvalue)) {
       throw new RuntimeException(
           "Illegal assignment statement.  Make sure that either left side or right hand side has a local or constant.");
     }
-
   }
 
   /**
    * Instantiates a new JAssignStmt.
    *
-   * @param variableBox
-   *          the variable box on the left side of the assign statement.
-   * @param rvalueBox
-   *          the rvalue box on the right side of the assign statement.
+   * @param variableBox the variable box on the left side of the assign statement.
+   * @param rvalueBox the rvalue box on the right side of the assign statement.
    */
   protected JAssignStmt(ValueBox variableBox, ValueBox rvalueBox, PositionInfo positionInfo) {
     super(variableBox, rvalueBox, positionInfo);
@@ -173,7 +153,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#containsInvokeExpr()
    */
   @Override
@@ -183,7 +163,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getInvokeExpr()
    */
   @Override
@@ -192,12 +172,12 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
     }
 
-    return (AbstractInvokeExpr) rightBox.getValue();
+    return (AbstractInvokeExpr) getRightBox().getValue();
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getInvokeExprBox()
    */
   @Override
@@ -206,12 +186,12 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
     }
 
-    return rightBox;
+    return getRightBox();
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#containsArrayRef()
    */
   /* added by Feng */
@@ -222,7 +202,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getArrayRef()
    */
   @Override
@@ -231,16 +211,16 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
     }
 
-    if (leftBox.getValue() instanceof JArrayRef) {
-      return (JArrayRef) leftBox.getValue();
+    if (getLeftBox().getValue() instanceof JArrayRef) {
+      return (JArrayRef) getLeftBox().getValue();
     } else {
-      return (JArrayRef) rightBox.getValue();
+      return (JArrayRef) getRightBox().getValue();
     }
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getArrayRefBox()
    */
   @Override
@@ -249,16 +229,16 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getArrayRefBox() called with no ArrayRef present!");
     }
 
-    if (leftBox.getValue() instanceof JArrayRef) {
-      return leftBox;
+    if (getLeftBox().getValue() instanceof JArrayRef) {
+      return getLeftBox();
     } else {
-      return rightBox;
+      return getRightBox();
     }
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#containsFieldRef()
    */
   @Override
@@ -268,7 +248,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getFieldRef()
    */
   @Override
@@ -277,16 +257,16 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
     }
 
-    if (leftBox.getValue() instanceof JFieldRef) {
-      return (JFieldRef) leftBox.getValue();
+    if (getLeftBox().getValue() instanceof JFieldRef) {
+      return (JFieldRef) getLeftBox().getValue();
     } else {
-      return (JFieldRef) rightBox.getValue();
+      return (JFieldRef) getRightBox().getValue();
     }
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getFieldRefBox()
    */
   @Override
@@ -295,22 +275,22 @@ public class JAssignStmt extends AbstractDefinitionStmt {
       throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
     }
 
-    if (leftBox.getValue() instanceof JFieldRef) {
-      return leftBox;
+    if (getLeftBox().getValue() instanceof JFieldRef) {
+      return getLeftBox();
     } else {
-      return rightBox;
+      return getRightBox();
     }
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getUnitBoxes()
    */
   @Override
   public List<IStmtBox> getStmtBoxes() {
     // handle possible PhiExpr's
-    Value rvalue = rightBox.getValue();
+    Value rvalue = getRightBox().getValue();
     if (rvalue instanceof StmtBoxOwner) {
       return ((StmtBoxOwner) rvalue).getStmtBoxes();
     }
@@ -320,42 +300,43 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return leftBox.getValue().toString() + " = " + rightBox.getValue().toString();
+    return getLeftBox().getValue().toString() + " = " + getRightBox().getValue().toString();
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.Stmt#toString(de.upb.soot.StmtPrinter)
    */
   @Override
   public void toString(IStmtPrinter up) {
-    leftBox.toString(up);
+    getLeftBox().toString(up);
     up.literal(" = ");
-    rightBox.toString(up);
+    getRightBox().toString(up);
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#clone()
    */
   @Override
   public JAssignStmt clone() {
-    return new JAssignStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()),
+    return new JAssignStmt(
+        Jimple.cloneIfNecessary(getLeftOp()),
+        Jimple.cloneIfNecessary(getRightOp()),
         getPositionInfo().clone());
   }
 
   /**
    * Sets the left op.
    *
-   * @param variable
-   *          the new left op
+   * @param variable the new left op
    */
   public void setLeftOp(Value variable) {
     getLeftOpBox().setValue(variable);
@@ -364,8 +345,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   /**
    * Sets the right op.
    *
-   * @param rvalue
-   *          the new right op
+   * @param rvalue the new right op
    */
   public void setRightOp(Value rvalue) {
     getRightOpBox().setValue(rvalue);
@@ -373,7 +353,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#accept(de.upb.soot.jimple.visitor.IVisitor)
    */
   @Override
@@ -393,7 +373,6 @@ public class JAssignStmt extends AbstractDefinitionStmt {
 
   @Override
   public int equivHashCode() {
-    return leftBox.getValue().equivHashCode() + 31 * rightBox.getValue().equivHashCode();
+    return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
   }
-
 }

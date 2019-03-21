@@ -18,24 +18,23 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 public class LongConstant extends ArithmeticConstant {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -3227009524415387793L;
-  public final long value;
+
+  private final long value;
 
   private LongConstant(long value) {
     this.value = value;
@@ -145,9 +144,7 @@ public class LongConstant extends ArithmeticConstant {
     return IntConstant.getInstance((this.value >= ((LongConstant) c).value) ? 1 : 0);
   }
 
-  /**
-   * Compares the value of LongConstant.
-   */
+  /** Compares the value of LongConstant. */
   public IntConstant cmp(LongConstant c) {
     if (this.value > c.value) {
       return IntConstant.getInstance(1);
@@ -195,7 +192,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return LongConstant.getInstance(this.value << ((IntConstant) c).value);
+    return LongConstant.getInstance(this.value << ((IntConstant) c).getValue());
   }
 
   @Override
@@ -203,7 +200,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return LongConstant.getInstance(this.value >> ((IntConstant) c).value);
+    return LongConstant.getInstance(this.value >> ((IntConstant) c).getValue());
   }
 
   @Override
@@ -211,7 +208,7 @@ public class LongConstant extends ArithmeticConstant {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return LongConstant.getInstance(this.value >>> ((IntConstant) c).value);
+    return LongConstant.getInstance(this.value >>> ((IntConstant) c).getValue());
   }
 
   @Override
@@ -220,8 +217,8 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public Type getType() {
-    return LongType.INSTANCE;
+  public TypeSignature getSignature() {
+    return PrimitiveTypeSignature.getLongSignature();
   }
 
   @Override
@@ -229,4 +226,7 @@ public class LongConstant extends ArithmeticConstant {
     ((IConstantVisitor) sw).caseLongConstant(this);
   }
 
+  public long getValue() {
+    return value;
+  }
 }

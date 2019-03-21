@@ -22,6 +22,7 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import categories.Java8Test;
 import de.upb.soot.jimple.IgnoreLocalNameComparator;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -29,36 +30,28 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.constant.LongConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-
+import de.upb.soot.signatures.PrimitiveTypeSignature;
 import java.util.Comparator;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java8Test;
-
-/**
- *
- * @author Markus Schmidt & Linghui Luo
- *
- */
+/** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
 public class JAssignStmtTest {
 
-  Comparator c = new Comparator<IStmt>() {
-    @Override
-    public int compare(IStmt o1, IStmt o2) {
-      return o1.containsFieldRef() && o2.containsFieldRef() ? 1 : 0;
-    }
+  Comparator c =
+      new Comparator<IStmt>() {
+        @Override
+        public int compare(IStmt o1, IStmt o2) {
+          return o1.containsFieldRef() && o2.containsFieldRef() ? 1 : 0;
+        }
 
-    @Override
-    public boolean equals(Object obj) {
-      return false;
-    }
-  };
+        @Override
+        public boolean equals(Object obj) {
+          return false;
+        }
+      };
 
   @Test
   public void test() {
@@ -67,8 +60,8 @@ public class JAssignStmtTest {
     Value numConst1 = IntConstant.getInstance(42);
     Value numConst2 = IntConstant.getInstance(33102);
 
-    Local local = new Local("$i0", IntType.INSTANCE);
-    Local field = new Local("i2", IntType.INSTANCE);
+    Local local = new Local("$i0", PrimitiveTypeSignature.getIntSignature());
+    Local field = new Local("i2", PrimitiveTypeSignature.getIntSignature());
 
     IStmt lStmt = new JAssignStmt(local, numConst1, nop);
     IStmt fStmt = new JAssignStmt(field, numConst1, nop);
@@ -76,24 +69,43 @@ public class JAssignStmtTest {
 
     // equivTo : equals
     Assert.assertTrue(lStmt.equivTo(new JAssignStmt(local, numConst1, nop)));
-    Assert.assertTrue(lStmt.equivTo(new JAssignStmt(new Local("$i0", IntType.INSTANCE), IntConstant.getInstance(42), nop)));
+    Assert.assertTrue(
+        lStmt.equivTo(
+            new JAssignStmt(
+                new Local("$i0", PrimitiveTypeSignature.getIntSignature()),
+                IntConstant.getInstance(42),
+                nop)));
 
     Assert.assertTrue(
-        deepStmt.equivTo(new JAssignStmt(new Local("$i0", IntType.INSTANCE), new JAddExpr(numConst1, numConst2), nop)));
+        deepStmt.equivTo(
+            new JAssignStmt(
+                new Local("$i0", PrimitiveTypeSignature.getIntSignature()),
+                new JAddExpr(numConst1, numConst2),
+                nop)));
 
     // equivTo: switched operands
     Assert.assertFalse(lStmt.equivTo(new JAssignStmt(local, numConst2, nop)));
-    Assert.assertFalse(deepStmt.equivTo(new JAssignStmt(local, new JAddExpr(numConst2, numConst1), nop)));
+    Assert.assertFalse(
+        deepStmt.equivTo(new JAssignStmt(local, new JAddExpr(numConst2, numConst1), nop)));
 
     // equivTo: different operands
     Assert.assertFalse(lStmt.equivTo(new JAssignStmt(field, numConst1, nop)));
     Assert.assertFalse(
-        lStmt.equivTo(new JAssignStmt(new Local("$i100differentname", IntType.INSTANCE), IntConstant.getInstance(42), nop)));
-    Assert
-        .assertFalse(lStmt.equivTo(new JAssignStmt(new Local("$i0", LongType.INSTANCE), LongConstant.getInstance(42), nop)));
+        lStmt.equivTo(
+            new JAssignStmt(
+                new Local("$i100differentname", PrimitiveTypeSignature.getIntSignature()),
+                IntConstant.getInstance(42),
+                nop)));
+    Assert.assertFalse(
+        lStmt.equivTo(
+            new JAssignStmt(
+                new Local("$i0", PrimitiveTypeSignature.getLongSignature()),
+                LongConstant.getInstance(42),
+                nop)));
 
     // equivTo: different depth
-    Assert.assertFalse(lStmt.equivTo(new JAssignStmt(field, new JAddExpr(numConst1, numConst2), nop)));
+    Assert.assertFalse(
+        lStmt.equivTo(new JAssignStmt(field, new JAddExpr(numConst1, numConst2), nop)));
 
     // toString
     Assert.assertEquals("$i0 = 42", lStmt.toString());
@@ -103,5 +115,4 @@ public class JAssignStmtTest {
     // equivTo with comparator
     Assert.assertFalse(lStmt.equivTo(deepStmt, new IgnoreLocalNameComparator()));
   }
-
 }

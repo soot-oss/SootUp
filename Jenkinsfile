@@ -52,8 +52,8 @@ pipeline {
             }
 
             steps {
-              sh 'mvn test -PJava8'
-
+              sh 'mvn verify -PJava8'
+              sh 'mvn com.coveo:fmt-maven-plugin:check'
             }
 
             post {
@@ -75,15 +75,13 @@ pipeline {
             }
 
             steps {
-              sh 'mvn test -PJava9'
-
+              sh 'mvn verify -PJava9'
+              sh 'mvn com.coveo:fmt-maven-plugin:check'
             }
             post {
               always {
                 junit 'target/surefire-reports/**/*.xml'
                 stash includes: '**/target/coverage-reports/*', name: 'reports2'
-
-
               }
             }
           }
@@ -102,7 +100,21 @@ pipeline {
                     }
           steps {
                       unstash 'reports1'
+                      sh 'mv target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-jdk8.exec'
+                      sh 'rm -f target/coverage-reports/aggregate.exec'
                       unstash 'reports2'
+                      sh 'mv target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-jdk9.exec'
+                      sh 'rm -f target/coverage-reports/aggregate.exec'
+                      sh 'mvn validate' // Invokes the jacoco merge goal
+
+                      jacoco(execPattern: '**/target/coverage-reports/aggregate.exec',
+                             classPattern: '**/classes',
+                             sourcePattern: 'src/main/java',
+                             exclusionPattern: 'src/test*',
+                             changeBuildStatus: false,
+                             minimumMethodCoverage: "50",
+                             maximumMethodCoverage: "70",
+                             deltaMethodCoverage: "10")
         	        }
         		}
 

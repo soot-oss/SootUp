@@ -3,31 +3,22 @@ package de.upb.soot.core;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.views.IView;
-
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 /**
- * Abstract class represents a class/module lives in {@link IView}. It may have different implementations, since we want to
- * support multiple languages.
- * 
- * @author Linghui Luo
+ * Abstract class represents a class/module lives in {@link IView}. It may have different
+ * implementations, since we want to support multiple languages.
  *
+ * @author Linghui Luo
  */
-public abstract class AbstractClass extends AbstractViewResident {
+public abstract class AbstractClass {
 
   protected final ClassSource classSource;
-  protected final Set<? extends IMethod> methods;
-  protected final Set<? extends IField> fields;
 
-  public AbstractClass(IView view, ClassSource cs, Set<? extends IMethod> methods, Set<? extends IField> fields) {
-    super(view);
-    this.methods = Collections.unmodifiableSet(methods);
-    this.fields = Collections.unmodifiableSet(fields);
+  public AbstractClass(ClassSource cs) {
     this.classSource = cs;
-
   }
 
   public ClassSource getClassSource() {
@@ -38,19 +29,19 @@ public abstract class AbstractClass extends AbstractViewResident {
 
   public abstract ISignature getSignature();
 
-  public Optional<? extends IMethod> getMethod(ISignature signature) {
-    return methods.stream().filter(m -> m.getSignature().equals(signature)).findFirst();
+  @Nonnull
+  public Optional<? extends IMethod> getMethod(@Nonnull ISignature signature) {
+    return this.getMethods().stream().filter(m -> m.getSignature().equals(signature)).findAny();
   }
 
-  public Collection<? extends IMethod> getMethods() {
-    return methods;
+  @Nonnull
+  public abstract Set<? extends IMethod> getMethods();
+
+  @Nonnull
+  public Optional<? extends IField> getField(@Nonnull ISignature signature) {
+    return this.getFields().stream().filter(f -> f.getSignature().equals(signature)).findAny();
   }
 
-  public Optional<? extends IField> getField(ISignature signature) {
-    return fields.stream().filter(f -> f.getSignature().equals(signature)).findFirst();
-  }
-
-  public Collection<? extends IField> getFields() {
-    return fields;
-  }
+  @Nonnull
+  public abstract Set<? extends IField> getFields();
 }

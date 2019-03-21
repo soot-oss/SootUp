@@ -38,88 +38,93 @@
 package foo.bar.hello.world;
 
 public class MethodMadness {
-	public static int s = 12345;
-	public int x = 100000;
-	
-	public MethodMadness() {
-		System.out.println("constructor");
-	}
-	public MethodMadness(String ss) {
-		System.out.println("hello world"+ ss);
-	}
-	
-	public static void staticTest() {
-		System.out.println("staticTest");
-	}
-	protected int protectedInteger() {
-		this.s = 5;
-		new MethodMadness("thrownaway").staticTest(); // MethodMadness object evaluated but thrown away
-		new MethodMadness("thrownaway").s++; // MethodMadness object evaluated but thrown away
-		staticTest();
-		
-		MethodMadness nullmm = null;
-		System.out.println("s from nullmm: "+nullmm.s); // static refs cannot cause NPEs
-		
-		return 6 + x;
-	}
-	protected int protectedInteger2() {
-		return 66 + x;
-	}
-	
-	void defaultVoid() {
-		if ( true )
-			return;
-		return;
-	}
-	
-	private void privateVoid() {
-		System.out.println("privateVoid "+x);
-	}
-	protected void protectedVoid() {
-		System.out.println("protectedVoid "+x);
-	}
-	
-	private int privateInteger() {
-		return 7 + x;
-	}
-	private int privateInteger2() {
-		return 77 + x;
-	}
-	
-	class Inner extends MethodMadness {
-		public Inner() {
-			x = 200000;
-		}
+  public static int s = 12345;
+  public int x = 100000;
 
-		private int privateInteger() {
-			return 13 + x;
-		}
-		
+  public MethodMadness() {
+    System.out.println("constructor");
+  }
+
+  public MethodMadness(String ss) {
+    System.out.println("hello world" + ss);
+  }
+
+  public static void staticTest() {
+    System.out.println("staticTest");
+  }
+
+  protected int protectedInteger() {
+    this.s = 5;
+    new MethodMadness("thrownaway").staticTest(); // MethodMadness object evaluated but thrown away
+    new MethodMadness("thrownaway").s++; // MethodMadness object evaluated but thrown away
+    staticTest();
+
+    MethodMadness nullmm = null;
+    System.out.println("s from nullmm: " + nullmm.s); // static refs cannot cause NPEs
+
+    return 6 + x;
+  }
+
+  protected int protectedInteger2() {
+    return 66 + x;
+  }
+
+  void defaultVoid() {
+    if (true)
+      return;
+    return;
+  }
+
+  private void privateVoid() {
+    System.out.println("privateVoid " + x);
+  }
+
+  protected void protectedVoid() {
+    System.out.println("protectedVoid " + x);
+  }
+
+  private int privateInteger() {
+    return 7 + x;
+  }
+
+  private int privateInteger2() {
+    return 77 + x;
+  }
+
+  class Inner extends MethodMadness {
+    public Inner() {
+      x = 200000;
+    }
+
+    private int privateInteger() {
+      return 13 + x;
+    }
+
     @Override
     protected int protectedInteger() {
-			return 233 + x;
-		}
-		
-		@SuppressWarnings("static-access")
-		public void hello() {
-			System.out.println(privateInteger()); // inner function, inner this, 200013
-			System.out.println(MethodMadness.this.privateInteger()); // outer function, outer this, 100007 
-			System.out.println(privateInteger2()); // outer function, outer this, 200077 // WRONG IN POLYGLOT (private)
-			System.out.println(protectedInteger()); // inner function, inner this, 200233 
-			System.out.println(MethodMadness.this.protectedInteger()); // outer function, outer this 
-			System.out.println(protectedInteger2()); // outer function, inner this, 200066 // the interesting one 
-			privateVoid(); // outer function, outer this, 100000 // WRONG IN POLYGLOT (private)
-			protectedVoid(); // outer function, inner this, 200000
-			
-			defaultVoid();
-			
-			staticTest();
-			this.staticTest();
-			MethodMadness.this.staticTest();
-		}
-	}
-	
-	public static void main(String args[]) {
-		new MethodMadness().new Inner().hello();
-	}
+      return 233 + x;
+    }
+
+    @SuppressWarnings("static-access")
+    public void hello() {
+      System.out.println(privateInteger()); // inner function, inner this, 200013
+      System.out.println(MethodMadness.this.privateInteger()); // outer function, outer this, 100007
+      System.out.println(privateInteger2()); // outer function, outer this, 200077 // WRONG IN POLYGLOT (private)
+      System.out.println(protectedInteger()); // inner function, inner this, 200233
+      System.out.println(MethodMadness.this.protectedInteger()); // outer function, outer this
+      System.out.println(protectedInteger2()); // outer function, inner this, 200066 // the interesting one
+      privateVoid(); // outer function, outer this, 100000 // WRONG IN POLYGLOT (private)
+      protectedVoid(); // outer function, inner this, 200000
+
+      defaultVoid();
+
+      staticTest();
+      this.staticTest();
+      MethodMadness.this.staticTest();
+    }
+  }
+
+  public static void main(String args[]) {
+    new MethodMadness().new Inner().hello();
+  }
 }

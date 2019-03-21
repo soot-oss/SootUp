@@ -1,19 +1,11 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.RefLikeType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
-import de.upb.soot.jimple.common.type.VoidType;
-
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.ReferenceTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.UnknownTypeSignature;
+import de.upb.soot.signatures.VoidTypeSignature;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,49 +35,35 @@ import java.util.Map;
 
 /**
  * Generates locals for Body.
- * 
- * @author Linghui Luo
  *
+ * @author Linghui Luo
  */
 public class LocalGenerator {
-  private List<Local> locals;
+  private List<Local> locals = new ArrayList<>();
   private Local thisLocal;
-  private Map<Integer, Local> paraLocals;
+  private Map<Integer, Local> paraLocals = new HashMap<>();
 
-  public LocalGenerator() {
-    this.locals = new ArrayList<>();
-    this.paraLocals = new HashMap<>();
-  }
+  public LocalGenerator() {}
 
-  protected boolean bodyContainsLocal(String name) {
-    return locals.stream().anyMatch(c -> c.name.equals(name));
-  }
-
-  /**
-   * generate this local with given type
-   */
-  public Local generateThisLocal(Type type) {
+  /** generate this local with given type */
+  public Local generateThisLocal(TypeSignature type) {
     if (this.thisLocal == null) {
       this.thisLocal = generateField(type);
     }
     return this.thisLocal;
   }
 
-  /**
-   * generates a new @Local given the type for field.
-   */
-  public Local generateField(Type type) {
+  /** generates a new @Local given the type for field. */
+  public Local generateField(TypeSignature type) {
     return generate(type, true);
   }
 
-  /**
-   * generates a new @Local given the type for local.
-   */
-  public Local generateLocal(Type type) {
+  /** generates a new @Local given the type for local. */
+  public Local generateLocal(TypeSignature type) {
     return generate(type, false);
   }
 
-  public Local generateParameterLocal(Type type, int index) {
+  public Local generateParameterLocal(TypeSignature type, int index) {
     if (!this.paraLocals.containsKey(index)) {
       Local paraLocal = generate(type, false);
       this.paraLocals.put(index, paraLocal);
@@ -93,154 +71,103 @@ public class LocalGenerator {
     return this.paraLocals.get(index);
   }
 
-  private Local generate(Type type, boolean isField) {
-    String name;
+  private Local generate(TypeSignature type, boolean isField) {
+    StringBuilder name = new StringBuilder(7);
+    if (!isField) {
+      name.append("$");
+    }
 
-    if (type instanceof IntType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextIntName();
-      } while (bodyContainsLocal(name));
-    } else if (type instanceof ByteType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextByteName();
-      } while (bodyContainsLocal(name));
-
-    } else if (type instanceof ShortType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextShortName();
-      } while (bodyContainsLocal(name));
-
-    } else if (type instanceof BooleanType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextBooleanName();
-      } while (bodyContainsLocal(name));
-
-    } else if (type instanceof VoidType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextVoidName();
-      } while (bodyContainsLocal(name));
-
-    } else if (type instanceof CharType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextCharName();
-      } while (bodyContainsLocal(name));
-
-    } else if (type instanceof DoubleType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextDoubleName();
-      } while (bodyContainsLocal(name));
-
-    } else if (type instanceof FloatType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextFloatName();
-      } while (bodyContainsLocal(name));
-    } else if (type instanceof LongType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextLongName();
-      } while (bodyContainsLocal(name));
-    } else if (type instanceof RefLikeType) {
-      do {
-        name = isField ? "" : "$";
-        name += nextRefLikeTypeName();
-      } while (bodyContainsLocal(name));
-    } else if (type instanceof UnknownType) {
-
-      do {
-        name = isField ? "" : "$";
-        name += nextUnknownTypeName();
-      } while (bodyContainsLocal(name));
-
+    if (type.equals(PrimitiveTypeSignature.getIntSignature())) {
+      appendNextIntName(name);
+    } else if (type.equals(PrimitiveTypeSignature.getByteSignature())) {
+      appendNextByteName(name);
+    } else if (type.equals(PrimitiveTypeSignature.getShortSignature())) {
+      appendNextShortName(name);
+    } else if (type.equals(PrimitiveTypeSignature.getBooleanSignature())) {
+      appendNextBooleanName(name);
+    } else if (type.equals(VoidTypeSignature.getInstance())) {
+      appendNextVoidName(name);
+    } else if (type.equals(PrimitiveTypeSignature.getCharSignature())) {
+      appendNextCharName(name);
+    } else if (type.equals(PrimitiveTypeSignature.getDoubleSignature())) {
+      appendNextDoubleName(name);
+    } else if (type.equals(PrimitiveTypeSignature.getFloatSignature())) {
+      appendNextFloatName(name);
+    } else if (type.equals(PrimitiveTypeSignature.getLongSignature())) {
+      appendNextLongName(name);
+    } else if (type instanceof ReferenceTypeSignature) {
+      appendNextRefLikeTypeName(name);
+    } else if (type.equals(UnknownTypeSignature.getInstance())) {
+      appendNextUnknownTypeName(name);
     } else {
       throw new RuntimeException("Unhandled Type of Local variable to Generate - Not Implemented");
     }
-    return createLocal(name, type);
+    return createLocal(name.toString(), type);
   }
 
-  private int tempInt = -1;
-  private int tempVoid = -1;
-  private int tempBoolean = -1;
-  private int tempLong = -1;
-  private int tempDouble = -1;
-  private int tempFloat = -1;
-  private int tempRefLikeType = -1;
-  private int tempByte = -1;
-  private int tempShort = -1;
-  private int tempChar = -1;
-  private int tempUnknownType = -1;
+  private int tempInt = 0;
+  private int tempVoid = 0;
+  private int tempBoolean = 0;
+  private int tempLong = 0;
+  private int tempDouble = 0;
+  private int tempFloat = 0;
+  private int tempRefLikeType = 0;
+  private int tempByte = 0;
+  private int tempShort = 0;
+  private int tempChar = 0;
+  private int tempUnknownType = 0;
 
-  private String nextIntName() {
-    tempInt++;
-    return "i" + tempInt;
+  private void appendNextIntName(StringBuilder name) {
+    name.append("i").append(tempInt++);
   }
 
-  private String nextCharName() {
-    tempChar++;
-    return "c" + tempChar;
+  private void appendNextCharName(StringBuilder name) {
+    name.append("c").append(tempChar++);
   }
 
-  private String nextVoidName() {
-    tempVoid++;
-    return "v" + tempVoid;
+  private void appendNextVoidName(StringBuilder name) {
+    name.append("v").append(tempVoid++);
   }
 
-  private String nextByteName() {
-    tempByte++;
-    return "b" + tempByte;
+  private void appendNextByteName(StringBuilder name) {
+    name.append("b").append(tempByte++);
   }
 
-  private String nextShortName() {
-    tempShort++;
-    return "s" + tempShort;
+  private void appendNextShortName(StringBuilder name) {
+    name.append("s").append(tempShort++);
   }
 
-  private String nextBooleanName() {
-    tempBoolean++;
-    return "z" + tempBoolean;
+  private void appendNextBooleanName(StringBuilder name) {
+    name.append("z").append(tempBoolean++);
   }
 
-  private String nextDoubleName() {
-    tempDouble++;
-    return "d" + tempDouble;
+  private void appendNextDoubleName(StringBuilder name) {
+    name.append("d").append(tempDouble++);
   }
 
-  private String nextFloatName() {
-    tempFloat++;
-    return "f" + tempFloat;
+  private void appendNextFloatName(StringBuilder name) {
+    name.append("f").append(tempFloat++);
   }
 
-  private String nextLongName() {
-    tempLong++;
-    return "l" + tempLong;
+  private void appendNextLongName(StringBuilder name) {
+    name.append("l").append(tempLong++);
   }
 
-  private String nextRefLikeTypeName() {
-    tempRefLikeType++;
-    return "r" + tempRefLikeType;
+  private void appendNextRefLikeTypeName(StringBuilder name) {
+    name.append("r").append(tempRefLikeType++);
   }
 
-  private String nextUnknownTypeName() {
-    tempUnknownType++;
-    return "u" + tempUnknownType;
+  private void appendNextUnknownTypeName(StringBuilder name) {
+    name.append("u").append(tempUnknownType++);
   }
 
-  private Local createLocal(String name, Type sootType) {
+  private Local createLocal(String name, TypeSignature sootType) {
     Local sootLocal = Jimple.newLocal(name, sootType);
     locals.add(sootLocal);
     return sootLocal;
   }
 
-  /**
-   * Return all locals created for the body referenced in this LocalGenrator.
-   */
+  /** Return all locals created for the body referenced in this LocalGenrator. */
   public List<Local> getLocals() {
     return this.locals;
   }
@@ -249,7 +176,7 @@ public class LocalGenerator {
     return this.thisLocal;
   }
 
-  public Local getParemeterLocal(int i) {
+  public Local getParameterLocal(int i) {
     return this.paraLocals.get(i);
   }
 }

@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -29,34 +29,29 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.ArrayType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.ArrayTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class JNewMultiArrayExpr implements Expr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -473132292740722571L;
-  private ArrayType baseType;
+
+  private ArrayTypeSignature baseType;
   protected final ValueBox[] sizeBoxes;
 
   /**
    * Initiates a JNewMultiArrayExpr.
-   * 
-   * @param type
-   *          the type of the array
-   * @param sizes
-   *          the sizes
-   * 
+   *
+   * @param type the type of the array
+   * @param sizes the sizes
    */
-  public JNewMultiArrayExpr(ArrayType type, List<? extends Value> sizes) {
+  public JNewMultiArrayExpr(ArrayTypeSignature type, List<? extends Value> sizes) {
     this.baseType = type;
     this.sizeBoxes = new ValueBox[sizes.size()];
     for (int i = 0; i < sizes.size(); i++) {
@@ -95,14 +90,14 @@ public class JNewMultiArrayExpr implements Expr {
   public String toString() {
     StringBuilder builder = new StringBuilder();
 
-    Type t = baseType.baseType;
+    TypeSignature t = baseType.getBaseType();
     builder.append(Jimple.NEWMULTIARRAY + " (").append(t.toString()).append(")");
 
     for (ValueBox element : sizeBoxes) {
       builder.append("[").append(element.getValue().toString()).append("]");
     }
 
-    for (int i = 0; i < baseType.numDimensions - sizeBoxes.length; i++) {
+    for (int i = 0; i < baseType.getDimension() - sizeBoxes.length; i++) {
       builder.append("[]");
     }
 
@@ -111,11 +106,11 @@ public class JNewMultiArrayExpr implements Expr {
 
   @Override
   public void toString(IStmtPrinter up) {
-    Type t = baseType.baseType;
+    TypeSignature t = baseType.getBaseType();
 
     up.literal(Jimple.NEWMULTIARRAY);
     up.literal(" (");
-    up.type(t);
+    up.typeSignature(t);
     up.literal(")");
 
     for (ValueBox element : sizeBoxes) {
@@ -124,16 +119,16 @@ public class JNewMultiArrayExpr implements Expr {
       up.literal("]");
     }
 
-    for (int i = 0; i < baseType.numDimensions - sizeBoxes.length; i++) {
+    for (int i = 0; i < baseType.getDimension() - sizeBoxes.length; i++) {
       up.literal("[]");
     }
   }
 
-  public ArrayType getBaseType() {
+  public ArrayTypeSignature getBaseType() {
     return baseType;
   }
 
-  public void setBaseType(ArrayType baseType) {
+  public void setBaseType(ArrayTypeSignature baseType) {
     this.baseType = baseType;
   }
 
@@ -149,9 +144,7 @@ public class JNewMultiArrayExpr implements Expr {
     return sizeBoxes[index].getValue();
   }
 
-  /**
-   * Returns a list of values of sizeBoxes.
-   */
+  /** Returns a list of values of sizeBoxes. */
   public List<Value> getSizes() {
     List<Value> toReturn = new ArrayList<>();
 
@@ -179,7 +172,7 @@ public class JNewMultiArrayExpr implements Expr {
   }
 
   @Override
-  public Type getType() {
+  public TypeSignature getSignature() {
     return baseType;
   }
 
@@ -187,5 +180,4 @@ public class JNewMultiArrayExpr implements Expr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNewMultiArrayExpr(this);
   }
-
 }

@@ -25,25 +25,15 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.ArrayType;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.PrimType;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.StringTools;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.TypeSignature;
+import soot.util.StringTools;
 
 @SuppressWarnings("serial")
 public class ClassConstant extends Constant {
-  public final String value;
+  private final String value;
 
   private ClassConstant(String s) {
     this.value = s;
@@ -57,40 +47,46 @@ public class ClassConstant extends Constant {
     return new ClassConstant(value);
   }
 
-  public static ClassConstant fromType(Type tp) {
-    return getInstance(sootTypeToString(tp));
-  }
+  // FIXME The following code is commented out due to incompatibility, but
+  //   may still be needed.
+  //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r266982906
 
-  private static String sootTypeToString(Type tp) {
-    if (tp instanceof RefType) {
-      return "L" + ((RefType) tp).getTypeSignature().toString().replaceAll("\\.", "/") + ";";
-    } else if (tp instanceof ArrayType) {
-      ArrayType at = (ArrayType) tp;
-      return "[" + sootTypeToString(at.getElementType());
-    } else if (tp instanceof PrimType) {
-      if (tp instanceof IntType) {
-        return "I";
-      } else if (tp instanceof ByteType) {
-        return "B";
-      } else if (tp instanceof CharType) {
-        return "C";
-      } else if (tp instanceof DoubleType) {
-        return "D";
-      } else if (tp instanceof FloatType) {
-        return "F";
-      } else if (tp instanceof LongType) {
-        return "L";
-      } else if (tp instanceof ShortType) {
-        return "S";
-      } else if (tp instanceof BooleanType) {
-        return "Z";
-      } else {
-        throw new RuntimeException("Unsupported primitive type");
-      }
-    } else {
-      throw new RuntimeException("Unsupported type" + tp);
-    }
-  }
+  //  public static ClassConstant fromType(TypeSignature tp) {
+  //    return getInstance(sootTypeToString(tp));
+  //  }
+  //
+  //  private static String sootTypeToString(TypeSignature tp) {
+  //    if (tp instanceof ArrayTypeSignature) {
+  //      ArrayTypeSignature at = (ArrayTypeSignature) tp;
+  //      // TODO: [JMP] It was `at.elementType` before; please ensure that the element type is here
+  // used.
+  //      return "[" + sootTypeToString(at.baseType);
+  //    } else if (tp instanceof ReferenceTypeSignature) {
+  //      return "L" + tp.toString().replaceAll("\\.", "/") + ";";
+  //    } else if (tp instanceof PrimitiveTypeSignature) {
+  //      if (tp instanceof IntType) {
+  //        return "I";
+  //      } else if (tp instanceof ByteType) {
+  //        return "B";
+  //      } else if (tp instanceof CharType) {
+  //        return "C";
+  //      } else if (tp instanceof DoubleType) {
+  //        return "D";
+  //      } else if (tp instanceof FloatType) {
+  //        return "F";
+  //      } else if (tp instanceof LongType) {
+  //        return "L";
+  //      } else if (tp instanceof ShortType) {
+  //        return "S";
+  //      } else if (tp instanceof BooleanType) {
+  //        return "Z";
+  //      } else {
+  //        throw new RuntimeException("Unsupported primitive type");
+  //      }
+  //    } else {
+  //      throw new RuntimeException("Unsupported type" + tp);
+  //    }
+  //  }
 
   /**
    * Gets whether this class constant denotes a reference type. This does not check for arrays.
@@ -101,45 +97,45 @@ public class ClassConstant extends Constant {
     return value.startsWith("L") && value.endsWith(";");
   }
 
-  /** Returns numDimensions. */
-  public Type toSootType() {
-    int numDimensions = 0;
-    String tmp = value;
-    while (tmp.startsWith("[")) {
-      numDimensions++;
-      tmp = tmp.substring(1);
-    }
-
-    Type baseType;
-    if (tmp.startsWith("L")) {
-      tmp = tmp.substring(1);
-      if (tmp.endsWith(";")) {
-        tmp = tmp.substring(0, tmp.length() - 1);
-      }
-      tmp = tmp.replace("/", ".");
-      baseType = RefType.getInstance(tmp);
-    } else if (tmp.equals("I")) {
-      baseType = IntType.INSTANCE;
-    } else if (tmp.equals("B")) {
-      baseType = ByteType.INSTANCE;
-    } else if (tmp.equals("C")) {
-      baseType = CharType.INSTANCE;
-    } else if (tmp.equals("D")) {
-      baseType = DoubleType.INSTANCE;
-    } else if (tmp.equals("F")) {
-      baseType = FloatType.INSTANCE;
-    } else if (tmp.equals("L")) {
-      baseType = LongType.INSTANCE;
-    } else if (tmp.equals("S")) {
-      baseType = ShortType.INSTANCE;
-    } else if (tmp.equals("Z")) {
-      baseType = BooleanType.INSTANCE;
-    } else {
-      throw new RuntimeException("Unsupported class constant: " + value);
-    }
-
-    return numDimensions > 0 ? ArrayType.getInstance(baseType, numDimensions) : baseType;
-  }
+  //  /** Returns numDimensions. */
+  //  public Type toSootType() {
+  //    int numDimensions = 0;
+  //    String tmp = value;
+  //    while (tmp.startsWith("[")) {
+  //      numDimensions++;
+  //      tmp = tmp.substring(1);
+  //    }
+  //
+  //    Type baseType;
+  //    if (tmp.startsWith("L")) {
+  //      tmp = tmp.substring(1);
+  //      if (tmp.endsWith(";")) {
+  //        tmp = tmp.substring(0, tmp.length() - 1);
+  //      }
+  //      tmp = tmp.replace("/", ".");
+  //      baseType = RefType.getInstance(tmp);
+  //    } else if (tmp.equals("I")) {
+  //      baseType = IntType.INSTANCE;
+  //    } else if (tmp.equals("B")) {
+  //      baseType = ByteType.INSTANCE;
+  //    } else if (tmp.equals("C")) {
+  //      baseType = CharType.INSTANCE;
+  //    } else if (tmp.equals("D")) {
+  //      baseType = DoubleType.INSTANCE;
+  //    } else if (tmp.equals("F")) {
+  //      baseType = FloatType.INSTANCE;
+  //    } else if (tmp.equals("L")) {
+  //      baseType = LongType.INSTANCE;
+  //    } else if (tmp.equals("S")) {
+  //      baseType = ShortType.INSTANCE;
+  //    } else if (tmp.equals("Z")) {
+  //      baseType = BooleanType.INSTANCE;
+  //    } else {
+  //      throw new RuntimeException("Unsupported class constant: " + value);
+  //    }
+  //
+  //    return numDimensions > 0 ? ArrayType.getInstance(baseType, numDimensions) : baseType;
+  //  }
 
   // In this case, equals should be structural equality.
   @Override
@@ -158,8 +154,9 @@ public class ClassConstant extends Constant {
   }
 
   @Override
-  public Type getType() {
-    return RefType.getInstance("java.lang.Class");
+  public TypeSignature getSignature() {
+    // TODO: [JMP] Used cached instance
+    return DefaultSignatureFactory.getInstance().getTypeSignature("java.lang.Class");
   }
 
   @Override
@@ -171,5 +168,4 @@ public class ClassConstant extends Constant {
   public String toString() {
     return "class " + StringTools.getQuotedStringOf(value);
   }
-
 }

@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -27,22 +27,20 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.ReferenceTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.Collections;
 import java.util.List;
 
 public class JThisRef implements IdentityRef {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 5300244196056992260L;
-  RefType thisType;
 
-  public JThisRef(RefType thisType) {
+  ReferenceTypeSignature thisType;
+
+  public JThisRef(ReferenceTypeSignature thisType) {
     this.thisType = thisType;
   }
 
@@ -77,7 +75,7 @@ public class JThisRef implements IdentityRef {
   }
 
   @Override
-  public Type getType() {
+  public TypeSignature getSignature() {
     return thisType;
   }
 
@@ -90,5 +88,4 @@ public class JThisRef implements IdentityRef {
   public Object clone() {
     return new JThisRef(thisType);
   }
-
 }

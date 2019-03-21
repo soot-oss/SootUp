@@ -41,24 +41,24 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class MethodGenerics {
-	static <T> void fromArrayToCollection(T[] a, Collection<T> c) {
-		c.add(a[0]);
-	}
+  static <T> void fromArrayToCollection(T[] a, Collection<T> c) {
+    c.add(a[0]);
+  }
 
-	static <T extends String> void foo(String x, T y) {
-		x = y;
-		System.out.println(x);
-	}
-	
-	public static void main(String args[]) {
-		(new MethodGenerics()).doit();
-	}
-	
-	private void doit() {
-		ArrayList<String> list = new ArrayList<>();
-		String array[] = new String[] { "coucou monde", "ciao mondo", "guten tag welt", "hola mundo", "shalom olam" };
-		fromArrayToCollection(array, list);
-		System.out.println(list);
-		foo("whatever", "whatever");
-	}
+  static <T extends String> void foo(String x, T y) {
+    x = y;
+    System.out.println(x);
+  }
+
+  public static void main(String args[]) {
+    (new MethodGenerics()).doit();
+  }
+
+  private void doit() {
+    ArrayList<String> list = new ArrayList<>();
+    String array[] = new String[] { "coucou monde", "ciao mondo", "guten tag welt", "hola mundo", "shalom olam" };
+    fromArrayToCollection(array, list);
+    System.out.println(list);
+    foo("whatever", "whatever");
+  }
 }

@@ -8,12 +8,12 @@
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -29,13 +29,11 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.TypeSignature;
 
-/**
- * Interface for different methods of printing out a IStmt.
- */
+/** Interface for different methods of printing out a IStmt. */
 public interface IStmtPrinter {
   void startStmt(IStmt u);
 
@@ -65,7 +63,7 @@ public interface IStmtPrinter {
 
   void local(Local jimpleLocal);
 
-  void type(Type t);
+  void typeSignature(TypeSignature t);
 
   void methodSignature(MethodSignature sig);
 

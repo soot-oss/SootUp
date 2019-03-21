@@ -1,7 +1,6 @@
 package de.upb.soot.frontends.java;
 
 import com.ibm.wala.cast.loader.AstClass;
-
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.frontends.IClassSourceContent;
@@ -13,7 +12,6 @@ import de.upb.soot.views.IView;
  * @author Andreas Dann
  * @author Linghui Luo
  * @author Ben Hermann
- *
  */
 class WalaIRIClassSourceContent implements IClassSourceContent {
   private AstClass source;
@@ -25,7 +23,7 @@ class WalaIRIClassSourceContent implements IClassSourceContent {
   }
 
   @Override
-  public AbstractClass resolve(ResolvingLevel level, IView view) {
+  public AbstractClass resolveClass(ResolvingLevel level, IView view) {
     switch (level) {
       case HIERARCHY:
         break;

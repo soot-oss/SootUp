@@ -19,43 +19,35 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
 package de.upb.soot.jimple.common.ref;
 
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.IField;
 import de.upb.soot.core.SootField;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.FieldSignature;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.views.IView;
-
 import java.util.Optional;
+import javax.annotation.Nonnull;
 
 public abstract class FieldRef implements ConcreteRef {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 1914104591633719756L;
-  protected final FieldSignature fieldSignature;
-  protected IView view;
 
-  protected FieldRef(IView view, FieldSignature fieldSignature) {
+  protected final FieldSignature fieldSignature;
+
+  protected FieldRef(FieldSignature fieldSignature) {
     this.fieldSignature = fieldSignature;
-    this.view = view;
   }
 
-  public Optional<SootField> getField() {
-    Optional<AbstractClass> declClass = view.getClass(fieldSignature.declClassSignature);
-    if (declClass.isPresent()) {
-      Optional<? extends IField> f = declClass.get().getField(fieldSignature);
-      return f.map(c -> (SootField) c);
-    }
-    return Optional.empty();
+  public @Nonnull Optional<SootField> getField(@Nonnull IView view) {
+    return view.getClass(fieldSignature.getDeclClassSignature())
+        .map(it -> it.getField(fieldSignature))
+        .map(SootField.class::cast);
   }
 
   public FieldSignature getFieldSignature() {
@@ -63,8 +55,8 @@ public abstract class FieldRef implements ConcreteRef {
   }
 
   @Override
-  public Type getType() {
-    return view.getType(fieldSignature.typeSignature);
+  public TypeSignature getSignature() {
+    return fieldSignature.getSignature();
   }
 
   @Override

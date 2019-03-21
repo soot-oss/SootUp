@@ -25,13 +25,10 @@ package de.upb.soot.frontends.asm;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.objectweb.asm.tree.AbstractInsnNode;
 
 /**
@@ -41,19 +38,16 @@ import org.objectweb.asm.tree.AbstractInsnNode;
  */
 final class Operand {
 
-  final @Nonnull AbstractInsnNode insn;
-  final @Nonnull Value value;
-  @Nullable
-  Local stack;
-  private @Nullable Object boxes;
+  @Nonnull final AbstractInsnNode insn;
+  @Nonnull final Value value;
+  @Nullable Local stack;
+  @Nullable private Object boxes;
 
   /**
    * Constructs a new stack operand.
    *
-   * @param insn
-   *          the instruction that produced this operand.
-   * @param value
-   *          the generated value.
+   * @param insn the instruction that produced this operand.
+   * @param value the generated value.
    */
   Operand(@Nonnull AbstractInsnNode insn, @Nonnull Value value) {
     this.insn = insn;
@@ -63,8 +57,7 @@ final class Operand {
   /**
    * Removes a value box from this operand.
    *
-   * @param vb
-   *          the value box.
+   * @param vb the value box.
    */
   @SuppressWarnings("unchecked")
   void removeBox(@Nullable ValueBox vb) {
@@ -82,8 +75,7 @@ final class Operand {
   /**
    * Adds a value box to this operand.
    *
-   * @param vb
-   *          the value box.
+   * @param vb the value box.
    */
   @SuppressWarnings("unchecked")
   void addBox(@Nonnull ValueBox vb) {
@@ -115,8 +107,7 @@ final class Operand {
   }
 
   /**
-   * @param <A>
-   *          type of value to cast to.
+   * @param <A> type of value to cast to.
    * @return the value.
    */
   @SuppressWarnings("unchecked")
@@ -135,8 +126,7 @@ final class Operand {
   /**
    * Determines if this operand is equal to another operand.
    *
-   * @param other
-   *          the other operand.
+   * @param other the other operand.
    * @return {@code true} if this operand is equal to another operand, {@code false} otherwise.
    */
   boolean equivTo(@Nonnull Operand other) {

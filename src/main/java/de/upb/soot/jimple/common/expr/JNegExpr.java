@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -28,24 +28,15 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.UnknownTypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JNegExpr extends AbstractUnopExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -5215362038683846098L;
 
   public JNegExpr(Value op) {
@@ -87,21 +78,23 @@ public class JNegExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public Type getType() {
+  public TypeSignature getSignature() {
     Value op = opBox.getValue();
 
-    if (op.getType().equals(IntType.INSTANCE) || op.getType().equals(ByteType.INSTANCE)
-        || op.getType().equals(ShortType.INSTANCE) || op.getType().equals(BooleanType.INSTANCE)
-        || op.getType().equals(CharType.INSTANCE)) {
-      return IntType.INSTANCE;
-    } else if (op.getType().equals(LongType.INSTANCE)) {
-      return LongType.INSTANCE;
-    } else if (op.getType().equals(DoubleType.INSTANCE)) {
-      return DoubleType.INSTANCE;
-    } else if (op.getType().equals(FloatType.INSTANCE)) {
-      return FloatType.INSTANCE;
+    if (op.getSignature().equals(PrimitiveTypeSignature.getIntSignature())
+        || op.getSignature().equals(PrimitiveTypeSignature.getByteSignature())
+        || op.getSignature().equals(PrimitiveTypeSignature.getShortSignature())
+        || op.getSignature().equals(PrimitiveTypeSignature.getBooleanSignature())
+        || op.getSignature().equals(PrimitiveTypeSignature.getCharSignature())) {
+      return PrimitiveTypeSignature.getIntSignature();
+    } else if (op.getSignature().equals(PrimitiveTypeSignature.getLongSignature())) {
+      return PrimitiveTypeSignature.getLongSignature();
+    } else if (op.getSignature().equals(PrimitiveTypeSignature.getDoubleSignature())) {
+      return PrimitiveTypeSignature.getDoubleSignature();
+    } else if (op.getSignature().equals(PrimitiveTypeSignature.getFloatSignature())) {
+      return PrimitiveTypeSignature.getFloatSignature();
     } else {
-      return UnknownType.INSTANCE;
+      return UnknownTypeSignature.getInstance();
     }
   }
 
@@ -109,5 +102,4 @@ public class JNegExpr extends AbstractUnopExpr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseNegExpr(this);
   }
-
 }

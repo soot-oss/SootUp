@@ -38,45 +38,45 @@
 package javaonepointfive;
 
 public class MoreOverriddenGenerics {
-	class Super<T> {
-		T x;
+  class Super<T> {
+    T x;
 
-		public T get() {
-			return x;
-		}
-	}
+    public T get() {
+      return x;
+    }
+  }
 
-	class Sub extends Super<Number> {
-		
+  class Sub extends Super<Number> {
+
     @Override
     public Number get() {
-			return super.get();
-		} 
-	}
-	
-	class SubSub extends Sub {
-		
+      return super.get();
+    }
+  }
+
+  class SubSub extends Sub {
+
     @Override
     public Long get() {
-			return Long.valueOf(6);
-		}
-	}
+      return Long.valueOf(6);
+    }
+  }
 
-	private void doit() {
-		String x = new Super<String>().get();
-		System.err.println(x);
-		Super<Number> s = new Sub();
-		Number n = s.get();
-		SubSub sss = new SubSub();
-		n = sss.get();
-		Sub ss = sss;
-		n = ss.get();
-		s = sss;
-		n = s.get();
-		System.err.println(n);
-	}
-	
-	public static void main(String args[]) {
-		(new MoreOverriddenGenerics()).doit();
-	}
+  private void doit() {
+    String x = new Super<String>().get();
+    System.err.println(x);
+    Super<Number> s = new Sub();
+    Number n = s.get();
+    SubSub sss = new SubSub();
+    n = sss.get();
+    Sub ss = sss;
+    n = ss.get();
+    s = sss;
+    n = s.get();
+    System.err.println(n);
+  }
+
+  public static void main(String args[]) {
+    (new MoreOverriddenGenerics()).doit();
+  }
 }

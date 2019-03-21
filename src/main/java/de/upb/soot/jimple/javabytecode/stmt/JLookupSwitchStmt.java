@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -37,15 +37,12 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class JLookupSwitchStmt extends AbstractSwitchStmt {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 7072376393810033195L;
   /**
    * List of lookup values from the corresponding bytecode instruction, represented as IntConstants.
@@ -64,54 +61,90 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   @Override
   public JLookupSwitchStmt clone() {
     int lookupValueCount = lookupValues.size();
-    List<IntConstant> clonedLookupValues = new ArrayList<IntConstant>(lookupValueCount);
+    List<IntConstant> clonedLookupValues = new ArrayList<>(lookupValueCount);
     for (int i = 0; i < lookupValueCount; i++) {
       clonedLookupValues.add(i, IntConstant.getInstance(getLookupValue(i)));
     }
-    return new JLookupSwitchStmt(getKey(), clonedLookupValues, getTargets(), getDefaultTarget(), getPositionInfo().clone());
+    return new JLookupSwitchStmt(
+        getKey(), clonedLookupValues, getTargets(), getDefaultTarget(), getPositionInfo().clone());
   }
 
   /** Constructs a new JLookupSwitchStmt. lookupValues should be a list of IntConst s. */
-  public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends IStmt> targets, IStmt defaultTarget,
+  public JLookupSwitchStmt(
+      Value key,
+      List<IntConstant> lookupValues,
+      List<? extends IStmt> targets,
+      IStmt defaultTarget,
       PositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(key), lookupValues, getTargetBoxesArray(targets), Jimple.newStmtBox(defaultTarget),
+    this(
+        Jimple.newImmediateBox(key),
+        lookupValues,
+        getTargetBoxesArray(targets),
+        Jimple.newStmtBox(defaultTarget),
         positionInfo);
   }
 
   /** Constructs a new JLookupSwitchStmt. lookupValues should be a list of IntConst s. */
-  public JLookupSwitchStmt(Value key, List<IntConstant> lookupValues, List<? extends IStmtBox> targets,
-      IStmtBox defaultTarget, PositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(key), lookupValues, targets.toArray(new IStmtBox[targets.size()]), defaultTarget,
+  public JLookupSwitchStmt(
+      Value key,
+      List<IntConstant> lookupValues,
+      List<? extends IStmtBox> targets,
+      IStmtBox defaultTarget,
+      PositionInfo positionInfo) {
+    this(
+        Jimple.newImmediateBox(key),
+        lookupValues,
+        targets.toArray(new IStmtBox[0]),
+        defaultTarget,
         positionInfo);
   }
 
-  protected JLookupSwitchStmt(ValueBox keyBox, List<IntConstant> lookupValues, IStmtBox[] targetBoxes,
-      IStmtBox defaultTargetBox, PositionInfo positionInfo) {
+  protected JLookupSwitchStmt(
+      ValueBox keyBox,
+      List<IntConstant> lookupValues,
+      IStmtBox[] targetBoxes,
+      IStmtBox defaultTargetBox,
+      PositionInfo positionInfo) {
     super(positionInfo, keyBox, defaultTargetBox, targetBoxes);
     setLookupValues(lookupValues);
   }
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
+    StringBuilder builder = new StringBuilder();
     String endOfLine = " ";
 
-    buffer.append(Jimple.LOOKUPSWITCH + "(" + keyBox.getValue().toString() + ")" + endOfLine);
+    builder
+        .append(Jimple.LOOKUPSWITCH + "(")
+        .append(keyBox.getValue().toString())
+        .append(")")
+        .append(endOfLine);
 
-    buffer.append("{" + endOfLine);
+    builder.append("{").append(endOfLine);
 
     for (int i = 0; i < lookupValues.size(); i++) {
       IStmt target = getTarget(i);
-      buffer.append("    " + Jimple.CASE + " " + lookupValues.get(i) + ": " + Jimple.GOTO + " "
-          + (target == this ? "self" : target) + ";" + endOfLine);
+      builder
+          .append("    " + Jimple.CASE + " ")
+          .append(lookupValues.get(i))
+          .append(": ")
+          .append(Jimple.GOTO)
+          .append(" ")
+          .append(target == this ? "self" : target)
+          .append(";")
+          .append(endOfLine);
     }
 
     IStmt target = getDefaultTarget();
-    buffer.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " " + (target == this ? "self" : target) + ";" + endOfLine);
+    builder
+        .append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " ")
+        .append(target == this ? "self" : target)
+        .append(";")
+        .append(endOfLine);
 
-    buffer.append("}");
+    builder.append("}");
 
-    return buffer.toString();
+    return builder.toString();
   }
 
   @Override
@@ -123,7 +156,8 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     up.newline();
     up.literal("{");
     up.newline();
-    for (int i = 0; i < lookupValues.size(); i++) {
+    final int size = lookupValues.size();
+    for (int i = 0; i < size; i++) {
       up.literal("    ");
       up.literal(Jimple.CASE);
       up.literal(" ");
@@ -148,7 +182,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   }
 
   public void setLookupValues(List<IntConstant> lookupValues) {
-    this.lookupValues = new ArrayList<IntConstant>(lookupValues);
+    this.lookupValues = new ArrayList<>(lookupValues);
   }
 
   public void setLookupValue(int index, int value) {
@@ -160,7 +194,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   }
 
   public int getLookupValue(int index) {
-    return lookupValues.get(index).value;
+    return lookupValues.get(index).getValue();
   }
 
   public List<IntConstant> getLookupValues() {
@@ -193,5 +227,4 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
 
     return res;
   }
-
 }

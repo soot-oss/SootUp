@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -29,24 +29,22 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class JInstanceOfExpr implements Expr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -3584505247110961970L;
-  private final ValueBox opBox;
-  private Type checkType;
 
-  public JInstanceOfExpr(Value op, Type checkType) {
+  private final ValueBox opBox;
+  private TypeSignature checkType;
+
+  public JInstanceOfExpr(Value op, TypeSignature checkType) {
     this.opBox = Jimple.newImmediateBox(op);
     this.checkType = checkType;
   }
@@ -108,15 +106,15 @@ public class JInstanceOfExpr implements Expr {
   }
 
   @Override
-  public Type getType() {
-    return BooleanType.INSTANCE;
+  public TypeSignature getSignature() {
+    return PrimitiveTypeSignature.getBooleanSignature();
   }
 
-  public Type getCheckType() {
+  public TypeSignature getCheckType() {
     return checkType;
   }
 
-  public void setCheckType(Type checkType) {
+  public void setCheckType(TypeSignature checkType) {
     this.checkType = checkType;
   }
 
@@ -124,5 +122,4 @@ public class JInstanceOfExpr implements Expr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseInstanceOfExpr(this);
   }
-
 }

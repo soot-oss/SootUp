@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -30,15 +30,13 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JIdentityStmt extends AbstractDefinitionStmt {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -6269380950007213506L;
 
   public JIdentityStmt(Value local, Value identityValue, PositionInfo positionInfo) {
@@ -51,28 +49,30 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
 
   @Override
   public JIdentityStmt clone() {
-    return new JIdentityStmt(Jimple.cloneIfNecessary(getLeftOp()), Jimple.cloneIfNecessary(getRightOp()),
+    return new JIdentityStmt(
+        Jimple.cloneIfNecessary(getLeftOp()),
+        Jimple.cloneIfNecessary(getRightOp()),
         getPositionInfo().clone());
   }
 
   @Override
   public String toString() {
-    return leftBox.getValue().toString() + " := " + rightBox.getValue().toString();
+    return getLeftBox().getValue().toString() + " := " + getRightBox().getValue().toString();
   }
 
   @Override
   public void toString(IStmtPrinter up) {
-    leftBox.toString(up);
+    getLeftBox().toString(up);
     up.literal(" := ");
-    rightBox.toString(up);
+    getRightBox().toString(up);
   }
 
   public void setLeftOp(Value local) {
-    leftBox.setValue(local);
+    getLeftBox().setValue(local);
   }
 
   public void setRightOp(Value identityRef) {
-    rightBox.setValue(identityRef);
+    getRightBox().setValue(identityRef);
   }
 
   @Override
@@ -80,8 +80,8 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
     ((IStmtVisitor) sw).caseIdentityStmt(this);
   }
 
-  public Type getType() {
-    return leftBox.getValue().getType();
+  public TypeSignature getType() {
+    return getLeftBox().getValue().getSignature();
   }
 
   @Override
@@ -96,7 +96,6 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
 
   @Override
   public int equivHashCode() {
-    return leftBox.getValue().equivHashCode() + 31 * rightBox.getValue().equivHashCode();
+    return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
   }
-
 }

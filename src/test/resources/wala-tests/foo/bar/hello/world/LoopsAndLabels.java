@@ -38,72 +38,71 @@
 package foo.bar.hello.world;
 
 public class LoopsAndLabels {
-	@SuppressWarnings("unused")
-	public static void main(String args[]) {
+  @SuppressWarnings("unused")
+  public static void main(String args[]) {
 
-		aaa: do {
-			while (null instanceof String) {
-				String x = (String) null;
-				Object a = (Object) x;
-				Object b = (Object) "hello";
-				x = (String) a;
-				x = "hello";
-				x = (String) b.toString();
-				x = ((String)((Object) b.toString()));
-				x = (String)(Object) b.toString();
-				b = (Object) b.toString();
-				b = (String) b.toString();
-				if (true)
-					break aaa;
-			}
-			if ("war".equals("peace"))
-				continue;
-			else if (1 == 0)
-				break;
+    aaa: do {
+      while (null instanceof String) {
+        String x = (String) null;
+        Object a = (Object) x;
+        Object b = (Object) "hello";
+        x = (String) a;
+        x = "hello";
+        x = (String) b.toString();
+        x = ((String) ((Object) b.toString()));
+        x = (String) (Object) b.toString();
+        b = (Object) b.toString();
+        b = (String) b.toString();
+        if (true)
+          break aaa;
+      }
+      if ("war".equals("peace"))
+        continue;
+      else if (1 == 0)
+        break;
 
-			int x = 6;
-			x ++;
-		} while (false);
+      int x = 6;
+      x++;
+    } while (false);
 
-		if (false)
-			return;
+    if (false)
+      return;
 
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; i < 4; i++) {
-				System.out.println(i + "*" + j + "=" + (i * j));
-			}
-		}
-		a: for (int i = 0; i < 3; i++) {
-			b: for (int j = 0; j < 10; j++) {
-				c: for (int k = 0; k < 10; k++) {
-					if (true)
-						break c;
-				}
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; i < 4; i++) {
+        System.out.println(i + "*" + j + "=" + (i * j));
+      }
+    }
+    a: for (int i = 0; i < 3; i++) {
+      b: for (int j = 0; j < 10; j++) {
+        c: for (int k = 0; k < 10; k++) {
+          if (true)
+            break c;
+        }
 
-				if ('c' == 'd')
-					continue b;
-			}
+        if ('c' == 'd')
+          continue b;
+      }
 
-			if (null instanceof Object)
-				break a;
-		}
-		a: for (int i = 0; i < 3; i++) {
-			b: for (int j = 0; j < i; i++) {
-				c: for (int k = 0; k < j; k++) {
-					if (true)
-						;
-					else
-						continue c;
-				}
-				if ("freedom".equals("slavery"))
-					break b;
-			}
-			if ("ignorance" == "strength")
-				continue a;
-		}
+      if (null instanceof Object)
+        break a;
+    }
+    a: for (int i = 0; i < 3; i++) {
+      b: for (int j = 0; j < i; i++) {
+        c: for (int k = 0; k < j; k++) {
+          if (true)
+            ;
+          else
+            continue c;
+        }
+        if ("freedom".equals("slavery"))
+          break b;
+      }
+      if ("ignorance" == "strength")
+        continue a;
+    }
 
-		foo:
-		;
+    foo: ;
 
-	}
+  }
 }

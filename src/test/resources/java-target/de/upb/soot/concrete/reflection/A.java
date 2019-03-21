@@ -1,11 +1,10 @@
 package de.upb.soot.concrete.reflection;
 
 /**
- * @author Manuel Benz
- * created on 21.07.18
+ * @author Manuel Benz created on 21.07.18
  */
 public class A {
-  public static void staticFoo(){
+  public static void staticFoo() {
     System.out.println("foo");
   }
 }

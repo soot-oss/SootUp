@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -28,16 +28,13 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JLengthExpr extends AbstractUnopExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 8028538963970159045L;
 
   public JLengthExpr(Value op) {
@@ -78,13 +75,12 @@ public class JLengthExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public Type getType() {
-    return IntType.INSTANCE;
+  public PrimitiveTypeSignature getSignature() {
+    return PrimitiveTypeSignature.getIntSignature();
   }
 
   @Override
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseLengthExpr(this);
   }
-
 }

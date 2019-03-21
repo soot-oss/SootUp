@@ -2,12 +2,11 @@ package de.upb.soot.frontends.asm;
 
 import de.upb.soot.core.Modifier;
 import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.PrimitiveTypeSignature;
 import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.signatures.VoidTypeSignature;
-import de.upb.soot.views.IView;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -17,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -24,30 +24,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 
 public final class AsmUtil {
 
-  private AsmUtil() {
-  }
+  private AsmUtil() {}
 
   public static final int SUPPORTED_ASM_OPCODE = Opcodes.ASM7;
 
   /**
    * Initializes a class node.
-   * 
-   * @param classSource
-   *          The source.
-   * @param classNode
-   *          The node to initialize
+   *
+   * @param classSource The source.
+   * @param classNode The node to initialize
    */
-  public static void initAsmClassSource(@Nonnull ClassSource classSource, @Nonnull ClassNode classNode) {
+  public static void initAsmClassSource(
+      @Nonnull ClassSource classSource, @Nonnull ClassNode classNode) {
     URI uri = classSource.getSourcePath().toUri();
 
     try {
@@ -80,15 +76,13 @@ public final class AsmUtil {
 
   /**
    * Initializes the specified class node from a class file.
-   * 
-   * @param sourceFile
-   *          The source file.
-   * @param classNode
-   *          The class node.
-   * @throws IOException
-   *           An error occurred.
+   *
+   * @param sourceFile The source file.
+   * @param classNode The class node.
+   * @throws IOException An error occurred.
    */
-  private static void initClassNode(@Nonnull Path sourceFile, @Nonnull ClassNode classNode) throws IOException {
+  private static void initClassNode(@Nonnull Path sourceFile, @Nonnull ClassNode classNode)
+      throws IOException {
     try (InputStream sourceFileInputStream = Files.newInputStream(sourceFile)) {
       ClassReader clsr = new ClassReader(sourceFileInputStream);
 
@@ -99,19 +93,18 @@ public final class AsmUtil {
   /**
    * Determines if a type is a dword type.
    *
-   * @param type
-   *          the type to check.
+   * @param type the type to check.
    * @return {@code true} if its a dword type.
    */
   public static boolean isDWord(@Nonnull TypeSignature type) {
-    return type == PrimitiveTypeSignature.LONG_TYPE_SIGNATURE || type == PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
+    return type == PrimitiveTypeSignature.getLongSignature()
+        || type == PrimitiveTypeSignature.getDoubleSignature();
   }
 
   /**
    * Converts an internal class name to a fully qualified name.
    *
-   * @param internal
-   *          internal name.
+   * @param internal internal name.
    * @return fully qualified name.
    */
   public static String toQualifiedName(@Nonnull String internal) {
@@ -130,7 +123,8 @@ public final class AsmUtil {
     return modifierEnumSet;
   }
 
-  public static @Nonnull TypeSignature toJimpleType(@Nonnull IView view, @Nonnull String desc) {
+  @Nonnull
+  public static TypeSignature toJimpleType(@Nonnull String desc) {
     int idx = desc.lastIndexOf('[');
     int nrDims = idx + 1;
     if (nrDims > 0) {
@@ -142,31 +136,31 @@ public final class AsmUtil {
     TypeSignature baseType;
     switch (desc.charAt(0)) {
       case 'Z':
-        baseType = PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE;
+        baseType = PrimitiveTypeSignature.getBooleanSignature();
         break;
       case 'B':
-        baseType = PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE;
+        baseType = PrimitiveTypeSignature.getByteSignature();
         break;
       case 'C':
-        baseType = PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE;
+        baseType = PrimitiveTypeSignature.getCharSignature();
         break;
       case 'S':
-        baseType = PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE;
+        baseType = PrimitiveTypeSignature.getShortSignature();
         break;
       case 'I':
-        baseType = PrimitiveTypeSignature.INT_TYPE_SIGNATURE;
+        baseType = PrimitiveTypeSignature.getIntSignature();
         break;
       case 'F':
-        baseType = PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE;
+        baseType = PrimitiveTypeSignature.getFloatSignature();
         break;
       case 'J':
-        baseType = PrimitiveTypeSignature.LONG_TYPE_SIGNATURE;
+        baseType = PrimitiveTypeSignature.getLongSignature();
         break;
       case 'D':
-        baseType = PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
+        baseType = PrimitiveTypeSignature.getDoubleSignature();
         break;
       case 'V':
-        baseType = VoidTypeSignature.VOID_TYPE_SIGNATURE;
+        baseType = VoidTypeSignature.getInstance();
         break;
       case 'L':
         if (desc.charAt(desc.length() - 1) != ';') {
@@ -174,7 +168,7 @@ public final class AsmUtil {
         }
         String name = desc.substring(1, desc.length() - 1);
         name = toQualifiedName(name);
-        baseType = view.getSignatureFactory().getTypeSignature(toQualifiedName(name));
+        baseType = DefaultSignatureFactory.getInstance().getTypeSignature(toQualifiedName(name));
         break;
       default:
         throw new AssertionError("Unknown descriptor: " + desc);
@@ -182,17 +176,22 @@ public final class AsmUtil {
     if (!(baseType instanceof JavaClassSignature) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
-    return nrDims > 0 ? view.getSignatureFactory().getArrayTypeSignature(baseType, nrDims) : baseType;
+    return nrDims > 0
+        ? DefaultSignatureFactory.getInstance().getArrayTypeSignature(baseType, nrDims)
+        : baseType;
   }
 
-  public static @Nonnull List<TypeSignature> toJimpleSignatureDesc(@Nonnull String desc, @Nonnull IView view) {
+  @Nonnull
+  public static List<TypeSignature> toJimpleSignatureDesc(@Nonnull String desc) {
     List<TypeSignature> types = new ArrayList<>(2);
     int len = desc.length();
     int idx = 0;
-    all: while (idx != len) {
+    all:
+    while (idx != len) {
       int nrDims = 0;
       TypeSignature baseType = null;
-      this_type: while (idx != len) {
+      this_type:
+      while (idx != len) {
         char c = desc.charAt(idx++);
         switch (c) {
           case '(':
@@ -202,31 +201,31 @@ public final class AsmUtil {
             ++nrDims;
             continue this_type;
           case 'Z':
-            baseType = PrimitiveTypeSignature.BOOLEAN_TYPE_SIGNATURE;
+            baseType = PrimitiveTypeSignature.getBooleanSignature();
             break this_type;
           case 'B':
-            baseType = PrimitiveTypeSignature.BYTE_TYPE_SIGNATURE;
+            baseType = PrimitiveTypeSignature.getByteSignature();
             break this_type;
           case 'C':
-            baseType = PrimitiveTypeSignature.CHAR_TYPE_SIGNATURE;
+            baseType = PrimitiveTypeSignature.getCharSignature();
             break this_type;
           case 'S':
-            baseType = PrimitiveTypeSignature.SHORT_TYPE_SIGNATURE;
+            baseType = PrimitiveTypeSignature.getShortSignature();
             break this_type;
           case 'I':
-            baseType = PrimitiveTypeSignature.INT_TYPE_SIGNATURE;
+            baseType = PrimitiveTypeSignature.getIntSignature();
             break this_type;
           case 'F':
-            baseType = PrimitiveTypeSignature.FLOAT_TYPE_SIGNATURE;
+            baseType = PrimitiveTypeSignature.getFloatSignature();
             break this_type;
           case 'J':
-            baseType = PrimitiveTypeSignature.LONG_TYPE_SIGNATURE;
+            baseType = PrimitiveTypeSignature.getLongSignature();
             break this_type;
           case 'D':
-            baseType = PrimitiveTypeSignature.DOUBLE_TYPE_SIGNATURE;
+            baseType = PrimitiveTypeSignature.getDoubleSignature();
             break this_type;
           case 'V':
-            baseType = VoidTypeSignature.VOID_TYPE_SIGNATURE;
+            baseType = VoidTypeSignature.getInstance();
             break this_type;
           case 'L':
             int begin = idx;
@@ -237,7 +236,7 @@ public final class AsmUtil {
             }
 
             String cls = desc.substring(begin, idx++);
-            baseType = view.getSignatureFactory().getTypeSignature(toQualifiedName(cls));
+            baseType = DefaultSignatureFactory.getInstance().getTypeSignature(toQualifiedName(cls));
             break this_type;
           default:
             throw new AssertionError("Unknown type: " + c);
@@ -245,7 +244,7 @@ public final class AsmUtil {
       }
 
       if (baseType != null && nrDims > 0) {
-        types.add(view.getSignatureFactory().getArrayTypeSignature(baseType, nrDims));
+        types.add(DefaultSignatureFactory.getInstance().getArrayTypeSignature(baseType, nrDims));
 
       } else {
         types.add(baseType);
@@ -254,13 +253,15 @@ public final class AsmUtil {
     return types;
   }
 
-  public static @Nonnull Iterable<JavaClassSignature> asmIdToSignature(@Nullable Iterable<String> modules,
-      @Nonnull IView view) {
+  @Nonnull
+  public static Collection<JavaClassSignature> asmIdToSignature(
+      @Nullable Iterable<String> modules) {
     if (modules == null) {
       return Collections.emptyList();
     }
 
     return StreamSupport.stream(modules.spliterator(), false)
-        .map(p -> (view.getSignatureFactory().getClassSignature(toQualifiedName(p)))).collect(Collectors.toList());
+        .map(p -> (DefaultSignatureFactory.getInstance().getClassSignature(toQualifiedName(p))))
+        .collect(Collectors.toList());
   }
 }

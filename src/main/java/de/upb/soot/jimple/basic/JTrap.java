@@ -18,29 +18,32 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.signatures.JavaClassSignature;
 
 public class JTrap extends AbstractTrap {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -1514595956359087470L;
 
-  public JTrap(SootClass exception, IStmt beginStmt, IStmt endStmt, IStmt handlerStmt) {
-    super(exception, Jimple.newStmtBox(beginStmt), Jimple.newStmtBox(endStmt), Jimple.newStmtBox(handlerStmt));
+  public JTrap(JavaClassSignature exception, IStmt beginStmt, IStmt endStmt, IStmt handlerStmt) {
+    super(
+        exception,
+        Jimple.newStmtBox(beginStmt),
+        Jimple.newStmtBox(endStmt),
+        Jimple.newStmtBox(handlerStmt));
   }
 
-  public JTrap(SootClass exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
+  public JTrap(
+      JavaClassSignature exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
     super(exception, beginStmt, endStmt, handlerStmt);
   }
 

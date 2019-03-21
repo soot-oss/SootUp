@@ -10,12 +10,12 @@ package de.upb.soot.validation;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -23,20 +23,15 @@ package de.upb.soot.validation;
  */
 
 import de.upb.soot.core.Body;
-
 import java.util.List;
 
-/**
- * Implement this interface if you want to provide your own body Validator
- */
+/** Implement this interface if you want to provide your own body Validator */
 public interface BodyValidator {
   /**
    * Validates the given body and saves all validation errors in the given list.
-   * 
-   * @param body
-   *          the body to check
-   * @param exceptions
-   *          the list of exceptions
+   *
+   * @param body the body to check
+   * @param exceptions the list of exceptions
    */
   void validate(Body body, List<ValidationException> exceptions);
 
@@ -44,7 +39,7 @@ public interface BodyValidator {
    * Basic validators run essential checks and are run always if validate is called.<br>
    * If this methodRef returns false and the caller of the validator respects this property,<br>
    * the checks will only be run if the debug or validation option is activated.
-   * 
+   *
    * @return whether this validator is a basic validator
    */
   boolean isBasicValidator();

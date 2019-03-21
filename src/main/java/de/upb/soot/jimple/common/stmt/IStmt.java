@@ -9,7 +9,6 @@ import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.IAcceptor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -20,9 +19,7 @@ public interface IStmt extends EquivTo, IAcceptor, Serializable {
   /** Returns a list of Boxes containing Values defined in this Stmt. */
   List<ValueBox> getDefBoxes();
 
-  /**
-   * Returns a list of Boxes containing Stmts defined in this Stmt; typically branch targets.
-   */
+  /** Returns a list of Boxes containing Stmts defined in this Stmt; typically branch targets. */
   List<IStmtBox> getStmtBoxes();
 
   /** Returns a list of Boxes pointing to this Stmt. */
@@ -37,29 +34,27 @@ public interface IStmt extends EquivTo, IAcceptor, Serializable {
   /** Clears any pointers to and from this Stmt's StmtBoxes. */
   void clearStmtBoxes();
 
-  /**
-   * Returns a list of Boxes containing any Value either used or defined in this Stmt.
-   */
+  /** Returns a list of Boxes containing any Value either used or defined in this Stmt. */
   List<ValueBox> getUseAndDefBoxes();
 
   IStmt clone();
 
   /**
-   * Returns true if execution after this statement may continue at the following statement. GotoStmt will return false but
-   * IfStmt will return true.
+   * Returns true if execution after this statement may continue at the following statement.
+   * GotoStmt will return false but IfStmt will return true.
    */
   boolean fallsThrough();
 
   /**
-   * Returns true if execution after this statement does not necessarily continue at the following statement. GotoStmt and
-   * IfStmt will both return true.
+   * Returns true if execution after this statement does not necessarily continue at the following
+   * statement. GotoStmt and IfStmt will both return true.
    */
   boolean branches();
 
   /**
-   * Redirects jumps to this Stmt to newLocation. In general, you shouldn't have to use this directly.
-   *
-   **/
+   * Redirects jumps to this Stmt to newLocation. In general, you shouldn't have to use this
+   * directly.
+   */
   void redirectJumpsToThisTo(IStmt newLocation);
 
   void toString(IStmtPrinter up);
@@ -84,9 +79,8 @@ public interface IStmt extends EquivTo, IAcceptor, Serializable {
 
   /**
    * Return the position information of this statement.
-   * 
+   *
    * @return he position information of this statement
    */
-  public PositionInfo getPositionInfo();
-
+  PositionInfo getPositionInfo();
 }

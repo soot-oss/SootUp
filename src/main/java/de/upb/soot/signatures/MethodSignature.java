@@ -10,69 +10,58 @@ package de.upb.soot.signatures;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 
-import com.google.common.base.Objects;
-
 import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
+import javax.annotation.Nonnull;
 
 /** Represents the fully qualified signature of a methodRef. */
 public class MethodSignature extends AbstractClassMemberSignature {
 
+  protected MethodSignature(
+      JavaClassSignature declaringClassSignature,
+      String methodName,
+      Iterable<TypeSignature> parameters,
+      TypeSignature fqReturnType) {
+    this(declaringClassSignature, new MethodSubSignature(methodName, parameters, fqReturnType));
+  }
+
+  /**
+   * Internal: Constructs a MethodSignature. Instances should only be created by a {@link
+   * DefaultSignatureFactory}
+   *
+   * @param declaringClass the declaring class signature
+   * @param subSignature the sub-signature
+   */
+  protected MethodSignature(
+      final @Nonnull JavaClassSignature declaringClass,
+      final @Nonnull MethodSubSignature subSignature) {
+    super(declaringClass, subSignature);
+
+    this._subSignature = subSignature;
+  }
+
+  private final @Nonnull MethodSubSignature _subSignature;
+
+  @Override
+  @Nonnull
+  public MethodSubSignature getSubSignature() {
+    return _subSignature;
+  }
+
   /** The methodRef's parameters' signatures. */
-  public final List<TypeSignature> parameterSignatures;
-
-  /**
-   * Internal: Constructs a MethodSignature. Instances should only be created by a {@link DefaultSignatureFactory}
-   *
-   * @param methodName
-   *          the signature
-   * @param declaringClass
-   *          the declaring class signature
-   */
-  protected MethodSignature(final String methodName, final JavaClassSignature declaringClass, final TypeSignature returnType,
-      final List<TypeSignature> parameters) {
-    super(methodName, declaringClass, returnType);
-    this.parameterSignatures = parameters;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    MethodSignature that = (MethodSignature) o;
-    return Objects.equal(name, that.name) && Objects.equal(declClassSignature, that.declClassSignature)
-        && Objects.equal(parameterSignatures, that.parameterSignatures) && Objects.equal(typeSignature, that.typeSignature);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(name, declClassSignature, parameterSignatures);
-  }
-
-  /**
-   * The simple name of the methodRef; the methodRef's name and its parameters.
-   *
-   * @return a String of the form "returnTypeName methodName(ParameterName(,)*)"
-   */
-  @Override
-  public String getSubSignature() {
-    return typeSignature.toString() + ' ' + name + '(' + StringUtils.join(parameterSignatures, ", ") + ')';
+  @Nonnull
+  public List<TypeSignature> getParameterSignatures() {
+    return this.getSubSignature().getParameterSignatures();
   }
 }

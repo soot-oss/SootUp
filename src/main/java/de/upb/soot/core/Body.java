@@ -9,12 +9,12 @@ package de.upb.soot.core;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
@@ -22,7 +22,6 @@ package de.upb.soot.core;
  */
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -33,6 +32,7 @@ import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.util.EscapedWriter;
+import de.upb.soot.util.Utils;
 import de.upb.soot.util.printer.Printer;
 import de.upb.soot.validation.BodyValidator;
 import de.upb.soot.validation.CheckEscapingValidator;
@@ -46,28 +46,25 @@ import de.upb.soot.validation.TrapsValidator;
 import de.upb.soot.validation.UsesValidator;
 import de.upb.soot.validation.ValidationException;
 import de.upb.soot.validation.ValueBoxesValidator;
-
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Class that models the Jimple body (code attribute) of a methodRef.
- * 
- * Modified by Linghui Luo
  *
+ * <p>Modified by Linghui Luo
  */
 public class Body implements Serializable {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -755840890323977315L;
 
   /** The locals for this Body. */
@@ -79,43 +76,43 @@ public class Body implements Serializable {
   /** The stmts for this Body. */
   protected final List<IStmt> stmts;
 
-  private final Position position;
+  @Nullable private final Position position;
 
-  /** The methodRef associated with this Body. */
-  protected SootMethod method;
-
-  /**
-   * An array containing some validators in order to validate the JimpleBody
-   */
-  private static final List<BodyValidator> validators = Arrays.asList(new LocalsValidator(), new TrapsValidator(),
-      new StmtBoxesValidator(), new UsesValidator(), new ValueBoxesValidator(), new CheckInitValidator(),
-      new CheckTypesValidator(), new CheckVoidLocalesValidator(), new CheckEscapingValidator());
-
-  /**
-   * Creates a Body associated to the given methodRef.
-   * 
-   * @param locals
-   *          please use {@link LocalGenerator} to generate local for a body.
-   */
-  public Body(SootMethod m, List<Local> locals, List<Trap> traps, List<IStmt> stmts, Position position) {
-    this(locals, traps, stmts, position);
-    this.method = m;
-  }
+  /** An array containing some validators in order to validate the JimpleBody */
+  @Nonnull
+  private static final List<BodyValidator> validators =
+      Utils.immutableList(
+          new LocalsValidator(),
+          new TrapsValidator(),
+          new StmtBoxesValidator(),
+          new UsesValidator(),
+          new ValueBoxesValidator(),
+          new CheckInitValidator(),
+          new CheckTypesValidator(),
+          new CheckVoidLocalesValidator(),
+          new CheckEscapingValidator());
 
   /**
    * Creates an body which is not associated to any methodRef.
-   * 
-   * @param locals
-   *          please use {@link LocalGenerator} to generate local for a body.
+   *
+   * @param locals please use {@link LocalGenerator} to generate local for a body.
    */
-  public Body(List<Local> locals, List<Trap> traps, List<IStmt> stmts, Position position) {
+  public Body(
+      @Nonnull List<Local> locals,
+      @Nonnull List<Trap> traps,
+      @Nonnull List<IStmt> stmts,
+      @Nullable Position position) {
     this.locals = Collections.unmodifiableList(locals);
     this.traps = Collections.unmodifiableList(traps);
     this.stmts = Collections.unmodifiableList(stmts);
     this.position = position;
-    this.method = null;
+
+    // FIXME: [JMP] Virtual method call in constructor
     checkInit();
   }
+
+  /** The methodRef associated with this Body. */
+  @Nullable private volatile SootMethod _method;
 
   /**
    * Returns the methodRef associated with this Body.
@@ -123,21 +120,28 @@ public class Body implements Serializable {
    * @return the methodRef that owns this body.
    */
   public SootMethod getMethod() {
-    if (method == null) {
-      throw new RuntimeException("no methodRef associated w/ body");
+    SootMethod owner = this._method;
+
+    if (owner == null) {
+      throw new IllegalStateException(
+          "The owning method of this body instance has not been not set yet.");
     }
-    return method;
+
+    return owner;
   }
 
   /**
    * Sets the methodRef associated with this Body.
    *
-   * @param method
-   *          the methodRef that owns this body.
-   *
+   * @param value the methodRef that owns this body.
    */
-  protected void setMethod(SootMethod method) {
-    this.method = method;
+  protected synchronized void setMethod(@Nullable SootMethod value) {
+    if (this._method != null) {
+      throw new IllegalStateException(
+          "The declaring class of this soot class member has already been set.");
+    }
+
+    this._method = value;
   }
 
   /** Returns the number of locals declared in this body. */
@@ -188,7 +192,7 @@ public class Body implements Serializable {
     return traps;
   }
 
-  /** Return unit containing the \@this-assignment **/
+  /** Return unit containing the \@this-assignment * */
   public IStmt getThisStmt() {
     for (IStmt u : getStmts()) {
       if (u instanceof JIdentityStmt && ((JIdentityStmt) u).getRightOp() instanceof JThisRef) {
@@ -199,12 +203,12 @@ public class Body implements Serializable {
     throw new RuntimeException("couldn't find this-assignment!" + " in " + getMethod());
   }
 
-  /** Return LHS of the first identity stmt assigning from \@this. **/
+  /** Return LHS of the first identity stmt assigning from \@this. * */
   public Local getThisLocal() {
     return (Local) (((JIdentityStmt) getThisStmt()).getLeftOp());
   }
 
-  /** Return LHS of the first identity stmt assigning from \@parameter i. **/
+  /** Return LHS of the first identity stmt assigning from \@parameter i. * */
   public Local getParameterLocal(int i) {
     for (IStmt s : getStmts()) {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
@@ -222,10 +226,9 @@ public class Body implements Serializable {
   /**
    * Get all the LHS of the identity statements assigning from parameter references.
    *
-   * @return a list of size as per <code>getMethod().getParameterCount()</code> with all elements ordered as per the
-   *         parameter index.
-   * @throws RuntimeException
-   *           if a JParameterRef is missing
+   * @return a list of size as per <code>getMethod().getParameterCount()</code> with all elements
+   *     ordered as per the parameter index.
+   * @throws RuntimeException if a JParameterRef is missing
    */
   public Collection<Local> getParameterLocals() {
     final int numParams = getMethod().getParameterCount();
@@ -247,9 +250,8 @@ public class Body implements Serializable {
 
   /**
    * Returns the statements that make up this body.
-   * 
-   * @return the statements in this Body
    *
+   * @return the statements in this Body
    */
   public Collection<IStmt> getStmts() {
     return stmts;
@@ -259,9 +261,7 @@ public class Body implements Serializable {
     runValidation(new CheckInitValidator());
   }
 
-  /**
-   * {@inheritDoc}
-   */
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     ByteArrayOutputStream streamOut = new ByteArrayOutputStream();
@@ -283,37 +283,42 @@ public class Body implements Serializable {
   /** Clones the current body, making deep copies of the contents. */
   @Override
   public Object clone() {
-    return new Body(this.method, this.locals, this.traps, this.stmts, this.position);
+    return new Body(this.locals, this.traps, this.stmts, this.position);
   }
 
-  /**
-   * Make sure that the JimpleBody is well formed. If not, throw an exception. Right now, performs only a handful of checks.
-   */
-  public void validate() {
-    final List<ValidationException> exceptionList = new ArrayList<>();
-    validate(exceptionList);
-    if (!exceptionList.isEmpty()) {
-      throw exceptionList.get(0);
-    }
-  }
+  // FIXME "This code does not work and has to be adapted in future features."
+  //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r267259693
+  //
+  //  /**
+  //   * Make sure that the JimpleBody is well formed. If not, throw an exception. Right now,
+  // performs only a handful of checks.
+  //   */
+  //  public void validate() {
+  //    final List<ValidationException> exceptionList = new ArrayList<>();
+  //    validate(exceptionList);
+  //    if (!exceptionList.isEmpty()) {
+  //      throw exceptionList.get(0);
+  //    }
+  //  }
 
-  /**
-   * Validates the jimple body and saves a list of all validation errors
-   *
-   * @param exceptionList
-   *          the list of validation errors
-   */
-  public void validate(List<ValidationException> exceptionList) {
-    validate(exceptionList);
-    final boolean runAllValidators
-        = this.method.getView().getOptions().debug() || this.method.getView().getOptions().validate();
-    for (BodyValidator validator : validators) {
-      if (!validator.isBasicValidator() && !runAllValidators) {
-        continue;
-      }
-      validator.validate(this, exceptionList);
-    }
-  }
+  //  /**
+  //   * Validates the jimple body and saves a list of all validation errors
+  //   *
+  //   * @param exceptionList
+  //   *          the list of validation errors
+  //   */
+  //  public void validate(List<ValidationException> exceptionList) {
+  //    validate(exceptionList);
+  //    final boolean runAllValidators
+  //        = this.method.getView().getOptions().debug() ||
+  // this.method.getView().getOptions().validate();
+  //    for (BodyValidator validator : validators) {
+  //      if (!validator.isBasicValidator() && !runAllValidators) {
+  //        continue;
+  //      }
+  //      validator.validate(this, exceptionList);
+  //    }
+  //  }
 
   public void validateIdentityStatements() {
     runValidation(new IdentityStatementsValidator());
@@ -345,15 +350,15 @@ public class Body implements Serializable {
   }
 
   /**
-   * Returns the result of iterating through all Stmts in this body and querying them for their StmtBoxes. All StmtBoxes thus
-   * found are returned. Branching Stmts and statements which use PhiExpr will have StmtBoxes; a StmtBox contains a Stmt that
-   * is either a target of a branch or is being used as a pointer to the end of a CFG block.
+   * Returns the result of iterating through all Stmts in this body and querying them for their
+   * StmtBoxes. All StmtBoxes thus found are returned. Branching Stmts and statements which use
+   * PhiExpr will have StmtBoxes; a StmtBox contains a Stmt that is either a target of a branch or
+   * is being used as a pointer to the end of a CFG block.
    *
-   * <p>
-   * This methodRef is typically used for pointer patching, e.g. when the unit chain is cloned.
+   * <p>This methodRef is typically used for pointer patching, e.g. when the unit chain is cloned.
    *
    * @return A collection of all the StmtBoxes held by this body's units.
-   **/
+   */
   public Collection<IStmtBox> getAllStmtBoxes() {
     List<IStmtBox> stmtBoxList = new ArrayList<>();
     for (IStmt item : stmts) {
@@ -365,5 +370,4 @@ public class Body implements Serializable {
     }
     return Collections.unmodifiableCollection(stmtBoxList);
   }
-
 }

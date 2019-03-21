@@ -22,22 +22,16 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import categories.Java8Test;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.ref.JParameterRef;
-import de.upb.soot.jimple.common.type.IntType;
-
+import de.upb.soot.signatures.PrimitiveTypeSignature;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import categories.Java8Test;
-
-/**
- *
- * @author Markus Schmidt & Linghui Luo
- *
- */
+/** @author Markus Schmidt & Linghui Luo */
 @Category(Java8Test.class)
 public class JNopStmtTest {
 
@@ -50,10 +44,12 @@ public class JNopStmtTest {
     Assert.assertTrue(nop.equivTo(new JNopStmt(nopos)));
 
     Assert.assertFalse(
-        nop.equivTo(new JIdentityStmt(new Local("$i0", IntType.INSTANCE), new JParameterRef(IntType.INSTANCE, 123), nopos)));
+        nop.equivTo(
+            new JIdentityStmt(
+                new Local("$i0", PrimitiveTypeSignature.getIntSignature()),
+                new JParameterRef(PrimitiveTypeSignature.getIntSignature(), 123),
+                nopos)));
 
     Assert.assertEquals("nop", nop.toString());
-
   }
-
 }

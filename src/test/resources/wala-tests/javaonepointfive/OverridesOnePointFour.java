@@ -38,25 +38,25 @@
 package javaonepointfive;
 
 public class OverridesOnePointFour {
-	static interface Super {
-		public Number get();
-	}
-	
-	static class Sub implements Super {
-		
+  static interface Super {
+    public Number get();
+  }
+
+  static class Sub implements Super {
+
     @Override
     public Long get() {
-			return Long.valueOf(6);
-		}
-	}
+      return Long.valueOf(6);
+    }
+  }
 
-	public static void main(String args[]) {
-		(new OverridesOnePointFour()).doit();
-	}	
-	
-	private void doit() {
-		Super sup = new Sub();
-		Number x = sup.get();
-		System.out.println(x);
-	}
+  public static void main(String args[]) {
+    (new OverridesOnePointFour()).doit();
+  }
+
+  private void doit() {
+    Super sup = new Sub();
+    Number x = sup.get();
+    System.out.println(x);
+  }
 }

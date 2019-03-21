@@ -18,5 +18,4 @@ public class StaticFields {
     System.out.println(nonFinalInt);
   }
 
-
 }

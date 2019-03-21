@@ -3,14 +3,9 @@ package de.upb.soot.frontends.java;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.util.printer.Printer;
-
 import java.io.PrintWriter;
 
-/**
- * 
- * @author Linghui Luo
- *
- */
+/** @author Linghui Luo */
 public class Utils {
 
   public static void print(SootClass cl, boolean print) {
@@ -32,5 +27,4 @@ public class Utils {
       writer.close();
     }
   }
-
 }

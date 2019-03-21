@@ -37,98 +37,101 @@
  */
 package javaonepointfive;
 // what IS illegal and we don't have to worry about:
+
 //  "x instanceof E"
 //  y = new Q();
 
 interface IGeneric<E> {
-	E foo();
+  E foo();
 
-	E bar(E x, E y);
+  E bar(E x, E y);
 }
 
 // Y: "implements IGeneric" (no <E>)
 // TOTRY: two arguments
 class ConcreteGeneric<Q> implements IGeneric<Q> {
-	Q x;
+  Q x;
 
-	
   @Override
   public Q bar(Q a, Q b) {
-		x = a;
-		if (b.hashCode() == a.hashCode() || b.toString().equals(a.toString()))
-			return a;
-		return b;
-	}
+    x = a;
+    if (b.hashCode() == a.hashCode() || b.toString().equals(a.toString()))
+      return a;
+    return b;
+  }
 
-	
   @Override
   public Q foo() {
-		return x;
-	}
+    return x;
+  }
 }
 
 class ConcreteGeneric2<Q> extends ConcreteGeneric<Q> {
-	Q y;
-	public void setFoo(Q a) {
-		y = a;
-	}
-	
+  Q y;
+
+  public void setFoo(Q a) {
+    y = a;
+  }
+
   @Override
   public Q foo() {
-		return y;
-	}
+    return y;
+  }
 }
 
 class MyGeneric<A extends Object, B extends IGeneric<A>> {
-	A a;
-	B b; // TODO: check field type
-	public MyGeneric(A a, B b) { // TODO: check parameter type
-		this.a = a;
-		this.b = b;
-	}
-	public A doFoo() { // TODO: check return value type
-		return b.foo();
-	}
-	public B getB() {
-		return b;
-	}
+  A a;
+  B b; // TODO: check field type
+
+  public MyGeneric(A a, B b) { // TODO: check parameter type
+    this.a = a;
+    this.b = b;
+  }
+
+  public A doFoo() { // TODO: check return value type
+    return b.foo();
+  }
+
+  public B getB() {
+    return b;
+  }
 }
 
 public class CustomGenericsAndFields {
-	static ConcreteGeneric2<String> cg2 = new ConcreteGeneric2<>();
+  static ConcreteGeneric2<String> cg2 = new ConcreteGeneric2<>();
 
-	static public ConcreteGeneric2<String> cg2WithSideEffects() {
-		System.out.println("look at me! I'm a side effect!");
-		return cg2;
-	}
+  static public ConcreteGeneric2<String> cg2WithSideEffects() {
+    System.out.println("look at me! I'm a side effect!");
+    return cg2;
+  }
 
-	public static void main(String args[]) {
-		(new CustomGenericsAndFields()).doit();
-	}
-	
-	private void doit() {
-		// Simple: concrete generic
-		
-		ConcreteGeneric<String> absinthe = new ConcreteGeneric<>();
-		IGeneric<String> rye = absinthe;
-		String foo = rye.bar("hello", "world");
-		System.out.println(absinthe.foo() + foo);
+  public static void main(String args[]) {
+    (new CustomGenericsAndFields()).doit();
+  }
 
-		/////////////////////////////
+  private void doit() {
+    // Simple: concrete generic
 
-		String thrownaway = cg2.bar("a","b");
-		cg2.setFoo("real one");
-		MyGeneric<String,ConcreteGeneric2<String>> mygeneric = new MyGeneric<>("useless",cg2);
-		String x = mygeneric.doFoo();
-		System.out.println(x);
-		String y = cg2.x;
-		System.out.println(mygeneric.getB().y);
-		System.out.println(mygeneric.b.y); // TODO: fields are going to be a pain... watch out for Lvalues in context?
-		cg2.x = null;
-		cg2.x = "hello";
+    ConcreteGeneric<String> absinthe = new ConcreteGeneric<>();
+    IGeneric<String> rye = absinthe;
+    String foo = rye.bar("hello", "world");
+    System.out.println(absinthe.foo() + foo);
 
-//		mygeneric.getB().y+="hey"; // TODO: this is going to be a MAJOR pain...
-		String real_oneheyya = (((cg2WithSideEffects().y))+="hey")+"ya"; // TODO: this is going to be a MAJOR pain...
-		System.out.println(real_oneheyya);
-	}
+    /////////////////////////////
+
+    String thrownaway = cg2.bar("a", "b");
+    cg2.setFoo("real one");
+    MyGeneric<String, ConcreteGeneric2<String>> mygeneric = new MyGeneric<>("useless", cg2);
+    String x = mygeneric.doFoo();
+    System.out.println(x);
+    String y = cg2.x;
+    System.out.println(mygeneric.getB().y);
+    System.out.println(mygeneric.b.y); // TODO: fields are going to be a pain... watch out for Lvalues in context?
+    cg2.x = null;
+    cg2.x = "hello";
+
+    // mygeneric.getB().y+="hey"; // TODO: this is going to be a MAJOR pain...
+    String real_oneheyya = (((cg2WithSideEffects().y)) += "hey") + "ya"; // TODO: this is going to be a MAJOR pain...
+    System.out.println(real_oneheyya);
+  }
 }

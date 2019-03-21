@@ -18,26 +18,24 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.TypeSignature;
 import soot.util.StringTools;
 
 public class StringConstant extends Constant {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -1247456329894136483L;
-  public final String value;
+
+  private final String value;
 
   private StringConstant(String s) {
     this.value = s;
@@ -60,8 +58,9 @@ public class StringConstant extends Constant {
   }
 
   @Override
-  public Type getType() {
-    return RefType.getInstance("java.lang.String");
+  public TypeSignature getSignature() {
+    // TODO: [JMP] Use cached type from somewhere.
+    return DefaultSignatureFactory.getInstance().getTypeSignature("java.lang.String");
   }
 
   @Override
@@ -72,5 +71,9 @@ public class StringConstant extends Constant {
   @Override
   public String toString() {
     return StringTools.getQuotedStringOf(value);
+  }
+
+  public String getValue() {
+    return value;
   }
 }

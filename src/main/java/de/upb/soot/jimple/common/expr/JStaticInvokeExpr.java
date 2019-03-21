@@ -19,7 +19,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -34,42 +34,33 @@ import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-import de.upb.soot.views.IView;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class JStaticInvokeExpr extends AbstractInvokeExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -8705816067828505717L;
 
-  /**
-   * Stores the values of new ImmediateBox to the argBoxes array.
-   */
-  public JStaticInvokeExpr(IView view, MethodSignature method, List<? extends Value> args) {
-    super(view, method, new ValueBox[args.size()]);
+  /** Stores the values of new ImmediateBox to the argBoxes array. */
+  public JStaticInvokeExpr(MethodSignature method, List<? extends Value> args) {
+    super(method, new ValueBox[args.size()]);
     this.methodSignature = method;
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
-
   }
 
   @Override
   public Object clone() {
-    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+    List<Value> clonedArgs = new ArrayList<>(getArgCount());
 
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
-    return new JStaticInvokeExpr(this.getView(), methodSignature, clonedArgs);
+    return new JStaticInvokeExpr(methodSignature, clonedArgs);
   }
 
-  /**
-   * Returns true if object o is an instance of AbstractStaticInvokeExpr else returns false.
-   */
+  /** Returns true if object o is an instance of AbstractStaticInvokeExpr else returns false. */
   @Override
   public boolean equivTo(Object o) {
     return JimpleComparator.getInstance().caseStaticInvokeExpr(this, o);
@@ -80,37 +71,29 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     return comparator.caseStaticInvokeExpr(this, o);
   }
 
-  /**
-   * Returns a hash code for this object, consistent with structural equality.
-   */
+  /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return getMethod().hashCode();
+    return getMethodSignature().hashCode();
   }
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-
-    buffer.append(Jimple.STATICINVOKE + " " + methodSignature + "(");
-    argBoxesToString(buffer);
-    buffer.append(")");
-
-    return buffer.toString();
+    StringBuilder builder = new StringBuilder();
+    builder.append(Jimple.STATICINVOKE).append(" ").append(methodSignature).append("(");
+    argBoxesToString(builder);
+    builder.append(")");
+    return builder.toString();
   }
 
-  /**
-   * Converts a parameter of type StmtPrinter to a string literal.
-   */
+  /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);
     up.literal(" ");
     up.methodSignature(methodSignature);
     up.literal("(");
-
     argBoxesToPrinter(up);
-
     up.literal(")");
   }
 
@@ -118,5 +101,4 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseStaticInvokeExpr(this);
   }
-
 }

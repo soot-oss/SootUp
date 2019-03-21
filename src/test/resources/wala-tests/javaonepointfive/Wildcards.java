@@ -40,42 +40,44 @@ package javaonepointfive;
 import java.util.ArrayList;
 
 public class Wildcards {
-	public void printCollection(ArrayList<?> c) {
-		// for (Object e : c) {
+  public void printCollection(ArrayList<?> c) {
+    // for (Object e : c) {
 
-		// for (Iterator tmp = c.iterator(); tmp.hasNext(); ) {
-		// Object e = tmp.next();
+    // for (Iterator tmp = c.iterator(); tmp.hasNext(); ) {
+    // Object e = tmp.next();
 
-		Object e = c.get(0);
-		System.out.println(e);
-		// }
-	}
-	public void printCollection1(ArrayList<? extends Object> c) {
-		Object e = c.get(0);
-		System.out.println(e);
-	}
-	public void printCollection2(ArrayList<? extends String> c) {
-		String e = c.get(0);
-		System.out.println(e);
-	}
+    Object e = c.get(0);
+    System.out.println(e);
+    // }
+  }
 
-	public static void main(String args[]) {
-		(new Wildcards()).doit();
-	}
-	
-	private void doit() {
-		ArrayList<String> e = new ArrayList<>();
-		e.add("hello");
-		e.add("goodbye");
-		printCollection(e);
-		printCollection1(e);
-		printCollection2(e);
+  public void printCollection1(ArrayList<? extends Object> c) {
+    Object e = c.get(0);
+    System.out.println(e);
+  }
 
-		ArrayList<Integer> e3 = new ArrayList<>();
-		e3.add(Integer.valueOf(123));
-		e3.add(Integer.valueOf(42));
-		printCollection(e3);
-		printCollection1(e3);
-		
-	}
+  public void printCollection2(ArrayList<? extends String> c) {
+    String e = c.get(0);
+    System.out.println(e);
+  }
+
+  public static void main(String args[]) {
+    (new Wildcards()).doit();
+  }
+
+  private void doit() {
+    ArrayList<String> e = new ArrayList<>();
+    e.add("hello");
+    e.add("goodbye");
+    printCollection(e);
+    printCollection1(e);
+    printCollection2(e);
+
+    ArrayList<Integer> e3 = new ArrayList<>();
+    e3.add(Integer.valueOf(123));
+    e3.add(Integer.valueOf(42));
+    printCollection(e3);
+    printCollection1(e3);
+
+  }
 }

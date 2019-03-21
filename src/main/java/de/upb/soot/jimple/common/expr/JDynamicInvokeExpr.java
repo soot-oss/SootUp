@@ -19,97 +19,99 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.IMethod;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-import de.upb.soot.views.IView;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
+import javax.annotation.Nonnull;
 import org.objectweb.asm.Opcodes;
 
 public class JDynamicInvokeExpr extends AbstractInvokeExpr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 8212277443400470834L;
-  protected MethodSignature bsm;
-  protected ValueBox[] bsmArgBoxes;
+
+  protected MethodSignature bootstrapMethodSignature;
+  protected ValueBox[] bootstrapMethodSignatureArgBoxes;
   protected int tag;
 
-  /**
-   * Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox.
-   */
-  public JDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef, int tag, List<? extends Value> methodArgs) {
-    super(view, methodRef, new ValueBox[methodArgs.size()]);
+  /** Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox. */
+  public JDynamicInvokeExpr(
+      MethodSignature bootstrapMethodRef,
+      List<? extends Value> bootstrapArgs,
+      MethodSignature methodRef,
+      int tag,
+      List<? extends Value> methodArgs) {
+    super(methodRef, new ValueBox[methodArgs.size()]);
     if (!methodRef.toString().startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
       throw new IllegalArgumentException(
-          "Receiver type of JDynamicInvokeExpr must be " + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + "!");
+          "Receiver type of JDynamicInvokeExpr must be "
+              + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME
+              + "!");
     }
-    this.bsm = bootstrapMethodRef;
-    this.bsmArgBoxes = new ValueBox[bootstrapArgs.size()];
+    this.bootstrapMethodSignature = bootstrapMethodRef;
+    this.bootstrapMethodSignatureArgBoxes = new ValueBox[bootstrapArgs.size()];
     this.tag = tag;
 
     for (int i = 0; i < bootstrapArgs.size(); i++) {
-      this.bsmArgBoxes[i] = Jimple.newImmediateBox(bootstrapArgs.get(i));
+      this.bootstrapMethodSignatureArgBoxes[i] = Jimple.newImmediateBox(bootstrapArgs.get(i));
     }
     for (int i = 0; i < methodArgs.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(methodArgs.get(i));
     }
   }
 
-  /**
-   * Makes a parameterized call to JDynamicInvokeExpr method.
-   */
-  public JDynamicInvokeExpr(IView view, MethodSignature bootstrapMethodRef, List<? extends Value> bootstrapArgs,
-      MethodSignature methodRef, List<? extends Value> methodArgs) {
+  /** Makes a parameterized call to JDynamicInvokeExpr method. */
+  public JDynamicInvokeExpr(
+      MethodSignature bootstrapMethodRef,
+      List<? extends Value> bootstrapArgs,
+      MethodSignature methodRef,
+      List<? extends Value> methodArgs) {
     /*
      * Here the static-handle is chosen as default value, because this works for Java.
      */
-    this(view, bootstrapMethodRef, bootstrapArgs, methodRef, Opcodes.H_INVOKESTATIC, methodArgs);
+    this(bootstrapMethodRef, bootstrapArgs, methodRef, Opcodes.H_INVOKESTATIC, methodArgs);
+  }
+
+  public @Nonnull MethodSignature getBootstrapMethodSignature() {
+    return this.bootstrapMethodSignature;
   }
 
   public int getBootstrapArgCount() {
-    return bsmArgBoxes.length;
+    return bootstrapMethodSignatureArgBoxes.length;
   }
 
   public Value getBootstrapArg(int index) {
-    return bsmArgBoxes[index].getValue();
+    return bootstrapMethodSignatureArgBoxes[index].getValue();
   }
 
   @Override
   public Object clone() {
-    List<Value> clonedBsmArgs = new ArrayList<Value>(getBootstrapArgCount());
+    List<Value> clonedBsmArgs = new ArrayList<>(getBootstrapArgCount());
     for (int i = 0; i < getBootstrapArgCount(); i++) {
       clonedBsmArgs.add(i, getBootstrapArg(i));
     }
 
-    List<Value> clonedArgs = new ArrayList<Value>(getArgCount());
+    List<Value> clonedArgs = new ArrayList<>(getArgCount());
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JDynamicInvokeExpr(this.getView(), bsm, clonedBsmArgs, methodSignature, tag, clonedArgs);
+    return new JDynamicInvokeExpr(
+        bootstrapMethodSignature, clonedBsmArgs, methodSignature, tag, clonedArgs);
   }
 
   @Override
@@ -122,72 +124,57 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     return comparator.caseDynamicInvokeExpr(this, o);
   }
 
-  /**
-   * Returns a hash code for this object, consistent with structural equality.
-   */
+  /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return bsm.hashCode() * getMethod().hashCode() * 17;
-  }
-
-  public Optional<SootMethod> getBootstrapMethod() {
-    JavaClassSignature signature = bsm.declClassSignature;
-    Optional<AbstractClass> op = this.getView().getClass(signature);
-    if (op.isPresent()) {
-      AbstractClass klass = op.get();
-      Optional<? extends IMethod> m = klass.getMethod(bsm);
-      return m.map(c -> (SootMethod) c);
-    }
-    return Optional.empty();
+    return bootstrapMethodSignature.hashCode() * getMethodSignature().hashCode() * 17;
   }
 
   @Override
   public String toString() {
-    StringBuffer buffer = new StringBuffer();
-    buffer.append(Jimple.DYNAMICINVOKE);
-    buffer.append(" \"");
-    buffer.append(methodSignature); // quoted method name (can be any UTF8
-    // string)
-    buffer.append("\" <");
-    buffer.append(methodSignature.getSubSignature());
-    buffer.append(">(");
+    StringBuilder builder = new StringBuilder();
+    builder.append(Jimple.DYNAMICINVOKE);
+    builder.append(" \"");
+    builder.append(methodSignature); // quoted method name (can be any UTF8 string)
+    builder.append("\" <");
+    builder.append(methodSignature.getSubSignature());
+    builder.append(">(");
 
-    argBoxesToString(buffer);
+    argBoxesToString(builder);
 
-    buffer.append(") ");
-    buffer.append(bsm);
-    buffer.append("(");
-    final int len = bsmArgBoxes.length;
+    builder.append(") ");
+    builder.append(this.getBootstrapMethodSignature());
+    builder.append("(");
+    final int len = bootstrapMethodSignatureArgBoxes.length;
     if (0 < len) {
-      buffer.append(bsmArgBoxes[0].getValue().toString());
+      builder.append(bootstrapMethodSignatureArgBoxes[0].getValue().toString());
       for (int i = 1; i < len; i++) {
-        buffer.append(", ");
-        buffer.append(bsmArgBoxes[i].getValue().toString());
+        builder.append(", ");
+        builder.append(bootstrapMethodSignatureArgBoxes[i].getValue().toString());
       }
     }
-    buffer.append(")");
+    builder.append(")");
 
-    return buffer.toString();
+    return builder.toString();
   }
 
   @Override
   public void toString(IStmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
-    up.literal(" \"" + methodSignature.name + "\" <" + methodSignature.getSubSignature() + ">(");
+    up.literal(
+        " \"" + methodSignature.getName() + "\" <" + methodSignature.getSubSignature() + ">(");
     argBoxesToPrinter(up);
 
     up.literal(") ");
-    Optional<SootMethod> op = getBootstrapMethod();
-    if (op.isPresent()) {
-      up.method(op.get());
-    }
+    MethodSignature op = this.bootstrapMethodSignature;
+    up.methodSignature(op);
     up.literal("(");
-    final int len = bsmArgBoxes.length;
+    final int len = bootstrapMethodSignatureArgBoxes.length;
     if (0 < len) {
-      bsmArgBoxes[0].toString(up);
+      bootstrapMethodSignatureArgBoxes[0].toString(up);
       for (int i = 1; i < len; i++) {
         up.literal(", ");
-        bsmArgBoxes[i].toString(up);
+        bootstrapMethodSignatureArgBoxes[i].toString(up);
       }
     }
     up.literal(")");
@@ -198,12 +185,10 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
     ((IExprVisitor) sw).caseDynamicInvokeExpr(this);
   }
 
-  /**
-   * Returns a list containing elements of type ValueBox.
-   */
+  /** Returns a list containing elements of type ValueBox. */
   public List<Value> getBootstrapArgs() {
-    List<Value> l = new ArrayList<Value>();
-    for (ValueBox element : bsmArgBoxes) {
+    List<Value> l = new ArrayList<>();
+    for (ValueBox element : bootstrapMethodSignatureArgBoxes) {
       l.add(element.getValue());
     }
 
@@ -213,5 +198,4 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   public int getHandleTag() {
     return tag;
   }
-
 }

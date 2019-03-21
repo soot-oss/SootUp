@@ -25,21 +25,18 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 
-/**
- * Floating point constant with single precision.
- */
+/** Floating point constant with single precision. */
 public class FloatConstant extends RealConstant {
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 1743530246829003090L;
-  public final float value;
+
+  private final float value;
 
   private FloatConstant(float value) {
     this.value = value;
@@ -54,9 +51,7 @@ public class FloatConstant extends RealConstant {
     return c instanceof FloatConstant && Float.compare(((FloatConstant) c).value, value) == 0;
   }
 
-  /**
-   * Returns a hash code for this FloatConstant object.
-   */
+  /** Returns a hash code for this FloatConstant object. */
   @Override
   public int hashCode() {
     return Float.floatToIntBits(value);
@@ -96,37 +91,43 @@ public class FloatConstant extends RealConstant {
   @Override
   public NumericConstant equalEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) == 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Float.compare(this.value, ((FloatConstant) c).value) == 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant notEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) != 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Float.compare(this.value, ((FloatConstant) c).value) != 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant lessThan(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) < 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Float.compare(this.value, ((FloatConstant) c).value) < 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant lessThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) <= 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Float.compare(this.value, ((FloatConstant) c).value) <= 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant greaterThan(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) > 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Float.compare(this.value, ((FloatConstant) c).value) > 0 ? 1 : 0);
   }
 
   @Override
   public NumericConstant greaterThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) >= 0 ? 1 : 0);
+    return IntConstant.getInstance(
+        Float.compare(this.value, ((FloatConstant) c).value) >= 0 ? 1 : 0);
   }
 
   @Override
@@ -164,7 +165,9 @@ public class FloatConstant extends RealConstant {
   public String toString() {
     String floatString = Float.toString(value);
 
-    if (floatString.equals("NaN") || floatString.equals("Infinity") || floatString.equals("-Infinity")) {
+    if (floatString.equals("NaN")
+        || floatString.equals("Infinity")
+        || floatString.equals("-Infinity")) {
       return "#" + floatString + "F";
     } else {
       return floatString + "F";
@@ -172,8 +175,8 @@ public class FloatConstant extends RealConstant {
   }
 
   @Override
-  public Type getType() {
-    return FloatType.INSTANCE;
+  public TypeSignature getSignature() {
+    return PrimitiveTypeSignature.getFloatSignature();
   }
 
   @Override
@@ -184,10 +187,8 @@ public class FloatConstant extends RealConstant {
   /**
    * Checks if passed argument is instance of expected class.
    *
-   * @param constant
-   *          the instance to check
-   * @throws IllegalArgumentException
-   *           when check fails
+   * @param constant the instance to check
+   * @throws IllegalArgumentException when check fails
    */
   private void assertInstanceOf(NumericConstant constant) {
     if (!(constant instanceof FloatConstant)) {
@@ -195,4 +196,7 @@ public class FloatConstant extends RealConstant {
     }
   }
 
+  public float getValue() {
+    return value;
+  }
 }

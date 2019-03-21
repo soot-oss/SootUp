@@ -18,33 +18,34 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.NullType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.NullTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 public class NullConstant extends Constant {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 8286431855238615958L;
-  public static final NullConstant INSTANCE = new NullConstant();
 
-  private NullConstant() {
+  private static final NullConstant INSTANCE = new NullConstant();
+
+  private NullConstant() {}
+
+  public static NullConstant getInstance() {
+    return INSTANCE;
   }
 
   @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
   @Override
   public boolean equals(Object c) {
-    return c == INSTANCE;
+    return c == getInstance();
   }
 
   @Override
@@ -53,8 +54,8 @@ public class NullConstant extends Constant {
   }
 
   @Override
-  public Type getType() {
-    return NullType.INSTANCE;
+  public TypeSignature getSignature() {
+    return NullTypeSignature.getInstance();
   }
 
   @Override
@@ -64,7 +65,6 @@ public class NullConstant extends Constant {
 
   @Override
   public String toString() {
-    return NullTypeSignature.NULL_TYPE_SIGNATURE.toString();
+    return this.getSignature().toString();
   }
-
 }

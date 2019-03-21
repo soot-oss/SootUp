@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -27,14 +27,9 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.UnknownTypeSignature;
 
 @SuppressWarnings("serial")
 public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
@@ -44,22 +39,26 @@ public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
     this.op2Box = Jimple.newArgBox(op2);
   }
 
-  public static boolean isIntLikeType(Type t) {
-    return t.equals(IntType.INSTANCE) || t.equals(ByteType.INSTANCE) || t.equals(ShortType.INSTANCE)
-        || t.equals(CharType.INSTANCE) || t.equals(BooleanType.INSTANCE);
+  public static boolean isIntLikeType(TypeSignature t) {
+    return t.equals(PrimitiveTypeSignature.getIntSignature())
+        || t.equals(PrimitiveTypeSignature.getByteSignature())
+        || t.equals(PrimitiveTypeSignature.getShortSignature())
+        || t.equals(PrimitiveTypeSignature.getCharSignature())
+        || t.equals(PrimitiveTypeSignature.getBooleanSignature());
   }
 
   @Override
-  public Type getType() {
+  public TypeSignature getSignature() {
     Value op1 = op1Box.getValue();
     Value op2 = op2Box.getValue();
 
-    if (isIntLikeType(op1.getType()) && isIntLikeType(op2.getType())) {
-      return IntType.INSTANCE;
-    } else if (op1.getType().equals(LongType.INSTANCE) && op2.getType().equals(LongType.INSTANCE)) {
-      return LongType.INSTANCE;
+    if (isIntLikeType(op1.getSignature()) && isIntLikeType(op2.getSignature())) {
+      return PrimitiveTypeSignature.getIntSignature();
+    } else if (op1.getSignature().equals(PrimitiveTypeSignature.getLongSignature())
+        && op2.getSignature().equals(PrimitiveTypeSignature.getLongSignature())) {
+      return PrimitiveTypeSignature.getLongSignature();
     } else {
-      return UnknownType.INSTANCE;
+      return UnknownTypeSignature.getInstance();
     }
   }
 }

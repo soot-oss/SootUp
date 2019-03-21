@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -28,18 +28,16 @@ package de.upb.soot.jimple.common.stmt;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractDefinitionStmt extends AbstractStmt {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -1424435720199285210L;
-  public final ValueBox leftBox;
-  public final ValueBox rightBox;
+
+  private final ValueBox leftBox;
+  private final ValueBox rightBox;
 
   protected AbstractDefinitionStmt(ValueBox leftBox, ValueBox rightBox, PositionInfo positionInfo) {
     super(positionInfo);
@@ -84,5 +82,13 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
   @Override
   public boolean branches() {
     return false;
+  }
+
+  public ValueBox getLeftBox() {
+    return leftBox;
+  }
+
+  public ValueBox getRightBox() {
+    return rightBox;
   }
 }

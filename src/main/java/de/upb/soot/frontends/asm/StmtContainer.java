@@ -10,20 +10,18 @@ import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.List;
-
 import javax.annotation.Nonnull;
 
 /**
  * A psuedo unit containing different units.
- * 
+ *
  * @author Aaloan Miftah
  */
 @SuppressWarnings("serial")
 class StmtContainer implements IStmt {
 
-  final @Nonnull IStmt[] units;
+  @Nonnull final IStmt[] units;
 
   StmtContainer(@Nonnull IStmt... units) {
     this.units = units;

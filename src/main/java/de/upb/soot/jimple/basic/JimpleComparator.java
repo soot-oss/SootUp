@@ -61,26 +61,20 @@ import de.upb.soot.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
-
 import java.util.Iterator;
 
 /**
- *
- * This class contains the equivalence implementations for the individual equivTo() methods of the Jimple IR. You can use it
- * as your base class if your use case needs an adjustment for checking structural equivalence.
+ * This class contains the equivalence implementations for the individual equivTo() methods of the
+ * Jimple IR. You can use it as your base class if your use case needs an adjustment for checking
+ * structural equivalence.
  *
  * @author Markus Schmidt
- *
  */
-
 public class JimpleComparator {
 
-  static JimpleComparator INSTANCE;
+  private static final JimpleComparator INSTANCE = new JimpleComparator();
 
   public static JimpleComparator getInstance() {
-    if (INSTANCE == null) {
-      INSTANCE = new JimpleComparator();
-    }
     return INSTANCE;
   }
 
@@ -96,7 +90,8 @@ public class JimpleComparator {
   }
 
   public boolean caseInvokeStmt(JInvokeStmt stmt, Object o) {
-    return (o instanceof JInvokeStmt) && stmt.getInvokeExpr().equivTo(((JInvokeStmt) o).getInvokeExpr(), this);
+    return (o instanceof JInvokeStmt)
+        && stmt.getInvokeExpr().equivTo(((JInvokeStmt) o).getInvokeExpr(), this);
   }
 
   public boolean caseAssignStmt(JAssignStmt stmt, Object o) {
@@ -104,7 +99,8 @@ public class JimpleComparator {
       return false;
     }
     JAssignStmt jas = (JAssignStmt) o;
-    return stmt.getLeftOp().equivTo(jas.getLeftOp()) && stmt.getRightOp().equivTo(jas.getRightOp(), this);
+    return stmt.getLeftOp().equivTo(jas.getLeftOp())
+        && stmt.getRightOp().equivTo(jas.getRightOp(), this);
   }
 
   public boolean caseIdentityStmt(JIdentityStmt stmt, Object o) {
@@ -139,7 +135,8 @@ public class JimpleComparator {
       return false;
     }
     JIfStmt ifStmt = (JIfStmt) o;
-    return stmt.getCondition().equivTo(ifStmt.getCondition()) && stmt.getTarget().equivTo(ifStmt.getTarget(), this);
+    return stmt.getCondition().equivTo(ifStmt.getCondition())
+        && stmt.getTarget().equivTo(ifStmt.getTarget(), this);
   }
 
   protected boolean caseAbstractSwitchStmt(AbstractSwitchStmt obj, AbstractSwitchStmt o) {
@@ -202,7 +199,8 @@ public class JimpleComparator {
       return false;
     }
     JTableSwitchStmt tableSwitchStmt = (JTableSwitchStmt) o;
-    if (stmt.getLowIndex() != tableSwitchStmt.getLowIndex() || stmt.getHighIndex() != tableSwitchStmt.getHighIndex()) {
+    if (stmt.getLowIndex() != tableSwitchStmt.getLowIndex()
+        || stmt.getHighIndex() != tableSwitchStmt.getHighIndex()) {
       return false;
     }
     return caseAbstractSwitchStmt(stmt, tableSwitchStmt);
@@ -218,7 +216,8 @@ public class JimpleComparator {
   public boolean caseAbstractBinopExpr(AbstractBinopExpr obj, Object o) {
     if (o instanceof AbstractBinopExpr) {
       AbstractBinopExpr abe = (AbstractBinopExpr) o;
-      return obj.getOp1().equivTo(abe.getOp1(), this) && obj.getOp2().equivTo(abe.getOp2(), this)
+      return obj.getOp1().equivTo(abe.getOp1(), this)
+          && obj.getOp2().equivTo(abe.getOp2(), this)
           && obj.getSymbol().equals(abe.getSymbol());
     }
     return false;
@@ -229,7 +228,8 @@ public class JimpleComparator {
       return false;
     }
     JStaticInvokeExpr ie = (JStaticInvokeExpr) o;
-    if (!(v.getMethod().equals(ie.getMethod()) && (v.getArgCount() == ie.getArgCount()))) {
+    if (!(v.getMethodSignature().equals(ie.getMethodSignature())
+        && (v.getArgCount() == ie.getArgCount()))) {
       return false;
     }
     for (int i = v.getArgCount() - 1; i >= 0; i--) {
@@ -245,7 +245,8 @@ public class JimpleComparator {
       return false;
     }
     JDynamicInvokeExpr ie = (JDynamicInvokeExpr) o;
-    if (!(v.getBootstrapMethod().equals(ie.getBootstrapMethod()) && v.getBootstrapArgCount() == ie.getBootstrapArgCount())) {
+    if (!(v.getBootstrapMethodSignature().equals(ie.getBootstrapMethodSignature())
+        && v.getBootstrapArgCount() == ie.getBootstrapArgCount())) {
       return false;
     }
     Value element;
@@ -255,7 +256,8 @@ public class JimpleComparator {
         return false;
       }
     }
-    if (!(v.getMethod().equals(ie.getMethod()) && v.getArgCount() == ie.getArgCount())) {
+    if (!(v.getMethodSignature().equals(ie.getMethodSignature())
+        && v.getArgCount() == ie.getArgCount())) {
       return false;
     }
     for (int i = v.getArgCount() - 1; i >= 0; i--) {
@@ -272,7 +274,7 @@ public class JimpleComparator {
       return false;
     }
     JCastExpr ace = (JCastExpr) o;
-    return v.getOp().equivTo(ace.getOp(), this) && v.getType().equals(ace.getType());
+    return v.getOp().equivTo(ace.getOp(), this) && v.getSignature().equals(ace.getSignature());
   }
 
   public boolean caseInstanceOfExpr(JInstanceOfExpr v, Object o) {
@@ -296,10 +298,7 @@ public class JimpleComparator {
       return false;
     }
     JNewMultiArrayExpr ae = (JNewMultiArrayExpr) o;
-    if (!v.getBaseType().equals(ae.getBaseType()) || v.getSizeCount() != ae.getSizeCount()) {
-      return false;
-    }
-    return true;
+    return v.getBaseType().equals(ae.getBaseType()) && v.getSizeCount() == ae.getSizeCount();
   }
 
   public boolean caseNewExpr(JNewExpr v, Object o) {
@@ -307,7 +306,7 @@ public class JimpleComparator {
       return false;
     }
     JNewExpr ae = (JNewExpr) o;
-    return v.getType().equals(ae.getType());
+    return v.getSignature().equals(ae.getSignature());
   }
 
   public boolean caseLengthExpr(JLengthExpr v, Object o) {
@@ -329,7 +328,8 @@ public class JimpleComparator {
       return false;
     }
     AbstractInstanceInvokeExpr ie = (AbstractInstanceInvokeExpr) o;
-    if (!(obj.getBase().equivTo(ie.getBase(), this) && obj.getMethod().equals(ie.getMethod())
+    if (!(obj.getBase().equivTo(ie.getBase(), this)
+        && obj.getMethodSignature().equals(ie.getMethodSignature())
         && obj.getArgCount() == ie.getArgCount())) {
       return false;
     }
@@ -371,7 +371,7 @@ public class JimpleComparator {
   }
 
   public boolean caseCaughtException(JCaughtExceptionRef obj, Object o) {
-    return obj instanceof JCaughtExceptionRef;
+    return o instanceof JCaughtExceptionRef;
   }
 
   public boolean caseInstanceFieldRef(JInstanceFieldRef obj, Object o) {
@@ -379,32 +379,33 @@ public class JimpleComparator {
       return false;
     }
     JInstanceFieldRef fr = (JInstanceFieldRef) o;
-    return fr.getField().equals(obj.getField()) && obj.getBase().equivTo(fr.getBase(), this);
+    return fr.getFieldSignature().equals(obj.getFieldSignature())
+        && obj.getBase().equivTo(fr.getBase(), this);
   }
 
   public boolean caseParameterRef(JParameterRef obj, Object o) {
     if (!(o instanceof JParameterRef)) {
       return false;
     }
-    return obj.getIndex() == ((JParameterRef) o).getIndex() && obj.getType().equals(((JParameterRef) o).getType());
+    return obj.getIndex() == ((JParameterRef) o).getIndex()
+        && obj.getSignature().equals(((JParameterRef) o).getSignature());
   }
 
   public boolean caseStaticFieldRef(JStaticFieldRef obj, Object o) {
     if (!(o instanceof JStaticFieldRef)) {
       return false;
     }
-    return obj.getField().equals(((JStaticFieldRef) o).getField());
+    return obj.getFieldSignature().equals(((JStaticFieldRef) o).getFieldSignature());
   }
 
   public boolean caseThisRef(JThisRef obj, Object o) {
     if (!(o instanceof JThisRef)) {
       return false;
     }
-    return obj.getType().equals(((JThisRef) o).getType());
+    return obj.getSignature().equals(((JThisRef) o).getSignature());
   }
 
   public boolean caseConstant(Constant constant, Object o) {
     return constant.equals(o);
   }
-
 }

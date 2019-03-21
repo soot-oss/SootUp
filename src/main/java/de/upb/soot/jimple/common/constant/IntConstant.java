@@ -18,24 +18,23 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.TypeSignature;
 
 public class IntConstant extends ArithmeticConstant {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 1266232311067376706L;
-  public final int value;
+
+  private final int value;
 
   protected IntConstant(int value) {
     this.value = value;
@@ -203,8 +202,8 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public Type getType() {
-    return IntType.INSTANCE;
+  public TypeSignature getSignature() {
+    return PrimitiveTypeSignature.getIntSignature();
   }
 
   @Override
@@ -212,4 +211,7 @@ public class IntConstant extends ArithmeticConstant {
     ((IConstantVisitor) sw).caseIntConstant(this);
   }
 
+  public int getValue() {
+    return value;
+  }
 }

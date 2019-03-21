@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -26,19 +26,20 @@
 package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.jimple.common.ref.FieldRef;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.MethodSignature;
-
+import de.upb.soot.signatures.TypeSignature;
 import org.objectweb.asm.Opcodes;
 
 public class MethodHandle extends Constant {
 
-  public static enum Kind {
-    REF_GET_FIELD(Opcodes.H_GETFIELD, "REF_GET_FIELD"), REF_GET_FIELD_STATIC(Opcodes.H_GETSTATIC, "REF_GET_FIELD_STATIC"),
-    REF_PUT_FIELD(Opcodes.H_PUTFIELD, "REF_PUT_FIELD"), REF_PUT_FIELD_STATIC(Opcodes.H_PUTSTATIC, "REF_PUT_FIELD_STATIC"),
+  public enum Kind {
+    REF_GET_FIELD(Opcodes.H_GETFIELD, "REF_GET_FIELD"),
+    REF_GET_FIELD_STATIC(Opcodes.H_GETSTATIC, "REF_GET_FIELD_STATIC"),
+    REF_PUT_FIELD(Opcodes.H_PUTFIELD, "REF_PUT_FIELD"),
+    REF_PUT_FIELD_STATIC(Opcodes.H_PUTSTATIC, "REF_PUT_FIELD_STATIC"),
     REF_INVOKE_VIRTUAL(Opcodes.H_INVOKEVIRTUAL, "REF_INVOKE_VIRTUAL"),
     REF_INVOKE_STATIC(Opcodes.H_INVOKESTATIC, "REF_INVOKE_STATIC"),
     REF_INVOKE_SPECIAL(Opcodes.H_INVOKESPECIAL, "REF_INVOKE_SPECIAL"),
@@ -48,7 +49,7 @@ public class MethodHandle extends Constant {
     private final int val;
     private final String valStr;
 
-    private Kind(int val, String valStr) {
+    Kind(int val, String valStr) {
       this.val = val;
       this.valStr = valStr;
     }
@@ -79,14 +80,12 @@ public class MethodHandle extends Constant {
       }
       throw new RuntimeException("Error: No methodRef handle kind for value '" + kind + "'.");
     }
-
   }
 
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 76297846662243365L;
-  public final MethodSignature methodRef;
+
+  private final MethodSignature methodRef;
   private final FieldRef fieldRef;
 
   public int tag;
@@ -112,8 +111,10 @@ public class MethodHandle extends Constant {
   }
 
   public static boolean isMethodRef(int kind) {
-    return kind == Kind.REF_INVOKE_VIRTUAL.getValue() || kind == Kind.REF_INVOKE_STATIC.getValue()
-        || kind == Kind.REF_INVOKE_SPECIAL.getValue() || kind == Kind.REF_INVOKE_CONSTRUCTOR.getValue()
+    return kind == Kind.REF_INVOKE_VIRTUAL.getValue()
+        || kind == Kind.REF_INVOKE_STATIC.getValue()
+        || kind == Kind.REF_INVOKE_SPECIAL.getValue()
+        || kind == Kind.REF_INVOKE_CONSTRUCTOR.getValue()
         || kind == Kind.REF_INVOKE_INTERFACE.getValue();
   }
 
@@ -123,8 +124,8 @@ public class MethodHandle extends Constant {
   }
 
   @Override
-  public Type getType() {
-    return RefType.getInstance("java.lang.invoke.MethodHandle");
+  public TypeSignature getSignature() {
+    return DefaultSignatureFactory.getInstance().getTypeSignature("java.lang.invoke.MethodHandle");
   }
 
   public MethodSignature getMethodRef() {
@@ -157,12 +158,9 @@ public class MethodHandle extends Constant {
     }
     MethodHandle other = (MethodHandle) obj;
     if (methodRef == null) {
-      if (other.methodRef != null) {
-        return false;
-      }
-    } else if (!methodRef.equals(other.methodRef)) {
-      return false;
+      return other.methodRef == null;
+    } else {
+      return methodRef.equals(other.methodRef);
     }
-    return true;
   }
 }

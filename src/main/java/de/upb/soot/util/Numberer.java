@@ -35,7 +35,8 @@ public interface Numberer<E> {
   void add(E o);
 
   /**
-   * Should return the number that was assigned to object o that was previously passed as an argument to add().
+   * Should return the number that was assigned to object o that was previously passed as an
+   * argument to add().
    */
   long get(E o);
 

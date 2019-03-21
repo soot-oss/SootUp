@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -27,22 +27,18 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.Collections;
 import java.util.List;
 
 public class JCaughtExceptionRef implements IdentityRef {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = 5249007116510821231L;
 
-  public JCaughtExceptionRef() {
-  }
+  public JCaughtExceptionRef() {}
 
   @Override
   public boolean equivTo(Object o) {
@@ -81,13 +77,13 @@ public class JCaughtExceptionRef implements IdentityRef {
   }
 
   @Override
-  public Type getType() {
-    return RefType.getInstance("java.lang.Throwable");
+  public TypeSignature getSignature() {
+    // TODO: [JMP] Get cached instance
+    return DefaultSignatureFactory.getInstance().getTypeSignature("java.lang.Throwable");
   }
 
   @Override
   public void accept(IVisitor sw) {
     // TODO
   }
-
 }

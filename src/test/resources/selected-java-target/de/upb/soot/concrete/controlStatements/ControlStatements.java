@@ -16,27 +16,26 @@ public class ControlStatements {
 
   public boolean simpleIfElse(int a, int b) {
     if (a == b) {
-		return true;
+      return true;
     } else {
-		return false;
-	}
+      return false;
+    }
   }
 
   public boolean simpleIfElse(boolean a, boolean b) {
     if (a != b) {
-		return true;
+      return true;
     } else {
-		return false;
-	}
+      return false;
+    }
   }
-  
-  public boolean simpleIf(String s)
-  {
-	  if( s == null)
-		  return false;
-	  return true;
+
+  public boolean simpleIf(String s) {
+    if (s == null)
+      return false;
+    return true;
   }
-  
+
   public void simpleIfElseIfTakeElse(double a, double b, double c) {
     if (a < b) {
       System.out.println(a);
@@ -76,7 +75,7 @@ public class ControlStatements {
 
   public void tableSwitchDefault() {
     int a = 3;
-	int b = a - 1;
+    int b = a - 1;
     switch (b) {
       case 1:
         System.out.println(a);

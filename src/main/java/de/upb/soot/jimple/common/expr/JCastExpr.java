@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the Sable Research Group and others 1997-1999.  
+ * Modified by the Sable Research Group and others 1997-1999.
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
@@ -29,23 +29,21 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class JCastExpr implements Expr {
-  /**
-   * 
-   */
+  /** */
   private static final long serialVersionUID = -3186041329205869260L;
-  private final ValueBox opBox;
-  private Type type;
 
-  public JCastExpr(Value op, Type type) {
+  private final ValueBox opBox;
+  private TypeSignature type;
+
+  public JCastExpr(Value op, TypeSignature type) {
     this.opBox = Jimple.newImmediateBox(op);
     this.type = type;
   }
@@ -79,7 +77,7 @@ public class JCastExpr implements Expr {
   @Override
   public void toString(IStmtPrinter up) {
     up.literal("(");
-    up.type(type);
+    up.typeSignature(type);
     up.literal(") ");
     opBox.toString(up);
   }
@@ -106,16 +104,16 @@ public class JCastExpr implements Expr {
   }
 
   // TODO: dulicate getter? -> getType()
-  public Type getCastType() {
+  public TypeSignature getCastType() {
     return type;
   }
 
-  public void setCastType(Type castType) {
+  public void setCastType(TypeSignature castType) {
     this.type = castType;
   }
 
   @Override
-  public Type getType() {
+  public TypeSignature getSignature() {
     return type;
   }
 
@@ -123,5 +121,4 @@ public class JCastExpr implements Expr {
   public void accept(IVisitor sw) {
     ((IExprVisitor) sw).caseCastExpr(this);
   }
-
 }

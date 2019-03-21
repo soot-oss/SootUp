@@ -10,47 +10,48 @@ package de.upb.soot.signatures;
  * it under the terms of the GNU Lesser General Public License as
  * published by the Free Software Foundation, either version 2.1 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Lesser Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Lesser Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/lgpl-2.1.html>.
  * #L%
  */
 
+import static de.upb.soot.util.Utils.Functional.tryCastTo;
+
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
-
+import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
-
+import de.upb.soot.views.IView;
+import de.upb.soot.views.JavaView;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
-public class JavaClassSignature extends TypeSignature {
+public class JavaClassSignature extends ReferenceTypeSignature {
 
-  /** The simple class name. */
-  public final String className;
+  private final String className;
 
-  /** The package in which the class resides. */
-  public final PackageSignature packageSignature;
+  private final PackageSignature packageSignature;
 
-  /** Whether the class is an inner class **/
-  public final boolean isInnerClass;
+  private final boolean isInnerClass;
 
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
    * {@link DefaultSignatureFactory}
    *
-   * @param className
-   *          the simple name of the class, e.g., ClassA NOT my.package.ClassA
-   * @param packageSignature
-   *          the corresponding package
+   * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
+   * @param packageSignature the corresponding package
    */
   protected JavaClassSignature(final String className, final PackageSignature packageSignature) {
     String realClassName = className;
@@ -77,7 +78,8 @@ public class JavaClassSignature extends TypeSignature {
       return false;
     }
     JavaClassSignature that = (JavaClassSignature) o;
-    return Objects.equal(className, that.className) && Objects.equal(packageSignature, that.packageSignature)
+    return Objects.equal(className, that.className)
+        && Objects.equal(packageSignature, that.packageSignature)
         && isInnerClass == that.isInnerClass;
   }
 
@@ -87,13 +89,14 @@ public class JavaClassSignature extends TypeSignature {
   }
 
   /**
-   * The fully-qualified name of the class. Concat package and class name , e.g., "java.lang.System".
+   * The fully-qualified name of the class. Concat package and class name , e.g.,
+   * "java.lang.System".
    *
    * @return fully-qualified name
    */
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
-    if (!Strings.isNullOrEmpty(packageSignature.packageName)) {
+    if (!Strings.isNullOrEmpty(packageSignature.getPackageName())) {
       sb.append(packageSignature.toString());
       sb.append('.');
     }
@@ -126,5 +129,63 @@ public class JavaClassSignature extends TypeSignature {
 
   public boolean isModuleInfo() {
     return this.className.equals(ModuleSignatureFactory.MODULE_INFO_CLASS.className);
+  }
+
+  /** The simple class name. */
+  public String getClassName() {
+    return className;
+  }
+
+  /** The package in which the class resides. */
+  public PackageSignature getPackageSignature() {
+    return packageSignature;
+  }
+
+  /** Whether the class is an inner class * */
+  public boolean isInnerClass() {
+    return isInnerClass;
+  }
+
+  private static final class SplitPatternHolder {
+    private static final char SPLIT_CHAR = '.';
+
+    @Nonnull
+    private static final Pattern SPLIT_PATTERN =
+        Pattern.compile(Character.toString(SPLIT_CHAR), Pattern.LITERAL);
+  }
+
+  @Override
+  public @Nonnull String toQuotedString() {
+    String s = this.getFullyQualifiedName();
+    StringBuilder res = new StringBuilder(s.length() + 16);
+
+    for (String part : SplitPatternHolder.SPLIT_PATTERN.split(s)) {
+      if (res.length() > 0) {
+        res.append(SplitPatternHolder.SPLIT_CHAR);
+      }
+
+      if (part.startsWith("-") || JavaView.RESERVED_NAMES.contains(part)) {
+        res.append('\'');
+        res.append(part);
+        res.append('\'');
+      } else {
+        res.append(part);
+      }
+    }
+
+    return res.toString();
+  }
+
+  /**
+   * Tries to resolve this {@link JavaClassSignature} to the corresponding {@link SootClass}.
+   *
+   * @param view The {@link IView} to resolve with.
+   * @return An {@link Optional} containing the {@link SootClass}, if the resolution was successful;
+   *     otherwise, an {@link Optional#empty() empty Optional}.
+   */
+  @Nonnull
+  public Optional<SootClass> resolve(@Nonnull IView view) {
+    // TODO: [JMP] Clarify: What if cast fails? Return empty or throw cast exception?
+    return view.getClass(this).flatMap(tryCastTo(SootClass.class));
   }
 }
