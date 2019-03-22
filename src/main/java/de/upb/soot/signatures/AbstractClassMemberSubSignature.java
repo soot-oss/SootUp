@@ -1,6 +1,8 @@
 package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
+import de.upb.soot.util.Utils;
+import de.upb.soot.util.concurrent.Lazy;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -89,18 +91,13 @@ public abstract class AbstractClassMemberSubSignature {
   public abstract AbstractClassMemberSignature toFullSignature(
       @Nonnull JavaClassSignature declClassSignature);
 
-  @Nullable private volatile String _cachedToString;
+  private final Lazy<String> _cachedToString =
+      Utils.synchronizedLazy(() -> String.format("%s %s", getSignature(), getName()));
 
   @Override
   @Nonnull
   public String toString() {
-    String cachedToString = this._cachedToString;
-
-    if (cachedToString == null) {
-      this._cachedToString =
-          cachedToString = String.format("%s %s", this.getSignature(), this.getName());
-    }
-    return cachedToString;
+    return _cachedToString.get();
   }
 
   // endregion /Methods/
