@@ -247,22 +247,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
     // return type + name
 
-    builder.append(this.getReturnTypeSignature().toQuotedString()).append(" ");
-    builder.append(this.getSignature().toQuotedString());
-
-    builder.append("(");
-
-    // parameters
-    Iterator<TypeSignature> typeIt = this.getParameterTypes().iterator();
-    // int count = 0;
-    while (typeIt.hasNext()) {
-      TypeSignature t = typeIt.next();
-      builder.append(t.toQuotedString());
-      if (typeIt.hasNext()) {
-        builder.append(", ");
-      }
-    }
-    builder.append(")");
+    builder.append(this.getSubSignature().toQuotedString());
 
     // Print exceptions
     Iterator<JavaClassSignature> exceptionIt = this.getExceptionSignatures().iterator();

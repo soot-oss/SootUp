@@ -70,7 +70,7 @@ public class ModuleCompositionTest {
     MethodSubSignature optionalToStreamMethodSubSignature =
         DefaultSignatureFactory.getInstance()
             .parseMethodSubSignature(
-                "java.util.stream.Stream iteratorToStream(java.util.Iterator)");
+                "java.util.stream.Stream optionalToStream(java.util.Optional)");
 
     // Print sub-signature
     System.out.println("Method to find: " + optionalToStreamMethodSubSignature);
@@ -86,7 +86,7 @@ public class ModuleCompositionTest {
     System.out.println();
 
     // Print method content
-    System.out.println("Method body:   " + foundMethod);
+    System.out.println("Method body:    ---Yay, InvokeDynamic is loading, now!---");
     System.out.println(foundMethod.getActiveBody());
 
     System.out.println();
