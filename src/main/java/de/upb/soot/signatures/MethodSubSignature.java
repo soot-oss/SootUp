@@ -2,10 +2,11 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
+import de.upb.soot.util.Utils;
+import de.upb.soot.util.concurrent.Lazy;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Defines a method sub-signature, containing the method name, the parameter type signatures, and
@@ -92,26 +93,21 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
     return new MethodSignature(declClassSignature, this);
   }
 
-  @Nullable private volatile String _cachedToString;
+  private final Lazy<String> _cachedToString =
+      Utils.synchronizedLazy(
+          () ->
+              String.format(
+                  "%s %s(%s)",
+                  getSignature(),
+                  getName(),
+                  getParameterSignatures().stream()
+                      .map(Object::toString)
+                      .collect(Collectors.joining(","))));
 
   @Override
   @Nonnull
   public String toString() {
-    String cachedToString = this._cachedToString;
-
-    if (cachedToString == null) {
-      this._cachedToString =
-          cachedToString =
-              String.format(
-                  "%s %s(%s)",
-                  this.getSignature(),
-                  this.getName(),
-                  this.getParameterSignatures().stream()
-                      .map(Object::toString)
-                      .collect(Collectors.joining(",")));
-    }
-
-    return cachedToString;
+    return _cachedToString.get();
   }
 
   // endregion /Methods/
