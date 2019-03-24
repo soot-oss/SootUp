@@ -144,11 +144,6 @@ public class JIfStmt extends AbstractStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseIfStmt(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseIfStmt(this, o);
   }

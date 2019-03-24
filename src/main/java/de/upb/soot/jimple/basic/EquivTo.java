@@ -32,7 +32,9 @@ package de.upb.soot.jimple.basic;
 public interface EquivTo {
 
   /** Returns true if this object is equivalent to o. */
-  boolean equivTo(Object o);
+  default boolean equivTo(Object o) {
+    return equivTo(o, JimpleComparator.getInstance());
+  }
 
   /**
    * Returns a (not necessarily fixed) hash code for this object. This hash code coincides with

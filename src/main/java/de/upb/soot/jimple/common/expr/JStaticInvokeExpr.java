@@ -61,12 +61,6 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     return new JStaticInvokeExpr(this.getView(), methodSignature, clonedArgs);
   }
 
-  /** Returns true if object o is an instance of AbstractStaticInvokeExpr else returns false. */
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseStaticInvokeExpr(this, o);
-  }
-
   @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseStaticInvokeExpr(this, o);
