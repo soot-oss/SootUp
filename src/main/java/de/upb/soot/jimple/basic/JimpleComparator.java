@@ -99,7 +99,7 @@ public class JimpleComparator {
       return false;
     }
     JAssignStmt jas = (JAssignStmt) o;
-    return stmt.getLeftOp().equivTo(jas.getLeftOp())
+    return stmt.getLeftOp().equivTo(jas.getLeftOp(), this)
         && stmt.getRightOp().equivTo(jas.getRightOp(), this);
   }
 
@@ -135,7 +135,7 @@ public class JimpleComparator {
       return false;
     }
     JIfStmt ifStmt = (JIfStmt) o;
-    return stmt.getCondition().equivTo(ifStmt.getCondition())
+    return stmt.getCondition().equivTo(ifStmt.getCondition(), this)
         && stmt.getTarget().equivTo(ifStmt.getTarget(), this);
   }
 
