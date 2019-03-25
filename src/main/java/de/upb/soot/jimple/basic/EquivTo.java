@@ -26,19 +26,28 @@
 package de.upb.soot.jimple.basic;
 
 /**
- * An alternate equivalence relation between objects. The standard interpretation will be structural
- * equality. We also demand that if x.equivTo(y), then x.equivHashCode() == y.equivHashCode.
+ * An alternate equivalence relation between objects, not necessarily compliant with the contract
+ * defined by {@link Object#equals(Object)}. The standard interpretation will be structural
+ * equality. We also demand that if {@code x.equivTo(y)}, then {@code x.equivHashCode() ==
+ * y.equivHashCode}.
+ *
+ * <p>See {@link JimpleComparator} for the detailed contract.
  */
 public interface EquivTo {
 
-  /** Returns true if this object is equivalent to o. */
+  /**
+   * Returns true if this object is equivalent to o. The contract is defined in {@link
+   * JimpleComparator} and is not necessarily compliant with the contract * defined by {@link
+   * Object#equals(Object)}.
+   */
   default boolean equivTo(Object o) {
     return equivTo(o, JimpleComparator.getInstance());
   }
 
   /**
    * Returns a (not necessarily fixed) hash code for this object. This hash code coincides with
-   * equivTo; it is undefined in the presence of mutable objects.
+   * equivTo; it is undefined in the presence of mutable objects. The contract is defined in {@link
+   * JimpleComparator}.
    */
   int equivHashCode();
 
