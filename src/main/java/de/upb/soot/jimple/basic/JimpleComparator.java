@@ -74,6 +74,10 @@ public class JimpleComparator {
 
   private static final JimpleComparator INSTANCE = new JimpleComparator();
 
+  /**
+   * Returns the default {@link JimpleComparator}. You may customize the behavior
+   * by extending {@link JimpleComparator} and overriding methods.
+   */
   public static JimpleComparator getInstance() {
     return INSTANCE;
   }
