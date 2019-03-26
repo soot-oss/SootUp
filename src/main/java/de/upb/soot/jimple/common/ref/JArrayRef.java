@@ -62,11 +62,6 @@ public class JArrayRef implements ConcreteRef {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseArrayRef(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseArrayRef(this, o);
   }

@@ -41,11 +41,6 @@ public class JCaughtExceptionRef implements IdentityRef {
   public JCaughtExceptionRef() {}
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseCaughtException(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseCaughtException(this, o);
   }

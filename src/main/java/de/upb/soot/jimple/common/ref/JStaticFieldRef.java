@@ -37,11 +37,6 @@ public class JStaticFieldRef extends FieldRef {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseStaticFieldRef(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseStaticFieldRef(this, o);
   }

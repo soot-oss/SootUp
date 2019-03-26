@@ -80,11 +80,6 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseEnterMonitorStmt(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseEnterMonitorStmt(this, o);
   }

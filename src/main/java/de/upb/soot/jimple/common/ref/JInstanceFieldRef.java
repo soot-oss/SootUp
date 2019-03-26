@@ -85,11 +85,6 @@ public class JInstanceFieldRef extends FieldRef {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseInstanceFieldRef(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseInstanceFieldRef(this, o);
   }

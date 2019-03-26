@@ -55,12 +55,6 @@ public class JNewArrayExpr implements Expr {
     return new JNewArrayExpr(getBaseType(), Jimple.cloneIfNecessary(getSize()));
   }
 
-  /** Returns a value of sizeBox if o is an instance of AbstractNewArrayExpr, else returns false. */
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseNewArrayExpr(this, o);
-  }
-
   @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseNewArrayExpr(this, o);

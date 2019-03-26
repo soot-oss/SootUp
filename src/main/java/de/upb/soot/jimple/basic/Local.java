@@ -53,11 +53,6 @@ public class Local implements Value, Numberable, Immediate {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return equivTo(o, JimpleComparator.getInstance());
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseLocal(this, o);
   }

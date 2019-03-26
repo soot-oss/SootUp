@@ -85,11 +85,6 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseIdentityStmt(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseIdentityStmt(this, o);
   }

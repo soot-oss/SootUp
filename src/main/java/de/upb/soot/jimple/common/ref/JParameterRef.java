@@ -57,11 +57,6 @@ public class JParameterRef implements IdentityRef {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseParameterRef(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseParameterRef(this, o);
   }

@@ -108,11 +108,6 @@ public class JRetStmt extends AbstractStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseRetStmt(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseRetStmt(this, o);
   }

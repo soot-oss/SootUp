@@ -48,12 +48,6 @@ public class JNegExpr extends AbstractUnopExpr {
     return new JNegExpr(Jimple.cloneIfNecessary(getOp()));
   }
 
-  /** Compares the specified object with this one for structural equality. */
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseNegExpr(this, o);
-  }
-
   @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseNegExpr(this, o);

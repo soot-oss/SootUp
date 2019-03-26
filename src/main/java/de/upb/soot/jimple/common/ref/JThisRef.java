@@ -45,11 +45,6 @@ public class JThisRef implements IdentityRef {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseThisRef(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseThisRef(this, o);
   }

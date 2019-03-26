@@ -71,11 +71,6 @@ public class JNewMultiArrayExpr implements Expr {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseNewMultiArrayExpr(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseNewMultiArrayExpr(this, o);
   }
