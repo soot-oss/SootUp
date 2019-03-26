@@ -207,11 +207,6 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseLookupSwitchStmt(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseLookupSwitchStmt(this, o);
   }

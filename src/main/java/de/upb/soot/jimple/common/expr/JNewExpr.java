@@ -52,11 +52,6 @@ public class JNewExpr implements Expr {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseNewExpr(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseNewExpr(this, o);
   }

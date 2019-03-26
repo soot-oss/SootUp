@@ -223,11 +223,6 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseTableSwitchStmt(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseTableSwitchStmt(this, o);
   }
