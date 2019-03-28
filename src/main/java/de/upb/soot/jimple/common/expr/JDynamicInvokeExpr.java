@@ -118,11 +118,6 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseDynamicInvokeExpr(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseDynamicInvokeExpr(this, o);
   }
