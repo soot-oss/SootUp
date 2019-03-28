@@ -233,7 +233,7 @@ public class PositionInfoTest {
       Position stmtPos = info.getStmtPosition();
 
       Position pos1 = info.getOperandPosition(0);
-      //FIXME: test doesn't pass 
+      // FIXME: test doesn't pass
       assertEquals(20, pos1.getFirstLine());
       assertEquals(20, pos1.getLastLine());
       assertEquals(8, pos1.getFirstCol());
@@ -261,7 +261,7 @@ public class PositionInfoTest {
       IStmt stmt = stmts.get(9);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
-      //FIXME: test doesn't pass 
+      // FIXME: test doesn't pass
       Position pos1 = info.getOperandPosition(0);
       assertEquals(20, pos1.getFirstLine());
       assertEquals(20, pos1.getLastLine());
