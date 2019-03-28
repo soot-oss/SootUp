@@ -783,11 +783,13 @@ public class InstructionConverter {
     return ifStmt;
   }
 
-  private IStmt convertReturnInstruction(DebuggingInformation debugInfo, SSAReturnInstruction inst) {
+  private IStmt convertReturnInstruction(
+      DebuggingInformation debugInfo, SSAReturnInstruction inst) {
     int result = inst.getResult();
     if (inst.returnsVoid()) {
       // this is return void stmt
-      return Jimple.newReturnVoidStmt(new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
+      return Jimple.newReturnVoidStmt(
+          new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
     } else {
       Value ret;
       if (symbolTable.isConstant(result)) {
@@ -800,7 +802,8 @@ public class InstructionConverter {
 
       Position[] operandPos = new Position[1];
       operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
-      return Jimple.newReturnStmt(ret, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
+      return Jimple.newReturnStmt(
+          ret, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
     }
   }
 

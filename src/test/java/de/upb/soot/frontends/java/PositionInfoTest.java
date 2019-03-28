@@ -38,7 +38,10 @@ public class PositionInfoTest {
     declareClassSig = sigFactory.getClassSignature("InstructionCollection");
   }
 
-  void loadCurrentMethod(String methodName, JavaClassSignature declaringClassSignature, String fqReturnType,
+  void loadCurrentMethod(
+      String methodName,
+      JavaClassSignature declaringClassSignature,
+      String fqReturnType,
       List<String> parameters) {
     Optional<SootMethod> m =
         loader.getSootMethod(
