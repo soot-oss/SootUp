@@ -59,11 +59,6 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return equivTo(o, JimpleComparator.getInstance());
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseVirtualInvokeExpr(this, o);
   }

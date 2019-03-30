@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -123,7 +124,7 @@ public class PositionInfoTest {
     }
 
     // with explicit return (at the end)
-    loadCurrentMethod("call01", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("call1", declareClassSig, "long", Arrays.asList("int"));
     {
       List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
       IStmt stmt = stmts.get(2);
@@ -139,7 +140,7 @@ public class PositionInfoTest {
 
   @Test
   public void testGotoInstruction() {
-    // has no useful operands
+    // has no operands
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
 
     List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());

@@ -152,11 +152,6 @@ class StmtContainer implements IStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public int equivHashCode() {
     throw new UnsupportedOperationException();
   }

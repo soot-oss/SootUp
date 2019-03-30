@@ -48,11 +48,6 @@ public class JLengthExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseLengthExpr(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseLengthExpr(this, o);
   }
