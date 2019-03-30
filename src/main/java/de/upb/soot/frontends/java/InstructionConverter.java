@@ -629,7 +629,7 @@ public class InstructionConverter {
   private IStmt convertComparisonInstruction(
       DebuggingInformation debugInfo, SSAComparisonInstruction inst) {
     // TODO
-    // TODO: [ms] positioninfo - needs example in instructionCollection
+    // TODO: [ms] positioninfo - (method is not implemented/used yet)
     return Jimple.newNopStmt(new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
   }
 

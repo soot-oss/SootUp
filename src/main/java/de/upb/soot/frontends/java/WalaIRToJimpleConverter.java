@@ -559,16 +559,7 @@ public class WalaIRToJimpleConverter {
    * wala-format: Ljava/lang/String
    */
   public String convertClassNameFromSoot(String signature) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("L");
-    String[] subNames = signature.split("\\.");
-    for (int i = 0; i < subNames.length; i++) {
-      sb.append(subNames[i]);
-      if (i != subNames.length - 1) {
-        sb.append("/");
-      }
-    }
-    return sb.toString();
+      return "L" + signature.replace('.', '/');
   }
 
   protected void addSootField(SootField field) {

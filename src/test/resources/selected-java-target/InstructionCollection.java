@@ -8,9 +8,9 @@ import java.lang.Exception;
  *
  */
 public class InstructionCollection {
-  private long field = 0;
-
-  public void test(int a, int b) {
+    private long field = 0;
+    static int staticField = 42;
+    public void test(int a, int b) {
     int c = a + b;
     call0();
     call1(c);
@@ -41,5 +41,72 @@ public class InstructionCollection {
   public List<String> call2(int i, int j) {
     return new ArrayList<String>();
   }
+
+  public void call01() {
+    int irrelefant = 42;
+    return;
+  }
+
+  private void readSth() {
+      long thatAbc = this.field;
+      long abc = field;
+      int thatElectron = InstructionCollection.staticField;
+      int electron = staticField;
+  }
+
+  private void callAndAssign(){
+      int pi = favouriteNumber();
+      int euler = 3;
+      euler = favouriteNumber();
+  }
+
+    private int favouriteNumber(){
+        int res = 0;
+        switch(3){
+            case 3:
+                res = 3;
+                break;
+            case 6:
+                res = 6;
+                break;
+            default:
+        }
+        return res;
+    }
+
+    void complexOperands(){
+        int a;
+        int b = 2;
+        int c = 3;
+        int d = 4;
+        int x = a + b + c + d;
+
+        int y =
+                3
+                +
+                        4;
+        long cascade = call1( 1 + call1(42) + 33102 );
+        long li = 42;
+        int i = (int) li;
+        Exception sth = new Exception("abc", new Exception("anotherthrowable"));
+        boolean zet = !false;
+    }
+
+    void comparison(){
+        int i = 42;
+        float f = 3.3f;
+        if( i == f){
+            int x = 5;
+        }
+    }
+    /*
+    private void exceptionMethod /throws Exception/ (){   // wala throws Nullpointer
+        try {
+            throw new Exception("useful message");
+        } catch (e) {
+
+        }
+    }
+    */
 
 }
