@@ -1,11 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.lang.Exception;
+import java.lang.reflect.*;
 /**
  * Test for source position mapping.
  * 
  * @author Linghui Luo
- *
  */
 public class InstructionCollection {
     private long field = 0;
@@ -83,13 +83,14 @@ public class InstructionCollection {
 
         int y =
                 3
-                +
+                *
                         4;
         long cascade = call1( 1 + call1(42) + 33102 );
         long li = 42;
         int i = (int) li;
         Exception sth = new Exception("abc", new Exception("anotherthrowable"));
         boolean zet = !false;
+        i++;
     }
 
     void comparison(){
@@ -99,14 +100,37 @@ public class InstructionCollection {
             int x = 5;
         }
     }
-    /*
-    private void exceptionMethod /throws Exception/ (){   // wala throws Nullpointer
+
+    private void exceptionMethod(){
         try {
             throw new Exception("useful message");
-        } catch (e) {
+        } catch (Exception e) {
 
         }
+        char [] charbuf = new char [6];
+        int len = charbuf.length;
+        charbuf[0] = 'F';
+        charbuf[1] = 'U';
+        charbuf[2] = 'T';
+        charbuf[3] = charbuf[1];
+        charbuf[4] = 'R';
+        charbuf[5] = 'E';
+        charbuf[6] = 'S';
+        charbuf[7] = 'O';
+        charbuf[8] = 'O';
+        charbuf[9] = 'T';
+
     }
-    */
+
+    synchronized void atomicone(){
+        this.field = 1;
+    }
+
+    void atomictwo(){
+        synchronized(this) {
+            this.field = 2;
+        }
+        assert( this.field > 0);
+    }
 
 }

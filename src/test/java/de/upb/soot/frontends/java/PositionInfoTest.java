@@ -56,7 +56,7 @@ public class PositionInfoTest {
   public void testBinaryOpInstruction() {
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
 
-    List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
     IStmt stmt = stmts.get(3);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
@@ -82,11 +82,41 @@ public class PositionInfoTest {
   }
 
   @Test
+  public void testBinaryOpInstructionMultiline() {
+
+    loadCurrentMethod("complexOperands", declareClassSig, "void", Arrays.asList());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    IStmt stmt = stmts.get(8);
+    PositionInfo info = stmt.getPositionInfo();
+    Position stmtPos = info.getStmtPosition();
+
+    assertEquals(85, stmtPos.getFirstLine());
+    assertEquals(87, stmtPos.getLastLine());
+    assertEquals(16, stmtPos.getFirstCol());
+    assertEquals(25, stmtPos.getLastCol());
+
+    Position pos1 = info.getOperandPosition(0);
+    Position pos2 = info.getOperandPosition(1);
+
+    /* FIXME: multiline binOp parameter are nullpointer -> WALA has no debugInfo.instructionPosition data for that range
+    assertEquals(85, pos1.getFirstLine());
+    assertEquals(85, pos1.getLastLine());
+    assertEquals(16, pos1.getFirstCol());
+    assertEquals(17, pos1.getLastCol());
+
+    assertEquals(87, pos2.getFirstLine());
+    assertEquals(87, pos2.getLastLine());
+    assertEquals(24, pos2.getFirstCol());
+    assertEquals(25, pos2.getLastCol());
+    */
+  }
+
+  @Test
   public void testReturnInstruction() {
 
     loadCurrentMethod("call1", declareClassSig, "long", Arrays.asList("int"));
 
-    List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
     IStmt stmt = stmts.get(4);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
@@ -109,7 +139,7 @@ public class PositionInfoTest {
     // implicit return i.e. end of method
     loadCurrentMethod("call0", declareClassSig, "void", Arrays.asList());
     {
-      List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
       IStmt stmt = stmts.get(6);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -124,9 +154,9 @@ public class PositionInfoTest {
     }
 
     // with explicit return (at the end)
-    loadCurrentMethod("call1", declareClassSig, "long", Arrays.asList("int"));
+    loadCurrentMethod("call01", declareClassSig, "void", Arrays.asList());
     {
-      List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
       IStmt stmt = stmts.get(2);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -143,7 +173,7 @@ public class PositionInfoTest {
     // has no operands
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
 
-    List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
     IStmt stmt = stmts.get(12);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
@@ -159,7 +189,7 @@ public class PositionInfoTest {
 
     loadCurrentMethod("readSth", declareClassSig, "void", Arrays.asList());
     {
-      List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
       IStmt stmt = stmts.get(1);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -176,7 +206,7 @@ public class PositionInfoTest {
     }
 
     {
-      List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
       IStmt stmt = stmts.get(2);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -192,7 +222,7 @@ public class PositionInfoTest {
     }
 
     {
-      List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
       IStmt stmt = stmts.get(3);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -208,7 +238,7 @@ public class PositionInfoTest {
     }
 
     {
-      List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
       IStmt stmt = stmts.get(4);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -228,7 +258,7 @@ public class PositionInfoTest {
   public void testPutInstruction() {
     loadCurrentMethod("<init>", declareClassSig, "void", Arrays.asList());
 
-    List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
     IStmt stmt = stmts.get(2);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
@@ -253,7 +283,7 @@ public class PositionInfoTest {
 
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
 
-    List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
     {
       IStmt stmt = stmts.get(9);
       PositionInfo info = stmt.getPositionInfo();
@@ -289,7 +319,7 @@ public class PositionInfoTest {
     // [ms] has no interesting operand data/positions; maybe parameters but i don't see a additional
     // benefit
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
-    List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
 
     {
       // !hasDef() -> same class, no parameters
@@ -319,7 +349,7 @@ public class PositionInfoTest {
   @Test
   public void testConversionInstruction() {
     loadCurrentMethod("complexOperands", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
 
     {
       IStmt stmt = stmts.get(15);
@@ -345,7 +375,7 @@ public class PositionInfoTest {
   @Test
   public void testInstanceOfInstruction() {
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
-    List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
 
     IStmt stmt = stmts.get(30);
     PositionInfo info = stmt.getPositionInfo();
@@ -369,7 +399,7 @@ public class PositionInfoTest {
   @Test
   public void testNewInstruction() {
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
-    List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
 
     IStmt stmt = stmts.get(18);
     PositionInfo info = stmt.getPositionInfo();
@@ -381,31 +411,411 @@ public class PositionInfoTest {
     assertEquals(48, stmtPos.getLastCol());
 
     /*
-     * FIXME get left and right value positions Position pos1 = info.getOperandPosition(0); assertEquals(25,
-     * pos1.getFirstLine()); assertEquals(25, pos1.getLastLine()); assertEquals(10, pos1.getFirstCol()); assertEquals(11,
-     * pos1.getLastCol());
-     *
-     * Position pos2 = info.getOperandPosition(1); assertEquals(25, pos2.getFirstLine()); assertEquals(25,
-     * pos2.getLastLine()); assertEquals(23, pos2.getFirstCol()); assertEquals(32, pos2.getLastCol());
-     */
+        // FIXME get type
+        Position pos1 = info.getOperandPosition(0);
+        assertEquals(21, pos1.getFirstLine());
+        assertEquals(21, pos1.getLastLine());
+        assertEquals(23, pos1.getFirstCol());
+        assertEquals(44, pos1.getLastCol());
+
+        // FIXME get size
+        Position pos2 = info.getOperandPosition(1);
+        assertEquals(21, pos2.getFirstLine());
+        assertEquals(21, pos2.getLastLine());
+        assertEquals(45, pos2.getFirstCol());
+        assertEquals(47, pos2.getLastCol());
+    */
 
   }
 
   @Test
   public void testUnaryInstruction() {
     loadCurrentMethod("complexOperands", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<IStmt>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
 
-    IStmt stmt = stmts.get(20);
+    { // assignment: int a;
+      IStmt stmt = stmts.get(1);
+      PositionInfo info = stmt.getPositionInfo();
+
+      Position stmtPos = info.getStmtPosition();
+      assertEquals(78, stmtPos.getFirstLine());
+      assertEquals(78, stmtPos.getLastLine());
+      assertEquals(12, stmtPos.getFirstCol());
+      assertEquals(13, stmtPos.getLastCol());
+
+      /* FIXME
+      Position pos1 = info.getOperandPosition(0);
+      assertEquals(78, pos1.getFirstLine());
+      assertEquals(78, pos1.getLastLine());
+      assertEquals(12, pos1.getFirstCol());
+      assertEquals(13, pos1.getLastCol());
+      */
+    }
+
+    { // assignment: int b = 2;
+      IStmt stmt = stmts.get(2);
+      PositionInfo info = stmt.getPositionInfo();
+
+      Position stmtPos = info.getStmtPosition();
+      assertEquals(79, stmtPos.getFirstLine());
+      assertEquals(79, stmtPos.getLastLine());
+      assertEquals(12, stmtPos.getFirstCol());
+      assertEquals(17, stmtPos.getLastCol());
+
+      /* FIXME operands are missing
+      Position pos1 = info.getOperandPosition(0);
+      assertEquals(79, pos1.getFirstLine());
+      assertEquals(79, pos1.getLastLine());
+      assertEquals(12, pos1.getFirstCol());
+      assertEquals(13, pos1.getLastCol());
+
+      Position pos2 = info.getOperandPosition(1);
+      assertEquals(79, pos2.getFirstLine());
+      assertEquals(79, pos2.getLastLine());
+      assertEquals(16, pos2.getFirstCol());
+      assertEquals(13, pos2.getLastCol());
+      */
+    }
+
+    { // unary: !
+      IStmt stmt = stmts.get(20);
+      PositionInfo info = stmt.getPositionInfo();
+
+      Position stmtPos = info.getStmtPosition();
+      assertEquals(92, stmtPos.getFirstLine());
+      assertEquals(92, stmtPos.getLastLine());
+      assertEquals(22, stmtPos.getFirstCol());
+      assertEquals(28, stmtPos.getLastCol());
+
+      /* FIXME
+      Position pos1 = info.getOperandPosition(0);
+      assertEquals(92, pos1.getFirstLine());
+      assertEquals(92, pos1.getLastLine());
+      assertEquals(23, pos1.getFirstCol());
+      assertEquals(28, pos1.getLastCol());
+      */
+    }
+  }
+
+  @Test
+  public void testThrowInstruction() {
+    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+
+    IStmt stmt = stmts.get(3);
     PositionInfo info = stmt.getPositionInfo();
 
     Position stmtPos = info.getStmtPosition();
-    assertEquals(92, stmtPos.getFirstLine());
-    assertEquals(92, stmtPos.getLastLine());
-    assertEquals(22, stmtPos.getFirstCol());
-    assertEquals(28, stmtPos.getLastCol());
+    assertEquals(106, stmtPos.getFirstLine());
+    assertEquals(106, stmtPos.getLastLine());
+    assertEquals(12, stmtPos.getFirstCol());
+    assertEquals(50, stmtPos.getLastCol());
 
-    // TODO: operands
+    /*
+        // FIXME type
+        Position pos1 = info.getOperandPosition(0);
+        assertEquals(106, pos1.getFirstLine());
+        assertEquals(106, pos1.getLastLine());
+        assertEquals(18, pos1.getFirstCol());
+        assertEquals(49, pos1.getLastCol());
+    */
 
+  }
+
+  @Test
+  public void testSwitchInstruction() {
+    loadCurrentMethod("favouriteNumber", declareClassSig, "int", Arrays.asList());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+
+    IStmt stmt = stmts.get(2);
+    PositionInfo info = stmt.getPositionInfo();
+
+    Position stmtPos = info.getStmtPosition();
+    assertEquals(65, stmtPos.getFirstLine());
+    assertEquals(73, stmtPos.getLastLine());
+    assertEquals(8, stmtPos.getFirstCol());
+    assertEquals(9, stmtPos.getLastCol());
+
+    // TODO: organize keybox,labels, targets as operands?
+
+  }
+
+  @Ignore
+  public void testLoadMetadataInstruction() {
+    // TODO: implement - no instruction example found
+    loadCurrentMethod("metadata", declareClassSig, "void", Arrays.asList());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+
+    IStmt stmt = stmts.get(0);
+    PositionInfo info = stmt.getPositionInfo();
+    /*
+    Position stmtPos = info.getStmtPosition();
+    assertEquals(, stmtPos.getFirstLine());
+    assertEquals(, stmtPos.getLastLine());
+    assertEquals(, stmtPos.getFirstCol());
+    assertEquals( , stmtPos.getLastCol());
+
+    Position pos1 = info.getOperandPosition(0);
+    assertEquals( , pos1.getFirstLine());
+    assertEquals( , pos1.getLastLine());
+    assertEquals( , pos1.getFirstCol());
+    assertEquals( , pos1.getLastCol());
+    */
+  }
+
+  @Ignore
+  public void testCheckCastInstruction() {
+    // TODO: implement - no instruction example found
+    loadCurrentMethod("TODO", declareClassSig, "void", Arrays.asList());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+
+    IStmt stmt = stmts.get(0);
+    PositionInfo info = stmt.getPositionInfo();
+    /*
+    Position stmtPos = info.getStmtPosition();
+    assertEquals(, stmtPos.getFirstLine());
+    assertEquals(, stmtPos.getLastLine());
+    assertEquals(, stmtPos.getFirstCol());
+    assertEquals( , stmtPos.getLastCol());
+
+    Position pos1 = info.getOperandPosition(0);
+    assertEquals( , pos1.getFirstLine());
+    assertEquals( , pos1.getLastLine());
+    assertEquals( , pos1.getFirstCol());
+    assertEquals( , pos1.getLastCol());
+    */
+  }
+
+  @Ignore
+  public void testEnclosingObjectReference() {
+    // TODO: implement - no instruction example found
+    loadCurrentMethod("enclosingobject", declareClassSig, "void", Arrays.asList());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+
+    IStmt stmt = stmts.get(0);
+    PositionInfo info = stmt.getPositionInfo();
+    /*
+    Position stmtPos = info.getStmtPosition();
+    assertEquals(, stmtPos.getFirstLine());
+    assertEquals(, stmtPos.getLastLine());
+    assertEquals(, stmtPos.getFirstCol());
+    assertEquals( , stmtPos.getLastCol());
+
+    Position pos1 = info.getOperandPosition(0);
+    assertEquals( , pos1.getFirstLine());
+    assertEquals( , pos1.getLastLine());
+    assertEquals( , pos1.getFirstCol());
+    assertEquals( , pos1.getLastCol());
+    */
+  }
+
+  @Ignore
+  public void testAstLexicalRead() {
+    // TODO: implement - no instruction example found
+    loadCurrentMethod("TODO", declareClassSig, "void", Arrays.asList());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+
+    IStmt stmt = stmts.get(0);
+    PositionInfo info = stmt.getPositionInfo();
+    /*
+    Position stmtPos = info.getStmtPosition();
+    assertEquals(, stmtPos.getFirstLine());
+    assertEquals(, stmtPos.getLastLine());
+    assertEquals(, stmtPos.getFirstCol());
+    assertEquals( , stmtPos.getLastCol());
+
+    Position pos1 = info.getOperandPosition(0);
+    assertEquals( , pos1.getFirstLine());
+    assertEquals( , pos1.getLastLine());
+    assertEquals( , pos1.getFirstCol());
+    assertEquals( , pos1.getLastCol());
+    */
+  }
+
+  @Ignore
+  public void testAstLexicalWrite() {
+    // TODO: implement - no instruction example found
+    loadCurrentMethod("TODO", declareClassSig, "void", Arrays.asList());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+
+    IStmt stmt = stmts.get(0);
+    PositionInfo info = stmt.getPositionInfo();
+    /*
+    Position stmtPos = info.getStmtPosition();
+    assertEquals(, stmtPos.getFirstLine());
+    assertEquals(, stmtPos.getLastLine());
+    assertEquals(, stmtPos.getFirstCol());
+    assertEquals( , stmtPos.getLastCol());
+
+    Position pos1 = info.getOperandPosition(0);
+    assertEquals( , pos1.getFirstLine());
+    assertEquals( , pos1.getLastLine());
+    assertEquals( , pos1.getFirstCol());
+    assertEquals( , pos1.getLastCol());
+    */
+  }
+
+  @Test
+  public void testAssertInstruction() {
+    loadCurrentMethod("atomictwo", declareClassSig, "void", Arrays.asList());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+
+    {
+      IStmt stmt = stmts.get(9); // to 17
+      PositionInfo info = stmt.getPositionInfo();
+
+      Position stmtPos = info.getStmtPosition();
+      assertEquals(133, stmtPos.getFirstLine());
+      assertEquals(133, stmtPos.getLastLine());
+      assertEquals(16, stmtPos.getFirstCol());
+      // FIXME: currently condition is not included only the referenced/checked object;
+      // assertEquals(32, stmtPos.getLastCol());
+
+      /*  TODO: how to evaluate/set generated code positions? [ms] i set both cols to -1 to indicate generated code
+      Position pos1 = info.getOperandPosition(0);
+      assertEquals( 130, pos1.getFirstLine());
+      assertEquals( 130, pos1.getLastLine());
+      assertEquals( -1, pos1.getFirstCol());
+      assertEquals( -1, pos1.getLastCol());
+      */
+    }
+  }
+
+  @Test
+  public void testMonitorInstruction() {
+
+    // FIXME: [ms] synchronized void atomicone has no monitors?
+
+    loadCurrentMethod("atomictwo", declareClassSig, "void", Arrays.asList());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+
+    { // entermonitor
+      IStmt stmt = stmts.get(2);
+      PositionInfo info = stmt.getPositionInfo();
+
+      Position stmtPos = info.getStmtPosition();
+      assertEquals(130, stmtPos.getFirstLine());
+      assertEquals(132, stmtPos.getLastLine());
+      assertEquals(8, stmtPos.getFirstCol());
+      assertEquals(9, stmtPos.getLastCol());
+
+      /* FIXME: if referenced object should get position information
+      Position pos1 = info.getOperandPosition(0);
+      assertEquals( 130, pos1.getFirstLine());
+      assertEquals( 130, pos1.getLastLine());
+      assertEquals( 21, pos1.getFirstCol());
+      assertEquals( 25, pos1.getLastCol());
+      */
+    }
+
+    { // exitmonitor
+      IStmt stmt = stmts.get(5);
+      PositionInfo info = stmt.getPositionInfo();
+
+      Position stmtPos = info.getStmtPosition();
+      assertEquals(130, stmtPos.getFirstLine());
+      assertEquals(132, stmtPos.getLastLine());
+      assertEquals(8, stmtPos.getFirstCol());
+      assertEquals(9, stmtPos.getLastCol());
+    }
+  }
+
+  @Test
+  public void testGetCaughtExceptionInstruction() {
+    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+
+    IStmt stmt = stmts.get(4);
+    PositionInfo info = stmt.getPositionInfo();
+
+    Position stmtPos = info.getStmtPosition();
+    assertEquals(107, stmtPos.getFirstLine());
+    assertEquals(109, stmtPos.getLastLine());
+    assertEquals(10, stmtPos.getFirstCol());
+    assertEquals(9, stmtPos.getLastCol());
+    /*
+        // FIXME position of the caught exception
+        Position pos1 = info.getOperandPosition(0);
+        assertEquals(107, pos1.getFirstLine());
+        assertEquals(107, pos1.getLastLine());
+        assertEquals(17, pos1.getFirstCol());
+        assertEquals(28, pos1.getLastCol());
+    */
+  }
+
+  @Test
+  public void testArrayLengthInstruction() {
+    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
+
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    IStmt stmt = stmts.get(6);
+    PositionInfo info = stmt.getPositionInfo();
+    Position stmtPos = info.getStmtPosition();
+
+    assertEquals(111, stmtPos.getFirstLine());
+    assertEquals(111, stmtPos.getLastLine());
+    assertEquals(18, stmtPos.getFirstCol());
+    // FIXME: it is at arrayname currently; imho it should include .length    assertEquals(32,
+    // stmtPos.getLastCol());
+
+    Position pos1 = info.getOperandPosition(0);
+    assertEquals(111, pos1.getFirstLine());
+    assertEquals(111, pos1.getLastLine());
+    assertEquals(18, pos1.getFirstCol());
+    assertEquals(25, pos1.getLastCol());
+  }
+
+  @Test
+  public void testArrayLoadInstruction() {
+    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
+
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    IStmt stmt = stmts.get(10);
+    PositionInfo info = stmt.getPositionInfo();
+    Position stmtPos = info.getStmtPosition();
+
+    assertEquals(115, stmtPos.getFirstLine());
+    assertEquals(115, stmtPos.getLastLine());
+    assertEquals(21, stmtPos.getFirstCol());
+    assertEquals(31, stmtPos.getLastCol());
+
+    /* FIXME
+    Position pos1 = info.getOperandPosition(0);
+    assertEquals(115, pos1.getFirstLine());
+    assertEquals(115, pos1.getLastLine());
+    assertEquals(29, pos1.getFirstCol());
+    assertEquals(30, pos1.getLastCol());
+    */
+  }
+
+  @Test
+  public void testArrayStoreInstruction() {
+    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
+
+    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    IStmt stmt = stmts.get(7);
+    PositionInfo info = stmt.getPositionInfo();
+    Position stmtPos = info.getStmtPosition();
+
+    assertEquals(112, stmtPos.getFirstLine());
+    assertEquals(112, stmtPos.getLastLine());
+    assertEquals(8, stmtPos.getFirstCol());
+    assertEquals(24, stmtPos.getLastCol());
+
+    /* FIXME
+    // index
+    Position pos1 = info.getOperandPosition(0);
+    assertEquals(112, pos1.getFirstLine());
+    assertEquals(112, pos1.getLastLine());
+    assertEquals(8, pos1.getFirstCol());
+    assertEquals(18, pos1.getLastCol());
+
+    // value
+    Position pos2 = info.getOperandPosition(1);
+    assertEquals(112, pos2.getFirstLine());
+    assertEquals(112, pos2.getLastLine());
+    assertEquals(21, pos2.getFirstCol());
+    assertEquals(24, pos2.getLastCol());
+    */
   }
 }
