@@ -38,6 +38,7 @@ public class InstanceofInstructionConverstionTest {
                 Collections.singletonList("java.lang.Object")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 }

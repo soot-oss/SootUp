@@ -36,6 +36,7 @@ public class GetInstructionConversionTest {
                 "getA_X", declareClassSig, "int", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 }

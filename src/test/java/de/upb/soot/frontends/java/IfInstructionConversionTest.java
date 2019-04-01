@@ -40,6 +40,7 @@ public class IfInstructionConversionTest {
                 Arrays.asList("int", "int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -51,6 +52,7 @@ public class IfInstructionConversionTest {
                 "simpleIfElse", declareClassSig, "boolean", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -62,6 +64,7 @@ public class IfInstructionConversionTest {
                 "simpleIfElse", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -76,6 +79,7 @@ public class IfInstructionConversionTest {
                 Collections.singletonList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -90,6 +94,7 @@ public class IfInstructionConversionTest {
                 Arrays.asList("double", "double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 }

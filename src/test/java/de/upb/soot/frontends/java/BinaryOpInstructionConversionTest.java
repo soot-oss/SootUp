@@ -36,6 +36,7 @@ public class BinaryOpInstructionConversionTest {
                 "addByte", declareClassSig, "byte", Arrays.asList("byte", "byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -47,6 +48,7 @@ public class BinaryOpInstructionConversionTest {
                 "addDouble", declareClassSig, "double", Arrays.asList("double", "float")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -58,6 +60,7 @@ public class BinaryOpInstructionConversionTest {
                 "mulDouble", declareClassSig, "double", Arrays.asList("double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -69,6 +72,7 @@ public class BinaryOpInstructionConversionTest {
                 "subChar", declareClassSig, "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -80,6 +84,7 @@ public class BinaryOpInstructionConversionTest {
                 "mulShort", declareClassSig, "short", Arrays.asList("short", "short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -91,6 +96,7 @@ public class BinaryOpInstructionConversionTest {
                 "divInt", declareClassSig, "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -102,6 +108,7 @@ public class BinaryOpInstructionConversionTest {
                 "modChar", declareClassSig, "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -114,6 +121,7 @@ public class BinaryOpInstructionConversionTest {
                 "incShort", declareClassSig, "short", Collections.singletonList("short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -126,6 +134,7 @@ public class BinaryOpInstructionConversionTest {
                 "decInt", declareClassSig, "int", Collections.singletonList("int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -137,6 +146,7 @@ public class BinaryOpInstructionConversionTest {
                 "orLong", declareClassSig, "long", Arrays.asList("long", "long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -148,6 +158,7 @@ public class BinaryOpInstructionConversionTest {
                 "xorInt", declareClassSig, "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -159,6 +170,7 @@ public class BinaryOpInstructionConversionTest {
                 "andChar", declareClassSig, "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -170,6 +182,7 @@ public class BinaryOpInstructionConversionTest {
                 "lshiftByte", declareClassSig, "byte", Collections.singletonList("byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -181,6 +194,7 @@ public class BinaryOpInstructionConversionTest {
                 "rshiftShort", declareClassSig, "short", Arrays.asList("short", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -193,6 +207,7 @@ public class BinaryOpInstructionConversionTest {
                 "negLong", declareClassSig, "long", Collections.singletonList("long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -205,6 +220,7 @@ public class BinaryOpInstructionConversionTest {
                 "zeroFillRshiftInt", declareClassSig, "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -217,6 +233,7 @@ public class BinaryOpInstructionConversionTest {
                 "logicalAnd", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -229,6 +246,7 @@ public class BinaryOpInstructionConversionTest {
                 "logicalOr", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -240,6 +258,7 @@ public class BinaryOpInstructionConversionTest {
                 "not", declareClassSig, "boolean", Collections.singletonList("boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -251,6 +270,7 @@ public class BinaryOpInstructionConversionTest {
                 "equal", declareClassSig, "boolean", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -262,6 +282,7 @@ public class BinaryOpInstructionConversionTest {
                 "notEqual", declareClassSig, "boolean", Arrays.asList("float", "float")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -273,6 +294,7 @@ public class BinaryOpInstructionConversionTest {
                 "greater", declareClassSig, "boolean", Arrays.asList("double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -284,6 +306,7 @@ public class BinaryOpInstructionConversionTest {
                 "smaller", declareClassSig, "boolean", Arrays.asList("long", "long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -295,6 +318,7 @@ public class BinaryOpInstructionConversionTest {
                 "greaterEqual", declareClassSig, "boolean", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -306,6 +330,7 @@ public class BinaryOpInstructionConversionTest {
                 "smallerEqual", declareClassSig, "boolean", Arrays.asList("byte", "byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 }

@@ -42,6 +42,7 @@ public class SelectedInstructionConverstionTest {
                 Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -54,6 +55,7 @@ public class SelectedInstructionConverstionTest {
                 "method", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -66,6 +68,7 @@ public class SelectedInstructionConverstionTest {
                 "doAllThis", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -78,6 +81,7 @@ public class SelectedInstructionConverstionTest {
                 "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -90,6 +94,7 @@ public class SelectedInstructionConverstionTest {
                 "<init>", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -102,6 +107,7 @@ public class SelectedInstructionConverstionTest {
                 "main", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -113,6 +119,7 @@ public class SelectedInstructionConverstionTest {
             sigFactory.getMethodSignature("bar", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -125,6 +132,7 @@ public class SelectedInstructionConverstionTest {
                 "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -140,6 +148,7 @@ public class SelectedInstructionConverstionTest {
                 Collections.singletonList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -155,6 +164,7 @@ public class SelectedInstructionConverstionTest {
                 Collections.singletonList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -167,6 +177,7 @@ public class SelectedInstructionConverstionTest {
                 "doSomeCrazyStuff", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -175,6 +186,7 @@ public class SelectedInstructionConverstionTest {
     declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA$AA");
     Optional<SootClass> m = loader.getSootClass(declareClassSig);
     assertTrue(m.isPresent());
+    // TODO. replace the next line with assertions.
     Utils.print(m.get(), false);
   }
 
@@ -187,6 +199,7 @@ public class SelectedInstructionConverstionTest {
                 "getValueBase", declareClassSig, "int", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -199,6 +212,7 @@ public class SelectedInstructionConverstionTest {
                 "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -207,6 +221,7 @@ public class SelectedInstructionConverstionTest {
     declareClassSig = sigFactory.getClassSignature("AnonymousClass$1");
     Optional<SootClass> m = loader.getSootClass(declareClassSig);
     assertTrue(m.isPresent());
+    // TODO. replace the next line with assertions.
     Utils.print(m.get(), false);
   }
 
@@ -219,6 +234,7 @@ public class SelectedInstructionConverstionTest {
                 "anonymousCoward", declareClassSig, "java.lang.Object", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -234,6 +250,7 @@ public class SelectedInstructionConverstionTest {
                 Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -242,6 +259,7 @@ public class SelectedInstructionConverstionTest {
     declareClassSig = sigFactory.getClassSignature("foo.bar.hello.world.InnerClasses");
     Optional<SootClass> m = loader.getSootClass(declareClassSig);
     assertTrue(m.isPresent());
+    // TODO. replace the next line with assertions.
     Utils.print(m.get(), false);
   }
 
@@ -257,6 +275,7 @@ public class SelectedInstructionConverstionTest {
                 Collections.singletonList("IntWrapper")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -265,6 +284,7 @@ public class SelectedInstructionConverstionTest {
     declareClassSig = sigFactory.getClassSignature("MiniaturSliceBug");
     Optional<SootClass> m = loader.getSootClass(declareClassSig);
     assertTrue(m.isPresent());
+    // TODO. replace the next line with assertions.
     Utils.print(m.get(), false);
   }
 
@@ -289,6 +309,7 @@ public class SelectedInstructionConverstionTest {
                 "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -300,6 +321,7 @@ public class SelectedInstructionConverstionTest {
             sigFactory.getMethodSignature("foo", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 

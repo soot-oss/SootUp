@@ -31,6 +31,7 @@ public class Java7EnhancementsTest {
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();
+    // TODO. replace the next line with assertions.
     Utils.outputJimple(klass, false);
   }
 
@@ -40,6 +41,7 @@ public class Java7EnhancementsTest {
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();
+    // TODO. replace the next line with assertions.
     Utils.outputJimple(klass, false);
   }
 
@@ -49,6 +51,7 @@ public class Java7EnhancementsTest {
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();
+    // TODO. replace the next line with assertions.
     Utils.outputJimple(klass, false);
   }
 
@@ -58,6 +61,7 @@ public class Java7EnhancementsTest {
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();
+    // TODO. replace the next line with assertions.
     Utils.outputJimple(klass, false);
   }
 
@@ -67,6 +71,7 @@ public class Java7EnhancementsTest {
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();
+    // TODO. replace the next line with assertions.
     Utils.outputJimple(klass, false);
   }
 
@@ -76,6 +81,7 @@ public class Java7EnhancementsTest {
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();
+    // TODO. replace the next line with assertions.
     Utils.outputJimple(klass, false);
   }
 }

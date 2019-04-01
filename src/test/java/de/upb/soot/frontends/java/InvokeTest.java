@@ -35,6 +35,7 @@ public class InvokeTest {
                 "specialInvokeInstanceInit", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -47,6 +48,7 @@ public class InvokeTest {
                 "specialInvokePrivateMethod", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -62,6 +64,7 @@ public class InvokeTest {
                 Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -74,6 +77,7 @@ public class InvokeTest {
                 "<clinit>", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -86,6 +90,7 @@ public class InvokeTest {
                 "equals", declareClassSig, "boolean", Collections.singletonList("InvokeVirtual")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -98,6 +103,7 @@ public class InvokeTest {
                 "interfaceMethod", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 
@@ -110,6 +116,7 @@ public class InvokeTest {
                 "doStuf", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
 }
