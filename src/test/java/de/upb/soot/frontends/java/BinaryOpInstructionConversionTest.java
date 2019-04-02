@@ -23,7 +23,6 @@ import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -96,7 +95,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getActiveBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = new ArrayList<>(body.getStmts());
+    List<IStmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
