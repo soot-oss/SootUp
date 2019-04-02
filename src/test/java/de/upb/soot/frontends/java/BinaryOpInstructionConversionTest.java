@@ -1,14 +1,34 @@
 package de.upb.soot.frontends.java;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.EquivTo;
+import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.common.expr.JAddExpr;
+import de.upb.soot.jimple.common.expr.JCastExpr;
+import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.JAssignStmt;
+import de.upb.soot.jimple.common.stmt.JIdentityStmt;
+import de.upb.soot.jimple.common.stmt.JReturnStmt;
+import de.upb.soot.jimple.common.type.ByteType;
+import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -28,6 +48,42 @@ public class BinaryOpInstructionConversionTest {
     declareClassSig = sigFactory.getClassSignature("BinaryOperations");
   }
 
+  private static void assertCorrectPos(
+      PositionInfo info,
+      int firstLine,
+      int firstCol,
+      int firstOffset,
+      int lastLine,
+      int lastCol,
+      int lastOffset) {
+    Position pos = info.getStmtPosition();
+    assertEquals(firstLine, pos.getFirstLine());
+    assertEquals(firstCol, pos.getFirstCol());
+    assertEquals(firstOffset, pos.getFirstOffset());
+    assertEquals(lastLine, pos.getLastLine());
+    assertEquals(lastCol, pos.getLastCol());
+    assertEquals(lastOffset, pos.getLastOffset());
+  }
+
+  private static void assertEquiv(EquivTo expected, EquivTo actual) {
+    if (!expected.equivTo(actual)) {
+      throw new AssertionError("Expected '" + expected + "', actual is " + actual);
+    }
+  }
+
+  private static <T> void assertInstanceOfSatisfying(
+      Object actual, Class<T> tClass, Consumer<T> checker) {
+    try {
+      checker.accept(tClass.cast(actual));
+    } catch (ClassCastException e) {
+      throw new AssertionError(
+          "Expected value of type "
+              + tClass
+              + (actual != null ? ", got type " + actual.getClass() + " with value " : ", got ")
+              + actual);
+    }
+  }
+
   @Test
   public void testAddByte() {
     Optional<SootMethod> m =
@@ -36,8 +92,94 @@ public class BinaryOpInstructionConversionTest {
                 "addByte", declareClassSig, "byte", Arrays.asList("byte", "byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<IStmt> stmts = new ArrayList<>(body.getStmts());
+    assertEquals(8, stmts.size());
+
+    assertInstanceOfSatisfying(
+        stmts.get(0),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(stmt.getLeftOp(), new Local("r0", RefType.getInstance("BinaryOperations")));
+          assertEquiv(
+              stmt.getRightOp(), Jimple.newThisRef(RefType.getInstance("BinaryOperations")));
+          assertCorrectPos(stmt.getPositionInfo(), 3, 19, 93, 3, 20, 94);
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(1),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(stmt.getLeftOp(), new Local("$b0", ByteType.getInstance()));
+          assertEquiv(stmt.getRightOp(), Jimple.newParameterRef(ByteType.getInstance(), 0));
+          assertCorrectPos(stmt.getPositionInfo(), 3, 19, 93, 3, 20, 94);
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(2),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(stmt.getLeftOp(), new Local("$b1", ByteType.getInstance()));
+          assertEquiv(stmt.getRightOp(), Jimple.newParameterRef(ByteType.getInstance(), 1));
+          assertCorrectPos(stmt.getPositionInfo(), 3, 19, 93, 3, 20, 94);
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(3),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(stmt.getLeftOp(), new Local("$i0", IntType.getInstance()));
+          assertEquiv(
+              stmt.getRightOp(),
+              new JCastExpr(new Local("$b0", ByteType.getInstance()), IntType.getInstance()));
+          assertCorrectPos(stmt.getPositionInfo(), 3, 19, 93, 3, 20, 94);
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(4),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(stmt.getLeftOp(), new Local("$i1", IntType.getInstance()));
+          assertEquiv(
+              stmt.getRightOp(),
+              new JCastExpr(new Local("$b1", ByteType.getInstance()), IntType.getInstance()));
+          assertCorrectPos(stmt.getPositionInfo(), 3, 23, 97, 3, 24, 98);
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(5),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(stmt.getLeftOp(), new Local("$i2", IntType.getInstance()));
+          assertEquiv(
+              stmt.getRightOp(),
+              new JAddExpr(
+                  new Local("$i0", IntType.getInstance()),
+                  new Local("$i1", IntType.getInstance())));
+          assertCorrectPos(stmt.getPositionInfo(), 3, 19, 93, 3, 24, 98);
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(6),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(stmt.getLeftOp(), new Local("$b2", ByteType.getInstance()));
+          assertEquiv(
+              stmt.getRightOp(),
+              new JCastExpr(new Local("$i2", IntType.getInstance()), ByteType.getInstance()));
+          assertCorrectPos(stmt.getPositionInfo(), 3, 11, 85, 3, 25, 99);
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(7),
+        JReturnStmt.class,
+        stmt -> {
+          assertEquiv(stmt.getOp(), new Local("$b2", ByteType.getInstance()));
+          assertCorrectPos(stmt.getPositionInfo(), 3, 4, 78, 3, 26, 100);
+        });
   }
 
   @Test
