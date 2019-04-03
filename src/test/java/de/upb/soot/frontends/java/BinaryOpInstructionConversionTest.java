@@ -100,9 +100,9 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(0),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(stmt.getLeftOp(), new Local("r0", RefType.getInstance("BinaryOperations")));
+          assertEquiv(new Local("r0", RefType.getInstance("BinaryOperations")), stmt.getLeftOp());
           assertEquiv(
-              stmt.getRightOp(), Jimple.newThisRef(RefType.getInstance("BinaryOperations")));
+              Jimple.newThisRef(RefType.getInstance("BinaryOperations")), stmt.getRightOp());
           assertCorrectPos(stmt.getPositionInfo(), 3, 19, 93, 3, 20, 94);
         });
 
@@ -110,8 +110,8 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(1),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(stmt.getLeftOp(), new Local("$b0", ByteType.getInstance()));
-          assertEquiv(stmt.getRightOp(), Jimple.newParameterRef(ByteType.getInstance(), 0));
+          assertEquiv(new Local("$b0", ByteType.getInstance()), stmt.getLeftOp());
+          assertEquiv(Jimple.newParameterRef(ByteType.getInstance(), 0), stmt.getRightOp());
           assertCorrectPos(stmt.getPositionInfo(), 3, 19, 93, 3, 20, 94);
         });
 
@@ -119,8 +119,8 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JIdentityStmt.class,
         stmt -> {
-          assertEquiv(stmt.getLeftOp(), new Local("$b1", ByteType.getInstance()));
-          assertEquiv(stmt.getRightOp(), Jimple.newParameterRef(ByteType.getInstance(), 1));
+          assertEquiv(new Local("$b1", ByteType.getInstance()), stmt.getLeftOp());
+          assertEquiv(Jimple.newParameterRef(ByteType.getInstance(), 1), stmt.getRightOp());
           assertCorrectPos(stmt.getPositionInfo(), 3, 19, 93, 3, 20, 94);
         });
 
@@ -128,10 +128,10 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(stmt.getLeftOp(), new Local("$i0", IntType.getInstance()));
+          assertEquiv(new Local("$i0", IntType.getInstance()), stmt.getLeftOp());
           assertEquiv(
-              stmt.getRightOp(),
-              new JCastExpr(new Local("$b0", ByteType.getInstance()), IntType.getInstance()));
+              new JCastExpr(new Local("$b0", ByteType.getInstance()), IntType.getInstance()),
+              stmt.getRightOp());
           assertCorrectPos(stmt.getPositionInfo(), 3, 19, 93, 3, 20, 94);
         });
 
@@ -139,10 +139,10 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(stmt.getLeftOp(), new Local("$i1", IntType.getInstance()));
+          assertEquiv(new Local("$i1", IntType.getInstance()), stmt.getLeftOp());
           assertEquiv(
-              stmt.getRightOp(),
-              new JCastExpr(new Local("$b1", ByteType.getInstance()), IntType.getInstance()));
+              new JCastExpr(new Local("$b1", ByteType.getInstance()), IntType.getInstance()),
+              stmt.getRightOp());
           assertCorrectPos(stmt.getPositionInfo(), 3, 23, 97, 3, 24, 98);
         });
 
@@ -150,12 +150,12 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(5),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(stmt.getLeftOp(), new Local("$i2", IntType.getInstance()));
+          assertEquiv(new Local("$i2", IntType.getInstance()), stmt.getLeftOp());
           assertEquiv(
-              stmt.getRightOp(),
               new JAddExpr(
                   new Local("$i0", IntType.getInstance()),
-                  new Local("$i1", IntType.getInstance())));
+                  new Local("$i1", IntType.getInstance())),
+              stmt.getRightOp());
           assertCorrectPos(stmt.getPositionInfo(), 3, 19, 93, 3, 24, 98);
         });
 
@@ -163,10 +163,10 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(6),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(stmt.getLeftOp(), new Local("$b2", ByteType.getInstance()));
+          assertEquiv(new Local("$b2", ByteType.getInstance()), stmt.getLeftOp());
           assertEquiv(
-              stmt.getRightOp(),
-              new JCastExpr(new Local("$i2", IntType.getInstance()), ByteType.getInstance()));
+              new JCastExpr(new Local("$i2", IntType.getInstance()), ByteType.getInstance()),
+              stmt.getRightOp());
           assertCorrectPos(stmt.getPositionInfo(), 3, 11, 85, 3, 25, 99);
         });
 
@@ -174,7 +174,7 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(7),
         JReturnStmt.class,
         stmt -> {
-          assertEquiv(stmt.getOp(), new Local("$b2", ByteType.getInstance()));
+          assertEquiv(new Local("$b2", ByteType.getInstance()), stmt.getOp());
           assertCorrectPos(stmt.getPositionInfo(), 3, 4, 78, 3, 26, 100);
         });
   }
@@ -198,9 +198,9 @@ public class BinaryOpInstructionConversionTest {
             stmts.get(0),
             JIdentityStmt.class,
             stmt -> {
-              assertEquiv(stmt.getLeftOp(), new Local("r0", RefType.getInstance("BinaryOperations")));
+              assertEquiv(new Local("r0", RefType.getInstance("BinaryOperations")), stmt.getLeftOp());
               assertEquiv(
-                      stmt.getRightOp(), Jimple.newThisRef(RefType.getInstance("BinaryOperations")));
+                      Jimple.newThisRef(RefType.getInstance("BinaryOperations")), stmt.getRightOp());
               assertCorrectPos(stmt.getPositionInfo(), 7, 15, 172, 7, 16, 173);
             });
 
@@ -208,8 +208,8 @@ public class BinaryOpInstructionConversionTest {
             stmts.get(1),
             JIdentityStmt.class,
             stmt -> {
-              assertEquiv(stmt.getLeftOp(), new Local("$d0", DoubleType.getInstance()));
-              assertEquiv(stmt.getRightOp(), Jimple.newParameterRef(DoubleType.getInstance(), 0));
+              assertEquiv(new Local("$d0", DoubleType.getInstance()), stmt.getLeftOp());
+              assertEquiv(Jimple.newParameterRef(DoubleType.getInstance(), 0), stmt.getRightOp());
               assertCorrectPos(stmt.getPositionInfo(), 7,15,172,7,16,173);
             });
 
@@ -217,8 +217,8 @@ public class BinaryOpInstructionConversionTest {
             stmts.get(2),
             JIdentityStmt.class,
             stmt -> {
-              assertEquiv(stmt.getLeftOp(), new Local("$f0", FloatType.getInstance()));
-              assertEquiv(stmt.getRightOp(), Jimple.newParameterRef(FloatType.getInstance(), 1));
+              assertEquiv(new Local("$f0", FloatType.getInstance()), stmt.getLeftOp());
+              assertEquiv(Jimple.newParameterRef(FloatType.getInstance(), 1), stmt.getRightOp());
               assertCorrectPos(stmt.getPositionInfo(), 7,15,172,7,16,173);
             });
 
@@ -226,10 +226,10 @@ public class BinaryOpInstructionConversionTest {
             stmts.get(3),
             JAssignStmt.class,
             stmt -> {
-              assertEquiv(stmt.getLeftOp(), new Local("$d1", DoubleType.getInstance()));
+              assertEquiv(new Local("$d1", DoubleType.getInstance()), stmt.getLeftOp());
               assertEquiv(
-                      stmt.getRightOp(),
-                      new JCastExpr(new Local("$f0", FloatType.getInstance()), DoubleType.getInstance()));
+                      new JCastExpr(new Local("$f0", FloatType.getInstance()), DoubleType.getInstance()),
+                      stmt.getRightOp());
               assertCorrectPos(stmt.getPositionInfo(), 7,15,172,7,16,173);
             });
 
@@ -237,12 +237,12 @@ public class BinaryOpInstructionConversionTest {
             stmts.get(4),
             JAssignStmt.class,
             stmt -> {
-              assertEquiv(stmt.getLeftOp(), new Local("$d2", DoubleType.getInstance()));
+              assertEquiv(new Local("$d2", DoubleType.getInstance()), stmt.getLeftOp());
               assertEquiv(
-                      stmt.getRightOp(),
                       new JAddExpr(
                               new Local("$d0", DoubleType.getInstance()),
-                              new Local("$d1", DoubleType.getInstance())));
+                              new Local("$d1", DoubleType.getInstance())),
+                      stmt.getRightOp());
               assertCorrectPos(stmt.getPositionInfo(), 7,11,168,7,16,173);
             });
 
@@ -250,7 +250,7 @@ public class BinaryOpInstructionConversionTest {
             stmts.get(5),
             JReturnStmt.class,
             stmt -> {
-              assertEquiv(stmt.getOp(), new Local("$d2", DoubleType.getInstance()));
+              assertEquiv(new Local("$d2", DoubleType.getInstance()), stmt.getOp());
               assertCorrectPos(stmt.getPositionInfo(), 7,4,161,7,17,174);
             });
   }
