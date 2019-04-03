@@ -18,9 +18,7 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.*;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 import java.util.Arrays;
@@ -66,7 +64,7 @@ public class BinaryOpInstructionConversionTest {
 
   private static void assertEquiv(EquivTo expected, EquivTo actual) {
     if (!expected.equivTo(actual)) {
-      throw new AssertionError("Expected '" + expected + "', actual is " + actual);
+      throw new AssertionError("Expected '" + expected + "', actual is '" + actual + "'");
     }
   }
 
@@ -189,8 +187,72 @@ public class BinaryOpInstructionConversionTest {
                 "addDouble", declareClassSig, "double", Arrays.asList("double", "float")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<IStmt> stmts = body.getStmts();
+    assertEquals(6, stmts.size());
+
+    assertInstanceOfSatisfying(
+            stmts.get(0),
+            JIdentityStmt.class,
+            stmt -> {
+              assertEquiv(stmt.getLeftOp(), new Local("r0", RefType.getInstance("BinaryOperations")));
+              assertEquiv(
+                      stmt.getRightOp(), Jimple.newThisRef(RefType.getInstance("BinaryOperations")));
+              assertCorrectPos(stmt.getPositionInfo(), 7, 15, 172, 7, 16, 173);
+            });
+
+    assertInstanceOfSatisfying(
+            stmts.get(1),
+            JIdentityStmt.class,
+            stmt -> {
+              assertEquiv(stmt.getLeftOp(), new Local("$d0", DoubleType.getInstance()));
+              assertEquiv(stmt.getRightOp(), Jimple.newParameterRef(DoubleType.getInstance(), 0));
+              assertCorrectPos(stmt.getPositionInfo(), 7,15,172,7,16,173);
+            });
+
+    assertInstanceOfSatisfying(
+            stmts.get(2),
+            JIdentityStmt.class,
+            stmt -> {
+              assertEquiv(stmt.getLeftOp(), new Local("$f0", FloatType.getInstance()));
+              assertEquiv(stmt.getRightOp(), Jimple.newParameterRef(FloatType.getInstance(), 1));
+              assertCorrectPos(stmt.getPositionInfo(), 7,15,172,7,16,173);
+            });
+
+    assertInstanceOfSatisfying(
+            stmts.get(3),
+            JAssignStmt.class,
+            stmt -> {
+              assertEquiv(stmt.getLeftOp(), new Local("$d1", DoubleType.getInstance()));
+              assertEquiv(
+                      stmt.getRightOp(),
+                      new JCastExpr(new Local("$f0", FloatType.getInstance()), DoubleType.getInstance()));
+              assertCorrectPos(stmt.getPositionInfo(), 7,15,172,7,16,173);
+            });
+
+    assertInstanceOfSatisfying(
+            stmts.get(4),
+            JAssignStmt.class,
+            stmt -> {
+              assertEquiv(stmt.getLeftOp(), new Local("$d2", DoubleType.getInstance()));
+              assertEquiv(
+                      stmt.getRightOp(),
+                      new JAddExpr(
+                              new Local("$d0", DoubleType.getInstance()),
+                              new Local("$d1", DoubleType.getInstance())));
+              assertCorrectPos(stmt.getPositionInfo(), 7,11,168,7,16,173);
+            });
+
+    assertInstanceOfSatisfying(
+            stmts.get(5),
+            JReturnStmt.class,
+            stmt -> {
+              assertEquiv(stmt.getOp(), new Local("$d2", DoubleType.getInstance()));
+              assertCorrectPos(stmt.getPositionInfo(), 7,4,161,7,17,174);
+            });
   }
 
   @Test
