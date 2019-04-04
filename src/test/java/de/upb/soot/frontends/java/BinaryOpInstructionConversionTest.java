@@ -10,8 +10,12 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.EquivTo;
 import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
 import de.upb.soot.jimple.common.expr.JCastExpr;
+import de.upb.soot.jimple.common.expr.JDivExpr;
+import de.upb.soot.jimple.common.expr.JMulExpr;
+import de.upb.soot.jimple.common.expr.JRemExpr;
 import de.upb.soot.jimple.common.expr.JSubExpr;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
@@ -23,6 +27,7 @@ import de.upb.soot.jimple.common.type.DoubleType;
 import de.upb.soot.jimple.common.type.FloatType;
 import de.upb.soot.jimple.common.type.IntType;
 import de.upb.soot.jimple.common.type.RefType;
+import de.upb.soot.jimple.common.type.ShortType;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
 import java.util.Arrays;
@@ -330,8 +335,83 @@ public class BinaryOpInstructionConversionTest {
                 "mulShort", declareClassSig, "short", Arrays.asList("short", "short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<IStmt> stmts = body.getStmts();
+    assertEquals(8, stmts.size());
+
+    assertInstanceOfSatisfying(
+        stmts.get(0),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(new Local("r0", RefType.getInstance("BinaryOperations")), stmt.getLeftOp());
+          assertEquiv(
+              Jimple.newThisRef(RefType.getInstance("BinaryOperations")), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(1),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$s0", ShortType.getInstance()), stmt.getLeftOp());
+          assertEquiv(Jimple.newParameterRef(ShortType.getInstance(), 0), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(2),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$s1", ShortType.getInstance()), stmt.getLeftOp());
+          assertEquiv(Jimple.newParameterRef(ShortType.getInstance(), 1), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(3),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i0", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JCastExpr(new Local("$s0", ShortType.getInstance()), IntType.getInstance()),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(4),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i1", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JCastExpr(new Local("$s1", ShortType.getInstance()), IntType.getInstance()),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(5),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i2", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JMulExpr(
+                  new Local("$i0", IntType.getInstance()), new Local("$i1", IntType.getInstance())),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(6),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$s2", ShortType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JCastExpr(new Local("$i2", IntType.getInstance()), ShortType.getInstance()),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(7),
+        JReturnStmt.class,
+        stmt -> assertEquiv(new Local("$s2", ShortType.getInstance()), stmt.getOp()));
   }
 
   @Test
@@ -342,8 +422,53 @@ public class BinaryOpInstructionConversionTest {
                 "divInt", declareClassSig, "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<IStmt> stmts = body.getStmts();
+    assertEquals(5, stmts.size());
+
+    assertInstanceOfSatisfying(
+        stmts.get(0),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(new Local("r0", RefType.getInstance("BinaryOperations")), stmt.getLeftOp());
+          assertEquiv(
+              Jimple.newThisRef(RefType.getInstance("BinaryOperations")), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(1),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i0", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(Jimple.newParameterRef(IntType.getInstance(), 0), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(2),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i1", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(Jimple.newParameterRef(IntType.getInstance(), 1), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(3),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i2", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JDivExpr(
+                  new Local("$i0", IntType.getInstance()), new Local("$i1", IntType.getInstance())),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(4),
+        JReturnStmt.class,
+        stmt -> assertEquiv(new Local("$i2", IntType.getInstance()), stmt.getOp()));
   }
 
   @Test
@@ -354,8 +479,83 @@ public class BinaryOpInstructionConversionTest {
                 "modChar", declareClassSig, "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<IStmt> stmts = body.getStmts();
+    assertEquals(8, stmts.size());
+
+    assertInstanceOfSatisfying(
+        stmts.get(0),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(new Local("r0", RefType.getInstance("BinaryOperations")), stmt.getLeftOp());
+          assertEquiv(
+              Jimple.newThisRef(RefType.getInstance("BinaryOperations")), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(1),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$c0", CharType.getInstance()), stmt.getLeftOp());
+          assertEquiv(Jimple.newParameterRef(CharType.getInstance(), 0), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(2),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$c1", CharType.getInstance()), stmt.getLeftOp());
+          assertEquiv(Jimple.newParameterRef(CharType.getInstance(), 1), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(3),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i0", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JCastExpr(new Local("$c0", CharType.getInstance()), IntType.getInstance()),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(4),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i1", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JCastExpr(new Local("$c1", CharType.getInstance()), IntType.getInstance()),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(5),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i2", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JRemExpr(
+                  new Local("$i0", IntType.getInstance()), new Local("$i1", IntType.getInstance())),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(6),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$c2", CharType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JCastExpr(new Local("$i2", IntType.getInstance()), CharType.getInstance()),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(7),
+        JReturnStmt.class,
+        stmt -> assertEquiv(new Local("$c2", CharType.getInstance()), stmt.getOp()));
   }
 
   @Test
@@ -367,8 +567,64 @@ public class BinaryOpInstructionConversionTest {
                 "incShort", declareClassSig, "short", Collections.singletonList("short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<IStmt> stmts = body.getStmts();
+    assertEquals(6, stmts.size());
+
+    assertInstanceOfSatisfying(
+        stmts.get(0),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(new Local("r0", RefType.getInstance("BinaryOperations")), stmt.getLeftOp());
+          assertEquiv(
+              Jimple.newThisRef(RefType.getInstance("BinaryOperations")), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(1),
+        JIdentityStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$s0", ShortType.getInstance()), stmt.getLeftOp());
+          assertEquiv(Jimple.newParameterRef(ShortType.getInstance(), 0), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(2),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i0", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JCastExpr(new Local("$s0", ShortType.getInstance()), IntType.getInstance()),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(3),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i1", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JAddExpr(new Local("$i0", IntType.getInstance()), IntConstant.getInstance(1)),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(4),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$s1", ShortType.getInstance()), stmt.getLeftOp());
+          assertEquiv(
+              new JCastExpr(new Local("$i1", IntType.getInstance()), ShortType.getInstance()),
+              stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(5),
+        JReturnStmt.class,
+        stmt -> assertEquiv(new Local("$s0", ShortType.getInstance()), stmt.getOp()));
   }
 
   @Test
