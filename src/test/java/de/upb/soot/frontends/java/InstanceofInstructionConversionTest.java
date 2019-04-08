@@ -22,7 +22,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Linghui Luo */
 @Category(Java8Test.class)
-public class InstanceofInstructionConverstionTest {
+public class InstanceofInstructionConversionTest {
   private WalaClassLoader loader;
   private DefaultSignatureFactory sigFactory;
   private JavaClassSignature declareClassSig;

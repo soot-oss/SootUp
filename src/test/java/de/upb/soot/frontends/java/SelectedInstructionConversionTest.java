@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Linghui Luo */
 @Category(Java8Test.class)
-public class SelectedInstructionConverstionTest {
+public class SelectedInstructionConversionTest {
 
   private WalaClassLoader loader;
   private DefaultSignatureFactory sigFactory;
