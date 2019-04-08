@@ -1,5 +1,7 @@
 package de.upb.soot.frontends.java;
 
+import static de.upb.soot.frontends.java.Utils.assertEquiv;
+import static de.upb.soot.frontends.java.Utils.assertInstanceOfSatisfying;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -8,19 +10,18 @@ import categories.Java8Test;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.EquivTo;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
 import de.upb.soot.jimple.common.expr.JAndExpr;
 import de.upb.soot.jimple.common.expr.JCastExpr;
+import de.upb.soot.jimple.common.expr.JDivExpr;
+import de.upb.soot.jimple.common.expr.JEqExpr;
 import de.upb.soot.jimple.common.expr.JGeExpr;
 import de.upb.soot.jimple.common.expr.JGtExpr;
 import de.upb.soot.jimple.common.expr.JLeExpr;
 import de.upb.soot.jimple.common.expr.JLtExpr;
 import de.upb.soot.jimple.common.expr.JMulExpr;
-import de.upb.soot.jimple.common.expr.JDivExpr;
-import de.upb.soot.jimple.common.expr.JEqExpr;
 import de.upb.soot.jimple.common.expr.JNeExpr;
 import de.upb.soot.jimple.common.expr.JNegExpr;
 import de.upb.soot.jimple.common.expr.JOrExpr;
@@ -51,7 +52,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -69,25 +69,6 @@ public class BinaryOpInstructionConversionTest {
     loader = new WalaClassLoader(srcDir, null);
     sigFactory = new DefaultSignatureFactory();
     declareClassSig = sigFactory.getClassSignature("BinaryOperations");
-  }
-
-  private static void assertEquiv(EquivTo expected, EquivTo actual) {
-    if (!expected.equivTo(actual)) {
-      throw new AssertionError("Expected '" + expected + "', actual is '" + actual + "'");
-    }
-  }
-
-  private static <T> void assertInstanceOfSatisfying(
-      Object actual, Class<T> tClass, Consumer<T> checker) {
-    try {
-      checker.accept(tClass.cast(actual));
-    } catch (ClassCastException e) {
-      throw new AssertionError(
-          "Expected value of type "
-              + tClass
-              + (actual != null ? ", got type " + actual.getClass() + " with value " : ", got ")
-              + actual);
-    }
   }
 
   @Test
