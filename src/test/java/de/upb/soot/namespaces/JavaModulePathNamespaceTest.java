@@ -76,7 +76,6 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
   @Test
   public void testTypeWrapper() throws Exception {
-    ModuleSignatureFactory signatureFactory = getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace =
         new JavaModulePathNamespace(
             "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",
@@ -89,7 +88,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
         Whitebox.invokeConstructor(
             signatureClass,
             new Class[] {TypeFactory.class, String.class},
-            new Object[] {signatureFactory, "myJava.mod"});
+            new Object[] {getTypeFactory(), "myJava.mod"});
     Object res1 =
         Whitebox.invokeMethod(typeFactoryWrapper, "getClassType", "java.lang.System");
     assertEquals(res1, getTypeFactory().getClassType("java.lang.System"));
