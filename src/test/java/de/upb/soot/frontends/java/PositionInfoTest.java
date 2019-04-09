@@ -1,10 +1,7 @@
 package de.upb.soot.frontends.java;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-
-import akka.japi.Util;
 
 import categories.Java8Test;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
@@ -336,19 +333,40 @@ public class PositionInfoTest {
 
     {
       // hasDef -> has parameter or is method of different class
-      IStmt stmt = stmts.get(5); 
+      IStmt stmt = stmts.get(5);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
       assertEquals(16, stmtPos.getFirstLine());
       assertEquals(16, stmtPos.getLastLine());
       assertEquals(4, stmtPos.getFirstCol());
       assertEquals(12, stmtPos.getLastCol());
-      
-      //FIXME. The following assertions fail 
+
+      // FIXME. The following assertions fail
       assertEquals(16, info.getOperandPosition(0).getFirstLine());
       assertEquals(10, info.getOperandPosition(0).getFirstCol());
       assertEquals(16, info.getOperandPosition(0).getLastLine());
       assertEquals(11, info.getOperandPosition(0).getLastCol());
+    }
+
+    {
+      IStmt stmt = stmts.get(6);
+      PositionInfo info = stmt.getPositionInfo();
+      Position stmtPos = info.getStmtPosition();
+      assertEquals(17, stmtPos.getFirstLine());
+      assertEquals(17, stmtPos.getLastLine());
+      assertEquals(4, stmtPos.getFirstCol());
+      assertEquals(15, stmtPos.getLastCol());
+
+      // FIXME. The following assertions fail
+      assertEquals(17, info.getOperandPosition(0).getFirstLine());
+      assertEquals(10, info.getOperandPosition(0).getFirstCol());
+      assertEquals(17, info.getOperandPosition(0).getLastLine());
+      assertEquals(11, info.getOperandPosition(0).getLastCol());
+
+      assertEquals(17, info.getOperandPosition(1).getFirstLine());
+      assertEquals(13, info.getOperandPosition(1).getFirstCol());
+      assertEquals(17, info.getOperandPosition(1).getLastLine());
+      assertEquals(14, info.getOperandPosition(1).getLastCol());
     }
   }
 

@@ -737,7 +737,7 @@ public class InstructionConverter {
       parameters.add(paraType.toString());
     }
     Position[] operandPos = new Position[target.getNumberOfParameters()];
-    int index=0;
+    int index = 0;
     int i = 0;
     if (!callee.isStatic()) {
       i = 1; // non-static invoke this first use is thisRef.
@@ -756,7 +756,7 @@ public class InstructionConverter {
       }
       assert (arg != null);
       args.add(arg);
-      operandPos[index]=debugInfo.getOperandPosition(invokeInst.iindex, i);
+      operandPos[index] = debugInfo.getOperandPosition(invokeInst.iindex, i);
       index++;
     }
 
@@ -791,10 +791,13 @@ public class InstructionConverter {
       Type type = converter.convertType(invokeInst.getDeclaredResultType());
       Local v = getLocal(type, invokeInst.getDef());
       return Jimple.newAssignStmt(
-          v, invoke, new PositionInfo(debugInfo.getInstructionPosition(invokeInst.iindex), operandPos));
+          v,
+          invoke,
+          new PositionInfo(debugInfo.getInstructionPosition(invokeInst.iindex), operandPos));
     } else {
       return Jimple.newInvokeStmt(
-          invoke, new PositionInfo(debugInfo.getInstructionPosition(invokeInst.iindex), operandPos));
+          invoke,
+          new PositionInfo(debugInfo.getInstructionPosition(invokeInst.iindex), operandPos));
     }
   }
 
