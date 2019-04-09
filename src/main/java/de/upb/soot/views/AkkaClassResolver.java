@@ -8,7 +8,7 @@ import de.upb.soot.buildactor.ReifyMessage;
 import de.upb.soot.buildactor.ResolveMessage;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -34,8 +34,7 @@ public class AkkaClassResolver {
    * @param signature the signature of the class to resolve
    * @return the initial resolved SootClass or an empty optional, if resolving fails
    */
-  public Optional<AbstractClass> getClass(
-      JavaClassSignature signature, IView view, ClassSource source) {
+  public Optional<AbstractClass> getClass(JavaClassType signature, IView view, ClassSource source) {
     // TODO: cache
 
     // TODO: decide for phantom ---> That's a good question, and how to create them ...

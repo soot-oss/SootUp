@@ -7,7 +7,7 @@ import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import java.util.Optional;
 import org.junit.Ignore;
@@ -41,9 +41,9 @@ public class ModuleBuilderActorTest {
   public void refiyMessageModuleInfoTest() {
     de.upb.soot.views.IView iView = createNewScene();
 
-    final JavaClassSignature sig =
+    final JavaClassType sig =
         new de.upb.soot.signatures.ModuleSignatureFactory()
-            .getClassSignature("module-info", "", "de.upb.mod");
+            .getClassType("module-info", "", "de.upb.mod");
     // Optional<ClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
 
     // assertTrue(source.isPresent());
@@ -61,9 +61,9 @@ public class ModuleBuilderActorTest {
   public void resolveMessageModuleInfoTest() {
     de.upb.soot.views.IView iView = createNewScene();
 
-    final JavaClassSignature sig =
+    final JavaClassType sig =
         (new de.upb.soot.signatures.ModuleSignatureFactory())
-            .getClassSignature("module-info", "", "de.upb.mod");
+            .getClassType("module-info", "", "de.upb.mod");
 
     Optional<AbstractClass> result = iView.getClass(sig);
     assertTrue(result.isPresent());

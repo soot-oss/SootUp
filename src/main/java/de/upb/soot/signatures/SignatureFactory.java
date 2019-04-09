@@ -31,16 +31,18 @@ import javax.annotation.Nonnull;
 public interface SignatureFactory {
   PackageSignature getPackageSignature(String packageName);
 
-  JavaClassSignature getClassSignature(String className, String packageName);
+  JavaClassType getClassType(String className, String packageName);
 
-  JavaClassSignature getClassSignature(String fullyQualifiedClassName);
+  JavaClassType getClassType(String fullyQualifiedClassName);
 
-  TypeSignature getTypeSignature(String typeName);
+  Type getType(String typeName);
 
   @Nonnull
-  Optional<PrimitiveTypeSignature> getPrimitiveTypeSignature(@Nonnull String typeName);
+  Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName);
 
-  ArrayTypeSignature getArrayTypeSignature(TypeSignature baseType, int dim);
+  ArrayType getArrayType(Type baseType, int dim);
+
+  JavaClassType fromPath(Path file);
 
   MethodSignature getMethodSignature(
       String methodName,
@@ -50,15 +52,15 @@ public interface SignatureFactory {
 
   MethodSignature getMethodSignature(
       String methodName,
-      JavaClassSignature declaringClassSignature,
+      JavaClassType declaringClassSignature,
       String fqReturnType,
       List<String> parameters);
 
   MethodSignature getMethodSignature(
       String methodName,
-      JavaClassSignature declaringClassSignature,
-      TypeSignature fqReturnType,
-      List<TypeSignature> parameters);
+      JavaClassType declaringClassSignature,
+      Type fqReturnType,
+      List<Type> parameters);
 
   @Nonnull
   MethodSignature getMethodSignature(
@@ -66,8 +68,7 @@ public interface SignatureFactory {
 
   @Nonnull
   MethodSignature getMethodSignature(
-      @Nonnull JavaClassSignature declaringClassSignature,
-      @Nonnull MethodSubSignature subSignature);
+      @Nonnull JavaClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature);
 
   @Nonnull
   MethodSignature parseMethodSignature(@Nonnull String methodSignature);
@@ -75,8 +76,8 @@ public interface SignatureFactory {
   @Nonnull
   MethodSubSignature getMethodSubSignature(
       @Nonnull String name,
-      @Nonnull Iterable<? extends TypeSignature> parameterSignatures,
-      @Nonnull TypeSignature returnTypeSignature);
+      @Nonnull Iterable<? extends Type> parameterSignatures,
+      @Nonnull Type returnType);
 
   @Nonnull
   MethodSubSignature parseMethodSubSignature(@Nonnull String methodSubSignature);
@@ -85,21 +86,20 @@ public interface SignatureFactory {
   FieldSignature parseFieldSignature(@Nonnull String fieldSignature);
 
   FieldSignature getFieldSignature(
-      String fieldName, JavaClassSignature declaringClassSignature, String fieldType);
+      String fieldName, JavaClassType declaringClassSignature, String fieldType);
 
   FieldSignature getFieldSignature(
-      String fieldName, JavaClassSignature declaringClassSignature, TypeSignature fieldType);
+      String fieldName, JavaClassType declaringClassSignature, Type fieldType);
 
   @Nonnull
   FieldSignature getFieldSignature(
-      @Nonnull JavaClassSignature declaringClassSignature, @Nonnull FieldSubSignature subSignature);
+      @Nonnull JavaClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature);
 
   @Nonnull
-  FieldSubSignature getFieldSubSignature(
-      @Nonnull String name, @Nonnull TypeSignature typeSignature);
+  FieldSubSignature getFieldSubSignature(@Nonnull String name, @Nonnull Type type);
 
   @Nonnull
   FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature);
 
-  JavaClassSignature fromPath(Path file);
+
 }

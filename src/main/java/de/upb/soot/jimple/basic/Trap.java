@@ -1,7 +1,7 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 
 /**
  * A trap is an exception catcher.
@@ -13,7 +13,7 @@ public interface Trap extends StmtBoxOwner {
   /** Performs a shallow clone of this trap. */
   Object clone();
 
-  JavaClassSignature getException();
+  JavaClassType getException();
 
   IStmt getBeginStmt();
 

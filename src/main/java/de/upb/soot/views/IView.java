@@ -5,8 +5,8 @@ import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.Type;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import java.util.Collection;
 import java.util.Optional;
@@ -39,7 +39,7 @@ public interface IView {
    * @return A class with given signature.
    */
   @Nonnull
-  Optional<AbstractClass> getClass(@Nonnull ISignature signature);
+  Optional<AbstractClass> getClass(@Nonnull Type signature);
 
   /**
    * Provides the call graph using the default algorithm.
@@ -75,12 +75,12 @@ public interface IView {
   Optional<Scope> getScope();
 
   //  /**
-  //   * Returns the {@link JavaClassSignature} with given class Signature from the view. If there
+  //   * Returns the {@link JavaClassType} with given class Signature from the view. If there
   // is no RefType with given className
   //   * exists, create a new instance.
   //   */
   //  @Nonnull
-  //  JavaClassSignature getRefType(@Nonnull TypeSignature classSignature);
+  //  JavaClassType getRefType(@Nonnull Type classSignature);
 
   /** Returns the {@link SignatureFactory} for this view. */
   @Nonnull
@@ -112,7 +112,7 @@ public interface IView {
 
   //  // TODO: This was placed in `JDynamicInvokeExpr`
   //  public Optional<SootMethod> getBootstrapMethod() {
-  //    JavaClassSignature signature = bsm.declClassSignature;
+  //    JavaClassType signature = bsm.declClassSignature;
   //    Optional<AbstractClass> op = this.getView().getClass(signature);
   //    if (op.isPresent()) {
   //      AbstractClass klass = op.get();

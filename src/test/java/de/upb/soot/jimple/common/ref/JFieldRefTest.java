@@ -15,7 +15,7 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
@@ -32,7 +32,7 @@ public class JFieldRefTest {
   public void testJStaticFieldRef() {
     IView view = new JavaView(new Project(null, new DefaultSignatureFactory()));
     SignatureFactory fact = view.getSignatureFactory();
-    JavaClassSignature declaringClassSignature = fact.getClassSignature("dummyMainClass");
+    JavaClassType declaringClassSignature = fact.getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 
@@ -63,7 +63,7 @@ public class JFieldRefTest {
   public void testJInstanceFieldRef() {
     IView view = new JavaView(new Project(null, new DefaultSignatureFactory()));
     SignatureFactory fact = view.getSignatureFactory();
-    JavaClassSignature declaringClassSignature = fact.getClassSignature("dummyMainClass");
+    JavaClassType declaringClassSignature = fact.getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 

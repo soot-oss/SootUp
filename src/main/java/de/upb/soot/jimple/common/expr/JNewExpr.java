@@ -30,8 +30,8 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.ReferenceTypeSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.ReferenceType;
+import de.upb.soot.signatures.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.Collections;
 import java.util.List;
@@ -40,9 +40,9 @@ public class JNewExpr implements Expr {
   /** */
   private static final long serialVersionUID = 2039425094688972405L;
 
-  private ReferenceTypeSignature type;
+  private ReferenceType type;
 
-  public JNewExpr(ReferenceTypeSignature type) {
+  public JNewExpr(ReferenceType type) {
     this.type = type;
   }
 
@@ -75,16 +75,16 @@ public class JNewExpr implements Expr {
   }
 
   // TODO: duplicate getter? ->getType()
-  public ReferenceTypeSignature getBaseType() {
+  public ReferenceType getBaseType() {
     return type;
   }
 
-  public void setBaseType(ReferenceTypeSignature type) {
+  public void setBaseType(ReferenceType type) {
     this.type = type;
   }
 
   @Override
-  public TypeSignature getSignature() {
+  public Type getType() {
     return type;
   }
 

@@ -5,7 +5,7 @@ import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.SignatureFactory;
 import java.util.Collection;
 import java.util.Optional;
@@ -67,17 +67,16 @@ public abstract class AbstractNamespaceTest {
     return new AsmJavaClassProvider();
   }
 
-  protected void testClassReceival(
-      AbstractNamespace ns, JavaClassSignature sig, int minClassesFound) {
+  protected void testClassReceival(AbstractNamespace ns, JavaClassType sig, int minClassesFound) {
     testClassReceival(ns, sig, minClassesFound, -1);
   }
 
   protected void testClassReceival(
-      AbstractNamespace ns, JavaClassSignature sig, int minClassesFound, int maxClassesFound) {
+      AbstractNamespace ns, JavaClassType sig, int minClassesFound, int maxClassesFound) {
     final Optional<ClassSource> clazz = ns.getClassSource(sig);
 
     Assert.assertTrue(clazz.isPresent());
-    Assert.assertEquals(sig, clazz.get().getClassSignature());
+    Assert.assertEquals(sig, clazz.get().getClassType());
 
     final Collection<ClassSource> classSources = ns.getClassSources(getSignatureFactory());
     Assert.assertNotNull(classSources);

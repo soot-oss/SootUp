@@ -29,7 +29,7 @@ import categories.Java8Test;
 import de.upb.soot.jimple.IgnoreLocalNameComparator;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.PrimitiveType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import soot.jimple.internal.JBreakpointStmt;
@@ -42,9 +42,9 @@ public class LocalTest {
 
     JimpleComparator comparator = new IgnoreLocalNameComparator();
 
-    Local l1 = new Local("$i1", PrimitiveTypeSignature.getIntSignature());
-    Local l2 = new Local("$i2", PrimitiveTypeSignature.getIntSignature());
-    Local l3 = new Local("$i1", PrimitiveTypeSignature.getBooleanSignature());
+    Local l1 = new Local("$i1", PrimitiveType.getInt());
+    Local l2 = new Local("$i2", PrimitiveType.getInt());
+    Local l3 = new Local("$i1", PrimitiveType.getBoolean());
 
     assertTrue(l1.equivTo(l1));
     assertTrue(l1.equivTo(l1, comparator));

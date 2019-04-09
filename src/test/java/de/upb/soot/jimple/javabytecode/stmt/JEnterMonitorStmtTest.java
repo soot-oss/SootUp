@@ -30,7 +30,7 @@ import categories.Java8Test;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.PrimitiveType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -41,9 +41,9 @@ public class JEnterMonitorStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    Local sandman = new Local("sandman", PrimitiveTypeSignature.getIntSignature());
-    Local night = new Local("night", PrimitiveTypeSignature.getBooleanSignature());
-    Local light = new Local("light", PrimitiveTypeSignature.getBooleanSignature());
+    Local sandman = new Local("sandman", PrimitiveType.getInt());
+    Local night = new Local("night", PrimitiveType.getBoolean());
+    Local light = new Local("light", PrimitiveType.getBoolean());
 
     IStmt stmt = new JEnterMonitorStmt(sandman, nop);
     IStmt nightStmt = new JEnterMonitorStmt(night, nop);

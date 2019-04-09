@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.Before;
@@ -17,14 +17,14 @@ import org.junit.experimental.categories.Category;
 public class InstanceofInstructionConverstionTest {
   private WalaClassLoader loader;
   private DefaultSignatureFactory sigFactory;
-  private JavaClassSignature declareClassSig;
+  private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir, null);
     sigFactory = new DefaultSignatureFactory();
-    declareClassSig = sigFactory.getClassSignature("InstanceOf");
+    declareClassSig = sigFactory.getClassType("InstanceOf");
   }
 
   @Test

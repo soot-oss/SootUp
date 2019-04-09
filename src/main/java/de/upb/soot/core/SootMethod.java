@@ -29,10 +29,10 @@ import com.google.common.collect.ImmutableList;
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import de.upb.soot.frontends.IMethodSourceContent;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.Type;
 import de.upb.soot.util.builder.BuilderException;
 import de.upb.soot.util.concurrent.Lazy;
 import java.util.Collections;
@@ -63,10 +63,10 @@ public class SootMethod extends SootClassMember implements IMethod {
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
    */
-  @Nonnull private final ImmutableList<TypeSignature> parameterTypes;
+  @Nonnull private final ImmutableList<Type> parameterTypes;
 
   /** Declared exceptions thrown by this methodRef. Created upon demand. */
-  @Nonnull protected final ImmutableList<JavaClassSignature> exceptions;
+  @Nonnull protected final ImmutableList<JavaClassType> exceptions;
 
   /** Tells this methodRef how to find out where its body lives. */
   @Nonnull private final IMethodSourceContent methodSource;
@@ -76,7 +76,7 @@ public class SootMethod extends SootClassMember implements IMethod {
       @Nonnull IMethodSourceContent source,
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
-      @Nonnull Iterable<JavaClassSignature> thrownExceptions,
+      @Nonnull Iterable<JavaClassType> thrownExceptions,
       @Nullable
           DebuggingInformation
               debugInfo // FIXME: remove Wala DebuggingInformation from this Class, IMHO it does not
@@ -90,7 +90,7 @@ public class SootMethod extends SootClassMember implements IMethod {
       @Nonnull IMethodSourceContent source,
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
-      @Nonnull Iterable<JavaClassSignature> thrownExceptions,
+      @Nonnull Iterable<JavaClassType> thrownExceptions,
       @Nullable Body activeBody,
       @Nullable
           DebuggingInformation
@@ -147,7 +147,7 @@ public class SootMethod extends SootClassMember implements IMethod {
     return !isPhantom() && !isAbstract() && !isNative();
   }
 
-  public TypeSignature getReturnTypeSignature() {
+  public Type getReturnTypeSignature() {
     return this.getSignature().getSignature();
   }
 
@@ -157,12 +157,12 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   /** Gets the type of the <i>n</i>th parameter of this methodRef. */
-  public TypeSignature getParameterType(int n) {
+  public Type getParameterType(int n) {
     return parameterTypes.get(n);
   }
 
   /** Returns a read-only list of the parameter types of this methodRef. */
-  public List<TypeSignature> getParameterTypes() {
+  public List<Type> getParameterTypes() {
     return parameterTypes;
   }
 
@@ -180,7 +180,7 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   @Nonnull
-  public List<JavaClassSignature> getExceptionSignatures() {
+  public List<JavaClassType> getExceptionSignatures() {
     return exceptions;
   }
 
@@ -253,10 +253,10 @@ public class SootMethod extends SootClassMember implements IMethod {
     builder.append("(");
 
     // parameters
-    Iterator<TypeSignature> typeIt = this.getParameterTypes().iterator();
+    Iterator<Type> typeIt = this.getParameterTypes().iterator();
     // int count = 0;
     while (typeIt.hasNext()) {
-      TypeSignature t = typeIt.next();
+      Type t = typeIt.next();
       builder.append(t.toQuotedString());
       if (typeIt.hasNext()) {
         builder.append(", ");
@@ -265,7 +265,7 @@ public class SootMethod extends SootClassMember implements IMethod {
     builder.append(")");
 
     // Print exceptions
-    Iterator<JavaClassSignature> exceptionIt = this.getExceptionSignatures().iterator();
+    Iterator<JavaClassType> exceptionIt = this.getExceptionSignatures().iterator();
 
     if (exceptionIt.hasNext()) {
       builder.append(" throws ").append(exceptionIt.next().toQuotedString());
@@ -336,7 +336,7 @@ public class SootMethod extends SootClassMember implements IMethod {
        * @return This fluent builder.
        */
       @Nonnull
-      ActiveBodyStep withThrownExceptions(@Nonnull Iterable<JavaClassSignature> value);
+      ActiveBodyStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value);
     }
 
     interface ActiveBodyStep extends DebugStep {
@@ -470,7 +470,7 @@ public class SootMethod extends SootClassMember implements IMethod {
       return this;
     }
 
-    @Nullable private Iterable<JavaClassSignature> _thrownExceptions = Collections.emptyList();
+    @Nullable private Iterable<JavaClassType> _thrownExceptions = Collections.emptyList();
 
     /**
      * Gets the thrown exceptions.
@@ -478,7 +478,7 @@ public class SootMethod extends SootClassMember implements IMethod {
      * @return The value to get.
      */
     @Nonnull
-    protected Iterable<JavaClassSignature> getThrownExceptions() {
+    protected Iterable<JavaClassType> getThrownExceptions() {
       return ensureValue(this._thrownExceptions, "thrownExceptions");
     }
 
@@ -488,7 +488,7 @@ public class SootMethod extends SootClassMember implements IMethod {
      * @param value The value to set.
      */
     @Nonnull
-    public ActiveBodyStep withThrownExceptions(@Nonnull Iterable<JavaClassSignature> value) {
+    public ActiveBodyStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value) {
       this._thrownExceptions = value;
 
       return this;

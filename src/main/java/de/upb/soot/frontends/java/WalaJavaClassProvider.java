@@ -5,7 +5,7 @@ import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import java.nio.file.Path;
 
 /** @author Linghui Luo */
@@ -13,7 +13,7 @@ public class WalaJavaClassProvider implements IClassProvider {
 
   @Override
   public ClassSource createClassSource(
-      INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {
+      INamespace srcNamespace, Path sourcePath, JavaClassType classSignature) {
     // TODO Auto-generated methodRef stub
     return null;
   }

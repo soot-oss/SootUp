@@ -22,10 +22,10 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
-import de.upb.soot.signatures.VoidTypeSignature;
+import de.upb.soot.signatures.PrimitiveType;
+import de.upb.soot.signatures.VoidType;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,7 +63,7 @@ class DummyMethodSource implements IMethodSourceContent {
 
 public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
-  JavaClassSignature classSignature;
+  JavaClassType classSignature;
 
   @Override
   public void build() {
@@ -75,23 +75,21 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
         new JavaClassSource(
             new JavaClassPathNamespace("src/main/java/de/upb/soot"),
             dummyPath,
-            dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
+            dsm.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"));
 
-    JavaClassSignature superClassSignature = dsm.getClassSignature("java.lang.Object");
-    classSignature = dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt");
+    JavaClassType superClassSignature = dsm.getClassType("java.lang.Object");
+    classSignature = dsm.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
 
     Set<SootField> fields = new LinkedHashSet<>();
 
     // Decl field
     fields.add(
         new SootField(
-            dsm.getFieldSignature(
-                "declProperty", classSignature, PrimitiveTypeSignature.getIntSignature()),
+            dsm.getFieldSignature("declProperty", classSignature, PrimitiveType.getInt()),
             EnumSet.noneOf(Modifier.class)));
 
     FieldSignature initFieldSignature =
-        dsm.getFieldSignature(
-            "initProperty", classSignature, PrimitiveTypeSignature.getIntSignature());
+        dsm.getFieldSignature("initProperty", classSignature, PrimitiveType.getInt());
 
     // Init field
     fields.add(new SootField(initFieldSignature, EnumSet.noneOf(Modifier.class)));
@@ -127,18 +125,14 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     MethodSignature methodSignature =
         dsm.getMethodSignature(
-            "<init>",
-            classSignature,
-            VoidTypeSignature.getInstance().toString(),
-            Arrays.asList(""));
+            "<init>", classSignature, VoidType.getInstance().toString(), Arrays.asList(""));
     AstMethod.DebuggingInformation debugInfo = null;
 
     List<Local> locals = new LinkedList<>();
     List<Trap> traps = new LinkedList<>();
     List<IStmt> stmts = new LinkedList<>();
 
-    JavaClassSignature typeSignature =
-        dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt");
+    JavaClassType typeSignature = dsm.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
     //    new RefType(view, dsm.getTypeSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
     //    RefType type = RefType.getInstance("de.upb.soot.instructions.stmt.IdentityStmt");
 

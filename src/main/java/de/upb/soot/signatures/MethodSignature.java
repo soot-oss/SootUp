@@ -29,10 +29,10 @@ import javax.annotation.Nonnull;
 public class MethodSignature extends AbstractClassMemberSignature {
 
   protected MethodSignature(
-      JavaClassSignature declaringClassSignature,
+      JavaClassType declaringClassSignature,
       String methodName,
-      Iterable<TypeSignature> parameters,
-      TypeSignature fqReturnType) {
+      Iterable<Type> parameters,
+      Type fqReturnType) {
     this(declaringClassSignature, new MethodSubSignature(methodName, parameters, fqReturnType));
   }
 
@@ -44,8 +44,7 @@ public class MethodSignature extends AbstractClassMemberSignature {
    * @param subSignature the sub-signature
    */
   protected MethodSignature(
-      final @Nonnull JavaClassSignature declaringClass,
-      final @Nonnull MethodSubSignature subSignature) {
+      final @Nonnull JavaClassType declaringClass, final @Nonnull MethodSubSignature subSignature) {
     super(declaringClass, subSignature);
 
     this._subSignature = subSignature;
@@ -61,7 +60,7 @@ public class MethodSignature extends AbstractClassMemberSignature {
 
   /** The methodRef's parameters' signatures. */
   @Nonnull
-  public List<TypeSignature> getParameterSignatures() {
+  public List<Type> getParameterSignatures() {
     return this.getSubSignature().getParameterSignatures();
   }
 }

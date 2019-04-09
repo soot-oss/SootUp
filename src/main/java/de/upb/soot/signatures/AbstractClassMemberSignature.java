@@ -13,12 +13,12 @@ import javax.annotation.Nonnull;
 public abstract class AbstractClassMemberSignature implements ISignature {
 
   /** The signature of the declaring class. */
-  @Nonnull private final JavaClassSignature declClassSignature;
+  @Nonnull private final JavaClassType declClassSignature;
 
   @Nonnull private final AbstractClassMemberSubSignature subSignature;
 
   public AbstractClassMemberSignature(
-      @Nonnull JavaClassSignature klass, @Nonnull AbstractClassMemberSubSignature subSignature) {
+      @Nonnull JavaClassType klass, @Nonnull AbstractClassMemberSubSignature subSignature) {
     this.declClassSignature = klass;
     this.subSignature = subSignature;
   }
@@ -53,11 +53,11 @@ public abstract class AbstractClassMemberSignature implements ISignature {
 
   /** The signature of the declaring class. */
   @Nonnull
-  public JavaClassSignature getDeclClassSignature() {
+  public JavaClassType getDeclClassSignature() {
     return declClassSignature;
   }
 
-  public TypeSignature getSignature() {
+  public Type getSignature() {
     return subSignature.getSignature();
   }
 

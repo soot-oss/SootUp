@@ -2,6 +2,7 @@ package de.upb.soot.core;
 
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.ISignature;
+import de.upb.soot.signatures.Type;
 import de.upb.soot.views.IView;
 import java.util.Optional;
 import java.util.Set;
@@ -27,7 +28,7 @@ public abstract class AbstractClass {
 
   public abstract String getName();
 
-  public abstract ISignature getSignature();
+  public abstract Type getType();
 
   @Nonnull
   public Optional<? extends IMethod> getMethod(@Nonnull ISignature signature) {

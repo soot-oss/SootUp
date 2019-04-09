@@ -3,10 +3,10 @@ package de.upb.soot.frontends.asm;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
-import de.upb.soot.signatures.TypeSignature;
-import de.upb.soot.signatures.VoidTypeSignature;
+import de.upb.soot.signatures.JavaClassType;
+import de.upb.soot.signatures.PrimitiveType;
+import de.upb.soot.signatures.Type;
+import de.upb.soot.signatures.VoidType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -96,9 +96,8 @@ public final class AsmUtil {
    * @param type the type to check.
    * @return {@code true} if its a dword type.
    */
-  public static boolean isDWord(@Nonnull TypeSignature type) {
-    return type == PrimitiveTypeSignature.getLongSignature()
-        || type == PrimitiveTypeSignature.getDoubleSignature();
+  public static boolean isDWord(@Nonnull Type type) {
+    return type == PrimitiveType.getLong() || type == PrimitiveType.getDouble();
   }
 
   /**
@@ -124,7 +123,7 @@ public final class AsmUtil {
   }
 
   @Nonnull
-  public static TypeSignature toJimpleType(@Nonnull String desc) {
+  public static Type toJimpleType(@Nonnull String desc) {
     int idx = desc.lastIndexOf('[');
     int nrDims = idx + 1;
     if (nrDims > 0) {
@@ -133,34 +132,34 @@ public final class AsmUtil {
       }
       desc = desc.substring(idx + 1);
     }
-    TypeSignature baseType;
+    Type baseType;
     switch (desc.charAt(0)) {
       case 'Z':
-        baseType = PrimitiveTypeSignature.getBooleanSignature();
+        baseType = PrimitiveType.getBoolean();
         break;
       case 'B':
-        baseType = PrimitiveTypeSignature.getByteSignature();
+        baseType = PrimitiveType.getByteSignature();
         break;
       case 'C':
-        baseType = PrimitiveTypeSignature.getCharSignature();
+        baseType = PrimitiveType.getChar();
         break;
       case 'S':
-        baseType = PrimitiveTypeSignature.getShortSignature();
+        baseType = PrimitiveType.getShort();
         break;
       case 'I':
-        baseType = PrimitiveTypeSignature.getIntSignature();
+        baseType = PrimitiveType.getInt();
         break;
       case 'F':
-        baseType = PrimitiveTypeSignature.getFloatSignature();
+        baseType = PrimitiveType.getFloat();
         break;
       case 'J':
-        baseType = PrimitiveTypeSignature.getLongSignature();
+        baseType = PrimitiveType.getLong();
         break;
       case 'D':
-        baseType = PrimitiveTypeSignature.getDoubleSignature();
+        baseType = PrimitiveType.getDouble();
         break;
       case 'V':
-        baseType = VoidTypeSignature.getInstance();
+        baseType = VoidType.getInstance();
         break;
       case 'L':
         if (desc.charAt(desc.length() - 1) != ';') {
@@ -168,28 +167,28 @@ public final class AsmUtil {
         }
         String name = desc.substring(1, desc.length() - 1);
         name = toQualifiedName(name);
-        baseType = DefaultSignatureFactory.getInstance().getTypeSignature(toQualifiedName(name));
+        baseType = DefaultSignatureFactory.getInstance().getType(toQualifiedName(name));
         break;
       default:
         throw new AssertionError("Unknown descriptor: " + desc);
     }
-    if (!(baseType instanceof JavaClassSignature) && desc.length() > 1) {
+    if (!(baseType instanceof JavaClassType) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
     return nrDims > 0
-        ? DefaultSignatureFactory.getInstance().getArrayTypeSignature(baseType, nrDims)
+        ? DefaultSignatureFactory.getInstance().getArrayType(baseType, nrDims)
         : baseType;
   }
 
   @Nonnull
-  public static List<TypeSignature> toJimpleSignatureDesc(@Nonnull String desc) {
-    List<TypeSignature> types = new ArrayList<>(2);
+  public static List<Type> toJimpleSignatureDesc(@Nonnull String desc) {
+    List<Type> types = new ArrayList<>(2);
     int len = desc.length();
     int idx = 0;
     all:
     while (idx != len) {
       int nrDims = 0;
-      TypeSignature baseType = null;
+      Type baseType = null;
       this_type:
       while (idx != len) {
         char c = desc.charAt(idx++);
@@ -201,31 +200,31 @@ public final class AsmUtil {
             ++nrDims;
             continue this_type;
           case 'Z':
-            baseType = PrimitiveTypeSignature.getBooleanSignature();
+            baseType = PrimitiveType.getBoolean();
             break this_type;
           case 'B':
-            baseType = PrimitiveTypeSignature.getByteSignature();
+            baseType = PrimitiveType.getByteSignature();
             break this_type;
           case 'C':
-            baseType = PrimitiveTypeSignature.getCharSignature();
+            baseType = PrimitiveType.getChar();
             break this_type;
           case 'S':
-            baseType = PrimitiveTypeSignature.getShortSignature();
+            baseType = PrimitiveType.getShort();
             break this_type;
           case 'I':
-            baseType = PrimitiveTypeSignature.getIntSignature();
+            baseType = PrimitiveType.getInt();
             break this_type;
           case 'F':
-            baseType = PrimitiveTypeSignature.getFloatSignature();
+            baseType = PrimitiveType.getFloat();
             break this_type;
           case 'J':
-            baseType = PrimitiveTypeSignature.getLongSignature();
+            baseType = PrimitiveType.getLong();
             break this_type;
           case 'D':
-            baseType = PrimitiveTypeSignature.getDoubleSignature();
+            baseType = PrimitiveType.getDouble();
             break this_type;
           case 'V':
-            baseType = VoidTypeSignature.getInstance();
+            baseType = VoidType.getInstance();
             break this_type;
           case 'L':
             int begin = idx;
@@ -236,7 +235,7 @@ public final class AsmUtil {
             }
 
             String cls = desc.substring(begin, idx++);
-            baseType = DefaultSignatureFactory.getInstance().getTypeSignature(toQualifiedName(cls));
+            baseType = DefaultSignatureFactory.getInstance().getType(toQualifiedName(cls));
             break this_type;
           default:
             throw new AssertionError("Unknown type: " + c);
@@ -244,7 +243,7 @@ public final class AsmUtil {
       }
 
       if (baseType != null && nrDims > 0) {
-        types.add(DefaultSignatureFactory.getInstance().getArrayTypeSignature(baseType, nrDims));
+        types.add(DefaultSignatureFactory.getInstance().getArrayType(baseType, nrDims));
 
       } else {
         types.add(baseType);
@@ -254,14 +253,13 @@ public final class AsmUtil {
   }
 
   @Nonnull
-  public static Collection<JavaClassSignature> asmIdToSignature(
-      @Nullable Iterable<String> modules) {
+  public static Collection<JavaClassType> asmIdToSignature(@Nullable Iterable<String> modules) {
     if (modules == null) {
       return Collections.emptyList();
     }
 
     return StreamSupport.stream(modules.spliterator(), false)
-        .map(p -> (DefaultSignatureFactory.getInstance().getClassSignature(toQualifiedName(p))))
+        .map(p -> (DefaultSignatureFactory.getInstance().getClassType(toQualifiedName(p))))
         .collect(Collectors.toList());
   }
 }

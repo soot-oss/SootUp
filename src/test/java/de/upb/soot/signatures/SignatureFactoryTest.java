@@ -72,8 +72,8 @@ public class SignatureFactoryTest {
   @Test
   public void eqPackageSignature3() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
-    JavaClassSignature classSignature2 = signatureFactory.getClassSignature("System", "java.lang");
+    JavaClassType classSignature1 = signatureFactory.getClassType("System", "java.lang");
+    JavaClassType classSignature2 = signatureFactory.getClassType("System", "java.lang");
     PackageSignature packageSignature1 = classSignature1.getPackageSignature();
     PackageSignature packageSignature2 = classSignature2.getPackageSignature();
     boolean sameObject = packageSignature1.equals(packageSignature2);
@@ -92,8 +92,8 @@ public class SignatureFactoryTest {
   @Test
   public void getClassSignature() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
-    JavaClassSignature classSignature2 = signatureFactory.getClassSignature("System", "java.lang");
+    JavaClassType classSignature1 = signatureFactory.getClassType("System", "java.lang");
+    JavaClassType classSignature2 = signatureFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
     boolean sameObject = classSignature1 == classSignature2;
     assertFalse(sameObject);
@@ -102,8 +102,8 @@ public class SignatureFactoryTest {
   @Test
   public void getCompareClassSignature2() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
-    JavaClassSignature classSignature2 = signatureFactory.getClassSignature("System", "java.lang");
+    JavaClassType classSignature1 = signatureFactory.getClassType("System", "java.lang");
+    JavaClassType classSignature2 = signatureFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
     assertEquals(classSignature1, classSignature2);
   }
@@ -111,7 +111,7 @@ public class SignatureFactoryTest {
   @Test
   public void getCompareClassSignature3() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
+    JavaClassType classSignature1 = signatureFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
     boolean sameObject = classSignature1.equals(classSignature1);
     assertTrue(sameObject);
@@ -120,8 +120,8 @@ public class SignatureFactoryTest {
   @Test
   public void getCompareClassSignature() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
-    JavaClassSignature classSignature2 = null;
+    JavaClassType classSignature1 = signatureFactory.getClassType("System", "java.lang");
+    JavaClassType classSignature2 = null;
     // Class Signatures are unique but not their package
     boolean sameObject = classSignature1.equals(classSignature2);
     assertFalse(sameObject);
@@ -130,7 +130,7 @@ public class SignatureFactoryTest {
   @Test
   public void sigToPath() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
+    JavaClassType classSignature1 = signatureFactory.getClassType("System", "java.lang");
     Path path = classSignature1.toPath(FileType.CLASS);
     // Class Signatures are unique but not their package
     assertEquals(
@@ -141,7 +141,7 @@ public class SignatureFactoryTest {
   public void sigFromPath() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
     Path p = Paths.get("java/lang/System.class");
-    JavaClassSignature classSignature = signatureFactory.fromPath(p);
+    JavaClassType classSignature = signatureFactory.fromPath(p);
     assertEquals(classSignature.toString(), "java.lang.System");
   }
 
@@ -149,15 +149,15 @@ public class SignatureFactoryTest {
   public void sigFromPathStartsWithSlash() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
     Path p = Paths.get("/java/lang/System.class");
-    JavaClassSignature classSignature = signatureFactory.fromPath(p);
+    JavaClassType classSignature = signatureFactory.fromPath(p);
     assertEquals(classSignature.toString(), "java.lang.System");
   }
 
   @Test
   public void getClassSignatureEmptyPackage() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("A", "");
-    JavaClassSignature classSignature2 = signatureFactory.getClassSignature("A");
+    JavaClassType classSignature1 = signatureFactory.getClassType("A", "");
+    JavaClassType classSignature2 = signatureFactory.getClassType("A");
     // Class Signatures are unique but not their package
     boolean sameObject = classSignature1 == classSignature2;
     assertFalse(sameObject);
@@ -174,8 +174,8 @@ public class SignatureFactoryTest {
   @Test
   public void getClassSignatureFullyQualified() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("java.lang.System");
-    JavaClassSignature classSignature2 = signatureFactory.getClassSignature("System", "java.lang");
+    JavaClassType classSignature1 = signatureFactory.getClassType("java.lang.System");
+    JavaClassType classSignature2 = signatureFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
     boolean sameObject = classSignature1 == classSignature2;
     assertFalse(sameObject);
@@ -184,10 +184,8 @@ public class SignatureFactoryTest {
   @Test
   public void getInnerClassSignature() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature1 =
-        signatureFactory.getClassSignature("java.lang.System$MyClass");
-    JavaClassSignature classSignature2 =
-        signatureFactory.getClassSignature("System$MyClass", "java.lang");
+    JavaClassType classSignature1 = signatureFactory.getClassType("java.lang.System$MyClass");
+    JavaClassType classSignature2 = signatureFactory.getClassType("System$MyClass", "java.lang");
     // Class Signatures are unique but not their package
     boolean sameObject = classSignature1 == classSignature2;
     assertFalse(sameObject);
@@ -199,8 +197,8 @@ public class SignatureFactoryTest {
   @Test
   public void getClassSignaturesPackage() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
-    JavaClassSignature classSignature2 = signatureFactory.getClassSignature("System", "java.lang");
+    JavaClassType classSignature1 = signatureFactory.getClassType("System", "java.lang");
+    JavaClassType classSignature2 = signatureFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
     boolean samePackageSignature =
         classSignature1.getPackageSignature() == classSignature2.getPackageSignature();
@@ -214,9 +212,9 @@ public class SignatureFactoryTest {
   @Test
   public void getMethodSignature() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature declClass = signatureFactory.getClassSignature("System", "java.lang");
-    JavaClassSignature parameter = signatureFactory.getClassSignature("java.lang.Class");
-    JavaClassSignature returnType = signatureFactory.getClassSignature("java.lang.A");
+    JavaClassType declClass = signatureFactory.getClassType("System", "java.lang");
+    JavaClassType parameter = signatureFactory.getClassType("java.lang.Class");
+    JavaClassType returnType = signatureFactory.getClassType("java.lang.A");
 
     List<String> parameters = Collections.singletonList("java.lang.Class");
 
@@ -266,7 +264,7 @@ public class SignatureFactoryTest {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
 
     List<String> parameters = Collections.emptyList();
-    JavaClassSignature classSignature = signatureFactory.getClassSignature("java.lang.System");
+    JavaClassType classSignature = signatureFactory.getClassType("java.lang.System");
     MethodSignature methodSignature =
         signatureFactory.getMethodSignature("foo", classSignature, "void", parameters);
     assertEquals("<java.lang.System: void foo()>", methodSignature.toString());
@@ -276,7 +274,7 @@ public class SignatureFactoryTest {
   @Test
   public void getFieldSignature() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature = signatureFactory.getClassSignature("java.lang.System");
+    JavaClassType classSignature = signatureFactory.getClassType("java.lang.System");
     FieldSignature fieldSignature =
         signatureFactory.getFieldSignature("foo", classSignature, "int");
     assertEquals("<java.lang.System: int foo>" + "", fieldSignature.toString());
@@ -316,8 +314,8 @@ public class SignatureFactoryTest {
   @Test
   public void getTypeSignature() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature1 = signatureFactory.getClassSignature("System", "java.lang");
-    TypeSignature classSignature2 = signatureFactory.getTypeSignature("java.lang.System");
+    JavaClassType classSignature1 = signatureFactory.getClassType("System", "java.lang");
+    Type classSignature2 = signatureFactory.getType("java.lang.System");
     assertEquals(classSignature1, classSignature2);
   }
 
@@ -325,84 +323,84 @@ public class SignatureFactoryTest {
   public void getTypeSignatureTypes() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
 
-    TypeSignature byteSig = signatureFactory.getTypeSignature("byte");
-    assertSame(byteSig, PrimitiveTypeSignature.getByteSignature());
+    Type byteSig = signatureFactory.getType("byte");
+    assertSame(byteSig, PrimitiveType.getByteSignature());
     assertSame("byte", byteSig.toString());
 
-    TypeSignature shortSig = signatureFactory.getTypeSignature("SHORT");
-    assertSame(shortSig, PrimitiveTypeSignature.getShortSignature());
+    Type shortSig = signatureFactory.getType("SHORT");
+    assertSame(shortSig, PrimitiveType.getShort());
     assertSame("short", shortSig.toString());
 
-    TypeSignature intSig = signatureFactory.getTypeSignature("int");
-    assertSame(intSig, PrimitiveTypeSignature.getIntSignature());
+    Type intSig = signatureFactory.getType("int");
+    assertSame(intSig, PrimitiveType.getInt());
     assertSame("int", intSig.toString());
 
-    TypeSignature longSig = signatureFactory.getTypeSignature("loNg");
-    assertSame(longSig, PrimitiveTypeSignature.getLongSignature());
+    Type longSig = signatureFactory.getType("loNg");
+    assertSame(longSig, PrimitiveType.getLong());
     assertSame("long", longSig.toString());
 
-    TypeSignature floatSig = signatureFactory.getTypeSignature("floAt");
-    assertSame(floatSig, PrimitiveTypeSignature.getFloatSignature());
+    Type floatSig = signatureFactory.getType("floAt");
+    assertSame(floatSig, PrimitiveType.getFloat());
     assertSame("float", floatSig.toString());
 
-    TypeSignature doubleSig = signatureFactory.getTypeSignature("doUble");
-    assertSame(doubleSig, PrimitiveTypeSignature.getDoubleSignature());
+    Type doubleSig = signatureFactory.getType("doUble");
+    assertSame(doubleSig, PrimitiveType.getDouble());
     assertSame("double", doubleSig.toString());
 
-    TypeSignature charSig = signatureFactory.getTypeSignature("chaR");
-    assertSame(charSig, PrimitiveTypeSignature.getCharSignature());
+    Type charSig = signatureFactory.getType("chaR");
+    assertSame(charSig, PrimitiveType.getChar());
     assertSame("char", charSig.toString());
 
-    TypeSignature boolSig = signatureFactory.getTypeSignature("boolean");
-    assertSame(boolSig, PrimitiveTypeSignature.getBooleanSignature());
+    Type boolSig = signatureFactory.getType("boolean");
+    assertSame(boolSig, PrimitiveType.getBoolean());
     assertSame("boolean", boolSig.toString());
 
-    TypeSignature nullSig = signatureFactory.getTypeSignature("nuLl");
-    assertSame(nullSig, NullTypeSignature.getInstance());
+    Type nullSig = signatureFactory.getType("nuLl");
+    assertSame(nullSig, NullType.getInstance());
     assertSame("null", nullSig.toString());
 
-    TypeSignature voidSig = signatureFactory.getTypeSignature("void");
-    assertSame(voidSig, VoidTypeSignature.getInstance());
+    Type voidSig = signatureFactory.getType("void");
+    assertSame(voidSig, VoidType.getInstance());
     assertSame("void", voidSig.toString());
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void getTypeSignatureArray() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    TypeSignature classSignature2 = signatureFactory.getTypeSignature("java.lang.System[[]");
+    Type classSignature2 = signatureFactory.getType("java.lang.System[[]");
   }
 
   @Test
   public void getTypeSignatureArray2() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    TypeSignature base = signatureFactory.getTypeSignature("int");
+    Type base = signatureFactory.getType("int");
 
-    TypeSignature classSignature2 = signatureFactory.getTypeSignature("int[]");
-    assertTrue(classSignature2 instanceof ArrayTypeSignature);
-    assertEquals(((ArrayTypeSignature) classSignature2).getDimension(), 1);
-    assertEquals(((ArrayTypeSignature) classSignature2).getBaseType(), base);
+    Type classSignature2 = signatureFactory.getType("int[]");
+    assertTrue(classSignature2 instanceof ArrayType);
+    assertEquals(((ArrayType) classSignature2).getDimension(), 1);
+    assertEquals(((ArrayType) classSignature2).getBaseType(), base);
   }
 
   @Test
   public void getTypeSignatureArray3() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    TypeSignature base = signatureFactory.getTypeSignature("int");
+    Type base = signatureFactory.getType("int");
 
-    TypeSignature classSignature2 = signatureFactory.getTypeSignature("int[][][][][]");
-    assertTrue(classSignature2 instanceof ArrayTypeSignature);
-    assertEquals(((ArrayTypeSignature) classSignature2).getDimension(), 5);
-    assertEquals(((ArrayTypeSignature) classSignature2).getBaseType(), base);
+    Type classSignature2 = signatureFactory.getType("int[][][][][]");
+    assertTrue(classSignature2 instanceof ArrayType);
+    assertEquals(((ArrayType) classSignature2).getDimension(), 5);
+    assertEquals(((ArrayType) classSignature2).getBaseType(), base);
   }
 
   @Test
   public void getTypeSignatureArray4() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    TypeSignature base = signatureFactory.getTypeSignature("java.lang.Fantasy");
+    Type base = signatureFactory.getType("java.lang.Fantasy");
 
-    TypeSignature classSignature2 = signatureFactory.getTypeSignature("java.lang.Fantasy[]");
-    assertTrue(classSignature2 instanceof ArrayTypeSignature);
-    assertEquals(((ArrayTypeSignature) classSignature2).getDimension(), 1);
-    assertEquals(((ArrayTypeSignature) classSignature2).getBaseType(), base);
+    Type classSignature2 = signatureFactory.getType("java.lang.Fantasy[]");
+    assertTrue(classSignature2 instanceof ArrayType);
+    assertEquals(((ArrayType) classSignature2).getDimension(), 1);
+    assertEquals(((ArrayType) classSignature2).getBaseType(), base);
   }
 
   @Test(expected = NullPointerException.class)
@@ -414,6 +412,6 @@ public class SignatureFactoryTest {
   @Test(expected = NullPointerException.class)
   public void checkNullPackage2() {
     SignatureFactory signatureFactory = new DefaultSignatureFactory();
-    JavaClassSignature classSignature = signatureFactory.getClassSignature("A", null);
+    JavaClassType classSignature = signatureFactory.getClassType("A", null);
   }
 }

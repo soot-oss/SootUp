@@ -6,8 +6,8 @@ import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.Type;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,8 +26,8 @@ public abstract class AbstractView implements IView {
   @Nonnull protected final Project project;
   protected final Options options;
 
-  //  protected final Set<ReferenceTypeSignature> refTypes;
-  protected final Map<ISignature, AbstractClass> classes;
+  //  protected final Set<ReferenceType> refTypes;
+  protected final Map<Type, AbstractClass> classes;
 
   public AbstractView(@Nonnull Project project) {
     this.project = project;
@@ -43,11 +43,11 @@ public abstract class AbstractView implements IView {
   }
 
   //  @Override
-  //  public @Nonnull JavaClassSignature getRefType(@Nonnull TypeSignature classSignature) {
-  //    Optional<ReferenceTypeSignature> op = this.refTypes.stream().filter(r ->
+  //  public @Nonnull JavaClassType getRefType(@Nonnull Type classSignature) {
+  //    Optional<ReferenceType> op = this.refTypes.stream().filter(r ->
   // r.getTypeSignature().equals(classSignature)).findFirst();
   //    if (!op.isPresent()) {
-  //      ReferenceTypeSignature refType =
+  //      ReferenceType refType =
   // DefaultSignatureFactory.getInstance().getClassSignature(classSignature);
   //      this.refTypes.add(refType);
   //      return refType;
@@ -57,7 +57,7 @@ public abstract class AbstractView implements IView {
 
   @Override
   public void addClass(@Nonnull AbstractClass klass) {
-    this.classes.put(klass.getSignature(), klass);
+    this.classes.put(klass.getType(), klass);
   }
 
   @Override

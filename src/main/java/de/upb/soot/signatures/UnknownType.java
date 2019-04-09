@@ -24,21 +24,25 @@ package de.upb.soot.signatures;
 
 import javax.annotation.Nonnull;
 
-/** Represents Java's 'void' type as methods return's type. */
-public class VoidTypeSignature extends TypeSignature {
+/**
+ * Represents a signature for an unknown type.
+ *
+ * @author Jan Martin Persch
+ */
+public class UnknownType extends Type {
 
-  @Nonnull private static final VoidTypeSignature INSTANCE = new VoidTypeSignature();
+  @Nonnull private static final UnknownType INSTANCE = new UnknownType();
 
   @Nonnull
-  public static VoidTypeSignature getInstance() {
+  public static UnknownType getInstance() {
     return INSTANCE;
   }
 
-  private VoidTypeSignature() {}
+  private UnknownType() {}
 
   @Override
   @Nonnull
   public String toString() {
-    return "void";
+    return "unknown";
   }
 }

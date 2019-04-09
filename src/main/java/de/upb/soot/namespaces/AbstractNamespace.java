@@ -3,7 +3,7 @@ package de.upb.soot.namespaces;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
 /**
  * Basic implementation of {@link INamespace}, encapsulating common behavior. Also used to keep the
  * {@link INamespace} interface clean from internal methods like {@link
- * AbstractNamespace#getClassSource(JavaClassSignature)}.
+ * AbstractNamespace#getClassSource(JavaClassType)}.
  *
  * @author Manuel Benz created on 22.05.18
  */
@@ -82,6 +82,5 @@ public abstract class AbstractNamespace implements INamespace {
   }
 
   @Override
-  public abstract @Nonnull Optional<ClassSource> getClassSource(
-      @Nonnull JavaClassSignature classSignature);
+  public abstract @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassType classSignature);
 }

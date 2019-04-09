@@ -21,10 +21,9 @@ public abstract class AbstractClassMemberSubSignature {
   // region Constructor
 
   /** Creates a new instance of the {@link AbstractClassMemberSubSignature} class. */
-  protected AbstractClassMemberSubSignature(
-      @Nonnull String name, @Nonnull TypeSignature typeSignature) {
+  protected AbstractClassMemberSubSignature(@Nonnull String name, @Nonnull Type type) {
     this._name = name;
-    this._typeSignature = typeSignature;
+    this._type = type;
   }
 
   // endregion /Constructor/
@@ -43,7 +42,7 @@ public abstract class AbstractClassMemberSubSignature {
     return this._name;
   }
 
-  @Nonnull private final TypeSignature _typeSignature;
+  @Nonnull private final Type _type;
 
   /**
    * Gets the type.
@@ -51,8 +50,8 @@ public abstract class AbstractClassMemberSubSignature {
    * @return The value to get.
    */
   @Nonnull
-  public TypeSignature getSignature() {
-    return this._typeSignature;
+  public Type getSignature() {
+    return this._type;
   }
 
   // endregion /Properties/
@@ -89,7 +88,7 @@ public abstract class AbstractClassMemberSubSignature {
 
   @Nonnull
   public abstract AbstractClassMemberSignature toFullSignature(
-      @Nonnull JavaClassSignature declClassSignature);
+      @Nonnull JavaClassType declClassSignature);
 
   private final Lazy<String> _cachedToString =
       Utils.synchronizedLazy(() -> String.format("%s %s", getSignature(), getName()));

@@ -27,13 +27,13 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
    *
    * @param name The method name.
    * @param parameterSignatures The signatures of the method parameters.
-   * @param typeSignature The return type signature.
+   * @param type The return type signature.
    */
   public MethodSubSignature(
       @Nonnull String name,
-      @Nonnull Iterable<? extends TypeSignature> parameterSignatures,
-      @Nonnull TypeSignature typeSignature) {
-    super(name, typeSignature);
+      @Nonnull Iterable<? extends Type> parameterSignatures,
+      @Nonnull Type type) {
+    super(name, type);
 
     this._parameterSignatures = ImmutableList.copyOf(parameterSignatures);
   }
@@ -42,7 +42,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
 
   // region Properties
 
-  @Nonnull private final List<TypeSignature> _parameterSignatures;
+  @Nonnull private final List<Type> _parameterSignatures;
 
   /**
    * Gets the parameters in an immutable list.
@@ -50,7 +50,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
    * @return The value to get.
    */
   @Nonnull
-  public List<TypeSignature> getParameterSignatures() {
+  public List<Type> getParameterSignatures() {
     return this._parameterSignatures;
   }
 
@@ -89,7 +89,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
 
   @Override
   @Nonnull
-  public MethodSignature toFullSignature(@Nonnull JavaClassSignature declClassSignature) {
+  public MethodSignature toFullSignature(@Nonnull JavaClassType declClassSignature) {
     return new MethodSignature(declClassSignature, this);
   }
 

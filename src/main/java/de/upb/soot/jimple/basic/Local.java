@@ -27,7 +27,7 @@ package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.visitor.IJimpleValueVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.Type;
 import de.upb.soot.util.Numberable;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.Collections;
@@ -44,10 +44,10 @@ public class Local implements Value, Numberable, Immediate {
   private static final long serialVersionUID = 4469815713329368282L;
 
   protected String name;
-  TypeSignature type;
+  Type type;
 
   /** Constructs a JimpleLocal of the given name and type. */
-  public Local(String name, TypeSignature type) {
+  public Local(String name, Type type) {
     setName(name);
     setType(type);
   }
@@ -87,12 +87,12 @@ public class Local implements Value, Numberable, Immediate {
 
   /** Returns the type of this local. */
   @Override
-  public TypeSignature getSignature() {
+  public Type getType() {
     return type;
   }
 
   /** Sets the type of this local. */
-  public void setType(TypeSignature t) {
+  public void setType(Type t) {
     this.type = t;
   }
 

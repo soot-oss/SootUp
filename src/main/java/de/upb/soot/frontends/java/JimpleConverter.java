@@ -28,16 +28,16 @@ import de.upb.soot.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
-import de.upb.soot.signatures.ArrayTypeSignature;
+import de.upb.soot.signatures.ArrayType;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.NullTypeSignature;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
-import de.upb.soot.signatures.ReferenceTypeSignature;
-import de.upb.soot.signatures.TypeSignature;
-import de.upb.soot.signatures.UnknownTypeSignature;
-import de.upb.soot.signatures.VoidTypeSignature;
+import de.upb.soot.signatures.NullType;
+import de.upb.soot.signatures.PrimitiveType;
+import de.upb.soot.signatures.ReferenceType;
+import de.upb.soot.signatures.Type;
+import de.upb.soot.signatures.UnknownType;
+import de.upb.soot.signatures.VoidType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,7 +56,6 @@ import soot.SootMethodRef;
 import soot.SootResolver;
 import soot.Trap;
 import soot.Unit;
-import soot.UnknownType;
 import soot.Value;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
@@ -93,12 +92,12 @@ public class JimpleConverter {
 
     // convert parents
     if (fromClass.hasSuperclass()) {
-      Optional<JavaClassSignature> superClass = fromClass.getSuperclass();
+      Optional<JavaClassType> superClass = fromClass.getSuperclass();
       soot.SootClass s = getSootClass(superClass, fromClass.getSuperclassSignature());
       toClass.setSuperclass(s);
     }
     if (fromClass.hasOuterClass()) {
-      Optional<JavaClassSignature> outClass = fromClass.getOuterClass();
+      Optional<JavaClassType> outClass = fromClass.getOuterClass();
       soot.SootClass o = getSootClass(outClass, fromClass.getOuterClassSignature());
       toClass.setOuterClass(o);
     }
@@ -144,7 +143,7 @@ public class JimpleConverter {
   public soot.SootMethod convertSootMethod(
       SootClass toClass, de.upb.soot.core.SootMethod fromMethod) {
     List<soot.Type> types = new ArrayList<>();
-    for (TypeSignature type : fromMethod.getParameterTypes()) {
+    for (Type type : fromMethod.getParameterTypes()) {
       types.add(convertType(type));
     }
     soot.SootMethod toMethod =
@@ -153,7 +152,7 @@ public class JimpleConverter {
     toMethod.setModifiers(convertModifiers(fromMethod.getModifiers()));
     List<soot.SootClass> exceptions = new ArrayList<>();
 
-    for (JavaClassSignature fromException : fromMethod.getExceptionSignatures()) {
+    for (JavaClassType fromException : fromMethod.getExceptionSignatures()) {
       //      soot.SootClass exception = convertSootClass(fromException);
       soot.SootClass exception = this.getSootClass(Optional.empty(), Optional.of(fromException));
       exceptions.add(exception);
@@ -227,7 +226,7 @@ public class JimpleConverter {
 
     for (de.upb.soot.jimple.basic.Local fromLocal : fromBody.getLocals()) {
       // covert locals
-      Local toLocal = new JimpleLocal(fromLocal.toString(), convertType(fromLocal.getSignature()));
+      Local toLocal = new JimpleLocal(fromLocal.toString(), convertType(fromLocal.getType()));
       locals.add(toLocal);
     }
 
@@ -373,7 +372,7 @@ public class JimpleConverter {
   public soot.Value convertValue(de.upb.soot.jimple.basic.Value from) {
     if (from instanceof de.upb.soot.jimple.basic.Local) {
       de.upb.soot.jimple.basic.Local value = (de.upb.soot.jimple.basic.Local) from;
-      return getLocal(value.getName(), convertType(value.getSignature()));
+      return getLocal(value.getName(), convertType(value.getType()));
     } else if (from instanceof de.upb.soot.jimple.common.constant.Constant) {
       return convertConstant((de.upb.soot.jimple.common.constant.Constant) from);
     } else if (from instanceof de.upb.soot.jimple.common.expr.Expr) {
@@ -401,10 +400,10 @@ public class JimpleConverter {
       to =
           Jimple.v()
               .newParameterRef(
-                  convertType(from.getSignature()),
+                  convertType(from.getType()),
                   ((de.upb.soot.jimple.common.ref.JParameterRef) from).getIndex());
     } else if (from instanceof de.upb.soot.jimple.common.ref.JThisRef) {
-      to = Jimple.v().newThisRef((RefType) convertType(from.getSignature()));
+      to = Jimple.v().newThisRef((RefType) convertType(from.getType()));
     } else if (from instanceof de.upb.soot.jimple.common.ref.JCaughtExceptionRef) {
       to = Jimple.v().newCaughtExceptionRef();
     }
@@ -526,7 +525,7 @@ public class JimpleConverter {
       }
     } else if (from instanceof de.upb.soot.jimple.common.expr.JNewExpr) {
       de.upb.soot.jimple.common.expr.JNewExpr expr = (de.upb.soot.jimple.common.expr.JNewExpr) from;
-      to = Jimple.v().newNewExpr((RefType) convertType(expr.getSignature()));
+      to = Jimple.v().newNewExpr((RefType) convertType(expr.getType()));
     } else if (from instanceof de.upb.soot.jimple.common.expr.JNewArrayExpr) {
       de.upb.soot.jimple.common.expr.JNewArrayExpr expr =
           (de.upb.soot.jimple.common.expr.JNewArrayExpr) from;
@@ -588,43 +587,43 @@ public class JimpleConverter {
     }
   }
 
-  public soot.Type convertType(TypeSignature from) {
-    soot.Type to = UnknownType.v();
-    if (!(from instanceof UnknownTypeSignature)) {
-      if (from instanceof PrimitiveTypeSignature) {
-        if (from.equals(PrimitiveTypeSignature.getBooleanSignature())) {
+  public soot.Type convertType(Type from) {
+    soot.Type to = soot.UnknownType.v();
+    if (!(from instanceof UnknownType)) {
+      if (from instanceof PrimitiveType) {
+        if (from.equals(PrimitiveType.getBoolean())) {
           return soot.BooleanType.v();
-        } else if (from.equals(PrimitiveTypeSignature.getByteSignature())) {
+        } else if (from.equals(PrimitiveType.getByteSignature())) {
           return soot.ByteType.v();
-        } else if (from.equals(PrimitiveTypeSignature.getCharSignature())) {
+        } else if (from.equals(PrimitiveType.getChar())) {
           return soot.CharType.v();
-        } else if (from.equals(PrimitiveTypeSignature.getShortSignature())) {
+        } else if (from.equals(PrimitiveType.getShort())) {
           return soot.ShortType.v();
-        } else if (from.equals(PrimitiveTypeSignature.getIntSignature())) {
+        } else if (from.equals(PrimitiveType.getInt())) {
           return soot.IntType.v();
-        } else if (from.equals(PrimitiveTypeSignature.getLongSignature())) {
+        } else if (from.equals(PrimitiveType.getLong())) {
           return soot.LongType.v();
-        } else if (from.equals(PrimitiveTypeSignature.getFloatSignature())) {
+        } else if (from.equals(PrimitiveType.getFloat())) {
           return soot.FloatType.v();
-        } else if (from.equals(PrimitiveTypeSignature.getDoubleSignature())) {
+        } else if (from.equals(PrimitiveType.getDouble())) {
           return soot.DoubleType.v();
         } else {
           throw new RuntimeException("can not convert primitive type from " + from.toString());
         }
-      } else if (from instanceof ArrayTypeSignature) {
-        ArrayTypeSignature type = (ArrayTypeSignature) from;
+      } else if (from instanceof ArrayType) {
+        ArrayType type = (ArrayType) from;
         return soot.ArrayType.v(convertType(type.getBaseType()), type.getDimension());
-      } else if (from instanceof ReferenceTypeSignature) {
-        ReferenceTypeSignature type = (ReferenceTypeSignature) from;
+      } else if (from instanceof ReferenceType) {
+        ReferenceType type = (ReferenceType) from;
         String className = type.toString();
         return soot.RefType.v(className);
-      } else if (from instanceof NullTypeSignature) {
+      } else if (from instanceof NullType) {
         return soot.NullType.v();
         //      } else if (from instanceof de.upb.soot.jimple.common.type.AnySubType) {
         //        de.upb.soot.jimple.common.type.AnySubType type =
         //            (de.upb.soot.jimple.common.type.AnySubType) from;
         //        return soot.AnySubType.v((soot.RefType) convertType(type.getBase()));
-      } else if (from instanceof VoidTypeSignature) {
+      } else if (from instanceof VoidType) {
         return soot.VoidType.v();
       } else {
         throw new RuntimeException("can not convert type from " + from.toString());
@@ -656,7 +655,7 @@ public class JimpleConverter {
     }
     declaringClass = Scene.v().getSootClass(className);
     List<soot.Type> parameterTypes = new ArrayList<>();
-    for (de.upb.soot.signatures.TypeSignature typeSig : methodSig.getParameterSignatures()) {
+    for (Type typeSig : methodSig.getParameterSignatures()) {
       String typeName = typeSig.toString();
       if (!Scene.v().containsType(typeSig.toString())) {
         Scene.v().addRefType(RefType.v(typeName));
@@ -691,13 +690,12 @@ public class JimpleConverter {
     return target;
   }
 
-  private soot.SootClass getSootClass(
-      Optional<JavaClassSignature> op, Optional<JavaClassSignature> sigOp) {
+  private soot.SootClass getSootClass(Optional<JavaClassType> op, Optional<JavaClassType> sigOp) {
     String className = sigOp.get().getFullyQualifiedName();
     if (!Scene.v().containsClass(className) && op.isPresent()) {
       //      return convertSootClass(op.get());
       Optional<de.upb.soot.core.SootClass> any =
-          fromClasses.stream().filter(it -> it.getSignature().equals(op.get())).findAny();
+          fromClasses.stream().filter(it -> it.getType().equals(op.get())).findAny();
 
       return any.map(this::convertSootClass).orElseGet(() -> Scene.v().getSootClass(className));
     } else {

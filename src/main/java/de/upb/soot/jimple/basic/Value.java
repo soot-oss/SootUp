@@ -26,7 +26,7 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.visitor.IAcceptor;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.io.Serializable;
 import java.util.List;
@@ -45,7 +45,7 @@ public interface Value extends IAcceptor, EquivTo, Serializable {
   List<ValueBox> getUseBoxes();
 
   /** Returns the Soot type of this Value. */
-  TypeSignature getSignature();
+  Type getType();
 
   /** Returns a clone of this Value. */
   Object clone();

@@ -3,7 +3,7 @@ package de.upb.soot.views;
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.signatures.ISignature;
+import de.upb.soot.signatures.Type;
 import de.upb.soot.util.Utils;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -91,9 +91,9 @@ public class JavaView extends AbstractView {
 
   @Override
   @Nonnull
-  public Optional<AbstractClass> getClass(@Nonnull ISignature signature) {
+  public Optional<AbstractClass> getClass(@Nonnull Type signature) {
     return this.classes()
-        .filter(c -> c.getClassSource().getClassSignature().equals(signature))
+        .filter(c -> c.getClassSource().getClassType().equals(signature))
         .findFirst();
   }
 

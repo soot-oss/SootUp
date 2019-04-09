@@ -33,8 +33,8 @@ import java.util.Map;
  */
 public class ModuleSignatureFactory extends DefaultSignatureFactory {
 
-  public static final JavaClassSignature MODULE_INFO_CLASS =
-      new JavaClassSignature("module-info", PackageSignature.DEFAULT_PACKAGE);
+  public static final JavaClassType MODULE_INFO_CLASS =
+      new JavaClassType("module-info", PackageSignature.DEFAULT_PACKAGE);
 
   private static final Map<String, ModuleSignature> modules = new HashMap<>();
 
@@ -109,8 +109,8 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
   }
 
   @Override
-  public JavaClassSignature getClassSignature(final String className, final String packageName) {
-    return getClassSignature(
+  public JavaClassType getClassType(final String className, final String packageName) {
+    return getClassType(
         className, packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
   }
 
@@ -126,9 +126,9 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
    * @throws NullPointerException if the given module name or package name is null. Use the empty
    *     string to denote the unnamed module or the default package.
    */
-  public JavaClassSignature getClassSignature(
+  public JavaClassType getClassType(
       final String className, final String packageName, final String moduleName) {
     PackageSignature packageSignature = getPackageSignature(packageName, moduleName);
-    return new JavaClassSignature(className, packageSignature);
+    return new JavaClassType(className, packageSignature);
   }
 }

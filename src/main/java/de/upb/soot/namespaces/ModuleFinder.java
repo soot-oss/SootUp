@@ -4,8 +4,8 @@ import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.frontends.asm.modules.AsmModuleClassSourceContent;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.ModuleDecoratorClassSignature;
+import de.upb.soot.signatures.JavaClassType;
+import de.upb.soot.signatures.ModuleDecoratorClassType;
 import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import java.io.File;
@@ -255,9 +255,8 @@ public class ModuleFinder {
     // add the module name, which was unknown before
     // moduleInfoSource.setClassSignature();
     ModuleSignature moduleSignature = ModuleSignatureFactory.getModuleSignature(moduleName);
-    JavaClassSignature sig =
-        new ModuleDecoratorClassSignature(
-            ModuleSignatureFactory.MODULE_INFO_CLASS, moduleSignature);
+    JavaClassType sig =
+        new ModuleDecoratorClassType(ModuleSignatureFactory.MODULE_INFO_CLASS, moduleSignature);
     moduleInfoSource.setClassSignature(sig);
   }
 

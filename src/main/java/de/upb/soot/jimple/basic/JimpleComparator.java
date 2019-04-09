@@ -307,7 +307,7 @@ public class JimpleComparator {
       return false;
     }
     JCastExpr ace = (JCastExpr) o;
-    return v.getOp().equivTo(ace.getOp(), this) && v.getSignature().equals(ace.getSignature());
+    return v.getOp().equivTo(ace.getOp(), this) && v.getType().equals(ace.getType());
   }
 
   public boolean caseInstanceOfExpr(JInstanceOfExpr v, Object o) {
@@ -339,7 +339,7 @@ public class JimpleComparator {
       return false;
     }
     JNewExpr ae = (JNewExpr) o;
-    return v.getSignature().equals(ae.getSignature());
+    return v.getType().equals(ae.getType());
   }
 
   public boolean caseLengthExpr(JLengthExpr v, Object o) {
@@ -421,7 +421,7 @@ public class JimpleComparator {
       return false;
     }
     return obj.getIndex() == ((JParameterRef) o).getIndex()
-        && obj.getSignature().equals(((JParameterRef) o).getSignature());
+        && obj.getType().equals(((JParameterRef) o).getType());
   }
 
   public boolean caseStaticFieldRef(JStaticFieldRef obj, Object o) {
@@ -435,7 +435,7 @@ public class JimpleComparator {
     if (!(o instanceof JThisRef)) {
       return false;
     }
-    return obj.getSignature().equals(((JThisRef) o).getSignature());
+    return obj.getType().equals(((JThisRef) o).getType());
   }
 
   public boolean caseConstant(Constant constant, Object o) {

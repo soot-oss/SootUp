@@ -30,7 +30,7 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.constant.LongConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.signatures.PrimitiveType;
 import java.util.Comparator;
 import org.junit.Assert;
 import org.junit.Test;
@@ -60,8 +60,8 @@ public class JAssignStmtTest {
     Value numConst1 = IntConstant.getInstance(42);
     Value numConst2 = IntConstant.getInstance(33102);
 
-    Local local = new Local("$i0", PrimitiveTypeSignature.getIntSignature());
-    Local field = new Local("i2", PrimitiveTypeSignature.getIntSignature());
+    Local local = new Local("$i0", PrimitiveType.getInt());
+    Local field = new Local("i2", PrimitiveType.getInt());
 
     IStmt lStmt = new JAssignStmt(local, numConst1, nop);
     IStmt fStmt = new JAssignStmt(field, numConst1, nop);
@@ -72,14 +72,14 @@ public class JAssignStmtTest {
     Assert.assertTrue(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", PrimitiveTypeSignature.getIntSignature()),
+                new Local("$i0", PrimitiveType.getInt()),
                 IntConstant.getInstance(42),
                 nop)));
 
     Assert.assertTrue(
         deepStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", PrimitiveTypeSignature.getIntSignature()),
+                new Local("$i0", PrimitiveType.getInt()),
                 new JAddExpr(numConst1, numConst2),
                 nop)));
 
@@ -93,13 +93,13 @@ public class JAssignStmtTest {
     Assert.assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i100differentname", PrimitiveTypeSignature.getIntSignature()),
+                new Local("$i100differentname", PrimitiveType.getInt()),
                 IntConstant.getInstance(42),
                 nop)));
     Assert.assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", PrimitiveTypeSignature.getLongSignature()),
+                new Local("$i0", PrimitiveType.getLong()),
                 LongConstant.getInstance(42),
                 nop)));
 

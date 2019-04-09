@@ -39,10 +39,10 @@ public class JThrowStmtTest {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
     DefaultSignatureFactory factory = new DefaultSignatureFactory();
 
-    Local local = new Local("$r0", factory.getTypeSignature("java.lang.Exception"));
-    Local localEqual = new Local("$r0", factory.getTypeSignature("java.lang.Exception"));
-    Local localDifferent = new Local("$r1", factory.getTypeSignature("java.lang.Exception"));
-    Local localDifferent2 = new Local("$r0", factory.getTypeSignature("sompepackage.MyException"));
+    Local local = new Local("$r0", factory.getType("java.lang.Exception"));
+    Local localEqual = new Local("$r0", factory.getType("java.lang.Exception"));
+    Local localDifferent = new Local("$r1", factory.getType("java.lang.Exception"));
+    Local localDifferent2 = new Local("$r0", factory.getType("sompepackage.MyException"));
 
     IStmt tStmt = new JThrowStmt(local, nop);
 

@@ -20,10 +20,10 @@ public class FieldSubSignature extends AbstractClassMemberSubSignature
    * Creates a new instance of the {@link FieldSubSignature} class.
    *
    * @param name The method name.
-   * @param typeSignature The type signature.
+   * @param type The type signature.
    */
-  public FieldSubSignature(@Nonnull String name, @Nonnull TypeSignature typeSignature) {
-    super(name, typeSignature);
+  public FieldSubSignature(@Nonnull String name, @Nonnull Type type) {
+    super(name, type);
   }
 
   // endregion /Constructor/
@@ -41,7 +41,7 @@ public class FieldSubSignature extends AbstractClassMemberSubSignature
 
   @Override
   @Nonnull
-  public FieldSignature toFullSignature(@Nonnull JavaClassSignature declClassSignature) {
+  public FieldSignature toFullSignature(@Nonnull JavaClassType declClassSignature) {
     return new FieldSignature(declClassSignature, this);
   }
 

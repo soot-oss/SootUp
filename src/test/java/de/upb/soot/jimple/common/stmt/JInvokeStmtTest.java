@@ -41,7 +41,7 @@ import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.MethodSignature;
 import java.net.URI;
 import java.nio.file.Path;
@@ -71,9 +71,9 @@ public class JInvokeStmtTest {
         new JavaClassSource(
             new JavaClassPathNamespace("src/main/java/de/upb/soot"),
             dummyPath,
-            dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
+            dsm.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"));
 
-    JavaClassSignature superClassSignature = dsm.getClassSignature("java.lang.Object");
+    JavaClassType superClassSignature = dsm.getClassType("java.lang.Object");
 
     Set<SootField> fields = new LinkedHashSet<>();
     Set<SootMethod> methods = new LinkedHashSet<>();
@@ -115,7 +115,7 @@ public class JInvokeStmtTest {
     IStmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
-                new Local("$r0", sootClass.getSignature()), smethodSig, Arrays.asList()),
+                new Local("$r0", sootClass.getType()), smethodSig, Arrays.asList()),
             nop);
 
     // toString
@@ -132,7 +132,7 @@ public class JInvokeStmtTest {
     IStmt interfaceInvokeStmt =
         new JInvokeStmt(
             new JInterfaceInvokeExpr(
-                new Local("r2", sootClass.getSignature()), imethodSig, Arrays.asList()),
+                new Local("r2", sootClass.getType()), imethodSig, Arrays.asList()),
             nop);
 
     // toString

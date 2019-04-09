@@ -31,8 +31,8 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.ArrayTypeSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.ArrayType;
+import de.upb.soot.signatures.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +42,7 @@ public class JNewMultiArrayExpr implements Expr {
   /** */
   private static final long serialVersionUID = -473132292740722571L;
 
-  private ArrayTypeSignature baseType;
+  private ArrayType baseType;
   protected final ValueBox[] sizeBoxes;
 
   /**
@@ -51,7 +51,7 @@ public class JNewMultiArrayExpr implements Expr {
    * @param type the type of the array
    * @param sizes the sizes
    */
-  public JNewMultiArrayExpr(ArrayTypeSignature type, List<? extends Value> sizes) {
+  public JNewMultiArrayExpr(ArrayType type, List<? extends Value> sizes) {
     this.baseType = type;
     this.sizeBoxes = new ValueBox[sizes.size()];
     for (int i = 0; i < sizes.size(); i++) {
@@ -85,7 +85,7 @@ public class JNewMultiArrayExpr implements Expr {
   public String toString() {
     StringBuilder builder = new StringBuilder();
 
-    TypeSignature t = baseType.getBaseType();
+    Type t = baseType.getBaseType();
     builder.append(Jimple.NEWMULTIARRAY + " (").append(t.toString()).append(")");
 
     for (ValueBox element : sizeBoxes) {
@@ -101,7 +101,7 @@ public class JNewMultiArrayExpr implements Expr {
 
   @Override
   public void toString(IStmtPrinter up) {
-    TypeSignature t = baseType.getBaseType();
+    Type t = baseType.getBaseType();
 
     up.literal(Jimple.NEWMULTIARRAY);
     up.literal(" (");
@@ -119,11 +119,11 @@ public class JNewMultiArrayExpr implements Expr {
     }
   }
 
-  public ArrayTypeSignature getBaseType() {
+  public ArrayType getBaseType() {
     return baseType;
   }
 
-  public void setBaseType(ArrayTypeSignature baseType) {
+  public void setBaseType(ArrayType baseType) {
     this.baseType = baseType;
   }
 
@@ -167,7 +167,7 @@ public class JNewMultiArrayExpr implements Expr {
   }
 
   @Override
-  public TypeSignature getSignature() {
+  public Type getType() {
     return baseType;
   }
 

@@ -24,20 +24,21 @@ package de.upb.soot.signatures;
 
 import javax.annotation.Nonnull;
 
-/** Represents a signature for a <code>null</code>-reference. */
-public class NullTypeSignature extends ReferenceTypeSignature {
+/** Represents Java's 'void' type as methods return's type. */
+public class VoidType extends Type {
 
-  @Nonnull private static final NullTypeSignature INSTANCE = new NullTypeSignature();
+  @Nonnull private static final VoidType INSTANCE = new VoidType();
 
   @Nonnull
-  public static NullTypeSignature getInstance() {
+  public static VoidType getInstance() {
     return INSTANCE;
   }
 
-  private NullTypeSignature() {}
+  private VoidType() {}
 
   @Override
+  @Nonnull
   public String toString() {
-    return "null";
+    return "void";
   }
 }

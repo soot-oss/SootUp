@@ -2,7 +2,7 @@ package de.upb.soot.namespaces;
 
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.NotYetImplementedException;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class CompositeNamespace implements INamespace {
    * @return The {@link ClassSource} instance found or created... Or an empty Optional.
    */
   @Override
-  public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature signature) {
+  public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassType signature) {
     List<ClassSource> result =
         namespaces.stream()
             .map(n -> n.getClassSource(signature))

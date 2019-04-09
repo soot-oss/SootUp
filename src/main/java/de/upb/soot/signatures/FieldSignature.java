@@ -10,13 +10,12 @@ import javax.annotation.Nonnull;
  */
 public class FieldSignature extends AbstractClassMemberSignature {
 
-  public FieldSignature(
-      final JavaClassSignature declaringClass, final String name, final TypeSignature type) {
+  public FieldSignature(final JavaClassType declaringClass, final String name, final Type type) {
     this(declaringClass, new FieldSubSignature(name, type));
   }
 
   public FieldSignature(
-      @Nonnull JavaClassSignature declaringClass, @Nonnull FieldSubSignature subSignature) {
+      @Nonnull JavaClassType declaringClass, @Nonnull FieldSubSignature subSignature) {
     super(declaringClass, subSignature);
 
     this._subSignature = subSignature;

@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.base.Objects;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
@@ -21,7 +21,7 @@ public abstract class ClassSource {
   // TODO: AD unfortunately I need to change it in the ModuleFinder, since I only know a module's
   // name after resolving its
   // module-info.class
-  private JavaClassSignature classSignature;
+  private JavaClassType classSignature;
   private final Path sourcePath;
 
   /**
@@ -38,14 +38,14 @@ public abstract class ClassSource {
    * @return A not yet resolved {@link ClassSource}, backed up by the given file A not yet resolved
    *     {@link ClassSource}, backed up by the given file
    */
-  public ClassSource(INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {
+  public ClassSource(INamespace srcNamespace, Path sourcePath, JavaClassType classSignature) {
     checkNotNull(srcNamespace);
     this.srcNamespace = srcNamespace;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;
   }
 
-  public JavaClassSignature getClassSignature() {
+  public JavaClassType getClassType() {
     return classSignature;
   }
 
@@ -63,7 +63,7 @@ public abstract class ClassSource {
     return srcNamespace.getClassProvider();
   }
 
-  public void setClassSignature(JavaClassSignature classSignature) {
+  public void setClassSignature(JavaClassType classSignature) {
     this.classSignature = classSignature;
   }
 

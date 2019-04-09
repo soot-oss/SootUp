@@ -91,15 +91,15 @@ import de.upb.soot.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
-import de.upb.soot.signatures.ArrayTypeSignature;
+import de.upb.soot.signatures.ArrayType;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.NullTypeSignature;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
-import de.upb.soot.signatures.ReferenceTypeSignature;
-import de.upb.soot.signatures.TypeSignature;
-import de.upb.soot.signatures.VoidTypeSignature;
+import de.upb.soot.signatures.NullType;
+import de.upb.soot.signatures.PrimitiveType;
+import de.upb.soot.signatures.ReferenceType;
+import de.upb.soot.signatures.Type;
+import de.upb.soot.signatures.VoidType;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -253,11 +253,9 @@ public class Jimple {
     return l;
   }
 
-  public static boolean isJavaKeywordType(TypeSignature t) {
+  public static boolean isJavaKeywordType(Type t) {
     // TODO: Ensure that the check is complete.
-    return t instanceof PrimitiveTypeSignature
-        || t instanceof VoidTypeSignature
-        || t instanceof NullTypeSignature;
+    return t instanceof PrimitiveType || t instanceof VoidType || t instanceof NullType;
   }
 
   public static Value cloneIfNecessary(Value val) {
@@ -376,17 +374,17 @@ public class Jimple {
   }
 
   /** Constructs a CastExpr(Immediate, Type) grammar chunk. */
-  public static JCastExpr newCastExpr(Value op1, TypeSignature t) {
+  public static JCastExpr newCastExpr(Value op1, Type t) {
     return new JCastExpr(op1, t);
   }
 
   /** Constructs a InstanceOfExpr(Immediate, Type) grammar chunk. */
-  public static JInstanceOfExpr newInstanceOfExpr(Value op1, TypeSignature t) {
+  public static JInstanceOfExpr newInstanceOfExpr(Value op1, Type t) {
     return new JInstanceOfExpr(op1, t);
   }
 
   /** Constructs a NewArrayExpr(Type, Immediate) grammar chunk. */
-  public static JNewArrayExpr newNewArrayExpr(TypeSignature type, Value size) {
+  public static JNewArrayExpr newNewArrayExpr(Type type, Value size) {
     return new JNewArrayExpr(type, size);
   }
 
@@ -632,7 +630,7 @@ public class Jimple {
   }
 
   /** Constructs a Local with the given name and type. */
-  public static Local newLocal(String name, TypeSignature t) {
+  public static Local newLocal(String name, Type t) {
     return new Local(name, t);
   }
 
@@ -642,12 +640,12 @@ public class Jimple {
   }
 
   /** Constructs a ThisRef(RefType) grammar chunk. */
-  public static JThisRef newThisRef(ReferenceTypeSignature t) {
+  public static JThisRef newThisRef(ReferenceType t) {
     return new JThisRef(t);
   }
 
   /** Constructs a ParameterRef(SootMethod, int) grammar chunk. */
-  public static JParameterRef newParameterRef(TypeSignature paramType, int number) {
+  public static JParameterRef newParameterRef(Type paramType, int number) {
     return new JParameterRef(paramType, number);
   }
 
@@ -695,17 +693,17 @@ public class Jimple {
   }
 
   /** Constructs a NewExpr(RefType) grammar chunk. */
-  public static JNewExpr newNewExpr(ReferenceTypeSignature type) {
+  public static JNewExpr newNewExpr(ReferenceType type) {
     return new JNewExpr(type);
   }
 
   public static JNewMultiArrayExpr newNewMultiArrayExpr(
-      ArrayTypeSignature type, List<? extends Value> sizes) {
+      ArrayType type, List<? extends Value> sizes) {
     return new JNewMultiArrayExpr(type, sizes);
   }
 
   public static JTrap newTrap(
-      JavaClassSignature exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
+      JavaClassType exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
     return new JTrap(exception, beginStmt, endStmt, handlerStmt);
   }
 }

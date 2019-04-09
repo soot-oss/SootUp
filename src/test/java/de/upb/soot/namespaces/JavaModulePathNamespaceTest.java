@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
 import java.util.Collections;
@@ -28,7 +28,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
     final JavaModulePathNamespace javaClassPathNamespace =
         new JavaModulePathNamespace(
             "target/test-classes/de/upb/soot/namespaces/modules", getClassProvider());
-    final JavaClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
+    final JavaClassType sig = factory.getClassType("module-info", "", "fancyMod");
     Optional<ClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
   }
@@ -39,7 +39,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
     final JavaModulePathNamespace javaClassPathNamespace =
         new JavaModulePathNamespace(
             "target/test-classes/de/upb/soot/namespaces/modules", getClassProvider());
-    final JavaClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
+    final JavaClassType sig = factory.getClassType("module-info", "", "fancyMod");
     // TODO: check for a better minClassFoundNumber
     // also all JDK classes are loaded
     testClassReceival(javaClassPathNamespace, sig, 50);
@@ -52,7 +52,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
         new JavaModulePathNamespace(
             "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",
             getClassProvider());
-    final JavaClassSignature sig = factory.getClassSignature("module-info", "", "de.upb.mod");
+    final JavaClassType sig = factory.getClassType("module-info", "", "de.upb.mod");
     Optional<ClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
   }
@@ -75,17 +75,17 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
             new Object[] {javaClassPathNamespace, factory, "myJava.mod"});
     Object res1 =
         Whitebox.invokeMethod(signatureFacotryWrapper, "getClassSignature", "java.lang.System");
-    assertEquals(res1, factory.getClassSignature("java.lang.System"));
+    assertEquals(res1, factory.getClassType("java.lang.System"));
 
     res1 =
         Whitebox.invokeMethod(signatureFacotryWrapper, "getClassSignature", "java.lang", "System");
-    assertEquals(res1, factory.getClassSignature("java.lang", "System"));
+    assertEquals(res1, factory.getClassType("java.lang", "System"));
 
     res1 = Whitebox.invokeMethod(signatureFacotryWrapper, "getTypeSignature", "int");
-    assertEquals(res1, factory.getTypeSignature("int"));
+    assertEquals(res1, factory.getType("int"));
 
     res1 = Whitebox.invokeMethod(signatureFacotryWrapper, "getTypeSignature", "int");
-    assertEquals(res1, factory.getTypeSignature("int"));
+    assertEquals(res1, factory.getType("int"));
 
     res1 =
         Whitebox.invokeMethod(
@@ -104,14 +104,14 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
             signatureFacotryWrapper,
             "getMethodSignature",
             "metho1",
-            factory.getClassSignature("java.lang.System"),
+            factory.getClassType("java.lang.System"),
             "void",
             Collections.emptyList());
     assertEquals(
         res1,
         factory.getMethodSignature(
             "metho1",
-            factory.getClassSignature("java.lang.System"),
+            factory.getClassType("java.lang.System"),
             "void",
             Collections.emptyList()));
 

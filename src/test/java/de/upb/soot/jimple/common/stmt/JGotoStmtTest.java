@@ -41,8 +41,8 @@ public class JGotoStmtTest {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
     DefaultSignatureFactory factory = new DefaultSignatureFactory();
 
-    Local local1 = new Local("$r0", factory.getTypeSignature("java.lang.Exception"));
-    Local local2 = new Local("$r0", factory.getTypeSignature("somepackage.dummy.Exception"));
+    Local local1 = new Local("$r0", factory.getType("java.lang.Exception"));
+    Local local2 = new Local("$r0", factory.getType("somepackage.dummy.Exception"));
 
     // IStmt
     IStmt targetStmt = new JThrowStmt(local1, nop);

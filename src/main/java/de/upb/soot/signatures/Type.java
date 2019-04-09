@@ -22,5 +22,18 @@ package de.upb.soot.signatures;
  * #L%
  */
 
+import javax.annotation.Nonnull;
+
 /** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
-public abstract class ReferenceTypeSignature extends TypeSignature {}
+public abstract class Type {
+
+  /**
+   * Gets the type name as quoted string.
+   *
+   * @return The type name as quoted string.
+   */
+  @Nonnull
+  public String toQuotedString() {
+    return this.toString();
+  }
+}

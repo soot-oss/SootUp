@@ -24,7 +24,7 @@ package de.upb.soot.frontends;
 
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import java.nio.file.Path;
 
 /**
@@ -35,8 +35,7 @@ import java.nio.file.Path;
  */
 public interface IClassProvider {
 
-  ClassSource createClassSource(
-      INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature);
+  ClassSource createClassSource(INamespace srcNamespace, Path sourcePath, JavaClassType classSignature);
 
   /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
   FileType getHandledFileType();

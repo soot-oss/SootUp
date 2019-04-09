@@ -30,9 +30,9 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
-import de.upb.soot.signatures.TypeSignature;
-import de.upb.soot.signatures.UnknownTypeSignature;
+import de.upb.soot.signatures.PrimitiveType;
+import de.upb.soot.signatures.Type;
+import de.upb.soot.signatures.UnknownType;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JNegExpr extends AbstractUnopExpr {
@@ -72,23 +72,23 @@ public class JNegExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public TypeSignature getSignature() {
+  public Type getType() {
     Value op = opBox.getValue();
 
-    if (op.getSignature().equals(PrimitiveTypeSignature.getIntSignature())
-        || op.getSignature().equals(PrimitiveTypeSignature.getByteSignature())
-        || op.getSignature().equals(PrimitiveTypeSignature.getShortSignature())
-        || op.getSignature().equals(PrimitiveTypeSignature.getBooleanSignature())
-        || op.getSignature().equals(PrimitiveTypeSignature.getCharSignature())) {
-      return PrimitiveTypeSignature.getIntSignature();
-    } else if (op.getSignature().equals(PrimitiveTypeSignature.getLongSignature())) {
-      return PrimitiveTypeSignature.getLongSignature();
-    } else if (op.getSignature().equals(PrimitiveTypeSignature.getDoubleSignature())) {
-      return PrimitiveTypeSignature.getDoubleSignature();
-    } else if (op.getSignature().equals(PrimitiveTypeSignature.getFloatSignature())) {
-      return PrimitiveTypeSignature.getFloatSignature();
+    if (op.getType().equals(PrimitiveType.getInt())
+        || op.getType().equals(PrimitiveType.getByteSignature())
+        || op.getType().equals(PrimitiveType.getShort())
+        || op.getType().equals(PrimitiveType.getBoolean())
+        || op.getType().equals(PrimitiveType.getChar())) {
+      return PrimitiveType.getInt();
+    } else if (op.getType().equals(PrimitiveType.getLong())) {
+      return PrimitiveType.getLong();
+    } else if (op.getType().equals(PrimitiveType.getDouble())) {
+      return PrimitiveType.getDouble();
+    } else if (op.getType().equals(PrimitiveType.getFloat())) {
+      return PrimitiveType.getFloat();
     } else {
-      return UnknownTypeSignature.getInstance();
+      return UnknownType.getInstance();
     }
   }
 

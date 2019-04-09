@@ -13,7 +13,7 @@ import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
@@ -31,7 +31,7 @@ public class SootMethodTest {
   @Test
   public void testCreateMethod() {
     IView view = new JavaView(new Project(null, new DefaultSignatureFactory()));
-    JavaClassSignature type = view.getSignatureFactory().getClassSignature("java.lang.String");
+    JavaClassType type = view.getSignatureFactory().getClassType("java.lang.String");
 
     List<IStmt> stmts = new ArrayList<>();
     LocalGenerator generator = new LocalGenerator();
@@ -68,7 +68,7 @@ public class SootMethodTest {
             new JavaClassSource(
                 new JavaSourcePathNamespace(Collections.emptySet()),
                 null,
-                view.getSignatureFactory().getClassSignature("dummyMain")),
+                view.getSignatureFactory().getClassType("dummyMain")),
             ClassType.Application,
             null,
             Collections.emptySet(),

@@ -1,7 +1,7 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.util.NotYetImplementedException;
 import java.util.Collection;
@@ -40,7 +40,7 @@ public class JavaSourcePathNamespace extends AbstractNamespace {
 
   @Override
   @Nonnull
-  public Optional<ClassSource> getClassSource(@Nonnull JavaClassSignature classSignature) {
+  public Optional<ClassSource> getClassSource(@Nonnull JavaClassType classSignature) {
     // TODO Auto-generated methodRef stub
     throw new NotYetImplementedException("Getting class source is not implemented, yet.");
   }

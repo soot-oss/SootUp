@@ -2,7 +2,7 @@ package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -12,29 +12,28 @@ public class MethodType extends Constant {
   // FIXME: adapt this class
 
   private static final long serialVersionUID = 3523899677165980823L;
-  protected TypeSignature returnType;
-  protected List<TypeSignature> parameterTypes;
+  protected Type returnType;
+  protected List<Type> parameterTypes;
 
-  private MethodType(List<TypeSignature> parameterTypes, TypeSignature returnType) {
+  private MethodType(List<Type> parameterTypes, Type returnType) {
     this.returnType = returnType;
     this.parameterTypes = parameterTypes;
   }
 
-  public static MethodType getInstance(
-      List<TypeSignature> paramaterTypes, TypeSignature returnType) {
+  public static MethodType getInstance(List<Type> paramaterTypes, Type returnType) {
     return new MethodType(paramaterTypes, returnType);
   }
 
   @Override
-  public TypeSignature getSignature() {
-    return DefaultSignatureFactory.getInstance().getClassSignature("java.lang.invoke.MethodType");
+  public Type getType() {
+    return DefaultSignatureFactory.getInstance().getClassType("java.lang.invoke.MethodType");
   }
 
-  public List<TypeSignature> getParameterTypes() {
+  public List<Type> getParameterTypes() {
     return parameterTypes == null ? Collections.emptyList() : parameterTypes;
   }
 
-  public TypeSignature getReturnType() {
+  public Type getReturnType() {
     return returnType;
   }
 

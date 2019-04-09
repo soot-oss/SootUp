@@ -48,7 +48,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
   }
 
   private void reify(ReifyMessage m) {
-    log().info("Start reifying for [{}].", classSource.getClassSignature().toString());
+    log().info("Start reifying for [{}].", classSource.getClassType().toString());
     // FIXME: new content
     IClassProvider classProvider = classSource.getClassProvider();
     IClassSourceContent content = classProvider.getContent(classSource);
@@ -67,11 +67,11 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
     sender().tell(sootClass, this.getSelf());
 
-    log().info("Completed reifying for [{}].", classSource.getClassSignature().toString());
+    log().info("Completed reifying for [{}].", classSource.getClassType().toString());
   }
 
   private void resolve(ResolveMessage m) {
-    log().info("Full reify for [{}].", classSource.getClassSignature().toString());
+    log().info("Full reify for [{}].", classSource.getClassType().toString());
     if (sootClass == null) {
       throw new IllegalStateException();
     }
@@ -88,7 +88,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
 
     sender().tell(sootClass, this.getSelf());
 
-    log().info("Completed reify for [{}]", classSource.getClassSignature().toString());
+    log().info("Completed reify for [{}]", classSource.getClassType().toString());
 
     // we are done
     this.getSelf().tell("done", this.getSelf());
