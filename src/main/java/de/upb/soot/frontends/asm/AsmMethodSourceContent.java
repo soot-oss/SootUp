@@ -174,9 +174,9 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
 
   @Override
   @Nullable
-  public Body resolveBody(@Nonnull SootMethod sootmethod) throws AsmFrontendException {
+  public Body resolveBody(@Nonnull SootMethod sootMethod) throws AsmFrontendException {
 
-    if (!sootmethod.isConcrete()) {
+    if (!sootMethod.isConcrete()) {
       return null;
     }
 
@@ -202,13 +202,13 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
     /* convert instructions */
     try {
-      convert(sootmethod);
+      convert(sootMethod);
     } catch (Throwable t) {
-      throw new RuntimeException("Failed to convert " + sootmethod, t);
+      throw new RuntimeException("Failed to convert " + sootMethod, t);
     }
 
     /* build body (add units, locals, traps, etc.) */
-    emitLocals(sootmethod, bodyLocals, bodyStmts);
+    emitLocals(sootMethod, bodyLocals, bodyStmts);
     emitTraps(bodyTraps);
     emitUnits(bodyStmts);
 
@@ -232,7 +232,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       // TODO: Implement body transformer
       // PackManager.v().getPack("jb").apply(jb);
     } catch (Throwable t) {
-      throw new RuntimeException("Failed to apply jb to " + sootmethod, t);
+      throw new RuntimeException("Failed to apply jb to " + sootMethod, t);
     }
 
     return new Body(bodyLocals, bodyTraps, bodyStmts, bodyPos);
@@ -1728,7 +1728,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
   }
 
   @SuppressWarnings("StatementWithEmptyBody")
-  private void convert(@Nonnull SootMethod sootmethod) {
+  private void convert(@Nonnull SootMethod sootMethod) {
     ArrayDeque<Edge> worklist = new ArrayDeque<>();
     for (LabelNode ln : trapHandlers.keySet()) {
       if (checkInlineExceptionHandler(ln)) {
@@ -1784,7 +1784,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
           addEdges(insn, dflt, swtch.labels);
           break;
         } else if (type == METHOD_INSN) {
-          convertMethodInsn(sootmethod, (MethodInsnNode) insn);
+          convertMethodInsn(sootMethod, (MethodInsnNode) insn);
         } else if (type == INVOKE_DYNAMIC_INSN) {
           convertInvokeDynamicInsn((InvokeDynamicInsnNode) insn);
         } else if (type == MULTIANEWARRAY_INSN) {
