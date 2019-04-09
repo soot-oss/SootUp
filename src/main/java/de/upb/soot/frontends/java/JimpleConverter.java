@@ -241,7 +241,7 @@ public class JimpleConverter {
         toStmt = convertStmt(fromStmt);
       }
       if (toStmt != null) {
-        toStmt.addTag(new PositionTag(fromStmt.getPositionInfo().getStmtPosition()));
+        toStmt.addTag(new PositionInfoTag(fromStmt.getPositionInfo()));
         units.add(toStmt);
       } else {
         System.out.println(fromStmt.getClass().toString());

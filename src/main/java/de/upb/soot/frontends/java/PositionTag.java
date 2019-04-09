@@ -7,7 +7,7 @@ import soot.tagkit.Tag;
 /** @author Linghui Luo */
 public class PositionTag implements Tag {
 
-  private Position stmtPos;
+  private Position pos;
 
   @Override
   public String getName() {
@@ -16,23 +16,23 @@ public class PositionTag implements Tag {
 
   @Override
   public byte[] getValue() throws AttributeValueException {
-    return stmtPos.toString().getBytes();
+    return pos.toString().getBytes();
   }
 
-  public PositionTag(Position stmtPos) {
-    this.stmtPos = stmtPos;
+  public PositionTag(Position pos) {
+    this.pos = pos;
   }
 
   public Position getPosition() {
-    return this.stmtPos;
+    return this.pos;
   }
 
   @Override
   public String toString() {
-    if (stmtPos != null) {
-      return stmtPos.toString();
+    if (pos != null) {
+      return pos.toString();
     } else {
-      return "No position info";
+      return "No position";
     }
   }
 }
