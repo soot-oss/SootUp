@@ -725,6 +725,7 @@ public class InstructionConverter {
     List<String> parameters = new ArrayList<>();
     List<Type> paraTypes = new ArrayList<>();
     List<Value> args = new ArrayList<>();
+    Position[] operandPos = new Position[target.getNumberOfParameters()];
     for (int i = 0; i < target.getNumberOfParameters(); i++) {
       Type paraType = converter.convertType(target.getParameterType(i)); // note
       // the
@@ -735,6 +736,7 @@ public class InstructionConverter {
       // "this"
       paraTypes.add(paraType);
       parameters.add(paraType.toString());
+      operandPos[i]=debugInfo.getOperandPosition(invokeInst.iindex, i);
     }
     int i = 0;
     if (!callee.isStatic()) {
@@ -787,10 +789,10 @@ public class InstructionConverter {
       Type type = converter.convertType(invokeInst.getDeclaredResultType());
       Local v = getLocal(type, invokeInst.getDef());
       return Jimple.newAssignStmt(
-          v, invoke, new PositionInfo(debugInfo.getInstructionPosition(invokeInst.iindex), null));
+          v, invoke, new PositionInfo(debugInfo.getInstructionPosition(invokeInst.iindex), operandPos));
     } else {
       return Jimple.newInvokeStmt(
-          invoke, new PositionInfo(debugInfo.getInstructionPosition(invokeInst.iindex), null));
+          invoke, new PositionInfo(debugInfo.getInstructionPosition(invokeInst.iindex), operandPos));
     }
   }
 
