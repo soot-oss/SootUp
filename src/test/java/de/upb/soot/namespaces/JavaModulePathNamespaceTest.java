@@ -88,8 +88,8 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
     Object signatureFactoryWrapper =
         Whitebox.invokeConstructor(
             signatureClass,
-            new Class[] {JavaModulePathNamespace.class, TypeFactory.class, String.class},
-            new Object[] {javaClassPathNamespace, signatureFactory, "myJava.mod"});
+            new Class[] {TypeFactory.class, String.class},
+            new Object[] {signatureFactory, "myJava.mod"});
     Object res1 =
         Whitebox.invokeMethod(signatureFactoryWrapper, "getClassType", "java.lang.System");
     assertEquals(res1, getTypeFactory().getClassType("java.lang.System"));
