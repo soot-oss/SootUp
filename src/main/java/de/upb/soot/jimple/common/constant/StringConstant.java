@@ -27,8 +27,8 @@ package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.Type;
 import soot.util.StringTools;
 
 public class StringConstant extends Constant {
@@ -60,7 +60,7 @@ public class StringConstant extends Constant {
   @Override
   public Type getType() {
     // TODO: [JMP] Use cached type from somewhere.
-    return DefaultSignatureFactory.getInstance().getType("java.lang.String");
+    return DefaultTypeFactory.getInstance().getType("java.lang.String");
   }
 
   @Override

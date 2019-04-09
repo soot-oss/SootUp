@@ -23,9 +23,10 @@
 package de.upb.soot.jimple.common.stmt;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.types.DefaultTypeFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -37,12 +38,13 @@ public class JThrowStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    DefaultSignatureFactory factory = new DefaultSignatureFactory();
+    DefaultFactories factories = DefaultFactories.create();
+    DefaultTypeFactory typeFactory = factories.getTypeFactory();
 
-    Local local = new Local("$r0", factory.getType("java.lang.Exception"));
-    Local localEqual = new Local("$r0", factory.getType("java.lang.Exception"));
-    Local localDifferent = new Local("$r1", factory.getType("java.lang.Exception"));
-    Local localDifferent2 = new Local("$r0", factory.getType("sompepackage.MyException"));
+    Local local = new Local("$r0", typeFactory.getType("java.lang.Exception"));
+    Local localEqual = new Local("$r0", typeFactory.getType("java.lang.Exception"));
+    Local localDifferent = new Local("$r1", typeFactory.getType("java.lang.Exception"));
+    Local localDifferent2 = new Local("$r0", typeFactory.getType("sompepackage.MyException"));
 
     IStmt tStmt = new JThrowStmt(local, nop);
 

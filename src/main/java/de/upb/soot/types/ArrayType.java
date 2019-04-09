@@ -1,4 +1,4 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 import com.google.common.base.Objects;
 

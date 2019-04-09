@@ -1,8 +1,8 @@
 package de.upb.soot.core;
 
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.JavaClassType;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
 import de.upb.soot.views.IView;
 import java.util.Collection;

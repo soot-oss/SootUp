@@ -1,10 +1,10 @@
 package de.upb.soot.jimple.visitor;
 
 import com.google.common.graph.ElementOrder.Type;
-import de.upb.soot.signatures.JavaClassType;
-import de.upb.soot.signatures.NullType;
-import de.upb.soot.signatures.PrimitiveType;
-import de.upb.soot.signatures.VoidType;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.NullType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.VoidType;
 
 public interface ITypeVisitor {
 

@@ -30,7 +30,7 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.Type;
 import java.util.HashSet;
 
 /** Partial default IStmtPrinter implementation. */

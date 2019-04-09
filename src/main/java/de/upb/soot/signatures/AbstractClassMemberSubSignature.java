@@ -1,6 +1,8 @@
 package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
 import de.upb.soot.util.concurrent.Lazy;
 import javax.annotation.Nonnull;

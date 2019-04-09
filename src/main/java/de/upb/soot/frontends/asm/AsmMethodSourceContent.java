@@ -69,16 +69,17 @@ import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.common.stmt.JThrowStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
-import de.upb.soot.signatures.ArrayType;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.PrimitiveType;
-import de.upb.soot.signatures.ReferenceType;
-import de.upb.soot.signatures.Type;
-import de.upb.soot.signatures.UnknownType;
-import de.upb.soot.signatures.VoidType;
+import de.upb.soot.types.ArrayType;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.ReferenceType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.UnknownType;
+import de.upb.soot.types.VoidType;
 import de.upb.soot.util.NotYetImplementedException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -480,12 +481,9 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       // SootClass declClass =
       // Scene.v().getSootClass(AsmUtil.toQualifiedName(insn.owner));
       JavaClassType declClass =
-          DefaultSignatureFactory.getInstance()
-              .getClassType(AsmUtil.toQualifiedName(insn.owner));
+          DefaultTypeFactory.getInstance().getClassType(AsmUtil.toQualifiedName(insn.owner));
       // type = AsmUtil.toJimpleType(insn.desc);
-      type =
-          DefaultSignatureFactory.getInstance()
-              .getType((AsmUtil.toQualifiedName(insn.desc)));
+      type = DefaultTypeFactory.getInstance().getType((AsmUtil.toQualifiedName(insn.desc)));
       Value val;
       // JFieldRef ref;
       FieldSignature ref;
@@ -525,12 +523,9 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       // SootClass declClass =
       // Scene.v().getSootClass(AsmUtil.toQualifiedName(insn.owner));
       JavaClassType declClass =
-          DefaultSignatureFactory.getInstance()
-              .getClassType(AsmUtil.toQualifiedName(insn.owner));
+          DefaultTypeFactory.getInstance().getClassType(AsmUtil.toQualifiedName(insn.owner));
       // type = AsmUtil.toJimpleType(insn.desc);
-      type =
-          DefaultSignatureFactory.getInstance()
-              .getType((AsmUtil.toQualifiedName(insn.desc)));
+      type = DefaultTypeFactory.getInstance().getType((AsmUtil.toQualifiedName(insn.desc)));
 
       Value val;
       FieldSignature ref;
@@ -1272,7 +1267,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       }
       // SootClass cls = Scene.v().getSootClass(clsName);
       JavaClassType cls =
-          DefaultSignatureFactory.getInstance().getClassType(AsmUtil.toQualifiedName(clsName));
+          DefaultTypeFactory.getInstance().getClassType(AsmUtil.toQualifiedName(clsName));
       // List<Type> sigTypes = AsmUtil.toJimpleDesc(insn.desc);
       List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(insn.desc);
       // returnType = sigTypes.remove(sigTypes.size() - 1);
@@ -1871,9 +1866,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       SootClass declaringClass = m.getDeclaringClass();
       jbu.add(
           Jimple.newIdentityStmt(
-              l,
-              Jimple.newThisRef(declaringClass.getType()),
-              PositionInfo.createNoPositionInfo()));
+              l, Jimple.newThisRef(declaringClass.getType()), PositionInfo.createNoPositionInfo()));
     }
     int nrp = 0;
     for (Type ot : m.getParameterTypes()) {
@@ -1892,8 +1885,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
 
   private void emitTraps(@Nonnull Collection<Trap> traps) throws AsmFrontendException {
     // SootClass throwable = Scene.v().getSootClass("java.lang.Throwable");
-    JavaClassType throwable =
-        DefaultSignatureFactory.getInstance().getClassType("java.lang.Throwable");
+    JavaClassType throwable = DefaultTypeFactory.getInstance().getClassType("java.lang.Throwable");
 
     Map<LabelNode, Iterator<IStmtBox>> handlers = new HashMap<>(tryCatchBlocks.size());
     for (TryCatchBlockNode tc : tryCatchBlocks) {
@@ -1910,11 +1902,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
         cls = throwable;
       } else {
         // Scene.v().getSootClass(AsmUtil.toQualifiedName(tc.type));
-        JavaClassType classSignature =
-            DefaultSignatureFactory.getInstance()
-                .getClassType(AsmUtil.toQualifiedName(tc.type));
 
-        cls = classSignature;
+        cls = DefaultTypeFactory.getInstance().getClassType(AsmUtil.toQualifiedName(tc.type));
       }
       Trap trap = Jimple.newTrap(cls, start, end, handler);
       traps.add(trap);

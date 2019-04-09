@@ -28,7 +28,7 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.core.SootField;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.Type;
 import de.upb.soot.views.IView;
 import java.util.Optional;
 import javax.annotation.Nonnull;

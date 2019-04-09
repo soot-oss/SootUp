@@ -2,6 +2,8 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 import de.upb.soot.core.SootClassMember;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import javax.annotation.Nonnull;
 
 /**

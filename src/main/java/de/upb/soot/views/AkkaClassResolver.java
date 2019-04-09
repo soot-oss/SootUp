@@ -8,7 +8,7 @@ import de.upb.soot.buildactor.ReifyMessage;
 import de.upb.soot.buildactor.ResolveMessage;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.JavaClassType;
+import de.upb.soot.types.JavaClassType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

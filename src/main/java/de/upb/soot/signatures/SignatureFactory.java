@@ -1,9 +1,9 @@
 package de.upb.soot.signatures;
 
 import de.upb.soot.core.SootClass;
-import java.nio.file.Path;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import java.util.List;
-import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /*-
@@ -29,20 +29,8 @@ import javax.annotation.Nonnull;
  */
 
 public interface SignatureFactory {
+
   PackageSignature getPackageSignature(String packageName);
-
-  JavaClassType getClassType(String className, String packageName);
-
-  JavaClassType getClassType(String fullyQualifiedClassName);
-
-  Type getType(String typeName);
-
-  @Nonnull
-  Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName);
-
-  ArrayType getArrayType(Type baseType, int dim);
-
-  JavaClassType fromPath(Path file);
 
   MethodSignature getMethodSignature(
       String methodName,
@@ -100,6 +88,4 @@ public interface SignatureFactory {
 
   @Nonnull
   FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature);
-
-
 }

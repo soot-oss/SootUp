@@ -9,7 +9,7 @@ import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.Type;
 
 /** IStmtPrinter implementation for normal (full) Jimple */
 public class NormalStmtPrinter extends LabeledStmtPrinter {

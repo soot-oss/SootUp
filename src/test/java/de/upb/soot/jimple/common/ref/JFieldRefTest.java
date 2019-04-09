@@ -3,6 +3,7 @@ package de.upb.soot.jimple.common.ref;
 import static org.junit.Assert.assertEquals;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.Project;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -13,10 +14,9 @@ import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 import java.util.Collections;
@@ -30,9 +30,13 @@ public class JFieldRefTest {
 
   @Test
   public void testJStaticFieldRef() {
-    IView view = new JavaView(new Project(null, new DefaultSignatureFactory()));
+    DefaultFactories factories = DefaultFactories.create();
+    IView view =
+        new JavaView(
+            new Project(null, factories.getSignatureFactory(), factories.getTypeFactory()));
     SignatureFactory fact = view.getSignatureFactory();
-    JavaClassType declaringClassSignature = fact.getClassType("dummyMainClass");
+    JavaClassType declaringClassSignature =
+        factories.getTypeFactory().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 
@@ -61,9 +65,13 @@ public class JFieldRefTest {
 
   @Test
   public void testJInstanceFieldRef() {
-    IView view = new JavaView(new Project(null, new DefaultSignatureFactory()));
+    DefaultFactories factories = DefaultFactories.create();
+    IView view =
+        new JavaView(
+            new Project(null, factories.getSignatureFactory(), factories.getTypeFactory()));
     SignatureFactory fact = view.getSignatureFactory();
-    JavaClassType declaringClassSignature = fact.getClassType("dummyMainClass");
+    JavaClassType declaringClassSignature =
+        factories.getTypeFactory().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 

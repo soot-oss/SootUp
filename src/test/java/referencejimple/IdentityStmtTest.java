@@ -1,6 +1,7 @@
 package referencejimple;
 
 import com.ibm.wala.cast.loader.AstMethod;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -22,10 +23,11 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.PrimitiveType;
-import de.upb.soot.signatures.VoidType;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.VoidType;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -67,18 +69,19 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
   @Override
   public void build() {
-
-    DefaultSignatureFactory dsm = new DefaultSignatureFactory();
+    DefaultFactories defaultFactories = DefaultFactories.create();
+    DefaultSignatureFactory dsm = defaultFactories.getSignatureFactory();
+    DefaultTypeFactory dtf = defaultFactories.getTypeFactory();
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
     JavaClassSource javaClassSource =
         new JavaClassSource(
             new JavaClassPathNamespace("src/main/java/de/upb/soot"),
             dummyPath,
-            dsm.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"));
+            dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"));
 
-    JavaClassType superClassSignature = dsm.getClassType("java.lang.Object");
-    classSignature = dsm.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
+    JavaClassType superClassSignature = dtf.getClassType("java.lang.Object");
+    classSignature = dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
 
     Set<SootField> fields = new LinkedHashSet<>();
 
@@ -120,7 +123,9 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
   SootMethod init(@Nonnull FieldSignature initFieldSignature) {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    DefaultSignatureFactory dsm = new DefaultSignatureFactory();
+    DefaultFactories defaultFactories = DefaultFactories.create();
+    DefaultSignatureFactory dsm = defaultFactories.getSignatureFactory();
+    DefaultTypeFactory dtf = defaultFactories.getTypeFactory();
     LocalGenerator generator = new LocalGenerator();
 
     MethodSignature methodSignature =
@@ -132,7 +137,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     List<Trap> traps = new LinkedList<>();
     List<IStmt> stmts = new LinkedList<>();
 
-    JavaClassType typeSignature = dsm.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
+    JavaClassType typeSignature = dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
     //    new RefType(view, dsm.getTypeSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
     //    RefType type = RefType.getInstance("de.upb.soot.instructions.stmt.IdentityStmt");
 

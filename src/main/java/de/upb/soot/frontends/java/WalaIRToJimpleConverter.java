@@ -38,12 +38,13 @@ import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.NullType;
-import de.upb.soot.signatures.PrimitiveType;
-import de.upb.soot.signatures.Type;
-import de.upb.soot.signatures.VoidType;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.NullType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.VoidType;
 import de.upb.soot.views.JavaView;
 import java.net.URL;
 import java.nio.file.Path;
@@ -70,8 +71,12 @@ public class WalaIRToJimpleConverter {
   private Set<SootField> sootFields;
 
   public WalaIRToJimpleConverter(Set<String> sourceDirPath) {
+    // TODO According to the annotation, we shouldn't pass in null here
+    Project project =
+        new Project(null, DefaultSignatureFactory.getInstance(), DefaultTypeFactory.getInstance());
+
     srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
-    view = new JavaView(new Project(null, DefaultSignatureFactory.getInstance()));
+    view = new JavaView(project);
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
   }
@@ -89,16 +94,14 @@ public class WalaIRToJimpleConverter {
     JavaClassType superClass = null;
     if (sc != null) {
       superClass =
-          view.getSignatureFactory()
-              .getClassType(convertClassNameFromWala(sc.getName().toString()));
+          view.getTypeFactory().getClassType(convertClassNameFromWala(sc.getName().toString()));
     }
 
     // get interfaces
     Set<JavaClassType> interfaces = new HashSet<>();
     for (IClass i : walaClass.getDirectInterfaces()) {
       JavaClassType inter =
-          view.getSignatureFactory()
-              .getClassType(convertClassNameFromWala(i.getName().toString()));
+          view.getTypeFactory().getClassType(convertClassNameFromWala(i.getName().toString()));
       interfaces.add(inter);
     }
 
@@ -110,8 +113,7 @@ public class WalaIRToJimpleConverter {
       IClass ec = javaClass.getEnclosingClass();
       if (ec != null) {
         outerClass =
-            view.getSignatureFactory()
-                .getClassType(convertClassNameFromWala(ec.getName().toString()));
+            view.getTypeFactory().getClassType(convertClassNameFromWala(ec.getName().toString()));
       }
     }
 
@@ -163,7 +165,7 @@ public class WalaIRToJimpleConverter {
   public JavaClassSource createClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSignature =
-        new DefaultSignatureFactory() {}.getClassType(fullyQualifiedClassName);
+        DefaultTypeFactory.getInstance().getClassType(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
     return new JavaClassSource(srcNamespace, sourcePath, classSignature);
@@ -205,7 +207,7 @@ public class WalaIRToJimpleConverter {
           }
         }
         Type paraType = convertType(type);
-        paraTypes.add(this.view.getSignatureFactory().getType(paraType.toString()));
+        paraTypes.add(this.view.getTypeFactory().getType(paraType.toString()));
         sigs.add(paraType.toString());
       }
     }
@@ -218,7 +220,7 @@ public class WalaIRToJimpleConverter {
     try {
       for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
         String exceptionName = convertClassNameFromWala(exception.getName().toString());
-        JavaClassType exceptionSig = this.view.getSignatureFactory().getClassType(exceptionName);
+        JavaClassType exceptionSig = this.view.getTypeFactory().getClassType(exceptionName);
         thrownExceptions.add(exceptionSig);
       }
     } catch (UnsupportedOperationException | InvalidClassFileException e) {
@@ -267,13 +269,13 @@ public class WalaIRToJimpleConverter {
         TypeReference t = type.getInnermostElementType();
         Type baseType = convertType(t);
         int dim = type.getDimensionality();
-        return DefaultSignatureFactory.getInstance().getArrayType(baseType, dim);
+        return DefaultTypeFactory.getInstance().getArrayType(baseType, dim);
       } else if (type.isClassType()) {
         if (type.equals(TypeReference.Null)) {
           return NullType.getInstance();
         } else {
           String className = convertClassNameFromWala(type.getName().toString());
-          return this.view.getSignatureFactory().getClassType(className);
+          return this.view.getTypeFactory().getClassType(className);
         }
       }
     }

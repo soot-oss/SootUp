@@ -1,7 +1,7 @@
 package de.upb.soot.frontends;
 
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.JavaClassType;
+import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 
 /**

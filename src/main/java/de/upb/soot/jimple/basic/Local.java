@@ -27,7 +27,7 @@ package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.visitor.IJimpleValueVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.Numberable;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.Collections;

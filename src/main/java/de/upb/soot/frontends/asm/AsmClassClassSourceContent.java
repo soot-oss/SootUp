@@ -13,10 +13,11 @@ import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.SignatureFactory;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -49,7 +50,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
   public AbstractClass resolveClass(@Nonnull ResolvingLevel level, @Nonnull IView view)
       throws AsmFrontendException {
 
-    JavaClassType cs = view.getSignatureFactory().getClassType(this.signature);
+    JavaClassType cs = view.getTypeFactory().getClassType(this.signature);
     SootClass.SootClassSurrogateBuilder builder;
 
     // FIXME: currently ugly because, the original class is always re-resolved but never copied...
@@ -107,7 +108,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
     // Add super class
     JavaClassType mySuperClass =
-        DefaultSignatureFactory.getInstance().getClassType(AsmUtil.toQualifiedName(superName));
+        DefaultTypeFactory.getInstance().getClassType(AsmUtil.toQualifiedName(superName));
 
     // Add interfaces
     Set<JavaClassType> interfaces = new HashSet<>(AsmUtil.asmIdToSignature(this.interfaces));
@@ -194,7 +195,8 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   @Override
   @Nonnull
-  public Iterable<SootMethod> resolveMethods(@Nonnull JavaClassType signature) throws ResolveException {
+  public Iterable<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
+      throws ResolveException {
     SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
     return resolveMethods(methods, signatureFactory, signature).collect(Collectors.toSet());
   }

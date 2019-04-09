@@ -3,9 +3,9 @@ package de.upb.soot.frontends.java;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassType;
+import de.upb.soot.types.JavaClassType;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Optional;
@@ -22,7 +22,7 @@ import soot.options.Options;
 public class JimpleConverterTest {
 
   private WalaClassLoader loader;
-  private DefaultSignatureFactory sigFactory;
+  private DefaultFactories defaultFactories;
   private JavaClassType declareClassSig;
   private SootClass klass;
 
@@ -30,7 +30,7 @@ public class JimpleConverterTest {
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/wala-tests/";
     loader = new WalaClassLoader(srcDir, null);
-    sigFactory = new DefaultSignatureFactory();
+    defaultFactories = DefaultFactories.create();
   }
 
   @After
@@ -53,7 +53,7 @@ public class JimpleConverterTest {
 
   @Test
   public void testSimple1() {
-    declareClassSig = sigFactory.getClassType("Simple1");
+    declareClassSig = defaultFactories.getTypeFactory().getClassType("Simple1");
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     klass = c.get();
@@ -61,7 +61,7 @@ public class JimpleConverterTest {
 
   @Test
   public void testVarDeclInSwitch() {
-    declareClassSig = sigFactory.getClassType("bugfixes.VarDeclInSwitch");
+    declareClassSig = defaultFactories.getTypeFactory().getClassType("bugfixes.VarDeclInSwitch");
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     klass = c.get();

@@ -1,8 +1,8 @@
 package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.Type;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +26,7 @@ public class MethodType extends Constant {
 
   @Override
   public Type getType() {
-    return DefaultSignatureFactory.getInstance().getClassType("java.lang.invoke.MethodType");
+    return DefaultTypeFactory.getInstance().getClassType("java.lang.invoke.MethodType");
   }
 
   public List<Type> getParameterTypes() {

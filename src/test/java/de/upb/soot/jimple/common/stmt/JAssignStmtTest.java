@@ -30,7 +30,7 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.constant.LongConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
-import de.upb.soot.signatures.PrimitiveType;
+import de.upb.soot.types.PrimitiveType;
 import java.util.Comparator;
 import org.junit.Assert;
 import org.junit.Test;

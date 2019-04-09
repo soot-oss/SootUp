@@ -4,7 +4,7 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.signatures.JavaClassType;
+import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
 import java.util.Collections;
 import javax.annotation.Nonnull;

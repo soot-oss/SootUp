@@ -79,16 +79,17 @@ import de.upb.soot.jimple.common.stmt.JInvokeStmt;
 import de.upb.soot.jimple.common.stmt.JNopStmt;
 import de.upb.soot.jimple.common.stmt.JThrowStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
-import de.upb.soot.signatures.ArrayType;
-import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassType;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.PrimitiveType;
-import de.upb.soot.signatures.ReferenceType;
 import de.upb.soot.signatures.SignatureFactory;
-import de.upb.soot.signatures.Type;
-import de.upb.soot.signatures.UnknownType;
+import de.upb.soot.types.ArrayType;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.ReferenceType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.TypeFactory;
+import de.upb.soot.types.UnknownType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -104,19 +105,20 @@ import scala.Char;
  */
 public class InstructionConverter {
 
-  private WalaIRToJimpleConverter converter;
-  private MethodSignature methodSignature;
-  private AstMethod walaMethod;
-  private SymbolTable symbolTable;
-  private LocalGenerator localGenerator;
+  private final WalaIRToJimpleConverter converter;
+  private final MethodSignature methodSignature;
+  private final AstMethod walaMethod;
+  private final SymbolTable symbolTable;
+  private final LocalGenerator localGenerator;
   // <ifStmt, iindex>
-  protected Map<JIfStmt, Integer> targetsOfIfStmts;
-  protected Map<JGotoStmt, Integer> targetsOfGotoStmts;
-  protected Map<JLookupSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
-  protected Map<JLookupSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
+  protected final Map<JIfStmt, Integer> targetsOfIfStmts;
+  protected final Map<JGotoStmt, Integer> targetsOfGotoStmts;
+  protected final Map<JLookupSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
+  protected final Map<JLookupSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
   protected Map<JLookupSwitchStmt, List<IStmt>> targetStmtsOfLookUpSwitchStmts;
-  private Map<Integer, Local> locals;
-  private SignatureFactory sigFactory;
+  private final Map<Integer, Local> locals;
+  private final SignatureFactory sigFactory;
+  private final TypeFactory typeFactory;
 
   public InstructionConverter(
       WalaIRToJimpleConverter converter,
@@ -134,6 +136,7 @@ public class InstructionConverter {
     this.defaultOfLookUpSwitchStmts = new HashMap<>();
     this.locals = new HashMap<>();
     this.sigFactory = converter.view.getSignatureFactory();
+    this.typeFactory = converter.view.getTypeFactory();
   }
 
   public List<IStmt> convertInstruction(DebuggingInformation debugInfo, SSAInstruction inst) {
@@ -262,8 +265,7 @@ public class InstructionConverter {
     int exceptionValue = inst.getException();
     Local local =
         getLocal(
-            DefaultSignatureFactory.getInstance().getClassType("java.lang.Throwable"),
-            exceptionValue);
+            DefaultTypeFactory.getInstance().getClassType("java.lang.Throwable"), exceptionValue);
     JCaughtExceptionRef caught = Jimple.newCaughtExceptionRef();
     return Jimple.newIdentityStmt(
         local, caught, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
@@ -323,7 +325,7 @@ public class InstructionConverter {
     // create failed assertion code.
 
     ReferenceType assertionErrorType =
-        DefaultSignatureFactory.getInstance().getClassType("java.lang.AssertionError");
+        DefaultTypeFactory.getInstance().getClassType("java.lang.AssertionError");
     Local failureLocal = localGenerator.generateLocal(assertionErrorType);
     JNewExpr newExpr = Jimple.newNewExpr(assertionErrorType);
     JAssignStmt newAssignStmt =
@@ -518,7 +520,7 @@ public class InstructionConverter {
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassType classSig =
-        sigFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
+        typeFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig =
         sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
     Value fieldValue = null;
@@ -829,7 +831,7 @@ public class InstructionConverter {
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassType classSig =
-        sigFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
+        typeFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig =
         sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
     Value rvalue = null;

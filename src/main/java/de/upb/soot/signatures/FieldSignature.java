@@ -1,5 +1,7 @@
 package de.upb.soot.signatures;
 
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import javax.annotation.Nonnull;
 
 /**

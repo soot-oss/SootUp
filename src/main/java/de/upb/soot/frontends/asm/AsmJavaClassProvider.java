@@ -7,7 +7,7 @@ import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.frontends.asm.modules.AsmModuleClassSourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.JavaClassType;
+import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
 

@@ -1,4 +1,4 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 /*-
  * #%L
@@ -28,6 +28,9 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.ModuleSignatureFactory;
+import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 import java.nio.file.FileSystem;
@@ -53,7 +56,7 @@ public class JavaClassType extends ReferenceType {
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
    * @param packageSignature the corresponding package
    */
-  protected JavaClassType(final String className, final PackageSignature packageSignature) {
+  public JavaClassType(final String className, final PackageSignature packageSignature) {
     String realClassName = className;
     boolean innerClass = false;
     // use $ to separate inner and outer class name

@@ -30,7 +30,7 @@ import categories.Java8Test;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.signatures.PrimitiveType;
+import de.upb.soot.types.PrimitiveType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 

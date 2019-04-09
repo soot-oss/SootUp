@@ -29,7 +29,7 @@ import categories.Java8Test;
 import de.upb.soot.jimple.IgnoreLocalNameComparator;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.signatures.PrimitiveType;
+import de.upb.soot.types.PrimitiveType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import soot.jimple.internal.JBreakpointStmt;

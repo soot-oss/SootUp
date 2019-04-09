@@ -23,7 +23,7 @@ package de.upb.soot.core;
 
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.FieldSubSignature;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.builder.BuilderException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

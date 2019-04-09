@@ -5,7 +5,7 @@ import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.JavaClassType;
+import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 
 /** @author Linghui Luo */

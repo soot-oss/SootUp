@@ -38,7 +38,9 @@ public class ViewBuilder {
     // compose View
 
     for (ClassSource cs :
-        this.project.getNamespace().getClassSources(result.getSignatureFactory())) {
+        this.project
+            .getNamespace()
+            .getClassSources(result.getSignatureFactory(), result.getTypeFactory())) {
       try {
         AbstractClass abstractClass =
             cs.getContent().resolveClass(ResolvingLevel.HIERARCHY, result);

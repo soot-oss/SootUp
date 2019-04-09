@@ -3,9 +3,11 @@ package de.upb.soot.frontends.java;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassType;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.Before;
@@ -18,14 +20,17 @@ public class GetInstructionConversionTest {
 
   private WalaClassLoader loader;
   private DefaultSignatureFactory sigFactory;
+  private DefaultTypeFactory typeFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/wala-tests/";
     loader = new WalaClassLoader(srcDir, null);
-    sigFactory = new DefaultSignatureFactory();
-    declareClassSig = sigFactory.getClassType("alreadywalaunittests.InnerClassAA");
+    DefaultFactories factories = DefaultFactories.create();
+    sigFactory = factories.getSignatureFactory();
+    typeFactory = factories.getTypeFactory();
+    declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");
   }
 
   @Test

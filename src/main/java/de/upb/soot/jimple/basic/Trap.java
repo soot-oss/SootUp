@@ -1,7 +1,7 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.signatures.JavaClassType;
+import de.upb.soot.types.JavaClassType;
 
 /**
  * A trap is an exception catcher.

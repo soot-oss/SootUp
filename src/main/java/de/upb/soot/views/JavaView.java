@@ -3,7 +3,7 @@ package de.upb.soot.views;
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
 import java.util.Optional;
 import java.util.regex.Pattern;

@@ -26,7 +26,7 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.visitor.IAcceptor;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.io.Serializable;
 import java.util.List;

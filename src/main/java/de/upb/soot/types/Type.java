@@ -1,4 +1,4 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 /*-
  * #%L
@@ -24,21 +24,16 @@ package de.upb.soot.signatures;
 
 import javax.annotation.Nonnull;
 
-/** Represents Java's 'void' type as methods return's type. */
-public class VoidType extends Type {
+/** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
+public abstract class Type {
 
-  @Nonnull private static final VoidType INSTANCE = new VoidType();
-
+  /**
+   * Gets the type name as quoted string.
+   *
+   * @return The type name as quoted string.
+   */
   @Nonnull
-  public static VoidType getInstance() {
-    return INSTANCE;
-  }
-
-  private VoidType() {}
-
-  @Override
-  @Nonnull
-  public String toString() {
-    return "void";
+  public String toQuotedString() {
+    return this.toString();
   }
 }

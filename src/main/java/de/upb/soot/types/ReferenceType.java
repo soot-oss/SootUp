@@ -1,4 +1,4 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 /*-
  * #%L
@@ -22,22 +22,5 @@ package de.upb.soot.signatures;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-
-/** Represents a signature for a <code>null</code>-reference. */
-public class NullType extends ReferenceType {
-
-  @Nonnull private static final NullType INSTANCE = new NullType();
-
-  @Nonnull
-  public static NullType getInstance() {
-    return INSTANCE;
-  }
-
-  private NullType() {}
-
-  @Override
-  public String toString() {
-    return "null";
-  }
-}
+/** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
+public abstract class ReferenceType extends Type {}

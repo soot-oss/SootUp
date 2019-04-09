@@ -28,8 +28,8 @@ package de.upb.soot.jimple.common.ref;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.Collections;
 import java.util.List;
@@ -74,7 +74,7 @@ public class JCaughtExceptionRef implements IdentityRef {
   @Override
   public Type getType() {
     // TODO: [JMP] Get cached instance
-    return DefaultSignatureFactory.getInstance().getType("java.lang.Throwable");
+    return DefaultTypeFactory.getInstance().getType("java.lang.Throwable");
   }
 
   @Override

@@ -1,7 +1,7 @@
 package de.upb.soot;
 
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.JavaClassType;
+import de.upb.soot.types.JavaClassType;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.util.NotYetImplementedException;
 

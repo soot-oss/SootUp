@@ -31,7 +31,7 @@ import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.Type;
+import de.upb.soot.types.Type;
 
 /** Interface for different methods of printing out a IStmt. */
 public interface IStmtPrinter {

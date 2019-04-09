@@ -1,11 +1,11 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.signatures.PrimitiveType;
-import de.upb.soot.signatures.ReferenceType;
-import de.upb.soot.signatures.Type;
-import de.upb.soot.signatures.UnknownType;
-import de.upb.soot.signatures.VoidType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.ReferenceType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.UnknownType;
+import de.upb.soot.types.VoidType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

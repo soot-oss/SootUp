@@ -8,6 +8,9 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
+import de.upb.soot.ModuleFactories;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.ModuleTypeFactory;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -38,7 +41,7 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
 
   @Test
   public void getPackageSignatureUnnamedModule() {
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
+    ModuleSignatureFactory signatureFactory = ModuleFactories.create().getSignatureFactory();
     PackageSignature packageSignature1 = signatureFactory.getPackageSignature("java.lang");
     assertTrue(packageSignature1 instanceof ModulePackageSignature);
     assertSame(
@@ -55,7 +58,7 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
 
   @Test
   public void getPackageSignatureNamedModule() {
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
+    ModuleSignatureFactory signatureFactory = ModuleFactories.create().getSignatureFactory();
     PackageSignature packageSignature1 =
         signatureFactory.getPackageSignature("java.lang", "myModule");
     assertTrue(packageSignature1 instanceof ModulePackageSignature);
@@ -66,7 +69,7 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
 
   @Test
   public void getModulePackageSignature() {
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
+    ModuleSignatureFactory signatureFactory = ModuleFactories.create().getSignatureFactory();
     ModulePackageSignature packageSignature1 =
         signatureFactory.getPackageSignature("java.lang", "myModule");
     ModulePackageSignature packageSignature2 =
@@ -77,7 +80,7 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
 
   @Test
   public void getModulePackageSignatureSameModule() {
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
+    ModuleSignatureFactory signatureFactory = ModuleFactories.create().getSignatureFactory();
     ModulePackageSignature packageSignature1 =
         signatureFactory.getPackageSignature("java.lang", "myModule");
     ModulePackageSignature packageSignature2 =
@@ -93,7 +96,7 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
 
   @Test
   public void getModulePackageSignatureDiffModule() {
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
+    ModuleSignatureFactory signatureFactory = ModuleFactories.create().getSignatureFactory();
     ModulePackageSignature packageSignature1 =
         signatureFactory.getPackageSignature("java.lang", "myModule1");
     ModulePackageSignature packageSignature2 =
@@ -107,28 +110,26 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
 
   @Test(expected = NullPointerException.class)
   public void checkNullModule() {
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
+    ModuleSignatureFactory signatureFactory = ModuleFactories.create().getSignatureFactory();
     ModulePackageSignature packageSignature =
         signatureFactory.getPackageSignature("myPackage", null);
   }
 
   @Test(expected = NullPointerException.class)
   public void checkNullModule2() {
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
-    JavaClassType classSignature = signatureFactory.getClassType("A", "mypackage", null);
+    ModuleTypeFactory typeFactory = ModuleFactories.create().getTypeFactory();
+    JavaClassType classSignature = typeFactory.getClassType("A", "mypackage", null);
   }
 
   @Test
   public void testModuleInfoSignature() {
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
-
-    JavaClassType classSignature1 = signatureFactory.getClassType("module-info");
+    ModuleTypeFactory typeFactory = ModuleFactories.create().getTypeFactory();
+    JavaClassType classSignature1 = typeFactory.getClassType("module-info");
     assertTrue(classSignature1.isModuleInfo());
   }
 
   @Test
   public void compModuleSignature() {
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
     ModuleSignature signature = ModuleSignatureFactory.getModuleSignature("java.base");
     ModuleSignature signature2 = ModuleSignatureFactory.getModuleSignature("java.base");
     assertEquals(signature, signature2);
@@ -138,7 +139,6 @@ public class ModuleSignatureFactoryTest extends SignatureFactoryTest {
 
   @Test
   public void compModuleSignature2() {
-    ModuleSignatureFactory signatureFactory = new ModuleSignatureFactory();
     ModuleSignature signature = ModuleSignatureFactory.getModuleSignature("java.base");
     ModuleSignature signature2 = ModuleSignatureFactory.getModuleSignature("javafx.base");
     assertNotEquals(signature, signature2);

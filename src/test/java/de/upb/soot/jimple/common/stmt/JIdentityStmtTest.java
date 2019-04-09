@@ -23,13 +23,14 @@
 package de.upb.soot.jimple.common.stmt;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.PrimitiveType;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.PrimitiveType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -41,18 +42,19 @@ public class JIdentityStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    DefaultSignatureFactory factory = new DefaultSignatureFactory();
+    DefaultFactories defaultFactories = DefaultFactories.create();
+    DefaultTypeFactory typeFactory = defaultFactories.getTypeFactory();
 
-    Local thiz = new Local("$r0", factory.getType("somepackage.dummy.MyClass"));
+    Local thiz = new Local("$r0", typeFactory.getType("somepackage.dummy.MyClass"));
     IStmt thisIdStmt =
         new JIdentityStmt(
-            thiz, new JThisRef(factory.getClassType("somepackage.dummy.MyClass")), nop);
+            thiz, new JThisRef(typeFactory.getClassType("somepackage.dummy.MyClass")), nop);
 
     Local param = new Local("$i0", PrimitiveType.getInt());
     IStmt paramIdStmt =
         new JIdentityStmt(param, new JParameterRef(PrimitiveType.getInt(), 123), nop);
 
-    Local exception = new Local("$r1", factory.getType("java.lang.Exception"));
+    Local exception = new Local("$r1", typeFactory.getType("java.lang.Exception"));
     IStmt exceptionIdStmt = new JIdentityStmt(exception, new JCaughtExceptionRef(), nop);
 
     // toString
@@ -64,14 +66,14 @@ public class JIdentityStmtTest {
     Assert.assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
-                new Local("$r5", factory.getType("somepackage.NotMyClass")),
-                new JThisRef(factory.getClassType("somepackage.NotMyClass")),
+                new Local("$r5", typeFactory.getType("somepackage.NotMyClass")),
+                new JThisRef(typeFactory.getClassType("somepackage.NotMyClass")),
                 nop)));
     Assert.assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
-                new Local("$r42", factory.getType("somepackage.dummy.MyClass")),
-                new JThisRef(factory.getClassType("somepackage.dummy.MyClass")),
+                new Local("$r42", typeFactory.getType("somepackage.dummy.MyClass")),
+                new JThisRef(typeFactory.getClassType("somepackage.dummy.MyClass")),
                 nop)));
     Assert.assertTrue(thisIdStmt.equivTo(thisIdStmt));
     Assert.assertFalse(thisIdStmt.equivTo(exceptionIdStmt));
@@ -96,7 +98,7 @@ public class JIdentityStmtTest {
     Assert.assertFalse(
         thisIdStmt.equivTo(
             new JIdentityStmt(
-                new Local("$r1", factory.getType("somepckg.NotMyException")),
+                new Local("$r1", typeFactory.getType("somepckg.NotMyException")),
                 new JCaughtExceptionRef(),
                 nop)));
     Assert.assertFalse(paramIdStmt.equivTo(thisIdStmt));

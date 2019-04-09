@@ -31,11 +31,11 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.ArrayType;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.NullType;
-import de.upb.soot.signatures.Type;
-import de.upb.soot.signatures.UnknownType;
+import de.upb.soot.types.ArrayType;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.NullType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.UnknownType;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
@@ -139,14 +139,14 @@ public class JArrayRef implements ConcreteRef {
       if (type instanceof ArrayType) {
         arrayType = (ArrayType) type;
       } else {
-        arrayType = DefaultSignatureFactory.getInstance().getArrayType(type, 1);
+        arrayType = DefaultTypeFactory.getInstance().getArrayType(type, 1);
       }
 
       // FIXME: [JMP] Should unwrapping not be done by the `ArrayType` itself?
       if (arrayType.getDimension() == 1) {
         return arrayType.getBaseType();
       } else {
-        return DefaultSignatureFactory.getInstance()
+        return DefaultTypeFactory.getInstance()
             .getArrayType(arrayType.getBaseType(), arrayType.getDimension() - 1);
       }
     }
