@@ -247,8 +247,8 @@ public class Body implements Serializable {
    *
    * @return the statements in this Body
    */
-  public Collection<IStmt> getStmts() {
-    return stmts;
+  public List<IStmt> getStmts() {
+    return Collections.unmodifiableList(stmts);
   }
 
   public void checkInit() {

@@ -2,10 +2,12 @@ package de.upb.soot.frontends.java;
 
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.basic.EquivTo;
 import de.upb.soot.util.printer.Printer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.util.function.Consumer;
 
 /** @author Linghui Luo */
 public class Utils {
@@ -47,6 +49,24 @@ public class Utils {
       printer.printTo(method.getActiveBody(), writer);
       writer.flush();
       writer.close();
+    }
+  }
+
+  static void assertEquiv(EquivTo expected, EquivTo actual) {
+    if (!expected.equivTo(actual)) {
+      throw new AssertionError("Expected '" + expected + "', actual is '" + actual + "'");
+    }
+  }
+
+  static <T> void assertInstanceOfSatisfying(Object actual, Class<T> tClass, Consumer<T> checker) {
+    try {
+      checker.accept(tClass.cast(actual));
+    } catch (ClassCastException e) {
+      throw new AssertionError(
+          "Expected value of type "
+              + tClass
+              + (actual != null ? ", got type " + actual.getClass() + " with value " : ", got ")
+              + actual);
     }
   }
 }
