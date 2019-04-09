@@ -725,7 +725,6 @@ public class InstructionConverter {
     List<String> parameters = new ArrayList<>();
     List<Type> paraTypes = new ArrayList<>();
     List<Value> args = new ArrayList<>();
-    Position[] operandPos = new Position[target.getNumberOfParameters()];
     for (int i = 0; i < target.getNumberOfParameters(); i++) {
       Type paraType = converter.convertType(target.getParameterType(i)); // note
       // the
@@ -736,8 +735,9 @@ public class InstructionConverter {
       // "this"
       paraTypes.add(paraType);
       parameters.add(paraType.toString());
-      operandPos[i]=debugInfo.getOperandPosition(invokeInst.iindex, i);
     }
+    Position[] operandPos = new Position[target.getNumberOfParameters()];
+    int index=0;
     int i = 0;
     if (!callee.isStatic()) {
       i = 1; // non-static invoke this first use is thisRef.
@@ -756,6 +756,8 @@ public class InstructionConverter {
       }
       assert (arg != null);
       args.add(arg);
+      operandPos[index]=debugInfo.getOperandPosition(invokeInst.iindex, i);
+      index++;
     }
 
     MethodSignature methodSig =

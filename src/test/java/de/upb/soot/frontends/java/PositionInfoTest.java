@@ -1,7 +1,10 @@
 package de.upb.soot.frontends.java;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+
+import akka.japi.Util;
 
 import categories.Java8Test;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
@@ -320,12 +323,10 @@ public class PositionInfoTest {
     // benefit
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
     List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
-
     {
       // !hasDef() -> same class, no parameters
       IStmt stmt = stmts.get(4);
       PositionInfo info = stmt.getPositionInfo();
-
       Position stmtPos = info.getStmtPosition();
       assertEquals(15, stmtPos.getFirstLine());
       assertEquals(15, stmtPos.getLastLine());
@@ -335,14 +336,19 @@ public class PositionInfoTest {
 
     {
       // hasDef -> has parameter or is method of different class
-      IStmt stmt = stmts.get(5);
+      IStmt stmt = stmts.get(5); 
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
-
       assertEquals(16, stmtPos.getFirstLine());
       assertEquals(16, stmtPos.getLastLine());
       assertEquals(4, stmtPos.getFirstCol());
       assertEquals(12, stmtPos.getLastCol());
+      
+      //FIXME. The following assertions fail 
+      assertEquals(16, info.getOperandPosition(0).getFirstLine());
+      assertEquals(10, info.getOperandPosition(0).getFirstCol());
+      assertEquals(16, info.getOperandPosition(0).getLastLine());
+      assertEquals(11, info.getOperandPosition(0).getLastCol());
     }
   }
 
