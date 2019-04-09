@@ -61,14 +61,11 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
             || op2t.equals(PrimitiveType.getChar())
             || op2t.equals(PrimitiveType.getBoolean()))) {
       return PrimitiveType.getInt();
-    } else if (op1t.equals(PrimitiveType.getLong())
-        || op2t.equals(PrimitiveType.getLong())) {
+    } else if (op1t.equals(PrimitiveType.getLong()) || op2t.equals(PrimitiveType.getLong())) {
       return PrimitiveType.getLong();
-    } else if (op1t.equals(PrimitiveType.getDouble())
-        || op2t.equals(PrimitiveType.getDouble())) {
+    } else if (op1t.equals(PrimitiveType.getDouble()) || op2t.equals(PrimitiveType.getDouble())) {
       return PrimitiveType.getDouble();
-    } else if (op1t.equals(PrimitiveType.getFloat())
-        || op2t.equals(PrimitiveType.getFloat())) {
+    } else if (op1t.equals(PrimitiveType.getFloat()) || op2t.equals(PrimitiveType.getFloat())) {
       return PrimitiveType.getFloat();
     } else {
       return UnknownType.getInstance();

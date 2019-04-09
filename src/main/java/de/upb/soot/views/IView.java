@@ -87,9 +87,7 @@ public interface IView {
   @Nonnull
   SignatureFactory getSignatureFactory();
 
-  /**
-   * Returns the {@link TypeFactory} for this view.
-   */
+  /** Returns the {@link TypeFactory} for this view. */
   @Nonnull
   TypeFactory getTypeFactory();
 

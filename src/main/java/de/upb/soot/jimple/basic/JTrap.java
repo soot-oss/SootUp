@@ -42,7 +42,8 @@ public class JTrap extends AbstractTrap {
         Jimple.newStmtBox(handlerStmt));
   }
 
-  public JTrap(JavaClassType exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
+  public JTrap(
+      JavaClassType exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
     super(exception, beginStmt, endStmt, handlerStmt);
   }
 

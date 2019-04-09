@@ -31,7 +31,8 @@ public interface IClassSourceContent {
   }
 
   @Nonnull
-  default Iterable<SootField> resolveFields(@Nonnull JavaClassType signature) throws ResolveException {
+  default Iterable<SootField> resolveFields(@Nonnull JavaClassType signature)
+      throws ResolveException {
     // TODO: Not sure whether this should even have a default implementation
     return Collections.emptyList();
   }

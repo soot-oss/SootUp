@@ -104,7 +104,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getClassSignature() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     JavaClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
@@ -115,7 +115,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getCompareClassSignature2() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     JavaClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
@@ -125,7 +125,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getCompareClassSignature3() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
@@ -135,7 +135,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getCompareClassSignature() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     JavaClassType classSignature2 = null;
@@ -146,7 +146,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void sigToPath() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     Path path = classSignature1.toPath(FileType.CLASS);
@@ -157,7 +157,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void sigFromPath() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     Path p = Paths.get("java/lang/System.class");
     JavaClassType classSignature = typeFactory.fromPath(p);
@@ -166,7 +166,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void sigFromPathStartsWithSlash() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     Path p = Paths.get("/java/lang/System.class");
     JavaClassType classSignature = typeFactory.fromPath(p);
@@ -175,7 +175,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getClassSignatureEmptyPackage() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature1 = typeFactory.getClassType("A", "");
     JavaClassType classSignature2 = typeFactory.getClassType("A");
@@ -194,7 +194,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getClassSignatureFullyQualified() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature1 = typeFactory.getClassType("java.lang.System");
     JavaClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
@@ -205,7 +205,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getInnerClassSignature() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature1 = typeFactory.getClassType("java.lang.System$MyClass");
     JavaClassType classSignature2 = typeFactory.getClassType("System$MyClass", "java.lang");
@@ -219,7 +219,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getClassSignaturesPackage() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     JavaClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
@@ -235,7 +235,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getMethodSignature() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType declClass = typeFactory.getClassType("System", "java.lang");
@@ -253,7 +253,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getMethodSignatureString() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
 
@@ -267,7 +267,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getMethodSignatureString2() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
 
@@ -280,7 +280,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getMethodSignatureString3() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
 
     List<String> parameters = Collections.emptyList();
@@ -292,7 +292,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getMethodSignatureString4() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
 
@@ -306,7 +306,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getFieldSignature() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature = typeFactory.getClassType("java.lang.System");
@@ -317,7 +317,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void compMethodSignature2() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
 
@@ -335,7 +335,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void compMethodSignature1() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
 
@@ -352,7 +352,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getTypeSignature() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     Type classSignature2 = typeFactory.getType("java.lang.System");
@@ -361,7 +361,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getTypeSignatureTypes() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
 
     Type byteSig = typeFactory.getType("byte");
@@ -407,14 +407,14 @@ public class SignatureFactoryTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void getTypeSignatureArray() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     Type classSignature2 = typeFactory.getType("java.lang.System[[]");
   }
 
   @Test
   public void getTypeSignatureArray2() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     Type base = typeFactory.getType("int");
 
@@ -426,7 +426,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getTypeSignatureArray3() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     Type base = typeFactory.getType("int");
 
@@ -438,7 +438,7 @@ public class SignatureFactoryTest {
 
   @Test
   public void getTypeSignatureArray4() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     Type base = typeFactory.getType("java.lang.Fantasy");
 
@@ -450,7 +450,7 @@ public class SignatureFactoryTest {
 
   @Test(expected = NullPointerException.class)
   public void checkNullPackage() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     PackageSignature packageSignature = signatureFactory.getPackageSignature(null);
@@ -458,7 +458,7 @@ public class SignatureFactoryTest {
 
   @Test(expected = NullPointerException.class)
   public void checkNullPackage2() {
-     DefaultFactories factories = DefaultFactories.create();
+    DefaultFactories factories = DefaultFactories.create();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature = typeFactory.getClassType("A", null);
   }

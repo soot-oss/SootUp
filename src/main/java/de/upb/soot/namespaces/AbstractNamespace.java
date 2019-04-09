@@ -82,5 +82,6 @@ public abstract class AbstractNamespace implements INamespace {
   }
 
   @Override
-  public abstract @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassType classSignature);
+  public abstract @Nonnull Optional<ClassSource> getClassSource(
+      @Nonnull JavaClassType classSignature);
 }

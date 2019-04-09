@@ -65,7 +65,8 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
   }
 
   @Nonnull
-  private SootModuleInfo.HierachyStep resolveDangling(@Nonnull IView view, @Nonnull JavaClassType cs) {
+  private SootModuleInfo.HierachyStep resolveDangling(
+      @Nonnull IView view, @Nonnull JavaClassType cs) {
     // sootClass.setModifiers(AsmUtil.getModifiers(access & ~org.objectweb.asm.Opcodes.ACC_SUPER));
     return SootModuleInfo.builder().dangling(view, this.classSource, null, this.module.name);
   }
@@ -131,8 +132,7 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
       // add requies
       for (ModuleRequireNode moduleRequireNode : module.requires) {
         JavaClassType classSignature =
-            view.getTypeFactory()
-                .getClassType(AsmUtil.toQualifiedName(moduleRequireNode.module));
+            view.getTypeFactory().getClassType(AsmUtil.toQualifiedName(moduleRequireNode.module));
         if (classSignature.isModuleInfo()) {
           // sootModuleInfo.addRequire(sootClassOptional.get(), moduleRequireNode.access,
           // moduleRequireNode.version);
@@ -148,8 +148,7 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
       // add provides
       for (ModuleProvideNode moduleProvideNode : module.provides) {
         JavaClassType serviceSignature =
-            view.getTypeFactory()
-                .getClassType(AsmUtil.toQualifiedName(moduleProvideNode.service));
+            view.getTypeFactory().getClassType(AsmUtil.toQualifiedName(moduleProvideNode.service));
         Iterable<JavaClassType> providersSignatures =
             AsmUtil.asmIdToSignature(moduleProvideNode.providers);
         for (JavaClassType sootClassSignature : providersSignatures) {

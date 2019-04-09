@@ -67,7 +67,10 @@ public class AbstractTrap implements Trap, Serializable {
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
   protected AbstractTrap(
-      JavaClassType exception, IStmtBox beginStmtBox, IStmtBox endStmtBox, IStmtBox handlerStmtBox) {
+      JavaClassType exception,
+      IStmtBox beginStmtBox,
+      IStmtBox endStmtBox,
+      IStmtBox handlerStmtBox) {
     this.exception = exception;
     this.beginStmtBox = beginStmtBox;
     this.endStmtBox = endStmtBox;

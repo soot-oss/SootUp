@@ -72,9 +72,7 @@ public class JAssignStmtTest {
     Assert.assertTrue(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", PrimitiveType.getInt()),
-                IntConstant.getInstance(42),
-                nop)));
+                new Local("$i0", PrimitiveType.getInt()), IntConstant.getInstance(42), nop)));
 
     Assert.assertTrue(
         deepStmt.equivTo(
@@ -99,9 +97,7 @@ public class JAssignStmtTest {
     Assert.assertFalse(
         lStmt.equivTo(
             new JAssignStmt(
-                new Local("$i0", PrimitiveType.getLong()),
-                LongConstant.getInstance(42),
-                nop)));
+                new Local("$i0", PrimitiveType.getLong()), LongConstant.getInstance(42), nop)));
 
     // equivTo: different depth
     Assert.assertFalse(

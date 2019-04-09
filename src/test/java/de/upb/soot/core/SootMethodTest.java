@@ -31,7 +31,9 @@ public class SootMethodTest {
   @Test
   public void testCreateMethod() {
     DefaultFactories factories = DefaultFactories.create();
-    IView view = new JavaView(new Project(null, factories.getSignatureFactory(), factories.getTypeFactory()));
+    IView view =
+        new JavaView(
+            new Project(null, factories.getSignatureFactory(), factories.getTypeFactory()));
     JavaClassType type = view.getTypeFactory().getClassType("java.lang.String");
 
     List<IStmt> stmts = new ArrayList<>();
