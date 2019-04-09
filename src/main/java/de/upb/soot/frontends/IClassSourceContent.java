@@ -26,12 +26,14 @@ public interface IClassSourceContent {
   @Nonnull
   default Iterable<SootMethod> resolveMethods(@Nonnull JavaClassSignature signature)
       throws ResolveException {
+    // TODO: Not sure whether this should even have a default implementation
     return Collections.emptyList();
   }
 
   @Nonnull
   default Iterable<SootField> resolveFields(@Nonnull JavaClassSignature signature)
       throws ResolveException {
+    // TODO: Not sure whether this should even have a default implementation
     return Collections.emptyList();
   }
 }
