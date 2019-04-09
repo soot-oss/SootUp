@@ -143,7 +143,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
       default:
         ret =
             this.getPrimitiveTypeSignature(typeNameLowerCase)
-                .map(TypeSignature.class::cast)
+                .map(obj -> (TypeSignature) obj)
                 .orElseGet(() -> getClassSignature(typeName));
     }
 
