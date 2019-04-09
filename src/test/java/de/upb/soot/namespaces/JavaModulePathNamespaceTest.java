@@ -85,22 +85,22 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
         Whitebox.getInnerClassType(JavaModulePathNamespace.class, "TypeFactoryWrapper");
     // Constructor constructor = Whitebox.getConstructor(signatureClass, SignatureFactory.class,
     // String.class);
-    Object signatureFactoryWrapper =
+    Object typeFactoryWrapper =
         Whitebox.invokeConstructor(
             signatureClass,
             new Class[] {TypeFactory.class, String.class},
             new Object[] {signatureFactory, "myJava.mod"});
     Object res1 =
-        Whitebox.invokeMethod(signatureFactoryWrapper, "getClassType", "java.lang.System");
+        Whitebox.invokeMethod(typeFactoryWrapper, "getClassType", "java.lang.System");
     assertEquals(res1, getTypeFactory().getClassType("java.lang.System"));
 
-    res1 = Whitebox.invokeMethod(signatureFactoryWrapper, "getClassType", "java.lang", "System");
+    res1 = Whitebox.invokeMethod(typeFactoryWrapper, "getClassType", "java.lang", "System");
     assertEquals(res1, getTypeFactory().getClassType("java.lang", "System"));
 
-    res1 = Whitebox.invokeMethod(signatureFactoryWrapper, "getType", "int");
+    res1 = Whitebox.invokeMethod(typeFactoryWrapper, "getType", "int");
     assertEquals(res1, getTypeFactory().getType("int"));
 
-    res1 = Whitebox.invokeMethod(signatureFactoryWrapper, "getType", "int");
+    res1 = Whitebox.invokeMethod(typeFactoryWrapper, "getType", "int");
     assertEquals(res1, getTypeFactory().getType("int"));
   }
 }
