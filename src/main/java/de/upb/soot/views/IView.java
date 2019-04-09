@@ -5,12 +5,10 @@ import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.signatures.ISignature;
 import de.upb.soot.signatures.SignatureFactory;
-import de.upb.soot.signatures.TypeSignature;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.TypeFactory;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -42,7 +40,7 @@ public interface IView {
    * @return A class with given signature.
    */
   @Nonnull
-  Optional<AbstractClass> getClass(@Nonnull ISignature signature);
+  Optional<AbstractClass> getClass(@Nonnull Type signature);
 
   /**
    * Provides the call graph using the default algorithm.
@@ -77,28 +75,27 @@ public interface IView {
   @Nonnull
   Optional<Scope> getScope();
 
-  /**
-   * Returns the {@link RefType} with given class Signature from the view. If there is no RefType
-   * with given className exists, create a new instance.
-   */
-  @Nonnull
-  RefType getRefType(@Nonnull TypeSignature classSignature);
-
-  /**
-   * Return the {@link Type} wtih given signature from the view. If there is no Type with given
-   * signature exists, create a new instance.
-   */
-  @Nonnull
-  Type getType(@Nonnull TypeSignature signature);
+  //  /**
+  //   * Returns the {@link JavaClassType} with given class Signature from the view. If there
+  // is no RefType with given className
+  //   * exists, create a new instance.
+  //   */
+  //  @Nonnull
+  //  JavaClassType getRefType(@Nonnull Type classSignature);
 
   /** Returns the {@link SignatureFactory} for this view. */
   @Nonnull
   SignatureFactory getSignatureFactory();
 
+  /** Returns the {@link TypeFactory} for this view. */
+  @Nonnull
+  TypeFactory getTypeFactory();
+
   /** Return the {@link Options} of this view. */
   @Nonnull
   Options getOptions();
 
+  // FIXME: [JMP] Adding classes violates the immutability rule!
   /** Add given class to the view. */
   void addClass(@Nonnull AbstractClass klass);
 
@@ -106,4 +103,27 @@ public interface IView {
 
   @Nonnull
   String quotedNameOf(@Nonnull String name);
+
+  //  // TODO: [JMP] Move type resolving into view.
+  //  /**
+  //   * Returns a backed list of the exceptions thrown by this methodRef.
+  //   */
+  //  public @Nonnull Collection<SootClass> getExceptions() {
+  //    return this.exceptions.stream()
+  //             .map(e -> this.getView().getClass(e))
+  //             .filter(Optional::isPresent).map(Optional::get)
+  //             .map(it -> (SootClass) it).collect(Collectors.toSet());
+  //  }
+
+  //  // TODO: This was placed in `JDynamicInvokeExpr`
+  //  public Optional<SootMethod> getBootstrapMethod() {
+  //    JavaClassType signature = bsm.declClassSignature;
+  //    Optional<AbstractClass> op = this.getView().getClass(signature);
+  //    if (op.isPresent()) {
+  //      AbstractClass klass = op.get();
+  //      Optional<? extends IMethod> m = klass.getMethod(bsm);
+  //      return m.map(c -> (SootMethod) c);
+  //    }
+  //    return Optional.empty();
+  //  }
 }

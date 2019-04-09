@@ -27,7 +27,8 @@
 
 package de.upb.soot.core;
 
-import java.util.EnumSet;
+import java.util.Set;
+import javax.annotation.Nonnull;
 
 /**
  * An Enum that provides static methods and constants to represent and work with with Java modifiers
@@ -69,71 +70,71 @@ public enum Modifier {
     this.bytecode = i;
   }
 
-  public static boolean isAbstract(EnumSet<Modifier> m) {
+  public static boolean isAbstract(@Nonnull Set<Modifier> m) {
     return m.contains(ABSTRACT);
   }
 
-  public static boolean isFinal(EnumSet<Modifier> m) {
+  public static boolean isFinal(@Nonnull Set<Modifier> m) {
     return m.contains(FINAL);
   }
 
-  public static boolean isInterface(EnumSet<Modifier> m) {
+  public static boolean isInterface(@Nonnull Set<Modifier> m) {
     return m.contains(INTERFACE);
   }
 
-  public static boolean isNative(EnumSet<Modifier> m) {
+  public static boolean isNative(@Nonnull Set<Modifier> m) {
     return m.contains(NATIVE);
   }
 
-  public static boolean isPrivate(EnumSet<Modifier> m) {
+  public static boolean isPrivate(@Nonnull Set<Modifier> m) {
     return m.contains(PRIVATE);
   }
 
-  public static boolean isProtected(EnumSet<Modifier> m) {
+  public static boolean isProtected(@Nonnull Set<Modifier> m) {
     return m.contains(PROTECTED);
   }
 
-  public static boolean isPublic(EnumSet<Modifier> m) {
+  public static boolean isPublic(@Nonnull Set<Modifier> m) {
     return m.contains(PUBLIC);
   }
 
-  public static boolean isStatic(EnumSet<Modifier> m) {
+  public static boolean isStatic(@Nonnull Set<Modifier> m) {
     return m.contains(STATIC);
   }
 
-  public static boolean isSynchronized(EnumSet<Modifier> m) {
+  public static boolean isSynchronized(@Nonnull Set<Modifier> m) {
     return m.contains(SYNCHRONIZED);
   }
 
-  public static boolean isTransient(EnumSet<Modifier> m) {
+  public static boolean isTransient(@Nonnull Set<Modifier> m) {
     return m.contains(TRANSIENT);
   }
 
-  public static boolean isVolatile(EnumSet<Modifier> m) {
+  public static boolean isVolatile(@Nonnull Set<Modifier> m) {
     return m.contains(VOLATILE);
   }
 
-  public static boolean isStrictFP(EnumSet<Modifier> m) {
+  public static boolean isStrictFP(@Nonnull Set<Modifier> m) {
     return m.contains(STRICTFP);
   }
 
-  public static boolean isAnnotation(EnumSet<Modifier> m) {
+  public static boolean isAnnotation(@Nonnull Set<Modifier> m) {
     return m.contains(ANNOTATION);
   }
 
-  public static boolean isEnum(EnumSet<Modifier> m) {
+  public static boolean isEnum(@Nonnull Set<Modifier> m) {
     return m.contains(ENUM);
   }
 
-  public static boolean isSynthetic(EnumSet<Modifier> m) {
+  public static boolean isSynthetic(@Nonnull Set<Modifier> m) {
     return m.contains(SYNTHETIC);
   }
 
-  public static boolean isConstructor(EnumSet<Modifier> m) {
+  public static boolean isConstructor(@Nonnull Set<Modifier> m) {
     return m.contains(CONSTRUCTOR);
   }
 
-  public static boolean isDeclaredSynchronized(EnumSet<Modifier> m) {
+  public static boolean isDeclaredSynchronized(@Nonnull Set<Modifier> m) {
     return m.contains(DECLARED_SYNCHRONIZED);
   }
 
@@ -143,7 +144,8 @@ public enum Modifier {
    * @param m a modifier set
    * @return a textual representation of the modifiers.
    */
-  public static String toString(EnumSet<Modifier> m) {
+  @Nonnull
+  public static String toString(@Nonnull Set<Modifier> m) {
     StringBuilder builder = new StringBuilder();
 
     if (isPublic(m)) {

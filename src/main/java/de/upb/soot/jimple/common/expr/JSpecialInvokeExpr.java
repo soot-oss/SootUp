@@ -33,7 +33,6 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +41,8 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   private static final long serialVersionUID = 9170581307891035087L;
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */
-  public JSpecialInvokeExpr(
-      IView view, Local base, MethodSignature method, List<? extends Value> args) {
-    super(view, Jimple.newLocalBox(base), method, new ImmediateBox[args.size()]);
+  public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
+    super(Jimple.newLocalBox(base), method, new ImmediateBox[args.size()]);
 
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
@@ -59,7 +57,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
       clonedArgs.add(i, getArg(i));
     }
 
-    return new JSpecialInvokeExpr(this.getView(), (Local) getBase(), methodSignature, clonedArgs);
+    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, clonedArgs);
   }
 
   @Override

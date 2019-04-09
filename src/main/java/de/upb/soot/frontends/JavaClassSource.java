@@ -1,7 +1,7 @@
 package de.upb.soot.frontends;
 
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 
 /**
@@ -11,8 +11,7 @@ import java.nio.file.Path;
  */
 public class JavaClassSource extends ClassSource {
 
-  public JavaClassSource(
-      INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {
+  public JavaClassSource(INamespace srcNamespace, Path sourcePath, JavaClassType classSignature) {
     super(srcNamespace, sourcePath, classSignature);
   }
 }
