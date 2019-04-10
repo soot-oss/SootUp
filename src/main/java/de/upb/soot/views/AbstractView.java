@@ -5,16 +5,10 @@ import de.upb.soot.Project;
 import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
-import de.upb.soot.core.AbstractClass;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
-import de.upb.soot.types.Type;
 import de.upb.soot.types.TypeFactory;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -37,6 +31,12 @@ public abstract class AbstractView implements IView {
   @Nonnull
   public SignatureFactory getSignatureFactory() {
     return this.getProject().getSignatureFactory();
+  }
+
+  @Nonnull
+  @Override
+  public TypeFactory getTypeFactory() {
+    return this.getProject().getTypeFactory();
   }
 
   @Override

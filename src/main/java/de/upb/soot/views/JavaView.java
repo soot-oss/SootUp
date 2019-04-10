@@ -9,8 +9,8 @@ import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
+import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.util.Utils;
 import java.util.Collection;
 import java.util.Collections;
@@ -99,7 +99,7 @@ public class JavaView extends AbstractView {
           "dynamicinvoke",
           "strictfp");
 
-  @Nonnull protected final Map<ISignature, SootClass> map = new HashMap<>();
+  @Nonnull protected final Map<Type, SootClass> map = new HashMap<>();
 
   // endregion /Fields/
 
@@ -161,20 +161,20 @@ public class JavaView extends AbstractView {
 
   @Override
   @Nonnull
-  public synchronized Optional<AbstractClass> getClass(@Nonnull ISignature signature) {
-    if (!(signature instanceof JavaClassSignature)) {
+  public synchronized Optional<AbstractClass> getClass(@Nonnull Type type) {
+    if (!(type instanceof JavaClassType)) {
       throw new IllegalArgumentException("Invalid signature.");
     }
 
-    SootClass sootClass = this.map.get(signature);
+    SootClass sootClass = this.map.get(type);
 
     if (sootClass != null) return Optional.of(sootClass);
     else if (this.isFullyResolved()) return Optional.empty();
-    else return Optional.ofNullable(this.__resolveSootClass((JavaClassSignature) signature));
+    else return Optional.ofNullable(this.__resolveSootClass((JavaClassType) type));
   }
 
   @Nullable
-  private SootClass __resolveSootClass(@Nonnull JavaClassSignature signature) {
+  private SootClass __resolveSootClass(@Nonnull JavaClassType signature) {
     return this.getProject()
         .getNamespace()
         .getClassSource(signature)
@@ -187,7 +187,7 @@ public class JavaView extends AbstractView {
               }
             })
         .map(SootClass.class::cast)
-        .map(it -> valueOrElse(this.map.putIfAbsent(it.getSignature(), it), it))
+        .map(it -> valueOrElse(this.map.putIfAbsent(it.getType(), it), it))
         .orElse(null);
   }
 
@@ -199,9 +199,8 @@ public class JavaView extends AbstractView {
     this.__setFullyResolved();
 
     for (ClassSource cs :
-        this.getProject().getNamespace().getClassSources(this.getSignatureFactory())) {
-      if (!this.map.containsKey(cs.getClassSignature()))
-        this.__resolveSootClass(cs.getClassSignature());
+        this.getProject().getNamespace().getClassSources(getSignatureFactory(), getTypeFactory())) {
+      if (!this.map.containsKey(cs.getClassType())) this.__resolveSootClass(cs.getClassType());
     }
   }
 
