@@ -341,10 +341,10 @@ public class PositionInfoTest {
       assertEquals(4, stmtPos.getFirstCol());
       assertEquals(12, stmtPos.getLastCol());
 
-      assertEquals(16, info.getOperandPosition(0).getFirstLine());
-      assertEquals(10, info.getOperandPosition(0).getFirstCol());
-      assertEquals(16, info.getOperandPosition(0).getLastLine());
-      assertEquals(11, info.getOperandPosition(0).getLastCol());
+      assertEquals(16, info.getOperandPosition(1).getFirstLine());
+      assertEquals(10, info.getOperandPosition(1).getFirstCol());
+      assertEquals(16, info.getOperandPosition(1).getLastLine());
+      assertEquals(11, info.getOperandPosition(1).getLastCol());
     }
 
     {
@@ -356,15 +356,15 @@ public class PositionInfoTest {
       assertEquals(4, stmtPos.getFirstCol());
       assertEquals(15, stmtPos.getLastCol());
 
-      assertEquals(17, info.getOperandPosition(0).getFirstLine());
-      assertEquals(10, info.getOperandPosition(0).getFirstCol());
-      assertEquals(17, info.getOperandPosition(0).getLastLine());
-      assertEquals(11, info.getOperandPosition(0).getLastCol());
-
       assertEquals(17, info.getOperandPosition(1).getFirstLine());
-      assertEquals(13, info.getOperandPosition(1).getFirstCol());
+      assertEquals(10, info.getOperandPosition(1).getFirstCol());
       assertEquals(17, info.getOperandPosition(1).getLastLine());
-      assertEquals(14, info.getOperandPosition(1).getLastCol());
+      assertEquals(11, info.getOperandPosition(1).getLastCol());
+
+      assertEquals(17, info.getOperandPosition(2).getFirstLine());
+      assertEquals(13, info.getOperandPosition(2).getFirstCol());
+      assertEquals(17, info.getOperandPosition(2).getLastLine());
+      assertEquals(14, info.getOperandPosition(2).getLastCol());
     }
   }
 

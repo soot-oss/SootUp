@@ -543,10 +543,10 @@ public class InstructionConverter {
     Position[] operandPos = new Position[2];
     // TODO: [ms] how to organize the operands
     // FIXME: has no operand positions yet for
-    // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, );  // key
-    // operandPos[1] = debugInfo.getOperandPosition(inst.iindex, );  // default
-    // operandPos[i] = debugInfo.getOperandPosition(inst.iindex, );  // lookups
-    // operandPos[i] = debugInfo.getOperandPosition(inst.iindex, );  // targets
+    // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, ); // key
+    // operandPos[1] = debugInfo.getOperandPosition(inst.iindex, ); // default
+    // operandPos[i] = debugInfo.getOperandPosition(inst.iindex, ); // lookups
+    // operandPos[i] = debugInfo.getOperandPosition(inst.iindex, ); // targets
 
     JLookupSwitchStmt stmt =
         Jimple.newLookupSwitchStmt(
@@ -736,8 +736,10 @@ public class InstructionConverter {
       paraTypes.add(paraType);
       parameters.add(paraType.toString());
     }
-    Position[] operandPos = new Position[target.getNumberOfParameters()];
-    int index = 0;
+    Position[] operandPos = new Position[invokeInst.getNumberOfUses()];
+    for (int j = 0; j < invokeInst.getNumberOfUses(); j++) {
+      operandPos[j] = debugInfo.getOperandPosition(invokeInst.iindex, j);
+    }
     int i = 0;
     if (!callee.isStatic()) {
       i = 1; // non-static invoke this first use is thisRef.
@@ -756,8 +758,6 @@ public class InstructionConverter {
       }
       assert (arg != null);
       args.add(arg);
-      operandPos[index] = debugInfo.getOperandPosition(invokeInst.iindex, i);
-      index++;
     }
 
     MethodSignature methodSig =
