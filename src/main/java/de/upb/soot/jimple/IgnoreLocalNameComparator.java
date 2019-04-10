@@ -31,6 +31,6 @@ public class IgnoreLocalNameComparator extends JimpleComparator {
     if (!(o instanceof Local)) {
       return false;
     }
-    return obj.getSignature().equals(((Local) o).getSignature());
+    return obj.getType().equals(((Local) o).getType());
   }
 }

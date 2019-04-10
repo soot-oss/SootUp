@@ -7,7 +7,7 @@ import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.frontends.asm.AsmFrontendException;
 import de.upb.soot.frontends.asm.AsmUtil;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -34,7 +34,7 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
   @Nonnull
   public AbstractClass resolveClass(@Nonnull ResolvingLevel level, @Nonnull IView view)
       throws AsmFrontendException {
-    JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
+    JavaClassType cs = view.getTypeFactory().getClassType(this.signature);
     SootModuleInfo.SootModuleInfoBuilder builder = null;
     if (module == null) {
       throw new IllegalArgumentException("This is not a module-info file");
@@ -66,13 +66,13 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
 
   @Nonnull
   private SootModuleInfo.HierachyStep resolveDangling(
-      @Nonnull IView view, @Nonnull JavaClassSignature cs) {
+      @Nonnull IView view, @Nonnull JavaClassType cs) {
     // sootClass.setModifiers(AsmUtil.getModifiers(access & ~org.objectweb.asm.Opcodes.ACC_SUPER));
     return SootModuleInfo.builder().dangling(view, this.classSource, null, this.module.name);
   }
 
   @Nonnull
-  private SootModuleInfo.Build resolveHierarchy(@Nonnull IView view, @Nonnull JavaClassSignature cs)
+  private SootModuleInfo.Build resolveHierarchy(@Nonnull IView view, @Nonnull JavaClassType cs)
       throws AsmFrontendException {
     Optional<AbstractClass> aClass = view.getClass(cs);
     if (!aClass.isPresent()) {
@@ -80,7 +80,7 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
     }
     SootModuleInfo sootClass = (SootModuleInfo) aClass.get();
     SootModuleInfo.HierachyStep hierachyStep;
-    ArrayList<JavaClassSignature> providers = new ArrayList<>();
+    ArrayList<JavaClassType> providers = new ArrayList<>();
     ArrayList<SootModuleInfo.ModuleReference> requieres = new ArrayList<>();
     ArrayList<SootModuleInfo.PackageReference> exports = new ArrayList<>();
     ArrayList<SootModuleInfo.PackageReference> opens = new ArrayList<>();
@@ -94,9 +94,9 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
 
     { // add exports
       for (ModuleExportNode exportNode : module.exports) {
-        Iterable<JavaClassSignature> optionals = AsmUtil.asmIdToSignature(exportNode.modules);
-        ArrayList<JavaClassSignature> modules = new ArrayList<>();
-        for (JavaClassSignature sootClassOptional : optionals) {
+        Iterable<JavaClassType> optionals = AsmUtil.asmIdToSignature(exportNode.modules);
+        ArrayList<JavaClassType> modules = new ArrayList<>();
+        for (JavaClassType sootClassOptional : optionals) {
           if (sootClassOptional.isModuleInfo()) {
             modules.add(sootClassOptional);
           }
@@ -113,9 +113,9 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
     {
       /// add opens
       for (ModuleOpenNode moduleOpenNode : module.opens) {
-        Iterable<JavaClassSignature> optionals = AsmUtil.asmIdToSignature(moduleOpenNode.modules);
-        ArrayList<JavaClassSignature> modules = new ArrayList<>();
-        for (JavaClassSignature sootClassOptional : optionals) {
+        Iterable<JavaClassType> optionals = AsmUtil.asmIdToSignature(moduleOpenNode.modules);
+        ArrayList<JavaClassType> modules = new ArrayList<>();
+        for (JavaClassType sootClassOptional : optionals) {
           if (sootClassOptional.isModuleInfo()) {
             modules.add(sootClassOptional);
           }
@@ -131,9 +131,8 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
     {
       // add requies
       for (ModuleRequireNode moduleRequireNode : module.requires) {
-        JavaClassSignature classSignature =
-            view.getSignatureFactory()
-                .getClassSignature(AsmUtil.toQualifiedName(moduleRequireNode.module));
+        JavaClassType classSignature =
+            view.getTypeFactory().getClassType(AsmUtil.toQualifiedName(moduleRequireNode.module));
         if (classSignature.isModuleInfo()) {
           // sootModuleInfo.addRequire(sootClassOptional.get(), moduleRequireNode.access,
           // moduleRequireNode.version);
@@ -148,12 +147,11 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
     {
       // add provides
       for (ModuleProvideNode moduleProvideNode : module.provides) {
-        JavaClassSignature serviceSignature =
-            view.getSignatureFactory()
-                .getClassSignature(AsmUtil.toQualifiedName(moduleProvideNode.service));
-        Iterable<JavaClassSignature> providersSignatures =
+        JavaClassType serviceSignature =
+            view.getTypeFactory().getClassType(AsmUtil.toQualifiedName(moduleProvideNode.service));
+        Iterable<JavaClassType> providersSignatures =
             AsmUtil.asmIdToSignature(moduleProvideNode.providers);
-        for (JavaClassSignature sootClassSignature : providersSignatures) {
+        for (JavaClassType sootClassSignature : providersSignatures) {
           providers.add(sootClassSignature);
         }
 
@@ -165,7 +163,7 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
   }
 
   @Nonnull
-  private SootModuleInfo.Build resolveSignature(@Nonnull IView view, @Nonnull JavaClassSignature cs)
+  private SootModuleInfo.Build resolveSignature(@Nonnull IView view, @Nonnull JavaClassType cs)
       throws AsmFrontendException {
     SootModuleInfo.Build signatureStep;
     Optional<AbstractClass> aClass = view.getClass(cs);
@@ -182,7 +180,7 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
   }
 
   @Nonnull
-  private SootModuleInfo.Build resolveBody(@Nonnull IView view, @Nonnull JavaClassSignature cs)
+  private SootModuleInfo.Build resolveBody(@Nonnull IView view, @Nonnull JavaClassType cs)
       throws AsmFrontendException {
     Optional<AbstractClass> aClass = view.getClass(cs);
     if (!aClass.isPresent()) {

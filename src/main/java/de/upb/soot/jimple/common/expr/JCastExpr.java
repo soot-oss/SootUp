@@ -31,7 +31,7 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +41,9 @@ public class JCastExpr implements Expr {
   private static final long serialVersionUID = -3186041329205869260L;
 
   private final ValueBox opBox;
-  private TypeSignature type;
+  private Type type;
 
-  public JCastExpr(Value op, TypeSignature type) {
+  public JCastExpr(Value op, Type type) {
     this.opBox = Jimple.newImmediateBox(op);
     this.type = type;
   }
@@ -51,11 +51,6 @@ public class JCastExpr implements Expr {
   @Override
   public Object clone() {
     return new JCastExpr(Jimple.cloneIfNecessary(getOp()), type);
-  }
-
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseCastExpr(this, o);
   }
 
   @Override
@@ -104,16 +99,16 @@ public class JCastExpr implements Expr {
   }
 
   // TODO: dulicate getter? -> getType()
-  public TypeSignature getCastType() {
+  public Type getCastType() {
     return type;
   }
 
-  public void setCastType(TypeSignature castType) {
+  public void setCastType(Type castType) {
     this.type = castType;
   }
 
   @Override
-  public TypeSignature getSignature() {
+  public Type getType() {
     return type;
   }
 

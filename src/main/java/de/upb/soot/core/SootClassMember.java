@@ -74,7 +74,7 @@ public abstract class SootClassMember implements Serializable {
           "The declaring class of this soot class member has already been set.");
     }
 
-    if (!value.getSignature().equals(this.getSignature().getDeclClassSignature())) {
+    if (!value.getType().equals(this.getSignature().getDeclClassSignature())) {
       throw new IllegalArgumentException(
           "The signature of the specified declaring class does not match to the declaring class "
               + "signature of this soot class member");

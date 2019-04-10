@@ -27,8 +27,8 @@ package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.Type;
 import soot.util.StringTools;
 
 @SuppressWarnings("serial")
@@ -51,19 +51,19 @@ public class ClassConstant extends Constant {
   //   may still be needed.
   //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r266982906
 
-  //  public static ClassConstant fromType(TypeSignature tp) {
+  //  public static ClassConstant fromType(Type tp) {
   //    return getInstance(sootTypeToString(tp));
   //  }
   //
-  //  private static String sootTypeToString(TypeSignature tp) {
-  //    if (tp instanceof ArrayTypeSignature) {
-  //      ArrayTypeSignature at = (ArrayTypeSignature) tp;
+  //  private static String sootTypeToString(Type tp) {
+  //    if (tp instanceof ArrayType) {
+  //      ArrayType at = (ArrayType) tp;
   //      // TODO: [JMP] It was `at.elementType` before; please ensure that the element type is here
   // used.
   //      return "[" + sootTypeToString(at.baseType);
-  //    } else if (tp instanceof ReferenceTypeSignature) {
+  //    } else if (tp instanceof ReferenceType) {
   //      return "L" + tp.toString().replaceAll("\\.", "/") + ";";
-  //    } else if (tp instanceof PrimitiveTypeSignature) {
+  //    } else if (tp instanceof PrimitiveType) {
   //      if (tp instanceof IntType) {
   //        return "I";
   //      } else if (tp instanceof ByteType) {
@@ -154,9 +154,9 @@ public class ClassConstant extends Constant {
   }
 
   @Override
-  public TypeSignature getSignature() {
+  public Type getType() {
     // TODO: [JMP] Used cached instance
-    return DefaultSignatureFactory.getInstance().getTypeSignature("java.lang.Class");
+    return DefaultTypeFactory.getInstance().getType("java.lang.Class");
   }
 
   @Override

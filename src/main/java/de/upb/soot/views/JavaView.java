@@ -9,7 +9,7 @@ import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.signatures.ISignature;
+import de.upb.soot.types.Type;
 import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.util.Utils;
 import java.util.Collection;

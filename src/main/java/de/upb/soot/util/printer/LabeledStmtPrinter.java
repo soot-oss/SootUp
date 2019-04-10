@@ -6,7 +6,7 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.Type;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,7 +46,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public abstract void identityRef(IdentityRef r);
 
   @Override
-  public abstract void typeSignature(TypeSignature t);
+  public abstract void typeSignature(Type t);
 
   @Override
   public void stmtRef(IStmt u, boolean branchTarget) {

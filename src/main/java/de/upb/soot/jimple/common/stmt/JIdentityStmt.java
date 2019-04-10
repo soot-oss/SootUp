@@ -32,7 +32,7 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IStmtVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JIdentityStmt extends AbstractDefinitionStmt {
@@ -80,13 +80,8 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
     ((IStmtVisitor) sw).caseIdentityStmt(this);
   }
 
-  public TypeSignature getType() {
-    return getLeftBox().getValue().getSignature();
-  }
-
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseIdentityStmt(this, o);
+  public Type getType() {
+    return getLeftBox().getValue().getType();
   }
 
   @Override

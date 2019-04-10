@@ -23,7 +23,7 @@ package de.upb.soot.core;
 
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.FieldSubSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.builder.BuilderException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -46,7 +46,7 @@ public class SootField extends SootClassMember implements IField {
   }
 
   @Nonnull
-  public TypeSignature getType() {
+  public Type getType() {
     return this.getSignature().getSignature();
   }
 

@@ -4,7 +4,7 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
 import java.util.Collections;
 import javax.annotation.Nonnull;
@@ -24,14 +24,16 @@ public interface IClassSourceContent {
       throws ResolveException;
 
   @Nonnull
-  default Iterable<SootMethod> resolveMethods(@Nonnull JavaClassSignature signature)
+  default Iterable<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
       throws ResolveException {
+    // TODO: Not sure whether this should even have a default implementation
     return Collections.emptyList();
   }
 
   @Nonnull
-  default Iterable<SootField> resolveFields(@Nonnull JavaClassSignature signature)
+  default Iterable<SootField> resolveFields(@Nonnull JavaClassType signature)
       throws ResolveException {
+    // TODO: Not sure whether this should even have a default implementation
     return Collections.emptyList();
   }
 }

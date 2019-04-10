@@ -80,11 +80,6 @@ public class JThrowStmt extends AbstractOpStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseThrowStmt(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseThrowStmt(this, o);
   }

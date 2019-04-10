@@ -362,11 +362,6 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseAssignStmt(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseAssignStmt(this, o);
   }
