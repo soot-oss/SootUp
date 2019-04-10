@@ -341,7 +341,6 @@ public class PositionInfoTest {
       assertEquals(4, stmtPos.getFirstCol());
       assertEquals(12, stmtPos.getLastCol());
 
-      // FIXME. The following assertions fail
       assertEquals(16, info.getOperandPosition(0).getFirstLine());
       assertEquals(10, info.getOperandPosition(0).getFirstCol());
       assertEquals(16, info.getOperandPosition(0).getLastLine());
@@ -357,7 +356,6 @@ public class PositionInfoTest {
       assertEquals(4, stmtPos.getFirstCol());
       assertEquals(15, stmtPos.getLastCol());
 
-      // FIXME. The following assertions fail
       assertEquals(17, info.getOperandPosition(0).getFirstLine());
       assertEquals(10, info.getOperandPosition(0).getFirstCol());
       assertEquals(17, info.getOperandPosition(0).getLastLine());

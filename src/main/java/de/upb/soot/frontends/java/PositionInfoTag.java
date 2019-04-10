@@ -1,6 +1,5 @@
 package de.upb.soot.frontends.java;
 
-
 import de.upb.soot.jimple.basic.PositionInfo;
 import soot.tagkit.AttributeValueException;
 import soot.tagkit.Tag;
