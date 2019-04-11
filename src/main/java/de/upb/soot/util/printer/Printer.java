@@ -33,8 +33,8 @@ import de.upb.soot.graph.BriefStmtGraph;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -109,12 +109,12 @@ public class Printer {
         classPrefix = classPrefix.trim();
       }
 
-      out.print(classPrefix + " " + cl.getSignature().toQuotedString() + "");
+      out.print(classPrefix + " " + cl.getType().toQuotedString() + "");
     }
 
     // Print extension
     {
-      Optional<JavaClassSignature> superclassSignature = cl.getSuperclassSignature();
+      Optional<JavaClassType> superclassSignature = cl.getSuperclassSignature();
 
       superclassSignature.ifPresent(
           javaClassSignature -> out.print(" extends " + javaClassSignature.toQuotedString()));
@@ -122,7 +122,7 @@ public class Printer {
 
     // Print interfaces
     {
-      Iterator<JavaClassSignature> interfaceIt = cl.getInterfaces().iterator();
+      Iterator<JavaClassType> interfaceIt = cl.getInterfaces().iterator();
 
       if (interfaceIt.hasNext()) {
         out.print(" implements ");
@@ -341,15 +341,14 @@ public class Printer {
   private void printLocalsInBody(Body body, IStmtPrinter up) {
     // Print out local variables
     {
-      Map<TypeSignature, List<Local>> typeToLocals =
-          new LinkedHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
+      Map<Type, List<Local>> typeToLocals = new LinkedHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);
 
       // Collect locals
       {
         for (Local local : body.getLocals()) {
           List<Local> localList;
 
-          TypeSignature t = local.getSignature();
+          Type t = local.getType();
 
           if (typeToLocals.containsKey(t)) {
             localList = typeToLocals.get(t);
@@ -364,7 +363,7 @@ public class Printer {
 
       // Print locals
       {
-        for (TypeSignature type : typeToLocals.keySet()) {
+        for (Type type : typeToLocals.keySet()) {
           List<Local> localList = new ArrayList<>(typeToLocals.get(type));
           up.typeSignature(type);
           up.literal(" ");

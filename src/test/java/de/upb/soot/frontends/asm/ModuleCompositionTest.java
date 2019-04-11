@@ -17,9 +17,9 @@ import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSubSignature;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
+import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
 import java.io.File;
 import java.util.Collections;
@@ -53,8 +53,7 @@ public class ModuleCompositionTest {
     IView view = p.createOnDemandView();
 
     // Create java class signature
-    JavaClassSignature utilsClassSignature =
-        p.getSignatureFactory().getClassSignature("de.upb.soot.Utils");
+    JavaClassType utilsClassSignature = p.getTypeFactory().getClassType("de.upb.soot.Utils");
 
     // Resolve signature to `SootClass`
     SootClass utilsClass =
@@ -98,8 +97,7 @@ public class ModuleCompositionTest {
         DefaultSignatureFactory.getInstance().parseFieldSubSignature("java.lang.String name");
 
     // Create the class signature
-    JavaClassSignature classSignature =
-        view.getSignatureFactory().getClassSignature("x.y.z.foo.Bar");
+    JavaClassType classSignature = view.getTypeFactory().getClassType("x.y.z.foo.Bar");
 
     // Build a soot class
     SootClass c =

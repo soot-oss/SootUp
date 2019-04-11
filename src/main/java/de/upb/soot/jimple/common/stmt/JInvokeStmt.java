@@ -111,11 +111,6 @@ public class JInvokeStmt extends AbstractStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseInvokeStmt(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseInvokeStmt(this, o);
   }

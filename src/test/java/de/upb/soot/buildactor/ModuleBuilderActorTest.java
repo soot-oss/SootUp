@@ -3,12 +3,12 @@ package de.upb.soot.buildactor;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
+import de.upb.soot.ModuleFactories;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.ModuleSignatureFactory;
+import de.upb.soot.types.JavaClassType;
 import java.util.Optional;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -21,9 +21,11 @@ public class ModuleBuilderActorTest {
 
     final JavaModulePathNamespace javaClassPathNamespace =
         new JavaModulePathNamespace("target/test-classes/de/upb/soot/namespaces/modules");
-    ModuleSignatureFactory moduleSignatureFactory = new ModuleSignatureFactory();
+    ModuleFactories factories = ModuleFactories.create();
 
-    Project project = new Project(javaClassPathNamespace, moduleSignatureFactory);
+    Project project =
+        new Project(
+            javaClassPathNamespace, factories.getSignatureFactory(), factories.getTypeFactory());
 
     // de.upb.soot.views.JavaView view = new de.upb.soot.views.JavaView(project);
 
@@ -41,9 +43,8 @@ public class ModuleBuilderActorTest {
   public void refiyMessageModuleInfoTest() {
     de.upb.soot.views.IView iView = createNewScene();
 
-    final JavaClassSignature sig =
-        new de.upb.soot.signatures.ModuleSignatureFactory()
-            .getClassSignature("module-info", "", "de.upb.mod");
+    final JavaClassType sig =
+        ModuleFactories.create().getTypeFactory().getClassType("module-info", "", "de.upb.mod");
     // Optional<ClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
 
     // assertTrue(source.isPresent());
@@ -61,9 +62,8 @@ public class ModuleBuilderActorTest {
   public void resolveMessageModuleInfoTest() {
     de.upb.soot.views.IView iView = createNewScene();
 
-    final JavaClassSignature sig =
-        (new de.upb.soot.signatures.ModuleSignatureFactory())
-            .getClassSignature("module-info", "", "de.upb.mod");
+    final JavaClassType sig =
+        ModuleFactories.create().getTypeFactory().getClassType("module-info", "", "de.upb.mod");
 
     Optional<AbstractClass> result = iView.getClass(sig);
     assertTrue(result.isPresent());

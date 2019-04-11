@@ -1,6 +1,7 @@
 package referencejimple;
 
 import com.ibm.wala.cast.loader.AstMethod;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -22,10 +23,11 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
-import de.upb.soot.signatures.VoidTypeSignature;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.VoidType;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -63,35 +65,34 @@ class DummyMethodSource implements IMethodSourceContent {
 
 public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
-  JavaClassSignature classSignature;
+  JavaClassType classSignature;
 
   @Override
   public void build() {
-
-    DefaultSignatureFactory dsm = new DefaultSignatureFactory();
+    DefaultFactories defaultFactories = DefaultFactories.create();
+    DefaultSignatureFactory dsm = defaultFactories.getSignatureFactory();
+    DefaultTypeFactory dtf = defaultFactories.getTypeFactory();
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
     JavaClassSource javaClassSource =
         new JavaClassSource(
             new JavaClassPathNamespace("src/main/java/de/upb/soot"),
             dummyPath,
-            dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
+            dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"));
 
-    JavaClassSignature superClassSignature = dsm.getClassSignature("java.lang.Object");
-    classSignature = dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt");
+    JavaClassType superClassSignature = dtf.getClassType("java.lang.Object");
+    classSignature = dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
 
     Set<SootField> fields = new LinkedHashSet<>();
 
     // Decl field
     fields.add(
         new SootField(
-            dsm.getFieldSignature(
-                "declProperty", classSignature, PrimitiveTypeSignature.getIntSignature()),
+            dsm.getFieldSignature("declProperty", classSignature, PrimitiveType.getInt()),
             EnumSet.noneOf(Modifier.class)));
 
     FieldSignature initFieldSignature =
-        dsm.getFieldSignature(
-            "initProperty", classSignature, PrimitiveTypeSignature.getIntSignature());
+        dsm.getFieldSignature("initProperty", classSignature, PrimitiveType.getInt());
 
     // Init field
     fields.add(new SootField(initFieldSignature, EnumSet.noneOf(Modifier.class)));
@@ -122,23 +123,21 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
   SootMethod init(@Nonnull FieldSignature initFieldSignature) {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    DefaultSignatureFactory dsm = new DefaultSignatureFactory();
+    DefaultFactories defaultFactories = DefaultFactories.create();
+    DefaultSignatureFactory dsm = defaultFactories.getSignatureFactory();
+    DefaultTypeFactory dtf = defaultFactories.getTypeFactory();
     LocalGenerator generator = new LocalGenerator();
 
     MethodSignature methodSignature =
         dsm.getMethodSignature(
-            "<init>",
-            classSignature,
-            VoidTypeSignature.getInstance().toString(),
-            Arrays.asList(""));
+            "<init>", classSignature, VoidType.getInstance().toString(), Arrays.asList(""));
     AstMethod.DebuggingInformation debugInfo = null;
 
     List<Local> locals = new LinkedList<>();
     List<Trap> traps = new LinkedList<>();
     List<IStmt> stmts = new LinkedList<>();
 
-    JavaClassSignature typeSignature =
-        dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt");
+    JavaClassType typeSignature = dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
     //    new RefType(view, dsm.getTypeSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
     //    RefType type = RefType.getInstance("de.upb.soot.instructions.stmt.IdentityStmt");
 

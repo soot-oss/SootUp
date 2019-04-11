@@ -30,7 +30,7 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JLengthExpr extends AbstractUnopExpr {
@@ -44,11 +44,6 @@ public class JLengthExpr extends AbstractUnopExpr {
   @Override
   public Object clone() {
     return new JLengthExpr(Jimple.cloneIfNecessary(getOp()));
-  }
-
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseLengthExpr(this, o);
   }
 
   @Override
@@ -75,8 +70,8 @@ public class JLengthExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public PrimitiveTypeSignature getSignature() {
-    return PrimitiveTypeSignature.getIntSignature();
+  public PrimitiveType getType() {
+    return PrimitiveType.getInt();
   }
 
   @Override

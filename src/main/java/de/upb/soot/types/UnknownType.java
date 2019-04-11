@@ -1,4 +1,4 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 /*-
  * #%L
@@ -24,16 +24,25 @@ package de.upb.soot.signatures;
 
 import javax.annotation.Nonnull;
 
-/** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
-public abstract class TypeSignature implements ISignature {
+/**
+ * Represents a signature for an unknown type.
+ *
+ * @author Jan Martin Persch
+ */
+public class UnknownType extends Type {
 
-  /**
-   * Gets the type name as quoted string.
-   *
-   * @return The type name as quoted string.
-   */
+  @Nonnull private static final UnknownType INSTANCE = new UnknownType();
+
   @Nonnull
-  public String toQuotedString() {
-    return this.toString();
+  public static UnknownType getInstance() {
+    return INSTANCE;
+  }
+
+  private UnknownType() {}
+
+  @Override
+  @Nonnull
+  public String toString() {
+    return "unknown";
   }
 }

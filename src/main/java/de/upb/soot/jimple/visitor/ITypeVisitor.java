@@ -1,38 +1,38 @@
 package de.upb.soot.jimple.visitor;
 
 import com.google.common.graph.ElementOrder.Type;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.NullTypeSignature;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
-import de.upb.soot.signatures.VoidTypeSignature;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.NullType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.VoidType;
 
 public interface ITypeVisitor {
 
-  void caseBooleanType(PrimitiveTypeSignature t);
+  void caseBooleanType(PrimitiveType t);
 
-  void caseByteType(PrimitiveTypeSignature t);
+  void caseByteType(PrimitiveType t);
 
-  void caseCharType(PrimitiveTypeSignature t);
+  void caseCharType(PrimitiveType t);
 
-  void caseShortType(PrimitiveTypeSignature t);
+  void caseShortType(PrimitiveType t);
 
-  void caseIntType(PrimitiveTypeSignature t);
+  void caseIntType(PrimitiveType t);
 
-  void caseLongType(PrimitiveTypeSignature t);
+  void caseLongType(PrimitiveType t);
 
-  void caseDoubleType(PrimitiveTypeSignature t);
+  void caseDoubleType(PrimitiveType t);
 
-  void caseFloatType(PrimitiveTypeSignature t);
+  void caseFloatType(PrimitiveType t);
 
-  void caseArrayType(PrimitiveTypeSignature t);
+  void caseArrayType(PrimitiveType t);
 
-  void caseRefType(JavaClassSignature t);
+  void caseRefType(JavaClassType t);
 
-  void caseNullType(NullTypeSignature t);
+  void caseNullType(NullType t);
 
   void caseUnknownType(/*UnknownType t*/ );
 
-  void caseVoidType(VoidTypeSignature t);
+  void caseVoidType(VoidType t);
 
   void caseDefault(Type t);
 }

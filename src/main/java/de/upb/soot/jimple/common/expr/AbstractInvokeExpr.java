@@ -29,7 +29,7 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,7 +82,7 @@ public abstract class AbstractInvokeExpr implements Expr {
   }
 
   @Override
-  public TypeSignature getSignature() {
+  public Type getType() {
     return methodSignature.getSignature();
   }
 

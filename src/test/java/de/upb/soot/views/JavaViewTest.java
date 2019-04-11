@@ -11,8 +11,9 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.ISignature;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +33,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class JavaViewTest {
 
-  private List<JavaClassSignature> signatures;
+  private List<JavaClassType> signatures;
   private JavaView view;
 
   @Before
@@ -45,9 +46,12 @@ public class JavaViewTest {
 
     this.signatures =
         Collections.unmodifiableList(
-            namespace.getClassSources(DefaultSignatureFactory.getInstance()).stream()
-                .map(ClassSource::getClassSignature)
-                .sorted(Comparator.comparing(JavaClassSignature::toString))
+            namespace
+                .getClassSources(
+                    DefaultSignatureFactory.getInstance(), DefaultTypeFactory.getInstance())
+                .stream()
+                .map(ClassSource::getClassType)
+                .sorted(Comparator.comparing(JavaClassType::toString))
                 .collect(Collectors.toList()));
 
     Project project = new Project(namespace);
@@ -78,13 +82,13 @@ public class JavaViewTest {
         it -> {
           AbstractClass clazz = this.view.getClass(it).orElse(null);
           assertNotNull("Class for signature \"" + it + "\" not found.", clazz);
-          assertEquals(it, clazz.getSignature());
+          assertEquals(it, clazz.getType());
         });
   }
 
   private void resolveUndefinedClass() {
-    JavaClassSignature signature =
-        DefaultSignatureFactory.getInstance().getClassSignature("com.example.NonExistingClass");
+    JavaClassType signature =
+        DefaultTypeFactory.getInstance().getClassType("com.example.NonExistingClass");
 
     if (this.signatures.contains(signature)) {
       Assert.fail("FATAL ERROR: Non-existing class exists in signature list!");
@@ -114,8 +118,8 @@ public class JavaViewTest {
 
     assertEquals(
         classes.stream()
-            .map(AbstractClass::getSignature)
-            .sorted(Comparator.comparing(ISignature::toString))
+            .map(AbstractClass::getType)
+            .sorted(Comparator.comparing(Type::toString))
             .collect(Collectors.toList()),
         this.signatures);
   }

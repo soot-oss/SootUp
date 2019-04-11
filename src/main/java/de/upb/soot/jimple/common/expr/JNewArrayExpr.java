@@ -31,9 +31,9 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.ArrayTypeSignature;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.ArrayType;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,10 +42,10 @@ public class JNewArrayExpr implements Expr {
   /** */
   private static final long serialVersionUID = 4481534412297120257L;
 
-  private TypeSignature baseType;
+  private Type baseType;
   private final ValueBox sizeBox;
 
-  public JNewArrayExpr(TypeSignature type, Value size) {
+  public JNewArrayExpr(Type type, Value size) {
     this.baseType = type;
     this.sizeBox = Jimple.newImmediateBox(size);
   }
@@ -53,12 +53,6 @@ public class JNewArrayExpr implements Expr {
   @Override
   public Object clone() {
     return new JNewArrayExpr(getBaseType(), Jimple.cloneIfNecessary(getSize()));
-  }
-
-  /** Returns a value of sizeBox if o is an instance of AbstractNewArrayExpr, else returns false. */
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseNewArrayExpr(this, o);
   }
 
   @Override
@@ -99,11 +93,11 @@ public class JNewArrayExpr implements Expr {
     return baseType.toString();
   }
 
-  public TypeSignature getBaseType() {
+  public Type getBaseType() {
     return baseType;
   }
 
-  public void setBaseType(TypeSignature type) {
+  public void setBaseType(Type type) {
     baseType = type;
   }
 
@@ -131,14 +125,13 @@ public class JNewArrayExpr implements Expr {
 
   /** Returns an instance of ArrayType(). */
   @Override
-  public TypeSignature getSignature() {
-    if (baseType instanceof ArrayTypeSignature) {
-      return DefaultSignatureFactory.getInstance()
-          .getArrayTypeSignature(
-              ((ArrayTypeSignature) baseType).getBaseType(),
-              ((ArrayTypeSignature) baseType).getDimension() + 1);
+  public Type getType() {
+    if (baseType instanceof ArrayType) {
+      return DefaultTypeFactory.getInstance()
+          .getArrayType(
+              ((ArrayType) baseType).getBaseType(), ((ArrayType) baseType).getDimension() + 1);
     } else {
-      return DefaultSignatureFactory.getInstance().getArrayTypeSignature(baseType, 1);
+      return DefaultTypeFactory.getInstance().getArrayType(baseType, 1);
     }
   }
 

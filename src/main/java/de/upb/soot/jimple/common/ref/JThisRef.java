@@ -28,8 +28,8 @@ package de.upb.soot.jimple.common.ref;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.ReferenceTypeSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.ReferenceType;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.Collections;
 import java.util.List;
@@ -38,15 +38,10 @@ public class JThisRef implements IdentityRef {
   /** */
   private static final long serialVersionUID = 5300244196056992260L;
 
-  ReferenceTypeSignature thisType;
+  ReferenceType thisType;
 
-  public JThisRef(ReferenceTypeSignature thisType) {
+  public JThisRef(ReferenceType thisType) {
     this.thisType = thisType;
-  }
-
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseThisRef(this, o);
   }
 
   @Override
@@ -75,7 +70,7 @@ public class JThisRef implements IdentityRef {
   }
 
   @Override
-  public TypeSignature getSignature() {
+  public Type getType() {
     return thisType;
   }
 

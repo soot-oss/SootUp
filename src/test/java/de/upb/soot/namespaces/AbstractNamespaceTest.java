@@ -1,12 +1,13 @@
 package de.upb.soot.namespaces;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.TypeFactory;
 import java.util.Collection;
 import java.util.Optional;
 import org.junit.Assert;
@@ -43,11 +44,15 @@ public abstract class AbstractNamespaceTest {
 
   protected static final int CLASSES_IN_JAR = 25;
   private SignatureFactory signatureFactory;
+  private TypeFactory typeFactory;
   private IClassProvider classProvider;
 
   @Before
   public void setUp() {
-    signatureFactory = createSignatureFactory();
+    DefaultFactories defaultFactories = DefaultFactories.create();
+
+    signatureFactory = defaultFactories.getSignatureFactory();
+    typeFactory = defaultFactories.getTypeFactory();
     classProvider = createClassProvider();
   }
 
@@ -55,31 +60,31 @@ public abstract class AbstractNamespaceTest {
     return signatureFactory;
   }
 
-  protected IClassProvider getClassProvider() {
-    return classProvider;
+  protected TypeFactory getTypeFactory() {
+    return typeFactory;
   }
 
-  protected SignatureFactory createSignatureFactory() {
-    return new DefaultSignatureFactory() {};
+  protected IClassProvider getClassProvider() {
+    return classProvider;
   }
 
   protected IClassProvider createClassProvider() {
     return new AsmJavaClassProvider();
   }
 
-  protected void testClassReceival(
-      AbstractNamespace ns, JavaClassSignature sig, int minClassesFound) {
+  protected void testClassReceival(AbstractNamespace ns, JavaClassType sig, int minClassesFound) {
     testClassReceival(ns, sig, minClassesFound, -1);
   }
 
   protected void testClassReceival(
-      AbstractNamespace ns, JavaClassSignature sig, int minClassesFound, int maxClassesFound) {
+      AbstractNamespace ns, JavaClassType sig, int minClassesFound, int maxClassesFound) {
     final Optional<ClassSource> clazz = ns.getClassSource(sig);
 
     Assert.assertTrue(clazz.isPresent());
-    Assert.assertEquals(sig, clazz.get().getClassSignature());
+    Assert.assertEquals(sig, clazz.get().getClassType());
 
-    final Collection<ClassSource> classSources = ns.getClassSources(getSignatureFactory());
+    final Collection<ClassSource> classSources =
+        ns.getClassSources(getSignatureFactory(), getTypeFactory());
     Assert.assertNotNull(classSources);
     Assert.assertFalse(classSources.isEmpty());
     Assert.assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));

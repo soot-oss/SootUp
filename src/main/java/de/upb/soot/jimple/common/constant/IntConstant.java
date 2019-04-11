@@ -27,8 +27,8 @@ package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
 
 public class IntConstant extends ArithmeticConstant {
   /** */
@@ -202,8 +202,8 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public TypeSignature getSignature() {
-    return PrimitiveTypeSignature.getIntSignature();
+  public Type getType() {
+    return PrimitiveType.getInt();
   }
 
   @Override
