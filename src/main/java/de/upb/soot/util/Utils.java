@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -108,6 +109,36 @@ public class Utils {
   @Nonnull
   public static <C> Stream<C> filterAllCasted(@Nonnull Stream<?> stream, @Nonnull Class<C> clazz) {
     return stream.filter(clazz::isInstance).map(clazz::cast);
+  }
+
+  /**
+   * Returns the <i>value</i>, if it is not <tt>null</tt>; otherwise, it returns <i>other</i>.
+   *
+   * @param value The value to get, if it is not <tt>null</tt>.
+   * @param other The other to get, if <i>value</i> is <tt>null</tt>.
+   * @param <T> The type of the value.
+   * @return <i>value</i>, if it is not <tt>null</tt>; otherwise, <i>other</i>.
+   * @see Optional#orElse(Object)
+   */
+  @Nonnull
+  public static <T> T valueOrElse(@Nullable T value, @Nonnull T other) {
+    return value != null ? value : other;
+  }
+
+  /**
+   * Performs the provided action on the specified element and returns the element.
+   *
+   * @param element The element to peek.
+   * @param action The action to perform.
+   * @param <T> The type of the element.
+   * @return The specified element.
+   * @see Stream#peek(Consumer)
+   */
+  @Nonnull
+  public static <T> T peek(@Nonnull T element, @Nonnull Consumer<? super T> action) {
+    action.accept(element);
+
+    return element;
   }
 
   // endregion /Stream/
