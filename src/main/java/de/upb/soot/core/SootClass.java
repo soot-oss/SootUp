@@ -34,10 +34,10 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.signatures.FieldSubSignature;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
 import de.upb.soot.util.builder.AbstractBuilder;
 import de.upb.soot.util.builder.BuilderException;
@@ -93,10 +93,10 @@ public class SootClass extends AbstractClass implements Serializable {
 
   public interface HierachyStep extends Build {
     SignatureStep hierachy(
-        @Nullable JavaClassSignature superclass,
-        Set<JavaClassSignature> interfaces,
+        @Nullable JavaClassType superclass,
+        Set<JavaClassType> interfaces,
         EnumSet<Modifier> modifiers,
-        @Nullable JavaClassSignature outerClass);
+        @Nullable JavaClassType outerClass);
   }
 
   public interface SignatureStep extends Build {
@@ -119,10 +119,10 @@ public class SootClass extends AbstractClass implements Serializable {
     private Iterable<Modifier> modifiers;
     private Iterable<? extends IField> fields;
     private Iterable<? extends IMethod> methods;
-    private Iterable<? extends JavaClassSignature> interfaces;
+    private Iterable<? extends JavaClassType> interfaces;
 
-    @Nullable private JavaClassSignature superClass;
-    @Nullable private JavaClassSignature outerClass;
+    @Nullable private JavaClassType superClass;
+    @Nullable private JavaClassType outerClass;
 
     private ClassSource classSource;
 
@@ -139,10 +139,10 @@ public class SootClass extends AbstractClass implements Serializable {
     // FIXME: decided what a Class at Hierachy Level must have resoled...
     @Override
     public SignatureStep hierachy(
-        JavaClassSignature superclass,
-        Set<JavaClassSignature> interfaces,
+        JavaClassType superclass,
+        Set<JavaClassType> interfaces,
         EnumSet<Modifier> modifiers,
-        JavaClassSignature outerClass) {
+        JavaClassType outerClass) {
 
       this.superClass = superclass;
       this.interfaces = interfaces;
@@ -194,7 +194,7 @@ public class SootClass extends AbstractClass implements Serializable {
     this.classType = builder.classType;
     this.superClass = builder.superClass;
     this.interfaces = immutableSetOf(builder.interfaces);
-    this.classSignature = builder.classSource.getClassSignature();
+    this.classSignature = builder.classSource.getClassType();
     this.outerClass = builder.outerClass;
     this.position = builder.position;
     this.modifiers = immutableEnumSetOf(builder.modifiers);
@@ -208,12 +208,12 @@ public class SootClass extends AbstractClass implements Serializable {
   private final ClassType classType;
   private final Position position;
   @Nonnull private final ImmutableSet<Modifier> modifiers;
-  @Nonnull private final JavaClassSignature classSignature;
-  @Nonnull private final ImmutableSet<JavaClassSignature> interfaces;
+  @Nonnull private final JavaClassType classSignature;
+  @Nonnull private final ImmutableSet<JavaClassType> interfaces;
 
-  @Nullable private final JavaClassSignature superClass;
+  @Nullable private final JavaClassType superClass;
 
-  @Nullable private final JavaClassSignature outerClass;
+  @Nullable private final JavaClassType outerClass;
 
   // TODO: [JMP] Create type signature for this dummy type and move it closer to its usage.
   @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
@@ -222,9 +222,9 @@ public class SootClass extends AbstractClass implements Serializable {
       ResolvingLevel resolvingLevel,
       ClassSource classSource,
       ClassType type,
-      @Nullable JavaClassSignature superClass,
-      @Nonnull Iterable<? extends JavaClassSignature> interfaces,
-      @Nullable JavaClassSignature outerClass,
+      @Nullable JavaClassType superClass,
+      @Nonnull Iterable<? extends JavaClassType> interfaces,
+      @Nullable JavaClassType outerClass,
       Position position,
       Iterable<Modifier> modifiers) {
     this(
@@ -244,9 +244,9 @@ public class SootClass extends AbstractClass implements Serializable {
       ResolvingLevel resolvingLevel,
       ClassSource classSource,
       ClassType type,
-      @Nullable JavaClassSignature superClass,
-      @Nonnull Iterable<? extends JavaClassSignature> interfaces,
-      @Nullable JavaClassSignature outerClass,
+      @Nullable JavaClassType superClass,
+      @Nonnull Iterable<? extends JavaClassType> interfaces,
+      @Nullable JavaClassType outerClass,
       @Nullable Iterable<? extends SootField> fields,
       @Nullable Iterable<? extends SootMethod> methods,
       Position position,
@@ -257,7 +257,7 @@ public class SootClass extends AbstractClass implements Serializable {
     this.classType = type;
     this.superClass = superClass;
     this.interfaces = immutableSetOf(interfaces);
-    this.classSignature = classSource.getClassSignature();
+    this.classSignature = classSource.getClassType();
     this.outerClass = outerClass;
     this.position = position;
     this.modifiers = immutableEnumSetOf(modifiers);
@@ -290,7 +290,7 @@ public class SootClass extends AbstractClass implements Serializable {
     Iterable<SootField> fields;
 
     try {
-      fields = this.classSource.getContent().resolveFields(this.getSignature());
+      fields = this.classSource.getContent().resolveFields(this.getType());
     } catch (ResolveException e) {
       fields = Utils.emptyImmutableSet();
 
@@ -307,7 +307,7 @@ public class SootClass extends AbstractClass implements Serializable {
     Iterable<SootMethod> methods;
 
     try {
-      methods = this.classSource.getContent().resolveMethods(this.getSignature());
+      methods = this.classSource.getContent().resolveMethods(this.getType());
     } catch (ResolveException e) {
       methods = Utils.emptyImmutableSet();
 
@@ -458,8 +458,7 @@ public class SootClass extends AbstractClass implements Serializable {
    * parameter.
    */
   @Nonnull
-  public Optional<SootMethod> getMethod(
-      String name, Iterable<? extends TypeSignature> parameterTypes) {
+  public Optional<SootMethod> getMethod(String name, Iterable<? extends Type> parameterTypes) {
     //    checkLevel(ResolvingLevel.SIGNATURES);
 
     return this.getMethods().stream()
@@ -509,17 +508,17 @@ public class SootClass extends AbstractClass implements Serializable {
    * Returns a backed Chain of the interfaces that are directly implemented by this class. (see
    * getInterfaceCount())
    */
-  public Set<JavaClassSignature> getInterfaces() {
+  public Set<JavaClassType> getInterfaces() {
     //    checkLevel(ResolvingLevel.HIERARCHY);
 
     return this.interfaces;
   }
 
   /** Does this class directly implement the given interface? (see getInterfaceCount()) */
-  public boolean implementsInterface(JavaClassSignature classSignature) {
+  public boolean implementsInterface(JavaClassType classSignature) {
     //    checkLevel(ResolvingLevel.HIERARCHY);
 
-    for (JavaClassSignature sc : interfaces) {
+    for (JavaClassType sc : interfaces) {
       if (sc.equals(classSignature)) {
         return true;
       }
@@ -541,7 +540,7 @@ public class SootClass extends AbstractClass implements Serializable {
    * WARNING: interfaces are subclasses of the java.lang.Object class! Returns the superclass of
    * this class. (see hasSuperclass())
    */
-  public Optional<JavaClassSignature> getSuperclass() {
+  public Optional<JavaClassType> getSuperclass() {
     //    checkLevel(ResolvingLevel.HIERARCHY);
     return Optional.ofNullable(superClass);
   }
@@ -552,7 +551,7 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   /** This methodRef returns the outer class. */
-  public @Nonnull Optional<JavaClassSignature> getOuterClass() {
+  public @Nonnull Optional<JavaClassType> getOuterClass() {
     //    checkLevel(ResolvingLevel.HIERARCHY);
     return Optional.ofNullable(outerClass);
   }
@@ -563,7 +562,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
   /** Returns the ClassSignature of this class. */
   @Override
-  public JavaClassSignature getSignature() {
+  public JavaClassType getType() {
     return classSignature;
   }
 
@@ -717,12 +716,12 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   @Nonnull
-  public Optional<JavaClassSignature> getSuperclassSignature() {
+  public Optional<JavaClassType> getSuperclassSignature() {
     return Optional.ofNullable(superClass);
   }
 
   @Nonnull
-  public Optional<JavaClassSignature> getOuterClassSignature() {
+  public Optional<JavaClassType> getOuterClassSignature() {
     return Optional.ofNullable(outerClass);
   }
 
@@ -800,46 +799,46 @@ public class SootClass extends AbstractClass implements Serializable {
 
     interface SuperClassStep extends InterfacesStep {
       /**
-       * Sets the {@link JavaClassSignature} of the super class. This step is optional.
+       * Sets the {@link JavaClassType} of the super class. This step is optional.
        *
        * @param value The value to set.
        * @return This fluent builder.
        */
       @Nonnull
-      InterfacesStep withSuperClass(@Nonnull JavaClassSignature value);
+      InterfacesStep withSuperClass(@Nonnull JavaClassType value);
     }
 
     interface InterfacesStep extends OuterClassStep {
       /**
-       * Sets the {@link JavaClassSignature interface type signatures}. This step is optional.
+       * Sets the {@link JavaClassType interface type signatures}. This step is optional.
        *
        * @param value The value to set.
        * @return This fluent builder.
        */
       @Nonnull
-      OuterClassStep withInterfaces(@Nonnull Iterable<? extends JavaClassSignature> value);
+      OuterClassStep withInterfaces(@Nonnull Iterable<? extends JavaClassType> value);
 
       /**
-       * Sets the {@link JavaClassSignature interface type signatures}. This step is optional.
+       * Sets the {@link JavaClassType interface type signatures}. This step is optional.
        *
        * @param values The values to set.
        * @return This fluent builder.
        */
       @Nonnull
-      default OuterClassStep withInterfaces(@Nonnull JavaClassSignature... values) {
+      default OuterClassStep withInterfaces(@Nonnull JavaClassType... values) {
         return this.withInterfaces(Arrays.asList(values));
       }
     }
 
     interface OuterClassStep extends FieldsStep {
       /**
-       * Sets the {@link JavaClassSignature} of the out class. This step is optional.
+       * Sets the {@link JavaClassType} of the out class. This step is optional.
        *
        * @param value The value to set.
        * @return This fluent builder.
        */
       @Nonnull
-      FieldsStep withOuterClass(@Nonnull JavaClassSignature value);
+      FieldsStep withOuterClass(@Nonnull JavaClassType value);
     }
 
     interface FieldsStep extends MethodsStep {
@@ -1039,7 +1038,7 @@ public class SootClass extends AbstractClass implements Serializable {
       return this;
     }
 
-    @Nullable private JavaClassSignature _superClass;
+    @Nullable private JavaClassType _superClass;
 
     /**
      * Gets the super class.
@@ -1047,7 +1046,7 @@ public class SootClass extends AbstractClass implements Serializable {
      * @return The value to get.
      */
     @Nullable
-    public JavaClassSignature getSuperClass() {
+    public JavaClassType getSuperClass() {
       return this._superClass;
     }
 
@@ -1058,13 +1057,13 @@ public class SootClass extends AbstractClass implements Serializable {
      */
     @Override
     @Nonnull
-    public InterfacesStep withSuperClass(@Nullable JavaClassSignature value) {
+    public InterfacesStep withSuperClass(@Nullable JavaClassType value) {
       this._superClass = value;
 
       return this;
     }
 
-    @Nonnull private Iterable<? extends JavaClassSignature> _interfaces = Collections.emptyList();
+    @Nonnull private Iterable<? extends JavaClassType> _interfaces = Collections.emptyList();
 
     /**
      * Gets the interfaces.
@@ -1072,7 +1071,7 @@ public class SootClass extends AbstractClass implements Serializable {
      * @return The value to get.
      */
     @Nonnull
-    public Iterable<? extends JavaClassSignature> getInterfaces() {
+    public Iterable<? extends JavaClassType> getInterfaces() {
       return ensureValue(this._interfaces, "interfaces");
     }
 
@@ -1083,13 +1082,13 @@ public class SootClass extends AbstractClass implements Serializable {
      */
     @Override
     @Nonnull
-    public OuterClassStep withInterfaces(@Nonnull Iterable<? extends JavaClassSignature> value) {
+    public OuterClassStep withInterfaces(@Nonnull Iterable<? extends JavaClassType> value) {
       this._interfaces = value;
 
       return this;
     }
 
-    @Nullable private JavaClassSignature _outerClass;
+    @Nullable private JavaClassType _outerClass;
 
     /**
      * Gets the outer class.
@@ -1097,7 +1096,7 @@ public class SootClass extends AbstractClass implements Serializable {
      * @return The value to get.
      */
     @Nullable
-    public JavaClassSignature getOuterClass() {
+    public JavaClassType getOuterClass() {
       return this._outerClass;
     }
 
@@ -1108,7 +1107,7 @@ public class SootClass extends AbstractClass implements Serializable {
      */
     @Override
     @Nonnull
-    public FieldsStep withOuterClass(@Nullable JavaClassSignature value) {
+    public FieldsStep withOuterClass(@Nullable JavaClassType value) {
       this._outerClass = value;
 
       return this;

@@ -28,9 +28,9 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
-import de.upb.soot.signatures.TypeSignature;
-import de.upb.soot.signatures.UnknownTypeSignature;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.UnknownType;
 
 @SuppressWarnings("serial")
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
@@ -45,33 +45,30 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
   }
 
   @Override
-  public TypeSignature getSignature() {
+  public Type getType() {
     Value op1 = op1Box.getValue();
     Value op2 = op2Box.getValue();
-    TypeSignature op1t = op1.getSignature();
-    TypeSignature op2t = op2.getSignature();
-    if ((op1t.equals(PrimitiveTypeSignature.getIntSignature())
-            || op1t.equals(PrimitiveTypeSignature.getByteSignature())
-            || op1t.equals(PrimitiveTypeSignature.getShortSignature())
-            || op1t.equals(PrimitiveTypeSignature.getCharSignature())
-            || op1t.equals(PrimitiveTypeSignature.getBooleanSignature()))
-        && (op2t.equals(PrimitiveTypeSignature.getIntSignature())
-            || op2t.equals(PrimitiveTypeSignature.getByteSignature())
-            || op2t.equals(PrimitiveTypeSignature.getShortSignature())
-            || op2t.equals(PrimitiveTypeSignature.getCharSignature())
-            || op2t.equals(PrimitiveTypeSignature.getBooleanSignature()))) {
-      return PrimitiveTypeSignature.getIntSignature();
-    } else if (op1t.equals(PrimitiveTypeSignature.getLongSignature())
-        || op2t.equals(PrimitiveTypeSignature.getLongSignature())) {
-      return PrimitiveTypeSignature.getLongSignature();
-    } else if (op1t.equals(PrimitiveTypeSignature.getDoubleSignature())
-        || op2t.equals(PrimitiveTypeSignature.getDoubleSignature())) {
-      return PrimitiveTypeSignature.getDoubleSignature();
-    } else if (op1t.equals(PrimitiveTypeSignature.getFloatSignature())
-        || op2t.equals(PrimitiveTypeSignature.getFloatSignature())) {
-      return PrimitiveTypeSignature.getFloatSignature();
+    Type op1t = op1.getType();
+    Type op2t = op2.getType();
+    if ((op1t.equals(PrimitiveType.getInt())
+            || op1t.equals(PrimitiveType.getByteSignature())
+            || op1t.equals(PrimitiveType.getShort())
+            || op1t.equals(PrimitiveType.getChar())
+            || op1t.equals(PrimitiveType.getBoolean()))
+        && (op2t.equals(PrimitiveType.getInt())
+            || op2t.equals(PrimitiveType.getByteSignature())
+            || op2t.equals(PrimitiveType.getShort())
+            || op2t.equals(PrimitiveType.getChar())
+            || op2t.equals(PrimitiveType.getBoolean()))) {
+      return PrimitiveType.getInt();
+    } else if (op1t.equals(PrimitiveType.getLong()) || op2t.equals(PrimitiveType.getLong())) {
+      return PrimitiveType.getLong();
+    } else if (op1t.equals(PrimitiveType.getDouble()) || op2t.equals(PrimitiveType.getDouble())) {
+      return PrimitiveType.getDouble();
+    } else if (op1t.equals(PrimitiveType.getFloat()) || op2t.equals(PrimitiveType.getFloat())) {
+      return PrimitiveType.getFloat();
     } else {
-      return UnknownTypeSignature.getInstance();
+      return UnknownType.getInstance();
     }
   }
 }

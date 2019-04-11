@@ -28,9 +28,9 @@ package de.upb.soot.jimple.common.constant;
 import de.upb.soot.jimple.common.ref.FieldRef;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.Type;
 import org.objectweb.asm.Opcodes;
 
 public class MethodHandle extends Constant {
@@ -124,8 +124,8 @@ public class MethodHandle extends Constant {
   }
 
   @Override
-  public TypeSignature getSignature() {
-    return DefaultSignatureFactory.getInstance().getTypeSignature("java.lang.invoke.MethodHandle");
+  public Type getType() {
+    return DefaultTypeFactory.getInstance().getType("java.lang.invoke.MethodHandle");
   }
 
   public MethodSignature getMethodRef() {

@@ -28,7 +28,7 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.core.SootField;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.Type;
 import de.upb.soot.views.IView;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -46,8 +46,7 @@ public abstract class FieldRef implements ConcreteRef {
 
   public @Nonnull Optional<SootField> getField(@Nonnull IView view) {
     return view.getClass(fieldSignature.getDeclClassSignature())
-        .map(it -> it.getField(fieldSignature))
-        .map(SootField.class::cast);
+        .flatMap(it -> it.getField(fieldSignature).map(field -> (SootField) field));
   }
 
   public FieldSignature getFieldSignature() {
@@ -55,7 +54,7 @@ public abstract class FieldRef implements ConcreteRef {
   }
 
   @Override
-  public TypeSignature getSignature() {
+  public Type getType() {
     return fieldSignature.getSignature();
   }
 

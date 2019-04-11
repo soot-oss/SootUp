@@ -7,7 +7,7 @@ import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.frontends.asm.modules.AsmModuleClassSourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
 
@@ -17,7 +17,7 @@ public class AsmJavaClassProvider implements IClassProvider {
 
   @Override
   public ClassSource createClassSource(
-      INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature) {
+      INamespace srcNamespace, Path sourcePath, JavaClassType classSignature) {
     return new JavaClassSource(srcNamespace, sourcePath, classSignature);
   }
 
@@ -38,7 +38,7 @@ public class AsmJavaClassProvider implements IClassProvider {
   public IClassSourceContent getContent(@Nonnull ClassSource classSource) {
 
     IClassSourceContent classNode;
-    if (classSource.getClassSignature().isModuleInfo()) {
+    if (classSource.getClassType().isModuleInfo()) {
       classNode = new AsmModuleClassSourceContent(classSource);
     } else {
       classNode = new AsmClassClassSourceContent(classSource);

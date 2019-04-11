@@ -23,8 +23,11 @@ package de.upb.soot.signatures;
  */
 
 import com.google.common.base.Preconditions;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.ModuleTypeFactory;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * Factory to create valid signatures for Java classes in a modulepath.
@@ -33,8 +36,8 @@ import java.util.Map;
  */
 public class ModuleSignatureFactory extends DefaultSignatureFactory {
 
-  public static final JavaClassSignature MODULE_INFO_CLASS =
-      new JavaClassSignature("module-info", PackageSignature.DEFAULT_PACKAGE);
+  public static final JavaClassType MODULE_INFO_CLASS =
+      new JavaClassType("module-info", PackageSignature.DEFAULT_PACKAGE);
 
   private static final Map<String, ModuleSignature> modules = new HashMap<>();
 
@@ -53,7 +56,9 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
    * FIXME: Check with mbenz if it is easer (and makes more sense), to make a module signature a
    * decorator for a class signature..., IMHO: easier Factory to create module signatures.
    */
-  public ModuleSignatureFactory() {}
+  public ModuleSignatureFactory(Supplier<ModuleTypeFactory> typeFactory) {
+    super(typeFactory);
+  }
 
   /**
    * Returns a unique ModuleSignature. The methodRef looks up a cache if it already contains a
@@ -106,29 +111,5 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
       packages.put(fqId, packageSignature);
     }
     return packageSignature;
-  }
-
-  @Override
-  public JavaClassSignature getClassSignature(final String className, final String packageName) {
-    return getClassSignature(
-        className, packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
-  }
-
-  /**
-   * Always creates a new ClassSignature. In opposite to PackageSignatures and ModuleSignatures,
-   * ClassSignatures are not cached because the are unique per class, and thus reusing them does not
-   * make sense.
-   *
-   * @param className the simple name of the class
-   * @param packageName the declaring package
-   * @param moduleName the declaring module
-   * @return a ClassSignature for a Java 9 class
-   * @throws NullPointerException if the given module name or package name is null. Use the empty
-   *     string to denote the unnamed module or the default package.
-   */
-  public JavaClassSignature getClassSignature(
-      final String className, final String packageName, final String moduleName) {
-    PackageSignature packageSignature = getPackageSignature(packageName, moduleName);
-    return new JavaClassSignature(className, packageSignature);
   }
 }

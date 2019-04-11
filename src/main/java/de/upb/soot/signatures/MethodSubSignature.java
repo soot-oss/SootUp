@@ -2,10 +2,13 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
+import de.upb.soot.util.Utils;
+import de.upb.soot.util.concurrent.Lazy;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Defines a method sub-signature, containing the method name, the parameter type signatures, and
@@ -26,13 +29,13 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
    *
    * @param name The method name.
    * @param parameterSignatures The signatures of the method parameters.
-   * @param typeSignature The return type signature.
+   * @param type The return type signature.
    */
   public MethodSubSignature(
       @Nonnull String name,
-      @Nonnull Iterable<? extends TypeSignature> parameterSignatures,
-      @Nonnull TypeSignature typeSignature) {
-    super(name, typeSignature);
+      @Nonnull Iterable<? extends Type> parameterSignatures,
+      @Nonnull Type type) {
+    super(name, type);
 
     this._parameterSignatures = ImmutableList.copyOf(parameterSignatures);
   }
@@ -41,7 +44,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
 
   // region Properties
 
-  @Nonnull private final List<TypeSignature> _parameterSignatures;
+  @Nonnull private final List<Type> _parameterSignatures;
 
   /**
    * Gets the parameters in an immutable list.
@@ -49,7 +52,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
    * @return The value to get.
    */
   @Nonnull
-  public List<TypeSignature> getParameterSignatures() {
+  public List<Type> getParameterSignatures() {
     return this._parameterSignatures;
   }
 
@@ -88,30 +91,25 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
 
   @Override
   @Nonnull
-  public MethodSignature toFullSignature(@Nonnull JavaClassSignature declClassSignature) {
+  public MethodSignature toFullSignature(@Nonnull JavaClassType declClassSignature) {
     return new MethodSignature(declClassSignature, this);
   }
 
-  @Nullable private volatile String _cachedToString;
+  private final Lazy<String> _cachedToString =
+      Utils.synchronizedLazy(
+          () ->
+              String.format(
+                  "%s %s(%s)",
+                  getSignature(),
+                  getName(),
+                  getParameterSignatures().stream()
+                      .map(Object::toString)
+                      .collect(Collectors.joining(","))));
 
   @Override
   @Nonnull
   public String toString() {
-    String cachedToString = this._cachedToString;
-
-    if (cachedToString == null) {
-      this._cachedToString =
-          cachedToString =
-              String.format(
-                  "%s %s(%s)",
-                  this.getSignature(),
-                  this.getName(),
-                  this.getParameterSignatures().stream()
-                      .map(Object::toString)
-                      .collect(Collectors.joining(",")));
-    }
-
-    return cachedToString;
+    return _cachedToString.get();
   }
 
   // endregion /Methods/

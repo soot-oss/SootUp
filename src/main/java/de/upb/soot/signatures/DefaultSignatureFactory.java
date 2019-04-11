@@ -2,20 +2,21 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Preconditions;
 import de.upb.soot.core.SootClass;
-import java.nio.file.Path;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.TypeFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ClassUtils;
 
 /**
  * Factory to create valid signatures for Java classes in a classpath.
@@ -24,7 +25,8 @@ import org.apache.commons.lang3.ClassUtils;
  */
 public class DefaultSignatureFactory implements SignatureFactory {
 
-  private static final @Nonnull DefaultSignatureFactory INSTANCE = new DefaultSignatureFactory();
+  private static final @Nonnull DefaultSignatureFactory INSTANCE =
+      new DefaultSignatureFactory(DefaultTypeFactory::getInstance);
 
   public static @Nonnull DefaultSignatureFactory getInstance() {
     return INSTANCE;
@@ -33,7 +35,10 @@ public class DefaultSignatureFactory implements SignatureFactory {
   /** Caches the created signatures for packages. */
   protected final Map<String, PackageSignature> packages = new HashMap<>();
 
-  public DefaultSignatureFactory() {
+  private final Supplier<? extends TypeFactory> typeFactorySupplier;
+
+  public DefaultSignatureFactory(@Nonnull Supplier<? extends TypeFactory> typeFactorySupplier) {
+    this.typeFactorySupplier = typeFactorySupplier;
     /* Represents the default package. */
     packages.put(
         PackageSignature.DEFAULT_PACKAGE.getPackageName(), PackageSignature.DEFAULT_PACKAGE);
@@ -61,110 +66,6 @@ public class DefaultSignatureFactory implements SignatureFactory {
   }
 
   /**
-   * Always creates a new ClassSignature. In opposite to PackageSignatures, ClassSignatures are not
-   * cached because the are unique per class, and thus reusing them does not make sense.
-   *
-   * @param className the simple class name
-   * @param packageName the Java package name; must not be null use empty string for the default
-   *     package {@link PackageSignature#DEFAULT_PACKAGE} the Java package name
-   * @return a ClassSignature for a Java class
-   * @throws NullPointerException if the given package name is null. Use the empty string to denote
-   *     the default package.
-   */
-  @Override
-  public JavaClassSignature getClassSignature(final String className, final String packageName) {
-    PackageSignature packageSignature = getPackageSignature(packageName);
-    return new JavaClassSignature(className, packageSignature);
-  }
-
-  /**
-   * Always creates a new ClassSignature.
-   *
-   * @param fullyQualifiedClassName the fully-qualified name of the class
-   * @return a ClassSignature for a Java Class
-   */
-  @Override
-  public JavaClassSignature getClassSignature(final String fullyQualifiedClassName) {
-    String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
-    String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
-    return getClassSignature(className, packageName);
-  }
-
-  /**
-   * Returns a TypeSignature which can be a {@link JavaClassSignature},{@link
-   * PrimitiveTypeSignature}, {@link VoidTypeSignature}, or {@link NullTypeSignature}.
-   *
-   * @param typeDesc the fully-qualified name of the class or for primitives its simple name, e.g.,
-   *     int, null, void, ...
-   * @return the type signature
-   */
-  @Override
-  public TypeSignature getTypeSignature(final String typeDesc) {
-
-    int len = typeDesc.length();
-    int idx = 0;
-    StringBuilder stringBuilder = new StringBuilder();
-    int nrDims = 0;
-    int closed = 0;
-
-    // check if this is an array type ...
-    while (idx != len) {
-      char c = typeDesc.charAt(idx++);
-      switch (c) {
-        case '[':
-          ++nrDims;
-          break;
-        case ']':
-          ++closed;
-          break;
-        default:
-          stringBuilder.append(c);
-          break;
-      }
-    }
-    if (nrDims != closed) {
-      throw new IllegalArgumentException("Invalid type descriptor");
-    }
-
-    String typeName = stringBuilder.toString();
-
-    // FIXME: [JMP] Is lower case correct here? 'Int' is not the same as 'int', because 'Int' is a
-    // reference type.
-    String typeNameLowerCase = typeName.toLowerCase();
-    TypeSignature ret;
-
-    switch (typeNameLowerCase) {
-      case "null":
-        ret = NullTypeSignature.getInstance();
-        break;
-      case "void":
-        ret = VoidTypeSignature.getInstance();
-        break;
-      default:
-        ret =
-            this.getPrimitiveTypeSignature(typeNameLowerCase)
-                .map(TypeSignature.class::cast)
-                .orElseGet(() -> getClassSignature(typeName));
-    }
-
-    if (nrDims > 0) {
-      ret = new ArrayTypeSignature(ret, nrDims);
-    }
-    return ret;
-  }
-
-  @Override
-  public @Nonnull Optional<PrimitiveTypeSignature> getPrimitiveTypeSignature(
-      @Nonnull String typeName) {
-    return PrimitiveTypeSignature.find(typeName);
-  }
-
-  @Override
-  public ArrayTypeSignature getArrayTypeSignature(TypeSignature baseType, int dim) {
-    return new ArrayTypeSignature(baseType, dim);
-  }
-
-  /**
    * Always creates a new MethodSignature AND a new ClassSignature.
    *
    * @param methodName the methodRef's name
@@ -179,15 +80,15 @@ public class DefaultSignatureFactory implements SignatureFactory {
       final String fullyQualifiedNameDeclClass,
       final String fqReturnType,
       final List<String> parameters) {
-    JavaClassSignature declaringClass = getClassSignature(fullyQualifiedNameDeclClass);
-    TypeSignature returnTypeSignature = getTypeSignature(fqReturnType);
-    List<TypeSignature> parameterSignatures = new ArrayList<>();
+    JavaClassType declaringClass =
+        typeFactorySupplier.get().getClassType(fullyQualifiedNameDeclClass);
+    Type returnType = typeFactorySupplier.get().getType(fqReturnType);
+    List<Type> parameterSignatures = new ArrayList<>();
     for (String fqParameterName : parameters) {
-      TypeSignature parameterSignature = getTypeSignature(fqParameterName);
+      Type parameterSignature = typeFactorySupplier.get().getType(fqParameterName);
       parameterSignatures.add(parameterSignature);
     }
-    return new MethodSignature(
-        declaringClass, methodName, parameterSignatures, returnTypeSignature);
+    return new MethodSignature(declaringClass, methodName, parameterSignatures, returnType);
   }
 
   /**
@@ -202,25 +103,25 @@ public class DefaultSignatureFactory implements SignatureFactory {
   @Override
   public MethodSignature getMethodSignature(
       final String methodName,
-      final JavaClassSignature declaringClassSignature,
+      final JavaClassType declaringClassSignature,
       final String fqReturnType,
       final List<String> parameters) {
-    TypeSignature returnTypeSignature = getTypeSignature(fqReturnType);
-    List<TypeSignature> parameterSignatures = new ArrayList<>();
+    Type returnType = typeFactorySupplier.get().getType(fqReturnType);
+    List<Type> parameterSignatures = new ArrayList<>();
     for (String fqParameterName : parameters) {
-      TypeSignature parameterSignature = getTypeSignature(fqParameterName);
+      Type parameterSignature = typeFactorySupplier.get().getType(fqParameterName);
       parameterSignatures.add(parameterSignature);
     }
     return new MethodSignature(
-        declaringClassSignature, methodName, parameterSignatures, returnTypeSignature);
+        declaringClassSignature, methodName, parameterSignatures, returnType);
   }
 
   @Override
   public MethodSignature getMethodSignature(
       final String methodName,
-      final JavaClassSignature declaringClassSignature,
-      final TypeSignature fqReturnType,
-      final List<TypeSignature> parameters) {
+      final JavaClassType declaringClassSignature,
+      final Type fqReturnType,
+      final List<Type> parameters) {
 
     return new MethodSignature(declaringClassSignature, methodName, parameters, fqReturnType);
   }
@@ -229,14 +130,13 @@ public class DefaultSignatureFactory implements SignatureFactory {
   @Nonnull
   public MethodSignature getMethodSignature(
       @Nonnull SootClass declaringClass, @Nonnull MethodSubSignature subSignature) {
-    return this.getMethodSignature(declaringClass.getSignature(), subSignature);
+    return this.getMethodSignature(declaringClass.getType(), subSignature);
   }
 
   @Override
   @Nonnull
   public MethodSignature getMethodSignature(
-      @Nonnull JavaClassSignature declaringClassSignature,
-      @Nonnull MethodSubSignature subSignature) {
+      @Nonnull JavaClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature) {
     return new MethodSignature(declaringClassSignature, subSignature);
   }
 
@@ -255,7 +155,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
     private static final Pattern ARGS_SPLITTER_PATTERN = Pattern.compile(",", Pattern.LITERAL);
 
     @Nonnull
-    private static IllegalArgumentException createIllegalArgumentException() {
+    private static IllegalArgumentException createInvalidMethodSignatureException() {
       return new IllegalArgumentException(
           "Invalid method signature.\n\n"
               + "The method signature must be conform either to the Soot syntax (\"<CLASS: RETURNTYPE METHOD(PARAM1, PARAM2, PARAM3)>\") "
@@ -275,14 +175,14 @@ public class DefaultSignatureFactory implements SignatureFactory {
    *
    * <pre><code>
    * &lt;de.upb.soot.signatures.DefaultSignatureFactory: de.upb.soot.signatures.MethodSignature parseMethodSignature(java.lang.String)&gt;
-   * &lt;de.upb.soot.signatures.DefaultSignatureFactory: de.upb.soot.signatures.MethodSignature getMethodSignature(java.lang.String, de.upb.soot.signatures.JavaClassSignature)&gt;
+   * &lt;de.upb.soot.signatures.DefaultSignatureFactory: de.upb.soot.signatures.MethodSignature getMethodSignature(java.lang.String, de.upb.soot.types.JavaClassType)&gt;
    * </code></pre>
    *
    * <p><b><i>JavaDoc-like syntax examples:</i></b>
    *
    * <pre><code>
    * de.upb.soot.signatures.DefaultSignatureFactory#parseMethodSignature(java.lang.String): de.upb.soot.signatures.MethodSignature
-   * de.upb.soot.signatures.DefaultSignatureFactory#getMethodSignature(java.lang.String, de.upb.soot.signatures.JavaClassSignature): de.upb.soot.signatures.MethodSignature
+   * de.upb.soot.signatures.DefaultSignatureFactory#getMethodSignature(java.lang.String, de.upb.soot.types.JavaClassType): de.upb.soot.signatures.MethodSignature
    * </code></pre>
    *
    * @param methodSignature A Soot- or JavaDoc-like method signature.
@@ -301,7 +201,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
               methodSignature);
 
       if (!matcher.find()) {
-        throw MethodSignatureParserPatternHolder.createIllegalArgumentException();
+        throw MethodSignatureParserPatternHolder.createInvalidMethodSignatureException();
       }
     }
 
@@ -310,7 +210,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
     String returnName = matcher.group("return").trim();
 
     if (className.isEmpty() || methodName.isEmpty() || returnName.isEmpty())
-      throw MethodSignatureParserPatternHolder.createIllegalArgumentException();
+      throw MethodSignatureParserPatternHolder.createInvalidMethodSignatureException();
 
     String argsGroup = matcher.group("args");
 
@@ -323,7 +223,8 @@ public class DefaultSignatureFactory implements SignatureFactory {
                 .filter(
                     it -> {
                       if (it.isEmpty())
-                        throw MethodSignatureParserPatternHolder.createIllegalArgumentException();
+                        throw MethodSignatureParserPatternHolder
+                            .createInvalidMethodSignatureException();
 
                       return true;
                     })
@@ -337,30 +238,28 @@ public class DefaultSignatureFactory implements SignatureFactory {
   @Override
   public MethodSubSignature getMethodSubSignature(
       @Nonnull String name,
-      @Nonnull Iterable<? extends TypeSignature> parameterSignatures,
-      @Nonnull TypeSignature returnTypeSignature) {
-    return new MethodSubSignature(name, parameterSignatures, returnTypeSignature);
+      @Nonnull Iterable<? extends Type> parameterSignatures,
+      @Nonnull Type returnType) {
+    return new MethodSubSignature(name, parameterSignatures, returnType);
   }
 
-  private static final class MethodSubSignatureParserPatternHolder {
-    @Nonnull
-    private static final Pattern SOOT_METHOD_SUB_SIGNATURE_PATTERN =
-        Pattern.compile("^(?<return>[^\\s]+)\\s+(?<method>[^(]+)\\((?<args>[^)]+)?\\)$");
+  @Nonnull
+  private static final Pattern SOOT_METHOD_SUB_SIGNATURE_PATTERN =
+      Pattern.compile("^(?<return>[^\\s]+)\\s+(?<method>[^(]+)\\((?<args>[^)]+)?\\)$");
 
-    @Nonnull
-    private static final Pattern JAVADOCLIKE_METHOD_SUB_SIGNATURE_PATTERN =
-        Pattern.compile("^#(?<method>[^(]+)\\((?<args>[^)]+)?\\)\\s*:(?<return>.+)$");
+  @Nonnull
+  private static final Pattern JAVADOCLIKE_METHOD_SUB_SIGNATURE_PATTERN =
+      Pattern.compile("^#(?<method>[^(]+)\\((?<args>[^)]+)?\\)\\s*:(?<return>.+)$");
 
-    @Nonnull
-    private static final Pattern ARGS_SPLITTER_PATTERN = Pattern.compile(",", Pattern.LITERAL);
+  @Nonnull
+  private static final Pattern ARGS_SPLITTER_PATTERN = Pattern.compile(",", Pattern.LITERAL);
 
-    @Nonnull
-    private static IllegalArgumentException createIllegalArgumentException() {
-      return new IllegalArgumentException(
-          "Invalid method sub-signature.\n\n"
-              + "The method sub-signature must be conform either to the Soot syntax (\"<RETURNTYPE METHOD(PARAM1, PARAM2, PARAM3)>\") "
-              + "or to the JavaDoc-like syntax (\"#METHOD(PARAM1, PARAM2, PARAM3): RETURNTYPE\").");
-    }
+  @Nonnull
+  private static IllegalArgumentException createInvalidMethodSubSignatureException() {
+    return new IllegalArgumentException(
+        "Invalid method sub-signature.\n\n"
+            + "The method sub-signature must be conform either to the Soot syntax (\"<RETURNTYPE METHOD(PARAM1, PARAM2, PARAM3)>\") "
+            + "or to the JavaDoc-like syntax (\"#METHOD(PARAM1, PARAM2, PARAM3): RETURNTYPE\").");
   }
 
   /**
@@ -375,14 +274,14 @@ public class DefaultSignatureFactory implements SignatureFactory {
    *
    * <pre><code>
    * &gt;de.upb.soot.signatures.MethodSignature parseMethodSignature(java.lang.String)&gt;
-   * &gt;de.upb.soot.signatures.MethodSignature getMethodSignature(java.lang.String, de.upb.soot.signatures.JavaClassSignature)&gt;
+   * &gt;de.upb.soot.signatures.MethodSignature getMethodSignature(java.lang.String, de.upb.soot.types.JavaClassType)&gt;
    * </code></pre>
    *
    * <p><b><i>JavaDoc-like syntax examples:</i></b>
    *
    * <pre><code>
    * #parseMethodSignature(java.lang.String): de.upb.soot.signatures.MethodSignature
-   * #getMethodSignature(java.lang.String, de.upb.soot.signatures.JavaClassSignature): de.upb.soot.signatures.MethodSignature
+   * #getMethodSignature(java.lang.String, de.upb.soot.types.JavaClassType): de.upb.soot.signatures.MethodSignature
    * </code></pre>
    *
    * @param subSignature A Soot- or Kotlin-like method sub-signature.
@@ -392,17 +291,13 @@ public class DefaultSignatureFactory implements SignatureFactory {
   @Override
   @Nonnull
   public MethodSubSignature parseMethodSubSignature(@Nonnull String subSignature) {
-    Matcher matcher =
-        MethodSubSignatureParserPatternHolder.JAVADOCLIKE_METHOD_SUB_SIGNATURE_PATTERN.matcher(
-            subSignature);
+    Matcher matcher = JAVADOCLIKE_METHOD_SUB_SIGNATURE_PATTERN.matcher(subSignature);
 
     if (!matcher.find()) {
-      matcher =
-          MethodSubSignatureParserPatternHolder.SOOT_METHOD_SUB_SIGNATURE_PATTERN.matcher(
-              subSignature);
+      matcher = SOOT_METHOD_SUB_SIGNATURE_PATTERN.matcher(subSignature);
 
       if (!matcher.find()) {
-        throw MethodSubSignatureParserPatternHolder.createIllegalArgumentException();
+        throw createInvalidMethodSubSignatureException();
       }
     }
 
@@ -410,48 +305,42 @@ public class DefaultSignatureFactory implements SignatureFactory {
     String returnName = matcher.group("return").trim();
 
     if (methodName.isEmpty() || returnName.isEmpty())
-      throw MethodSubSignatureParserPatternHolder.createIllegalArgumentException();
+      throw createInvalidMethodSubSignatureException();
 
     String argsGroup = matcher.group("args");
 
-    List<TypeSignature> argsList =
+    List<Type> argsList =
         argsGroup == null
             ? Collections.emptyList()
-            : Arrays.stream(
-                    MethodSubSignatureParserPatternHolder.ARGS_SPLITTER_PATTERN.split(
-                        argsGroup, -1))
+            : Arrays.stream(ARGS_SPLITTER_PATTERN.split(argsGroup, -1))
                 .map(String::trim)
                 .filter(
                     it -> {
-                      if (it.isEmpty())
-                        throw MethodSubSignatureParserPatternHolder
-                            .createIllegalArgumentException();
+                      if (it.isEmpty()) throw createInvalidMethodSubSignatureException();
 
                       return true;
                     })
-                .map(this::getTypeSignature)
+                .map(typeName -> typeFactorySupplier.get().getType(typeName))
                 .collect(Collectors.toList());
 
     return DefaultSignatureFactory.getInstance()
-        .getMethodSubSignature(methodName, argsList, this.getTypeSignature(returnName));
+        .getMethodSubSignature(methodName, argsList, typeFactorySupplier.get().getType(returnName));
   }
 
-  private static final class FieldSignatureParserPatternHolder {
-    @Nonnull
-    private static final Pattern SOOT_FIELD_SIGNATURE_PATTERN =
-        Pattern.compile("^<(?<class>[^:]+):\\s+(?<type>[^\\s]+)\\s+(?<field>.+)>$");
+  @Nonnull
+  private static final Pattern SOOT_FIELD_SIGNATURE_PATTERN =
+      Pattern.compile("^<(?<class>[^:]+):\\s+(?<type>[^\\s]+)\\s+(?<field>.+)>$");
 
-    @Nonnull
-    private static final Pattern JAVADOCLIKE_FIELD_SIGNATURE_PATTERN =
-        Pattern.compile("^(?<class>[^#]*)#(?<field>[^(]+):(?<type>.+)$");
+  @Nonnull
+  private static final Pattern JAVADOCLIKE_FIELD_SIGNATURE_PATTERN =
+      Pattern.compile("^(?<class>[^#]*)#(?<field>[^(]+):(?<type>.+)$");
 
-    @Nonnull
-    private static IllegalArgumentException createIllegalArgumentException() {
-      return new IllegalArgumentException(
-          "Invalid field signature.\n\n"
-              + "The field signature must be conform either to the Soot syntax (\"<CLASS: TYPE FIELD>\") "
-              + "or to the JavaDoc-like syntax (\"CLASS#FIELD: TYPE\").");
-    }
+  @Nonnull
+  private static IllegalArgumentException createInvalidFieldSignatureException() {
+    return new IllegalArgumentException(
+        "Invalid field signature.\n\n"
+            + "The field signature must be conform either to the Soot syntax (\"<CLASS: TYPE FIELD>\") "
+            + "or to the JavaDoc-like syntax (\"CLASS#FIELD: TYPE\").");
   }
 
   /**
@@ -481,16 +370,13 @@ public class DefaultSignatureFactory implements SignatureFactory {
   @Override
   @Nonnull
   public FieldSignature parseFieldSignature(@Nonnull String fieldSignature) {
-    Matcher matcher =
-        FieldSignatureParserPatternHolder.SOOT_FIELD_SIGNATURE_PATTERN.matcher(fieldSignature);
+    Matcher matcher = SOOT_FIELD_SIGNATURE_PATTERN.matcher(fieldSignature);
 
     if (!matcher.find()) {
-      matcher =
-          FieldSignatureParserPatternHolder.JAVADOCLIKE_FIELD_SIGNATURE_PATTERN.matcher(
-              fieldSignature);
+      matcher = JAVADOCLIKE_FIELD_SIGNATURE_PATTERN.matcher(fieldSignature);
 
       if (!matcher.find()) {
-        throw FieldSignatureParserPatternHolder.createIllegalArgumentException();
+        throw createInvalidFieldSignatureException();
       }
     }
 
@@ -499,60 +385,52 @@ public class DefaultSignatureFactory implements SignatureFactory {
     String typeName = matcher.group("type").trim();
 
     if (className.isEmpty() || fieldName.isEmpty() || typeName.isEmpty())
-      throw FieldSignatureParserPatternHolder.createIllegalArgumentException();
+      throw createInvalidFieldSignatureException();
 
     return DefaultSignatureFactory.getInstance()
-        .getFieldSignature(fieldName, this.getClassSignature(className), typeName);
+        .getFieldSignature(fieldName, typeFactorySupplier.get().getClassType(className), typeName);
   }
 
   @Override
   public FieldSignature getFieldSignature(
-      final String fieldName,
-      final JavaClassSignature declaringClassSignature,
-      final String fieldType) {
-    TypeSignature typeSignature = getTypeSignature(fieldType);
-    return new FieldSignature(declaringClassSignature, fieldName, typeSignature);
+      final String fieldName, final JavaClassType declaringClassSignature, final String fieldType) {
+    Type type = typeFactorySupplier.get().getType(fieldType);
+    return new FieldSignature(declaringClassSignature, fieldName, type);
   }
 
   @Override
   public FieldSignature getFieldSignature(
-      final String fieldName,
-      final JavaClassSignature declaringClassSignature,
-      final TypeSignature fieldType) {
+      final String fieldName, final JavaClassType declaringClassSignature, final Type fieldType) {
     return new FieldSignature(declaringClassSignature, fieldName, fieldType);
   }
 
   @Override
   @Nonnull
   public FieldSignature getFieldSignature(
-      @Nonnull JavaClassSignature declaringClassSignature,
-      @Nonnull FieldSubSignature subSignature) {
+      @Nonnull JavaClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature) {
     return new FieldSignature(declaringClassSignature, subSignature);
   }
 
   @Nonnull
   @Override
-  public FieldSubSignature getFieldSubSignature(
-      @Nonnull String name, @Nonnull TypeSignature typeSignature) {
-    return new FieldSubSignature(name, typeSignature);
+  public FieldSubSignature getFieldSubSignature(@Nonnull String name, @Nonnull Type type) {
+    return new FieldSubSignature(name, type);
   }
 
-  private static final class FieldSubSignatureParserPatternHolder {
-    @Nonnull
-    private static final Pattern SOOT_FIELD_SUB_SIGNATURE_PATTERN =
-        Pattern.compile("^(?<type>[^\\s]+)\\s+(?<field>.+)$");
+  @Nonnull
+  private static final Pattern SOOT_FIELD_SUB_SIGNATURE_PATTERN =
+      Pattern.compile("^(?<type>[^\\s]+)\\s+(?<field>.+)$");
 
-    @Nonnull
-    private static final Pattern JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN =
-        Pattern.compile("^#(?<field>[^(]+):(?<type>.+)$");
+  @Nonnull
+  private static final Pattern JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN =
+      Pattern.compile("^#(?<field>[^(]+):(?<type>.+)$");
 
-    @Nonnull
-    private static IllegalArgumentException createIllegalArgumentException() {
-      return new IllegalArgumentException(
-          "Invalid field sub-signature.\n\n"
-              + "The field sub-signature must be conform either to the Soot syntax (\"<TYPE FIELD>\") "
-              + "or to the JavaDoc-like syntax (\"#FIELD: TYPE\").");
-    }
+  @Nonnull
+  private static IllegalArgumentException createInvalidFieldSubSignatureException() {
+    return new IllegalArgumentException(
+        "Invalid field sub-signature.\n\n"
+            + "The field sub-signature must be conform either to the Soot syntax (\"<TYPE FIELD>\") "
+            + "or to the JavaDoc-like syntax (\"#FIELD: TYPE\").");
   }
 
   /**
@@ -581,41 +459,22 @@ public class DefaultSignatureFactory implements SignatureFactory {
    */
   @Nonnull
   public FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature) {
-    Matcher matcher =
-        FieldSubSignatureParserPatternHolder.JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN.matcher(
-            subSignature);
+    Matcher matcher = JAVADOCLIKE_FIELD_SUB_SIGNATURE_PATTERN.matcher(subSignature);
 
     if (!matcher.find()) {
-      matcher =
-          FieldSubSignatureParserPatternHolder.SOOT_FIELD_SUB_SIGNATURE_PATTERN.matcher(
-              subSignature);
+      matcher = SOOT_FIELD_SUB_SIGNATURE_PATTERN.matcher(subSignature);
 
       if (!matcher.find()) {
-        throw FieldSubSignatureParserPatternHolder.createIllegalArgumentException();
+        throw createInvalidFieldSubSignatureException();
       }
     }
 
     String fieldName = matcher.group("field").trim();
     String typeName = matcher.group("type").trim();
 
-    if (fieldName.isEmpty() || typeName.isEmpty())
-      throw FieldSubSignatureParserPatternHolder.createIllegalArgumentException();
+    if (fieldName.isEmpty() || typeName.isEmpty()) throw createInvalidFieldSubSignatureException();
 
     return DefaultSignatureFactory.getInstance()
-        .getFieldSubSignature(fieldName, this.getTypeSignature(typeName));
-  }
-
-  @Override
-  @Nonnull
-  public JavaClassSignature fromPath(@Nonnull final Path file) {
-    String separator = file.getFileSystem().getSeparator();
-    String path = file.toString();
-
-    String fullyQualifiedName =
-        FilenameUtils.removeExtension(
-                path.startsWith(separator) ? path.substring(separator.length()) : path)
-            .replace(separator, ".");
-
-    return this.getClassSignature(fullyQualifiedName);
+        .getFieldSubSignature(fieldName, typeFactorySupplier.get().getType(typeName));
   }
 }

@@ -27,8 +27,8 @@ package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
 
 /** Floating point constant with single precision. */
 public class FloatConstant extends RealConstant {
@@ -175,8 +175,8 @@ public class FloatConstant extends RealConstant {
   }
 
   @Override
-  public TypeSignature getSignature() {
-    return PrimitiveTypeSignature.getFloatSignature();
+  public Type getType() {
+    return PrimitiveType.getFloat();
   }
 
   @Override

@@ -48,15 +48,6 @@ public abstract class Constant implements Value, Immediate {
     throw new RuntimeException();
   }
 
-  /**
-   * Returns true if this object is structurally equivalent to c. For Constants, equality is
-   * structural equality, so we just call equals().
-   */
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseConstant(this, o);
-  }
-
   @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseConstant(this, o);

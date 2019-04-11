@@ -26,7 +26,7 @@ import categories.Java8Test;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.ref.JParameterRef;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.types.PrimitiveType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -46,8 +46,8 @@ public class JNopStmtTest {
     Assert.assertFalse(
         nop.equivTo(
             new JIdentityStmt(
-                new Local("$i0", PrimitiveTypeSignature.getIntSignature()),
-                new JParameterRef(PrimitiveTypeSignature.getIntSignature(), 123),
+                new Local("$i0", PrimitiveType.getInt()),
+                new JParameterRef(PrimitiveType.getInt(), 123),
                 nopos)));
 
     Assert.assertEquals("nop", nop.toString());

@@ -64,9 +64,38 @@ import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 import java.util.Iterator;
 
 /**
- * This class contains the equivalence implementations for the individual equivTo() methods of the
- * Jimple IR. You can use it as your base class if your use case needs an adjustment for checking
- * structural equivalence.
+ * This class contains the equivalence implementations for the individual {@link
+ * EquivTo#equivTo(Object)} methods of the Jimple IR. You can use it as your base class if your use
+ * case needs an adjustment for checking structural equivalence. This follows a contract weaker than
+ * {@link Object#equals(Object)}:
+ *
+ * <p>{@code X x = ...; Y y = ...; x.equivTo(y);} will check whether {@code y} is an instance of
+ * {@code X} and whether the properties known to {@code X} are equal in both objects.
+ *
+ * <ul>
+ *   <li>It is <i>reflexive</i>: for any non-null reference value {@code x}, {@code x.equivTo(x)}
+ *       should return {@code true}.
+ *   <li>In contrast to {@link Object#equals(Object)} it is <b>not</b> necessarily <i>symmetric</i>:
+ *       Consider reference values {@code Foo x} and {@code Bar y} where {@code class Bar extends
+ *       Foo}. If {@code x.equivTo(y)} returns {@code true}, it is still valid for {@code
+ *       y.equivTo(x)} to return {@code false}. This is because {@code x.equivTo(y)} will only
+ *       compare the properties defined in {@code Foo}. If {@code Bar} has added any other
+ *       properties, it will also take these into consideration for the comparison. Since {@code
+ *       Foo} does not contain them, {@code y.equivTo(x)} will return {@code false} in this case.
+ *   <li>In contrast to {@link Object#equals(Object)} it is <b>not</b> necessarily
+ *       <i>transitive</i>. This is because it is reflexive, but not necessarily symmetric. This
+ *       means that when {@code x.equivTo(y) == true} and {@code y.equivTo(z) == true}, this does
+ *       not imply {@code x.equivTo(z) == true}. A trivial example showing this is when {@code x}
+ *       refers to the same object as {@code z}, since {@code equivTo} is not always symmetric.
+ *   <li>It is <i>consistent</i>: for any non-null reference values {@code x} and {@code y},
+ *       multiple invocations of {@code x.equivTo(y)} consistently return {@code true} or
+ *       consistently return {@code false}, provided no information used in {@code equivTo}
+ *       comparisons on the objects is modified.
+ *   <li>For any non-null reference value {@code x}, {@code x.equivTo(null)} should return {@code
+ *       false}.
+ * </ul>
+ *
+ * <p>
  *
  * @author Markus Schmidt
  */
@@ -74,6 +103,10 @@ public class JimpleComparator {
 
   private static final JimpleComparator INSTANCE = new JimpleComparator();
 
+  /**
+   * Returns the default {@link JimpleComparator}. You may customize the behavior by extending
+   * {@link JimpleComparator} and overriding methods.
+   */
   public static JimpleComparator getInstance() {
     return INSTANCE;
   }
@@ -99,7 +132,7 @@ public class JimpleComparator {
       return false;
     }
     JAssignStmt jas = (JAssignStmt) o;
-    return stmt.getLeftOp().equivTo(jas.getLeftOp())
+    return stmt.getLeftOp().equivTo(jas.getLeftOp(), this)
         && stmt.getRightOp().equivTo(jas.getRightOp(), this);
   }
 
@@ -135,7 +168,7 @@ public class JimpleComparator {
       return false;
     }
     JIfStmt ifStmt = (JIfStmt) o;
-    return stmt.getCondition().equivTo(ifStmt.getCondition())
+    return stmt.getCondition().equivTo(ifStmt.getCondition(), this)
         && stmt.getTarget().equivTo(ifStmt.getTarget(), this);
   }
 
@@ -274,7 +307,7 @@ public class JimpleComparator {
       return false;
     }
     JCastExpr ace = (JCastExpr) o;
-    return v.getOp().equivTo(ace.getOp(), this) && v.getSignature().equals(ace.getSignature());
+    return v.getOp().equivTo(ace.getOp(), this) && v.getType().equals(ace.getType());
   }
 
   public boolean caseInstanceOfExpr(JInstanceOfExpr v, Object o) {
@@ -306,7 +339,7 @@ public class JimpleComparator {
       return false;
     }
     JNewExpr ae = (JNewExpr) o;
-    return v.getSignature().equals(ae.getSignature());
+    return v.getType().equals(ae.getType());
   }
 
   public boolean caseLengthExpr(JLengthExpr v, Object o) {
@@ -388,7 +421,7 @@ public class JimpleComparator {
       return false;
     }
     return obj.getIndex() == ((JParameterRef) o).getIndex()
-        && obj.getSignature().equals(((JParameterRef) o).getSignature());
+        && obj.getType().equals(((JParameterRef) o).getType());
   }
 
   public boolean caseStaticFieldRef(JStaticFieldRef obj, Object o) {
@@ -402,7 +435,7 @@ public class JimpleComparator {
     if (!(o instanceof JThisRef)) {
       return false;
     }
-    return obj.getSignature().equals(((JThisRef) o).getSignature());
+    return obj.getType().equals(((JThisRef) o).getType());
   }
 
   public boolean caseConstant(Constant constant, Object o) {

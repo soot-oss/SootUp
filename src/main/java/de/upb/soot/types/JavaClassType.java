@@ -1,4 +1,4 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 /*-
  * #%L
@@ -28,6 +28,9 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.ModuleSignatureFactory;
+import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 import java.nio.file.FileSystem;
@@ -38,7 +41,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
-public class JavaClassSignature extends ReferenceTypeSignature {
+public class JavaClassType extends ReferenceType {
 
   private final String className;
 
@@ -53,7 +56,7 @@ public class JavaClassSignature extends ReferenceTypeSignature {
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
    * @param packageSignature the corresponding package
    */
-  protected JavaClassSignature(final String className, final PackageSignature packageSignature) {
+  public JavaClassType(final String className, final PackageSignature packageSignature) {
     String realClassName = className;
     boolean innerClass = false;
     // use $ to separate inner and outer class name
@@ -77,7 +80,7 @@ public class JavaClassSignature extends ReferenceTypeSignature {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    JavaClassSignature that = (JavaClassSignature) o;
+    JavaClassType that = (JavaClassType) o;
     return Objects.equal(className, that.className)
         && Objects.equal(packageSignature, that.packageSignature)
         && isInnerClass == that.isInnerClass;
@@ -177,7 +180,7 @@ public class JavaClassSignature extends ReferenceTypeSignature {
   }
 
   /**
-   * Tries to resolve this {@link JavaClassSignature} to the corresponding {@link SootClass}.
+   * Tries to resolve this {@link JavaClassType} to the corresponding {@link SootClass}.
    *
    * @param view The {@link IView} to resolve with.
    * @return An {@link Optional} containing the {@link SootClass}, if the resolution was successful;
