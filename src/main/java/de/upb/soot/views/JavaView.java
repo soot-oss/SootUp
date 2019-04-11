@@ -99,7 +99,7 @@ public class JavaView extends AbstractView {
           "dynamicinvoke",
           "strictfp");
 
-  @Nonnull protected final Map<Type, SootClass> map = new HashMap<>();
+  @Nonnull private final Map<Type, SootClass> map = new HashMap<>();
 
   // endregion /Fields/
 
@@ -117,16 +117,16 @@ public class JavaView extends AbstractView {
   private volatile boolean _isFullyResolved;
 
   /**
-   * Gets a value, indicating whether all classes have been initialized.
+   * Gets a value, indicating whether all classes have been loaded.
    *
    * @return The value to get.
    */
-  public boolean isFullyResolved() {
+  boolean isFullyResolved() {
     return this._isFullyResolved;
   }
 
-  /** Sets a value, indicating whether all classes have been initialized. */
-  private void __setFullyResolved() {
+  /** Sets a value, indicating that all classes have been loaded. */
+  private void markAsFullyResolved() {
     this._isFullyResolved = true;
   }
 
@@ -196,7 +196,7 @@ public class JavaView extends AbstractView {
       return;
     }
 
-    this.__setFullyResolved();
+    this.markAsFullyResolved();
 
     for (ClassSource cs :
         this.getProject().getNamespace().getClassSources(getSignatureFactory(), getTypeFactory())) {
