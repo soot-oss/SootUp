@@ -1414,10 +1414,10 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
 
       // Beware: Call stack is FIFO, Jimple is linear
 
-      while (nrArgs-- != 0) {
-        parameterTypes.add(types.get(nrArgs));
-        args[nrArgs] = popImmediate(types.get(nrArgs));
-        methodArgs.add(args[nrArgs].stackOrValue());
+      for (int i = nrArgs - 1; i >= 0; i--) {
+        parameterTypes.add(types.get(i));
+        args[i] = popImmediate(types.get(i));
+        methodArgs.add(args[i].stackOrValue());
       }
       if (methodArgs.size() > 1) {
         Collections.reverse(methodArgs); // Call stack is FIFO, Jimple is linear
@@ -1434,15 +1434,13 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       JDynamicInvokeExpr indy =
           Jimple.newDynamicInvokeExpr(
               bsmMethodRef, bsmMethodArgs, methodRef, insn.bsm.getTag(), methodArgs);
-      if (boxes != null) {
-        for (int i = 0; i < types.size() - 1; i++) {
-          boxes[i] = indy.getArgBox(i);
-          args[i].addBox(boxes[i]);
-        }
-
-        frame.boxes(boxes);
-        frame.in(args);
+      for (int i = 0; i < types.size() - 1; i++) {
+        boxes[i] = indy.getArgBox(i);
+        args[i].addBox(boxes[i]);
       }
+
+      frame.boxes(boxes);
+      frame.in(args);
       opr = new Operand(insn, indy);
       frame.out(opr);
     } else {
