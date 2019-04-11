@@ -61,19 +61,19 @@ public class JavaViewTest {
 
   @Test
   public void testIsResolvedPropertyBeforeAll() {
-    assertFalse(this.view.isEntirelyResolved());
+    assertFalse(this.view.isFullyResolved());
   }
 
   @Test
   public void testIsResolvedPropertyAfterOne() {
     assertTrue(this.view.getClass(this.signatures.get(0)).isPresent());
-    assertFalse(this.view.isEntirelyResolved());
+    assertFalse(this.view.isFullyResolved());
   }
 
   @Test
   public void testIsResolvedPropertyAfterAll() {
     this.view.resolveAll();
-    assertTrue(this.view.isEntirelyResolved());
+    assertTrue(this.view.isFullyResolved());
   }
 
   @Test
