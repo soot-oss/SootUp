@@ -114,20 +114,20 @@ public class JavaView extends AbstractView {
 
   // region Properties
 
-  private volatile boolean _isEntirelyResolved;
+  private volatile boolean _isFullyResolved;
 
   /**
    * Gets a value, indicating whether all classes have been loaded.
    *
    * @return The value to get.
    */
-  protected boolean isEntirelyResolved() {
-    return this._isEntirelyResolved;
+  boolean isFullyResolved() {
+    return this._isFullyResolved;
   }
 
-  /** Sets a value, indicating whether all classes have been loaded. */
-  private void __setEntirelyResolved() {
-    this._isEntirelyResolved = true;
+  /** Sets a value, indicating that all classes have been loaded. */
+  private void markAsFullyResolved() {
+    this._isFullyResolved = true;
   }
 
   // endregion /Properties/
@@ -169,7 +169,7 @@ public class JavaView extends AbstractView {
     SootClass sootClass = this.map.get(type);
 
     if (sootClass != null) return Optional.of(sootClass);
-    else if (this.isEntirelyResolved()) return Optional.empty();
+    else if (this.isFullyResolved()) return Optional.empty();
     else return Optional.ofNullable(this.__resolveSootClass((JavaClassType) type));
   }
 
@@ -192,11 +192,11 @@ public class JavaView extends AbstractView {
   }
 
   public synchronized void resolveAll() {
-    if (this.isEntirelyResolved()) {
+    if (this.isFullyResolved()) {
       return;
     }
 
-    this.__setEntirelyResolved();
+    this.markAsFullyResolved();
 
     for (ClassSource cs :
         this.getProject().getNamespace().getClassSources(getSignatureFactory(), getTypeFactory())) {
