@@ -1215,8 +1215,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
 
   private FieldRef toSootFieldRef(Handle methodHandle) {
     String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
-    JavaClassSignature bsmCls = DefaultSignatureFactory.getInstance().getClassSignature(bsmClsName);
-    TypeSignature t = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc()).get(0);
+    JavaClassType bsmCls = DefaultTypeFactory.getInstance().getClassType(bsmClsName);
+    Type t = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc()).get(0);
     int kind = methodHandle.getTag();
     FieldSignature fieldSignature =
         DefaultSignatureFactory.getInstance().getFieldSignature(methodHandle.getName(), bsmCls, t);
@@ -1231,9 +1231,9 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
 
   private MethodSignature toMethodSignature(Handle methodHandle) {
     String bsmClsName = AsmUtil.toQualifiedName(methodHandle.getOwner());
-    JavaClassSignature bsmCls = DefaultSignatureFactory.getInstance().getClassSignature(bsmClsName);
-    List<TypeSignature> bsmSigTypes = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc());
-    TypeSignature returnType = bsmSigTypes.remove(bsmSigTypes.size() - 1);
+    JavaClassType bsmCls = DefaultTypeFactory.getInstance().getClassType(bsmClsName);
+    List<Type> bsmSigTypes = AsmUtil.toJimpleSignatureDesc(methodHandle.getDesc());
+    Type returnType = bsmSigTypes.remove(bsmSigTypes.size() - 1);
     return DefaultSignatureFactory.getInstance()
         .getMethodSignature(methodHandle.getName(), bsmCls, returnType, bsmSigTypes);
   }
@@ -1390,7 +1390,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.out();
     Operand opr;
-    TypeSignature returnType;
+    Type returnType;
     if (out == null) {
       // convert info on bootstrap method
       MethodSignature bsmMethodRef = toMethodSignature(insn.bsm);
@@ -1400,14 +1400,13 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       }
 
       // create ref to actual method
-      JavaClassSignature bclass =
-          DefaultSignatureFactory.getInstance()
-              .getClassSignature(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
+      JavaClassType bclass =
+          DefaultTypeFactory.getInstance().getClassType(SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME);
 
       // Generate parameters & returnType & parameterTypes
-      List<TypeSignature> types = AsmUtil.toJimpleSignatureDesc(insn.desc);
+      List<Type> types = AsmUtil.toJimpleSignatureDesc(insn.desc);
       int nrArgs = types.size() - 1;
-      List<TypeSignature> parameterTypes = new ArrayList<>(nrArgs);
+      List<Type> parameterTypes = new ArrayList<>(nrArgs);
       List<Value> methodArgs = new ArrayList<>(nrArgs);
 
       Operand[] args = new Operand[nrArgs];
@@ -1449,7 +1448,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     } else {
       opr = out[0];
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
-      List<TypeSignature> types = expr.getMethodSignature().getParameterSignatures();
+      List<Type> types = expr.getMethodSignature().getParameterSignatures();
       Operand[] oprs;
       int nrArgs = types.size();
       if (expr instanceof JStaticInvokeExpr) {
@@ -1469,11 +1468,11 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
         // FIXME: [JMP] This assignment is never used.
         nrArgs = types.size();
       }
-      returnType = expr.getSignature();
+      returnType = expr.getType();
     }
     if (AsmUtil.isDWord(returnType)) {
       pushDual(opr);
-    } else if (!(returnType instanceof VoidTypeSignature)) {
+    } else if (!(returnType instanceof VoidType)) {
       push(opr);
     } else if (!units.containsKey(insn)) {
       // FIXME: [JMP] Set correct position information
@@ -1582,7 +1581,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     Operand[] out = frame.out();
     Operand opr;
     if (out == null) {
-      Type t = DefaultSignatureFactory.getInstance().getTypeSignature(insn.desc);
+      Type t = DefaultTypeFactory.getInstance().getType(insn.desc);
       Value val;
       if (op == NEW) {
         val = Jimple.newNewExpr((ReferenceType) t);
