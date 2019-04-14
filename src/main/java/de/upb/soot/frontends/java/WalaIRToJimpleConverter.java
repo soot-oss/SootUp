@@ -451,10 +451,14 @@ public class WalaIRToJimpleConverter {
           TypeReference t = walaMethod.getParameterType(startPara);
           Type type = convertType(t);
           Local paraLocal = localGenerator.generateParameterLocal(type, startPara);
+          int index = startPara;
+          if (!walaMethod.isStatic()) {
+            index = startPara - 1;
+          }
           IStmt stmt =
               Jimple.newIdentityStmt(
                   paraLocal,
-                  Jimple.newParameterRef(type, startPara - 1),
+                  Jimple.newParameterRef(type, index),
                   new PositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }

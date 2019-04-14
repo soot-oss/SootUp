@@ -6,6 +6,7 @@ import categories.Java8Test;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.Before;
@@ -69,12 +70,28 @@ public class InvokeTest {
   }
 
   @Test
-  public void testInvokeStatic() {
+  public void testInvokeStatic1() {
     declareClassSig = sigFactory.getClassSignature("InvokeStatic");
     Optional<SootMethod> m =
         loader.getSootMethod(
             sigFactory.getMethodSignature(
                 "<clinit>", declareClassSig, "void", Collections.emptyList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testInvokeStatic2() {
+    declareClassSig = sigFactory.getClassSignature("InvokeStatic");
+    Optional<SootMethod> m =
+        loader.getSootMethod(
+            sigFactory.getMethodSignature(
+                "repro",
+                declareClassSig,
+                "void",
+                Arrays.asList("int", "java.lang.String", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     // TODO. replace the next line with assertions.

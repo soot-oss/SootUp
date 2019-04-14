@@ -7,4 +7,5 @@ public class InvokeStatic {
   static {
     x = "abc";
   }
+  public static void repro(int a, String b, boolean c) { }
 }
