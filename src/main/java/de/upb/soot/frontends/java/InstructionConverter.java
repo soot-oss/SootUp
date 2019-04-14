@@ -577,14 +577,13 @@ public class InstructionConverter {
     int def = inst.getDef();
     int use = inst.getUse(0);
     Value op;
-    // TODO: change type
     Type type = UnknownType.getInstance();
     if (symbolTable.isConstant(use)) {
       op = getConstant(use);
-      type = op.getType();
     } else {
       op = getLocal(type, use);
     }
+    type = op.getType();
     Local left = getLocal(type, def);
 
     Position[] operandPos = new Position[2];

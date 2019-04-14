@@ -99,6 +99,32 @@ public class InvokeTest {
   }
 
   @Test
+  public void testInvokeStatic3() {
+    declareClassSig = sigFactory.getClassSignature("InvokeStatic");
+    Optional<SootMethod> m =
+        loader.getSootMethod(
+            sigFactory.getMethodSignature(
+                "repro1", declareClassSig, "void", Arrays.asList("java.lang.Object")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testInvokeStatic4() {
+    declareClassSig = sigFactory.getClassSignature("InvokeStatic");
+    Optional<SootMethod> m =
+        loader.getSootMethod(
+            sigFactory.getMethodSignature(
+                "repro2", declareClassSig, "void", Arrays.asList("java.lang.Object")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
+    Utils.print(method, false);
+  }
+
+  @Test
   public void testInvokeVirtual1() {
     declareClassSig = sigFactory.getClassSignature("InvokeVirtual");
     Optional<SootMethod> m =
