@@ -888,7 +888,6 @@ public class InstructionConverter {
       op2 = getLocal(type, val2);
     }
     if (type.equals(UnknownType.getInstance())) type = op2.getType();
-    Value result = getLocal(type, def);
     AbstractBinopExpr binExpr = null;
     IBinaryOpInstruction.IOperator operator = binOpInst.getOperator();
     if (operator.equals(IBinaryOpInstruction.Operator.ADD)) {
@@ -903,22 +902,31 @@ public class InstructionConverter {
       binExpr = Jimple.newRemExpr(op1, op2);
     } else if (operator.equals(IBinaryOpInstruction.Operator.AND)) {
       binExpr = Jimple.newAndExpr(op1, op2);
+      type = BooleanType.getInstance();
     } else if (operator.equals(IBinaryOpInstruction.Operator.OR)) {
       binExpr = Jimple.newOrExpr(op1, op2);
+      type = BooleanType.getInstance();
     } else if (operator.equals(IBinaryOpInstruction.Operator.XOR)) {
       binExpr = Jimple.newXorExpr(op1, op2);
+      type = BooleanType.getInstance();
     } else if (operator.equals(CAstBinaryOp.EQ)) {
       binExpr = Jimple.newEqExpr(op1, op2);
+      type = BooleanType.getInstance();
     } else if (operator.equals(CAstBinaryOp.NE)) {
       binExpr = Jimple.newNeExpr(op1, op2);
+      type = BooleanType.getInstance();
     } else if (operator.equals(CAstBinaryOp.LT)) {
       binExpr = Jimple.newLtExpr(op1, op2);
+      type = BooleanType.getInstance();
     } else if (operator.equals(CAstBinaryOp.GE)) {
       binExpr = Jimple.newGeExpr(op1, op2);
+      type = BooleanType.getInstance();
     } else if (operator.equals(CAstBinaryOp.GT)) {
       binExpr = Jimple.newGtExpr(op1, op2);
+      type = BooleanType.getInstance();
     } else if (operator.equals(CAstBinaryOp.LE)) {
       binExpr = Jimple.newLtExpr(op1, op2);
+      type = BooleanType.getInstance();
     } else if (operator.equals(IShiftInstruction.Operator.SHL)) {
       binExpr = Jimple.newShlExpr(op1, op2);
     } else if (operator.equals(IShiftInstruction.Operator.SHR)) {
@@ -928,13 +936,12 @@ public class InstructionConverter {
     } else {
       throw new RuntimeException("Unsupported binary operator: " + operator.getClass());
     }
-
     Position[] operandPos = new Position[2];
     Position p1 = debugInfo.getOperandPosition(binOpInst.iindex, 0);
     operandPos[0] = p1;
     Position p2 = debugInfo.getOperandPosition(binOpInst.iindex, 1);
     operandPos[1] = p2;
-
+    Value result = getLocal(type, def);
     return Jimple.newAssignStmt(
         result,
         binExpr,
