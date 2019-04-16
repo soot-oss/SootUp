@@ -840,6 +840,7 @@ public class InstructionConverter {
             condition,
             target,
             new PositionInfo(debugInfo.getInstructionPosition(condInst.iindex), null));
+    // target equals -1 refers to the end of the method
     this.targetsOfIfStmts.put(ifStmt, condInst.getTarget());
     return ifStmt;
   }
@@ -1060,6 +1061,7 @@ public class InstructionConverter {
         }
       }
     }
+
     // FIXME: [ms] targetbox of JGotoStmt is null @PositionInfoTest.java ->testSwitchInstruction()
     if (this.targetsOfGotoStmts.containsValue(iindex)) {
       for (JGotoStmt gotoStmt : this.targetsOfGotoStmts.keySet()) {

@@ -482,20 +482,24 @@ public class WalaIRToJimpleConverter {
         for (IStmt stmt : stmt2IIndex.keySet()) {
           instConverter.setTarget(stmt, stmt2IIndex.get(stmt));
         }
+
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
-          // TODO? [ms] check whether last stmts are branching->check all branches too?
-          if (!stmts.isEmpty() && !(stmts.get(stmts.size() - 1) instanceof JReturnVoidStmt)) {
+          IStmt ret = null;
+          if (stmts.isEmpty() || !(stmts.get(stmts.size() - 1) instanceof JReturnVoidStmt)) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?
-            IStmt ret =
+            ret =
                 Jimple.newReturnVoidStmt(
                     new PositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-            instConverter.setTarget(ret, -1);
             stmts.add(ret);
+          } else {
+            ret = stmts.get(stmts.size() - 1);
           }
+          instConverter.setTarget(ret, -1); // -1 is the end of the method
         }
+
         Body body = new Body(sootMethod, localGenerator.getLocals(), traps, stmts, bodyPos);
         return Optional.of(body);
       }
