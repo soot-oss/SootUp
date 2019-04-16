@@ -165,4 +165,18 @@ public class ControlStatements {
       System.out.println(s);
     }
   }
+  
+  public void simpleIfTrue()
+  {
+    if (true) return;
+    if (false) return;
+    return;
+  }
+  
+  public void simpleIf()
+  {
+      if (true)
+          return;
+  }
+  }
 }
