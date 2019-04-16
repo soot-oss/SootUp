@@ -1,14 +1,22 @@
 package de.upb.soot.frontends.java;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.soot.core.Body;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.JavaClassSignature;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -55,8 +63,32 @@ public class SelectedInstructionConversionTest {
                 "method", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(IStmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: AnonymousClass",
+                "$r1 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(7)",
+                "$r2 = new AnonymousClass$2",
+                "$i0 = 0 - 4",
+                "specialinvoke $r2.<AnonymousClass$2: void <init>(int)>($i0)",
+                "$r3 = <java.lang.System: java.io.PrintStream out>",
+                "$i1 = interfaceinvoke $r2.<AnonymousClass$Foo: int getValue()>()",
+                "virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i1)",
+                "$r4 = <java.lang.System: java.io.PrintStream out>",
+                "$i2 = interfaceinvoke $r2.<AnonymousClass$Foo: int getValueBase()>()",
+                "virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i2)",
+                "return")
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    assertEquals(expectedStmts, actualStmts);
   }
 
   @Test
@@ -68,8 +100,37 @@ public class SelectedInstructionConversionTest {
                 "doAllThis", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(IStmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: alreadywalaunittests.InnerClassAA",
+                "$r1 = r0",
+                "$r2 = new alreadywalaunittests.InnerClassAA$AA",
+                "specialinvoke $r2.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>($r0)",
+                "$r3 = new alreadywalaunittests.InnerClassAA$AA",
+                "specialinvoke $r3.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>($r1)",
+                "$r2 = $r3",
+                "$r4 = virtualinvoke $r2.<alreadywalaunittests.InnerClassAA$AA: alreadywalaunittests.InnerClassAA$AB makeAB()>()",
+                "$r1.<alreadywalaunittests.InnerClassAA: int a_x> = 5",
+                "$i0 = virtualinvoke $r4.<alreadywalaunittests.InnerClassAA$AB: int getA_X_from_AB()>()",
+                "$r5 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i0)",
+                "$i1 = virtualinvoke $r4.<alreadywalaunittests.InnerClassAA$AB: int getA_X_thru_AB()>()",
+                "$r6 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $r6.<java.io.PrintStream: void println(int)>($i1)",
+                "virtualinvoke $r2.<alreadywalaunittests.InnerClassAA$AA: void doSomeCrazyStuff()>()",
+                "return")
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    assertEquals(expectedStmts, actualStmts);
   }
 
   @Test
@@ -81,8 +142,25 @@ public class SelectedInstructionConversionTest {
                 "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(IStmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+            "$r0 := @parameter0: java.lang.String[]",
+            "$r1 = new alreadywalaunittests.InnerClassAA",
+            "specialinvoke $r1.<alreadywalaunittests.InnerClassAA: void <init>()>()",
+            "virtualinvoke $r1.<alreadywalaunittests.InnerClassAA: void doAllThis()>()",
+            "return")
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    assertEquals(expectedStmts, actualStmts);
   }
 
   @Test
@@ -94,8 +172,23 @@ public class SelectedInstructionConversionTest {
                 "<init>", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(IStmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+            "r0 := @this: alreadywalaunittests.InnerClassAA",
+            "specialinvoke r0.<java.lang.Object: void <init>()>()",
+            "return")
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    assertEquals(expectedStmts, actualStmts);
   }
 
   @Test
@@ -107,8 +200,25 @@ public class SelectedInstructionConversionTest {
                 "main", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(IStmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+  // TODO does invoking wait(long, int) require upcast? goto really with ?= branch?
+    // TODO is $r21 = newarray (int[][][][])[2] correct? because we have n-dim array
+    // TODO Other than that, seems fine
+    List<String> expectedStmts =
+        Stream.of(
+            "r0 := @this: alreadywalaunittests.InnerClassAA",
+            "specialinvoke r0.<java.lang.Object: void <init>()>()",
+            "return")
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    assertEquals(expectedStmts, actualStmts);
   }
 
   @Test
