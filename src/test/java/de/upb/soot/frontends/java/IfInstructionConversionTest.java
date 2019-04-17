@@ -66,7 +66,7 @@ public class IfInstructionConversionTest {
                 "$i0 := @parameter0: int",
                 "$i1 := @parameter1: int",
                 "$i2 := @parameter2: int",
-                "$z0 := $i0 < $i1",
+                "$z0 = $i0 < $i1",
                 "if $z0 == 0 goto $z1 = $i0 < $i2",
                 "$r1 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0)",
@@ -106,10 +106,10 @@ public class IfInstructionConversionTest {
                 "r0 := @this: de.upb.soot.concrete.controlStatements.ControlStatements",
                 "$i0 := @parameter0: int",
                 "$i1 := @parameter1: int",
-                "$z0 := $i0 == $i1",
+                "$z0 = $i0 == $i1",
                 "if $z0 == 0 goto return 0",
-                "return 0",
-                "return 1")
+                "return 1",
+                "return 0")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -137,8 +137,8 @@ public class IfInstructionConversionTest {
                 "r0 := @this: de.upb.soot.concrete.controlStatements.ControlStatements",
                 "$z0 := @parameter0: boolean",
                 "$z1 := @parameter1: boolean",
-                "$z2 := $z0 == $z1",
-                "if $z2 == 0 goto return 1",
+                "$z2 = $z0 != $z1",
+                "if $z2 == 0 goto return 0",
                 "return 1",
                 "return 0")
             .collect(Collectors.toCollection(ArrayList::new));
@@ -170,7 +170,7 @@ public class IfInstructionConversionTest {
         Stream.of(
                 "r0 := @this: de.upb.soot.concrete.controlStatements.ControlStatements",
                 "$r1 := @parameter0: java.lang.String",
-                "$z0 := $r1 == null",
+                "$z0 = $r1 == null",
                 "if $z0 == 0 goto return 1",
                 "return 0",
                 "return 1")
@@ -205,18 +205,18 @@ public class IfInstructionConversionTest {
                 "$d0 := @parameter0: double",
                 "$d1 := @parameter1: double",
                 "$d2 := @parameter2: double",
-                "$z0 := $d0 < $d1",
+                "$z0 = $d0 < $d1",
                 "if $z0 == 0 goto $z1 = $d0 < $d2",
                 "$r1 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($d0)",
+                "virtualinvoke $r1.<java.io.PrintStream: void println(double)>($d0)",
                 "goto [?= return]",
                 "$z1 = $d0 < $d2",
                 "if $z1 == 0 goto $r3 = <java.lang.System: java.io.PrintStream out>",
                 "$r2 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r2.<java.io.PrintStream: void println(int)>($d1)",
+                "virtualinvoke $r2.<java.io.PrintStream: void println(double)>($d1)",
                 "goto [?= return]",
                 "$r3 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r3.<java.io.PrintStream: void println(int)>($d2)",
+                "virtualinvoke $r3.<java.io.PrintStream: void println(double)>($d2)",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
