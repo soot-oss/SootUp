@@ -246,14 +246,13 @@ public class InvokeTest {
                 "$r3 = \"A\"",
                 "$r4 = \"B\"",
                 "$z0 = $r3 == $r4",
-                "$z0 == 0 goto $z1 = 5 < 3",
+                "if $z0 == 0 goto $z1 = 5 < 3",
                 "return",
                 "$z1 = 5 < 3",
-                "$z1 == 0 goto $z2 = 5.0 < 3.0",
+                "if $z1 == 0 goto $z2 = 5.0 < 3.0",
                 "return",
                 "$z2 = 5.0 < 3.0",
                 "if $z2 == 0 goto return",
-                "return",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
