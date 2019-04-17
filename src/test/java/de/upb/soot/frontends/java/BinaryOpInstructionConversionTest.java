@@ -626,7 +626,7 @@ public class BinaryOpInstructionConversionTest {
                 "incShort", declareClassSig, "short", Collections.singletonList("short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-
+    Utils.print(method, true);
     Body body = method.getActiveBody();
     assertNotNull(body);
 
@@ -655,19 +655,17 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(2),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(
-              new JCastExpr(new Local("$s0", PrimitiveType.getShort()), PrimitiveType.getInt()),
-              stmt.getRightOp());
+          assertEquiv(new Local("$s1", PrimitiveType.getShort()), stmt.getLeftOp());
+          assertEquiv(new Local("$s0", PrimitiveType.getShort()), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("$s2", PrimitiveType.getShort()), stmt.getLeftOp());
           assertEquiv(
-              new JAddExpr(new Local("$i0", PrimitiveType.getInt()), IntConstant.getInstance(1)),
+              new JAddExpr(new Local("$s0", PrimitiveType.getShort()), IntConstant.getInstance(1)),
               stmt.getRightOp());
         });
 
@@ -675,10 +673,8 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(4),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$s1", PrimitiveType.getShort()), stmt.getLeftOp());
-          assertEquiv(
-              new JCastExpr(new Local("$i1", PrimitiveType.getInt()), PrimitiveType.getShort()),
-              stmt.getRightOp());
+          assertEquiv(new Local("$s0", PrimitiveType.getShort()), stmt.getLeftOp());
+          assertEquiv(new Local("$s2", PrimitiveType.getShort()), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
