@@ -594,7 +594,7 @@ public class JimpleConverter {
       if (from instanceof PrimitiveType) {
         if (from.equals(PrimitiveType.getBoolean())) {
           return soot.BooleanType.v();
-        } else if (from.equals(PrimitiveType.getByteSignature())) {
+        } else if (from.equals(PrimitiveType.getByte())) {
           return soot.ByteType.v();
         } else if (from.equals(PrimitiveType.getChar())) {
           return soot.CharType.v();
@@ -665,7 +665,7 @@ public class JimpleConverter {
       }
       parameterTypes.add(Scene.v().getType(typeName));
     }
-    String returnTypeName = methodSig.getTypeSignature().toString();
+    String returnTypeName = methodSig.getSignature().toString();
     if (Scene.v().getTypeUnsafe(returnTypeName) == null) // check if type is in scene
     {
       if (!Scene.v().containsType(returnTypeName)) {
@@ -706,7 +706,9 @@ public class JimpleConverter {
     if (!Scene.v().containsClass(className)) {
       // class not in Scene, either is from source code or need to be forced to resolve
       if (op.isPresent()) {
-        return convertSootClass(op.get());
+        Optional<de.upb.soot.core.SootClass> any =
+            fromClasses.stream().filter(it -> it.getType().equals(op.get())).findAny();
+        return any.map(this::convertSootClass).orElseGet(() -> Scene.v().getSootClass(className));
       } else {
         return Scene.v().forceResolve(className, SootClass.SIGNATURES);
       }

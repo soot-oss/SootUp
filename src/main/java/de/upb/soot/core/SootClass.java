@@ -73,7 +73,7 @@ import javax.annotation.Nullable;
  * They are usually created by a Scene, but can also be constructed manually through the given
  * constructors.
  *
- * @author Manuel Benz created on 06.06.18.
+ * @author Manuel Benz
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
@@ -319,14 +319,14 @@ public class SootClass extends AbstractClass implements Serializable {
     return this.initializeClassMembers(methods);
   }
 
-  //  // FIXME: error handling
-  //  public void resolve(de.upb.soot.core.ResolvingLevel resolvingLevel) {
-  //    try {
-  //      this.getClassSource().getContent().resolve(resolvingLevel, getView());
-  //    } catch (ResolveException e) {
-  //      e.printStackTrace();
-  //    }
-  //  }
+  // // FIXME: error handling
+  // public void resolve(de.upb.soot.core.ResolvingLevel resolvingLevel) {
+  // try {
+  // this.getClassSource().getContent().resolve(resolvingLevel, getView());
+  // } catch (ResolveException e) {
+  // e.printStackTrace();
+  // }
+  // }
 
   @Nonnull private final Lazy<Set<SootMethod>> _lazyMethods;
 
@@ -360,10 +360,10 @@ public class SootClass extends AbstractClass implements Serializable {
       return;
     }
 
-    //    if (!this.getView().doneResolving() ||
+    // if (!this.getView().doneResolving() ||
     // this.getView().getOptions().ignore_resolving_levels()) {
-    //      return;
-    //    }
+    // return;
+    // }
     checkLevelIgnoreResolving(level);
   }
 
@@ -404,9 +404,9 @@ public class SootClass extends AbstractClass implements Serializable {
   public int getFieldCount() {
     // FIXME "This has to be refactored later. I'm unsure whether we still need the resolving
     // levels."
-    //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r267007069
-    //   This also applies to every other commented-out occurrence of checkLevel(...) in this class.
-    //    checkLevel(ResolvingLevel.SIGNATURES);
+    // https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r267007069
+    // This also applies to every other commented-out occurrence of checkLevel(...) in this class.
+    // checkLevel(ResolvingLevel.SIGNATURES);
     return getFields().size();
   }
 
@@ -416,7 +416,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   @Nonnull
   public Optional<SootField> getField(String name) {
-    //    checkLevel(ResolvingLevel.SIGNATURES);
+    // checkLevel(ResolvingLevel.SIGNATURES);
 
     return this.getFields().stream()
         .filter(field -> field.getSignature().getName().equals(name))
@@ -432,7 +432,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   @Nonnull
   public Optional<SootField> getField(@Nonnull FieldSubSignature subSignature) {
-    //    checkLevel(ResolvingLevel.SIGNATURES);
+    // checkLevel(ResolvingLevel.SIGNATURES);
 
     return this.getFields().stream()
         .filter(field -> field.getSubSignature().equals(subSignature))
@@ -445,7 +445,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   @Nonnull
   public Optional<SootMethod> getMethod(MethodSignature signature) {
-    //    checkLevel(ResolvingLevel.SIGNATURES);
+    // checkLevel(ResolvingLevel.SIGNATURES);
 
     return this.getMethods().stream()
         .filter(method -> method.getSignature().equals(signature))
@@ -459,7 +459,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   @Nonnull
   public Optional<SootMethod> getMethod(String name, Iterable<? extends Type> parameterTypes) {
-    //    checkLevel(ResolvingLevel.SIGNATURES);
+    // checkLevel(ResolvingLevel.SIGNATURES);
 
     return this.getMethods().stream()
         .filter(
@@ -479,7 +479,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   @Nonnull
   public Optional<SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
-    //    checkLevel(ResolvingLevel.SIGNATURES);
+    // checkLevel(ResolvingLevel.SIGNATURES);
 
     return this.getMethods().stream()
         .filter(method -> method.getSubSignature().equals(subSignature))
@@ -499,7 +499,7 @@ public class SootClass extends AbstractClass implements Serializable {
    * a class which directly implements some interfaces.
    */
   public int getInterfaceCount() {
-    //    checkLevel(ResolvingLevel.HIERARCHY);
+    // checkLevel(ResolvingLevel.HIERARCHY);
 
     return interfaces.size();
   }
@@ -509,14 +509,14 @@ public class SootClass extends AbstractClass implements Serializable {
    * getInterfaceCount())
    */
   public Set<JavaClassType> getInterfaces() {
-    //    checkLevel(ResolvingLevel.HIERARCHY);
+    // checkLevel(ResolvingLevel.HIERARCHY);
 
     return this.interfaces;
   }
 
   /** Does this class directly implement the given interface? (see getInterfaceCount()) */
   public boolean implementsInterface(JavaClassType classSignature) {
-    //    checkLevel(ResolvingLevel.HIERARCHY);
+    // checkLevel(ResolvingLevel.HIERARCHY);
 
     for (JavaClassType sc : interfaces) {
       if (sc.equals(classSignature)) {
@@ -533,7 +533,8 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   public boolean hasSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    return superClass.isPresent();
+    if (superClass != null) return true;
+    else return false;
   }
 
   /**
@@ -541,18 +542,18 @@ public class SootClass extends AbstractClass implements Serializable {
    * this class. (see hasSuperclass())
    */
   public Optional<JavaClassType> getSuperclass() {
-    //    checkLevel(ResolvingLevel.HIERARCHY);
+    // checkLevel(ResolvingLevel.HIERARCHY);
     return Optional.ofNullable(superClass);
   }
 
   public boolean hasOuterClass() {
-    //    checkLevel(ResolvingLevel.HIERARCHY);
+    // checkLevel(ResolvingLevel.HIERARCHY);
     return outerClass != null;
   }
 
   /** This methodRef returns the outer class. */
   public @Nonnull Optional<JavaClassType> getOuterClass() {
-    //    checkLevel(ResolvingLevel.HIERARCHY);
+    // checkLevel(ResolvingLevel.HIERARCHY);
     return Optional.ofNullable(outerClass);
   }
 
@@ -568,19 +569,19 @@ public class SootClass extends AbstractClass implements Serializable {
 
   /** Convenience methodRef; returns true if this class is an interface. */
   public boolean isInterface() {
-    //    checkLevel(ResolvingLevel.HIERARCHY);
+    // checkLevel(ResolvingLevel.HIERARCHY);
     return Modifier.isInterface(this.getModifiers());
   }
 
   /** Convenience methodRef; returns true if this class is an enumeration. */
   public boolean isEnum() {
-    //    checkLevel(ResolvingLevel.HIERARCHY);
+    // checkLevel(ResolvingLevel.HIERARCHY);
     return Modifier.isEnum(this.getModifiers());
   }
 
   /** Convenience methodRef; returns true if this class is synchronized. */
   public boolean isSynchronized() {
-    //    checkLevel(ResolvingLevel.HIERARCHY);
+    // checkLevel(ResolvingLevel.HIERARCHY);
     return Modifier.isSynchronized(this.getModifiers());
   }
 
@@ -660,44 +661,44 @@ public class SootClass extends AbstractClass implements Serializable {
   protected int number = 0;
 
   // FIXME The following code is commented out due to incompatibility, but
-  //   may still be needed.
-  //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r266971653
+  // may still be needed.
+  // https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r266971653
 
-  //  /**
-  //   * An array containing some validators in order to validate the SootClass
-  //   */
-  //  private static final List<ClassValidator> validators
-  //      = Arrays.asList(new OuterClassValidator(), new MethodDeclarationValidator(), new
+  // /**
+  // * An array containing some validators in order to validate the SootClass
+  // */
+  // private static final List<ClassValidator> validators
+  // = Arrays.asList(new OuterClassValidator(), new MethodDeclarationValidator(), new
   // ClassFlagsValidator());
   //
-  //  /**
-  //   * Validates this SootClass for logical errors. Note that this does not validate the methodRef
+  // /**
+  // * Validates this SootClass for logical errors. Note that this does not validate the methodRef
   // bodies, only the class
-  //   * structure.
-  //   */
-  //  public void validate() {
-  //    final List<ValidationException> exceptionList = new ArrayList<>();
-  //    validate(exceptionList);
-  //    if (!exceptionList.isEmpty()) {
-  //      throw exceptionList.get(0);
-  //    }
-  //  }
+  // * structure.
+  // */
+  // public void validate() {
+  // final List<ValidationException> exceptionList = new ArrayList<>();
+  // validate(exceptionList);
+  // if (!exceptionList.isEmpty()) {
+  // throw exceptionList.get(0);
+  // }
+  // }
   //
-  //  /**
-  //   * Validates this SootClass for logical errors. Note that this does not validate the methodRef
+  // /**
+  // * Validates this SootClass for logical errors. Note that this does not validate the methodRef
   // bodies, only the class
-  //   * structure. All found errors are saved into the given list.
-  //   */
-  //  public void validate(List<ValidationException> exceptionList) {
-  //    final boolean runAllValidators = this.getView().getOptions().debug() ||
+  // * structure. All found errors are saved into the given list.
+  // */
+  // public void validate(List<ValidationException> exceptionList) {
+  // final boolean runAllValidators = this.getView().getOptions().debug() ||
   // this.getView().getOptions().validate();
-  //    for (ClassValidator validator : validators) {
-  //      if (!validator.isBasicValidator() && !runAllValidators) {
-  //        continue;
-  //      }
-  //      validator.validate(this, exceptionList);
-  //    }
-  //  }
+  // for (ClassValidator validator : validators) {
+  // if (!validator.isBasicValidator() && !runAllValidators) {
+  // continue;
+  // }
+  // validator.validate(this, exceptionList);
+  // }
+  // }
 
   @Nonnull
   public Position getPosition() {

@@ -61,7 +61,7 @@ import javax.annotation.Nullable;
 /**
  * Class that models the Jimple body (code attribute) of a methodRef.
  *
- * <p>Modified by Linghui Luo
+ * @author Linghui Luo
  */
 public class Body implements Serializable {
   /** */

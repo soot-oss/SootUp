@@ -34,6 +34,7 @@ import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
@@ -61,7 +62,7 @@ import javax.annotation.Nullable;
 /**
  * Converter which converts WALA IR to jimple.
  *
- * @author Linghui Luo created on 17.09.18
+ * @author Linghui Luo
  */
 public class WalaIRToJimpleConverter {
   protected JavaView view;
@@ -248,7 +249,7 @@ public class WalaIRToJimpleConverter {
       if (type.equals(TypeReference.Boolean)) {
         return PrimitiveType.getBoolean();
       } else if (type.equals(TypeReference.Byte)) {
-        return PrimitiveType.getByteSignature();
+        return PrimitiveType.getByte();
       } else if (type.equals(TypeReference.Char)) {
         return PrimitiveType.getChar();
       } else if (type.equals(TypeReference.Short)) {

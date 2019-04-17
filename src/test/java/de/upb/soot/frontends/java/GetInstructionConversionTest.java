@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
@@ -16,12 +17,11 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.RefType;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.PrimitiveTypeSignature;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.PrimitiveType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -68,10 +68,10 @@ public class GetInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", RefType.getInstance("alreadywalaunittests.InnerClassAA")),
+              new Local("r0", typeFactory.getClassType("alreadywalaunittests.InnerClassAA")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(RefType.getInstance("alreadywalaunittests.InnerClassAA")),
+              Jimple.newThisRef(typeFactory.getClassType("alreadywalaunittests.InnerClassAA")),
               stmt.getRightOp());
         });
 
@@ -79,23 +79,21 @@ public class GetInstructionConversionTest {
         stmts.get(1),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
           assertInstanceOfSatisfying(
               stmt.getRightOp(),
               JInstanceFieldRef.class,
               fieldRef -> {
                 assertEquiv(
-                    new Local("r0", RefType.getInstance("alreadywalaunittests.InnerClassAA")),
+                    new Local("r0", typeFactory.getClassType("alreadywalaunittests.InnerClassAA")),
                     fieldRef.getBase());
 
                 FieldSignature fieldSig = fieldRef.getFieldSignature();
                 assertNotNull(fieldSig);
                 assertEquals("a_x", fieldSig.getName());
+                assertEquals(PrimitiveType.getInt(), fieldSig.getSignature());
                 assertEquals(
-                    PrimitiveTypeSignature.INT_TYPE_SIGNATURE, fieldSig.getTypeSignature());
-                assertEquals(
-                    new DefaultSignatureFactory()
-                        .getClassSignature("alreadywalaunittests.InnerClassAA"),
+                    typeFactory.getClassType("alreadywalaunittests.InnerClassAA"),
                     fieldSig.getDeclClassSignature());
               });
         });
@@ -103,6 +101,6 @@ public class GetInstructionConversionTest {
     assertInstanceOfSatisfying(
         stmts.get(2),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$i0", IntType.getInstance()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getOp()));
   }
 }

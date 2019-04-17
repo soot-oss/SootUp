@@ -459,15 +459,8 @@ public class InstructionConverter {
     // TODO check modifier
     FieldSignature fieldSig =
         sigFactory.getFieldSignature("this$0", cSig, enclosingType.toString());
-    SootField enclosingObject =
-        new SootField(
-            converter.view,
-            cSig,
-            fieldSig,
-            sigFactory.getTypeSignature(enclosingType.toString()),
-            EnumSet.of(Modifier.FINAL));
-    JInstanceFieldRef rvalue =
-        Jimple.newInstanceFieldRef(converter.view, localGenerator.getThisLocal(), fieldSig);
+
+    JInstanceFieldRef rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
 
     // TODO: [ms] no instruction example found to add positioninfo
     return Jimple.newAssignStmt(
@@ -663,7 +656,7 @@ public class InstructionConverter {
     // TODO. how to get type of ref?
     Local op = getLocal(UnknownType.getInstance(), ref);
     JInstanceOfExpr expr = Jimple.newInstanceOfExpr(op, checkedType);
-    Value left = getLocal(BooleanType.getInstance(), result);
+    Value left = getLocal(PrimitiveType.getBoolean(), result);
 
     Position[] operandPos = new Position[2];
     // FIXME: has no operand positions yet for checked and expected side
@@ -751,9 +744,7 @@ public class InstructionConverter {
             .getMethodSignature(
                 target.getName().toString(), declaringClassSignature, returnType, parameters);
 
-    if (callee.isStatic()) {
-      invoke = Jimple.newStaticInvokeExpr(converter.view, methodSig, args);
-    } else {
+    if (!callee.isStatic()) {
       int receiver = invokeInst.getReceiver();
       Type classType = converter.convertType(target.getDeclaringClass());
       Local base = getLocal(classType, receiver);
@@ -890,31 +881,31 @@ public class InstructionConverter {
       binExpr = Jimple.newRemExpr(op1, op2);
     } else if (operator.equals(IBinaryOpInstruction.Operator.AND)) {
       binExpr = Jimple.newAndExpr(op1, op2);
-      type = BooleanType.getInstance();
+      type = PrimitiveType.getBoolean();
     } else if (operator.equals(IBinaryOpInstruction.Operator.OR)) {
       binExpr = Jimple.newOrExpr(op1, op2);
-      type = BooleanType.getInstance();
+      type = PrimitiveType.getBoolean();
     } else if (operator.equals(IBinaryOpInstruction.Operator.XOR)) {
       binExpr = Jimple.newXorExpr(op1, op2);
-      type = BooleanType.getInstance();
+      type = PrimitiveType.getBoolean();
     } else if (operator.equals(CAstBinaryOp.EQ)) {
       binExpr = Jimple.newEqExpr(op1, op2);
-      type = BooleanType.getInstance();
+      type = PrimitiveType.getBoolean();
     } else if (operator.equals(CAstBinaryOp.NE)) {
       binExpr = Jimple.newNeExpr(op1, op2);
-      type = BooleanType.getInstance();
+      type = PrimitiveType.getBoolean();
     } else if (operator.equals(CAstBinaryOp.LT)) {
       binExpr = Jimple.newLtExpr(op1, op2);
-      type = BooleanType.getInstance();
+      type = PrimitiveType.getBoolean();
     } else if (operator.equals(CAstBinaryOp.GE)) {
       binExpr = Jimple.newGeExpr(op1, op2);
-      type = BooleanType.getInstance();
+      type = PrimitiveType.getBoolean();
     } else if (operator.equals(CAstBinaryOp.GT)) {
       binExpr = Jimple.newGtExpr(op1, op2);
-      type = BooleanType.getInstance();
+      type = PrimitiveType.getBoolean();
     } else if (operator.equals(CAstBinaryOp.LE)) {
       binExpr = Jimple.newLtExpr(op1, op2);
-      type = BooleanType.getInstance();
+      type = PrimitiveType.getBoolean();
     } else if (operator.equals(IShiftInstruction.Operator.SHL)) {
       binExpr = Jimple.newShlExpr(op1, op2);
     } else if (operator.equals(IShiftInstruction.Operator.SHR)) {
@@ -1004,8 +995,7 @@ public class InstructionConverter {
     if (locals.containsKey(valueNumber)) {
       return locals.get(valueNumber);
     }
-    if (valueNumber == 1
-        || type.toString().equals(sootMethod.getDeclaringClassSignature().toString())) {
+    if (valueNumber == 1 || type.equals(methodSignature.getDeclClassSignature())) {
       // in wala symbol numbers start at 1 ... the "this" parameter will be symbol number 1 in a
       // non-static method.
       if (!walaMethod.isStatic()) {

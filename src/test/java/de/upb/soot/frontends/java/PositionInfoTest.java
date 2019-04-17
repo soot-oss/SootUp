@@ -5,11 +5,13 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,20 +30,22 @@ import org.junit.experimental.categories.Category;
 public class PositionInfoTest {
   private WalaClassLoader loader;
   private DefaultSignatureFactory sigFactory;
-  private JavaClassSignature declareClassSig;
+  private DefaultTypeFactory typeFactory;
+  private JavaClassType declareClassSig;
   private SootMethod method;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir, null);
-    sigFactory = new DefaultSignatureFactory();
-    declareClassSig = sigFactory.getClassSignature("InstructionCollection");
+    DefaultFactories factories = DefaultFactories.create();
+    typeFactory = factories.getTypeFactory();
+    declareClassSig = typeFactory.getClassType("InstructionCollection");
   }
 
   void loadCurrentMethod(
       String methodName,
-      JavaClassSignature declaringClassSignature,
+      JavaClassType declaringClassSignature,
       String fqReturnType,
       List<String> parameters) {
     Optional<SootMethod> m =

@@ -48,8 +48,7 @@ import javax.annotation.Nullable;
  * the actual code, which belongs to a Body. The getActiveBody() method points to the
  * currently-active body.
  *
- * <p>Modified by Linghui Luo
- *
+ * @author Linghui Luo
  * @author Jan Martin Persch
  */
 public class SootMethod extends SootClassMember implements IMethod {
@@ -71,8 +70,7 @@ public class SootMethod extends SootClassMember implements IMethod {
   /** Tells this methodRef how to find out where its body lives. */
   @Nonnull private final IMethodSourceContent methodSource;
   /** Active body associated with this method. */
-  protected final @Nullable Body activeBody;
-
+  @Nullable private Body activeBody;
 
   /** Constructs a SootMethod object with the given attributes. */
   public SootMethod(
@@ -95,11 +93,7 @@ public class SootMethod extends SootClassMember implements IMethod {
       @Nonnull Iterable<Modifier> modifiers,
       @Nonnull Iterable<JavaClassType> thrownExceptions,
       @Nullable Body activeBody,
-      @Nullable
-          DebuggingInformation
-              debugInfo // FIXME: remove Wala DebuggingInformation from this Class, IMHO it does not
-      // belong to a sootmethod
-      ) {
+      @Nullable DebuggingInformation debugInfo) {
     super(methodSignature, modifiers);
 
     this.methodSource = source;
@@ -136,22 +130,6 @@ public class SootMethod extends SootClassMember implements IMethod {
     return body;
   }
 
-  /** Construct a SootMethod object with the attributes of given method and activeBody. */
-  public SootMethod(SootMethod method, Body activeBody) {
-    super(
-        method.getView(),
-        method.getDeclaringClassSignature(),
-        method.signature,
-        method.typeSignature,
-        method.modifiers);
-    this.methodSource = method.methodSource;
-    this.parameterTypes = Collections.unmodifiableList(method.parameterTypes);
-    this.exceptions = Collections.unmodifiableList(method.exceptions);
-    this.debugInfo = method.debugInfo;
-    this.activeBody = activeBody;
-    if (this.activeBody != null) {
-      this.activeBody.setMethod(this);
-    }
   @Nonnull
   @Override
   public MethodSubSignature getSubSignature() {
