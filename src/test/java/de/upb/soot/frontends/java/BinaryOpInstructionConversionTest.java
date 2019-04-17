@@ -865,7 +865,7 @@ public class BinaryOpInstructionConversionTest {
                 "andChar", declareClassSig, "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-
+    Utils.print(method, true);
     Body body = method.getActiveBody();
     assertNotNull(body);
 
@@ -1301,7 +1301,6 @@ public class BinaryOpInstructionConversionTest {
                 "logicalOr", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-
     Body body = method.getActiveBody();
     assertNotNull(body);
 
