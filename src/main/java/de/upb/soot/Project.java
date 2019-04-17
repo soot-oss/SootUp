@@ -4,6 +4,8 @@ import de.upb.soot.buildactor.ViewBuilder;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.TypeFactory;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
 import javax.annotation.Nonnull;
@@ -19,26 +21,38 @@ import javax.annotation.Nonnull;
 public class Project {
   /** Create a project from an arbitrary list of namespaces */
   public Project(@Nonnull INamespace namespace) {
-    this(namespace, new DefaultSignatureFactory());
+    this(namespace, DefaultSignatureFactory.getInstance(), DefaultTypeFactory.getInstance());
   }
 
   /** Create a project from an arbitrary list of namespaces */
-  public Project(@Nonnull INamespace namespaces, @Nonnull SignatureFactory signatureFactory) {
+  public Project(
+      @Nonnull INamespace namespaces,
+      @Nonnull SignatureFactory signatureFactory,
+      @Nonnull TypeFactory typeFactory) {
     this.namespace = namespaces;
     this.signatureFactory = signatureFactory;
+    this.typeFactory = typeFactory;
   }
 
-  private @Nonnull INamespace namespace;
+  @Nonnull private final INamespace namespace;
 
   /** Gets the namespace. */
-  public @Nonnull INamespace getNamespace() {
+  @Nonnull
+  public INamespace getNamespace() {
     return this.namespace;
   }
 
-  private final @Nonnull SignatureFactory signatureFactory;
+  @Nonnull private final SignatureFactory signatureFactory;
 
-  public @Nonnull SignatureFactory getSignatureFactory() {
+  @Nonnull private final TypeFactory typeFactory;
+
+  @Nonnull
+  public SignatureFactory getSignatureFactory() {
     return this.signatureFactory;
+  }
+
+  public TypeFactory getTypeFactory() {
+    return typeFactory;
   }
 
   /**
@@ -47,12 +61,16 @@ public class Project {
    *
    * @return A complete view on the provided code
    */
+  @Nonnull
   public IView createFullView() {
-    ViewBuilder vb = new ViewBuilder(this);
-    return vb.buildComplete();
+    //    ViewBuilder vb = new ViewBuilder(this);
+    //    return vb.buildComplete();
+
+    throw new NotYetImplementedException();
   }
 
-  public IView createDemandView() {
+  @Nonnull
+  public IView createOnDemandView() {
     ViewBuilder vb = new ViewBuilder(this);
     return vb.buildOnDemand();
   }
@@ -64,6 +82,7 @@ public class Project {
    * @param s A scope of interest for the view
    * @return A scoped view of the provided code
    */
+  @Nonnull
   public IView createView(Scope s) {
     throw new NotYetImplementedException(); // TODO
   }

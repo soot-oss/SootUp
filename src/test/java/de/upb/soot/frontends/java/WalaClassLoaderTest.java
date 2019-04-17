@@ -213,6 +213,7 @@ public class WalaClassLoaderTest {
       for (Pair<String, String> edgeOld : actual) {
         if (edge.fst.equals(edgeOld.fst) && edge.snd.equals(edgeOld.snd)) {
           found = true;
+          break;
         }
       }
       if (!found) {

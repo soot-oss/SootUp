@@ -4,12 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
+import de.upb.soot.ModuleFactories;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
-import de.upb.soot.signatures.SignatureFactory;
-import java.util.Collections;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.ModuleTypeFactory;
+import de.upb.soot.types.TypeFactory;
 import java.util.Optional;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
@@ -17,29 +19,45 @@ import org.powermock.reflect.Whitebox;
 @Category(Java9Test.class)
 public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
+  private ModuleSignatureFactory signatureFactory;
+  private ModuleTypeFactory typeFactory;
+
+  @Before
   @Override
-  protected SignatureFactory getSignatureFactory() {
-    return new ModuleSignatureFactory();
+  public void setUp() {
+    super.setUp();
+
+    ModuleFactories factories = ModuleFactories.create();
+    signatureFactory = factories.getSignatureFactory();
+    typeFactory = factories.getTypeFactory();
+  }
+
+  @Override
+  protected ModuleSignatureFactory getSignatureFactory() {
+    return signatureFactory;
+  }
+
+  @Override
+  public ModuleTypeFactory getTypeFactory() {
+    return typeFactory;
   }
 
   @Test
   public void singleDir() {
-    ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace =
         new JavaModulePathNamespace(
             "target/test-classes/de/upb/soot/namespaces/modules", getClassProvider());
-    final JavaClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
+    final JavaClassType sig = getTypeFactory().getClassType("module-info", "", "fancyMod");
     Optional<ClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
   }
 
   @Test
   public void singleDir2() {
-    ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace =
         new JavaModulePathNamespace(
             "target/test-classes/de/upb/soot/namespaces/modules", getClassProvider());
-    final JavaClassSignature sig = factory.getClassSignature("module-info", "", "fancyMod");
+    final JavaClassType sig = getTypeFactory().getClassType("module-info", "", "fancyMod");
     // TODO: check for a better minClassFoundNumber
     // also all JDK classes are loaded
     testClassReceival(javaClassPathNamespace, sig, 50);
@@ -47,75 +65,40 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
   @Test
   public void singleJar() {
-    ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
     final JavaModulePathNamespace javaClassPathNamespace =
         new JavaModulePathNamespace(
             "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",
             getClassProvider());
-    final JavaClassSignature sig = factory.getClassSignature("module-info", "", "de.upb.mod");
+    final JavaClassType sig = getTypeFactory().getClassType("module-info", "", "de.upb.mod");
     Optional<ClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
   }
 
   @Test
-  public void testSignatureWrapper() throws Exception {
-    ModuleSignatureFactory factory = (ModuleSignatureFactory) getSignatureFactory();
+  public void testTypeWrapper() throws Exception {
     final JavaModulePathNamespace javaClassPathNamespace =
         new JavaModulePathNamespace(
             "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",
             getClassProvider());
-    Class signatureCLass =
-        Whitebox.getInnerClassType(JavaModulePathNamespace.class, "SignatureFactoryWrapper");
-    // Constructor constructor = Whitebox.getConstructor(signatureCLass, SignatureFactory.class,
+    Class<?> signatureClass =
+        Whitebox.getInnerClassType(JavaModulePathNamespace.class, "TypeFactoryWrapper");
+    // Constructor constructor = Whitebox.getConstructor(signatureClass, SignatureFactory.class,
     // String.class);
-    Object signatureFacotryWrapper =
+    Object typeFactoryWrapper =
         Whitebox.invokeConstructor(
-            signatureCLass,
-            new Class[] {JavaModulePathNamespace.class, SignatureFactory.class, String.class},
-            new Object[] {javaClassPathNamespace, factory, "myJava.mod"});
-    Object res1 =
-        Whitebox.invokeMethod(signatureFacotryWrapper, "getClassSignature", "java.lang.System");
-    assertEquals(res1, factory.getClassSignature("java.lang.System"));
+            signatureClass,
+            new Class[] {TypeFactory.class, String.class},
+            new Object[] {getTypeFactory(), "myJava.mod"});
+    Object res1 = Whitebox.invokeMethod(typeFactoryWrapper, "getClassType", "java.lang.System");
+    assertEquals(res1, getTypeFactory().getClassType("java.lang.System"));
 
-    res1 =
-        Whitebox.invokeMethod(signatureFacotryWrapper, "getClassSignature", "java.lang", "System");
-    assertEquals(res1, factory.getClassSignature("java.lang", "System"));
+    res1 = Whitebox.invokeMethod(typeFactoryWrapper, "getClassType", "java.lang", "System");
+    assertEquals(res1, getTypeFactory().getClassType("java.lang", "System"));
 
-    res1 = Whitebox.invokeMethod(signatureFacotryWrapper, "getTypeSignature", "int");
-    assertEquals(res1, factory.getTypeSignature("int"));
+    res1 = Whitebox.invokeMethod(typeFactoryWrapper, "getType", "int");
+    assertEquals(res1, getTypeFactory().getType("int"));
 
-    res1 = Whitebox.invokeMethod(signatureFacotryWrapper, "getTypeSignature", "int");
-    assertEquals(res1, factory.getTypeSignature("int"));
-
-    res1 =
-        Whitebox.invokeMethod(
-            signatureFacotryWrapper,
-            "getMethodSignature",
-            "metho1",
-            "java.lang.System",
-            "void",
-            Collections.emptyList());
-    assertEquals(
-        res1,
-        factory.getMethodSignature("metho1", "java.lang.System", "void", Collections.emptyList()));
-
-    res1 =
-        Whitebox.invokeMethod(
-            signatureFacotryWrapper,
-            "getMethodSignature",
-            "metho1",
-            factory.getClassSignature("java.lang.System"),
-            "void",
-            Collections.emptyList());
-    assertEquals(
-        res1,
-        factory.getMethodSignature(
-            "metho1",
-            factory.getClassSignature("java.lang.System"),
-            "void",
-            Collections.emptyList()));
-
-    res1 = Whitebox.invokeMethod(signatureFacotryWrapper, "getPackageSignature", "java.lang");
-    assertEquals(res1, factory.getPackageSignature("java.lang"));
+    res1 = Whitebox.invokeMethod(typeFactoryWrapper, "getType", "int");
+    assertEquals(res1, getTypeFactory().getType("int"));
   }
 }

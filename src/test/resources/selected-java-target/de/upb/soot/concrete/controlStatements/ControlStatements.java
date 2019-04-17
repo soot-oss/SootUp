@@ -178,5 +178,14 @@ public class ControlStatements {
       if (true)
           return;
   }
+  
+  
+  public void simpleIfIntExpr()
+  {
+    if (1 == 1) return;
+    if (1 == 2) return;
+    return;
+  }
+  
   }
 }

@@ -40,11 +40,11 @@ import javax.annotation.Nullable;
  */
 final class StackFrame {
 
-  private @Nullable Operand[] out;
-  private @Nullable Local[] inStackLocals;
-  private @Nullable ValueBox[] boxes;
-  private @Nullable ArrayList<Operand[]> in;
-  private final @Nonnull AsmMethodSourceContent src;
+  @Nullable private Operand[] out;
+  @Nullable private Local[] inStackLocals;
+  @Nullable private ValueBox[] boxes;
+  @Nullable private ArrayList<Operand[]> in;
+  @Nonnull private final AsmMethodSourceContent src;
 
   /**
    * Constructs a new stack frame.

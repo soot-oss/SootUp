@@ -1,12 +1,17 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 import com.google.common.base.Objects;
+import de.upb.soot.ModuleFactories;
+import de.upb.soot.signatures.ModuleSignature;
+import de.upb.soot.signatures.ModuleSignatureFactory;
 
-public class ModuleDecoratorClassSignature extends JavaClassSignature {
+public class ModuleDecoratorClassType extends JavaClassType {
 
-  private static final ModuleSignatureFactory factory = new ModuleSignatureFactory();
+  private static final ModuleFactories FACTORIES = ModuleFactories.create();
+  private static final ModuleTypeFactory TYPE_FACTORY = FACTORIES.getTypeFactory();
+  private static final ModuleSignatureFactory SIGNATURE_FACTORY = FACTORIES.getSignatureFactory();
 
-  private final JavaClassSignature wrappedSignature;
+  private final JavaClassType wrappedSignature;
   private final ModuleSignature moduleSignature;
 
   /**
@@ -15,8 +20,7 @@ public class ModuleDecoratorClassSignature extends JavaClassSignature {
    * @param classSignature the singature to decorate
    * @param moduleSignature the module signature to add
    */
-  public ModuleDecoratorClassSignature(
-      JavaClassSignature classSignature, ModuleSignature moduleSignature) {
+  public ModuleDecoratorClassType(JavaClassType classSignature, ModuleSignature moduleSignature) {
     super(classSignature.getClassName(), classSignature.getPackageSignature());
     this.wrappedSignature = classSignature;
     // FIXME: use factory
@@ -38,10 +42,10 @@ public class ModuleDecoratorClassSignature extends JavaClassSignature {
     if (!super.equals(o)) {
       return false;
     }
-    ModuleDecoratorClassSignature that = (ModuleDecoratorClassSignature) o;
+    ModuleDecoratorClassType that = (ModuleDecoratorClassType) o;
     boolean moduleEqual = Objects.equal(moduleSignature, that.moduleSignature);
     return moduleEqual
-        && ((ModuleDecoratorClassSignature) o).wrappedSignature.equals(that.wrappedSignature);
+        && ((ModuleDecoratorClassType) o).wrappedSignature.equals(that.wrappedSignature);
   }
 
   @Override
