@@ -117,21 +117,20 @@ public class SelectedInstructionConversionTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: alreadywalaunittests.InnerClassAA",
-                "$r1 = r0",
+                "$r1 = new alreadywalaunittests.InnerClassAA$AA",
+                "specialinvoke $r1.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>($r0)",
                 "$r2 = new alreadywalaunittests.InnerClassAA$AA",
-                "specialinvoke $r2.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>($r0)",
-                "$r3 = new alreadywalaunittests.InnerClassAA$AA",
-                "specialinvoke $r3.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>($r1)",
-                "$r2 = $r3",
-                "$r4 = virtualinvoke $r2.<alreadywalaunittests.InnerClassAA$AA: alreadywalaunittests.InnerClassAA$AB makeAB()>()",
-                "$r1.<alreadywalaunittests.InnerClassAA: int a_x> = 5",
-                "$i0 = virtualinvoke $r4.<alreadywalaunittests.InnerClassAA$AB: int getA_X_from_AB()>()",
+                "specialinvoke $r2.<alreadywalaunittests.InnerClassAA$AA: void <init>(alreadywalaunittests.InnerClassAA)>($r1)",
+                "$r1 = $r2",
+                "$r3 = virtualinvoke $r1.<alreadywalaunittests.InnerClassAA$AA: alreadywalaunittests.InnerClassAA$AB makeAB()>()",
+                "$r0.<alreadywalaunittests.InnerClassAA: int a_x> = 5",
+                "$i0 = virtualinvoke $r3.<alreadywalaunittests.InnerClassAA$AB: int getA_X_from_AB()>()",
+                "$r4 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $r4.<java.io.PrintStream: void println(int)>($i0)",
+                "$i1 = virtualinvoke $r3.<alreadywalaunittests.InnerClassAA$AB: int getA_X_thru_AB()>()",
                 "$r5 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i0)",
-                "$i1 = virtualinvoke $r4.<alreadywalaunittests.InnerClassAA$AB: int getA_X_thru_AB()>()",
-                "$r6 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r6.<java.io.PrintStream: void println(int)>($i1)",
-                "virtualinvoke $r2.<alreadywalaunittests.InnerClassAA$AA: void doSomeCrazyStuff()>()",
+                "virtualinvoke $r5.<java.io.PrintStream: void println(int)>($i1)",
+                "virtualinvoke $r1.<alreadywalaunittests.InnerClassAA$AA: void doSomeCrazyStuff()>()",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
