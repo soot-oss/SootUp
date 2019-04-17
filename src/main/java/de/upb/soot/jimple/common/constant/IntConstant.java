@@ -25,10 +25,10 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
 
 public class IntConstant extends ArithmeticConstant {
   /** */
@@ -203,7 +203,7 @@ public class IntConstant extends ArithmeticConstant {
 
   @Override
   public Type getType() {
-    return IntType.getInstance();
+    return PrimitiveType.getInt();
   }
 
   @Override

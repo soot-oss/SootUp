@@ -28,16 +28,9 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.UnknownType;
 
 @SuppressWarnings("serial")
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
@@ -57,23 +50,23 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
     Value op2 = op2Box.getValue();
     Type op1t = op1.getType();
     Type op2t = op2.getType();
-    if ((op1t.equals(IntType.getInstance())
-            || op1t.equals(ByteType.getInstance())
-            || op1t.equals(ShortType.getInstance())
-            || op1t.equals(CharType.getInstance())
-            || op1t.equals(BooleanType.getInstance()))
-        && (op2t.equals(IntType.getInstance())
-            || op2t.equals(ByteType.getInstance())
-            || op2t.equals(ShortType.getInstance())
-            || op2t.equals(CharType.getInstance())
-            || op2t.equals(BooleanType.getInstance()))) {
-      return IntType.getInstance();
-    } else if (op1t.equals(LongType.getInstance()) || op2t.equals(LongType.getInstance())) {
-      return LongType.getInstance();
-    } else if (op1t.equals(DoubleType.getInstance()) || op2t.equals(DoubleType.getInstance())) {
-      return DoubleType.getInstance();
-    } else if (op1t.equals(FloatType.getInstance()) || op2t.equals(FloatType.getInstance())) {
-      return FloatType.getInstance();
+    if ((op1t.equals(PrimitiveType.getInt())
+            || op1t.equals(PrimitiveType.getByteSignature())
+            || op1t.equals(PrimitiveType.getShort())
+            || op1t.equals(PrimitiveType.getChar())
+            || op1t.equals(PrimitiveType.getBoolean()))
+        && (op2t.equals(PrimitiveType.getInt())
+            || op2t.equals(PrimitiveType.getByteSignature())
+            || op2t.equals(PrimitiveType.getShort())
+            || op2t.equals(PrimitiveType.getChar())
+            || op2t.equals(PrimitiveType.getBoolean()))) {
+      return PrimitiveType.getInt();
+    } else if (op1t.equals(PrimitiveType.getLong()) || op2t.equals(PrimitiveType.getLong())) {
+      return PrimitiveType.getLong();
+    } else if (op1t.equals(PrimitiveType.getDouble()) || op2t.equals(PrimitiveType.getDouble())) {
+      return PrimitiveType.getDouble();
+    } else if (op1t.equals(PrimitiveType.getFloat()) || op2t.equals(PrimitiveType.getFloat())) {
+      return PrimitiveType.getFloat();
     } else {
       return UnknownType.getInstance();
     }

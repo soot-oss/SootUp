@@ -29,10 +29,10 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.ArrayType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.ArrayType;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -92,7 +92,7 @@ public class JNewMultiArrayExpr implements Expr {
       builder.append("[").append(element.getValue().toString()).append("]");
     }
 
-    for (int i = 0; i < baseType.getNumDimensions() - sizeBoxes.length; i++) {
+    for (int i = 0; i < baseType.getDimension() - sizeBoxes.length; i++) {
       builder.append("[]");
     }
 
@@ -105,7 +105,7 @@ public class JNewMultiArrayExpr implements Expr {
 
     up.literal(Jimple.NEWMULTIARRAY);
     up.literal(" (");
-    up.type(t);
+    up.typeSignature(t);
     up.literal(")");
 
     for (ValueBox element : sizeBoxes) {
@@ -114,7 +114,7 @@ public class JNewMultiArrayExpr implements Expr {
       up.literal("]");
     }
 
-    for (int i = 0; i < baseType.getNumDimensions() - sizeBoxes.length; i++) {
+    for (int i = 0; i < baseType.getDimension() - sizeBoxes.length; i++) {
       up.literal("[]");
     }
   }

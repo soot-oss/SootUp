@@ -1,4 +1,4 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 /*-
  * #%L
@@ -22,5 +22,23 @@ package de.upb.soot.signatures;
  * #L%
  */
 
-/** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
-public abstract class TypeSignature implements ISignature {}
+import javax.annotation.Nonnull;
+
+/** Represents Java's 'void' type as methods return's type. */
+public class VoidType extends Type {
+
+  @Nonnull private static final VoidType INSTANCE = new VoidType();
+
+  @Nonnull
+  public static VoidType getInstance() {
+    return INSTANCE;
+  }
+
+  private VoidType() {}
+
+  @Override
+  @Nonnull
+  public String toString() {
+    return "void";
+  }
+}

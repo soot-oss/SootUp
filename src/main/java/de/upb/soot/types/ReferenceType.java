@@ -1,4 +1,4 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 /*-
  * #%L
@@ -22,15 +22,5 @@ package de.upb.soot.signatures;
  * #L%
  */
 
-/** Represents Java's 'void' type as methods return's type. */
-public class VoidTypeSignature extends TypeSignature {
-
-  public static final VoidTypeSignature VOID_TYPE_SIGNATURE = new VoidTypeSignature();
-
-  private VoidTypeSignature() {}
-
-  @Override
-  public String toString() {
-    return "void";
-  }
-}
+/** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
+public abstract class ReferenceType extends Type {}

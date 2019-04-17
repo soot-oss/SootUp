@@ -1,14 +1,14 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 import com.google.common.base.Objects;
 
-public class ArrayTypeSignature extends TypeSignature {
+public class ArrayType extends ReferenceType {
 
-  private final TypeSignature baseType;
+  private final Type baseType;
 
   private final int dimension;
 
-  protected ArrayTypeSignature(TypeSignature baseType, int dimension) {
+  protected ArrayType(Type baseType, int dimension) {
     this.baseType = baseType;
     this.dimension = dimension;
   }
@@ -33,7 +33,7 @@ public class ArrayTypeSignature extends TypeSignature {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ArrayTypeSignature that = (ArrayTypeSignature) o;
+    ArrayType that = (ArrayType) o;
     return dimension == that.dimension && Objects.equal(baseType, that.baseType);
   }
 
@@ -42,7 +42,7 @@ public class ArrayTypeSignature extends TypeSignature {
     return Objects.hashCode(baseType, dimension);
   }
 
-  public TypeSignature getBaseType() {
+  public Type getBaseType() {
     return baseType;
   }
 

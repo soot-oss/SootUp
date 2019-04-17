@@ -22,68 +22,47 @@ package de.upb.soot.signatures;
  * #L%
  */
 
-import com.google.common.base.Objects;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import java.util.List;
-import org.apache.commons.lang3.StringUtils;
+import javax.annotation.Nonnull;
 
 /** Represents the fully qualified signature of a methodRef. */
 public class MethodSignature extends AbstractClassMemberSignature {
 
-  private final List<TypeSignature> parameterSignatures;
+  protected MethodSignature(
+      JavaClassType declaringClassSignature,
+      String methodName,
+      Iterable<Type> parameters,
+      Type fqReturnType) {
+    this(declaringClassSignature, new MethodSubSignature(methodName, parameters, fqReturnType));
+  }
 
   /**
    * Internal: Constructs a MethodSignature. Instances should only be created by a {@link
    * DefaultSignatureFactory}
    *
-   * @param methodName the signature
    * @param declaringClass the declaring class signature
+   * @param subSignature the sub-signature
    */
   protected MethodSignature(
-      final String methodName,
-      final JavaClassSignature declaringClass,
-      final TypeSignature returnType,
-      final List<TypeSignature> parameters) {
-    super(methodName, declaringClass, returnType);
-    this.parameterSignatures = parameters;
+      final @Nonnull JavaClassType declaringClass, final @Nonnull MethodSubSignature subSignature) {
+    super(declaringClass, subSignature);
+
+    this._subSignature = subSignature;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    MethodSignature that = (MethodSignature) o;
-    return Objects.equal(getName(), that.getName())
-        && Objects.equal(getDeclClassSignature(), that.getDeclClassSignature())
-        && Objects.equal(parameterSignatures, that.parameterSignatures)
-        && Objects.equal(getTypeSignature(), that.getTypeSignature());
-  }
+  private final @Nonnull MethodSubSignature _subSignature;
 
   @Override
-  public int hashCode() {
-    return Objects.hashCode(getName(), getDeclClassSignature(), parameterSignatures);
-  }
-
-  /**
-   * The simple name of the methodRef; the methodRef's name and its parameters.
-   *
-   * @return a String of the form "returnTypeName methodName(ParameterName(,)*)"
-   */
-  @Override
-  public String getSubSignature() {
-    return getTypeSignature().toString()
-        + ' '
-        + getName()
-        + '('
-        + StringUtils.join(parameterSignatures, ", ")
-        + ')';
+  @Nonnull
+  public MethodSubSignature getSubSignature() {
+    return _subSignature;
   }
 
   /** The methodRef's parameters' signatures. */
-  public List<TypeSignature> getParameterSignatures() {
-    return parameterSignatures;
+  @Nonnull
+  public List<Type> getParameterSignatures() {
+    return this.getSubSignature().getParameterSignatures();
   }
 }

@@ -26,18 +26,21 @@ import org.junit.experimental.categories.Category;
 public class InvokeTest {
   private WalaClassLoader loader;
   private DefaultSignatureFactory sigFactory;
-  private JavaClassSignature declareClassSig;
+  private DefaultTypeFactory typeFactory;
+  private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir, null);
-    sigFactory = new DefaultSignatureFactory();
+    DefaultFactories factories = DefaultFactories.create();
+    sigFactory = factories.getSignatureFactory();
+    typeFactory = factories.getTypeFactory();
   }
 
   @Test
   public void testInvokeSpecialInstanceInit() {
-    declareClassSig = sigFactory.getClassSignature("InvokeSpecial");
+    declareClassSig = typeFactory.getClassType("InvokeSpecial");
     Optional<SootMethod> m =
         loader.getSootMethod(
             sigFactory.getMethodSignature(
@@ -67,7 +70,7 @@ public class InvokeTest {
 
   @Test
   public void testInvokeSpecialPrivateMethod() {
-    declareClassSig = sigFactory.getClassSignature("InvokeSpecial");
+    declareClassSig = typeFactory.getClassType("InvokeSpecial");
     Optional<SootMethod> m =
         loader.getSootMethod(
             sigFactory.getMethodSignature(
@@ -95,7 +98,7 @@ public class InvokeTest {
 
   @Test
   public void testInvokeSpecialSuperClassMethod() {
-    declareClassSig = sigFactory.getClassSignature("InvokeSpecial");
+    declareClassSig = typeFactory.getClassType("InvokeSpecial");
     Optional<SootMethod> m =
         loader.getSootMethod(
             sigFactory.getMethodSignature(
@@ -257,7 +260,7 @@ public class InvokeTest {
 
   @Test
   public void testInvokeVirtual1() {
-    declareClassSig = sigFactory.getClassSignature("InvokeVirtual");
+    declareClassSig = typeFactory.getClassType("InvokeVirtual");
     Optional<SootMethod> m =
         loader.getSootMethod(
             sigFactory.getMethodSignature(
@@ -288,7 +291,7 @@ public class InvokeTest {
 
   @Test
   public void testInvokeVirtual2() {
-    declareClassSig = sigFactory.getClassSignature("InvokeVirtual");
+    declareClassSig = typeFactory.getClassType("InvokeVirtual");
     Optional<SootMethod> m =
         loader.getSootMethod(
             sigFactory.getMethodSignature(
@@ -317,7 +320,7 @@ public class InvokeTest {
 
   @Test
   public void testInvokeVirtual3() {
-    declareClassSig = sigFactory.getClassSignature("InvokeVirtual");
+    declareClassSig = typeFactory.getClassType("InvokeVirtual");
     Optional<SootMethod> m =
         loader.getSootMethod(
             sigFactory.getMethodSignature(

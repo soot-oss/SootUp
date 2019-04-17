@@ -26,19 +26,14 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.ResolvingLevel;
-import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
   /** */
@@ -48,24 +43,25 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
    * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array
    * argBoxes.
    */
-  public JInterfaceInvokeExpr(
-      IView view, Value base, MethodSignature method, List<? extends Value> args) {
-    super(view, Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
+  public JInterfaceInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
+    super(Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
 
-    // Check that the method's class is resolved enough
-    // CheckLevel returns without doing anything because we can be not 'done' resolving
-    Optional<AbstractClass> declaringClass = view.getClass(method.getDeclClassSignature());
-    if (declaringClass.isPresent()) {
-      SootClass cls = (SootClass) declaringClass.get();
-      cls.checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
-      // now check if the class is valid
-      if (!cls.isInterface() && !cls.isPhantomClass()) {
-        throw new RuntimeException(
-            "Trying to create interface invoke expression for non-interface type: "
-                + cls
-                + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
-      }
-    }
+    // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
+    // available
+    //    // Check that the method's class is resolved enough
+    //    // CheckLevel returns without doing anything because we can be not 'done' resolving
+    //    Optional<AbstractClass> declaringClass = view.getClass(method.declClassSignature);
+    //    if (declaringClass.isPresent()) {
+    //      SootClass cls = (SootClass) declaringClass.get();
+    //      cls.checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
+    //      // now check if the class is valid
+    //      if (!cls.isInterface() && !cls.isPhantomClass()) {
+    //        throw new RuntimeException("Trying to create interface invoke expression for
+    // non-interface type: " + cls
+    //            + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
+    //      }
+    //    }
+
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
@@ -77,8 +73,7 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     for (int i = 0; i < getArgCount(); i++) {
       argList.add(i, Jimple.cloneIfNecessary(getArg(i)));
     }
-    return new JInterfaceInvokeExpr(
-        this.getView(), Jimple.cloneIfNecessary(getBase()), methodSignature, argList);
+    return new JInterfaceInvokeExpr(Jimple.cloneIfNecessary(getBase()), methodSignature, argList);
   }
 
   @Override

@@ -1,18 +1,11 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.RefLikeType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
-import de.upb.soot.jimple.common.type.VoidType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.ReferenceType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.UnknownType;
+import de.upb.soot.types.VoidType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,27 +77,27 @@ public class LocalGenerator {
       name.append("$");
     }
 
-    if (type instanceof IntType) {
+    if (type.equals(PrimitiveType.getInt())) {
       appendNextIntName(name);
-    } else if (type instanceof ByteType) {
+    } else if (type.equals(PrimitiveType.getByteSignature())) {
       appendNextByteName(name);
-    } else if (type instanceof ShortType) {
+    } else if (type.equals(PrimitiveType.getShort())) {
       appendNextShortName(name);
-    } else if (type instanceof BooleanType) {
+    } else if (type.equals(PrimitiveType.getBoolean())) {
       appendNextBooleanName(name);
-    } else if (type instanceof VoidType) {
+    } else if (type.equals(VoidType.getInstance())) {
       appendNextVoidName(name);
-    } else if (type instanceof CharType) {
+    } else if (type.equals(PrimitiveType.getChar())) {
       appendNextCharName(name);
-    } else if (type instanceof DoubleType) {
+    } else if (type.equals(PrimitiveType.getDouble())) {
       appendNextDoubleName(name);
-    } else if (type instanceof FloatType) {
+    } else if (type.equals(PrimitiveType.getFloat())) {
       appendNextFloatName(name);
-    } else if (type instanceof LongType) {
+    } else if (type.equals(PrimitiveType.getLong())) {
       appendNextLongName(name);
-    } else if (type instanceof RefLikeType) {
+    } else if (type instanceof ReferenceType) {
       appendNextRefLikeTypeName(name);
-    } else if (type instanceof UnknownType) {
+    } else if (type.equals(UnknownType.getInstance())) {
       appendNextUnknownTypeName(name);
     } else {
       throw new RuntimeException("Unhandled Type of Local variable to Generate - Not Implemented");

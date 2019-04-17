@@ -30,7 +30,6 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,8 +41,8 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   protected final ValueBox baseBox;
 
   protected AbstractInstanceInvokeExpr(
-      IView view, ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
-    super(view, methodSig, argBoxes);
+      ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
+    super(methodSig, argBoxes);
     this.baseBox = baseBox;
   }
 
@@ -85,6 +84,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return baseBox.getValue().equivHashCode() * 101 + getMethod().hashCode() * 17;
+    return baseBox.getValue().equivHashCode() * 101 + getMethodSignature().hashCode() * 17;
   }
 }

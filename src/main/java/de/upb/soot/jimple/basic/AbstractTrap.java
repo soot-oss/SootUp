@@ -1,7 +1,7 @@
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.core.SootClass;
 import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.types.JavaClassType;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -39,7 +39,7 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class AbstractTrap implements Trap, Serializable {
   /** The exception being caught. */
-  protected transient SootClass exception;
+  protected transient JavaClassType exception;
 
   /** The first unit being trapped. */
   protected IStmtBox beginStmtBox;
@@ -62,12 +62,15 @@ public class AbstractTrap implements Trap, Serializable {
 
   private void writeObject(ObjectOutputStream out) throws IOException {
     out.defaultWriteObject();
-    out.writeObject(exception.getSignature().getFullyQualifiedName());
+    out.writeObject(exception.getFullyQualifiedName());
   }
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
   protected AbstractTrap(
-      SootClass exception, IStmtBox beginStmtBox, IStmtBox endStmtBox, IStmtBox handlerStmtBox) {
+      JavaClassType exception,
+      IStmtBox beginStmtBox,
+      IStmtBox endStmtBox,
+      IStmtBox handlerStmtBox) {
     this.exception = exception;
     this.beginStmtBox = beginStmtBox;
     this.endStmtBox = endStmtBox;
@@ -116,7 +119,7 @@ public class AbstractTrap implements Trap, Serializable {
   }
 
   @Override
-  public SootClass getException() {
+  public JavaClassType getException() {
     return exception;
   }
 
@@ -132,7 +135,7 @@ public class AbstractTrap implements Trap, Serializable {
     handlerStmtBox.setStmt(handlerStmt);
   }
 
-  public void setException(SootClass exception) {
+  public void setException(JavaClassType exception) {
     this.exception = exception;
   }
 

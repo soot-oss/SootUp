@@ -29,15 +29,18 @@ public class IfInstructionConversionTest {
 
   private WalaClassLoader loader;
   private DefaultSignatureFactory sigFactory;
-  private JavaClassSignature declareClassSig;
+  private DefaultTypeFactory typeFactory;
+  private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir, null);
-    sigFactory = new DefaultSignatureFactory();
+    DefaultFactories factories = DefaultFactories.create();
+    sigFactory = factories.getSignatureFactory();
+    typeFactory = factories.getTypeFactory();
     declareClassSig =
-        sigFactory.getClassSignature("de.upb.soot.concrete.controlStatements.ControlStatements");
+        typeFactory.getClassType("de.upb.soot.concrete.controlStatements.ControlStatements");
   }
 
   @Test

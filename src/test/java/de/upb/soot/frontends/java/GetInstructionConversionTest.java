@@ -35,14 +35,17 @@ public class GetInstructionConversionTest {
 
   private WalaClassLoader loader;
   private DefaultSignatureFactory sigFactory;
-  private JavaClassSignature declareClassSig;
+  private DefaultTypeFactory typeFactory;
+  private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/wala-tests/";
     loader = new WalaClassLoader(srcDir, null);
-    sigFactory = new DefaultSignatureFactory();
-    declareClassSig = sigFactory.getClassSignature("alreadywalaunittests.InnerClassAA");
+    DefaultFactories factories = DefaultFactories.create();
+    sigFactory = factories.getSignatureFactory();
+    typeFactory = factories.getTypeFactory();
+    declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");
   }
 
   @Test

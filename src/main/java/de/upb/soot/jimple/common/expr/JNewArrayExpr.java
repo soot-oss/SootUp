@@ -29,10 +29,11 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.ArrayType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.ArrayType;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +82,7 @@ public class JNewArrayExpr implements Expr {
     up.literal(Jimple.NEWARRAY);
     up.literal(" ");
     up.literal("(");
-    up.type(baseType);
+    up.typeSignature(baseType);
     up.literal(")");
     up.literal("[");
     sizeBox.toString(up);
@@ -126,10 +127,11 @@ public class JNewArrayExpr implements Expr {
   @Override
   public Type getType() {
     if (baseType instanceof ArrayType) {
-      return ArrayType.getInstance(
-          ((ArrayType) baseType).getBaseType(), ((ArrayType) baseType).getNumDimensions() + 1);
+      return DefaultTypeFactory.getInstance()
+          .getArrayType(
+              ((ArrayType) baseType).getBaseType(), ((ArrayType) baseType).getDimension() + 1);
     } else {
-      return ArrayType.getInstance(baseType, 1);
+      return DefaultTypeFactory.getInstance().getArrayType(baseType, 1);
     }
   }
 
