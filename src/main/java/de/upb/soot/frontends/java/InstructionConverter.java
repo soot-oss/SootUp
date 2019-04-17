@@ -52,6 +52,7 @@ import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.PositionInformation;
 import de.upb.soot.jimple.basic.Value;
+import de.upb.soot.jimple.common.constant.BooleanConstant;
 import de.upb.soot.jimple.common.constant.ClassConstant;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.constant.DoubleConstant;
@@ -967,9 +968,9 @@ public class InstructionConverter {
     Object value = symbolTable.getConstantValue(valueNumber);
     if (value instanceof Boolean) {
       if (value.equals(true)) {
-        return IntConstant.getInstance(1);
+        return BooleanConstant.getInstance(1);
       } else {
-        return IntConstant.getInstance(0);
+        return BooleanConstant.getInstance(0);
       }
     } else if (value instanceof Byte
         || value instanceof Char

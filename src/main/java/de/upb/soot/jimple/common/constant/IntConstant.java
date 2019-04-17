@@ -34,7 +34,7 @@ public class IntConstant extends ArithmeticConstant {
   /** */
   private static final long serialVersionUID = 1266232311067376706L;
 
-  private final int value;
+  protected final int value;
 
   protected IntConstant(int value) {
     this.value = value;
