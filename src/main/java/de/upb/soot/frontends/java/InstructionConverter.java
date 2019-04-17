@@ -882,13 +882,10 @@ public class InstructionConverter {
       binExpr = Jimple.newRemExpr(op1, op2);
     } else if (operator.equals(IBinaryOpInstruction.Operator.AND)) {
       binExpr = Jimple.newAndExpr(op1, op2);
-      type = PrimitiveType.getBoolean();
     } else if (operator.equals(IBinaryOpInstruction.Operator.OR)) {
       binExpr = Jimple.newOrExpr(op1, op2);
-      type = PrimitiveType.getBoolean();
     } else if (operator.equals(IBinaryOpInstruction.Operator.XOR)) {
       binExpr = Jimple.newXorExpr(op1, op2);
-      type = PrimitiveType.getBoolean();
     } else if (operator.equals(CAstBinaryOp.EQ)) {
       binExpr = Jimple.newEqExpr(op1, op2);
       type = PrimitiveType.getBoolean();
