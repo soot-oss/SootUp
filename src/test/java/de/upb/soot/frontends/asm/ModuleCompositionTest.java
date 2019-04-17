@@ -61,7 +61,7 @@ public class ModuleCompositionTest {
 
     // Print all methods that are loaded on-demand
     // System.out.println("Methods of " + utilsClassSignature + " class:");
-    utilsClass.getMethods().stream().map(it -> " - " + it).forEach(System.out::println);
+    // utilsClass.getMethods().stream().map(it -> " - " + it).forEach(System.out::println);
 
     // System.out.println();
 
