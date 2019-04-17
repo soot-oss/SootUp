@@ -731,8 +731,8 @@ public class BinaryOpInstructionConversionTest {
         stmts.get(3),
         JAssignStmt.class,
         stmt -> {
-          assertEquiv(new Local("$i0", IntType.getInstance()), stmt.getLeftOp());
-          assertEquiv(new Local("$i1", IntType.getInstance()), stmt.getRightOp());
+          assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
+          assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
