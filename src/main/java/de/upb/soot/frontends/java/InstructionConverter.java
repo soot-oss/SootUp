@@ -902,7 +902,7 @@ public class InstructionConverter {
       binExpr = Jimple.newGtExpr(op1, op2);
       type = PrimitiveType.getBoolean();
     } else if (operator.equals(CAstBinaryOp.LE)) {
-      binExpr = Jimple.newLtExpr(op1, op2);
+      binExpr = Jimple.newLeExpr(op1, op2);
       type = PrimitiveType.getBoolean();
     } else if (operator.equals(IShiftInstruction.Operator.SHL)) {
       binExpr = Jimple.newShlExpr(op1, op2);
