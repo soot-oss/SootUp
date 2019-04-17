@@ -43,7 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Soot's counterpart of th import java.util.stream.Collectors;e source language's method concept.
+ * Soot's counterpart of the source language's method concept.
  * Soot representation of a Java method. Can be declared to belong to a SootClass. Does not contain
  * the actual code, which belongs to a Body. The getActiveBody() method points to the
  * currently-active body.
@@ -68,7 +68,9 @@ public class SootMethod extends SootClassMember implements IMethod {
   @Nonnull protected final ImmutableList<JavaClassType> exceptions;
 
   /** Tells this methodRef how to find out where its body lives. */
-  @Nonnull private final IMethodSourceContent methodSource;
+  @Nonnull private final IMethodSourceContent methodSourc
+    
+    e;
   /** Active body associated with this method. */
   @Nullable private Body activeBody;
 
