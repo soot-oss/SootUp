@@ -39,6 +39,7 @@ public class PositionInfoTest {
     String srcDir = "src/test/resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir, null);
     DefaultFactories factories = DefaultFactories.create();
+    sigFactory = factories.getSignatureFactory();
     typeFactory = factories.getTypeFactory();
     declareClassSig = typeFactory.getClassType("InstructionCollection");
   }
