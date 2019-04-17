@@ -626,7 +626,7 @@ public class BinaryOpInstructionConversionTest {
                 "incShort", declareClassSig, "short", Collections.singletonList("short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Utils.print(method, true);
+
     Body body = method.getActiveBody();
     assertNotNull(body);
 
@@ -680,7 +680,7 @@ public class BinaryOpInstructionConversionTest {
     assertInstanceOfSatisfying(
         stmts.get(5),
         JReturnStmt.class,
-        stmt -> assertEquiv(new Local("$s0", PrimitiveType.getShort()), stmt.getOp()));
+        stmt -> assertEquiv(new Local("$s1", PrimitiveType.getShort()), stmt.getOp()));
   }
 
   @Test
