@@ -250,4 +250,16 @@ public class IfInstructionConversionTest {
     // TODO. replace the next line with assertions.
     Utils.print(method, false);
   }
+
+  @Test
+  public void test8() {
+    Optional<SootMethod> m =
+        loader.getSootMethod(
+            sigFactory.getMethodSignature(
+                "simpleIfIntExpr", declareClassSig, "void", Collections.emptyList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
+    Utils.print(method, false);
+  }
 }

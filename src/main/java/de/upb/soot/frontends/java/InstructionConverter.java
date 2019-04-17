@@ -146,7 +146,8 @@ public class InstructionConverter {
     // System.out.println(sootMethod.getSignature());
     // System.out.println(inst);
     if (inst instanceof SSAConditionalBranchInstruction) {
-      stmts.add(this.convertBranchInstruction(debugInfo, (SSAConditionalBranchInstruction) inst));
+      stmts.addAll(
+          this.convertBranchInstruction(debugInfo, (SSAConditionalBranchInstruction) inst));
     } else if (inst instanceof SSAGotoInstruction) {
       stmts.add(this.convertGoToInstruction(debugInfo, (SSAGotoInstruction) inst));
     } else if (inst instanceof SSAReturnInstruction) {
@@ -779,21 +780,52 @@ public class InstructionConverter {
     }
   }
 
-  private IStmt convertBranchInstruction(
+  private List<IStmt> convertBranchInstruction(
       DebuggingInformation debugInfo, SSAConditionalBranchInstruction condInst) {
+    PositionInfo posInfo =
+        new PositionInfo(debugInfo.getInstructionPosition(condInst.iindex), null);
+    List<IStmt> stmts = new ArrayList<IStmt>();
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
     Value value1;
+    Integer constant = null;
     if (symbolTable.isZero(val1)) {
       value1 = IntConstant.getInstance(0);
     } else {
+      if (symbolTable.isConstant(val1)) {
+        Object c = symbolTable.getConstantValue(val1);
+        if (c instanceof Boolean) {
+          if (c.equals(true)) {
+            constant = 1;
+          } else constant = 0;
+        }
+      }
       value1 = getLocal(PrimitiveType.getInt(), val1);
     }
+    if (constant != null) {
+      JAssignStmt assignStmt =
+          Jimple.newAssignStmt(value1, IntConstant.getInstance(constant.intValue()), posInfo);
+      stmts.add(assignStmt);
+    }
     Value value2;
+    constant = null;
     if (symbolTable.isZero(val2)) {
       value2 = IntConstant.getInstance(0);
     } else {
-      value2 = getLocal(PrimitiveType.getInt(), val1);
+      if (symbolTable.isConstant(val2)) {
+        Object c = symbolTable.getConstantValue(val2);
+        if (c instanceof Boolean) {
+          if (c.equals(true)) {
+            constant = 1;
+          } else constant = 0;
+        }
+      }
+      value2 = getLocal(PrimitiveType.getInt(), val2);
+    }
+    if (constant != null) {
+      JAssignStmt assignStmt =
+          Jimple.newAssignStmt(value2, IntConstant.getInstance(constant.intValue()), posInfo);
+      stmts.add(assignStmt);
     }
     AbstractConditionExpr condition = null;
     IOperator op = condInst.getOperator();
@@ -814,14 +846,11 @@ public class InstructionConverter {
     }
     JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
 
-    JIfStmt ifStmt =
-        Jimple.newIfStmt(
-            condition,
-            target,
-            new PositionInfo(debugInfo.getInstructionPosition(condInst.iindex), null));
+    JIfStmt ifStmt = Jimple.newIfStmt(condition, target, posInfo);
     // target equals -1 refers to the end of the method
     this.targetsOfIfStmts.put(ifStmt, condInst.getTarget());
-    return ifStmt;
+    stmts.add(ifStmt);
+    return stmts;
   }
 
   private IStmt convertReturnInstruction(
