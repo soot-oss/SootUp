@@ -16,7 +16,7 @@ public class InvokeSpecial extends Object {
   }
 
   public String specialInvokeSupperClassMethod() {
-    String s = this.toString();
+    String s = super.toString();
     return s;
   }
 

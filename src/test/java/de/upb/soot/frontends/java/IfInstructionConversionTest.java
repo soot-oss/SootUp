@@ -190,7 +190,6 @@ public class IfInstructionConversionTest {
                 Arrays.asList("double", "double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-
     Body body = method.getActiveBody();
     assertNotNull(body);
 
@@ -221,5 +220,29 @@ public class IfInstructionConversionTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
+  }
+
+  @Test
+  public void test6() {
+    Optional<SootMethod> m =
+        loader.getSootMethod(
+            sigFactory.getMethodSignature(
+                "simpleIf", declareClassSig, "void", Collections.emptyList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void test7() {
+    Optional<SootMethod> m =
+        loader.getSootMethod(
+            sigFactory.getMethodSignature(
+                "simpleIfTrue", declareClassSig, "void", Collections.emptyList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    // TODO. replace the next line with assertions.
+    Utils.print(method, false);
   }
 }

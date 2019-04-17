@@ -153,11 +153,11 @@ public class SelectedInstructionConversionTest {
 
     List<String> expectedStmts =
         Stream.of(
-            "$r0 := @parameter0: java.lang.String[]",
-            "$r1 = new alreadywalaunittests.InnerClassAA",
-            "specialinvoke $r1.<alreadywalaunittests.InnerClassAA: void <init>()>()",
-            "virtualinvoke $r1.<alreadywalaunittests.InnerClassAA: void doAllThis()>()",
-            "return")
+                "$r0 := @parameter0: java.lang.String[]",
+                "$r1 = new alreadywalaunittests.InnerClassAA",
+                "specialinvoke $r1.<alreadywalaunittests.InnerClassAA: void <init>()>()",
+                "virtualinvoke $r1.<alreadywalaunittests.InnerClassAA: void doAllThis()>()",
+                "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -183,9 +183,9 @@ public class SelectedInstructionConversionTest {
 
     List<String> expectedStmts =
         Stream.of(
-            "r0 := @this: alreadywalaunittests.InnerClassAA",
-            "specialinvoke r0.<java.lang.Object: void <init>()>()",
-            "return")
+                "r0 := @this: alreadywalaunittests.InnerClassAA",
+                "specialinvoke r0.<java.lang.Object: void <init>()>()",
+                "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -193,6 +193,11 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void test6() {
+    // TODO The Jimple here is probably incorrect, but complicated to test for.
+    //   Likely issues:
+    //     wait(long, int) is invoked with an int as its first argument
+    //     Multi-dimensional array is not created properly
+
     declareClassSig = sigFactory.getClassSignature("foo.bar.hello.world.ArraysAndSuch");
     Optional<SootMethod> m =
         loader.getSootMethod(
@@ -201,24 +206,8 @@ public class SelectedInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(IStmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-  // TODO does invoking wait(long, int) require upcast? goto really with ?= branch?
-    // TODO is $r21 = newarray (int[][][][])[2] correct? because we have n-dim array
-    // TODO Other than that, seems fine
-    List<String> expectedStmts =
-        Stream.of(
-            "r0 := @this: alreadywalaunittests.InnerClassAA",
-            "specialinvoke r0.<java.lang.Object: void <init>()>()",
-            "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
+    // TODO. replace the next line with assertions.
+    Utils.print(method, false);
   }
 
   @Test
@@ -229,12 +218,31 @@ public class SelectedInstructionConversionTest {
             sigFactory.getMethodSignature("bar", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    // TODO. replace the next line with assertions.
-    Utils.print(method, false);
+
+    Body body = method.getActiveBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(IStmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: FooEx1",
+                "$r1 = new BadLanguageExceptionEx1",
+                "specialinvoke $r1.<BadLanguageExceptionEx1: void <init>()>()",
+                "throw $r1",
+                "return")
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    assertEquals(expectedStmts, actualStmts);
   }
 
   @Test
   public void testSwitchInstruction() {
+    // TODO Conversion from switch is very broken (default-case is not compiled correctly),
+    //      And the target of the loop condition is null.
     declareClassSig = sigFactory.getClassSignature("bugfixes.DoWhileInCase");
     Optional<SootMethod> m =
         loader.getSootMethod(
@@ -248,6 +256,7 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testLoadMetadataInstruction() {
+    // TODO Is the cast wrong?
     declareClassSig = sigFactory.getClassSignature("javaonepointfive.EnumSwitch$Palo");
     Optional<SootMethod> m =
         loader.getSootMethod(
