@@ -244,8 +244,8 @@ public class SootMethod extends SootClassMember implements IMethod {
 
     // return type + name
 
-    builder.append(this.getReturnTypeSignature().toQuotedString()).append(" ");
-    builder.append(this.getSignature().toQuotedString());
+    builder.append(this.getReturnTypeSignature().toString()).append(" ");
+    builder.append(this.getSignature().toString());
 
     builder.append("(");
 
@@ -254,7 +254,7 @@ public class SootMethod extends SootClassMember implements IMethod {
     // int count = 0;
     while (typeIt.hasNext()) {
       Type t = typeIt.next();
-      builder.append(t.toQuotedString());
+      builder.append(t.toString());
       if (typeIt.hasNext()) {
         builder.append(", ");
       }
