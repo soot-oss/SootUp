@@ -691,7 +691,7 @@ public class BinaryOpInstructionConversionTest {
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
-    assertEquals(4, stmts.size());
+    assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
         stmts.get(0),
@@ -722,6 +722,14 @@ public class BinaryOpInstructionConversionTest {
 
     assertInstanceOfSatisfying(
         stmts.get(3),
+        JAssignStmt.class,
+        stmt -> {
+          assertEquiv(new Local("$i0", IntType.getInstance()), stmt.getLeftOp());
+          assertEquiv(new Local("$i1", IntType.getInstance()), stmt.getRightOp());
+        });
+
+    assertInstanceOfSatisfying(
+        stmts.get(4),
         JReturnStmt.class,
         stmt -> assertEquiv(new Local("$i1", IntType.getInstance()), stmt.getOp()));
   }
