@@ -48,7 +48,7 @@ public class FileTypeTest {
 
   private void testType( FileType ft, String path) throws IOException {
     File file = new File( "target/"+path );
-    assertEquals( EnumSet.of(ft) , FileType.getFileType( file ) );
+    assertEquals( ft , FileType.getFileType( file ) );
   }
 
   @Test

@@ -26,7 +26,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -44,10 +46,10 @@ import javax.annotation.Nonnull;
 public enum FileType {
   JAR("jar"),
   ZIP("zip"),
-  APK("apk"),         // 50 4B 03 04    for jar, zip, apk
-  CLASS("class"),     // CA FE BA BE
-  JAVA("java"),       // none
-  JIMPLE("jimple");   // none
+  APK("apk"),
+  CLASS("class"),
+  JAVA("java"),
+  JIMPLE("jimple");
 
   public static final @Nonnull EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK);
 
@@ -61,31 +63,30 @@ public enum FileType {
     return extension;
   }
 
-  // TODO: test
-  //  TODO: [ms] is archive type enough info if not determinable? if its not sufficient refactor to FileType
-  public static EnumSet<FileType> getFileType(File file ) throws IOException {
 
-    EnumSet<FileType> foundType = EnumSet.noneOf(FileType.class);
-    BufferedReader buffer = new BufferedReader(new FileReader(file));
-    char [] fileHead = new char[4];
-    // use magic byte where possible
-    if( buffer.read(fileHead, 0, 4) == 4 ){
+  public static FileType getFileType(File file ) throws IOException {
 
-      if(Arrays.equals(fileHead, new char[]{ 0xCA, 0xFE, 0xBA, 0xBE }) ) {
-        foundType = EnumSet.of(FileType.CLASS);
-      }else if( Arrays.equals(fileHead, new char[]{ 0x50, 0x4B, 0x03, 0x04}) ){
-        FileType fileType = getArchiveTypeByExtension( file.getName() );
-        foundType = (fileType == null)? FileType.ARCHIVE_TYPES : EnumSet.of(fileType);
-      }
+    FileType foundType = null;
+    // use magic number where possible
+    FileInputStream fis = new FileInputStream(file);
+    DataInputStream dis = new DataInputStream(fis);
+    int[] magicNumber = new int[4];
+    for( int i = 0; dis.available() > 0 && i < 4; i++) {
+      magicNumber[i] = dis.readUnsignedByte();
+    }
+    dis.close();
+    fis.close();
 
+    // TODO: [ms] shall we support deprecated pack2000 format? (-> CAFED00D)
+    if(Arrays.equals(magicNumber , new int[]{ 0xCA, 0xFE, 0xBA, 0xBE }) ) {
+      foundType = FileType.CLASS;
+    }else if( Arrays.equals( magicNumber , new int[]{ 0x50, 0x4B, 0x03, 0x04}) ){
+      foundType = getArchiveTypeByExtension( file.getName() );
     }
 
-    // otherwise use filename to determine type
-    if( foundType.isEmpty()){
-      FileType type = getPlainTypeByExtension(file.getName());
-      if( type != null ) {
-        return EnumSet.of( type );
-      }
+    // otherwise use filename to determine plaintext type
+    if( foundType == null ){
+      foundType = getPlainTypeByExtension(file.getName());
     }
 
     return foundType;
