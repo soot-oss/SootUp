@@ -334,7 +334,7 @@
     <dependency>
       <groupId>ca.mcgill.sable</groupId>
       <artifactId>soot</artifactId>
-      <version>3.2.0-20181205.124259-3</version>
+      <version>3.2.0</version>
     </dependency>
     <!-- adds `@Nullable` and `@Nonnull` annotations -->
     <dependency>
