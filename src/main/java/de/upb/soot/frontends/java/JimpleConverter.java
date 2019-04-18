@@ -30,14 +30,9 @@ import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.NullType;
 import de.upb.soot.types.PrimitiveType;
-import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
-import de.upb.soot.types.UnknownType;
-import de.upb.soot.types.VoidType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -505,7 +500,7 @@ public class JimpleConverter {
         de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr expr =
             (de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr) from;
         SootMethodRef method = createSootMethodRef(expr.getMethodSignature(), false);
-        if (method.declaringClass().isInterface()) {
+        if (method.getDeclaringClass().isInterface()) {
           to =
               Jimple.v().newInterfaceInvokeExpr((Local) convertValue(expr.getBase()), method, args);
         } else {
@@ -590,7 +585,7 @@ public class JimpleConverter {
 
   public soot.Type convertType(Type from) {
     soot.Type to = soot.UnknownType.v();
-    if (!(from instanceof UnknownType)) {
+    if (!(from instanceof de.upb.soot.types.UnknownType)) {
       if (from instanceof PrimitiveType) {
         if (from.equals(PrimitiveType.getBoolean())) {
           return soot.BooleanType.v();
@@ -608,23 +603,17 @@ public class JimpleConverter {
           return soot.FloatType.v();
         } else if (from.equals(PrimitiveType.getDouble())) {
           return soot.DoubleType.v();
-        } else {
-          throw new RuntimeException("can not convert primitive type from " + from.toString());
         }
-      } else if (from instanceof ArrayType) {
-        ArrayType type = (ArrayType) from;
+      } else if (from instanceof de.upb.soot.types.ArrayType) {
+        de.upb.soot.types.ArrayType type = (de.upb.soot.types.ArrayType) from;
         return soot.ArrayType.v(convertType(type.getBaseType()), type.getDimension());
-      } else if (from instanceof ReferenceType) {
-        ReferenceType type = (ReferenceType) from;
+      } else if (from instanceof de.upb.soot.types.ReferenceType) {
+        de.upb.soot.types.ReferenceType type = (de.upb.soot.types.ReferenceType) from;
         String className = type.toString();
         return soot.RefType.v(className);
-      } else if (from instanceof NullType) {
+      } else if (from instanceof de.upb.soot.types.NullType) {
         return soot.NullType.v();
-        //      } else if (from instanceof de.upb.soot.jimple.common.type.AnySubType) {
-        //        de.upb.soot.jimple.common.type.AnySubType type =
-        //            (de.upb.soot.jimple.common.type.AnySubType) from;
-        //        return soot.AnySubType.v((soot.RefType) convertType(type.getBase()));
-      } else if (from instanceof VoidType) {
+      } else if (from instanceof de.upb.soot.types.VoidType) {
         return soot.VoidType.v();
       } else {
         throw new RuntimeException("can not convert type from " + from.toString());
