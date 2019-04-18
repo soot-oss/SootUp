@@ -5,6 +5,7 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.views.IView;
+import javax.annotation.Nonnull;
 
 /**
  * Converts one Wala IR source file to Jimple representation
@@ -22,8 +23,9 @@ class WalaIRIClassSourceContent implements IClassSourceContent {
     this.converter = converter;
   }
 
+  @Nonnull
   @Override
-  public AbstractClass resolve(ResolvingLevel level, IView view) {
+  public AbstractClass resolveClass(@Nonnull ResolvingLevel level, @Nonnull IView view) {
     switch (level) {
       case HIERARCHY:
         break;

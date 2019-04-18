@@ -1,6 +1,7 @@
 package de.upb.soot.frontends.asm;
 
 import de.upb.soot.core.AbstractClass;
+import de.upb.soot.core.ClassType;
 import de.upb.soot.core.IMethod;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.ResolvingLevel;
@@ -9,19 +10,26 @@ import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassSourceContent;
+import de.upb.soot.frontends.ResolveException;
+import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodNode;
 
 class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     implements IClassSourceContent {
@@ -30,170 +38,199 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
   public AsmClassClassSourceContent(@Nonnull ClassSource classSource) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE);
+
     this.classSource = classSource;
+
     // FIXME: maybe delete class reading
     AsmUtil.initAsmClassSource(classSource, this);
   }
 
   @Override
-  public @Nonnull AbstractClass resolve(@Nonnull ResolvingLevel level, @Nonnull IView view)
+  @Nonnull
+  public AbstractClass resolveClass(@Nonnull ResolvingLevel level, @Nonnull IView view)
       throws AsmFrontendException {
-    JavaClassSignature cs = view.getSignatureFactory().getClassSignature(this.signature);
-    SootClass.SootClassBuilder builder = null;
+
+    JavaClassType cs = view.getTypeFactory().getClassType(this.signature);
+    SootClass.SootClassSurrogateBuilder builder;
+
     // FIXME: currently ugly because, the original class is always re-resolved but never copied...
     switch (level) {
       case DANGLING:
-        builder = (SootClass.SootClassBuilder) resolveDangling(view, cs);
+        builder = (SootClass.SootClassSurrogateBuilder) resolveDangling(view, cs);
         break;
 
       case HIERARCHY:
-        builder = (SootClass.SootClassBuilder) resolveHierarchy(view, cs);
+        builder = (SootClass.SootClassSurrogateBuilder) resolveHierarchy(view, cs);
         break;
 
       case SIGNATURES:
-        builder = (SootClass.SootClassBuilder) resolveSignature(view, cs);
+        builder = (SootClass.SootClassSurrogateBuilder) resolveSignature(view, cs);
         break;
 
       case BODIES:
-        builder = (SootClass.SootClassBuilder) resolveBody(view, cs);
+        builder = (SootClass.SootClassSurrogateBuilder) resolveBody(view, cs);
         break;
+
+      default:
+        throw new AsmFrontendException("Unsupported resolving level \"" + level + "\".");
     }
 
     return builder.build();
   }
 
   // FIXME: Parameter `cs` is unused
-  private @Nonnull SootClass.HierachyStep resolveDangling(
-      @Nonnull IView view, @Nonnull JavaClassSignature cs) {
+  @Nonnull
+  private SootClass.HierachyStep resolveDangling(@Nonnull IView view, @Nonnull JavaClassType cs) {
 
-    return SootClass.builder().dangling(view, this.classSource, null);
+    return SootClass.surrogateBuilder().dangling(this.classSource, ClassType.Library);
   }
 
-  private @Nonnull SootClass.SignatureStep resolveHierarchy(
-      @Nonnull IView view, @Nonnull JavaClassSignature cs) throws AsmFrontendException {
-    SootClass sootClass =
-        (SootClass)
-            view.getClass(cs)
-                .orElseThrow(
-                    () -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
-    Set<JavaClassSignature> interfaces = new HashSet<>();
-    JavaClassSignature mySuperClass;
+  @Nonnull
+  private SootClass.SignatureStep resolveHierarchy(@Nonnull IView view, @Nonnull JavaClassType cs)
+      throws AsmFrontendException {
+
+    SootClass sootClass = (SootClass) view.getClass(cs).orElse(null);
+
     SootClass.HierachyStep danglingStep;
 
-    if (sootClass.resolvingLevel().isLoweverLevel(ResolvingLevel.DANGLING)) {
+    if (sootClass == null
+        || sootClass
+            .resolvingLevel()
+            .isLowerThan(
+                ResolvingLevel
+                    .DANGLING)) { // FIXME: [JMP] This expression is always `false`, because
+      // `DANGLING` is the lowest level.
       // FIXME: do the setting stuff again...
       danglingStep = resolveDangling(view, cs);
     } else {
       danglingStep = SootClass.fromExisting(sootClass);
     }
-    {
-      // add super class
-      mySuperClass =
-          view.getSignatureFactory().getClassSignature(AsmUtil.toQualifiedName(superName));
-    }
-    {
-      // add the interfaces
-      Iterable<JavaClassSignature> interfaceSignatures =
-          AsmUtil.asmIdToSignature(this.interfaces, view);
-      for (JavaClassSignature interfaceSig : interfaceSignatures) {
 
-        interfaces.add(interfaceSig);
-      }
-    }
-    return danglingStep.hierachy(mySuperClass, interfaces, null, null);
+    // Add super class
+    JavaClassType mySuperClass =
+        DefaultTypeFactory.getInstance().getClassType(AsmUtil.toQualifiedName(superName));
+
+    // Add interfaces
+    Set<JavaClassType> interfaces = new HashSet<>(AsmUtil.asmIdToSignature(this.interfaces));
+
+    return danglingStep.hierachy(mySuperClass, interfaces, EnumSet.noneOf(Modifier.class), null);
   }
 
-  private @Nonnull SootClass.BodyStep resolveSignature(
-      @Nonnull IView view, @Nonnull JavaClassSignature cs) throws AsmFrontendException {
-    SootClass.SignatureStep signatureStep;
-    Set<IMethod> methods = new HashSet<>();
-    Set<SootField> fields = new HashSet<>();
-    SootClass sootClass =
-        (SootClass)
-            view.getClass(cs)
-                .orElseThrow(
-                    () -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
-    if (sootClass.resolvingLevel().isLoweverLevel(ResolvingLevel.HIERARCHY)) {
-      signatureStep = resolveHierarchy(view, cs);
-    } else {
-      signatureStep = SootClass.fromExisting(sootClass);
-    }
+  private static Set<SootField> resolveFields(
+      List<FieldNode> fieldNodes, SignatureFactory signatureFactory, JavaClassType classSignature) {
+    // FIXME: add support for annotation
+    return fieldNodes.stream()
+        .map(
+            fieldNode -> {
+              String fieldName = fieldNode.name;
+              Type fieldType = AsmUtil.toJimpleType(fieldNode.desc);
+              FieldSignature fieldSignature =
+                  signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
+              EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
 
-    {
-      // FIXME: add support for annotation
-      // add the fields
-      for (FieldNode fieldNode : this.fields) {
-        String fieldName = fieldNode.name;
-        EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
-        TypeSignature fieldType = AsmUtil.toJimpleType(view, fieldNode.desc);
-        FieldSignature fieldSignature =
-            view.getSignatureFactory()
-                .getFieldSignature(fieldName, sootClass.getSignature(), fieldType);
-        SootField sootField =
-            new SootField(view, sootClass.getSignature(), fieldSignature, fieldType, modifiers);
-        fields.add(sootField);
-      }
-    }
-
-    { // add methods
-      for (org.objectweb.asm.tree.MethodNode methodSource : this.methods) {
-
-        if (!(methodSource instanceof AsmMethodSourceContent)) {
-          throw new AsmFrontendException(
-              String.format("Failed to create Method Signature %s", methodSource));
-        }
-        AsmMethodSourceContent asmClassClassSourceContent = (AsmMethodSourceContent) methodSource;
-
-        List<JavaClassSignature> exceptions = new ArrayList<>();
-        Iterable<JavaClassSignature> exceptionsSignatures =
-            AsmUtil.asmIdToSignature(methodSource.exceptions, view);
-
-        for (JavaClassSignature exceptionSig : exceptionsSignatures) {
-          exceptions.add(exceptionSig);
-        }
-        String methodName = methodSource.name;
-        EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);
-        List<TypeSignature> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc, view);
-        TypeSignature retType = sigTypes.remove(sigTypes.size() - 1);
-
-        MethodSignature methodSignature =
-            view.getSignatureFactory()
-                .getMethodSignature(methodName, sootClass.getSignature(), retType, sigTypes);
-
-        SootMethod sootMethod =
-            new SootMethod(
-                view,
-                sootClass.getSignature(),
-                asmClassClassSourceContent,
-                methodSignature,
-                modifiers,
-                exceptions,
-                null);
-        methods.add(sootMethod);
-      }
-    }
-    return signatureStep.signature(fields, methods);
+              return new SootField(fieldSignature, modifiers);
+            })
+        .collect(Collectors.toSet());
   }
 
-  private @Nonnull SootClass.Build resolveBody(@Nonnull IView view, @Nonnull JavaClassSignature cs)
+  private static Stream<SootMethod> resolveMethods(
+      List<MethodNode> methodNodes, SignatureFactory signatureFactory, JavaClassType cs) {
+    return methodNodes.stream()
+        .map(
+            methodSource -> {
+              if (!(methodSource instanceof AsmMethodSourceContent)) {
+                throw new AsmFrontendException(
+                    String.format("Failed to create Method Signature %s", methodSource));
+              }
+              AsmMethodSourceContent asmClassClassSourceContent =
+                  (AsmMethodSourceContent) methodSource;
+
+              List<JavaClassType> exceptions = new ArrayList<>();
+              Iterable<JavaClassType> exceptionsSignatures =
+                  AsmUtil.asmIdToSignature(methodSource.exceptions);
+
+              for (JavaClassType exceptionSig : exceptionsSignatures) {
+                exceptions.add(exceptionSig);
+              }
+              String methodName = methodSource.name;
+              EnumSet<Modifier> modifiers = AsmUtil.getModifiers(methodSource.access);
+              List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(methodSource.desc);
+              Type retType = sigTypes.remove(sigTypes.size() - 1);
+
+              MethodSignature methodSignature =
+                  signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
+
+              return SootMethod.builder()
+                  .withSource(asmClassClassSourceContent)
+                  .withSignature(methodSignature)
+                  .withModifiers(modifiers)
+                  .withThrownExceptions(exceptions)
+                  .build();
+            });
+  }
+
+  @Nonnull
+  private SootClass.BodyStep resolveSignature(@Nonnull IView view, @Nonnull JavaClassType cs)
       throws AsmFrontendException {
     SootClass sootClass =
         (SootClass)
             view.getClass(cs)
                 .orElseThrow(
                     () -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
-    SootClass.BodyStep bodyStep;
-    if (sootClass.resolvingLevel().isLoweverLevel(ResolvingLevel.SIGNATURES)) {
-      bodyStep = resolveSignature(view, cs);
+
+    SootClass.SignatureStep signatureStep;
+    if (sootClass.resolvingLevel().isLowerThan(ResolvingLevel.HIERARCHY)) {
+      signatureStep = resolveHierarchy(view, cs);
     } else {
-      bodyStep = SootClass.fromExisting(sootClass);
+      signatureStep = SootClass.fromExisting(sootClass);
     }
+
+    Set<SootField> fields =
+        resolveFields(this.fields, view.getSignatureFactory(), sootClass.getType());
+    Set<IMethod> methods =
+        resolveMethods(this.methods, view.getSignatureFactory(), cs).collect(Collectors.toSet());
+
+    return signatureStep.signature(fields, methods);
+  }
+
+  @Override
+  @Nonnull
+  public Iterable<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
+      throws ResolveException {
+    SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
+    return resolveMethods(methods, signatureFactory, signature).collect(Collectors.toSet());
+  }
+
+  @Override
+  @Nonnull
+  public Iterable<SootField> resolveFields(@Nonnull JavaClassType classSignature)
+      throws ResolveException {
+    SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
+    return resolveFields(fields, signatureFactory, classSignature);
+  }
+
+  @Nonnull
+  private SootClass.Build resolveBody(@Nonnull IView view, @Nonnull JavaClassType cs)
+      throws AsmFrontendException {
+
+    SootClass sootClass =
+        (SootClass)
+            view.getClass(cs)
+                .orElseThrow(
+                    () -> new AsmFrontendException(String.format("Cannot resolve class %s", cs)));
+
+    SootClass.BodyStep bodyStep =
+        sootClass.resolvingLevel().isLowerThan(ResolvingLevel.SIGNATURES)
+            ? resolveSignature(view, cs)
+            : SootClass.fromExisting(sootClass);
+
     // TODO: resolve the method bodies
     return bodyStep.bodies("dummy");
   }
 
   @Override
-  public @Nonnull MethodVisitor visitMethod(
+  @Nonnull
+  public MethodVisitor visitMethod(
       int access,
       @Nonnull String name,
       @Nonnull String desc,

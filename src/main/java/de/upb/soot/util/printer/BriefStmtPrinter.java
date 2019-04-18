@@ -9,9 +9,9 @@ import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.types.Type;
 
 /** IStmtPrinter implementation for normal Jimple */
 public class BriefStmtPrinter extends LabeledStmtPrinter {
@@ -28,9 +28,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   public void method(SootMethod m) {
     handleIndent();
     if (m.isStatic()) {
-      if (m.getDeclaringClass().isPresent()) {
-        output.append(m.getDeclaringClass().get().getName());
-      }
+      output.append(m.getDeclaringClass().getName());
       literal(".");
     }
     output.append(m.getSignature().getName());
@@ -40,9 +38,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   public void field(SootField f) {
     handleIndent();
     if (f.isStatic()) {
-      if (f.getDeclaringClass().isPresent()) {
-        output.append(f.getDeclaringClass().get().getName());
-      }
+      output.append(f.getDeclaringClass().getName());
       literal(".");
     }
     output.append(f.getSignature().getName());
@@ -84,7 +80,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   }
 
   @Override
-  public void type(Type t) {
+  public void typeSignature(Type t) {
     handleIndent();
     output.append(t.toString());
   }

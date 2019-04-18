@@ -29,9 +29,9 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.types.Type;
 
 /** Interface for different methods of printing out a IStmt. */
 public interface IStmtPrinter {
@@ -63,7 +63,7 @@ public interface IStmtPrinter {
 
   void local(Local jimpleLocal);
 
-  void type(Type t);
+  void typeSignature(Type t);
 
   void methodSignature(MethodSignature sig);
 

@@ -25,10 +25,10 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
 
 /** Floating point constant with single precision. */
 public class FloatConstant extends RealConstant {
@@ -176,7 +176,7 @@ public class FloatConstant extends RealConstant {
 
   @Override
   public Type getType() {
-    return FloatType.getInstance();
+    return PrimitiveType.getFloat();
   }
 
   @Override

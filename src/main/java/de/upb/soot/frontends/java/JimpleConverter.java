@@ -22,7 +22,6 @@ import de.upb.soot.jimple.common.stmt.JNopStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.soot.jimple.common.stmt.JThrowStmt;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.javabytecode.stmt.JBreakpointStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JExitMonitorStmt;
@@ -30,11 +29,12 @@ import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +51,6 @@ import soot.SootMethodRef;
 import soot.SootResolver;
 import soot.Trap;
 import soot.Unit;
-import soot.UnknownType;
 import soot.Value;
 import soot.jimple.Jimple;
 import soot.jimple.JimpleBody;
@@ -74,7 +73,7 @@ public class JimpleConverter {
   }
 
   public soot.SootClass convertSootClass(de.upb.soot.core.SootClass fromClass) {
-    soot.SootClass toClass = null;
+    soot.SootClass toClass;
     if (Scene.v().containsClass(fromClass.getName())) {
       toClass = Scene.v().getSootClass(fromClass.getName());
     } else {
@@ -88,12 +87,12 @@ public class JimpleConverter {
 
     // convert parents
     if (fromClass.hasSuperclass()) {
-      Optional<de.upb.soot.core.SootClass> superClass = fromClass.getSuperclass();
+      Optional<JavaClassType> superClass = fromClass.getSuperclass();
       soot.SootClass s = getSootClass(superClass, fromClass.getSuperclassSignature());
       toClass.setSuperclass(s);
     }
     if (fromClass.hasOuterClass()) {
-      Optional<de.upb.soot.core.SootClass> outClass = fromClass.getOuterClass();
+      Optional<JavaClassType> outClass = fromClass.getOuterClass();
       soot.SootClass o = getSootClass(outClass, fromClass.getOuterClassSignature());
       toClass.setOuterClass(o);
     }
@@ -144,12 +143,14 @@ public class JimpleConverter {
       types.add(convertType(type));
     }
     soot.SootMethod toMethod =
-        new SootMethod(fromMethod.getName(), types, convertType(fromMethod.getReturnType()));
+        new SootMethod(
+            fromMethod.getName(), types, convertType(fromMethod.getReturnTypeSignature()));
     toMethod.setModifiers(convertModifiers(fromMethod.getModifiers()));
     List<soot.SootClass> exceptions = new ArrayList<>();
 
-    for (de.upb.soot.core.SootClass fromException : fromMethod.getExceptions()) {
-      soot.SootClass exception = convertSootClass(fromException);
+    for (JavaClassType fromException : fromMethod.getExceptionSignatures()) {
+      //      soot.SootClass exception = convertSootClass(fromException);
+      soot.SootClass exception = this.getSootClass(Optional.empty(), Optional.of(fromException));
       exceptions.add(exception);
     }
     toMethod.setExceptions(exceptions);
@@ -499,7 +500,7 @@ public class JimpleConverter {
         de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr expr =
             (de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr) from;
         SootMethodRef method = createSootMethodRef(expr.getMethodSignature(), false);
-        if (method.declaringClass().isInterface()) {
+        if (method.getDeclaringClass().isInterface()) {
           to =
               Jimple.v().newInterfaceInvokeExpr((Local) convertValue(expr.getBase()), method, args);
         } else {
@@ -582,40 +583,37 @@ public class JimpleConverter {
     }
   }
 
-  public soot.Type convertType(de.upb.soot.jimple.common.type.Type from) {
-    soot.Type to = UnknownType.v();
-    if (!(from instanceof de.upb.soot.jimple.common.type.UnknownType)) {
-      if (from instanceof de.upb.soot.jimple.common.type.BooleanType) {
-        return soot.BooleanType.v();
-      } else if (from instanceof de.upb.soot.jimple.common.type.ByteType) {
-        return soot.ByteType.v();
-      } else if (from instanceof de.upb.soot.jimple.common.type.CharType) {
-        return soot.CharType.v();
-      } else if (from instanceof de.upb.soot.jimple.common.type.ShortType) {
-        return soot.ShortType.v();
-      } else if (from instanceof de.upb.soot.jimple.common.type.IntType) {
-        return soot.IntType.v();
-      } else if (from instanceof de.upb.soot.jimple.common.type.LongType) {
-        return soot.LongType.v();
-      } else if (from instanceof de.upb.soot.jimple.common.type.FloatType) {
-        return soot.FloatType.v();
-      } else if (from instanceof de.upb.soot.jimple.common.type.DoubleType) {
-        return soot.DoubleType.v();
-      } else if (from instanceof de.upb.soot.jimple.common.type.ArrayType) {
-        de.upb.soot.jimple.common.type.ArrayType type =
-            (de.upb.soot.jimple.common.type.ArrayType) from;
-        return soot.ArrayType.v(convertType(type.getBaseType()), type.getNumDimensions());
-      } else if (from instanceof de.upb.soot.jimple.common.type.RefType) {
-        de.upb.soot.jimple.common.type.RefType type = (de.upb.soot.jimple.common.type.RefType) from;
-        String className = type.getTypeSignature().toString();
+  public soot.Type convertType(Type from) {
+    soot.Type to = soot.UnknownType.v();
+    if (!(from instanceof de.upb.soot.types.UnknownType)) {
+      if (from instanceof PrimitiveType) {
+        if (from.equals(PrimitiveType.getBoolean())) {
+          return soot.BooleanType.v();
+        } else if (from.equals(PrimitiveType.getByte())) {
+          return soot.ByteType.v();
+        } else if (from.equals(PrimitiveType.getChar())) {
+          return soot.CharType.v();
+        } else if (from.equals(PrimitiveType.getShort())) {
+          return soot.ShortType.v();
+        } else if (from.equals(PrimitiveType.getInt())) {
+          return soot.IntType.v();
+        } else if (from.equals(PrimitiveType.getLong())) {
+          return soot.LongType.v();
+        } else if (from.equals(PrimitiveType.getFloat())) {
+          return soot.FloatType.v();
+        } else if (from.equals(PrimitiveType.getDouble())) {
+          return soot.DoubleType.v();
+        }
+      } else if (from instanceof de.upb.soot.types.ArrayType) {
+        de.upb.soot.types.ArrayType type = (de.upb.soot.types.ArrayType) from;
+        return soot.ArrayType.v(convertType(type.getBaseType()), type.getDimension());
+      } else if (from instanceof de.upb.soot.types.ReferenceType) {
+        de.upb.soot.types.ReferenceType type = (de.upb.soot.types.ReferenceType) from;
+        String className = type.toString();
         return soot.RefType.v(className);
-      } else if (from instanceof de.upb.soot.jimple.common.type.NullType) {
+      } else if (from instanceof de.upb.soot.types.NullType) {
         return soot.NullType.v();
-      } else if (from instanceof de.upb.soot.jimple.common.type.AnySubType) {
-        de.upb.soot.jimple.common.type.AnySubType type =
-            (de.upb.soot.jimple.common.type.AnySubType) from;
-        return soot.AnySubType.v((soot.RefType) convertType(type.getBase()));
-      } else if (from instanceof de.upb.soot.jimple.common.type.VoidType) {
+      } else if (from instanceof de.upb.soot.types.VoidType) {
         return soot.VoidType.v();
       } else {
         throw new RuntimeException("can not convert type from " + from.toString());
@@ -624,7 +622,7 @@ public class JimpleConverter {
     return to;
   }
 
-  public int convertModifiers(EnumSet<Modifier> modifiers) {
+  public int convertModifiers(Iterable<Modifier> modifiers) {
     int bytecode = 0;
     for (Modifier modifier : modifiers) {
       bytecode = bytecode | modifier.getBytecode();
@@ -647,7 +645,7 @@ public class JimpleConverter {
     }
     declaringClass = Scene.v().getSootClass(className);
     List<soot.Type> parameterTypes = new ArrayList<>();
-    for (de.upb.soot.signatures.TypeSignature typeSig : methodSig.getParameterSignatures()) {
+    for (Type typeSig : methodSig.getParameterSignatures()) {
       String typeName = typeSig.toString();
       if (Scene.v().getTypeUnsafe(typeName) == null) { // check if type is in scene
         if (!Scene.v().containsType(typeName)) {
@@ -656,7 +654,7 @@ public class JimpleConverter {
       }
       parameterTypes.add(Scene.v().getType(typeName));
     }
-    String returnTypeName = methodSig.getTypeSignature().toString();
+    String returnTypeName = methodSig.getSignature().toString();
     if (Scene.v().getTypeUnsafe(returnTypeName) == null) // check if type is in scene
     {
       if (!Scene.v().containsType(returnTypeName)) {
@@ -672,7 +670,7 @@ public class JimpleConverter {
   private SootFieldRef createSootFieldRef(FieldSignature fieldSig, boolean isStatic) {
     SootClass declaringClass =
         SootResolver.v().makeClassRef(fieldSig.getDeclClassSignature().getFullyQualifiedName());
-    soot.Type type = Scene.v().getType(fieldSig.getTypeSignature().toString());
+    soot.Type type = Scene.v().getType(fieldSig.getSignature().toString());
     return Scene.v().makeFieldRef(declaringClass, fieldSig.getName(), type, isStatic);
   }
 
@@ -692,13 +690,14 @@ public class JimpleConverter {
     return target;
   }
 
-  private soot.SootClass getSootClass(
-      Optional<de.upb.soot.core.SootClass> op, Optional<JavaClassSignature> sigOp) {
+  private soot.SootClass getSootClass(Optional<JavaClassType> op, Optional<JavaClassType> sigOp) {
     String className = sigOp.get().getFullyQualifiedName();
     if (!Scene.v().containsClass(className)) {
       // class not in Scene, either is from source code or need to be forced to resolve
       if (op.isPresent()) {
-        return convertSootClass(op.get());
+        Optional<de.upb.soot.core.SootClass> any =
+            fromClasses.stream().filter(it -> it.getType().equals(op.get())).findAny();
+        return any.map(this::convertSootClass).orElseGet(() -> Scene.v().getSootClass(className));
       } else {
         return Scene.v().forceResolve(className, SootClass.SIGNATURES);
       }

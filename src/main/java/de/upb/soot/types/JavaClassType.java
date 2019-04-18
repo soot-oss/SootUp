@@ -1,4 +1,4 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 /*-
  * #%L
@@ -22,15 +22,26 @@ package de.upb.soot.signatures;
  * #L%
  */
 
+import static de.upb.soot.util.Utils.Functional.tryCastTo;
+
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
+import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.signatures.ModuleSignatureFactory;
+import de.upb.soot.signatures.PackageSignature;
+import de.upb.soot.views.IView;
+import de.upb.soot.views.JavaView;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import javax.annotation.Nonnull;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
-public class JavaClassSignature extends TypeSignature {
+public class JavaClassType extends ReferenceType {
 
   private final String className;
 
@@ -45,7 +56,7 @@ public class JavaClassSignature extends TypeSignature {
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
    * @param packageSignature the corresponding package
    */
-  protected JavaClassSignature(final String className, final PackageSignature packageSignature) {
+  public JavaClassType(final String className, final PackageSignature packageSignature) {
     String realClassName = className;
     boolean innerClass = false;
     // use $ to separate inner and outer class name
@@ -69,7 +80,7 @@ public class JavaClassSignature extends TypeSignature {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    JavaClassSignature that = (JavaClassSignature) o;
+    JavaClassType that = (JavaClassType) o;
     return Objects.equal(className, that.className)
         && Objects.equal(packageSignature, that.packageSignature)
         && isInnerClass == that.isInnerClass;
@@ -136,5 +147,48 @@ public class JavaClassSignature extends TypeSignature {
   /** Whether the class is an inner class * */
   public boolean isInnerClass() {
     return isInnerClass;
+  }
+
+  private static final class SplitPatternHolder {
+    private static final char SPLIT_CHAR = '.';
+
+    @Nonnull
+    private static final Pattern SPLIT_PATTERN =
+        Pattern.compile(Character.toString(SPLIT_CHAR), Pattern.LITERAL);
+  }
+
+  @Override
+  public @Nonnull String toQuotedString() {
+    String s = this.getFullyQualifiedName();
+    StringBuilder res = new StringBuilder(s.length() + 16);
+
+    for (String part : SplitPatternHolder.SPLIT_PATTERN.split(s)) {
+      if (res.length() > 0) {
+        res.append(SplitPatternHolder.SPLIT_CHAR);
+      }
+
+      if (part.startsWith("-") || JavaView.RESERVED_NAMES.contains(part)) {
+        res.append('\'');
+        res.append(part);
+        res.append('\'');
+      } else {
+        res.append(part);
+      }
+    }
+
+    return res.toString();
+  }
+
+  /**
+   * Tries to resolve this {@link JavaClassType} to the corresponding {@link SootClass}.
+   *
+   * @param view The {@link IView} to resolve with.
+   * @return An {@link Optional} containing the {@link SootClass}, if the resolution was successful;
+   *     otherwise, an {@link Optional#empty() empty Optional}.
+   */
+  @Nonnull
+  public Optional<SootClass> resolve(@Nonnull IView view) {
+    // TODO: [JMP] Clarify: What if cast fails? Return empty or throw cast exception?
+    return view.getClass(this).flatMap(tryCastTo(SootClass.class));
   }
 }

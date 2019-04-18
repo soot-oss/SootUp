@@ -3,9 +3,10 @@ package de.upb.soot.frontends.java;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,19 +16,20 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class Java7EnhancementsTest {
   private WalaClassLoader loader;
-  private DefaultSignatureFactory sigFactory;
-  private JavaClassSignature declareClassSig;
+  private DefaultTypeFactory typeFactory;
+  private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/java-target/java7";
     loader = new WalaClassLoader(srcDir, null);
-    sigFactory = new DefaultSignatureFactory();
+    DefaultFactories factories = DefaultFactories.create();
+    typeFactory = factories.getTypeFactory();
   }
 
   @Test
   public void testBinaryLiterals() {
-    declareClassSig = sigFactory.getClassSignature("BinaryLiterals");
+    declareClassSig = typeFactory.getClassType("BinaryLiterals");
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();
@@ -37,7 +39,7 @@ public class Java7EnhancementsTest {
 
   @Test
   public void testCatchMultipleExceptionTypes() {
-    declareClassSig = sigFactory.getClassSignature("CatchMultipleExceptionTypes");
+    declareClassSig = typeFactory.getClassType("CatchMultipleExceptionTypes");
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();
@@ -47,7 +49,7 @@ public class Java7EnhancementsTest {
 
   @Test
   public void testStringsInSwitch() {
-    declareClassSig = sigFactory.getClassSignature("StringsInSwitch");
+    declareClassSig = typeFactory.getClassType("StringsInSwitch");
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();
@@ -57,7 +59,7 @@ public class Java7EnhancementsTest {
 
   @Test
   public void testTryWithResourcesStatement() {
-    declareClassSig = sigFactory.getClassSignature("TryWithResourcesStatement");
+    declareClassSig = typeFactory.getClassType("TryWithResourcesStatement");
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();
@@ -67,7 +69,7 @@ public class Java7EnhancementsTest {
 
   @Test
   public void testUnderscoresInNumericLiterals() {
-    declareClassSig = sigFactory.getClassSignature("UnderscoresInNumericLiterals");
+    declareClassSig = typeFactory.getClassType("UnderscoresInNumericLiterals");
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();
@@ -77,7 +79,7 @@ public class Java7EnhancementsTest {
 
   @Test
   public void testTypeInferenceforGenericInstanceCreation() {
-    declareClassSig = sigFactory.getClassSignature("TypeInferenceforGenericInstanceCreation");
+    declareClassSig = typeFactory.getClassType("TypeInferenceforGenericInstanceCreation");
     Optional<SootClass> c = loader.getSootClass(declareClassSig);
     assertTrue(c.isPresent());
     SootClass klass = c.get();

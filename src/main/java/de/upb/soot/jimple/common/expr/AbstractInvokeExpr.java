@@ -26,44 +26,25 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.AbstractViewResident;
-import de.upb.soot.core.IMethod;
-import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
-import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-public abstract class AbstractInvokeExpr extends AbstractViewResident implements Expr {
+public abstract class AbstractInvokeExpr implements Expr {
   /** */
   private static final long serialVersionUID = 1796920588315752175L;
 
   protected MethodSignature methodSignature;
   protected final ValueBox[] argBoxes;
 
-  protected AbstractInvokeExpr(IView view, MethodSignature method, ValueBox[] argBoxes) {
-    super(view);
+  protected AbstractInvokeExpr(MethodSignature method, ValueBox[] argBoxes) {
     this.methodSignature = method;
     this.argBoxes = argBoxes.length == 0 ? null : argBoxes;
-  }
-
-  public Optional<SootMethod> getMethod() {
-    JavaClassSignature signature = methodSignature.getDeclClassSignature();
-    Optional<AbstractClass> op = this.getView().getClass(signature);
-    if (op.isPresent()) {
-      AbstractClass klass = op.get();
-      Optional<? extends IMethod> m = klass.getMethod(methodSignature);
-      return m.map(c -> (SootMethod) c);
-    }
-    return Optional.empty();
   }
 
   public MethodSignature getMethodSignature() {
@@ -102,7 +83,7 @@ public abstract class AbstractInvokeExpr extends AbstractViewResident implements
 
   @Override
   public Type getType() {
-    return this.getView().getType(methodSignature.getTypeSignature());
+    return methodSignature.getSignature();
   }
 
   @Override

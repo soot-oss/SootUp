@@ -21,7 +21,7 @@ import javax.annotation.Nonnull;
 @SuppressWarnings("serial")
 class StmtContainer implements IStmt {
 
-  final @Nonnull IStmt[] units;
+  @Nonnull final IStmt[] units;
 
   StmtContainer(@Nonnull IStmt... units) {
     this.units = units;

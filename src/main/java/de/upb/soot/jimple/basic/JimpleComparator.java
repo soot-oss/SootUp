@@ -261,7 +261,8 @@ public class JimpleComparator {
       return false;
     }
     JStaticInvokeExpr ie = (JStaticInvokeExpr) o;
-    if (!(v.getMethod().equals(ie.getMethod()) && (v.getArgCount() == ie.getArgCount()))) {
+    if (!(v.getMethodSignature().equals(ie.getMethodSignature())
+        && (v.getArgCount() == ie.getArgCount()))) {
       return false;
     }
     for (int i = v.getArgCount() - 1; i >= 0; i--) {
@@ -277,7 +278,7 @@ public class JimpleComparator {
       return false;
     }
     JDynamicInvokeExpr ie = (JDynamicInvokeExpr) o;
-    if (!(v.getBootstrapMethod().equals(ie.getBootstrapMethod())
+    if (!(v.getBootstrapMethodSignature().equals(ie.getBootstrapMethodSignature())
         && v.getBootstrapArgCount() == ie.getBootstrapArgCount())) {
       return false;
     }
@@ -288,7 +289,8 @@ public class JimpleComparator {
         return false;
       }
     }
-    if (!(v.getMethod().equals(ie.getMethod()) && v.getArgCount() == ie.getArgCount())) {
+    if (!(v.getMethodSignature().equals(ie.getMethodSignature())
+        && v.getArgCount() == ie.getArgCount())) {
       return false;
     }
     for (int i = v.getArgCount() - 1; i >= 0; i--) {
@@ -360,7 +362,7 @@ public class JimpleComparator {
     }
     AbstractInstanceInvokeExpr ie = (AbstractInstanceInvokeExpr) o;
     if (!(obj.getBase().equivTo(ie.getBase(), this)
-        && obj.getMethod().equals(ie.getMethod())
+        && obj.getMethodSignature().equals(ie.getMethodSignature())
         && obj.getArgCount() == ie.getArgCount())) {
       return false;
     }
@@ -410,7 +412,8 @@ public class JimpleComparator {
       return false;
     }
     JInstanceFieldRef fr = (JInstanceFieldRef) o;
-    return fr.getField().equals(obj.getField()) && obj.getBase().equivTo(fr.getBase(), this);
+    return fr.getFieldSignature().equals(obj.getFieldSignature())
+        && obj.getBase().equivTo(fr.getBase(), this);
   }
 
   public boolean caseParameterRef(JParameterRef obj, Object o) {
@@ -425,7 +428,7 @@ public class JimpleComparator {
     if (!(o instanceof JStaticFieldRef)) {
       return false;
     }
-    return obj.getField().equals(((JStaticFieldRef) o).getField());
+    return obj.getFieldSignature().equals(((JStaticFieldRef) o).getFieldSignature());
   }
 
   public boolean caseThisRef(JThisRef obj, Object o) {

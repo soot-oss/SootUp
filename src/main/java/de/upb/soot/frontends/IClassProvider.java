@@ -24,19 +24,19 @@ package de.upb.soot.frontends;
 
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 
 /**
  * Responsible for creating {@link ClassSource}es based on the handled file type (.class, .jimple,
  * .java, .dex, etc).
  *
- * @author Manuel Benz created on 22.05.18
+ * @author Manuel Benz
  */
 public interface IClassProvider {
 
   ClassSource createClassSource(
-      INamespace srcNamespace, Path sourcePath, JavaClassSignature classSignature);
+      INamespace srcNamespace, Path sourcePath, JavaClassType classSignature);
 
   /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
   FileType getHandledFileType();

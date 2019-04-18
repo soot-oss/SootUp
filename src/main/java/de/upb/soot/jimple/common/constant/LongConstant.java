@@ -25,10 +25,10 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
 
 public class LongConstant extends ArithmeticConstant {
   /** */
@@ -218,7 +218,7 @@ public class LongConstant extends ArithmeticConstant {
 
   @Override
   public Type getType() {
-    return LongType.getInstance();
+    return PrimitiveType.getLong();
   }
 
   @Override

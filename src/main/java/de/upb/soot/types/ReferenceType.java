@@ -1,4 +1,4 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 /*-
  * #%L
@@ -22,5 +22,5 @@ package de.upb.soot.signatures;
  * #L%
  */
 
-/** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
-public abstract class TypeSignature implements ISignature {}
+/** Represents the signature of a Java type, e.g., a class, an array type, or null. */
+public abstract class ReferenceType extends Type {}

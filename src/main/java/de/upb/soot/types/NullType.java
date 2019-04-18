@@ -1,4 +1,4 @@
-package de.upb.soot.signatures;
+package de.upb.soot.types;
 
 /*-
  * #%L
@@ -22,15 +22,22 @@ package de.upb.soot.signatures;
  * #L%
  */
 
-/** Represents Java's 'void' type as methods return's type. */
-public class VoidTypeSignature extends TypeSignature {
+import javax.annotation.Nonnull;
 
-  public static final VoidTypeSignature VOID_TYPE_SIGNATURE = new VoidTypeSignature();
+/** Represents a signature for a <code>null</code>-reference. */
+public class NullType extends ReferenceType {
 
-  private VoidTypeSignature() {}
+  @Nonnull private static final NullType INSTANCE = new NullType();
+
+  @Nonnull
+  public static NullType getInstance() {
+    return INSTANCE;
+  }
+
+  private NullType() {}
 
   @Override
   public String toString() {
-    return "void";
+    return "null";
   }
 }

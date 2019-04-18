@@ -7,9 +7,9 @@ import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.types.Type;
 
 /** IStmtPrinter implementation for normal (full) Jimple */
 public class NormalStmtPrinter extends LabeledStmtPrinter {
@@ -19,9 +19,9 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
   }
 
   @Override
-  public void type(Type t) {
+  public void typeSignature(Type t) {
     handleIndent();
-    String s = t == null ? "<null>" : t.toQuotedString();
+    String s = t == null ? "<null>" : t.toString();
     output.append(s);
   }
 
@@ -42,11 +42,11 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
     handleIndent();
     if (r instanceof JThisRef) {
       literal("@this: ");
-      type(r.getType());
+      typeSignature(r.getType());
     } else if (r instanceof JParameterRef) {
       JParameterRef pr = (JParameterRef) r;
       literal("@parameter" + pr.getIndex() + ": ");
-      type(r.getType());
+      typeSignature(r.getType());
     } else if (r instanceof JCaughtExceptionRef) {
       literal("@caughtexception");
     } else {

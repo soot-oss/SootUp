@@ -29,10 +29,10 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +102,7 @@ public class JInstanceOfExpr implements Expr {
 
   @Override
   public Type getType() {
-    return BooleanType.getInstance();
+    return PrimitiveType.getBoolean();
   }
 
   public Type getCheckType() {
