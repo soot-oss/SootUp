@@ -82,7 +82,7 @@ public enum FileType {
 
     // otherwise use filename to determine type
     if( foundType.isEmpty()){
-      FileType type = getTypeByExtension(file.getName());
+      FileType type = getPlainTypeByExtension(file.getName());
       if( type != null ) {
         return EnumSet.of( type );
       }
@@ -91,16 +91,26 @@ public enum FileType {
     return foundType;
   }
 
-  private static FileType getTypeByExtension( String filename ){
+  public static FileType getTypeByExtension( String filename ){
+    FileType type;
     if( filename.endsWith(".class") ){
-      return FileType.CLASS;
-    }else if( filename.endsWith(".jimple") ){
+      type = FileType.CLASS;
+    }else {
+      type = getPlainTypeByExtension(filename);
+    }
+    if( type == null) {
+      type = getArchiveTypeByExtension(filename);
+    }
+    return type;
+  }
+
+  private static FileType getPlainTypeByExtension( String filename ){
+    if( filename.endsWith(".jimple") ){
       return FileType.JIMPLE;
     }else if( filename.endsWith(".java") ){
       return FileType.JAVA;
     }
-
-    return getArchiveTypeByExtension( filename );
+    return null;
   }
 
   private static FileType getArchiveTypeByExtension( String filename ) {
