@@ -22,21 +22,32 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
 
 /**
  * An enumeration of common file types used for class loading/writing and other purposes.
  *
- * @author Manuel Benz created on 07.06.18
+ * @author Manuel Benz
+ * @author Markus Schmidt
+ *
  */
 public enum FileType {
   JAR("jar"),
   ZIP("zip"),
-  APK("apk"),
-  CLASS("class"),
-  JAVA("java"),
-  JIMPLE("jimple");
+  APK("apk"),         // 50 4B 03 04    for jar, zip, apk
+  CLASS("class"),     // CA FE BA BE
+  JAVA("java"),       // none
+  JIMPLE("jimple");   // none
 
   public static final @Nonnull EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK);
 
@@ -48,5 +59,58 @@ public enum FileType {
 
   public @Nonnull String getExtension() {
     return extension;
+  }
+
+  // TODO: test
+  //  TODO: [ms] is archive type enough info if not determinable? if its not sufficient refactor to FileType
+  public static EnumSet<FileType> getFileType(File file ) throws IOException {
+
+    EnumSet<FileType> foundType = EnumSet.noneOf(FileType.class);
+    BufferedReader buffer = new BufferedReader(new FileReader(file));
+    char [] fileHead = new char[4];
+    // use magic byte where possible
+    if( buffer.read(fileHead, 0, 4) == 4 ){
+
+      if(Arrays.equals(fileHead, new char[]{ 0xCA, 0xFE, 0xBA, 0xBE }) ) {
+        foundType = EnumSet.of(FileType.CLASS);
+      }else if( Arrays.equals(fileHead, new char[]{ 0x50, 0x4B, 0x03, 0x04}) ){
+        FileType fileType = getArchiveTypeByExtension( file.getName() );
+        foundType = (fileType == null)? FileType.ARCHIVE_TYPES : EnumSet.of(fileType);
+      }
+
+    }
+
+    // otherwise use filename to determine type
+    if( foundType.isEmpty()){
+      FileType type = getTypeByExtension(file.getName());
+      if( type != null ) {
+        return EnumSet.of( type );
+      }
+    }
+
+    return foundType;
+  }
+
+  private static FileType getTypeByExtension( String filename ){
+    if( filename.endsWith(".class") ){
+      return FileType.CLASS;
+    }else if( filename.endsWith(".jimple") ){
+      return FileType.JIMPLE;
+    }else if( filename.endsWith(".java") ){
+      return FileType.JAVA;
+    }
+
+    return getArchiveTypeByExtension( filename );
+  }
+
+  private static FileType getArchiveTypeByExtension( String filename ) {
+    if( filename.endsWith(".jar") ){
+      return FileType.JAR;
+    }else if( filename.endsWith(".zip") ){
+      return FileType.ZIP;
+    }else if( filename.endsWith(".apk") ){
+      return FileType.APK;
+    }
+    return null;
   }
 }
