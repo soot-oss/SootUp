@@ -109,10 +109,12 @@ public class IfInstructionConversionTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: de.upb.soot.concrete.controlStatements.ControlStatements",
-                "$i0 := @parameter0: int",
-                "$i1 := @parameter1: int",
-                "$z0 = $i0 == $i1",
-                "if $z0 == 0 goto return 0",
+                "$z0 := @parameter0: boolean",
+                "$z1 := @parameter1: boolean",
+                "$i0 = (int) $z0",
+                "$i1 = (int) $z1",
+                "$z2 = $i0 != $i1",
+                "if $z2 == 0 goto return 0",
                 "return 1",
                 "return 0")
             .collect(Collectors.toCollection(ArrayList::new));
@@ -142,7 +144,9 @@ public class IfInstructionConversionTest {
                 "r0 := @this: de.upb.soot.concrete.controlStatements.ControlStatements",
                 "$z0 := @parameter0: boolean",
                 "$z1 := @parameter1: boolean",
-                "$z2 = $z0 != $z1",
+                "$i0 = (int) $z0",
+                "$i1 = (int) $z1",
+                "$z2 = $i0 != $i1",
                 "if $z2 == 0 goto return 0",
                 "return 1",
                 "return 0")
