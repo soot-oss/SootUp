@@ -34,6 +34,7 @@ import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
@@ -61,7 +62,7 @@ import javax.annotation.Nullable;
 /**
  * Converter which converts WALA IR to jimple.
  *
- * @author Linghui Luo created on 17.09.18
+ * @author Linghui Luo
  */
 public class WalaIRToJimpleConverter {
   protected JavaView view;
@@ -248,7 +249,7 @@ public class WalaIRToJimpleConverter {
       if (type.equals(TypeReference.Boolean)) {
         return PrimitiveType.getBoolean();
       } else if (type.equals(TypeReference.Byte)) {
-        return PrimitiveType.getByteSignature();
+        return PrimitiveType.getByte();
       } else if (type.equals(TypeReference.Char)) {
         return PrimitiveType.getChar();
       } else if (type.equals(TypeReference.Short)) {
@@ -415,10 +416,14 @@ public class WalaIRToJimpleConverter {
           TypeReference t = walaMethod.getParameterType(startPara);
           Type type = convertType(t);
           Local paraLocal = localGenerator.generateParameterLocal(type, startPara);
+          int index = startPara;
+          if (!walaMethod.isStatic()) {
+            index = startPara - 1;
+          }
           IStmt stmt =
               Jimple.newIdentityStmt(
                   paraLocal,
-                  Jimple.newParameterRef(type, startPara - 1),
+                  Jimple.newParameterRef(type, index),
                   new PositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
@@ -442,13 +447,22 @@ public class WalaIRToJimpleConverter {
         for (IStmt stmt : stmt2IIndex.keySet()) {
           instConverter.setTarget(stmt, stmt2IIndex.get(stmt));
         }
-        // add return void stmt for methods with return type beiing void
+
+        // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
-          IStmt ret =
-              Jimple.newReturnVoidStmt(
-                  new PositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
-          instConverter.setTarget(ret, -1);
-          stmts.add(ret);
+          IStmt ret = null;
+          if (stmts.isEmpty() || !(stmts.get(stmts.size() - 1) instanceof JReturnVoidStmt)) {
+            // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
+            // maybe use lastLine with
+            // startcol: -1 because it does not exist in the source explicitly?
+            ret =
+                Jimple.newReturnVoidStmt(
+                    new PositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
+            stmts.add(ret);
+          } else {
+            ret = stmts.get(stmts.size() - 1);
+          }
+          instConverter.setTarget(ret, -1); // -1 is the end of the method
         }
 
         return new Body(localGenerator.getLocals(), traps, stmts, bodyPos);
@@ -518,16 +532,7 @@ public class WalaIRToJimpleConverter {
    * wala-format: Ljava/lang/String
    */
   public String convertClassNameFromSoot(String signature) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("L");
-    String[] subNames = signature.split("\\.");
-    for (int i = 0; i < subNames.length; i++) {
-      sb.append(subNames[i]);
-      if (i != subNames.length - 1) {
-        sb.append("/");
-      }
-    }
-    return sb.toString();
+    return "L" + signature.replace('.', '/');
   }
 
   protected void addSootField(SootField field) {

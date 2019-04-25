@@ -20,11 +20,10 @@ public abstract class AbstractView implements IView {
 
   @Nonnull private final Project project;
 
-  @Nonnull private final Options options;
+  @Nonnull private final Options options = new Options();
 
   public AbstractView(@Nonnull Project project) {
     this.project = project;
-    this.options = new Options();
   }
 
   @Override

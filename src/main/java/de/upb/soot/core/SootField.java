@@ -32,8 +32,7 @@ import javax.annotation.Nullable;
  * Soot's counterpart of the source language's field concept. Soot representation of a Java field.
  * Can be declared to belong to a SootClass.
  *
- * <p>Modified by Linghui Luo
- *
+ * @author Linghui Luo
  * @author Jan Martin Persch
  */
 public class SootField extends SootClassMember implements IField {

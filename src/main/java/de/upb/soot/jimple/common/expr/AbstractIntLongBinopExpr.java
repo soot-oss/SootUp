@@ -41,7 +41,7 @@ public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
 
   public static boolean isIntLikeType(Type t) {
     return t.equals(PrimitiveType.getInt())
-        || t.equals(PrimitiveType.getByteSignature())
+        || t.equals(PrimitiveType.getByte())
         || t.equals(PrimitiveType.getShort())
         || t.equals(PrimitiveType.getChar())
         || t.equals(PrimitiveType.getBoolean());

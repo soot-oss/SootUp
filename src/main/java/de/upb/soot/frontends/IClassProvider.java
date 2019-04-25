@@ -31,7 +31,7 @@ import java.nio.file.Path;
  * Responsible for creating {@link ClassSource}es based on the handled file type (.class, .jimple,
  * .java, .dex, etc).
  *
- * @author Manuel Benz created on 22.05.18
+ * @author Manuel Benz
  */
 public interface IClassProvider {
 

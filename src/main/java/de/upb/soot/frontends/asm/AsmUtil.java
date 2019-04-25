@@ -138,7 +138,7 @@ public final class AsmUtil {
         baseType = PrimitiveType.getBoolean();
         break;
       case 'B':
-        baseType = PrimitiveType.getByteSignature();
+        baseType = PrimitiveType.getByte();
         break;
       case 'C':
         baseType = PrimitiveType.getChar();
@@ -201,7 +201,7 @@ public final class AsmUtil {
             baseType = PrimitiveType.getBoolean();
             break this_type;
           case 'B':
-            baseType = PrimitiveType.getByteSignature();
+            baseType = PrimitiveType.getByte();
             break this_type;
           case 'C':
             baseType = PrimitiveType.getChar();
