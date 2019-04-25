@@ -127,8 +127,9 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
     return IntConstant.getInstance(Double.compare(this.value, c.value) >= 0 ? 1 : 0);
   }
 
+  @Nonnull
   @Override
-  public IntConstant cmpg(DoubleConstant constant) {
+  public IntConstant cmpg(@Nonnull DoubleConstant constant) {
     final double cValue = constant.value;
     if (this.value < cValue) {
       return IntConstant.getInstance(-1);
@@ -139,8 +140,9 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
     }
   }
 
+  @Nonnull
   @Override
-  public IntConstant cmpl(DoubleConstant constant) {
+  public IntConstant cmpl(@Nonnull DoubleConstant constant) {
     final double cValue = constant.value;
     if (this.value > cValue) {
       return IntConstant.getInstance(1);

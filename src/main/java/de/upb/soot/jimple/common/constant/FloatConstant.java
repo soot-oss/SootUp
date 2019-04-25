@@ -125,8 +125,9 @@ public class FloatConstant implements RealConstant<FloatConstant> {
     return IntConstant.getInstance(Float.compare(this.value, c.value) >= 0 ? 1 : 0);
   }
 
+  @Nonnull
   @Override
-  public IntConstant cmpg(FloatConstant constant) {
+  public IntConstant cmpg(@Nonnull FloatConstant constant) {
     final float cValue = constant.value;
     if (this.value < cValue) {
       return IntConstant.getInstance(-1);
@@ -137,8 +138,9 @@ public class FloatConstant implements RealConstant<FloatConstant> {
     }
   }
 
+  @Nonnull
   @Override
-  public IntConstant cmpl(FloatConstant constant) {
+  public IntConstant cmpl(@Nonnull FloatConstant constant) {
     final float cValue = constant.value;
     if (this.value > cValue) {
       return IntConstant.getInstance(1);
