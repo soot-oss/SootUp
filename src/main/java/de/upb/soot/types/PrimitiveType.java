@@ -89,6 +89,7 @@ public class PrimitiveType extends Type {
 
   @Override
   @Nonnull
+  // TODO: [MS] wanted behaviour? or only qote if needed?
   public String toQuotedString() {
     return "'" + this._name + "'";
   }

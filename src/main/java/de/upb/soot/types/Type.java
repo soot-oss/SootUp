@@ -30,10 +30,8 @@ public abstract class Type {
   /**
    * Gets the type name as quoted string.
    *
-   * @return The type name as quoted string.
+   * @return The type name as an escaped "quoted" string where its necessary to do so (e.g. reserved names).
    */
   @Nonnull
-  public String toQuotedString() {
-    return this.toString();
-  }
+  abstract public String toQuotedString();
 }

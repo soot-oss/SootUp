@@ -13,12 +13,23 @@ public class ArrayType extends ReferenceType {
     this.dimension = dimension;
   }
 
-  // Todo please implemnt it
+  // TODO [LL] please implement it
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(baseType);
+    for (int i = 0; i < dimension; i++) {
+      sb.append("[]");
+    }
+    return sb.toString();
+  }
+
+  /** Returns an escaped textual representation of this type for serialization */
+  @Override
+  public String toQuotedString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(baseType.toQuotedString());
     for (int i = 0; i < dimension; i++) {
       sb.append("[]");
     }

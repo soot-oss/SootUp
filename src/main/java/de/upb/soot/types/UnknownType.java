@@ -45,4 +45,7 @@ public class UnknownType extends Type {
   public String toString() {
     return "unknown";
   }
+  public String toQuotedString() {
+    return toString();
+  }
 }
