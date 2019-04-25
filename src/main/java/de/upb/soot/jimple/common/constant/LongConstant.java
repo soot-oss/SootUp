@@ -31,7 +31,7 @@ import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 import javax.annotation.Nonnull;
 
-public class LongConstant implements ArithmeticConstant<LongConstant> {
+public class LongConstant implements ShiftableConstant<LongConstant> {
   /** */
   private static final long serialVersionUID = -3227009524415387793L;
 

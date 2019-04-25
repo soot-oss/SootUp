@@ -60,7 +60,7 @@ public class BooleanConstant
   @Nonnull
   @Override
   public BooleanConstant equalEqual(@Nonnull BooleanConstant c) {
-    return BooleanConstant.getInstance((this.value == c.value));
+    return BooleanConstant.getInstance(this.value == c.value);
   }
 
   @Nonnull
