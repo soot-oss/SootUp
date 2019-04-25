@@ -847,8 +847,6 @@ public class InstructionConverter {
       if (symbolTable.isConstant(result)) {
         ret = getConstant(result);
       } else {
-        // TODO. [LL] how to get the type of result?
-        // [ms]: what about: this.sootMethod.getReturnType()
         ret = this.getLocal(UnknownType.getInstance(), result);
       }
 
@@ -1021,7 +1019,7 @@ public class InstructionConverter {
 
     if (!ret.getType().equals(type)) {
       // ret.setType(ret.getType().merge(type));
-      // TODO. re-implement merge.
+      // TODO. re-implement merge. Don't forget type can also be UnknownType.
       // throw new RuntimeException("Different types for same local
       // variable: "+ret.getType()+"<->"+type);
     }
