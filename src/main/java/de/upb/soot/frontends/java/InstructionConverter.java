@@ -50,7 +50,6 @@ import de.upb.soot.jimple.basic.JStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.jimple.basic.PositionInformation;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.BooleanConstant;
 import de.upb.soot.jimple.common.constant.ClassConstant;
@@ -327,9 +326,8 @@ public class InstructionConverter {
     converter.addSootField(assertionsDisabled);
     Local testLocal = localGenerator.generateLocal(PrimitiveType.getBoolean());
     JStaticFieldRef assertFieldRef = Jimple.newStaticFieldRef(fieldSig);
-    Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
     Position[] operandPos = new Position[1];
-    operandPos[0] = new PositionInformation(stmtPos.getLastLine(), -1, stmtPos.getLastLine(), -1);
+    operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
     JAssignStmt assignStmt =
         Jimple.newAssignStmt(
             testLocal,
