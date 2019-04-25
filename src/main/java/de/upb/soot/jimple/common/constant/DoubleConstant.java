@@ -91,17 +91,15 @@ public class DoubleConstant implements RealConstant {
   }
 
   @Override
-  public IntConstant equalEqual(ComparableConstant c) {
+  public BooleanConstant equalEqual(ComparableConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) == 0 ? 1 : 0);
+    return BooleanConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) == 0);
   }
 
   @Override
-  public IntConstant notEqual(ComparableConstant c) {
+  public BooleanConstant notEqual(ComparableConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) != 0 ? 1 : 0);
+    return BooleanConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) != 0);
   }
 
   @Override

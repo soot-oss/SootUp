@@ -89,17 +89,15 @@ public class FloatConstant implements RealConstant {
   }
 
   @Override
-  public IntConstant equalEqual(ComparableConstant c) {
+  public BooleanConstant equalEqual(ComparableConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Float.compare(this.value, ((FloatConstant) c).value) == 0 ? 1 : 0);
+    return BooleanConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) == 0);
   }
 
   @Override
-  public IntConstant notEqual(ComparableConstant c) {
+  public BooleanConstant notEqual(ComparableConstant c) {
     assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Float.compare(this.value, ((FloatConstant) c).value) != 0 ? 1 : 0);
+    return BooleanConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) != 0);
   }
 
   @Override

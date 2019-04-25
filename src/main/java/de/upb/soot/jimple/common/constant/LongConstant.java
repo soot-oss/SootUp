@@ -97,19 +97,19 @@ public class LongConstant implements ArithmeticConstant {
   }
 
   @Override
-  public IntConstant equalEqual(ComparableConstant c) {
+  public BooleanConstant equalEqual(ComparableConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return IntConstant.getInstance((this.value == ((LongConstant) c).value) ? 1 : 0);
+    return BooleanConstant.getInstance(this.value == ((LongConstant) c).value);
   }
 
   @Override
-  public IntConstant notEqual(ComparableConstant c) {
+  public BooleanConstant notEqual(ComparableConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
-    return IntConstant.getInstance((this.value != ((LongConstant) c).value) ? 1 : 0);
+    return BooleanConstant.getInstance(this.value != ((LongConstant) c).value);
   }
 
   @Override

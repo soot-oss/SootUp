@@ -1288,7 +1288,7 @@ public class BinaryOpInstructionConversionTest {
         JAssignStmt.class,
         target -> {
           assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
-          assertEquiv(IntConstant.getInstance(0), target.getRightOp());
+          assertEquiv(BooleanConstant.getFalse(), target.getRightOp());
         });
 
     assertInstanceOfSatisfying(

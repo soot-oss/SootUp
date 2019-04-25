@@ -96,19 +96,19 @@ public class IntConstant implements ArithmeticConstant {
   }
 
   @Override
-  public IntConstant equalEqual(ComparableConstant c) {
+  public BooleanConstant equalEqual(ComparableConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.getInstance((this.value == ((IntConstant) c).value) ? 1 : 0);
+    return BooleanConstant.getInstance(this.value == ((IntConstant) c).value);
   }
 
   @Override
-  public IntConstant notEqual(ComparableConstant c) {
+  public BooleanConstant notEqual(ComparableConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
-    return IntConstant.getInstance((this.value != ((IntConstant) c).value) ? 1 : 0);
+    return BooleanConstant.getInstance(this.value != ((IntConstant) c).value);
   }
 
   @Override
