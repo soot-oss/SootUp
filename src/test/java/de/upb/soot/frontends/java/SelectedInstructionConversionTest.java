@@ -42,7 +42,7 @@ public class SelectedInstructionConversionTest {
     typeFactory = factories.getTypeFactory();
   }
 
-  @Ignore
+  @Test @Ignore
   public void test1() {
     // TODO FIX IT
     declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA.AA");
@@ -98,7 +98,7 @@ public class SelectedInstructionConversionTest {
 
   // TODO This test should not be ignored
   //  https://github.com/secure-software-engineering/soot-reloaded/issues/108
-  @Ignore
+  @Test @Ignore
   public void test3() {
     declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");
     Optional<SootMethod> m =
