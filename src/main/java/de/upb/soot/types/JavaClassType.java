@@ -163,9 +163,6 @@ public class JavaClassType extends ReferenceType {
     StringBuilder res = new StringBuilder(s.length() + 16);
 
     for (String part : SplitPatternHolder.SPLIT_PATTERN.split(s)) {
-      if (res.length() > 0) {
-        res.append(SplitPatternHolder.SPLIT_CHAR);
-      }
 
       if (part.startsWith("-") || JavaView.RESERVED_NAMES.contains(part)) {
         res.append('\'');
@@ -174,8 +171,9 @@ public class JavaClassType extends ReferenceType {
       } else {
         res.append(part);
       }
+      res.append(SplitPatternHolder.SPLIT_CHAR);
     }
-
+    res.setLength(res.length() - 1);
     return res.toString();
   }
 

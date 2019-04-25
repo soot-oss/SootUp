@@ -40,6 +40,7 @@ public class NullType extends ReferenceType {
   public String toString() {
     return "null";
   }
+
   public String toQuotedString() {
     return toString();
   }
