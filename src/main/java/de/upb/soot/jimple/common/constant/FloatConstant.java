@@ -29,9 +29,10 @@ import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
+import javax.annotation.Nonnull;
 
 /** Floating point constant with single precision. */
-public class FloatConstant implements RealConstant {
+public class FloatConstant implements RealConstant<FloatConstant> {
 
   /** */
   private static final long serialVersionUID = 1743530246829003090L;
@@ -58,80 +59,75 @@ public class FloatConstant implements RealConstant {
   }
 
   // PTC 1999/06/28
+  @Nonnull
   @Override
-  public FloatConstant add(NumericConstant c) {
-    assertInstanceOf(c);
-    return FloatConstant.getInstance(this.value + ((FloatConstant) c).value);
+  public FloatConstant add(@Nonnull FloatConstant c) {
+    return FloatConstant.getInstance(this.value + c.value);
+  }
+
+  @Nonnull
+  @Override
+  public FloatConstant subtract(@Nonnull FloatConstant c) {
+    return FloatConstant.getInstance(this.value - c.value);
+  }
+
+  @Nonnull
+  @Override
+  public FloatConstant multiply(@Nonnull FloatConstant c) {
+    return FloatConstant.getInstance(this.value * c.value);
+  }
+
+  @Nonnull
+  @Override
+  public FloatConstant divide(@Nonnull FloatConstant c) {
+    return FloatConstant.getInstance(this.value / c.value);
+  }
+
+  @Nonnull
+  @Override
+  public FloatConstant remainder(@Nonnull FloatConstant c) {
+    return FloatConstant.getInstance(this.value % c.value);
+  }
+
+  @Nonnull
+  @Override
+  public BooleanConstant equalEqual(@Nonnull FloatConstant c) {
+    return BooleanConstant.getInstance(Float.compare(this.value, c.value) == 0);
+  }
+
+  @Nonnull
+  @Override
+  public BooleanConstant notEqual(@Nonnull FloatConstant c) {
+    return BooleanConstant.getInstance(Float.compare(this.value, c.value) != 0);
+  }
+
+  @Nonnull
+  @Override
+  public IntConstant lessThan(@Nonnull FloatConstant c) {
+    return IntConstant.getInstance(Float.compare(this.value, c.value) < 0 ? 1 : 0);
+  }
+
+  @Nonnull
+  @Override
+  public IntConstant lessThanOrEqual(@Nonnull FloatConstant c) {
+    return IntConstant.getInstance(Float.compare(this.value, c.value) <= 0 ? 1 : 0);
+  }
+
+  @Nonnull
+  @Override
+  public IntConstant greaterThan(@Nonnull FloatConstant c) {
+    return IntConstant.getInstance(Float.compare(this.value, c.value) > 0 ? 1 : 0);
+  }
+
+  @Nonnull
+  @Override
+  public IntConstant greaterThanOrEqual(@Nonnull FloatConstant c) {
+    return IntConstant.getInstance(Float.compare(this.value, c.value) >= 0 ? 1 : 0);
   }
 
   @Override
-  public FloatConstant subtract(NumericConstant c) {
-    assertInstanceOf(c);
-    return FloatConstant.getInstance(this.value - ((FloatConstant) c).value);
-  }
-
-  @Override
-  public FloatConstant multiply(NumericConstant c) {
-    assertInstanceOf(c);
-    return FloatConstant.getInstance(this.value * ((FloatConstant) c).value);
-  }
-
-  @Override
-  public FloatConstant divide(NumericConstant c) {
-    assertInstanceOf(c);
-    return FloatConstant.getInstance(this.value / ((FloatConstant) c).value);
-  }
-
-  @Override
-  public FloatConstant remainder(NumericConstant c) {
-    assertInstanceOf(c);
-    return FloatConstant.getInstance(this.value % ((FloatConstant) c).value);
-  }
-
-  @Override
-  public BooleanConstant equalEqual(ComparableConstant c) {
-    assertInstanceOf(c);
-    return BooleanConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) == 0);
-  }
-
-  @Override
-  public BooleanConstant notEqual(ComparableConstant c) {
-    assertInstanceOf(c);
-    return BooleanConstant.getInstance(Float.compare(this.value, ((FloatConstant) c).value) != 0);
-  }
-
-  @Override
-  public IntConstant lessThan(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Float.compare(this.value, ((FloatConstant) c).value) < 0 ? 1 : 0);
-  }
-
-  @Override
-  public IntConstant lessThanOrEqual(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Float.compare(this.value, ((FloatConstant) c).value) <= 0 ? 1 : 0);
-  }
-
-  @Override
-  public IntConstant greaterThan(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Float.compare(this.value, ((FloatConstant) c).value) > 0 ? 1 : 0);
-  }
-
-  @Override
-  public IntConstant greaterThanOrEqual(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Float.compare(this.value, ((FloatConstant) c).value) >= 0 ? 1 : 0);
-  }
-
-  @Override
-  public IntConstant cmpg(RealConstant constant) {
-    assertInstanceOf(constant);
-    final float cValue = ((FloatConstant) constant).value;
+  public IntConstant cmpg(FloatConstant constant) {
+    final float cValue = constant.value;
     if (this.value < cValue) {
       return IntConstant.getInstance(-1);
     } else if (this.value == cValue) {
@@ -142,9 +138,8 @@ public class FloatConstant implements RealConstant {
   }
 
   @Override
-  public IntConstant cmpl(RealConstant constant) {
-    assertInstanceOf(constant);
-    final float cValue = ((FloatConstant) constant).value;
+  public IntConstant cmpl(FloatConstant constant) {
+    final float cValue = constant.value;
     if (this.value > cValue) {
       return IntConstant.getInstance(1);
     } else if (this.value == cValue) {
@@ -154,6 +149,7 @@ public class FloatConstant implements RealConstant {
     }
   }
 
+  @Nonnull
   @Override
   public FloatConstant negate() {
     return FloatConstant.getInstance(-(this.value));
@@ -180,18 +176,6 @@ public class FloatConstant implements RealConstant {
   @Override
   public void accept(IVisitor sw) {
     ((IConstantVisitor) sw).caseFloatConstant(this);
-  }
-
-  /**
-   * Checks if passed argument is instance of expected class.
-   *
-   * @param constant the instance to check
-   * @throws IllegalArgumentException when check fails
-   */
-  private void assertInstanceOf(Constant constant) {
-    if (!(constant instanceof FloatConstant)) {
-      throw new IllegalArgumentException("FloatConstant expected");
-    }
   }
 
   public float getValue() {

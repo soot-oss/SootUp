@@ -29,8 +29,9 @@ import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
+import javax.annotation.Nonnull;
 
-public class LongConstant implements ArithmeticConstant {
+public class LongConstant implements ArithmeticConstant<LongConstant> {
   /** */
   private static final long serialVersionUID = -3227009524415387793L;
 
@@ -56,92 +57,70 @@ public class LongConstant implements ArithmeticConstant {
   }
 
   // PTC 1999/06/28
+  @Nonnull
   @Override
-  public LongConstant add(NumericConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return LongConstant.getInstance(this.value + ((LongConstant) c).value);
+  public LongConstant add(@Nonnull LongConstant c) {
+    return LongConstant.getInstance(this.value + c.value);
   }
 
+  @Nonnull
   @Override
-  public LongConstant subtract(NumericConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return LongConstant.getInstance(this.value - ((LongConstant) c).value);
+  public LongConstant subtract(@Nonnull LongConstant c) {
+    return LongConstant.getInstance(this.value - c.value);
   }
 
+  @Nonnull
   @Override
-  public LongConstant multiply(NumericConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return LongConstant.getInstance(this.value * ((LongConstant) c).value);
+  public LongConstant multiply(@Nonnull LongConstant c) {
+    return LongConstant.getInstance(this.value * c.value);
   }
 
+  @Nonnull
   @Override
-  public LongConstant divide(NumericConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return LongConstant.getInstance(this.value / ((LongConstant) c).value);
+  public LongConstant divide(@Nonnull LongConstant c) {
+    return LongConstant.getInstance(this.value / c.value);
   }
 
+  @Nonnull
   @Override
-  public LongConstant remainder(NumericConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return LongConstant.getInstance(this.value % ((LongConstant) c).value);
+  public LongConstant remainder(@Nonnull LongConstant c) {
+    return LongConstant.getInstance(this.value % c.value);
   }
 
+  @Nonnull
   @Override
-  public BooleanConstant equalEqual(ComparableConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value == ((LongConstant) c).value);
+  public BooleanConstant equalEqual(@Nonnull LongConstant c) {
+    return BooleanConstant.getInstance(this.value == c.value);
   }
 
+  @Nonnull
   @Override
-  public BooleanConstant notEqual(ComparableConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value != ((LongConstant) c).value);
+  public BooleanConstant notEqual(@Nonnull LongConstant c) {
+    return BooleanConstant.getInstance(this.value != c.value);
   }
 
+  @Nonnull
   @Override
-  public IntConstant lessThan(NumericConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return IntConstant.getInstance((this.value < ((LongConstant) c).value) ? 1 : 0);
+  public IntConstant lessThan(@Nonnull LongConstant c) {
+    return IntConstant.getInstance((this.value < c.value) ? 1 : 0);
   }
 
+  @Nonnull
   @Override
-  public IntConstant lessThanOrEqual(NumericConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return IntConstant.getInstance((this.value <= ((LongConstant) c).value) ? 1 : 0);
+  public IntConstant lessThanOrEqual(@Nonnull LongConstant c) {
+    return IntConstant.getInstance((this.value <= c.value) ? 1 : 0);
   }
 
+  @Nonnull
   @Override
-  public IntConstant greaterThan(NumericConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return IntConstant.getInstance((this.value > ((LongConstant) c).value) ? 1 : 0);
+  public IntConstant greaterThan(@Nonnull LongConstant c) {
+    return IntConstant.getInstance((this.value > c.value) ? 1 : 0);
   }
 
+  @Nonnull
   @Override
-  public IntConstant greaterThanOrEqual(NumericConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return IntConstant.getInstance((this.value >= ((LongConstant) c).value) ? 1 : 0);
+  public IntConstant greaterThanOrEqual(@Nonnull LongConstant c) {
+    return IntConstant.getInstance((this.value >= c.value) ? 1 : 0);
   }
 
   /** Compares the value of LongConstant. */
@@ -155,60 +134,46 @@ public class LongConstant implements ArithmeticConstant {
     }
   }
 
+  @Nonnull
   @Override
   public LongConstant negate() {
     return LongConstant.getInstance(-(this.value));
   }
 
+  @Nonnull
   @Override
-  public LongConstant and(LogicalConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return LongConstant.getInstance(this.value & ((LongConstant) c).value);
+  public LongConstant and(@Nonnull LongConstant c) {
+    return LongConstant.getInstance(this.value & c.value);
   }
 
+  @Nonnull
   @Override
-  public LongConstant or(LogicalConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return LongConstant.getInstance(this.value | ((LongConstant) c).value);
+  public LongConstant or(@Nonnull LongConstant c) {
+    return LongConstant.getInstance(this.value | c.value);
   }
 
+  @Nonnull
   @Override
-  public LongConstant xor(LogicalConstant c) {
-    if (!(c instanceof LongConstant)) {
-      throw new IllegalArgumentException("LongConstant expected");
-    }
-    return LongConstant.getInstance(this.value ^ ((LongConstant) c).value);
+  public LongConstant xor(@Nonnull LongConstant c) {
+    return LongConstant.getInstance(this.value ^ c.value);
   }
 
+  @Nonnull
   @Override
-  public LongConstant shiftLeft(ArithmeticConstant c) {
-    // NOTE CAREFULLY: the RHS of a shift op is not (!)
-    // of Long type. It is, in fact, an IntConstant.
-
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return LongConstant.getInstance(this.value << ((IntConstant) c).getValue());
+  public LongConstant shiftLeft(@Nonnull IntConstant c) {
+    return LongConstant.getInstance(this.value << c.getValue());
   }
 
+  @Nonnull
   @Override
-  public LongConstant shiftRight(ArithmeticConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return LongConstant.getInstance(this.value >> ((IntConstant) c).getValue());
+  public LongConstant shiftRight(@Nonnull IntConstant c) {
+    return LongConstant.getInstance(this.value >> c.getValue());
   }
 
+  @Nonnull
   @Override
-  public LongConstant unsignedShiftRight(ArithmeticConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return LongConstant.getInstance(this.value >>> ((IntConstant) c).getValue());
+  public LongConstant unsignedShiftRight(@Nonnull IntConstant c) {
+    return LongConstant.getInstance(this.value >>> c.getValue());
   }
 
   @Override

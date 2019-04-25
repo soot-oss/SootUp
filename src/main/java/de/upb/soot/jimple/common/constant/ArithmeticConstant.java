@@ -25,11 +25,17 @@
 
 package de.upb.soot.jimple.common.constant;
 
+import javax.annotation.Nonnull;
+
 @SuppressWarnings("serial")
-public interface ArithmeticConstant extends NumericConstant, LogicalConstant {
-  ArithmeticConstant shiftLeft(ArithmeticConstant c);
+public interface ArithmeticConstant<A extends ArithmeticConstant<A>>
+    extends NumericConstant<A>, LogicalConstant<A> {
+  @Nonnull
+  A shiftLeft(@Nonnull IntConstant c);
 
-  ArithmeticConstant shiftRight(ArithmeticConstant c);
+  @Nonnull
+  A shiftRight(@Nonnull IntConstant c);
 
-  ArithmeticConstant unsignedShiftRight(ArithmeticConstant c);
+  @Nonnull
+  A unsignedShiftRight(@Nonnull IntConstant c);
 }

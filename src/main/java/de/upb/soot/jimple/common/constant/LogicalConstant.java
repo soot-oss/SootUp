@@ -1,9 +1,14 @@
 package de.upb.soot.jimple.common.constant;
 
-public interface LogicalConstant extends Constant {
-  LogicalConstant and(LogicalConstant c);
+import javax.annotation.Nonnull;
 
-  LogicalConstant or(LogicalConstant c);
+public interface LogicalConstant<L extends LogicalConstant<L>> extends Constant {
+  @Nonnull
+  L and(@Nonnull L c);
 
-  LogicalConstant xor(LogicalConstant c);
+  @Nonnull
+  L or(@Nonnull L c);
+
+  @Nonnull
+  L xor(@Nonnull L c);
 }

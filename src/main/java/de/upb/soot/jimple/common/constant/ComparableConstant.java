@@ -1,7 +1,11 @@
 package de.upb.soot.jimple.common.constant;
 
-public interface ComparableConstant extends Constant {
-  BooleanConstant equalEqual(ComparableConstant c);
+import javax.annotation.Nonnull;
 
-  BooleanConstant notEqual(ComparableConstant c);
+public interface ComparableConstant<C extends ComparableConstant<C>> extends Constant {
+  @Nonnull
+  BooleanConstant equalEqual(@Nonnull C c);
+
+  @Nonnull
+  BooleanConstant notEqual(@Nonnull C c);
 }

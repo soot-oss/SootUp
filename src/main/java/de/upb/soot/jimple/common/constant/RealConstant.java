@@ -25,13 +25,15 @@
 
 package de.upb.soot.jimple.common.constant;
 
+import javax.annotation.Nonnull;
+
 /**
  * Base type for floating point constants.
  *
  * @see DoubleConstant
  * @see FloatConstant
  */
-public interface RealConstant extends NumericConstant {
+public interface RealConstant<R extends RealConstant<R>> extends NumericConstant<R> {
 
   /**
    * Performs the indicated floating point comparison. For {@code NaN} comparisons {@code -1} is
@@ -41,7 +43,8 @@ public interface RealConstant extends NumericConstant {
    * @return {@code 0} if values are equal, {@code 1} if passed value less, or {@code -1} if passed
    *     value greater. When any of the values is {@code NaN} methodRef returns {@code -1}.
    */
-  IntConstant cmpl(RealConstant constant);
+  @Nonnull
+  IntConstant cmpl(@Nonnull R constant);
 
   /**
    * Performs the indicated floating point comparison. For {@code NaN} comparisons {@code 1} is
@@ -51,5 +54,6 @@ public interface RealConstant extends NumericConstant {
    * @return {@code 0} if values are equal, {@code 1} if passed value less, or {@code -1} if passed
    *     value greater. When any of the values is {@code NaN} methodRef returns {@code 1}.
    */
-  IntConstant cmpg(RealConstant constant);
+  @Nonnull
+  IntConstant cmpg(@Nonnull R constant);
 }

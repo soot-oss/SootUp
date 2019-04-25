@@ -29,9 +29,10 @@ import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
+import javax.annotation.Nonnull;
 
 /** Floating point constant with double precision. */
-public class DoubleConstant implements RealConstant {
+public class DoubleConstant implements RealConstant<DoubleConstant> {
 
   /** */
   private static final long serialVersionUID = -6608501059585159445L;
@@ -60,80 +61,75 @@ public class DoubleConstant implements RealConstant {
   }
 
   // PTC 1999/06/28
+  @Nonnull
   @Override
-  public DoubleConstant add(NumericConstant c) {
-    assertInstanceOf(c);
-    return DoubleConstant.getInstance(this.value + ((DoubleConstant) c).value);
+  public DoubleConstant add(@Nonnull DoubleConstant c) {
+    return DoubleConstant.getInstance(this.value + c.value);
+  }
+
+  @Nonnull
+  @Override
+  public DoubleConstant subtract(@Nonnull DoubleConstant c) {
+    return DoubleConstant.getInstance(this.value - c.value);
+  }
+
+  @Nonnull
+  @Override
+  public DoubleConstant multiply(@Nonnull DoubleConstant c) {
+    return DoubleConstant.getInstance(this.value * c.value);
+  }
+
+  @Nonnull
+  @Override
+  public DoubleConstant divide(@Nonnull DoubleConstant c) {
+    return DoubleConstant.getInstance(this.value / c.value);
+  }
+
+  @Nonnull
+  @Override
+  public DoubleConstant remainder(@Nonnull DoubleConstant c) {
+    return DoubleConstant.getInstance(this.value % c.value);
+  }
+
+  @Nonnull
+  @Override
+  public BooleanConstant equalEqual(@Nonnull DoubleConstant c) {
+    return BooleanConstant.getInstance(Double.compare(this.value, c.value) == 0);
+  }
+
+  @Nonnull
+  @Override
+  public BooleanConstant notEqual(@Nonnull DoubleConstant c) {
+    return BooleanConstant.getInstance(Double.compare(this.value, c.value) != 0);
+  }
+
+  @Nonnull
+  @Override
+  public IntConstant lessThan(@Nonnull DoubleConstant c) {
+    return IntConstant.getInstance(Double.compare(this.value, c.value) < 0 ? 1 : 0);
+  }
+
+  @Nonnull
+  @Override
+  public IntConstant lessThanOrEqual(@Nonnull DoubleConstant c) {
+    return IntConstant.getInstance(Double.compare(this.value, c.value) <= 0 ? 1 : 0);
+  }
+
+  @Nonnull
+  @Override
+  public IntConstant greaterThan(@Nonnull DoubleConstant c) {
+    return IntConstant.getInstance(Double.compare(this.value, c.value) > 0 ? 1 : 0);
+  }
+
+  @Nonnull
+  @Override
+  public IntConstant greaterThanOrEqual(@Nonnull DoubleConstant c) {
+    return IntConstant.getInstance(Double.compare(this.value, c.value) >= 0 ? 1 : 0);
   }
 
   @Override
-  public DoubleConstant subtract(NumericConstant c) {
-    assertInstanceOf(c);
-    return DoubleConstant.getInstance(this.value - ((DoubleConstant) c).value);
-  }
-
-  @Override
-  public DoubleConstant multiply(NumericConstant c) {
-    assertInstanceOf(c);
-    return DoubleConstant.getInstance(this.value * ((DoubleConstant) c).value);
-  }
-
-  @Override
-  public DoubleConstant divide(NumericConstant c) {
-    assertInstanceOf(c);
-    return DoubleConstant.getInstance(this.value / ((DoubleConstant) c).value);
-  }
-
-  @Override
-  public DoubleConstant remainder(NumericConstant c) {
-    assertInstanceOf(c);
-    return DoubleConstant.getInstance(this.value % ((DoubleConstant) c).value);
-  }
-
-  @Override
-  public BooleanConstant equalEqual(ComparableConstant c) {
-    assertInstanceOf(c);
-    return BooleanConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) == 0);
-  }
-
-  @Override
-  public BooleanConstant notEqual(ComparableConstant c) {
-    assertInstanceOf(c);
-    return BooleanConstant.getInstance(Double.compare(this.value, ((DoubleConstant) c).value) != 0);
-  }
-
-  @Override
-  public IntConstant lessThan(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) < 0 ? 1 : 0);
-  }
-
-  @Override
-  public IntConstant lessThanOrEqual(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) <= 0 ? 1 : 0);
-  }
-
-  @Override
-  public IntConstant greaterThan(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) > 0 ? 1 : 0);
-  }
-
-  @Override
-  public IntConstant greaterThanOrEqual(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) >= 0 ? 1 : 0);
-  }
-
-  @Override
-  public IntConstant cmpg(RealConstant constant) {
-    assertInstanceOf(constant);
-    final double cValue = ((DoubleConstant) constant).value;
+  public IntConstant cmpg(DoubleConstant constant) {
+    final double cValue = constant.value;
     if (this.value < cValue) {
       return IntConstant.getInstance(-1);
     } else if (this.value == cValue) {
@@ -144,9 +140,8 @@ public class DoubleConstant implements RealConstant {
   }
 
   @Override
-  public IntConstant cmpl(RealConstant constant) {
-    assertInstanceOf(constant);
-    final double cValue = ((DoubleConstant) constant).value;
+  public IntConstant cmpl(DoubleConstant constant) {
+    final double cValue = constant.value;
     if (this.value > cValue) {
       return IntConstant.getInstance(1);
     } else if (this.value == cValue) {
@@ -156,6 +151,7 @@ public class DoubleConstant implements RealConstant {
     }
   }
 
+  @Nonnull
   @Override
   public DoubleConstant negate() {
     return DoubleConstant.getInstance(-(this.value));

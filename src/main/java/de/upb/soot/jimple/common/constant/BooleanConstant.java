@@ -4,6 +4,7 @@ import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
+import javax.annotation.Nonnull;
 
 /**
  * BooleanConstant didn't exist in old soot, because in Java byte code boolean values are
@@ -12,7 +13,8 @@ import de.upb.soot.types.Type;
  *
  * @author Linghui Luo
  */
-public class BooleanConstant implements LogicalConstant, ComparableConstant {
+public class BooleanConstant
+    implements LogicalConstant<BooleanConstant>, ComparableConstant<BooleanConstant> {
 
   private static final BooleanConstant FALSE = new BooleanConstant(0);
   private static final BooleanConstant TRUE = new BooleanConstant(1);
@@ -55,43 +57,33 @@ public class BooleanConstant implements LogicalConstant, ComparableConstant {
     ((IConstantVisitor) sw).caseBooleanConstant(this);
   }
 
+  @Nonnull
   @Override
-  public BooleanConstant equalEqual(ComparableConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance((this.value == ((BooleanConstant) c).value) ? 1 : 0);
+  public BooleanConstant equalEqual(@Nonnull BooleanConstant c) {
+    return BooleanConstant.getInstance((this.value == c.value));
   }
 
+  @Nonnull
   @Override
-  public BooleanConstant notEqual(ComparableConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance((this.value != ((BooleanConstant) c).value) ? 1 : 0);
+  public BooleanConstant notEqual(@Nonnull BooleanConstant c) {
+    return BooleanConstant.getInstance(this.value != c.value);
   }
 
-  public BooleanConstant and(LogicalConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value & ((BooleanConstant) c).value);
+  @Nonnull
+  public BooleanConstant and(@Nonnull BooleanConstant c) {
+    return BooleanConstant.getInstance(this.value & c.value);
   }
 
+  @Nonnull
   @Override
-  public BooleanConstant or(LogicalConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value | ((BooleanConstant) c).value);
+  public BooleanConstant or(@Nonnull BooleanConstant c) {
+    return BooleanConstant.getInstance(this.value | c.value);
   }
 
+  @Nonnull
   @Override
-  public BooleanConstant xor(LogicalConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value ^ ((BooleanConstant) c).value);
+  public BooleanConstant xor(@Nonnull BooleanConstant c) {
+    return BooleanConstant.getInstance(this.value ^ c.value);
   }
 
   @Override
