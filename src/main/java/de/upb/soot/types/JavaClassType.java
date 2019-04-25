@@ -173,7 +173,8 @@ public class JavaClassType extends ReferenceType {
       }
       res.append(SplitPatternHolder.SPLIT_CHAR);
     }
-    // TODO: [ms] condition is always true if non-empty names are enforced at signature generation (see getFullyQualifiedName())
+    // TODO: [ms] condition is always true if non-empty names are enforced at signature generation
+    // (see getFullyQualifiedName())
     if (res.length() > 0) {
       res.setLength(res.length() - 1);
     }
