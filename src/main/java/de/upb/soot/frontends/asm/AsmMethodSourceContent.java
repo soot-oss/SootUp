@@ -1450,21 +1450,18 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       Operand[] oprs;
       int nrArgs = types.size();
       if (expr instanceof JStaticInvokeExpr) {
-        oprs = nrArgs == 0 ? null : new Operand[nrArgs];
+        oprs = (nrArgs == 0) ? null : new Operand[nrArgs];
       } else {
         oprs = new Operand[nrArgs + 1];
       }
       if (oprs != null) {
-        while (nrArgs-- != 0) {
+        while (nrArgs-- >= 0) {
           oprs[nrArgs] = pop(types.get(nrArgs));
         }
         if (!(expr instanceof JStaticInvokeExpr)) {
           oprs[oprs.length - 1] = pop();
         }
         frame.mergeIn(oprs);
-
-        // FIXME: [JMP] This assignment is never used.
-        nrArgs = types.size();
       }
       returnType = expr.getType();
     }
