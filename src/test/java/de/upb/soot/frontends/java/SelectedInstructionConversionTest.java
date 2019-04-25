@@ -96,6 +96,8 @@ public class SelectedInstructionConversionTest {
     assertEquals(expectedStmts, actualStmts);
   }
 
+  // TODO This test should not be ignored
+  //  https://github.com/secure-software-engineering/soot-reloaded/issues/108
   @Ignore
   public void test3() {
     declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");
