@@ -61,7 +61,7 @@ import javax.annotation.Nullable;
 /**
  * Class that models the Jimple body (code attribute) of a methodRef.
  *
- * <p>Modified by Linghui Luo
+ * @author Linghui Luo
  */
 public class Body implements Serializable {
   /** */
@@ -253,8 +253,8 @@ public class Body implements Serializable {
    *
    * @return the statements in this Body
    */
-  public Collection<IStmt> getStmts() {
-    return stmts;
+  public List<IStmt> getStmts() {
+    return Collections.unmodifiableList(stmts);
   }
 
   public void checkInit() {

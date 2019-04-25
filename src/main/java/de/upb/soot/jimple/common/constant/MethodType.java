@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public class MethodType extends Constant {
+public class MethodType implements Constant {
 
   // FIXME: adapt this class
 
@@ -60,4 +60,9 @@ public class MethodType extends Constant {
 
   @Override
   public void accept(IVisitor v) {}
+
+  @Override
+  public Object clone() {
+    throw new RuntimeException();
+  }
 }

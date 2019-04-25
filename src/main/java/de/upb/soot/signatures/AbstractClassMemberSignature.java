@@ -66,9 +66,4 @@ public abstract class AbstractClassMemberSignature implements ISignature {
   public String getName() {
     return subSignature.getName();
   }
-
-  @Nonnull
-  public String toQuotedString() {
-    return this.toString();
-  }
 }

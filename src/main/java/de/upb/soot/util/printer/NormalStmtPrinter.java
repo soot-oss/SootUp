@@ -21,7 +21,7 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
   @Override
   public void typeSignature(Type t) {
     handleIndent();
-    String s = t == null ? "<null>" : t.toQuotedString();
+    String s = t == null ? "<null>" : t.toString();
     output.append(s);
   }
 

@@ -365,7 +365,7 @@ public class SignatureFactoryTest {
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
 
     Type byteSig = typeFactory.getType("byte");
-    assertSame(byteSig, PrimitiveType.getByteSignature());
+    assertSame(byteSig, PrimitiveType.getByte());
     assertSame("byte", byteSig.toString());
 
     Type shortSig = typeFactory.getType("SHORT");

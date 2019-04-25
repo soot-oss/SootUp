@@ -8,6 +8,7 @@ import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.Module;
 import com.ibm.wala.classLoader.SourceDirectoryTreeModule;
+import com.ibm.wala.dalvik.classLoader.DexFileModule;
 import com.ibm.wala.ipa.callgraph.AnalysisScope;
 import com.ibm.wala.ipa.cha.ClassHierarchyException;
 import com.ibm.wala.ipa.cha.ClassHierarchyFactory;
@@ -121,6 +122,36 @@ public class WalaClassLoader {
     }
   }
 
+  public WalaClassLoader(
+      Set<String> sourcePath, String apkPath, String androidJar, String exclusionFilePath) {
+    addScopesForJava();
+    this.sourcePath = sourcePath;
+    try {
+      // add the source directory to scope
+      for (String path : sourcePath) {
+        scope.addToScope(
+            JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(path)));
+      }
+      scope.setLoaderImpl(
+          ClassLoaderReference.Application, "com.ibm.wala.dalvik.classLoader.WDexClassLoaderImpl");
+      // add androidJar and apkPath to scope
+      scope.addToScope(ClassLoaderReference.Primordial, new JarFile(androidJar));
+      scope.addToScope(ClassLoaderReference.Application, DexFileModule.make(new File(apkPath)));
+      // set exclusions
+      if (exclusionFilePath != null) {
+        File exclusionFile = new File(exclusionFilePath);
+        if (exclusionFile.isFile()) {
+          FileOfClasses classes;
+          classes = new FileOfClasses(new FileInputStream(exclusionFile));
+          scope.setExclusions(classes);
+        }
+      }
+      factory = new ECJClassLoaderFactory(scope.getExclusions());
+    } catch (IllegalArgumentException | IOException e) {
+      throw new RuntimeException("Failed to construct WalaClassLoader", e);
+    }
+  }
+
   /**
    * Constructor used for loading classes from given source code path.
    *
@@ -159,7 +190,6 @@ public class WalaClassLoader {
     for (Module m : moduleFiles) {
       scope.addToScope(JavaSourceAnalysisScope.SOURCE, m);
     }
-    // factory = new ClassLoaderFactoryImpl(scope.getExclusions());
     factory = new ECJClassLoaderFactory(scope.getExclusions());
   }
 
