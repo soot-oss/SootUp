@@ -42,6 +42,8 @@ public class VoidType extends Type {
     return "void";
   }
 
+  @Override
+  @Nonnull
   public String toQuotedString() {
     return toString();
   }

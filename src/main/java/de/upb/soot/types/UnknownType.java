@@ -46,6 +46,8 @@ public class UnknownType extends Type {
     return "unknown";
   }
 
+  @Override
+  @Nonnull
   public String toQuotedString() {
     return toString();
   }
