@@ -787,47 +787,9 @@ public class InstructionConverter {
     List<IStmt> stmts = new ArrayList<IStmt>();
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
-    Value value1;
-    Integer constant = null;
-    if (symbolTable.isZero(val1)) {
-      value1 = IntConstant.getInstance(0);
-    } else {
-      if (symbolTable.isConstant(val1)) {
-        Object c = symbolTable.getConstantValue(val1);
-        if (c instanceof Boolean) {
-          if (c.equals(true)) {
-            constant = 1;
-          } else constant = 0;
-        }
-      }
-      value1 = getLocal(PrimitiveType.getInt(), val1);
-    }
-    if (constant != null) {
-      JAssignStmt assignStmt =
-          Jimple.newAssignStmt(value1, IntConstant.getInstance(constant.intValue()), posInfo);
-      stmts.add(assignStmt);
-    }
-    Value value2;
-    constant = null;
-    if (symbolTable.isZero(val2)) {
-      value2 = IntConstant.getInstance(0);
-    } else {
-      if (symbolTable.isConstant(val2)) {
-        Object c = symbolTable.getConstantValue(val2);
-        if (c instanceof Boolean) {
-          if (c.equals(true)) {
-            constant = 1;
-          } else constant = 0;
-        }
-      }
-      value2 = getLocal(PrimitiveType.getInt(), val2);
-    }
-    if (constant != null) {
-      JAssignStmt assignStmt =
-          Jimple.newAssignStmt(value2, IntConstant.getInstance(constant.intValue()), posInfo);
-      stmts.add(assignStmt);
-    }
-    AbstractConditionExpr condition = null;
+    Value value1 = extractValueAndAddAssignStmt(posInfo, stmts, val1);
+    Value value2 = extractValueAndAddAssignStmt(posInfo, stmts, val2);
+    AbstractConditionExpr condition;
     IOperator op = condInst.getOperator();
     if (op.equals(Operator.EQ)) {
       condition = Jimple.newEqExpr(value1, value2);
@@ -851,6 +813,28 @@ public class InstructionConverter {
     this.targetsOfIfStmts.put(ifStmt, condInst.getTarget());
     stmts.add(ifStmt);
     return stmts;
+  }
+
+  private Value extractValueAndAddAssignStmt(PositionInfo posInfo, List<IStmt> addTo, int val) {
+    Value value;
+    Integer constant = null;
+    if (symbolTable.isZero(val)) {
+      value = IntConstant.getInstance(0);
+    } else {
+      if (symbolTable.isConstant(val)) {
+        Object c = symbolTable.getConstantValue(val);
+        if (c instanceof Boolean) {
+          constant = c.equals(true) ? 1 : 0;
+        }
+      }
+      value = getLocal(PrimitiveType.getInt(), val);
+    }
+    if (constant != null) {
+      JAssignStmt assignStmt =
+          Jimple.newAssignStmt(value, IntConstant.getInstance(constant), posInfo);
+      addTo.add(assignStmt);
+    }
+    return value;
   }
 
   private IStmt convertReturnInstruction(
