@@ -25,32 +25,26 @@
 
 package de.upb.soot.jimple.common.constant;
 
-public abstract class NumericConstant extends Constant {
-  /** */
-  private static final long serialVersionUID = 4905706877355824134L;
+public interface NumericConstant extends Constant, ComparableConstant {
 
   // PTC 1999/06/28
-  public abstract NumericConstant add(NumericConstant c);
+  NumericConstant add(NumericConstant c);
 
-  public abstract NumericConstant subtract(NumericConstant c);
+  NumericConstant subtract(NumericConstant c);
 
-  public abstract NumericConstant multiply(NumericConstant c);
+  NumericConstant multiply(NumericConstant c);
 
-  public abstract NumericConstant divide(NumericConstant c);
+  NumericConstant divide(NumericConstant c);
 
-  public abstract NumericConstant remainder(NumericConstant c);
+  NumericConstant remainder(NumericConstant c);
 
-  public abstract NumericConstant equalEqual(NumericConstant c);
+  NumericConstant lessThan(NumericConstant c);
 
-  public abstract NumericConstant notEqual(NumericConstant c);
+  NumericConstant lessThanOrEqual(NumericConstant c);
 
-  public abstract NumericConstant lessThan(NumericConstant c);
+  NumericConstant greaterThan(NumericConstant c);
 
-  public abstract NumericConstant lessThanOrEqual(NumericConstant c);
+  NumericConstant greaterThanOrEqual(NumericConstant c);
 
-  public abstract NumericConstant greaterThan(NumericConstant c);
-
-  public abstract NumericConstant greaterThanOrEqual(NumericConstant c);
-
-  public abstract NumericConstant negate();
+  NumericConstant negate();
 }

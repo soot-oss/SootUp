@@ -31,7 +31,7 @@ import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 
 /** Floating point constant with single precision. */
-public class FloatConstant extends RealConstant {
+public class FloatConstant implements RealConstant {
 
   /** */
   private static final long serialVersionUID = 1743530246829003090L;
@@ -59,72 +59,72 @@ public class FloatConstant extends RealConstant {
 
   // PTC 1999/06/28
   @Override
-  public NumericConstant add(NumericConstant c) {
+  public FloatConstant add(NumericConstant c) {
     assertInstanceOf(c);
     return FloatConstant.getInstance(this.value + ((FloatConstant) c).value);
   }
 
   @Override
-  public NumericConstant subtract(NumericConstant c) {
+  public FloatConstant subtract(NumericConstant c) {
     assertInstanceOf(c);
     return FloatConstant.getInstance(this.value - ((FloatConstant) c).value);
   }
 
   @Override
-  public NumericConstant multiply(NumericConstant c) {
+  public FloatConstant multiply(NumericConstant c) {
     assertInstanceOf(c);
     return FloatConstant.getInstance(this.value * ((FloatConstant) c).value);
   }
 
   @Override
-  public NumericConstant divide(NumericConstant c) {
+  public FloatConstant divide(NumericConstant c) {
     assertInstanceOf(c);
     return FloatConstant.getInstance(this.value / ((FloatConstant) c).value);
   }
 
   @Override
-  public NumericConstant remainder(NumericConstant c) {
+  public FloatConstant remainder(NumericConstant c) {
     assertInstanceOf(c);
     return FloatConstant.getInstance(this.value % ((FloatConstant) c).value);
   }
 
   @Override
-  public NumericConstant equalEqual(NumericConstant c) {
+  public IntConstant equalEqual(ComparableConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Float.compare(this.value, ((FloatConstant) c).value) == 0 ? 1 : 0);
   }
 
   @Override
-  public NumericConstant notEqual(NumericConstant c) {
+  public IntConstant notEqual(ComparableConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Float.compare(this.value, ((FloatConstant) c).value) != 0 ? 1 : 0);
   }
 
   @Override
-  public NumericConstant lessThan(NumericConstant c) {
+  public IntConstant lessThan(NumericConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Float.compare(this.value, ((FloatConstant) c).value) < 0 ? 1 : 0);
   }
 
   @Override
-  public NumericConstant lessThanOrEqual(NumericConstant c) {
+  public IntConstant lessThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Float.compare(this.value, ((FloatConstant) c).value) <= 0 ? 1 : 0);
   }
 
   @Override
-  public NumericConstant greaterThan(NumericConstant c) {
+  public IntConstant greaterThan(NumericConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Float.compare(this.value, ((FloatConstant) c).value) > 0 ? 1 : 0);
   }
 
   @Override
-  public NumericConstant greaterThanOrEqual(NumericConstant c) {
+  public IntConstant greaterThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Float.compare(this.value, ((FloatConstant) c).value) >= 0 ? 1 : 0);
@@ -157,7 +157,7 @@ public class FloatConstant extends RealConstant {
   }
 
   @Override
-  public NumericConstant negate() {
+  public FloatConstant negate() {
     return FloatConstant.getInstance(-(this.value));
   }
 
@@ -190,7 +190,7 @@ public class FloatConstant extends RealConstant {
    * @param constant the instance to check
    * @throws IllegalArgumentException when check fails
    */
-  private void assertInstanceOf(NumericConstant constant) {
+  private void assertInstanceOf(Constant constant) {
     if (!(constant instanceof FloatConstant)) {
       throw new IllegalArgumentException("FloatConstant expected");
     }
@@ -198,5 +198,10 @@ public class FloatConstant extends RealConstant {
 
   public float getValue() {
     return value;
+  }
+
+  @Override
+  public Object clone() {
+    throw new RuntimeException();
   }
 }

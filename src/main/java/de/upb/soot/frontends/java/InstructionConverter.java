@@ -977,11 +977,7 @@ public class InstructionConverter {
   private Constant getConstant(int valueNumber) {
     Object value = symbolTable.getConstantValue(valueNumber);
     if (value instanceof Boolean) {
-      if (value.equals(true)) {
-        return BooleanConstant.getInstance(1);
-      } else {
-        return BooleanConstant.getInstance(0);
-      }
+      return BooleanConstant.getInstance((boolean) value);
     } else if (value instanceof Byte
         || value instanceof Char
         || value instanceof Short

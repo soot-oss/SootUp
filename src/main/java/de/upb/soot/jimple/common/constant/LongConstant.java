@@ -30,7 +30,7 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 
-public class LongConstant extends ArithmeticConstant {
+public class LongConstant implements ArithmeticConstant {
   /** */
   private static final long serialVersionUID = -3227009524415387793L;
 
@@ -57,7 +57,7 @@ public class LongConstant extends ArithmeticConstant {
 
   // PTC 1999/06/28
   @Override
-  public NumericConstant add(NumericConstant c) {
+  public LongConstant add(NumericConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -65,7 +65,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant subtract(NumericConstant c) {
+  public LongConstant subtract(NumericConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -73,7 +73,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant multiply(NumericConstant c) {
+  public LongConstant multiply(NumericConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -81,7 +81,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant divide(NumericConstant c) {
+  public LongConstant divide(NumericConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -89,7 +89,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant remainder(NumericConstant c) {
+  public LongConstant remainder(NumericConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -97,7 +97,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant equalEqual(NumericConstant c) {
+  public IntConstant equalEqual(ComparableConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -105,7 +105,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant notEqual(NumericConstant c) {
+  public IntConstant notEqual(ComparableConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -113,7 +113,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant lessThan(NumericConstant c) {
+  public IntConstant lessThan(NumericConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -121,7 +121,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant lessThanOrEqual(NumericConstant c) {
+  public IntConstant lessThanOrEqual(NumericConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -129,7 +129,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant greaterThan(NumericConstant c) {
+  public IntConstant greaterThan(NumericConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -137,7 +137,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant greaterThanOrEqual(NumericConstant c) {
+  public IntConstant greaterThanOrEqual(NumericConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -156,12 +156,12 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant negate() {
+  public LongConstant negate() {
     return LongConstant.getInstance(-(this.value));
   }
 
   @Override
-  public ArithmeticConstant and(ArithmeticConstant c) {
+  public LongConstant and(LogicalConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -169,7 +169,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public ArithmeticConstant or(ArithmeticConstant c) {
+  public LongConstant or(LogicalConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -177,7 +177,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public ArithmeticConstant xor(ArithmeticConstant c) {
+  public LongConstant xor(LogicalConstant c) {
     if (!(c instanceof LongConstant)) {
       throw new IllegalArgumentException("LongConstant expected");
     }
@@ -185,7 +185,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public ArithmeticConstant shiftLeft(ArithmeticConstant c) {
+  public LongConstant shiftLeft(ArithmeticConstant c) {
     // NOTE CAREFULLY: the RHS of a shift op is not (!)
     // of Long type. It is, in fact, an IntConstant.
 
@@ -196,7 +196,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public ArithmeticConstant shiftRight(ArithmeticConstant c) {
+  public LongConstant shiftRight(ArithmeticConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -204,7 +204,7 @@ public class LongConstant extends ArithmeticConstant {
   }
 
   @Override
-  public ArithmeticConstant unsignedShiftRight(ArithmeticConstant c) {
+  public LongConstant unsignedShiftRight(ArithmeticConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -228,5 +228,10 @@ public class LongConstant extends ArithmeticConstant {
 
   public long getValue() {
     return value;
+  }
+
+  @Override
+  public Object clone() {
+    throw new RuntimeException();
   }
 }

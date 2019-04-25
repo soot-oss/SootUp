@@ -30,11 +30,11 @@ import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 
-public class IntConstant extends ArithmeticConstant {
+public class IntConstant implements ArithmeticConstant {
   /** */
   private static final long serialVersionUID = 1266232311067376706L;
 
-  protected final int value;
+  private final int value;
 
   protected IntConstant(int value) {
     this.value = value;
@@ -56,7 +56,7 @@ public class IntConstant extends ArithmeticConstant {
 
   // PTC 1999/06/28
   @Override
-  public NumericConstant add(NumericConstant c) {
+  public IntConstant add(NumericConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -64,7 +64,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant subtract(NumericConstant c) {
+  public IntConstant subtract(NumericConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -72,7 +72,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant multiply(NumericConstant c) {
+  public IntConstant multiply(NumericConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -80,7 +80,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant divide(NumericConstant c) {
+  public IntConstant divide(NumericConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -88,7 +88,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant remainder(NumericConstant c) {
+  public IntConstant remainder(NumericConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -96,7 +96,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant equalEqual(NumericConstant c) {
+  public IntConstant equalEqual(ComparableConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -104,7 +104,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant notEqual(NumericConstant c) {
+  public IntConstant notEqual(ComparableConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -112,7 +112,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant lessThan(NumericConstant c) {
+  public IntConstant lessThan(NumericConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -120,7 +120,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant lessThanOrEqual(NumericConstant c) {
+  public IntConstant lessThanOrEqual(NumericConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -128,7 +128,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant greaterThan(NumericConstant c) {
+  public IntConstant greaterThan(NumericConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -136,7 +136,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant greaterThanOrEqual(NumericConstant c) {
+  public IntConstant greaterThanOrEqual(NumericConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -144,12 +144,12 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public NumericConstant negate() {
+  public IntConstant negate() {
     return IntConstant.getInstance(-(this.value));
   }
 
   @Override
-  public ArithmeticConstant and(ArithmeticConstant c) {
+  public IntConstant and(LogicalConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -157,7 +157,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public ArithmeticConstant or(ArithmeticConstant c) {
+  public IntConstant or(LogicalConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -165,7 +165,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public ArithmeticConstant xor(ArithmeticConstant c) {
+  public IntConstant xor(LogicalConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -173,7 +173,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public ArithmeticConstant shiftLeft(ArithmeticConstant c) {
+  public IntConstant shiftLeft(ArithmeticConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -181,7 +181,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public ArithmeticConstant shiftRight(ArithmeticConstant c) {
+  public IntConstant shiftRight(ArithmeticConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -189,7 +189,7 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   @Override
-  public ArithmeticConstant unsignedShiftRight(ArithmeticConstant c) {
+  public IntConstant unsignedShiftRight(ArithmeticConstant c) {
     if (!(c instanceof IntConstant)) {
       throw new IllegalArgumentException("IntConstant expected");
     }
@@ -213,5 +213,10 @@ public class IntConstant extends ArithmeticConstant {
 
   public int getValue() {
     return value;
+  }
+
+  @Override
+  public Object clone() {
+    throw new RuntimeException();
   }
 }

@@ -31,7 +31,7 @@ import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 
 /** Floating point constant with double precision. */
-public class DoubleConstant extends RealConstant {
+public class DoubleConstant implements RealConstant {
 
   /** */
   private static final long serialVersionUID = -6608501059585159445L;
@@ -61,72 +61,72 @@ public class DoubleConstant extends RealConstant {
 
   // PTC 1999/06/28
   @Override
-  public NumericConstant add(NumericConstant c) {
+  public DoubleConstant add(NumericConstant c) {
     assertInstanceOf(c);
     return DoubleConstant.getInstance(this.value + ((DoubleConstant) c).value);
   }
 
   @Override
-  public NumericConstant subtract(NumericConstant c) {
+  public DoubleConstant subtract(NumericConstant c) {
     assertInstanceOf(c);
     return DoubleConstant.getInstance(this.value - ((DoubleConstant) c).value);
   }
 
   @Override
-  public NumericConstant multiply(NumericConstant c) {
+  public DoubleConstant multiply(NumericConstant c) {
     assertInstanceOf(c);
     return DoubleConstant.getInstance(this.value * ((DoubleConstant) c).value);
   }
 
   @Override
-  public NumericConstant divide(NumericConstant c) {
+  public DoubleConstant divide(NumericConstant c) {
     assertInstanceOf(c);
     return DoubleConstant.getInstance(this.value / ((DoubleConstant) c).value);
   }
 
   @Override
-  public NumericConstant remainder(NumericConstant c) {
+  public DoubleConstant remainder(NumericConstant c) {
     assertInstanceOf(c);
     return DoubleConstant.getInstance(this.value % ((DoubleConstant) c).value);
   }
 
   @Override
-  public NumericConstant equalEqual(NumericConstant c) {
+  public IntConstant equalEqual(ComparableConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Double.compare(this.value, ((DoubleConstant) c).value) == 0 ? 1 : 0);
   }
 
   @Override
-  public NumericConstant notEqual(NumericConstant c) {
+  public IntConstant notEqual(ComparableConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Double.compare(this.value, ((DoubleConstant) c).value) != 0 ? 1 : 0);
   }
 
   @Override
-  public NumericConstant lessThan(NumericConstant c) {
+  public IntConstant lessThan(NumericConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Double.compare(this.value, ((DoubleConstant) c).value) < 0 ? 1 : 0);
   }
 
   @Override
-  public NumericConstant lessThanOrEqual(NumericConstant c) {
+  public IntConstant lessThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Double.compare(this.value, ((DoubleConstant) c).value) <= 0 ? 1 : 0);
   }
 
   @Override
-  public NumericConstant greaterThan(NumericConstant c) {
+  public IntConstant greaterThan(NumericConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Double.compare(this.value, ((DoubleConstant) c).value) > 0 ? 1 : 0);
   }
 
   @Override
-  public NumericConstant greaterThanOrEqual(NumericConstant c) {
+  public IntConstant greaterThanOrEqual(NumericConstant c) {
     assertInstanceOf(c);
     return IntConstant.getInstance(
         Double.compare(this.value, ((DoubleConstant) c).value) >= 0 ? 1 : 0);
@@ -159,7 +159,7 @@ public class DoubleConstant extends RealConstant {
   }
 
   @Override
-  public NumericConstant negate() {
+  public DoubleConstant negate() {
     return DoubleConstant.getInstance(-(this.value));
   }
 
@@ -192,7 +192,7 @@ public class DoubleConstant extends RealConstant {
    * @param constant the instance to check
    * @throws IllegalArgumentException when check fails
    */
-  private void assertInstanceOf(NumericConstant constant) {
+  private void assertInstanceOf(Constant constant) {
     if (!(constant instanceof DoubleConstant)) {
       throw new IllegalArgumentException("DoubleConstant expected");
     }
@@ -200,5 +200,10 @@ public class DoubleConstant extends RealConstant {
 
   public double getValue() {
     return value;
+  }
+
+  @Override
+  public Object clone() {
+    throw new RuntimeException();
   }
 }
