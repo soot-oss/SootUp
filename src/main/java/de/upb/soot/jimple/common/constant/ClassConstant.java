@@ -32,7 +32,7 @@ import de.upb.soot.types.Type;
 import soot.util.StringTools;
 
 @SuppressWarnings("serial")
-public class ClassConstant extends Constant {
+public class ClassConstant implements Constant {
   private final String value;
 
   private ClassConstant(String s) {
@@ -167,5 +167,10 @@ public class ClassConstant extends Constant {
   @Override
   public String toString() {
     return "class " + StringTools.getQuotedStringOf(value);
+  }
+
+  @Override
+  public Object clone() {
+    throw new RuntimeException();
   }
 }

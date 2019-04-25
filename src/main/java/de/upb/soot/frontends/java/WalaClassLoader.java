@@ -147,10 +147,8 @@ public class WalaClassLoader {
         }
       }
       factory = new ECJClassLoaderFactory(scope.getExclusions());
-    } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IllegalArgumentException | IOException e) {
+      throw new RuntimeException("Failed to construct WalaClassLoader", e);
     }
   }
 

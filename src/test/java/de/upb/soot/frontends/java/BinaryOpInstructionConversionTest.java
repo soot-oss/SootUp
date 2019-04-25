@@ -12,6 +12,7 @@ import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.common.constant.BooleanConstant;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
 import de.upb.soot.jimple.common.expr.JAndExpr;
@@ -1260,7 +1261,7 @@ public class BinaryOpInstructionConversionTest {
               JAssignStmt.class,
               target -> {
                 assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
-                assertEquiv(IntConstant.getInstance(0), target.getRightOp());
+                assertEquiv(BooleanConstant.getFalse(), target.getRightOp());
               });
         });
 
@@ -1287,7 +1288,7 @@ public class BinaryOpInstructionConversionTest {
         JAssignStmt.class,
         target -> {
           assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
-          assertEquiv(IntConstant.getInstance(0), target.getRightOp());
+          assertEquiv(BooleanConstant.getFalse(), target.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1358,7 +1359,7 @@ public class BinaryOpInstructionConversionTest {
         JAssignStmt.class,
         stmt -> {
           assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), stmt.getLeftOp());
-          assertEquiv(IntConstant.getInstance(1), stmt.getRightOp());
+          assertEquiv(BooleanConstant.getTrue(), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(

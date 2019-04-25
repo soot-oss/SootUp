@@ -25,18 +25,17 @@
 
 package de.upb.soot.jimple.common.constant;
 
+import javax.annotation.Nonnull;
+
 @SuppressWarnings("serial")
-public abstract class ArithmeticConstant extends NumericConstant {
-  // PTC 1999/06/28
-  public abstract ArithmeticConstant and(ArithmeticConstant c);
+public interface ShiftableConstant<A extends ShiftableConstant<A>>
+    extends NumericConstant<A>, LogicalConstant<A> {
+  @Nonnull
+  A shiftLeft(@Nonnull IntConstant c);
 
-  public abstract ArithmeticConstant or(ArithmeticConstant c);
+  @Nonnull
+  A shiftRight(@Nonnull IntConstant c);
 
-  public abstract ArithmeticConstant xor(ArithmeticConstant c);
-
-  public abstract ArithmeticConstant shiftLeft(ArithmeticConstant c);
-
-  public abstract ArithmeticConstant shiftRight(ArithmeticConstant c);
-
-  public abstract ArithmeticConstant unsignedShiftRight(ArithmeticConstant c);
+  @Nonnull
+  A unsignedShiftRight(@Nonnull IntConstant c);
 }

@@ -29,9 +29,10 @@ import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
+import javax.annotation.Nonnull;
 
 /** Floating point constant with double precision. */
-public class DoubleConstant extends RealConstant {
+public class DoubleConstant implements RealConstant<DoubleConstant> {
 
   /** */
   private static final long serialVersionUID = -6608501059585159445L;
@@ -60,82 +61,76 @@ public class DoubleConstant extends RealConstant {
   }
 
   // PTC 1999/06/28
+  @Nonnull
   @Override
-  public NumericConstant add(NumericConstant c) {
-    assertInstanceOf(c);
-    return DoubleConstant.getInstance(this.value + ((DoubleConstant) c).value);
+  public DoubleConstant add(@Nonnull DoubleConstant c) {
+    return DoubleConstant.getInstance(this.value + c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant subtract(NumericConstant c) {
-    assertInstanceOf(c);
-    return DoubleConstant.getInstance(this.value - ((DoubleConstant) c).value);
+  public DoubleConstant subtract(@Nonnull DoubleConstant c) {
+    return DoubleConstant.getInstance(this.value - c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant multiply(NumericConstant c) {
-    assertInstanceOf(c);
-    return DoubleConstant.getInstance(this.value * ((DoubleConstant) c).value);
+  public DoubleConstant multiply(@Nonnull DoubleConstant c) {
+    return DoubleConstant.getInstance(this.value * c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant divide(NumericConstant c) {
-    assertInstanceOf(c);
-    return DoubleConstant.getInstance(this.value / ((DoubleConstant) c).value);
+  public DoubleConstant divide(@Nonnull DoubleConstant c) {
+    return DoubleConstant.getInstance(this.value / c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant remainder(NumericConstant c) {
-    assertInstanceOf(c);
-    return DoubleConstant.getInstance(this.value % ((DoubleConstant) c).value);
+  public DoubleConstant remainder(@Nonnull DoubleConstant c) {
+    return DoubleConstant.getInstance(this.value % c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant equalEqual(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) == 0 ? 1 : 0);
+  public BooleanConstant equalEqual(@Nonnull DoubleConstant c) {
+    return BooleanConstant.getInstance(Double.compare(this.value, c.value) == 0);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant notEqual(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) != 0 ? 1 : 0);
+  public BooleanConstant notEqual(@Nonnull DoubleConstant c) {
+    return BooleanConstant.getInstance(Double.compare(this.value, c.value) != 0);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant lessThan(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) < 0 ? 1 : 0);
+  public IntConstant lessThan(@Nonnull DoubleConstant c) {
+    return IntConstant.getInstance(Double.compare(this.value, c.value) < 0 ? 1 : 0);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant lessThanOrEqual(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) <= 0 ? 1 : 0);
+  public IntConstant lessThanOrEqual(@Nonnull DoubleConstant c) {
+    return IntConstant.getInstance(Double.compare(this.value, c.value) <= 0 ? 1 : 0);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant greaterThan(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) > 0 ? 1 : 0);
+  public IntConstant greaterThan(@Nonnull DoubleConstant c) {
+    return IntConstant.getInstance(Double.compare(this.value, c.value) > 0 ? 1 : 0);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant greaterThanOrEqual(NumericConstant c) {
-    assertInstanceOf(c);
-    return IntConstant.getInstance(
-        Double.compare(this.value, ((DoubleConstant) c).value) >= 0 ? 1 : 0);
+  public IntConstant greaterThanOrEqual(@Nonnull DoubleConstant c) {
+    return IntConstant.getInstance(Double.compare(this.value, c.value) >= 0 ? 1 : 0);
   }
 
+  @Nonnull
   @Override
-  public IntConstant cmpg(RealConstant constant) {
-    assertInstanceOf(constant);
-    final double cValue = ((DoubleConstant) constant).value;
+  public IntConstant cmpg(@Nonnull DoubleConstant constant) {
+    final double cValue = constant.value;
     if (this.value < cValue) {
       return IntConstant.getInstance(-1);
     } else if (this.value == cValue) {
@@ -145,10 +140,10 @@ public class DoubleConstant extends RealConstant {
     }
   }
 
+  @Nonnull
   @Override
-  public IntConstant cmpl(RealConstant constant) {
-    assertInstanceOf(constant);
-    final double cValue = ((DoubleConstant) constant).value;
+  public IntConstant cmpl(@Nonnull DoubleConstant constant) {
+    final double cValue = constant.value;
     if (this.value > cValue) {
       return IntConstant.getInstance(1);
     } else if (this.value == cValue) {
@@ -158,8 +153,9 @@ public class DoubleConstant extends RealConstant {
     }
   }
 
+  @Nonnull
   @Override
-  public NumericConstant negate() {
+  public DoubleConstant negate() {
     return DoubleConstant.getInstance(-(this.value));
   }
 
@@ -192,7 +188,7 @@ public class DoubleConstant extends RealConstant {
    * @param constant the instance to check
    * @throws IllegalArgumentException when check fails
    */
-  private void assertInstanceOf(NumericConstant constant) {
+  private void assertInstanceOf(Constant constant) {
     if (!(constant instanceof DoubleConstant)) {
       throw new IllegalArgumentException("DoubleConstant expected");
     }
@@ -200,5 +196,10 @@ public class DoubleConstant extends RealConstant {
 
   public double getValue() {
     return value;
+  }
+
+  @Override
+  public Object clone() {
+    throw new RuntimeException();
   }
 }
