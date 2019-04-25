@@ -103,26 +103,26 @@ public class FloatConstant implements RealConstant<FloatConstant> {
 
   @Nonnull
   @Override
-  public IntConstant lessThan(@Nonnull FloatConstant c) {
-    return IntConstant.getInstance(Float.compare(this.value, c.value) < 0 ? 1 : 0);
+  public BooleanConstant lessThan(@Nonnull FloatConstant c) {
+    return BooleanConstant.getInstance(Float.compare(this.value, c.value) < 0);
   }
 
   @Nonnull
   @Override
-  public IntConstant lessThanOrEqual(@Nonnull FloatConstant c) {
-    return IntConstant.getInstance(Float.compare(this.value, c.value) <= 0 ? 1 : 0);
+  public BooleanConstant lessThanOrEqual(@Nonnull FloatConstant c) {
+    return BooleanConstant.getInstance(Float.compare(this.value, c.value) <= 0);
   }
 
   @Nonnull
   @Override
-  public IntConstant greaterThan(@Nonnull FloatConstant c) {
-    return IntConstant.getInstance(Float.compare(this.value, c.value) > 0 ? 1 : 0);
+  public BooleanConstant greaterThan(@Nonnull FloatConstant c) {
+    return BooleanConstant.getInstance(Float.compare(this.value, c.value) > 0);
   }
 
   @Nonnull
   @Override
-  public IntConstant greaterThanOrEqual(@Nonnull FloatConstant c) {
-    return IntConstant.getInstance(Float.compare(this.value, c.value) >= 0 ? 1 : 0);
+  public BooleanConstant greaterThanOrEqual(@Nonnull FloatConstant c) {
+    return BooleanConstant.getInstance(Float.compare(this.value, c.value) >= 0);
   }
 
   @Nonnull

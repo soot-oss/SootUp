@@ -105,26 +105,26 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
 
   @Nonnull
   @Override
-  public IntConstant lessThan(@Nonnull DoubleConstant c) {
-    return IntConstant.getInstance(Double.compare(this.value, c.value) < 0 ? 1 : 0);
+  public BooleanConstant lessThan(@Nonnull DoubleConstant c) {
+    return BooleanConstant.getInstance(Double.compare(this.value, c.value) < 0);
   }
 
   @Nonnull
   @Override
-  public IntConstant lessThanOrEqual(@Nonnull DoubleConstant c) {
-    return IntConstant.getInstance(Double.compare(this.value, c.value) <= 0 ? 1 : 0);
+  public BooleanConstant lessThanOrEqual(@Nonnull DoubleConstant c) {
+    return BooleanConstant.getInstance(Double.compare(this.value, c.value) <= 0);
   }
 
   @Nonnull
   @Override
-  public IntConstant greaterThan(@Nonnull DoubleConstant c) {
-    return IntConstant.getInstance(Double.compare(this.value, c.value) > 0 ? 1 : 0);
+  public BooleanConstant greaterThan(@Nonnull DoubleConstant c) {
+    return BooleanConstant.getInstance(Double.compare(this.value, c.value) > 0);
   }
 
   @Nonnull
   @Override
-  public IntConstant greaterThanOrEqual(@Nonnull DoubleConstant c) {
-    return IntConstant.getInstance(Double.compare(this.value, c.value) >= 0 ? 1 : 0);
+  public BooleanConstant greaterThanOrEqual(@Nonnull DoubleConstant c) {
+    return BooleanConstant.getInstance(Double.compare(this.value, c.value) >= 0);
   }
 
   @Nonnull

@@ -100,26 +100,26 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
 
   @Nonnull
   @Override
-  public IntConstant lessThan(@Nonnull IntConstant c) {
-    return IntConstant.getInstance((this.value < c.value) ? 1 : 0);
+  public BooleanConstant lessThan(@Nonnull IntConstant c) {
+    return BooleanConstant.getInstance(this.value < c.value);
   }
 
   @Nonnull
   @Override
-  public IntConstant lessThanOrEqual(@Nonnull IntConstant c) {
-    return IntConstant.getInstance((this.value <= c.value) ? 1 : 0);
+  public BooleanConstant lessThanOrEqual(@Nonnull IntConstant c) {
+    return BooleanConstant.getInstance(this.value <= c.value);
   }
 
   @Nonnull
   @Override
-  public IntConstant greaterThan(@Nonnull IntConstant c) {
-    return IntConstant.getInstance((this.value > c.value) ? 1 : 0);
+  public BooleanConstant greaterThan(@Nonnull IntConstant c) {
+    return BooleanConstant.getInstance(this.value > c.value);
   }
 
   @Nonnull
   @Override
-  public IntConstant greaterThanOrEqual(@Nonnull IntConstant c) {
-    return IntConstant.getInstance((this.value >= c.value) ? 1 : 0);
+  public BooleanConstant greaterThanOrEqual(@Nonnull IntConstant c) {
+    return BooleanConstant.getInstance(this.value >= c.value);
   }
 
   @Nonnull

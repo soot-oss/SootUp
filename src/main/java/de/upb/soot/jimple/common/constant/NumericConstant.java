@@ -47,16 +47,16 @@ public interface NumericConstant<N extends NumericConstant<N>>
   N remainder(@Nonnull N c);
 
   @Nonnull
-  IntConstant lessThan(@Nonnull N c);
+  BooleanConstant lessThan(@Nonnull N c);
 
   @Nonnull
-  IntConstant lessThanOrEqual(@Nonnull N c);
+  BooleanConstant lessThanOrEqual(@Nonnull N c);
 
   @Nonnull
-  IntConstant greaterThan(@Nonnull N c);
+  BooleanConstant greaterThan(@Nonnull N c);
 
   @Nonnull
-  IntConstant greaterThanOrEqual(@Nonnull N c);
+  BooleanConstant greaterThanOrEqual(@Nonnull N c);
 
   @Nonnull
   N negate();

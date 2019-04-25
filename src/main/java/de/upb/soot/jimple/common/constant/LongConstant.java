@@ -101,26 +101,26 @@ public class LongConstant implements ShiftableConstant<LongConstant> {
 
   @Nonnull
   @Override
-  public IntConstant lessThan(@Nonnull LongConstant c) {
-    return IntConstant.getInstance((this.value < c.value) ? 1 : 0);
+  public BooleanConstant lessThan(@Nonnull LongConstant c) {
+    return BooleanConstant.getInstance(this.value < c.value);
   }
 
   @Nonnull
   @Override
-  public IntConstant lessThanOrEqual(@Nonnull LongConstant c) {
-    return IntConstant.getInstance((this.value <= c.value) ? 1 : 0);
+  public BooleanConstant lessThanOrEqual(@Nonnull LongConstant c) {
+    return BooleanConstant.getInstance(this.value <= c.value);
   }
 
   @Nonnull
   @Override
-  public IntConstant greaterThan(@Nonnull LongConstant c) {
-    return IntConstant.getInstance((this.value > c.value) ? 1 : 0);
+  public BooleanConstant greaterThan(@Nonnull LongConstant c) {
+    return BooleanConstant.getInstance(this.value > c.value);
   }
 
   @Nonnull
   @Override
-  public IntConstant greaterThanOrEqual(@Nonnull LongConstant c) {
-    return IntConstant.getInstance((this.value >= c.value) ? 1 : 0);
+  public BooleanConstant greaterThanOrEqual(@Nonnull LongConstant c) {
+    return BooleanConstant.getInstance(this.value >= c.value);
   }
 
   /** Compares the value of LongConstant. */
