@@ -99,6 +99,7 @@ public class JavaClassType extends ReferenceType {
    */
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
+    // TODO: [ms] enforce at signature generation?
     if (!Strings.isNullOrEmpty(packageSignature.getPackageName())) {
       sb.append(packageSignature.toString());
       sb.append('.');
@@ -163,7 +164,6 @@ public class JavaClassType extends ReferenceType {
     StringBuilder res = new StringBuilder(s.length() + 16);
 
     for (String part : SplitPatternHolder.SPLIT_PATTERN.split(s)) {
-
       if (part.startsWith("-") || JavaView.RESERVED_NAMES.contains(part)) {
         res.append('\'');
         res.append(part);
@@ -173,7 +173,10 @@ public class JavaClassType extends ReferenceType {
       }
       res.append(SplitPatternHolder.SPLIT_CHAR);
     }
-    res.setLength(res.length() - 1);
+    // TODO: [ms] condition is always true if non-empty names are enforced at signature generation (see getFullyQualifiedName())
+    if (res.length() > 0) {
+      res.setLength(res.length() - 1);
+    }
     return res.toString();
   }
 
