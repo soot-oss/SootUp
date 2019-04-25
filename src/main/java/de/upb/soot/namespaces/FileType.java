@@ -22,15 +22,10 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ArrayUtils;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -41,7 +36,6 @@ import javax.annotation.Nonnull;
  *
  * @author Manuel Benz
  * @author Markus Schmidt
- *
  */
 public enum FileType {
   JAR("jar"),
@@ -63,63 +57,62 @@ public enum FileType {
     return extension;
   }
 
-
-  public static FileType getFileType(File file ) throws IOException {
+  public static FileType getFileType(File file) throws IOException {
 
     FileType foundType = null;
     // use magic number where possible
     FileInputStream fis = new FileInputStream(file);
     DataInputStream dis = new DataInputStream(fis);
     int[] magicNumber = new int[4];
-    for( int i = 0; dis.available() > 0 && i < 4; i++) {
+    for (int i = 0; dis.available() > 0 && i < 4; i++) {
       magicNumber[i] = dis.readUnsignedByte();
     }
     dis.close();
     fis.close();
 
     // TODO: [ms] shall we support deprecated pack2000 format? (-> CAFED00D)
-    if(Arrays.equals(magicNumber , new int[]{ 0xCA, 0xFE, 0xBA, 0xBE }) ) {
+    if (Arrays.equals(magicNumber, new int[] {0xCA, 0xFE, 0xBA, 0xBE})) {
       foundType = FileType.CLASS;
-    }else if( Arrays.equals( magicNumber , new int[]{ 0x50, 0x4B, 0x03, 0x04}) ){
-      foundType = getArchiveTypeByExtension( file.getName() );
+    } else if (Arrays.equals(magicNumber, new int[] {0x50, 0x4B, 0x03, 0x04})) {
+      foundType = getArchiveTypeByExtension(file.getName());
     }
 
     // otherwise use filename to determine plaintext type
-    if( foundType == null ){
+    if (foundType == null) {
       foundType = getPlainTypeByExtension(file.getName());
     }
 
     return foundType;
   }
 
-  public static FileType getTypeByExtension( String filename ){
+  public static FileType getTypeByExtension(String filename) {
     FileType type;
-    if( filename.endsWith(".class") ){
+    if (filename.endsWith(".class")) {
       type = FileType.CLASS;
-    }else {
+    } else {
       type = getPlainTypeByExtension(filename);
     }
-    if( type == null) {
+    if (type == null) {
       type = getArchiveTypeByExtension(filename);
     }
     return type;
   }
 
-  private static FileType getPlainTypeByExtension( String filename ){
-    if( filename.endsWith(".jimple") ){
+  private static FileType getPlainTypeByExtension(String filename) {
+    if (filename.endsWith(".jimple")) {
       return FileType.JIMPLE;
-    }else if( filename.endsWith(".java") ){
+    } else if (filename.endsWith(".java")) {
       return FileType.JAVA;
     }
     return null;
   }
 
-  private static FileType getArchiveTypeByExtension( String filename ) {
-    if( filename.endsWith(".jar") ){
+  private static FileType getArchiveTypeByExtension(String filename) {
+    if (filename.endsWith(".jar")) {
       return FileType.JAR;
-    }else if( filename.endsWith(".zip") ){
+    } else if (filename.endsWith(".zip")) {
       return FileType.ZIP;
-    }else if( filename.endsWith(".apk") ){
+    } else if (filename.endsWith(".apk")) {
       return FileType.APK;
     }
     return null;

@@ -22,62 +22,52 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
-import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.JavaClassSignature;
 
+import static org.junit.Assert.assertEquals;
+
+import categories.Java8Test;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.EnumSet;
-import java.util.Optional;
-
-import org.apache.commons.io.FilenameUtils;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
-import categories.Java8Test;
-
-import static org.junit.Assert.assertEquals;
 
 /** @author Markus Schmidt */
 @Category(Java8Test.class)
 public class FileTypeTest {
 
-  private void testType( FileType ft, String path) throws IOException {
-    File file = new File( "target/"+path );
-    assertEquals( ft , FileType.getFileType( file ) );
+  private void testType(FileType ft, String path) throws IOException {
+    File file = new File("target/" + path);
+    assertEquals(ft, FileType.getFileType(file));
   }
 
   @Test
-  public void testJar() throws IOException{
-    testType( FileType.JAR, "test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
+  public void testJar() throws IOException {
+    testType(FileType.JAR, "test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
   }
 
   @Ignore
-  public void testZip() throws IOException{
-    testType( FileType.ZIP,"");
+  public void testZip() throws IOException {
+    testType(FileType.ZIP, "");
   }
 
   @Ignore
   public void testApk() throws IOException {
-    testType( FileType.APK, "");
+    testType(FileType.APK, "");
   }
 
   @Test
   public void testClass() throws IOException {
-    testType( FileType.CLASS, "classes/de/upb/soot/Scope.class");
+    testType(FileType.CLASS, "classes/de/upb/soot/Scope.class");
   }
 
   @Test
   public void testJimple() throws IOException {
-    testType( FileType.JIMPLE, "test-classes/jimple-target/BinaryOperations.jimple");
+    testType(FileType.JIMPLE, "test-classes/jimple-target/BinaryOperations.jimple");
   }
 
   @Test
   public void testJava() throws IOException {
-    testType( FileType.JAVA, "test-classes/java-target/BinaryOperations.java");
+    testType(FileType.JAVA, "test-classes/java-target/BinaryOperations.java");
   }
 }
