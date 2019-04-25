@@ -32,6 +32,7 @@
     <test.outDir>${project.build.directory}/test-classes-java</test.outDir>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
+    <wala.version>1.5.3.2</wala.version>
   </properties>
 
   <profiles>
@@ -221,14 +222,14 @@
     </plugins>
   </build>
   <distributionManagement>
-	<repository>
-	<uniqueVersion>true</uniqueVersion>
-	<id>wala</id>
-	<name>wala repository</name>
-	<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
-	<layout>default</layout>
-	</repository>
- </distributionManagement>
+    <repository>
+      <uniqueVersion>true</uniqueVersion>
+      <id>wala</id>
+      <name>wala repository</name>
+      <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
+      <layout>default</layout>
+    </repository>
+  </distributionManagement>
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -294,37 +295,37 @@
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.core</artifactId>
-      <version>1.5.3.2</version>
+      <version>${wala.version}</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.cast</artifactId>
-      <version>1.5.3.2</version>
+      <version>${wala.version}</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.cast.java</artifactId>
-      <version>1.5.3.2</version>
+      <version>${wala.version}</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.cast.java.ecj</artifactId>
-      <version>1.5.3.2</version>
+      <version>${wala.version}</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.util</artifactId>
-      <version>1.5.3.2</version>
+      <version>${wala.version}</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.shrike</artifactId>
-      <version>1.5.3.2</version>
+      <version>${wala.version}</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.dalvik</artifactId>
-      <version>1.5.3.2</version>
+      <version>${wala.version}</version>
     </dependency>
     <!--eclipse jdt, used by wala java source front end -->
     <dependency>
@@ -354,15 +355,15 @@
   </dependencies>
   <repositories>
     <!-- include old soot repo & wala repo -->
-   	<repository>
-		<id>wala</id>
-		<name>wala snapshots</name>
-		<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
-	</repository>
-	<repository>
-		<id>soot-snapshot</id>
-		<name>soot snapshots</name>
-		<url>https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-snapshot/</url>
-	</repository>
+    <repository>
+      <id>wala</id>
+      <name>wala snapshots</name>
+      <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
+    </repository>
+    <repository>
+      <id>soot-snapshot</id>
+      <name>soot snapshots</name>
+      <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/soot-snapshot/</url>
+    </repository>
   </repositories>
 </project>
