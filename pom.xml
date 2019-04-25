@@ -294,37 +294,37 @@
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.core</artifactId>
-      <version>1.5.3.2</version>
+      <version>1.5.3.3</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.cast</artifactId>
-      <version>1.5.3.2</version>
+      <version>1.5.3.3</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.cast.java</artifactId>
-      <version>1.5.3.2</version>
+      <version>1.5.3.3</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.cast.java.ecj</artifactId>
-      <version>1.5.3.2</version>
+      <version>1.5.3.3</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.util</artifactId>
-      <version>1.5.3.2</version>
+      <version>1.5.3.3</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.shrike</artifactId>
-      <version>1.5.3.2</version>
+      <version>1.5.3.3</version>
     </dependency>
     <dependency>
       <groupId>com.ibm.wala</groupId>
       <artifactId>com.ibm.wala.dalvik</artifactId>
-      <version>1.5.3.2</version>
+      <version>1.5.3.3</version>
     </dependency>
     <!--eclipse jdt, used by wala java source front end -->
     <dependency>
