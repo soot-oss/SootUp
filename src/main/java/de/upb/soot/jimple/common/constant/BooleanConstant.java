@@ -4,6 +4,7 @@ import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
+import javax.annotation.Nonnull;
 
 /**
  * BooleanConstant didn't exist in old soot, because in Java byte code boolean values are
@@ -12,20 +13,38 @@ import de.upb.soot.types.Type;
  *
  * @author Linghui Luo
  */
-public class BooleanConstant extends IntConstant {
+public class BooleanConstant
+    implements LogicalConstant<BooleanConstant>, ComparableConstant<BooleanConstant> {
+
+  private static final BooleanConstant FALSE = new BooleanConstant(0);
+  private static final BooleanConstant TRUE = new BooleanConstant(1);
 
   /** */
   private static final long serialVersionUID = 6986012843042501546L;
 
-  protected BooleanConstant(int value) {
-    super(value);
+  private final int value;
+
+  private BooleanConstant(int value) {
+    this.value = value;
+  }
+
+  public static BooleanConstant getInstance(boolean value) {
+    return value ? TRUE : FALSE;
+  }
+
+  public static BooleanConstant getTrue() {
+    return TRUE;
+  }
+
+  public static BooleanConstant getFalse() {
+    return FALSE;
   }
 
   public static BooleanConstant getInstance(int value) {
     if (value != 1 && value != 0) {
       throw new RuntimeException("The value of boolean constant can only be 1 or 0");
     }
-    return new BooleanConstant(value);
+    return value == 1 ? TRUE : FALSE;
   }
 
   @Override
@@ -38,144 +57,42 @@ public class BooleanConstant extends IntConstant {
     ((IConstantVisitor) sw).caseBooleanConstant(this);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant add(NumericConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value + ((BooleanConstant) c).value);
+  public BooleanConstant equalEqual(@Nonnull BooleanConstant c) {
+    return BooleanConstant.getInstance(this.value == c.value);
+  }
+
+  @Nonnull
+  @Override
+  public BooleanConstant notEqual(@Nonnull BooleanConstant c) {
+    return BooleanConstant.getInstance(this.value != c.value);
+  }
+
+  @Nonnull
+  public BooleanConstant and(@Nonnull BooleanConstant c) {
+    return BooleanConstant.getInstance(this.value & c.value);
+  }
+
+  @Nonnull
+  @Override
+  public BooleanConstant or(@Nonnull BooleanConstant c) {
+    return BooleanConstant.getInstance(this.value | c.value);
+  }
+
+  @Nonnull
+  @Override
+  public BooleanConstant xor(@Nonnull BooleanConstant c) {
+    return BooleanConstant.getInstance(this.value ^ c.value);
   }
 
   @Override
-  public NumericConstant subtract(NumericConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value - ((BooleanConstant) c).value);
+  public String toString() {
+    return Integer.toString(value);
   }
 
   @Override
-  public NumericConstant multiply(NumericConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value * ((BooleanConstant) c).value);
-  }
-
-  @Override
-  public NumericConstant divide(NumericConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value / ((BooleanConstant) c).value);
-  }
-
-  @Override
-  public NumericConstant remainder(NumericConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value % ((BooleanConstant) c).value);
-  }
-
-  @Override
-  public NumericConstant equalEqual(NumericConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance((this.value == ((BooleanConstant) c).value) ? 1 : 0);
-  }
-
-  @Override
-  public NumericConstant notEqual(NumericConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance((this.value != ((BooleanConstant) c).value) ? 1 : 0);
-  }
-
-  @Override
-  public NumericConstant lessThan(NumericConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance((this.value < ((BooleanConstant) c).value) ? 1 : 0);
-  }
-
-  @Override
-  public NumericConstant lessThanOrEqual(NumericConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance((this.value <= ((BooleanConstant) c).value) ? 1 : 0);
-  }
-
-  @Override
-  public NumericConstant greaterThan(NumericConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance((this.value > ((BooleanConstant) c).value) ? 1 : 0);
-  }
-
-  @Override
-  public NumericConstant greaterThanOrEqual(NumericConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance((this.value >= ((BooleanConstant) c).value) ? 1 : 0);
-  }
-
-  @Override
-  public NumericConstant negate() {
-    return BooleanConstant.getInstance(-(this.value));
-  }
-
-  @Override
-  public ArithmeticConstant and(ArithmeticConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value & ((BooleanConstant) c).value);
-  }
-
-  @Override
-  public ArithmeticConstant or(ArithmeticConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value | ((BooleanConstant) c).value);
-  }
-
-  @Override
-  public ArithmeticConstant xor(ArithmeticConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value ^ ((BooleanConstant) c).value);
-  }
-
-  @Override
-  public ArithmeticConstant shiftLeft(ArithmeticConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value << ((BooleanConstant) c).value);
-  }
-
-  @Override
-  public ArithmeticConstant shiftRight(ArithmeticConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value >> ((BooleanConstant) c).value);
-  }
-
-  @Override
-  public ArithmeticConstant unsignedShiftRight(ArithmeticConstant c) {
-    if (!(c instanceof BooleanConstant)) {
-      throw new IllegalArgumentException("BooleanConstant expected");
-    }
-    return BooleanConstant.getInstance(this.value >>> ((BooleanConstant) c).value);
+  public Object clone() {
+    throw new RuntimeException();
   }
 }

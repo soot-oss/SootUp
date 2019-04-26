@@ -42,6 +42,7 @@ public class SelectedInstructionConversionTest {
     typeFactory = factories.getTypeFactory();
   }
 
+  @Test
   @Ignore
   public void test1() {
     // TODO FIX IT

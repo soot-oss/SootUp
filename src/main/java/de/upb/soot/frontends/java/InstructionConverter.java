@@ -50,7 +50,6 @@ import de.upb.soot.jimple.basic.JStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.jimple.basic.PositionInformation;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.BooleanConstant;
 import de.upb.soot.jimple.common.constant.ClassConstant;
@@ -327,9 +326,8 @@ public class InstructionConverter {
     converter.addSootField(assertionsDisabled);
     Local testLocal = localGenerator.generateLocal(PrimitiveType.getBoolean());
     JStaticFieldRef assertFieldRef = Jimple.newStaticFieldRef(fieldSig);
-    Position stmtPos = debugInfo.getInstructionPosition(inst.iindex);
     Position[] operandPos = new Position[1];
-    operandPos[0] = new PositionInformation(stmtPos.getLastLine(), -1, stmtPos.getLastLine(), -1);
+    operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
     JAssignStmt assignStmt =
         Jimple.newAssignStmt(
             testLocal,
@@ -787,47 +785,9 @@ public class InstructionConverter {
     List<IStmt> stmts = new ArrayList<IStmt>();
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
-    Value value1;
-    Integer constant = null;
-    if (symbolTable.isZero(val1)) {
-      value1 = IntConstant.getInstance(0);
-    } else {
-      if (symbolTable.isConstant(val1)) {
-        Object c = symbolTable.getConstantValue(val1);
-        if (c instanceof Boolean) {
-          if (c.equals(true)) {
-            constant = 1;
-          } else constant = 0;
-        }
-      }
-      value1 = getLocal(PrimitiveType.getInt(), val1);
-    }
-    if (constant != null) {
-      JAssignStmt assignStmt =
-          Jimple.newAssignStmt(value1, IntConstant.getInstance(constant.intValue()), posInfo);
-      stmts.add(assignStmt);
-    }
-    Value value2;
-    constant = null;
-    if (symbolTable.isZero(val2)) {
-      value2 = IntConstant.getInstance(0);
-    } else {
-      if (symbolTable.isConstant(val2)) {
-        Object c = symbolTable.getConstantValue(val2);
-        if (c instanceof Boolean) {
-          if (c.equals(true)) {
-            constant = 1;
-          } else constant = 0;
-        }
-      }
-      value2 = getLocal(PrimitiveType.getInt(), val2);
-    }
-    if (constant != null) {
-      JAssignStmt assignStmt =
-          Jimple.newAssignStmt(value2, IntConstant.getInstance(constant.intValue()), posInfo);
-      stmts.add(assignStmt);
-    }
-    AbstractConditionExpr condition = null;
+    Value value1 = extractValueAndAddAssignStmt(posInfo, stmts, val1);
+    Value value2 = extractValueAndAddAssignStmt(posInfo, stmts, val2);
+    AbstractConditionExpr condition;
     IOperator op = condInst.getOperator();
     if (op.equals(Operator.EQ)) {
       condition = Jimple.newEqExpr(value1, value2);
@@ -853,6 +813,28 @@ public class InstructionConverter {
     return stmts;
   }
 
+  private Value extractValueAndAddAssignStmt(PositionInfo posInfo, List<IStmt> addTo, int val) {
+    Value value;
+    Integer constant = null;
+    if (symbolTable.isZero(val)) {
+      value = IntConstant.getInstance(0);
+    } else {
+      if (symbolTable.isConstant(val)) {
+        Object c = symbolTable.getConstantValue(val);
+        if (c instanceof Boolean) {
+          constant = c.equals(true) ? 1 : 0;
+        }
+      }
+      value = getLocal(PrimitiveType.getInt(), val);
+    }
+    if (constant != null) {
+      JAssignStmt assignStmt =
+          Jimple.newAssignStmt(value, IntConstant.getInstance(constant), posInfo);
+      addTo.add(assignStmt);
+    }
+    return value;
+  }
+
   private IStmt convertReturnInstruction(
       DebuggingInformation debugInfo, SSAReturnInstruction inst) {
     int result = inst.getResult();
@@ -865,8 +847,6 @@ public class InstructionConverter {
       if (symbolTable.isConstant(result)) {
         ret = getConstant(result);
       } else {
-        // TODO. [LL] how to get the type of result?
-        // [ms]: what about: this.sootMethod.getReturnType()
         ret = this.getLocal(UnknownType.getInstance(), result);
       }
 
@@ -993,11 +973,7 @@ public class InstructionConverter {
   private Constant getConstant(int valueNumber) {
     Object value = symbolTable.getConstantValue(valueNumber);
     if (value instanceof Boolean) {
-      if (value.equals(true)) {
-        return BooleanConstant.getInstance(1);
-      } else {
-        return BooleanConstant.getInstance(0);
-      }
+      return BooleanConstant.getInstance((boolean) value);
     } else if (value instanceof Byte
         || value instanceof Char
         || value instanceof Short
@@ -1043,7 +1019,7 @@ public class InstructionConverter {
 
     if (!ret.getType().equals(type)) {
       // ret.setType(ret.getType().merge(type));
-      // TODO. re-implement merge.
+      // TODO. re-implement merge. Don't forget type can also be UnknownType.
       // throw new RuntimeException("Different types for same local
       // variable: "+ret.getType()+"<->"+type);
     }

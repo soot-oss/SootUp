@@ -533,8 +533,7 @@ public class SootClass extends AbstractClass implements Serializable {
    */
   public boolean hasSuperclass() {
     checkLevel(ResolvingLevel.HIERARCHY);
-    if (superClass != null) return true;
-    else return false;
+    return superClass != null;
   }
 
   /**

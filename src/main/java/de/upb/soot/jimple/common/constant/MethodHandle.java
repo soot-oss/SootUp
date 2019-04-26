@@ -33,7 +33,7 @@ import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.Type;
 import org.objectweb.asm.Opcodes;
 
-public class MethodHandle extends Constant {
+public class MethodHandle implements Constant {
 
   public enum Kind {
     REF_GET_FIELD(Opcodes.H_GETFIELD, "REF_GET_FIELD"),
@@ -162,5 +162,10 @@ public class MethodHandle extends Constant {
     } else {
       return methodRef.equals(other.methodRef);
     }
+  }
+
+  @Override
+  public Object clone() {
+    throw new RuntimeException();
   }
 }

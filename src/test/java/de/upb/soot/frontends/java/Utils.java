@@ -27,6 +27,7 @@ public class Utils {
         writer.flush();
         writer.close();
       } catch (FileNotFoundException e) {
+        // Not rethrowing as this is for debug purposes only
         e.printStackTrace();
       }
     }

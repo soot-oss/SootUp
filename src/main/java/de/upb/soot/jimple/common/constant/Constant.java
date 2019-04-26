@@ -33,23 +33,19 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class Constant implements Value, Immediate {
-  /** */
-  private static final long serialVersionUID = -6401333027090308367L;
+public interface Constant extends Value, Immediate {
 
   @Override
-  public final List<ValueBox> getUseBoxes() {
+  default List<ValueBox> getUseBoxes() {
     return Collections.emptyList();
   }
 
   /** Clones the current constant. Not implemented here. */
   @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
+  Object clone();
 
   @Override
-  public boolean equivTo(Object o, JimpleComparator comparator) {
+  default boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseConstant(this, o);
   }
 
@@ -58,12 +54,12 @@ public abstract class Constant implements Value, Immediate {
    * equality is structural equality; we hope that each subclass defines hashCode() correctly.
    */
   @Override
-  public int equivHashCode() {
+  default int equivHashCode() {
     return hashCode();
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  default void toString(IStmtPrinter up) {
     up.constant(this);
   }
 }
