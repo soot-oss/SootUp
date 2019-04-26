@@ -340,12 +340,6 @@
       <artifactId>akka-actor_2.12</artifactId>
       <version>2.5.14</version>
     </dependency>
-    <!-- add supports from new soot to old soot -->
-    <dependency>
-      <groupId>ca.mcgill.sable</groupId>
-      <artifactId>soot</artifactId>
-      <version>3.2.0</version>
-    </dependency>
     <!-- adds `@Nullable` and `@Nonnull` annotations -->
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
