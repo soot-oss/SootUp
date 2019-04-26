@@ -112,11 +112,5 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
     return _cachedToString.get();
   }
 
-  // FIXME: [JMP] Implement quotation
-  @Nonnull
-  public String toQuotedString() {
-    return this.toString();
-  }
-
   // endregion /Methods/
 }
