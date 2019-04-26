@@ -65,4 +65,10 @@ public class MethodSignature extends AbstractClassMemberSignature {
   public List<Type> getParameterSignatures() {
     return this.getSubSignature().getParameterSignatures();
   }
+
+  // FIXME: [JMP] Implement quotation
+  @Nonnull
+  public String toQuotedString() {
+    return this.toString();
+  }
 }
