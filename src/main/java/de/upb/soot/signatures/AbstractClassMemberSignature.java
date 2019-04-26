@@ -66,10 +66,4 @@ public abstract class AbstractClassMemberSignature implements ISignature {
   public String getName() {
     return subSignature.getName();
   }
-
-  // FIXME: [JMP] Implement quotation
-  @Nonnull
-  public String toQuotedString() {
-    return this.toString();
-  }
 }

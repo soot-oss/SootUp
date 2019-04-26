@@ -43,13 +43,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Soot's counterpart of th import java.util.stream.Collectors;e source language's methodRef
- * concept. Soot representation of a Java methodRef. Can be declared to belong to a SootClass. Does
- * not contain the actual code, which belongs to a Body. The getActiveBody() methodRef points to the
- * currently-active body.
+ * Soot's counterpart of the source language's method concept. Soot representation of a Java method.
+ * Can be declared to belong to a SootClass. Does not contain the actual code, which belongs to a
+ * Body. The getActiveBody() method points to the currently-active body.
  *
- * <p>Modified by Linghui Luo
- *
+ * @author Linghui Luo
  * @author Jan Martin Persch
  */
 public class SootMethod extends SootClassMember implements IMethod {
@@ -70,6 +68,9 @@ public class SootMethod extends SootClassMember implements IMethod {
 
   /** Tells this methodRef how to find out where its body lives. */
   @Nonnull private final IMethodSourceContent methodSource;
+
+  /** Active body associated with this method. */
+  @Nullable private Body activeBody;
 
   /** Constructs a SootMethod object with the given attributes. */
   public SootMethod(
@@ -92,11 +93,7 @@ public class SootMethod extends SootClassMember implements IMethod {
       @Nonnull Iterable<Modifier> modifiers,
       @Nonnull Iterable<JavaClassType> thrownExceptions,
       @Nullable Body activeBody,
-      @Nullable
-          DebuggingInformation
-              debugInfo // FIXME: remove Wala DebuggingInformation from this Class, IMHO it does not
-      // belong to a sootmethod
-      ) {
+      @Nullable DebuggingInformation debugInfo) {
     super(methodSignature, modifiers);
 
     this.methodSource = source;
@@ -140,8 +137,8 @@ public class SootMethod extends SootClassMember implements IMethod {
   }
 
   /**
-   * Returns true if this methodRef is not phantom, abstract or native, i.e. this methodRef can have
-   * a body.
+   * Returns true if this method is not phantom, abstract or native, i.e. this method can have a
+   * body.
    */
   public boolean isConcrete() {
     return !isPhantom() && !isAbstract() && !isNative();
@@ -151,12 +148,12 @@ public class SootMethod extends SootClassMember implements IMethod {
     return this.getSignature().getSignature();
   }
 
-  /** Returns the number of parameters taken by this methodRef. */
+  /** Returns the number of parameters taken by this method. */
   public int getParameterCount() {
     return parameterTypes.size();
   }
 
-  /** Gets the type of the <i>n</i>th parameter of this methodRef. */
+  /** Gets the type of the <i>n</i>th parameter of this method. */
   public Type getParameterType(int n) {
     return parameterTypes.get(n);
   }
@@ -174,7 +171,7 @@ public class SootMethod extends SootClassMember implements IMethod {
     return this._lazyBody.get(); // TODO: [JMP] Refactor to return `.getAsOptional()`
   }
 
-  /** Returns true if this methodRef has an active body. */
+  /** Returns true if this method has an active body. */
   public boolean hasActiveBody() {
     return this.getActiveBody() != null;
   }
@@ -184,22 +181,22 @@ public class SootMethod extends SootClassMember implements IMethod {
     return exceptions;
   }
 
-  /** Convenience methodRef returning true if this methodRef is abstract. */
+  /** Convenience method returning true if this method is abstract. */
   public boolean isAbstract() {
     return Modifier.isAbstract(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this methodRef is native. */
+  /** Convenience method returning true if this method is native. */
   public boolean isNative() {
     return Modifier.isNative(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this methodRef is synchronized. */
+  /** Convenience method returning true if this method is synchronized. */
   public boolean isSynchronized() {
     return Modifier.isSynchronized(this.getModifiers());
   }
 
-  /** @return yes if this is the main methodRef */
+  /** @return yes if this is the main method */
   public boolean isMain() {
     return isPublic()
         && isStatic()
@@ -219,13 +216,13 @@ public class SootMethod extends SootClassMember implements IMethod {
     return this.getSignature().getName().equals(STATIC_INITIALIZER_NAME);
   }
 
-  /** We rely on the JDK class recognition to decide if a methodRef is JDK methodRef. */
+  /** We rely on the JDK class recognition to decide if a method is JDK method. */
   public boolean isJavaLibraryMethod() {
     return this.getDeclaringClass().isJavaLibraryClass();
   }
 
   /**
-   * Returns the declaration of this methodRef, as used at the top of textual body representations
+   * Returns the declaration of this method, as used at the top of textual body representations
    * (before the {}'s containing the code for representation.)
    */
   public String getDeclaration() {
@@ -247,7 +244,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
     // return type + name
 
-    builder.append(this.getSubSignature().toQuotedString());
+    builder.append(this.getSubSignature().toString());
 
     // Print exceptions
     Iterator<JavaClassType> exceptionIt = this.getExceptionSignatures().iterator();

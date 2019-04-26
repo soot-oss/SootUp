@@ -31,7 +31,7 @@ import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.Type;
 import soot.util.StringTools;
 
-public class StringConstant extends Constant {
+public class StringConstant implements Constant {
   /** */
   private static final long serialVersionUID = -1247456329894136483L;
 
@@ -75,5 +75,10 @@ public class StringConstant extends Constant {
 
   public String getValue() {
     return value;
+  }
+
+  @Override
+  public Object clone() {
+    throw new RuntimeException();
   }
 }

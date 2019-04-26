@@ -895,7 +895,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       } else if (op == I2D || op == L2D || op == F2D) {
         totype = PrimitiveType.getDouble();
       } else if (op == I2B) {
-        totype = PrimitiveType.getByteSignature();
+        totype = PrimitiveType.getByte();
       } else if (op == I2S) {
         totype = PrimitiveType.getShort();
       } else if (op == I2C) {
@@ -1047,7 +1047,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
             type = PrimitiveType.getDouble();
             break;
           case T_BYTE:
-            type = PrimitiveType.getByteSignature();
+            type = PrimitiveType.getByte();
             break;
           case T_SHORT:
             type = PrimitiveType.getShort();

@@ -76,7 +76,7 @@ public class JNegExpr extends AbstractUnopExpr {
     Value op = opBox.getValue();
 
     if (op.getType().equals(PrimitiveType.getInt())
-        || op.getType().equals(PrimitiveType.getByteSignature())
+        || op.getType().equals(PrimitiveType.getByte())
         || op.getType().equals(PrimitiveType.getShort())
         || op.getType().equals(PrimitiveType.getBoolean())
         || op.getType().equals(PrimitiveType.getChar())) {

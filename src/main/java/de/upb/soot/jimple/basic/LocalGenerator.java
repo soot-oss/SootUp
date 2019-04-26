@@ -79,7 +79,7 @@ public class LocalGenerator {
 
     if (type.equals(PrimitiveType.getInt())) {
       appendNextIntName(name);
-    } else if (type.equals(PrimitiveType.getByteSignature())) {
+    } else if (type.equals(PrimitiveType.getByte())) {
       appendNextByteName(name);
     } else if (type.equals(PrimitiveType.getShort())) {
       appendNextShortName(name);

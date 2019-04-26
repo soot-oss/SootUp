@@ -110,7 +110,7 @@ public class PrimitiveType extends Type {
   }
 
   @Nonnull
-  public static PrimitiveType getByteSignature() {
+  public static PrimitiveType getByte() {
     return BYTE_TYPE;
   }
 

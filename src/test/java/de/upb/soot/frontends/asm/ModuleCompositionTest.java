@@ -38,9 +38,9 @@ public class ModuleCompositionTest {
 
   @Test
   public void apiExamples() {
-
-    System.out.println("--- EXAMPLE 1: On-Demand Loading ---");
-    System.out.println();
+    // TODO. add assertions
+    // System.out.println("--- EXAMPLE 1: On-Demand Loading ---");
+    // System.out.println();
 
     String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
 
@@ -60,10 +60,10 @@ public class ModuleCompositionTest {
         utilsClassSignature.resolve(view).orElseThrow(IllegalStateException::new);
 
     // Print all methods that are loaded on-demand
-    System.out.println("Methods of " + utilsClassSignature + " class:");
-    utilsClass.getMethods().stream().map(it -> " - " + it).forEach(System.out::println);
+    // System.out.println("Methods of " + utilsClassSignature + " class:");
+    // utilsClass.getMethods().stream().map(it -> " - " + it).forEach(System.out::println);
 
-    System.out.println();
+    // System.out.println();
 
     // Parse sub-signature for "optionalToStream" method
     MethodSubSignature optionalToStreamMethodSubSignature =
@@ -72,7 +72,7 @@ public class ModuleCompositionTest {
                 "java.util.stream.Stream optionalToStream(java.util.Optional)");
 
     // Print sub-signature
-    System.out.println("Method to find: " + optionalToStreamMethodSubSignature);
+    // System.out.println("Method to find: " + optionalToStreamMethodSubSignature);
 
     // Get method for sub-signature
     SootMethod foundMethod =
@@ -81,16 +81,16 @@ public class ModuleCompositionTest {
             .orElseThrow(IllegalStateException::new);
 
     // Print method
-    System.out.println("Found method:   " + foundMethod);
-    System.out.println();
+    // System.out.println("Found method:   " + foundMethod);
+    // System.out.println();
 
     // Print method content
-    System.out.println("Method body:    ---Yay, InvokeDynamic is loading, now!---");
-    System.out.println(foundMethod.getActiveBody());
+    // System.out.println("Method body:    ---Yay, InvokeDynamic is loading, now!---");
+    // System.out.println(foundMethod.getActiveBody());
 
-    System.out.println();
-    System.out.println("--- EXAMPLE 2: Using Builders ---");
-    System.out.println();
+    // System.out.println();
+    // System.out.println("--- EXAMPLE 2: Using Builders ---");
+    // System.out.println();
 
     // Parse sub-signature for "name" field
     FieldSubSignature nameFieldSubSignature =
@@ -137,11 +137,11 @@ public class ModuleCompositionTest {
             .build();
 
     // Print some information
-    System.out.println("Field sub-signature: " + nameFieldSubSignature);
-    System.out.println("Class signature:     " + c);
-    System.out.println();
-    System.out.println("Field:         " + c.getField(nameFieldSubSignature));
-    System.out.println("Field by name: " + c.getField(nameFieldSubSignature.getName()));
-    System.out.println("Method:        " + c.getMethod(optionalToStreamMethodSubSignature));
+    // System.out.println("Field sub-signature: " + nameFieldSubSignature);
+    // System.out.println("Class signature:     " + c);
+    // System.out.println();
+    // System.out.println("Field:         " + c.getField(nameFieldSubSignature));
+    // System.out.println("Field by name: " + c.getField(nameFieldSubSignature.getName()));
+    // System.out.println("Method:        " + c.getMethod(optionalToStreamMethodSubSignature));
   }
 }
