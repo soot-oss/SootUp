@@ -971,12 +971,13 @@ public class InstructionConverter {
       op2 = getLocal(type, val2);
     }
     if (type.equals(UnknownType.getInstance())) type = op2.getType();
-    Value result = getLocal(type, def);
+
     AbstractBinopExpr binExpr = null;
     IBinaryOpInstruction.IOperator operator = binOpInst.getOperator();
     if (operator.equals(IBinaryOpInstruction.Operator.ADD)) {
       if (type.toString().equals("java.lang.String")) {
         // from wala java source code front end we get also string addition.
+        Value result = getLocal(type, def);
         return convertStringAddition(op1, op2, result, type, binOpInst.iindex, debugInfo);
       }
       binExpr = Jimple.newAddExpr(op1, op2);
@@ -1026,6 +1027,7 @@ public class InstructionConverter {
     operandPos[0] = p1;
     Position p2 = debugInfo.getOperandPosition(binOpInst.iindex, 1);
     operandPos[1] = p2;
+    Value result = getLocal(type, def);
     ret.add(
         Jimple.newAssignStmt(
             result,
