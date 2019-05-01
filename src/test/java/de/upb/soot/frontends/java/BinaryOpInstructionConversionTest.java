@@ -1852,4 +1852,57 @@ public class BinaryOpInstructionConversionTest {
         JReturnStmt.class,
         stmt -> assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getOp()));
   }
+
+  @Test
+  public void testString1() {
+    Optional<SootMethod> m =
+        loader.getSootMethod(
+            sigFactory.getMethodSignature(
+                "getString1",
+                declareClassSig,
+                "java.lang.String",
+                Arrays.asList("java.lang.String")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testString2() {
+    Optional<SootMethod> m =
+        loader.getSootMethod(
+            sigFactory.getMethodSignature(
+                "getString2",
+                declareClassSig,
+                "java.lang.String",
+                Arrays.asList("java.lang.String")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testString3() {
+    Optional<SootMethod> m =
+        loader.getSootMethod(
+            sigFactory.getMethodSignature(
+                "getString3",
+                declareClassSig,
+                "java.lang.String",
+                Arrays.asList("java.lang.String", "java.lang.String")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
+
+  @Test
+  public void testString4() {
+    Optional<SootMethod> m =
+        loader.getSootMethod(
+            sigFactory.getMethodSignature(
+                "getString4", declareClassSig, "java.lang.String", Collections.emptyList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+  }
 }

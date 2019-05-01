@@ -92,6 +92,7 @@ import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.TypeFactory;
 import de.upb.soot.types.UnknownType;
+import de.upb.soot.types.VoidType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -169,7 +170,7 @@ public class InstructionConverter {
     } else if (inst instanceof SSAInstanceofInstruction) {
       stmts.add(convertInstanceofInstruction(debugInfo, (SSAInstanceofInstruction) inst));
     } else if (inst instanceof SSABinaryOpInstruction) {
-      stmts.add(this.convertBinaryOpInstruction(debugInfo, (SSABinaryOpInstruction) inst));
+      stmts.addAll(this.convertBinaryOpInstruction(debugInfo, (SSABinaryOpInstruction) inst));
     } else if (inst instanceof SSAUnaryOpInstruction) {
       stmts.add(this.convertUnaryOpInstruction(debugInfo, (SSAUnaryOpInstruction) inst));
     } else if (inst instanceof SSAThrowInstruction) {
@@ -877,8 +878,81 @@ public class InstructionConverter {
     }
   }
 
-  private IStmt convertBinaryOpInstruction(
+  private List<IStmt> convertStringAddition(
+      Value op1, Value op2, Value result, Type type, int iindex, DebuggingInformation debugInfo) {
+    List<IStmt> ret = new ArrayList<>();
+    Position p1 = debugInfo.getOperandPosition(iindex, 0);
+    Position p2 = debugInfo.getOperandPosition(iindex, 1);
+    Position stmtPosition = debugInfo.getInstructionPosition(iindex);
+
+    JavaClassType sbType = DefaultTypeFactory.getInstance().getClassType("java.lang.StringBuilder");
+    Local strBuilderLocal = localGenerator.generateLocal(sbType);
+    IStmt newStmt =
+        Jimple.newAssignStmt(
+            strBuilderLocal, Jimple.newNewExpr(sbType), new PositionInfo(stmtPosition, null));
+    ret.add(newStmt);
+
+    // handle op1
+    MethodSignature initMethod =
+        converter
+            .view
+            .getSignatureFactory()
+            .getMethodSignature(
+                "<init>",
+                sbType.getFullyQualifiedName(),
+                VoidType.getInstance().toString(),
+                Collections.singletonList(type.toString()));
+    Position[] pos1 = new Position[2];
+    pos1[0] = null;
+    pos1[1] = p1;
+    IStmt specStmt =
+        Jimple.newInvokeStmt(
+            Jimple.newSpecialInvokeExpr(strBuilderLocal, initMethod, op1),
+            new PositionInfo(stmtPosition, pos1));
+    ret.add(specStmt);
+    // handle op2
+    MethodSignature appendMethod =
+        converter
+            .view
+            .getSignatureFactory()
+            .getMethodSignature(
+                "append",
+                sbType.getFullyQualifiedName(),
+                sbType.toString(),
+                Collections.singletonList(type.toString()));
+    Local strBuilderLocal2 = localGenerator.generateLocal(sbType);
+    Position[] pos2 = new Position[2];
+    pos2[0] = null;
+    pos2[1] = p2;
+
+    IStmt virStmt =
+        Jimple.newAssignStmt(
+            strBuilderLocal2,
+            Jimple.newVirtualInvokeExpr(strBuilderLocal, appendMethod, op2),
+            new PositionInfo(stmtPosition, pos2));
+    ret.add(virStmt);
+    MethodSignature toStringMethod =
+        converter
+            .view
+            .getSignatureFactory()
+            .getMethodSignature(
+                "toString",
+                sbType.getFullyQualifiedName(),
+                sbType.toString(),
+                Collections.emptyList());
+    // assign result
+    IStmt toStringStmt =
+        Jimple.newAssignStmt(
+            result,
+            Jimple.newVirtualInvokeExpr(strBuilderLocal2, toStringMethod),
+            new PositionInfo(stmtPosition, null));
+    ret.add(toStringStmt);
+    return ret;
+  }
+
+  private List<IStmt> convertBinaryOpInstruction(
       DebuggingInformation debugInfo, SSABinaryOpInstruction binOpInst) {
+    List<IStmt> ret = new ArrayList<>();
     int def = binOpInst.getDef();
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
@@ -897,9 +971,14 @@ public class InstructionConverter {
       op2 = getLocal(type, val2);
     }
     if (type.equals(UnknownType.getInstance())) type = op2.getType();
+    Value result = getLocal(type, def);
     AbstractBinopExpr binExpr = null;
     IBinaryOpInstruction.IOperator operator = binOpInst.getOperator();
     if (operator.equals(IBinaryOpInstruction.Operator.ADD)) {
+      if (type.toString().equals("java.lang.String")) {
+        // from wala java source code front end we get also string addition.
+        return convertStringAddition(op1, op2, result, type, binOpInst.iindex, debugInfo);
+      }
       binExpr = Jimple.newAddExpr(op1, op2);
     } else if (operator.equals(IBinaryOpInstruction.Operator.SUB)) {
       binExpr = Jimple.newSubExpr(op1, op2);
@@ -947,11 +1026,12 @@ public class InstructionConverter {
     operandPos[0] = p1;
     Position p2 = debugInfo.getOperandPosition(binOpInst.iindex, 1);
     operandPos[1] = p2;
-    Value result = getLocal(type, def);
-    return Jimple.newAssignStmt(
-        result,
-        binExpr,
-        new PositionInfo(debugInfo.getInstructionPosition(binOpInst.iindex), operandPos));
+    ret.add(
+        Jimple.newAssignStmt(
+            result,
+            binExpr,
+            new PositionInfo(debugInfo.getInstructionPosition(binOpInst.iindex), operandPos)));
+    return ret;
   }
 
   private IStmt convertGoToInstruction(
