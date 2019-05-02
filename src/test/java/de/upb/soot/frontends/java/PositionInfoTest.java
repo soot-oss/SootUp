@@ -61,7 +61,7 @@ public class PositionInfoTest {
   public void testBinaryOpInstruction() {
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
 
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
     IStmt stmt = stmts.get(3);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
@@ -90,7 +90,7 @@ public class PositionInfoTest {
   public void testBinaryOpInstructionMultiline() {
 
     loadCurrentMethod("complexOperands", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
     IStmt stmt = stmts.get(8);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
@@ -121,7 +121,7 @@ public class PositionInfoTest {
 
     loadCurrentMethod("call1", declareClassSig, "long", Arrays.asList("int"));
 
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
     IStmt stmt = stmts.get(4);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
@@ -144,7 +144,7 @@ public class PositionInfoTest {
     // implicit return i.e. end of method
     loadCurrentMethod("call0", declareClassSig, "void", Arrays.asList());
     {
-      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
       IStmt stmt = stmts.get(6);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -161,7 +161,7 @@ public class PositionInfoTest {
     // with explicit return (at the end)
     loadCurrentMethod("call01", declareClassSig, "void", Arrays.asList());
     {
-      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
       IStmt stmt = stmts.get(2);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -178,7 +178,7 @@ public class PositionInfoTest {
     // has no operands
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
 
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
     IStmt stmt = stmts.get(12);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
@@ -194,7 +194,7 @@ public class PositionInfoTest {
 
     loadCurrentMethod("readSth", declareClassSig, "void", Arrays.asList());
     {
-      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
       IStmt stmt = stmts.get(1);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -211,7 +211,7 @@ public class PositionInfoTest {
     }
 
     {
-      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
       IStmt stmt = stmts.get(2);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -227,7 +227,7 @@ public class PositionInfoTest {
     }
 
     {
-      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
       IStmt stmt = stmts.get(3);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -243,7 +243,7 @@ public class PositionInfoTest {
     }
 
     {
-      List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+      List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
       IStmt stmt = stmts.get(4);
       PositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
@@ -263,7 +263,7 @@ public class PositionInfoTest {
   public void testPutInstruction() {
     loadCurrentMethod("<init>", declareClassSig, "void", Arrays.asList());
 
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
     IStmt stmt = stmts.get(2);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
@@ -288,7 +288,7 @@ public class PositionInfoTest {
 
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
 
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
     {
       IStmt stmt = stmts.get(9);
       PositionInfo info = stmt.getPositionInfo();
@@ -324,7 +324,7 @@ public class PositionInfoTest {
     // [ms] has no interesting operand data/positions; maybe parameters but i don't see a additional
     // benefit
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
     {
       // !hasDef() -> same class, no parameters
       IStmt stmt = stmts.get(4);
@@ -376,7 +376,7 @@ public class PositionInfoTest {
   @Test
   public void testConversionInstruction() {
     loadCurrentMethod("complexOperands", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     {
       IStmt stmt = stmts.get(15);
@@ -402,7 +402,7 @@ public class PositionInfoTest {
   @Test
   public void testInstanceOfInstruction() {
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     IStmt stmt = stmts.get(30);
     PositionInfo info = stmt.getPositionInfo();
@@ -426,7 +426,7 @@ public class PositionInfoTest {
   @Test
   public void testNewInstruction() {
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     IStmt stmt = stmts.get(18);
     PositionInfo info = stmt.getPositionInfo();
@@ -458,7 +458,7 @@ public class PositionInfoTest {
   @Test
   public void testUnaryInstruction() {
     loadCurrentMethod("complexOperands", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     { // assignment: int a;
       IStmt stmt = stmts.get(1);
@@ -527,7 +527,7 @@ public class PositionInfoTest {
   @Test
   public void testThrowInstruction() {
     loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     IStmt stmt = stmts.get(3);
     PositionInfo info = stmt.getPositionInfo();
@@ -552,7 +552,7 @@ public class PositionInfoTest {
   @Test
   public void testSwitchInstruction() {
     loadCurrentMethod("favouriteNumber", declareClassSig, "int", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     IStmt stmt = stmts.get(2);
     PositionInfo info = stmt.getPositionInfo();
@@ -571,7 +571,7 @@ public class PositionInfoTest {
   public void testLoadMetadataInstruction() {
     // TODO: implement - no instruction example found
     loadCurrentMethod("metadata", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     IStmt stmt = stmts.get(0);
     PositionInfo info = stmt.getPositionInfo();
@@ -594,7 +594,7 @@ public class PositionInfoTest {
   public void testCheckCastInstruction() {
     // TODO: implement - no instruction example found
     loadCurrentMethod("TODO", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     IStmt stmt = stmts.get(0);
     PositionInfo info = stmt.getPositionInfo();
@@ -617,7 +617,7 @@ public class PositionInfoTest {
   public void testEnclosingObjectReference() {
     // TODO: implement - no instruction example found
     loadCurrentMethod("enclosingobject", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     IStmt stmt = stmts.get(0);
     PositionInfo info = stmt.getPositionInfo();
@@ -640,7 +640,7 @@ public class PositionInfoTest {
   public void testAstLexicalRead() {
     // TODO: implement - no instruction example found
     loadCurrentMethod("TODO", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     IStmt stmt = stmts.get(0);
     PositionInfo info = stmt.getPositionInfo();
@@ -663,7 +663,7 @@ public class PositionInfoTest {
   public void testAstLexicalWrite() {
     // TODO: implement - no instruction example found
     loadCurrentMethod("TODO", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     IStmt stmt = stmts.get(0);
     PositionInfo info = stmt.getPositionInfo();
@@ -685,7 +685,7 @@ public class PositionInfoTest {
   @Test
   public void testAssertInstruction() {
     loadCurrentMethod("atomictwo", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     {
       IStmt stmt = stmts.get(9); // to 17
@@ -714,7 +714,7 @@ public class PositionInfoTest {
     // FIXME: [ms] synchronized void atomicone has no monitors?
 
     loadCurrentMethod("atomictwo", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     { // entermonitor
       IStmt stmt = stmts.get(2);
@@ -750,7 +750,7 @@ public class PositionInfoTest {
   @Test
   public void testGetCaughtExceptionInstruction() {
     loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     IStmt stmt = stmts.get(4);
     PositionInfo info = stmt.getPositionInfo();
@@ -774,7 +774,7 @@ public class PositionInfoTest {
   public void testArrayLengthInstruction() {
     loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
 
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
     IStmt stmt = stmts.get(6);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
@@ -796,7 +796,7 @@ public class PositionInfoTest {
   public void testArrayLoadInstruction() {
     loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
 
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
     IStmt stmt = stmts.get(10);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
@@ -819,7 +819,7 @@ public class PositionInfoTest {
   public void testArrayStoreInstruction() {
     loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
 
-    List<IStmt> stmts = new ArrayList<>(method.getActiveBody().getStmts());
+    List<IStmt> stmts = new ArrayList<>(method.getBody().getStmts());
     IStmt stmt = stmts.get(7);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
