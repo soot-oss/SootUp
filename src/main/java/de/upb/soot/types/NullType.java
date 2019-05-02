@@ -41,10 +41,4 @@ public class NullType extends ReferenceType {
   public String toString() {
     return "null";
   }
-
-  @Override
-  @Nonnull
-  public String toQuotedString() {
-    return toString();
-  }
 }

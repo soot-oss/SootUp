@@ -87,12 +87,6 @@ public class PrimitiveType extends Type {
     return name;
   }
 
-  @Override
-  @Nonnull
-  public String toQuotedString() {
-    return name;
-  }
-
   @Nonnull
   public static ImmutableCollection<PrimitiveType> all() {
     return CACHED_SIGNATURES.values();

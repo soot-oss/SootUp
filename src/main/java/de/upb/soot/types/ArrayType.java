@@ -25,17 +25,6 @@ public class ArrayType extends ReferenceType {
     return sb.toString();
   }
 
-  /** Returns an escaped textual representation of this type for serialization */
-  @Override
-  public String toQuotedString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append(baseType.toQuotedString());
-    for (int i = 0; i < dimension; i++) {
-      sb.append("[]");
-    }
-    return sb.toString();
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
