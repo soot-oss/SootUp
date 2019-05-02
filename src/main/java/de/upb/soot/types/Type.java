@@ -22,6 +22,5 @@ package de.upb.soot.types;
  * #L%
  */
 
-
 /** Represents the signature of a Java type, e.g., a class, a primitive type, void, or null. */
 public abstract class Type {}
