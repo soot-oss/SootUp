@@ -186,9 +186,7 @@ public class Printer {
             && !Modifier.isNative(method.getModifiers())) {
           if (!method.hasBody()) {
             // methodRef.retrieveActiveBody(); // force loading the body
-            if (!method.hasBody()) {
-              throw new RuntimeException("methodRef " + method.getName() + " has no active body!");
-            }
+            throw new RuntimeException("methodRef " + method.getName() + " has no body!");
           }
           printTo(method.getBody(), out);
 
