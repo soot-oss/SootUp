@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableSet;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ResolvingLevel;
-import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.types.JavaClassType;
@@ -99,7 +98,7 @@ public class JavaView extends AbstractView {
           "dynamicinvoke",
           "strictfp");
 
-  @Nonnull private final Map<Type, SootClass> map = new HashMap<>();
+  @Nonnull private final Map<Type, AbstractClass> map = new HashMap<>();
 
   // endregion /Fields/
 
@@ -161,20 +160,16 @@ public class JavaView extends AbstractView {
 
   @Override
   @Nonnull
-  public synchronized Optional<AbstractClass> getClass(@Nonnull Type type) {
-    if (!(type instanceof JavaClassType)) {
-      throw new IllegalArgumentException("Invalid signature.");
-    }
-
-    SootClass sootClass = this.map.get(type);
+  public synchronized Optional<AbstractClass> getClass(@Nonnull JavaClassType type) {
+    AbstractClass sootClass = this.map.get(type);
 
     if (sootClass != null) return Optional.of(sootClass);
     else if (this.isFullyResolved()) return Optional.empty();
-    else return Optional.ofNullable(this.__resolveSootClass((JavaClassType) type));
+    else return Optional.ofNullable(this.__resolveSootClass(type));
   }
 
   @Nullable
-  private SootClass __resolveSootClass(@Nonnull JavaClassType signature) {
+  private AbstractClass __resolveSootClass(@Nonnull JavaClassType signature) {
     return this.getProject()
         .getNamespace()
         .getClassSource(signature)
@@ -186,7 +181,6 @@ public class JavaView extends AbstractView {
                 throw new RuntimeException("Resolving Soot class failed.", e);
               }
             })
-        .map(SootClass.class::cast)
         .map(it -> valueOrElse(this.map.putIfAbsent(it.getType(), it), it))
         .orElse(null);
   }

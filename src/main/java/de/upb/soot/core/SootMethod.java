@@ -22,8 +22,8 @@ package de.upb.soot.core;
  */
 
 import static de.upb.soot.util.Utils.immutableListOf;
-import static de.upb.soot.util.Utils.initializedLazy;
-import static de.upb.soot.util.Utils.synchronizedLazy;
+import static de.upb.soot.util.concurrent.Lazy.initializedLazy;
+import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
 
 import com.google.common.collect.ImmutableList;
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
@@ -72,6 +72,7 @@ public class SootMethod extends SootClassMember implements IMethod {
   /** Active body associated with this method. */
   @Nullable private Body activeBody;
 
+  // TODO Simplify constructor
   /** Constructs a SootMethod object with the given attributes. */
   public SootMethod(
       @Nonnull IMethodSourceContent source,
@@ -101,6 +102,7 @@ public class SootMethod extends SootClassMember implements IMethod {
     this.exceptions = immutableListOf(thrownExceptions);
     this.debugInfo = debugInfo;
 
+    // TODO Also use Lazy class here
     if (activeBody != null) {
       //noinspection ThisEscapedInObjectConstruction
       activeBody.setMethod(this);

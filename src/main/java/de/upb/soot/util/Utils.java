@@ -25,9 +25,6 @@ package de.upb.soot.util;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import de.upb.soot.util.concurrent.InitializedLazy;
-import de.upb.soot.util.concurrent.Lazy;
-import de.upb.soot.util.concurrent.SynchronizedLazy;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Optional;
@@ -35,7 +32,6 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -142,48 +138,6 @@ public class Utils {
   }
 
   // endregion /Stream/
-
-  // region Lazy
-
-  /**
-   * Creates a {@link SynchronizedLazy} instance.
-   *
-   * @param initializer The initializer for the lazy value.
-   * @param <T> The type of the lazy value.
-   * @return The created {@link SynchronizedLazy} instance.
-   */
-  @Nonnull
-  public static <T> Lazy<T> synchronizedLazy(@Nonnull Supplier<T> initializer) {
-    return synchronizedLazy(null, initializer);
-  }
-
-  /**
-   * Creates a {@link SynchronizedLazy} instance.
-   *
-   * @param mutex A mutex object for synchronization.
-   * @param initializer The initializer for the lazy value.
-   * @param <T> The type of the lazy value.
-   * @return The created {@link SynchronizedLazy} instance.
-   */
-  @Nonnull
-  public static <T> Lazy<T> synchronizedLazy(
-      @Nullable Object mutex, @Nonnull Supplier<T> initializer) {
-    return new SynchronizedLazy<>(mutex, initializer);
-  }
-
-  /**
-   * Creates a {@link InitializedLazy} instance.
-   *
-   * @param value The value.
-   * @param <T> The type of the lazy value.
-   * @return The created {@link InitializedLazy} instance.
-   */
-  @Nonnull
-  public static <T> Lazy<T> initializedLazy(@Nonnull T value) {
-    return new InitializedLazy<>(value);
-  }
-
-  // endregion /Lazy/
 
   // region Immutable Lists
 

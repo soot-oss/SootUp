@@ -5,7 +5,6 @@
 
 package de.upb.soot.util.concurrent;
 
-import de.upb.soot.util.Utils;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,10 +17,10 @@ import javax.annotation.Nullable;
  * <code>kotlin.util.Lazy</code> and <code>kotlin.util.LazyJVM</code>).</i>
  *
  * @author Jan Martin Persch
- * @see Utils#synchronizedLazy(Supplier)
- * @see Utils#synchronizedLazy(Object, Supplier)
+ * @see Lazy#synchronizedLazy(Supplier)
+ * @see Lazy#synchronizedLazy(Object, Supplier)
  * @see InitializedLazy
- * @see Utils#initializedLazy(Object)
+ * @see Lazy#initializedLazy(Object)
  */
 public class SynchronizedLazy<T> extends LazyBase<T> {
   // region Fields

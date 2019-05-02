@@ -57,12 +57,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
   @Override
   public PackageSignature getPackageSignature(final String packageName) {
     Preconditions.checkNotNull(packageName);
-    PackageSignature packageSignature = packages.get(packageName);
-    if (packageSignature == null) {
-      packageSignature = new PackageSignature(packageName);
-      packages.put(packageName, packageSignature);
-    }
-    return packageSignature;
+    return packages.computeIfAbsent(packageName, PackageSignature::new);
   }
 
   /**

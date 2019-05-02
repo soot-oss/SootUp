@@ -1,12 +1,16 @@
 package de.upb.soot.frontends;
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.core.AbstractClass;
+import de.upb.soot.core.Modifier;
 import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
 import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -36,4 +40,14 @@ public interface IClassSourceContent {
     // TODO: Not sure whether this should even have a default implementation
     return Collections.emptyList();
   }
+
+  Set<Modifier> resolveModifiers(JavaClassType type);
+
+  Set<JavaClassType> resolveInterfaces(JavaClassType type);
+
+  Optional<JavaClassType> resolveSuperclass(JavaClassType type);
+
+  Optional<JavaClassType> resolveOuterClass(JavaClassType type);
+
+  Position resolvePosition(JavaClassType type);
 }
