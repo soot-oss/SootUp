@@ -2,33 +2,20 @@ package de.upb.soot.frontends.asm;
 
 import de.upb.soot.core.Modifier;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.types.DefaultTypeFactory;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.PrimitiveType;
-import de.upb.soot.types.Type;
-import de.upb.soot.types.VoidType;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import de.upb.soot.types.*;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public final class AsmUtil {
 
@@ -42,7 +29,7 @@ public final class AsmUtil {
    * @param classSource The source.
    * @param classNode The node to initialize
    */
-  public static void initAsmClassSource(
+  protected static void initAsmClassSource(
       @Nonnull ClassSource classSource, @Nonnull ClassNode classNode) {
     URI uri = classSource.getSourcePath().toUri();
 
@@ -251,13 +238,22 @@ public final class AsmUtil {
   }
 
   @Nonnull
-  public static Collection<JavaClassType> asmIdToSignature(@Nullable Iterable<String> modules) {
-    if (modules == null) {
+  public static Collection<JavaClassType> asmIdToSignature(
+      @Nullable Iterable<String> asmClassNames) {
+    if (asmClassNames == null) {
       return Collections.emptyList();
     }
 
-    return StreamSupport.stream(modules.spliterator(), false)
-        .map(p -> (DefaultTypeFactory.getInstance().getClassType(toQualifiedName(p))))
+    return StreamSupport.stream(asmClassNames.spliterator(), false)
+        .map(p -> asmIDToSignature(p))
         .collect(Collectors.toList());
+  }
+
+  @Nullable
+  public static JavaClassType asmIDToSignature(@Nonnull String asmClassName) {
+    if (asmClassName == null || asmClassName.isEmpty()) {
+      return null;
+    }
+    return DefaultTypeFactory.getInstance().getClassType(toQualifiedName(asmClassName));
   }
 }

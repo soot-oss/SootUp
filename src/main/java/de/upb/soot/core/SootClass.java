@@ -21,10 +21,6 @@ package de.upb.soot.core;
  * #L%
  */
 
-import static de.upb.soot.util.Utils.ImmutableCollectors.toImmutableSet;
-import static de.upb.soot.util.Utils.iterableToStream;
-import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
-
 import com.google.common.collect.Iterables;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.frontends.ClassSource;
@@ -36,11 +32,16 @@ import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
 import de.upb.soot.util.concurrent.Lazy;
+
+import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
+
+import static de.upb.soot.util.Utils.ImmutableCollectors.toImmutableSet;
+import static de.upb.soot.util.Utils.iterableToStream;
+import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
 
 /*
  * Incomplete and inefficient implementation.
@@ -340,6 +341,7 @@ public class SootClass extends AbstractClass implements Serializable {
     return classType.equals(ClassType.Library);
   }
 
+  // FIXME: get rid of these logic
   private static final class LibraryClassPatternHolder {
     /**
      * Sometimes we need to know which class is a JDK class. There is no simple way to distinguish a
@@ -428,6 +430,7 @@ public class SootClass extends AbstractClass implements Serializable {
   // }
   // }
 
+  // FIXME: get rid of the wala class position
   private final Lazy<Position> lazyPosition =
       synchronizedLazy(() -> classSource.getContent().resolvePosition(getType()));
 
