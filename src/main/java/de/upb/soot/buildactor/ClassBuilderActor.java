@@ -4,7 +4,6 @@ import akka.actor.AbstractLoggingActor;
 import akka.actor.Props;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.IMethod;
-import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
@@ -59,7 +58,8 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     // FIXME: somewhere a soot class needs to be created or returned???
     AbstractClass sootClass = null;
     try {
-      sootClass = content.resolveClass(ResolvingLevel.DANGLING, view);
+      // TODO Fix this, resolveClass no longer exists
+//      sootClass = content.resolveClass(ResolvingLevel.DANGLING, view);
     } catch (ResolveException e) {
       e.printStackTrace();
       // FIXME: error handling

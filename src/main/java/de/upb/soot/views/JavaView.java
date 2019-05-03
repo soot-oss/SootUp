@@ -5,9 +5,9 @@ import static de.upb.soot.util.Utils.valueOrElse;
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.ResolvingLevel;
+import de.upb.soot.core.ClassType;
+import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
@@ -175,11 +175,9 @@ public class JavaView extends AbstractView {
         .getClassSource(signature)
         .map(
             it -> {
-              try {
-                return it.getContent().resolveClass(ResolvingLevel.HIERARCHY, this);
-              } catch (ResolveException e) {
-                throw new RuntimeException("Resolving Soot class failed.", e);
-              }
+              // TODO Don't use static ClassType here. Generally this seems weird, we shouldn't
+              //   create the SootClass here
+              return new SootClass(it, ClassType.Application);
             })
         .map(it -> valueOrElse(this.map.putIfAbsent(it.getType(), it), it))
         .orElse(null);

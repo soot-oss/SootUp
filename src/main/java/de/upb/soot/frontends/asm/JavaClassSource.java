@@ -1,5 +1,6 @@
-package de.upb.soot.frontends;
+package de.upb.soot.frontends.asm;
 
+import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;

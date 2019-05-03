@@ -26,11 +26,10 @@ import categories.Java8Test;
 import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
-import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.JavaClassSource;
+import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.NoPositionInformation;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -71,22 +70,14 @@ public class JInvokeStmtTest {
     DefaultTypeFactory dtf = factories.getTypeFactory();
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
-    JavaClassSource javaClassSource =
-        new JavaClassSource(
-            new JavaClassPathNamespace("src/main/java/de/upb/soot"),
-            dummyPath,
-            dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"));
-
     JavaClassType superClassSignature = dtf.getClassType("java.lang.Object");
-
     Set<SootField> fields = new LinkedHashSet<>();
     Set<SootMethod> methods = new LinkedHashSet<>();
-
-    SootClass sootClass =
-        new SootClass(
-            ResolvingLevel.BODIES,
-            javaClassSource,
-            ClassType.Application,
+    EagerJavaClassSource javaClassSource =
+        new EagerJavaClassSource(
+            new JavaClassPathNamespace("src/main/java/de/upb/soot"),
+            dummyPath,
+            dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
             superClassSignature,
             new HashSet<>(),
             null,
@@ -94,6 +85,8 @@ public class JInvokeStmtTest {
             methods,
             new NoPositionInformation(),
             EnumSet.of(Modifier.PUBLIC));
+
+    SootClass sootClass = new SootClass(javaClassSource, ClassType.Application);
 
     // JStaticInvokeExpr
     MethodSignature statMethodSig =

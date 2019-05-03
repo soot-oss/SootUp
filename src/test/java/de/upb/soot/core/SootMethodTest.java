@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.soot.DefaultFactories;
 import de.upb.soot.Project;
-import de.upb.soot.frontends.JavaClassSource;
+import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.frontends.java.WalaIRMethodSourceContent;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -67,19 +67,18 @@ public class SootMethodTest {
 
     SootClass mainClass =
         new SootClass(
-            ResolvingLevel.BODIES,
-            new JavaClassSource(
+            new EagerJavaClassSource(
                 new JavaSourcePathNamespace(Collections.emptySet()),
                 null,
-                view.getTypeFactory().getClassType("dummyMain")),
-            ClassType.Application,
-            null,
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.singleton(dummyMainMethod),
-            null,
-            EnumSet.of(Modifier.PUBLIC));
+                view.getTypeFactory().getClassType("dummyMain"),
+                null,
+                Collections.emptySet(),
+                null,
+                Collections.emptySet(),
+                Collections.singleton(dummyMainMethod),
+                null,
+                EnumSet.of(Modifier.PUBLIC)),
+            ClassType.Application);
 
     assertEquals(mainClass.getMethods().size(), 1);
     assertTrue(

@@ -22,12 +22,10 @@ import de.upb.soot.Project;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
-import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -65,6 +63,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  */
 public class WalaIRToJimpleConverter {
+
   protected JavaView view;
   private INamespace srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
@@ -72,11 +71,11 @@ public class WalaIRToJimpleConverter {
   private Set<SootField> sootFields;
 
   public WalaIRToJimpleConverter(Set<String> sourceDirPath) {
-    // TODO According to the annotation, we shouldn't pass in null here
-    Project project =
-        new Project(null, DefaultSignatureFactory.getInstance(), DefaultTypeFactory.getInstance());
-
     srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
+    Project project =
+        new Project(
+            srcNamespace, DefaultSignatureFactory.getInstance(), DefaultTypeFactory.getInstance());
+
     view = new JavaView(project);
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
@@ -88,8 +87,8 @@ public class WalaIRToJimpleConverter {
    * @return A SootClass converted from walaClass
    */
   public SootClass convertClass(AstClass walaClass) {
-    ClassSource classSource = createClassSource(walaClass);
-    JavaClassType classSig = classSource.getClassType();
+    String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
+    JavaClassType classSig = DefaultTypeFactory.getInstance().getClassType(fullyQualifiedClassName);
     // get super class
     IClass sc = walaClass.getSuperclass();
     JavaClassType superClass = null;
@@ -149,10 +148,38 @@ public class WalaIRToJimpleConverter {
       sootMethods.add(sootMethod);
     }
 
-    return new SootClass(
-        ResolvingLevel.BODIES,
-        classSource,
-        ClassType.Application,
+    ClassSource classSource =
+        createClassSource(
+            walaClass,
+            superClass,
+            interfaces,
+            outerClass,
+            sootFields,
+            sootMethods,
+            position,
+            modifiers);
+    return new SootClass(classSource, ClassType.Application);
+  }
+
+  /** Create a {@link EagerJavaClassSource} object for the given walaClass. */
+  public EagerJavaClassSource createClassSource(
+      AstClass walaClass,
+      JavaClassType superClass,
+      Set<JavaClassType> interfaces,
+      JavaClassType outerClass,
+      Set<SootField> sootFields,
+      Set<SootMethod> sootMethods,
+      Position position,
+      EnumSet<Modifier> modifiers) {
+    String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
+    JavaClassType classSignature =
+        DefaultTypeFactory.getInstance().getClassType(fullyQualifiedClassName);
+    URL url = walaClass.getSourceURL();
+    Path sourcePath = Paths.get(url.getPath());
+    return new EagerJavaClassSource(
+        srcNamespace,
+        sourcePath,
+        classSignature,
         superClass,
         interfaces,
         outerClass,
@@ -160,16 +187,6 @@ public class WalaIRToJimpleConverter {
         sootMethods,
         position,
         modifiers);
-  }
-
-  /** Create a {@link JavaClassSource} object for the given walaClass. */
-  public JavaClassSource createClassSource(AstClass walaClass) {
-    String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-    JavaClassType classSignature =
-        DefaultTypeFactory.getInstance().getClassType(fullyQualifiedClassName);
-    URL url = walaClass.getSourceURL();
-    Path sourcePath = Paths.get(url.getPath());
-    return new JavaClassSource(srcNamespace, sourcePath, classSignature);
   }
 
   /**

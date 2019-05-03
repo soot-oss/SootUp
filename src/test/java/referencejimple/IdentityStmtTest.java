@@ -5,12 +5,11 @@ import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
-import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.IMethodSourceContent;
-import de.upb.soot.frontends.JavaClassSource;
+import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -74,11 +73,6 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     DefaultTypeFactory dtf = defaultFactories.getTypeFactory();
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
-    JavaClassSource javaClassSource =
-        new JavaClassSource(
-            new JavaClassPathNamespace("src/main/java/de/upb/soot"),
-            dummyPath,
-            dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"));
 
     JavaClassType superClassSignature = dtf.getClassType("java.lang.Object");
     classSignature = dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
@@ -107,11 +101,11 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     // atExceptionThrow();
     // atExceptionThrowAndCatch();
 
-    sootClass =
-        new SootClass(
-            ResolvingLevel.BODIES,
-            javaClassSource,
-            ClassType.Application,
+    EagerJavaClassSource javaClassSource =
+        new EagerJavaClassSource(
+            new JavaClassPathNamespace("src/main/java/de/upb/soot"),
+            dummyPath,
+            dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
             superClassSignature,
             new HashSet<>(),
             null,
@@ -119,6 +113,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
             methods,
             new NoPositionInformation(),
             EnumSet.of(Modifier.PUBLIC));
+
+    sootClass = new SootClass(javaClassSource, ClassType.Application);
   }
 
   SootMethod init(@Nonnull FieldSignature initFieldSignature) {
