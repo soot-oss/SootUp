@@ -133,17 +133,6 @@ public class JavaView extends AbstractView {
 
   // region Methods
 
-  /**
-   * Always throws {@link IllegalStateException}.
-   *
-   * @deprecated Violates immutability rule
-   */
-  @Deprecated
-  @Override
-  public synchronized void addClass(@Nonnull AbstractClass klass) {
-    throw new IllegalStateException("Adding classes is not allowed.");
-  }
-
   @Override
   @Nonnull
   public synchronized Collection<AbstractClass> getClasses() {

@@ -95,15 +95,6 @@ public interface IView {
   @Nonnull
   Options getOptions();
 
-  // FIXME: [JMP] Adding classes violates the immutability rule!
-  /**
-   * Add given class to the view.
-   *
-   * @deprecated Violates immutability rule
-   */
-  @Deprecated
-  void addClass(@Nonnull AbstractClass klass);
-
   boolean doneResolving();
 
   @Nonnull
