@@ -6,14 +6,13 @@ import de.upb.soot.frontends.IModuleClassSourceContent;
 import de.upb.soot.frontends.asm.AbstractAsmSourceContent;
 import de.upb.soot.frontends.asm.AsmUtil;
 import de.upb.soot.types.JavaClassType;
+import java.util.ArrayList;
+import java.util.Collection;
+import javax.annotation.Nonnull;
 import org.objectweb.asm.tree.ModuleExportNode;
 import org.objectweb.asm.tree.ModuleOpenNode;
 import org.objectweb.asm.tree.ModuleProvideNode;
 import org.objectweb.asm.tree.ModuleRequireNode;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class AsmModuleClassSourceContent extends AbstractAsmSourceContent
     implements IModuleClassSourceContent {

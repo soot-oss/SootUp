@@ -1,6 +1,5 @@
 package de.upb.soot.frontends.asm;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
@@ -12,14 +11,13 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.MethodNode;
-
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodNode;
 
 class AsmClassClassSourceContent extends AbstractAsmSourceContent {
 
@@ -95,9 +93,6 @@ class AsmClassClassSourceContent extends AbstractAsmSourceContent {
     SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
     return resolveFields(fields, signatureFactory, classSignature);
   }
-
-
-
 
   @Override
   @Nonnull

@@ -1,5 +1,7 @@
 package de.upb.soot.core;
 
+import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
+
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IModuleClassSourceContent;
 import de.upb.soot.frontends.ResolveException;
@@ -7,14 +9,11 @@ import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
 import de.upb.soot.util.concurrent.Lazy;
-
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
-
-import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
+import javax.annotation.Nonnull;
 
 public class SootModuleInfo extends AbstractClass {
 

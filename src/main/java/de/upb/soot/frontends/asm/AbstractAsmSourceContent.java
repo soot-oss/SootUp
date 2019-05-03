@@ -5,12 +5,11 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.types.JavaClassType;
-
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractAsmSourceContent extends org.objectweb.asm.tree.ClassNode
     implements IClassSourceContent {
@@ -48,7 +47,7 @@ public abstract class AbstractAsmSourceContent extends org.objectweb.asm.tree.Cl
 
   @Override
   public CAstSourcePositionMap.Position resolvePosition(JavaClassType type) {
-    //FIXME: what is this??? the source code line number of the complete file?
+    // FIXME: what is this??? the source code line number of the complete file?
     return null;
   }
 }

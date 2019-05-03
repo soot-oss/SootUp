@@ -6,12 +6,11 @@ import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.types.JavaClassType;
-
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 /**
  * Converts a single source into Soot IR (Jimple).
