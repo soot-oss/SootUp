@@ -63,7 +63,7 @@ public class JavaSourcePathNamespace extends AbstractNamespace {
         return Optional.of(getClassProvider().createClassSource(this, Paths.get(path), type));
       } catch (ResolveException ignored) {
         // TODO This is really ugly. Maybe we can make createClassSource return an optional /
-        // nullable?
+        //   nullable?
       }
     }
     return Optional.empty();
