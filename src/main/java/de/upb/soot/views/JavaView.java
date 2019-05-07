@@ -164,8 +164,7 @@ public class JavaView extends AbstractView {
         .getClassSource(signature)
         .map(
             it -> {
-              // TODO Don't use static ClassType here. Generally this seems weird, we shouldn't
-              //   create the SootClass here
+              // TODO Don't use a fixed ClassType here.
               return new SootClass(it, ClassType.Application);
             })
         .map(it -> valueOrElse(this.map.putIfAbsent(it.getType(), it), it))

@@ -11,6 +11,7 @@ import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
@@ -58,14 +59,14 @@ public class EagerJavaClassSource extends ClassSource {
 
       @Nonnull
       @Override
-      public Iterable<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
+      public Collection<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
           throws ResolveException {
         return sootMethods;
       }
 
       @Nonnull
       @Override
-      public Iterable<SootField> resolveFields(@Nonnull JavaClassType signature)
+      public Collection<SootField> resolveFields(@Nonnull JavaClassType signature)
           throws ResolveException {
         return sootFields;
       }

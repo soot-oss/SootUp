@@ -5,6 +5,7 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.types.JavaClassType;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -20,16 +21,19 @@ import javax.annotation.Nonnull;
  */
 public interface IClassSourceContent {
 
+  // TODO We should probably eliminate the type parameters here.
+  //   An IClassSourceContent should be directly associated with and
+  //   know about its JavaClassType, so users don't need to pass this
+  //   as a parameter twice.
+
   @Nonnull
-  default Iterable<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
-      throws ResolveException {
+  default Collection<SootMethod> resolveMethods(@Nonnull JavaClassType type) throws ResolveException {
     // TODO: Not sure whether this should even have a default implementation
     return Collections.emptyList();
   }
 
   @Nonnull
-  default Iterable<SootField> resolveFields(@Nonnull JavaClassType signature)
-      throws ResolveException {
+  default Collection<SootField> resolveFields(@Nonnull JavaClassType type) throws ResolveException {
     // TODO: Not sure whether this should even have a default implementation
     return Collections.emptyList();
   }

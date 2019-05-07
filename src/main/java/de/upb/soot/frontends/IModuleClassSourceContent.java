@@ -20,13 +20,13 @@ import javax.annotation.Nonnull;
 public interface IModuleClassSourceContent extends IClassSourceContent {
 
   @Nonnull
-  default Iterable<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
+  default Collection<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
       throws ResolveException {
     return Collections.emptyList();
   }
 
   @Nonnull
-  default Iterable<SootField> resolveFields(@Nonnull JavaClassType signature)
+  default Collection<SootField> resolveFields(@Nonnull JavaClassType signature)
       throws ResolveException {
     return Collections.emptyList();
   }

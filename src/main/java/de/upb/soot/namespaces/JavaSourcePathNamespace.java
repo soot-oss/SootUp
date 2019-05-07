@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * An implementation of the {@link INamespace} interface for the Java source code path.
@@ -21,6 +22,7 @@ import javax.annotation.Nonnull;
 public class JavaSourcePathNamespace extends AbstractNamespace {
 
   @Nonnull private final Set<String> sourcePaths;
+  private final String exclusionFilePath;
 
   /**
    * Create a {@link JavaSourcePathNamespace} which locates java source code in the given source
@@ -29,16 +31,28 @@ public class JavaSourcePathNamespace extends AbstractNamespace {
    * @param sourcePaths the source code path to search in
    */
   public JavaSourcePathNamespace(@Nonnull Set<String> sourcePaths) {
-    super(new WalaJavaClassProvider());
+    this(sourcePaths, null);
+  }
+
+  /**
+   * Create a {@link JavaSourcePathNamespace} which locates java source code in the given source
+   * path.
+   *
+   * @param sourcePaths the source code path to search in
+   */
+  public JavaSourcePathNamespace(
+      @Nonnull Set<String> sourcePaths, @Nullable String exclusionFilePath) {
+    super(new WalaJavaClassProvider(exclusionFilePath));
 
     this.sourcePaths = sourcePaths;
+    this.exclusionFilePath = exclusionFilePath;
   }
 
   @Override
   @Nonnull
   public Collection<ClassSource> getClassSources(
       @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory) {
-    return new WalaClassLoader(sourcePaths).getClassSources();
+    return new WalaClassLoader(sourcePaths, exclusionFilePath).getClassSources();
   }
 
   @Override

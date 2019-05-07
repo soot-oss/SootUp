@@ -80,7 +80,7 @@ class AsmClassClassSourceContent extends AbstractAsmSourceContent {
 
   @Override
   @Nonnull
-  public Iterable<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
+  public Collection<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
       throws ResolveException {
     SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
     return resolveMethods(this.methods, signatureFactory, signature).collect(Collectors.toSet());
@@ -88,7 +88,7 @@ class AsmClassClassSourceContent extends AbstractAsmSourceContent {
 
   @Override
   @Nonnull
-  public Iterable<SootField> resolveFields(@Nonnull JavaClassType classSignature)
+  public Collection<SootField> resolveFields(@Nonnull JavaClassType classSignature)
       throws ResolveException {
     SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
     return resolveFields(fields, signatureFactory, classSignature);

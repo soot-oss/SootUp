@@ -74,7 +74,7 @@ public class WalaClassLoader {
     this(sourcePath, "");
   }
 
-  public WalaClassLoader(Set<String> sourcePath, String exclusionFilePath) {
+  public WalaClassLoader(Set<String> sourcePath, @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = sourcePath;
     try {
@@ -127,7 +127,10 @@ public class WalaClassLoader {
   }
 
   public WalaClassLoader(
-      Set<String> sourcePath, String apkPath, String androidJar, String exclusionFilePath) {
+      Set<String> sourcePath,
+      String apkPath,
+      String androidJar,
+      @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = sourcePath;
     try {
@@ -162,7 +165,7 @@ public class WalaClassLoader {
    * @param sourceDirPath
    * @param exclusionFilePath
    */
-  public WalaClassLoader(String sourceDirPath, String exclusionFilePath) {
+  public WalaClassLoader(String sourceDirPath, @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = Collections.singleton(sourceDirPath);
     try {
