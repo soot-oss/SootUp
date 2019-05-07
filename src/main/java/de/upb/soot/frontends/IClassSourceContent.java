@@ -27,7 +27,8 @@ public interface IClassSourceContent {
   //   as a parameter twice.
 
   @Nonnull
-  default Collection<SootMethod> resolveMethods(@Nonnull JavaClassType type) throws ResolveException {
+  default Collection<SootMethod> resolveMethods(@Nonnull JavaClassType type)
+      throws ResolveException {
     // TODO: Not sure whether this should even have a default implementation
     return Collections.emptyList();
   }
