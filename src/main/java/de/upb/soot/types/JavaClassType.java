@@ -28,7 +28,6 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
-import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.views.IView;
@@ -49,9 +48,10 @@ public class JavaClassType extends ReferenceType {
 
   private final boolean isInnerClass;
 
+  // TODO Can we hide this somehow from the public API surface?
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
-   * {@link DefaultSignatureFactory}
+   * {@link DefaultTypeFactory}
    *
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
    * @param packageSignature the corresponding package
