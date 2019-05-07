@@ -1,21 +1,17 @@
 package de.upb.soot.frontends.java;
 
-import com.google.common.base.Preconditions;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassSourceContent;
-import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.EnumSet;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nonnull;
 
 /**
  * A class source for resolving from .java files using wala java source front-end.
@@ -24,18 +20,12 @@ import javax.annotation.Nonnull;
  */
 public class EagerJavaClassSource extends ClassSource {
 
-  private final JavaClassType superClass;
-  private final Set<JavaClassType> interfaces;
-  private final JavaClassType outerClass;
-  private final Set<SootField> sootFields;
-  private final Set<SootMethod> sootMethods;
-  private final Position position;
-  private final EnumSet<Modifier> modifiers;
+  private final IClassSourceContent content;
 
   public EagerJavaClassSource(
       INamespace srcNamespace,
       Path sourcePath,
-      JavaClassType classSignature,
+      JavaClassType classType,
       JavaClassType superClass,
       Set<JavaClassType> interfaces,
       JavaClassType outerClass,
@@ -43,67 +33,46 @@ public class EagerJavaClassSource extends ClassSource {
       Set<SootMethod> sootMethods,
       Position position,
       EnumSet<Modifier> modifiers) {
-    super(srcNamespace, sourcePath, classSignature);
-    this.superClass = superClass;
-    this.interfaces = interfaces;
-    this.outerClass = outerClass;
-    this.sootFields = sootFields;
-    this.sootMethods = sootMethods;
-    this.position = position;
-    this.modifiers = modifiers;
+    super(srcNamespace, sourcePath, classType);
+    content =
+        new EagerJavaClassSourceContent(
+            superClass,
+            interfaces,
+            outerClass,
+            sootFields,
+            sootMethods,
+            position,
+            modifiers,
+            classType);
   }
 
   @Override
   public IClassSourceContent getContent() {
-    return new IClassSourceContent() {
+    return content;
+  }
 
-      @Nonnull
-      @Override
-      public Collection<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
-          throws ResolveException {
-        return sootMethods;
-      }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    EagerJavaClassSource that = (EagerJavaClassSource) o;
+    return Objects.equals(content, that.content);
+  }
 
-      @Nonnull
-      @Override
-      public Collection<SootField> resolveFields(@Nonnull JavaClassType signature)
-          throws ResolveException {
-        return sootFields;
-      }
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), content);
+  }
 
-      @Override
-      public Set<Modifier> resolveModifiers(JavaClassType type) {
-        checkExpectedType(type);
-        return modifiers;
-      }
-
-      @Override
-      public Set<JavaClassType> resolveInterfaces(JavaClassType type) {
-        checkExpectedType(type);
-        return interfaces;
-      }
-
-      @Override
-      public Optional<JavaClassType> resolveSuperclass(JavaClassType type) {
-        checkExpectedType(type);
-        return Optional.ofNullable(superClass);
-      }
-
-      @Override
-      public Optional<JavaClassType> resolveOuterClass(JavaClassType type) {
-        checkExpectedType(type);
-        return Optional.ofNullable(outerClass);
-      }
-
-      @Override
-      public Position resolvePosition(JavaClassType type) {
-        checkExpectedType(type);
-        return position;
-      }
-
-      private void checkExpectedType(JavaClassType type) {
-        Preconditions.checkArgument(getClassType().equals(type), "Expected type " + getClassType());
-      }
-    };
+  @Override
+  public String toString() {
+    return "EagerJavaClassSource{" + "content=" + content + '}';
   }
 }
