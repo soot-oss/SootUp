@@ -27,6 +27,8 @@ import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 
+// TODO Why do we need both this interface plus INamespace?
+
 /**
  * Responsible for creating {@link ClassSource}es based on the handled file type (.class, .jimple,
  * .java, .dex, etc).

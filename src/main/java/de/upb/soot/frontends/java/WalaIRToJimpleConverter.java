@@ -86,7 +86,13 @@ public class WalaIRToJimpleConverter {
    *
    * @return A SootClass converted from walaClass
    */
+  @Deprecated
   public SootClass convertClass(AstClass walaClass) {
+    ClassSource classSource = convertToClassSource(walaClass);
+    return new SootClass(classSource, ClassType.Application);
+  }
+
+  ClassSource convertToClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSig = DefaultTypeFactory.getInstance().getClassType(fullyQualifiedClassName);
     // get super class
@@ -148,17 +154,15 @@ public class WalaIRToJimpleConverter {
       sootMethods.add(sootMethod);
     }
 
-    ClassSource classSource =
-        createClassSource(
-            walaClass,
-            superClass,
-            interfaces,
-            outerClass,
-            sootFields,
-            sootMethods,
-            position,
-            modifiers);
-    return new SootClass(classSource, ClassType.Application);
+    return createClassSource(
+        walaClass,
+        superClass,
+        interfaces,
+        outerClass,
+        sootFields,
+        sootMethods,
+        position,
+        modifiers);
   }
 
   /** Create a {@link EagerJavaClassSource} object for the given walaClass. */
