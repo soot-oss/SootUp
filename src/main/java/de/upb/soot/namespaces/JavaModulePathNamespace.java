@@ -1,19 +1,19 @@
 package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
+import de.upb.soot.IdentifierFactory;
+import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.FieldSubSignature;
-import de.upb.soot.signatures.IdentifierFactory;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.signatures.ModulePackageName;
 import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.ModuleIdentifierFactory;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 import java.nio.file.Path;

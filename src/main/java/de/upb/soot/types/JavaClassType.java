@@ -26,6 +26,8 @@ import static de.upb.soot.util.Utils.Functional.tryCastTo;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import de.upb.soot.IdentifierFactory;
+import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.signatures.PackageName;
@@ -48,7 +50,7 @@ public class JavaClassType extends ReferenceType {
 
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
-   * {@link de.upb.soot.signatures.IdentifierFactory}
+   * {@link IdentifierFactory}
    *
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
    * @param packageName the corresponding package

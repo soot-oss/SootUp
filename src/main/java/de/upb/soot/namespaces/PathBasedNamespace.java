@@ -1,8 +1,8 @@
 package de.upb.soot.namespaces;
 
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.IdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
 import java.io.IOException;

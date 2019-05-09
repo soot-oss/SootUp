@@ -22,6 +22,7 @@ package de.upb.soot.signatures;
  * #L%
  */
 
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import java.util.List;

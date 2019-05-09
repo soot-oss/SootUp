@@ -23,6 +23,7 @@
 package de.upb.soot.jimple.common.stmt;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.ResolvingLevel;
@@ -41,7 +42,6 @@ import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import java.net.URI;
 import java.nio.file.Path;

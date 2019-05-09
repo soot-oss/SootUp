@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
@@ -32,7 +33,6 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.types.ArrayType;
-import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;

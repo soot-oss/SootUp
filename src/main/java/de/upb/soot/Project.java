@@ -2,8 +2,6 @@ package de.upb.soot;
 
 import de.upb.soot.buildactor.ViewBuilder;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.IdentifierFactory;
-import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
 import javax.annotation.Nonnull;

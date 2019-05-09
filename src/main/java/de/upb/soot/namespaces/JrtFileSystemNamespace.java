@@ -1,12 +1,12 @@
 package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
+import de.upb.soot.IdentifierFactory;
+import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.IdentifierFactory;
 import de.upb.soot.signatures.ModulePackageName;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.ModuleIdentifierFactory;
 import de.upb.soot.util.Utils;
 import java.io.IOException;
 import java.net.URI;

@@ -1,11 +1,11 @@
 package de.upb.soot.namespaces;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultIdentifierFactory;
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
-import de.upb.soot.signatures.IdentifierFactory;
-import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;

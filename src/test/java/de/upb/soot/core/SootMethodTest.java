@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.frontends.java.WalaIRMethodSourceContent;
@@ -13,7 +14,6 @@ import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;

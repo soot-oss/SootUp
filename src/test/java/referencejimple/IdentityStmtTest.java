@@ -1,6 +1,7 @@
 package referencejimple;
 
 import com.ibm.wala.cast.loader.AstMethod;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -22,7 +23,6 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.VoidType;

@@ -1,11 +1,11 @@
 package de.upb.soot.views;
 
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Options;
 import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.signatures.IdentifierFactory;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.types.Type;
 import java.util.Collection;

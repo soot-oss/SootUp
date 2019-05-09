@@ -1,6 +1,6 @@
 package de.upb.soot.signatures;
 
-import de.upb.soot.types.DefaultIdentifierFactory;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 
 /**

@@ -1,5 +1,7 @@
 package de.upb.soot.frontends.asm;
 
+import de.upb.soot.DefaultIdentifierFactory;
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.IMethod;
@@ -12,9 +14,7 @@ import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.IdentifierFactory;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.views.IView;

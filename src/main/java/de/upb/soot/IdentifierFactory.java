@@ -1,6 +1,11 @@
-package de.upb.soot.signatures;
+package de.upb.soot;
 
 import de.upb.soot.core.SootClass;
+import de.upb.soot.signatures.FieldSignature;
+import de.upb.soot.signatures.FieldSubSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.MethodSubSignature;
+import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;

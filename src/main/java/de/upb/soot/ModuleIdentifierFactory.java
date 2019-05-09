@@ -1,9 +1,10 @@
-package de.upb.soot.types;
+package de.upb.soot;
 
 import com.google.common.base.Preconditions;
 import de.upb.soot.signatures.ModulePackageName;
 import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.signatures.PackageName;
+import de.upb.soot.types.JavaClassType;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -3,12 +3,12 @@ package de.upb.soot.buildactor;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
+import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.ModuleIdentifierFactory;
 import java.util.Optional;
 import org.junit.Ignore;
 import org.junit.Test;

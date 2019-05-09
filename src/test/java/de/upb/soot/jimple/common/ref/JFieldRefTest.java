@@ -3,6 +3,8 @@ package de.upb.soot.jimple.common.ref;
 import static org.junit.Assert.assertEquals;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultIdentifierFactory;
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -14,8 +16,6 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.IdentifierFactory;
-import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;

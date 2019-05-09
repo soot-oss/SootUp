@@ -1,8 +1,8 @@
 package de.upb.soot.frontends.asm;
 
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;

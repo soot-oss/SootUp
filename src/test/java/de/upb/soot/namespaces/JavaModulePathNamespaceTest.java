@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
+import de.upb.soot.IdentifierFactory;
+import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.IdentifierFactory;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.ModuleIdentifierFactory;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;

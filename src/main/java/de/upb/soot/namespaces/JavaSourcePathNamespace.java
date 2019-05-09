@@ -1,7 +1,7 @@
 package de.upb.soot.namespaces;
 
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.IdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.NotYetImplementedException;
 import java.util.Collection;

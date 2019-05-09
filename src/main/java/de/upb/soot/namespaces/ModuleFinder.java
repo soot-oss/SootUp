@@ -1,5 +1,6 @@
 package de.upb.soot.namespaces;
 
+import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.IClassSourceContent;
@@ -7,7 +8,6 @@ import de.upb.soot.frontends.asm.modules.AsmModuleClassSourceContent;
 import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.ModuleDecoratorClassType;
-import de.upb.soot.types.ModuleIdentifierFactory;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
