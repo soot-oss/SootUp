@@ -1,15 +1,13 @@
 package de.upb.soot.jimple.basic;
 
+import de.upb.soot.core.Body;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
 import de.upb.soot.types.VoidType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /*-
  * #%L
@@ -37,13 +35,28 @@ import java.util.Map;
  * Generates locals for Body.
  *
  * @author Linghui Luo
+ * @author Markus Schmidt
  */
 public class LocalGenerator {
+  private Body body;
+
   private List<Local> locals = new ArrayList<>();
   private Local thisLocal;
   private Map<Integer, Local> paraLocals = new HashMap<>();
 
+  /*
+   * Creates Locals @Local with a standard naming scheme without checking whether the name is already taken.
+   * */
   public LocalGenerator() {}
+
+  /*
+   * Creates Locals @Local with a standard naming scheme.
+   * Checks if the Local is already existing in the Body.
+   * (If you mix using LocalGenerator and own creation of Local)
+   * */
+  public LocalGenerator(Body body) {
+    this.body = body;
+  }
 
   /** generate this local with given type */
   public Local generateThisLocal(Type type) {
@@ -72,37 +85,56 @@ public class LocalGenerator {
   }
 
   private Local generate(Type type, boolean isField) {
+
     StringBuilder name = new StringBuilder(7);
-    if (!isField) {
-      name.append("$");
+    name.append("$");
+
+    // cache Local names if body is given to speedup checks whether the local name is already taken
+    HashSet<String> typeFilteredLocalNames = new HashSet<>();
+    if (body != null) {
+      for (Local l : body.getLocals()) {
+        if( l.getType().equals(type)) {
+          typeFilteredLocalNames.add(l.getName());
+        }
+      }
     }
 
-    if (type.equals(PrimitiveType.getInt())) {
-      appendNextIntName(name);
-    } else if (type.equals(PrimitiveType.getByte())) {
-      appendNextByteName(name);
-    } else if (type.equals(PrimitiveType.getShort())) {
-      appendNextShortName(name);
-    } else if (type.equals(PrimitiveType.getBoolean())) {
-      appendNextBooleanName(name);
-    } else if (type.equals(VoidType.getInstance())) {
-      appendNextVoidName(name);
-    } else if (type.equals(PrimitiveType.getChar())) {
-      appendNextCharName(name);
-    } else if (type.equals(PrimitiveType.getDouble())) {
-      appendNextDoubleName(name);
-    } else if (type.equals(PrimitiveType.getFloat())) {
-      appendNextFloatName(name);
-    } else if (type.equals(PrimitiveType.getLong())) {
-      appendNextLongName(name);
-    } else if (type instanceof ReferenceType) {
-      appendNextRefLikeTypeName(name);
-    } else if (type.equals(UnknownType.getInstance())) {
-      appendNextUnknownTypeName(name);
-    } else {
-      throw new RuntimeException("Unhandled Type of Local variable to Generate - Not Implemented");
-    }
-    return createLocal(name.toString(), type);
+    String localName;
+    // determine locals name
+    do {
+      name.setLength(isField ? 0 : 1);
+
+      if (type.equals(PrimitiveType.getInt())) {
+        appendNextIntName(name);
+      } else if (type.equals(PrimitiveType.getByte())) {
+        appendNextByteName(name);
+      } else if (type.equals(PrimitiveType.getShort())) {
+        appendNextShortName(name);
+      } else if (type.equals(PrimitiveType.getBoolean())) {
+        appendNextBooleanName(name);
+      } else if (type.equals(VoidType.getInstance())) {
+        appendNextVoidName(name);
+      } else if (type.equals(PrimitiveType.getChar())) {
+        appendNextCharName(name);
+      } else if (type.equals(PrimitiveType.getDouble())) {
+        appendNextDoubleName(name);
+      } else if (type.equals(PrimitiveType.getFloat())) {
+        appendNextFloatName(name);
+      } else if (type.equals(PrimitiveType.getLong())) {
+        appendNextLongName(name);
+      } else if (type instanceof ReferenceType) {
+        appendNextRefLikeTypeName(name);
+      } else if (type.equals(UnknownType.getInstance())) {
+        appendNextUnknownTypeName(name);
+      } else {
+        throw new RuntimeException(
+            "Unhandled Type of Local variable to Generate - Not Implemented");
+      }
+
+      localName = name.toString();
+    } while ((body != null) && typeFilteredLocalNames.contains(localName));
+
+    return createLocal(localName, type);
   }
 
   private int tempInt = 0;
