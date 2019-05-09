@@ -71,7 +71,7 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
             "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",
             getClassProvider());
     Class<?> signatureClass =
-        Whitebox.getInnerClassType(JavaModulePathNamespace.class, "TypeFactoryWrapper");
+        Whitebox.getInnerClassType(JavaModulePathNamespace.class, "IdentifierFactoryWrapper");
     // Constructor constructor = Whitebox.getConstructor(signatureClass, IdentifierFactory.class,
     // String.class);
     Object typeFactoryWrapper =
