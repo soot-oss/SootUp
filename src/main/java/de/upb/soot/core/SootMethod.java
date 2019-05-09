@@ -250,10 +250,10 @@ public class SootMethod extends SootClassMember implements IMethod {
     Iterator<JavaClassType> exceptionIt = this.getExceptionSignatures().iterator();
 
     if (exceptionIt.hasNext()) {
-      builder.append(" throws ").append(exceptionIt.next().toQuotedString());
+      builder.append(" throws ").append(exceptionIt.next());
 
       while (exceptionIt.hasNext()) {
-        builder.append(", ").append(exceptionIt.next().toQuotedString());
+        builder.append(", ").append(exceptionIt.next());
       }
     }
 
