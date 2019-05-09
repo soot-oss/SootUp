@@ -65,16 +65,15 @@ public class JInvokeStmtTest {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
 
     DefaultIdentifierFactory dif = DefaultIdentifierFactory.getInstance();
-    DefaultIdentifierFactory dtf = DefaultIdentifierFactory.getInstance();
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
     JavaClassSource javaClassSource =
         new JavaClassSource(
             new JavaClassPathNamespace("src/main/java/de/upb/soot"),
             dummyPath,
-            dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"));
+            dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"));
 
-    JavaClassType superClassSignature = dtf.getClassType("java.lang.Object");
+    JavaClassType superClassSignature = dif.getClassType("java.lang.Object");
 
     Set<SootField> fields = new LinkedHashSet<>();
     Set<SootMethod> methods = new LinkedHashSet<>();
