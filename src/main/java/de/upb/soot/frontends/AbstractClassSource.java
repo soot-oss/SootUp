@@ -48,7 +48,7 @@ public class AbstractClassSource {
       if (o == null || getClass() != o.getClass()) {
         return false;
       }
-      ClassSource that = (ClassSource) o;
+      AbstractClassSource that = (AbstractClassSource) o;
       return Objects.equal(srcNamespace, that.srcNamespace)
           && Objects.equal(sourcePath, that.sourcePath);
     }
