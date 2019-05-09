@@ -71,11 +71,6 @@ public class JReturnVoidStmt extends AbstractStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseReturnVoidStmt(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseReturnVoidStmt(this, o);
   }

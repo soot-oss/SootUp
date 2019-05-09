@@ -3,6 +3,7 @@ package de.upb.soot.frontends;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.MethodSignature;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /*-
@@ -31,7 +32,9 @@ import javax.annotation.Nullable;
 public interface IMethodSourceContent {
   /** Returns a filled-out body for the given SootMethod. */
   @Nullable
-  Body getBody(SootMethod m) throws ResolveException;
+  Body resolveBody(@Nonnull SootMethod m) throws ResolveException;
 
+  // FIXME: [JMP] This method is never used
+  @Nonnull
   MethodSignature getSignature();
 }

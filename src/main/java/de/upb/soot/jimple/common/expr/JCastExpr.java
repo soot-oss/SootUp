@@ -29,9 +29,9 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +54,6 @@ public class JCastExpr implements Expr {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseCastExpr(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseCastExpr(this, o);
   }
@@ -77,7 +72,7 @@ public class JCastExpr implements Expr {
   @Override
   public void toString(IStmtPrinter up) {
     up.literal("(");
-    up.type(type);
+    up.typeSignature(type);
     up.literal(") ");
     opBox.toString(up);
   }

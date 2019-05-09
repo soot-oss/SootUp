@@ -14,6 +14,7 @@ public class ExampleTest {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     String[] args = {srcDir, exclusionFilePath};
+    // FIXME need to check later why WALA crashed
     // Example.main(args);
   }
 
@@ -22,6 +23,7 @@ public class ExampleTest {
     String srcDir = "src/test/resources/java-target/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     String[] args = {srcDir, exclusionFilePath};
+    // FIXME need to check later why WALA crashed
     // Example.main(args);
   }
 }

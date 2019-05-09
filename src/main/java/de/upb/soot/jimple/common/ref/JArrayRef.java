@@ -30,11 +30,12 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.ArrayType;
-import de.upb.soot.jimple.common.type.NullType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.ArrayType;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.NullType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.UnknownType;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,11 +59,6 @@ public class JArrayRef implements ConcreteRef {
   @Override
   public Object clone() {
     return new JArrayRef(Jimple.cloneIfNecessary(getBase()), Jimple.cloneIfNecessary(getIndex()));
-  }
-
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseArrayRef(this, o);
   }
 
   @Override
@@ -143,13 +139,15 @@ public class JArrayRef implements ConcreteRef {
       if (type instanceof ArrayType) {
         arrayType = (ArrayType) type;
       } else {
-        arrayType = type.makeArrayType();
+        arrayType = DefaultTypeFactory.getInstance().getArrayType(type, 1);
       }
 
-      if (arrayType.getNumDimensions() == 1) {
+      // FIXME: [JMP] Should unwrapping not be done by the `ArrayType` itself?
+      if (arrayType.getDimension() == 1) {
         return arrayType.getBaseType();
       } else {
-        return ArrayType.getInstance(arrayType.getBaseType(), arrayType.getNumDimensions() - 1);
+        return DefaultTypeFactory.getInstance()
+            .getArrayType(arrayType.getBaseType(), arrayType.getDimension() - 1);
       }
     }
   }
