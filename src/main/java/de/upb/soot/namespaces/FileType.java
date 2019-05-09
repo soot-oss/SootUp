@@ -44,6 +44,9 @@ public enum FileType {
   JAVA("java"),
   JIMPLE("jimple");
 
+  static final int[] CAFEBABE_MAGICNUMBER = new int[] {0xCA, 0xFE, 0xBA, 0xBE};
+  static int[] ARCHIVE_MAGICNUMBER = new int[] {0x50, 0x4B, 0x03, 0x04};
+
   public static final @Nonnull EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK);
 
   private final @Nonnull String extension;
@@ -70,9 +73,9 @@ public enum FileType {
     dis.close();
     fis.close();
 
-    if (Arrays.equals(magicNumber, new int[] {0xCA, 0xFE, 0xBA, 0xBE})) {
+    if (Arrays.equals(magicNumber, CAFEBABE_MAGICNUMBER)) {
       foundType = FileType.CLASS;
-    } else if (Arrays.equals(magicNumber, new int[] {0x50, 0x4B, 0x03, 0x04})) {
+    } else if (Arrays.equals(magicNumber, ARCHIVE_MAGICNUMBER)) {
       foundType = getArchiveTypeByExtension(file.getName());
     }
 
