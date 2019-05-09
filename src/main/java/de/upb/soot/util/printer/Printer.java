@@ -33,7 +33,8 @@ import de.upb.soot.graph.BriefStmtGraph;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,6 +42,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringTokenizer;
 
 /**
@@ -107,33 +109,29 @@ public class Printer {
         classPrefix = classPrefix.trim();
       }
 
-      out.print(classPrefix + " " + cl.getView().quotedNameOf(cl.getSignature().toString()) + "");
+      out.print(classPrefix + " " + cl.getType() + "");
     }
 
     // Print extension
     {
-      if (cl.hasSuperclass()) {
-        out.print(
-            " extends "
-                + cl.getView().quotedNameOf(cl.getSuperclassSignature().get().toString())
-                + "");
-      }
+      Optional<JavaClassType> superclassSignature = cl.getSuperclassSignature();
+
+      superclassSignature.ifPresent(
+          javaClassSignature -> out.print(" extends " + javaClassSignature));
     }
 
     // Print interfaces
     {
-      Iterator<SootClass> interfaceIt = cl.getInterfaces().iterator();
+      Iterator<JavaClassType> interfaceIt = cl.getInterfaces().iterator();
 
       if (interfaceIt.hasNext()) {
         out.print(" implements ");
 
-        out.print(
-            "" + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
+        out.print(interfaceIt.next());
 
         while (interfaceIt.hasNext()) {
           out.print(",");
-          out.print(
-              " " + cl.getView().quotedNameOf(interfaceIt.next().getSignature().toString()) + "");
+          out.print(" " + interfaceIt.next());
         }
       }
     }
@@ -186,13 +184,11 @@ public class Printer {
 
         if (!Modifier.isAbstract(method.getModifiers())
             && !Modifier.isNative(method.getModifiers())) {
-          if (!method.hasActiveBody()) {
+          if (!method.hasBody()) {
             // methodRef.retrieveActiveBody(); // force loading the body
-            if (!method.hasActiveBody()) {
-              throw new RuntimeException("methodRef " + method.getName() + " has no active body!");
-            }
+            throw new RuntimeException("methodRef " + method.getName() + " has no body!");
           }
-          printTo(method.getActiveBody(), out);
+          printTo(method.getBody(), out);
 
           if (methodIt.hasNext()) {
             out.println();
@@ -315,9 +311,7 @@ public class Printer {
 
         out.println(
             "        catch "
-                + body.getMethod()
-                    .getView()
-                    .quotedNameOf(trap.getException().getSignature().toString())
+                + trap.getException()
                 + " from "
                 + up.labels().get(trap.getBeginStmt())
                 + " to "
@@ -369,7 +363,7 @@ public class Printer {
       {
         for (Type type : typeToLocals.keySet()) {
           List<Local> localList = new ArrayList<>(typeToLocals.get(type));
-          up.type(type);
+          up.typeSignature(type);
           up.literal(" ");
 
           final int len = localList.size();

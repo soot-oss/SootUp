@@ -32,7 +32,6 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-import de.upb.soot.views.IView;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,9 +40,8 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   private static final long serialVersionUID = 8767212132509253058L;
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */
-  public JVirtualInvokeExpr(
-      IView view, Value base, MethodSignature method, List<? extends Value> args) {
-    super(view, Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
+  public JVirtualInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
+    super(Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
@@ -55,12 +53,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     for (int i = 0; i < getArgCount(); i++) {
       clonedArgs.add(i, getArg(i));
     }
-    return new JVirtualInvokeExpr(this.getView(), getBase(), methodSignature, clonedArgs);
-  }
-
-  @Override
-  public boolean equivTo(Object o) {
-    return equivTo(o, JimpleComparator.getInstance());
+    return new JVirtualInvokeExpr(getBase(), methodSignature, clonedArgs);
   }
 
   @Override

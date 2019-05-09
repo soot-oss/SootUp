@@ -1,8 +1,8 @@
 package de.upb.soot;
 
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.PackageSignature;
+import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.NotYetImplementedException;
 
 /**
@@ -24,11 +24,11 @@ public class Scope {
   }
 
   /** Define a scope consists of multiple classes. */
-  public Scope(JavaClassSignature... classSignatures) {
+  public Scope(JavaClassType... classSignatures) {
     // TODO Auto-generated constructor stub
   }
 
-  public Scope withStartingSignature(JavaClassSignature classSignature) {
+  public Scope withStartingSignature(JavaClassType classSignature) {
     throw new NotYetImplementedException();
   }
 }

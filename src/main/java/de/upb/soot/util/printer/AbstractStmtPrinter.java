@@ -23,14 +23,13 @@ package de.upb.soot.util.printer;
 
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.Type;
+import de.upb.soot.types.Type;
 import java.util.HashSet;
 
 /** Partial default IStmtPrinter implementation. */
@@ -96,7 +95,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   public abstract void literal(String s);
 
   @Override
-  public abstract void type(Type t);
+  public abstract void typeSignature(Type t);
 
   @Override
   public abstract void method(SootMethod m);
@@ -119,14 +118,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   @Override
   public void local(Local l) {
     handleIndent();
-    if (quotableLocals == null) {
-      initializeQuotableLocals();
-    }
-    if (quotableLocals.contains(l.getName())) {
-      output.append("'").append(l.getName()).append("'");
-    } else {
-      output.append(l.getName());
-    }
+    output.append(l.getName());
   }
 
   @Override
@@ -152,10 +144,5 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
       output.append(indent);
     }
     startOfLine = false;
-  }
-
-  protected void initializeQuotableLocals() {
-    quotableLocals = new HashSet<>();
-    quotableLocals.addAll(Jimple.jimpleKeywordList());
   }
 }

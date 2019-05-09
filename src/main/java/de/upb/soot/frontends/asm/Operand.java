@@ -38,10 +38,10 @@ import org.objectweb.asm.tree.AbstractInsnNode;
  */
 final class Operand {
 
-  final @Nonnull AbstractInsnNode insn;
-  final @Nonnull Value value;
+  @Nonnull final AbstractInsnNode insn;
+  @Nonnull final Value value;
   @Nullable Local stack;
-  private @Nullable Object boxes;
+  @Nullable private Object boxes;
 
   /**
    * Constructs a new stack operand.

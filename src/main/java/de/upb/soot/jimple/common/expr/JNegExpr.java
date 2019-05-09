@@ -28,18 +28,11 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.DoubleType;
-import de.upb.soot.jimple.common.type.FloatType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.UnknownType;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 public class JNegExpr extends AbstractUnopExpr {
@@ -53,12 +46,6 @@ public class JNegExpr extends AbstractUnopExpr {
   @Override
   public Object clone() {
     return new JNegExpr(Jimple.cloneIfNecessary(getOp()));
-  }
-
-  /** Compares the specified object with this one for structural equality. */
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseNegExpr(this, o);
   }
 
   @Override
@@ -88,18 +75,18 @@ public class JNegExpr extends AbstractUnopExpr {
   public Type getType() {
     Value op = opBox.getValue();
 
-    if (op.getType().equals(IntType.getInstance())
-        || op.getType().equals(ByteType.getInstance())
-        || op.getType().equals(ShortType.getInstance())
-        || op.getType().equals(BooleanType.getInstance())
-        || op.getType().equals(CharType.getInstance())) {
-      return IntType.getInstance();
-    } else if (op.getType().equals(LongType.getInstance())) {
-      return LongType.getInstance();
-    } else if (op.getType().equals(DoubleType.getInstance())) {
-      return DoubleType.getInstance();
-    } else if (op.getType().equals(FloatType.getInstance())) {
-      return FloatType.getInstance();
+    if (op.getType().equals(PrimitiveType.getInt())
+        || op.getType().equals(PrimitiveType.getByte())
+        || op.getType().equals(PrimitiveType.getShort())
+        || op.getType().equals(PrimitiveType.getBoolean())
+        || op.getType().equals(PrimitiveType.getChar())) {
+      return PrimitiveType.getInt();
+    } else if (op.getType().equals(PrimitiveType.getLong())) {
+      return PrimitiveType.getLong();
+    } else if (op.getType().equals(PrimitiveType.getDouble())) {
+      return PrimitiveType.getDouble();
+    } else if (op.getType().equals(PrimitiveType.getFloat())) {
+      return PrimitiveType.getFloat();
     } else {
       return UnknownType.getInstance();
     }

@@ -27,8 +27,8 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.Collections;
 import java.util.List;
@@ -54,11 +54,6 @@ public class JParameterRef implements IdentityRef {
   public JParameterRef(Type paramType, int number) {
     this.num = number;
     this.paramType = paramType;
-  }
-
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseParameterRef(this, o);
   }
 
   @Override

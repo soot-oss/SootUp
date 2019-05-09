@@ -1,6 +1,7 @@
 package referencejimple;
 
 import com.ibm.wala.cast.loader.AstMethod;
+import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -19,25 +20,26 @@ import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.VoidType;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.TypeSignature;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.VoidType;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
 class DummyMethodSource implements IMethodSourceContent {
@@ -50,10 +52,11 @@ class DummyMethodSource implements IMethodSourceContent {
   }
 
   @Override
-  public Body getBody(SootMethod m) {
+  public Body resolveBody(@Nonnull SootMethod m) {
     return body;
   }
 
+  @Nonnull
   @Override
   public MethodSignature getSignature() {
     return methodSignature;
@@ -62,44 +65,41 @@ class DummyMethodSource implements IMethodSourceContent {
 
 public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
-  SootField initField, declField;
-  JavaClassSignature classSignature;
+  JavaClassType classSignature;
 
   @Override
   public void build() {
-
-    DefaultSignatureFactory dsm = new DefaultSignatureFactory();
+    DefaultFactories defaultFactories = DefaultFactories.create();
+    DefaultSignatureFactory dsm = defaultFactories.getSignatureFactory();
+    DefaultTypeFactory dtf = defaultFactories.getTypeFactory();
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
     JavaClassSource javaClassSource =
         new JavaClassSource(
             new JavaClassPathNamespace("src/main/java/de/upb/soot"),
             dummyPath,
-            dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
+            dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"));
 
-    JavaClassSignature superClassSignature = dsm.getClassSignature("java.lang.Object");
-    classSignature = dsm.getClassSignature("de.upb.soot.instructions.stmt.IdentityStmt");
+    JavaClassType superClassSignature = dtf.getClassType("java.lang.Object");
+    classSignature = dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
 
-    Set<SootField> fields = new LinkedHashSet<SootField>();
+    Set<SootField> fields = new LinkedHashSet<>();
 
-    declField =
+    // Decl field
+    fields.add(
         new SootField(
-            view,
-            classSignature,
-            dsm.getFieldSignature("declProperty", classSignature, IntType.getInstance().toString()),
-            dsm.getTypeSignature(IntType.getInstance().toString()));
-    fields.add(declField);
-    initField =
-        new SootField(
-            view,
-            classSignature,
-            dsm.getFieldSignature("initProperty", classSignature, IntType.getInstance().toString()),
-            dsm.getTypeSignature(IntType.getInstance().toString()));
-    fields.add(initField);
+            dsm.getFieldSignature("declProperty", classSignature, PrimitiveType.getInt()),
+            EnumSet.noneOf(Modifier.class)));
+
+    FieldSignature initFieldSignature =
+        dsm.getFieldSignature("initProperty", classSignature, PrimitiveType.getInt());
+
+    // Init field
+    fields.add(new SootField(initFieldSignature, EnumSet.noneOf(Modifier.class)));
 
     Set<SootMethod> methods = new LinkedHashSet<>();
 
-    methods.add(init());
+    methods.add(init(initFieldSignature));
 
     // methods.add( atThis());
     // atParameterPrimitive();
@@ -109,7 +109,6 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     sootClass =
         new SootClass(
-            view,
             ResolvingLevel.BODIES,
             javaClassSource,
             ClassType.Application,
@@ -122,9 +121,11 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
             EnumSet.of(Modifier.PUBLIC));
   }
 
-  SootMethod init() {
+  SootMethod init(@Nonnull FieldSignature initFieldSignature) {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    DefaultSignatureFactory dsm = new DefaultSignatureFactory();
+    DefaultFactories defaultFactories = DefaultFactories.create();
+    DefaultSignatureFactory dsm = defaultFactories.getSignatureFactory();
+    DefaultTypeFactory dtf = defaultFactories.getTypeFactory();
     LocalGenerator generator = new LocalGenerator();
 
     MethodSignature methodSignature =
@@ -136,37 +137,30 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     List<Trap> traps = new LinkedList<>();
     List<IStmt> stmts = new LinkedList<>();
 
-    new RefType(view, dsm.getTypeSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
-    RefType type = RefType.getInstance("de.upb.soot.instructions.stmt.IdentityStmt");
+    JavaClassType typeSignature = dtf.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
+    //    new RefType(view, dsm.getTypeSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
+    //    RefType type = RefType.getInstance("de.upb.soot.instructions.stmt.IdentityStmt");
 
-    Local r0 = generator.generateField(type);
-    stmts.add(Jimple.newIdentityStmt(r0, Jimple.newThisRef(type), nop));
+    Local r0 = generator.generateField(typeSignature);
+    stmts.add(Jimple.newIdentityStmt(r0, Jimple.newThisRef(typeSignature), nop));
 
     // TODO: how to add expr to body?
     // add(Jimple.newSpecialInvokeExpr( r0 , currentMethod ));
 
     Value value = IntConstant.getInstance(42);
-    stmts.add(
-        Jimple.newAssignStmt(
-            Jimple.newInstanceFieldRef(view, r0, (FieldSignature) initField.getSignature()),
-            value,
-            nop));
+    stmts.add(Jimple.newAssignStmt(Jimple.newInstanceFieldRef(r0, initFieldSignature), value, nop));
 
     stmts.add(Jimple.newReturnVoidStmt(nop));
 
     Body body = new Body(locals, traps, stmts, new NoPositionInformation());
     IMethodSourceContent methodSource = new DummyMethodSource(methodSignature, body);
-    SootMethod currentMethod =
-        new SootMethod(
-            view,
-            classSignature,
-            methodSource,
-            Arrays.asList(new TypeSignature[] {}),
-            dsm.getTypeSignature("void"),
-            EnumSet.of(Modifier.PUBLIC),
-            debugInfo);
 
-    return currentMethod;
+    return new SootMethod(
+        methodSource,
+        methodSignature,
+        EnumSet.of(Modifier.PUBLIC),
+        Collections.emptyList(),
+        debugInfo);
   }
 
   /*

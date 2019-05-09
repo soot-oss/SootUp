@@ -29,11 +29,11 @@ import categories.Java8Test;
 import de.upb.soot.jimple.IgnoreLocalNameComparator;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.IntType;
+import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.javabytecode.stmt.JBreakpointStmt;
+import de.upb.soot.types.PrimitiveType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import soot.jimple.internal.JBreakpointStmt;
 
 @Category(Java8Test.class)
 public class LocalTest {
@@ -43,9 +43,9 @@ public class LocalTest {
 
     JimpleComparator comparator = new IgnoreLocalNameComparator();
 
-    Local l1 = new Local("$i1", IntType.getInstance());
-    Local l2 = new Local("$i2", IntType.getInstance());
-    Local l3 = new Local("$i1", BooleanType.getInstance());
+    Local l1 = new Local("$i1", PrimitiveType.getInt());
+    Local l2 = new Local("$i2", PrimitiveType.getInt());
+    Local l3 = new Local("$i1", PrimitiveType.getBoolean());
 
     assertTrue(l1.equivTo(l1));
     assertTrue(l1.equivTo(l1, comparator));
@@ -59,6 +59,6 @@ public class LocalTest {
     assertFalse(l2.equivTo(l3));
     assertFalse(l2.equivTo(l3, comparator));
 
-    assertFalse(l1.equivTo(new JBreakpointStmt(), comparator));
+    assertFalse(l1.equivTo(new JBreakpointStmt(PositionInfo.createNoPositionInfo()), comparator));
   }
 }

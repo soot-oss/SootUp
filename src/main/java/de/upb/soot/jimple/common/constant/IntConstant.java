@@ -25,12 +25,13 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
+import javax.annotation.Nonnull;
 
-public class IntConstant extends ArithmeticConstant {
+public class IntConstant implements ShiftableConstant<IntConstant> {
   /** */
   private static final long serialVersionUID = 1266232311067376706L;
 
@@ -55,145 +56,112 @@ public class IntConstant extends ArithmeticConstant {
   }
 
   // PTC 1999/06/28
+  @Nonnull
   @Override
-  public NumericConstant add(NumericConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance(this.value + ((IntConstant) c).value);
+  public IntConstant add(@Nonnull IntConstant c) {
+    return IntConstant.getInstance(this.value + c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant subtract(NumericConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance(this.value - ((IntConstant) c).value);
+  public IntConstant subtract(@Nonnull IntConstant c) {
+    return IntConstant.getInstance(this.value - c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant multiply(NumericConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance(this.value * ((IntConstant) c).value);
+  public IntConstant multiply(@Nonnull IntConstant c) {
+    return IntConstant.getInstance(this.value * c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant divide(NumericConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance(this.value / ((IntConstant) c).value);
+  public IntConstant divide(@Nonnull IntConstant c) {
+    return IntConstant.getInstance(this.value / c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant remainder(NumericConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance(this.value % ((IntConstant) c).value);
+  public IntConstant remainder(@Nonnull IntConstant c) {
+    return IntConstant.getInstance(this.value % c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant equalEqual(NumericConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance((this.value == ((IntConstant) c).value) ? 1 : 0);
+  public BooleanConstant equalEqual(@Nonnull IntConstant c) {
+    return BooleanConstant.getInstance(this.value == c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant notEqual(NumericConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance((this.value != ((IntConstant) c).value) ? 1 : 0);
+  public BooleanConstant notEqual(@Nonnull IntConstant c) {
+    return BooleanConstant.getInstance(this.value != c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant lessThan(NumericConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance((this.value < ((IntConstant) c).value) ? 1 : 0);
+  public BooleanConstant lessThan(@Nonnull IntConstant c) {
+    return BooleanConstant.getInstance(this.value < c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant lessThanOrEqual(NumericConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance((this.value <= ((IntConstant) c).value) ? 1 : 0);
+  public BooleanConstant lessThanOrEqual(@Nonnull IntConstant c) {
+    return BooleanConstant.getInstance(this.value <= c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant greaterThan(NumericConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance((this.value > ((IntConstant) c).value) ? 1 : 0);
+  public BooleanConstant greaterThan(@Nonnull IntConstant c) {
+    return BooleanConstant.getInstance(this.value > c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant greaterThanOrEqual(NumericConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance((this.value >= ((IntConstant) c).value) ? 1 : 0);
+  public BooleanConstant greaterThanOrEqual(@Nonnull IntConstant c) {
+    return BooleanConstant.getInstance(this.value >= c.value);
   }
 
+  @Nonnull
   @Override
-  public NumericConstant negate() {
+  public IntConstant negate() {
     return IntConstant.getInstance(-(this.value));
   }
 
+  @Nonnull
   @Override
-  public ArithmeticConstant and(ArithmeticConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance(this.value & ((IntConstant) c).value);
+  public IntConstant and(@Nonnull IntConstant c) {
+    return IntConstant.getInstance(this.value & c.value);
   }
 
+  @Nonnull
   @Override
-  public ArithmeticConstant or(ArithmeticConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance(this.value | ((IntConstant) c).value);
+  public IntConstant or(@Nonnull IntConstant c) {
+    return IntConstant.getInstance(this.value | c.value);
   }
 
+  @Nonnull
   @Override
-  public ArithmeticConstant xor(ArithmeticConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance(this.value ^ ((IntConstant) c).value);
+  public IntConstant xor(@Nonnull IntConstant c) {
+    return IntConstant.getInstance(this.value ^ c.value);
   }
 
+  @Nonnull
   @Override
-  public ArithmeticConstant shiftLeft(ArithmeticConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance(this.value << ((IntConstant) c).value);
+  public IntConstant shiftLeft(@Nonnull IntConstant c) {
+    return IntConstant.getInstance(this.value << c.value);
   }
 
+  @Nonnull
   @Override
-  public ArithmeticConstant shiftRight(ArithmeticConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance(this.value >> ((IntConstant) c).value);
+  public IntConstant shiftRight(@Nonnull IntConstant c) {
+    return IntConstant.getInstance(this.value >> c.value);
   }
 
+  @Nonnull
   @Override
-  public ArithmeticConstant unsignedShiftRight(ArithmeticConstant c) {
-    if (!(c instanceof IntConstant)) {
-      throw new IllegalArgumentException("IntConstant expected");
-    }
-    return IntConstant.getInstance(this.value >>> ((IntConstant) c).value);
+  public IntConstant unsignedShiftRight(@Nonnull IntConstant c) {
+    return IntConstant.getInstance(this.value >>> c.value);
   }
 
   @Override
@@ -203,7 +171,7 @@ public class IntConstant extends ArithmeticConstant {
 
   @Override
   public Type getType() {
-    return IntType.getInstance();
+    return PrimitiveType.getInt();
   }
 
   @Override
@@ -213,5 +181,10 @@ public class IntConstant extends ArithmeticConstant {
 
   public int getValue() {
     return value;
+  }
+
+  @Override
+  public Object clone() {
+    throw new RuntimeException();
   }
 }

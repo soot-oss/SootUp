@@ -79,11 +79,6 @@ public class JReturnStmt extends AbstractOpStmt {
   }
 
   @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseReturnStmt(this, o);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseReturnStmt(this, o);
   }

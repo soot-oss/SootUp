@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.visitor;
 
+import de.upb.soot.jimple.common.constant.BooleanConstant;
 import de.upb.soot.jimple.common.constant.ClassConstant;
 import de.upb.soot.jimple.common.constant.DoubleConstant;
 import de.upb.soot.jimple.common.constant.FloatConstant;
@@ -35,6 +36,8 @@ import de.upb.soot.jimple.common.constant.NullConstant;
 import de.upb.soot.jimple.common.constant.StringConstant;
 
 public interface IConstantVisitor extends IVisitor {
+  void caseBooleanConstant(BooleanConstant v);
+
   void caseDoubleConstant(DoubleConstant v);
 
   void caseFloatConstant(FloatConstant v);

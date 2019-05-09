@@ -27,14 +27,9 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.type.BooleanType;
-import de.upb.soot.jimple.common.type.ByteType;
-import de.upb.soot.jimple.common.type.CharType;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.ShortType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.UnknownType;
 
 @SuppressWarnings("serial")
 public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
@@ -45,11 +40,11 @@ public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
   }
 
   public static boolean isIntLikeType(Type t) {
-    return t.equals(IntType.getInstance())
-        || t.equals(ByteType.getInstance())
-        || t.equals(ShortType.getInstance())
-        || t.equals(CharType.getInstance())
-        || t.equals(BooleanType.getInstance());
+    return t.equals(PrimitiveType.getInt())
+        || t.equals(PrimitiveType.getByte())
+        || t.equals(PrimitiveType.getShort())
+        || t.equals(PrimitiveType.getChar())
+        || t.equals(PrimitiveType.getBoolean());
   }
 
   @Override
@@ -58,10 +53,10 @@ public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
     Value op2 = op2Box.getValue();
 
     if (isIntLikeType(op1.getType()) && isIntLikeType(op2.getType())) {
-      return IntType.getInstance();
-    } else if (op1.getType().equals(LongType.getInstance())
-        && op2.getType().equals(LongType.getInstance())) {
-      return LongType.getInstance();
+      return PrimitiveType.getInt();
+    } else if (op1.getType().equals(PrimitiveType.getLong())
+        && op2.getType().equals(PrimitiveType.getLong())) {
+      return PrimitiveType.getLong();
     } else {
       return UnknownType.getInstance();
     }

@@ -27,9 +27,9 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.type.RefType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.Collections;
 import java.util.List;
@@ -39,11 +39,6 @@ public class JCaughtExceptionRef implements IdentityRef {
   private static final long serialVersionUID = 5249007116510821231L;
 
   public JCaughtExceptionRef() {}
-
-  @Override
-  public boolean equivTo(Object o) {
-    return JimpleComparator.getInstance().caseCaughtException(this, o);
-  }
 
   @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
@@ -78,7 +73,8 @@ public class JCaughtExceptionRef implements IdentityRef {
 
   @Override
   public Type getType() {
-    return RefType.getInstance("java.lang.Throwable");
+    // TODO: [JMP] Get cached instance
+    return DefaultTypeFactory.getInstance().getType("java.lang.Throwable");
   }
 
   @Override

@@ -27,12 +27,11 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.common.type.IntType;
-import de.upb.soot.jimple.common.type.LongType;
-import de.upb.soot.jimple.common.type.Type;
-import de.upb.soot.jimple.common.type.UnknownType;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.UnknownType;
 
 public class JShrExpr extends AbstractIntLongBinopExpr {
   /** */
@@ -62,10 +61,10 @@ public class JShrExpr extends AbstractIntLongBinopExpr {
     }
 
     if (isIntLikeType(op1.getType())) {
-      return IntType.getInstance();
+      return PrimitiveType.getInt();
     }
-    if (op1.getType().equals(LongType.getInstance())) {
-      return LongType.getInstance();
+    if (op1.getType().equals(PrimitiveType.getLong())) {
+      return PrimitiveType.getLong();
     }
 
     return UnknownType.getInstance();

@@ -25,13 +25,12 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.common.type.NullType;
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.jimple.visitor.IConstantVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.signatures.NullTypeSignature;
+import de.upb.soot.types.NullType;
+import de.upb.soot.types.Type;
 
-public class NullConstant extends Constant {
+public class NullConstant implements Constant {
   /** */
   private static final long serialVersionUID = 8286431855238615958L;
 
@@ -66,6 +65,11 @@ public class NullConstant extends Constant {
 
   @Override
   public String toString() {
-    return NullTypeSignature.NULL_TYPE_SIGNATURE.toString();
+    return this.getType().toString();
+  }
+
+  @Override
+  public Object clone() {
+    throw new RuntimeException();
   }
 }

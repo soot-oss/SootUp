@@ -21,66 +21,174 @@ package de.upb.soot.core;
  * #L%
  */
 
-import de.upb.soot.jimple.common.type.Type;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.JavaClassSignature;
-import de.upb.soot.signatures.TypeSignature;
-import de.upb.soot.views.IView;
-import java.util.EnumSet;
+import de.upb.soot.signatures.FieldSubSignature;
+import de.upb.soot.types.Type;
+import de.upb.soot.util.builder.BuilderException;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+/**
+ * Soot's counterpart of the source language's field concept. Soot representation of a Java field.
+ * Can be declared to belong to a SootClass.
+ *
+ * @author Linghui Luo
+ * @author Jan Martin Persch
+ */
 public class SootField extends SootClassMember implements IField {
 
-  /**
-   * Soot's counterpart of the source language's field concept. Soot representation of a Java field.
-   * Can be declared to belong to a SootClass.
-   *
-   * <p>Modified by Linghui Luo
-   */
   private static final long serialVersionUID = -5101396409117866687L;
 
   /** Constructs a Soot field with the given name, type and modifiers. */
-  public SootField(
-      IView view,
-      JavaClassSignature declaringClass,
-      FieldSignature signature,
-      TypeSignature type,
-      EnumSet<Modifier> modifiers) {
-    super(view, declaringClass, signature, type, modifiers);
+  public SootField(@Nonnull FieldSignature signature, @Nonnull Iterable<Modifier> modifiers) {
+    super(signature, modifiers);
   }
 
-  public SootField(IView view, SootField field) {
-    this(
-        view,
-        field.getDeclaringClassSignature(),
-        (FieldSignature) field.signature,
-        field.typeSignature,
-        field.modifiers);
-  }
-
-  /** Constructs a Soot field with the given name, type and no modifiers. */
-  public SootField(
-      IView view, JavaClassSignature declaringClass, FieldSignature signature, TypeSignature type) {
-    this(view, declaringClass, signature, type, EnumSet.noneOf(Modifier.class));
-  }
-
+  @Nonnull
   public Type getType() {
-    return this.getView().getType(typeSignature);
+    return this.getSignature().getSignature();
   }
 
+  @Nonnull
   private String getOriginalStyleDeclaration() {
-    if (modifiers.isEmpty()) {
-      return signature.getSubSignature();
+    if (this.getModifiers().isEmpty()) {
+      return this.getSignature().getSubSignature().toString();
     } else {
-      return Modifier.toString(modifiers) + ' ' + this.signature.getSubSignature();
+      return Modifier.toString(this.getModifiers()) + ' ' + this.getSignature().getSubSignature();
     }
   }
 
+  @Nonnull
+  @Override
+  public FieldSubSignature getSubSignature() {
+    return (FieldSubSignature) super.getSubSignature();
+  }
+
+  @Nonnull
   public String getDeclaration() {
     return getOriginalStyleDeclaration();
   }
 
-  @Override
-  public String toString() {
-    return this.signature.toString();
+  /**
+   * Creates a {@link SootField} builder.
+   *
+   * @return A {@link SootField} builder.
+   */
+  @Nonnull
+  public static Builder.SignatureStep builder() {
+    return new SootFieldBuilder();
+  }
+
+  /**
+   * Defines a stepwise builder for the {@link SootField} class.
+   *
+   * @see #builder()
+   * @author Jan Martin Persch
+   */
+  public interface Builder extends SootClassMember.Builder<SootField> {
+    interface SignatureStep {
+      /**
+       * Sets the {@link FieldSignature}.
+       *
+       * @param value The value to set.
+       * @return This fluent builder.
+       */
+      @Nonnull
+      ModifiersStep withSignature(@Nonnull FieldSignature value);
+    }
+
+    interface ModifiersStep extends SootClassMember.Builder.ModifiersStep<Builder> {}
+
+    /**
+     * Builds the {@link SootField}.
+     *
+     * @return The created {@link SootField}.
+     * @throws BuilderException A build error occurred.
+     */
+    @Nonnull
+    SootField build();
+  }
+
+  /**
+   * Defines a {@link SootMethod} builder that provides a fluent API.
+   *
+   * @author Jan Martin Persch
+   */
+  protected static class SootFieldBuilder extends SootClassMemberBuilder<SootField>
+      implements Builder.SignatureStep, Builder.ModifiersStep, Builder {
+    // region Fields
+
+    // endregion /Fields/
+
+    // region Constructor
+
+    /** Creates a new instance of the {@link SootMethod.SootMethodBuilder} class. */
+    protected SootFieldBuilder() {
+      super(SootField.class);
+    }
+
+    // endregion /Constructor/
+
+    // region Properties
+
+    @Nullable private FieldSignature _signature;
+
+    /**
+     * Gets the field sub-signature.
+     *
+     * @return The value to get.
+     */
+    @Nonnull
+    protected FieldSignature getSignature() {
+      return ensureValue(this._signature, "signature");
+    }
+
+    /**
+     * Sets the field sub-signature.
+     *
+     * @param value The value to set.
+     */
+    @Nonnull
+    public ModifiersStep withSignature(@Nonnull FieldSignature value) {
+      this._signature = value;
+
+      return this;
+    }
+
+    @Nullable private Iterable<Modifier> _modifiers;
+
+    /**
+     * Gets the modifiers.
+     *
+     * @return The value to get.
+     */
+    @Nonnull
+    protected Iterable<Modifier> getModifiers() {
+      return ensureValue(this._modifiers, "modifiers");
+    }
+
+    /**
+     * Sets the modifiers.
+     *
+     * @param value The value to set.
+     */
+    @Nonnull
+    public Builder withModifiers(@Nonnull Iterable<Modifier> value) {
+      this._modifiers = value;
+
+      return this;
+    }
+
+    // endregion /Properties/
+
+    // region Methods
+
+    @Override
+    @Nonnull
+    protected SootField make() {
+      return new SootField(this.getSignature(), this.getModifiers());
+    }
+
+    // endregion /Methods/
   }
 }

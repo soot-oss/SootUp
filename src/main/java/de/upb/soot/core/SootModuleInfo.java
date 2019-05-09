@@ -1,14 +1,15 @@
 package de.upb.soot.core;
 
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.ISignature;
-import de.upb.soot.signatures.JavaClassSignature;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.Type;
+import de.upb.soot.util.Utils;
 import de.upb.soot.views.IView;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 public class SootModuleInfo extends AbstractClass {
 
@@ -31,7 +32,7 @@ public class SootModuleInfo extends AbstractClass {
         Collection<ModuleReference> requires,
         Collection<PackageReference> exports,
         Collection<PackageReference> opens,
-        Collection<JavaClassSignature> services);
+        Collection<JavaClassType> services);
   }
 
   public interface Build {
@@ -47,7 +48,7 @@ public class SootModuleInfo extends AbstractClass {
     private Collection<ModuleReference> requires;
     private Collection<PackageReference> exports;
     private Collection<PackageReference> opens;
-    private Collection<JavaClassSignature> services;
+    private Collection<JavaClassType> services;
     private boolean isAutomaticModule = false;
     private String moduleName;
 
@@ -74,7 +75,7 @@ public class SootModuleInfo extends AbstractClass {
         Collection<ModuleReference> requires,
         Collection<PackageReference> exports,
         Collection<PackageReference> opens,
-        Collection<JavaClassSignature> services) {
+        Collection<JavaClassType> services) {
 
       this.requires = requires;
       this.exports = exports;
@@ -110,9 +111,9 @@ public class SootModuleInfo extends AbstractClass {
 
   // FIXME: add missing statementss
   private SootModuleInfo(SootModuleInfoBuilder builder) {
-    super(builder.view, builder.classSource, Collections.emptySet(), Collections.emptySet());
+    super(builder.classSource);
     this.resolvingLevel = builder.resolvingLevel;
-    this.moduleSignature = builder.classSource.getClassSignature();
+    this.moduleSignature = builder.classSource.getClassType();
     this.modifiers = builder.modifiers;
     this.isAutomaticModule = builder.isAutomaticModule;
     this.name = builder.moduleName;
@@ -124,11 +125,11 @@ public class SootModuleInfo extends AbstractClass {
 
   public static class ModuleReference {
 
-    private JavaClassSignature moduleInfo;
+    private JavaClassType moduleInfo;
     private EnumSet<Modifier> modifiers;
     private ClassSource classSource;
 
-    public ModuleReference(JavaClassSignature moduleInfo, EnumSet<Modifier> accessModifier) {
+    public ModuleReference(JavaClassType moduleInfo, EnumSet<Modifier> accessModifier) {
       this.moduleInfo = moduleInfo;
       this.modifiers = accessModifier;
     }
@@ -137,12 +138,10 @@ public class SootModuleInfo extends AbstractClass {
   public static class PackageReference {
     private String packageName;
     private EnumSet<Modifier> modifers;
-    private Set<JavaClassSignature> targetModules;
+    private Set<JavaClassType> targetModules;
 
     public PackageReference(
-        String packageName,
-        EnumSet<Modifier> modifier,
-        Collection<JavaClassSignature> targetModules) {
+        String packageName, EnumSet<Modifier> modifier, Collection<JavaClassType> targetModules) {
       this.packageName = packageName;
       this.modifers = modifier;
       this.targetModules = new HashSet<>(targetModules);
@@ -163,7 +162,7 @@ public class SootModuleInfo extends AbstractClass {
     }
   }
 
-  private JavaClassSignature moduleSignature;
+  private JavaClassType moduleSignature;
   private final ResolvingLevel resolvingLevel;
 
   private HashSet<ModuleReference> requiredModules = new HashSet<>();
@@ -172,7 +171,7 @@ public class SootModuleInfo extends AbstractClass {
 
   private HashSet<PackageReference> openedPackages = new HashSet<>();
 
-  private HashSet<JavaClassSignature> usedServices = new HashSet<>();
+  private HashSet<JavaClassType> usedServices = new HashSet<>();
 
   // FIXME: how to create automatic modules
   private boolean isAutomaticModule;
@@ -191,11 +190,11 @@ public class SootModuleInfo extends AbstractClass {
   public SootModuleInfo(
       IView view,
       ClassSource cs,
-      JavaClassSignature moduleSignature,
+      JavaClassType moduleSignature,
       EnumSet<Modifier> access,
       String version,
       ResolvingLevel resolvingLevel) {
-    super(view, cs, Collections.emptySet(), Collections.emptySet());
+    super(cs);
     this.moduleSignature = moduleSignature;
     this.resolvingLevel = resolvingLevel;
     this.modifiers = null;
@@ -217,7 +216,19 @@ public class SootModuleInfo extends AbstractClass {
   }
 
   @Override
-  public ISignature getSignature() {
+  public Type getType() {
     return this.moduleSignature;
+  }
+
+  @Nonnull
+  @Override
+  public Set<IMethod> getMethods() {
+    return Utils.emptyImmutableSet();
+  }
+
+  @Nonnull
+  @Override
+  public Set<IField> getFields() {
+    return Utils.emptyImmutableSet();
   }
 }
