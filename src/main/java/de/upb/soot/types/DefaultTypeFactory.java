@@ -1,7 +1,7 @@
 package de.upb.soot.types;
 
 import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.PackageSignature;
+import de.upb.soot.signatures.PackageIdentifier;
 import de.upb.soot.signatures.SignatureFactory;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -33,16 +33,16 @@ public class DefaultTypeFactory implements TypeFactory {
    *
    * @param className the simple class name
    * @param packageName the Java package name; must not be null use empty string for the default
-   *     package {@link PackageSignature#DEFAULT_PACKAGE} the Java package name
+   *     package {@link PackageIdentifier#DEFAULT_PACKAGE} the Java package name
    * @return a ClassSignature for a Java class
    * @throws NullPointerException if the given package name is null. Use the empty string to denote
    *     the default package.
    */
   @Override
   public JavaClassType getClassType(final String className, final String packageName) {
-    PackageSignature packageSignature =
+    PackageIdentifier packageIdentifier =
         signatureFactorySupplier.get().getPackageSignature(packageName);
-    return new JavaClassType(className, packageSignature);
+    return new JavaClassType(className, packageIdentifier);
   }
 
   /**

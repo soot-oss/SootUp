@@ -3,7 +3,7 @@ package de.upb.soot.namespaces;
 import com.google.common.base.Preconditions;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.ModulePackageSignature;
+import de.upb.soot.signatures.ModulePackageIdentifier;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
@@ -39,7 +39,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   @Override
   public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassType signature) {
-    if (signature.getPackageSignature() instanceof ModulePackageSignature) {
+    if (signature.getPackageIdentifier() instanceof ModulePackageIdentifier) {
       return this.getClassSourceInternalForModule(signature);
     }
     return this.getClassSourceInternalForClassPath(signature);
@@ -70,10 +70,10 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   private @Nonnull Optional<ClassSource> getClassSourceInternalForModule(
       @Nonnull JavaClassType classSignature) {
     Preconditions.checkArgument(
-        classSignature.getPackageSignature() instanceof ModulePackageSignature);
+        classSignature.getPackageIdentifier() instanceof ModulePackageIdentifier);
 
-    ModulePackageSignature modulePackageSignature =
-        (ModulePackageSignature) classSignature.getPackageSignature();
+    ModulePackageIdentifier modulePackageSignature =
+        (ModulePackageIdentifier) classSignature.getPackageIdentifier();
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path module =
@@ -173,7 +173,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
       return ((ModuleTypeFactory) typeFactory)
           .getClassType(
-              sig.getClassName(), sig.getPackageSignature().getPackageName(), moduleDir.toString());
+              sig.getClassName(), sig.getPackageIdentifier().getPackageName(), moduleDir.toString());
     }
 
     // if we are using the normal signature factory, than trim the module from the path

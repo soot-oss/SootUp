@@ -2,7 +2,7 @@ package de.upb.soot.types;
 
 import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
-import de.upb.soot.signatures.PackageSignature;
+import de.upb.soot.signatures.PackageIdentifier;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
@@ -34,8 +34,8 @@ public class ModuleTypeFactory extends DefaultTypeFactory {
    */
   public JavaClassType getClassType(
       final String className, final String packageName, final String moduleName) {
-    PackageSignature packageSignature =
+    PackageIdentifier packageIdentifier =
         signatureFactorySupplier.get().getPackageSignature(packageName, moduleName);
-    return new JavaClassType(className, packageSignature);
+    return new JavaClassType(className, packageIdentifier);
   }
 }

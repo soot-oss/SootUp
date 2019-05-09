@@ -33,7 +33,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
   }
 
   /** Caches the created signatures for packages. */
-  protected final Map<String, PackageSignature> packages = new HashMap<>();
+  protected final Map<String, PackageIdentifier> packages = new HashMap<>();
 
   private final Supplier<? extends TypeFactory> typeFactorySupplier;
 
@@ -41,28 +41,28 @@ public class DefaultSignatureFactory implements SignatureFactory {
     this.typeFactorySupplier = typeFactorySupplier;
     /* Represents the default package. */
     packages.put(
-        PackageSignature.DEFAULT_PACKAGE.getPackageName(), PackageSignature.DEFAULT_PACKAGE);
+        PackageIdentifier.DEFAULT_PACKAGE.getPackageName(), PackageIdentifier.DEFAULT_PACKAGE);
   }
 
   /**
-   * Returns a unique PackageSignature. The methodRef looks up a cache if it already contains a
+   * Returns a unique PackageIdentifier. The methodRef looks up a cache if it already contains a
    * signature with the given package name. If the cache lookup fails a new signature is created.
    *
    * @param packageName the Java package name; must not be null use empty string for the default
-   *     package {@link PackageSignature#DEFAULT_PACKAGE}
-   * @return a PackageSignature
+   *     package {@link PackageIdentifier#DEFAULT_PACKAGE}
+   * @return a PackageIdentifier
    * @throws NullPointerException if the given package name is null. Use the empty string to denote
    *     the default package.
    */
   @Override
-  public PackageSignature getPackageSignature(final String packageName) {
+  public PackageIdentifier getPackageSignature(final String packageName) {
     Preconditions.checkNotNull(packageName);
-    PackageSignature packageSignature = packages.get(packageName);
-    if (packageSignature == null) {
-      packageSignature = new PackageSignature(packageName);
-      packages.put(packageName, packageSignature);
+    PackageIdentifier packageIdentifier = packages.get(packageName);
+    if (packageIdentifier == null) {
+      packageIdentifier = new PackageIdentifier(packageName);
+      packages.put(packageName, packageIdentifier);
     }
-    return packageSignature;
+    return packageIdentifier;
   }
 
   /**

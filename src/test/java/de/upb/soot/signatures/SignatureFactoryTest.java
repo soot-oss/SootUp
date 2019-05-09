@@ -54,9 +54,9 @@ public class SignatureFactoryTest {
   public void getSamePackageSignature() {
     DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
-    PackageSignature packageSignature1 = signatureFactory.getPackageSignature("java.lang");
-    PackageSignature packageSignature2 = signatureFactory.getPackageSignature("java.lang");
-    boolean sameObject = packageSignature1 == packageSignature2;
+    PackageIdentifier packageIdentifier1 = signatureFactory.getPackageSignature("java.lang");
+    PackageIdentifier packageIdentifier2 = signatureFactory.getPackageSignature("java.lang");
+    boolean sameObject = packageIdentifier1 == packageIdentifier2;
     assertTrue(sameObject);
   }
 
@@ -64,9 +64,9 @@ public class SignatureFactoryTest {
   public void eqPackageSignature() {
     DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
-    PackageSignature packageSignature1 = signatureFactory.getPackageSignature("java.lang");
-    PackageSignature packageSignature2 = signatureFactory.getPackageSignature("java.lang");
-    boolean sameObject = packageSignature1.equals(packageSignature2);
+    PackageIdentifier packageIdentifier1 = signatureFactory.getPackageSignature("java.lang");
+    PackageIdentifier packageIdentifier2 = signatureFactory.getPackageSignature("java.lang");
+    boolean sameObject = packageIdentifier1.equals(packageIdentifier2);
     assertTrue(sameObject);
   }
 
@@ -74,9 +74,9 @@ public class SignatureFactoryTest {
   public void eqPackageSignature2() {
     DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
-    PackageSignature packageSignature1 = signatureFactory.getPackageSignature("java.lang");
-    PackageSignature packageSignature2 = signatureFactory.getPackageSignature("java.lang");
-    boolean sameObject = packageSignature1.equals(null);
+    PackageIdentifier packageIdentifier1 = signatureFactory.getPackageSignature("java.lang");
+    PackageIdentifier packageIdentifier2 = signatureFactory.getPackageSignature("java.lang");
+    boolean sameObject = packageIdentifier1.equals(null);
     assertFalse(sameObject);
   }
 
@@ -86,9 +86,9 @@ public class SignatureFactoryTest {
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
     JavaClassType classSignature1 = typeFactory.getClassType("System", "java.lang");
     JavaClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
-    PackageSignature packageSignature1 = classSignature1.getPackageSignature();
-    PackageSignature packageSignature2 = classSignature2.getPackageSignature();
-    boolean sameObject = packageSignature1.equals(packageSignature2);
+    PackageIdentifier packageIdentifier1 = classSignature1.getPackageIdentifier();
+    PackageIdentifier packageIdentifier2 = classSignature2.getPackageIdentifier();
+    boolean sameObject = packageIdentifier1.equals(packageIdentifier2);
     assertTrue(sameObject);
   }
 
@@ -96,9 +96,9 @@ public class SignatureFactoryTest {
   public void getDiffPackageSignature() {
     DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
-    PackageSignature packageSignature1 = signatureFactory.getPackageSignature("java.lang");
-    PackageSignature packageSignature2 = signatureFactory.getPackageSignature("java.lang.invoke");
-    boolean sameObject = packageSignature1 == packageSignature2;
+    PackageIdentifier packageIdentifier1 = signatureFactory.getPackageSignature("java.lang");
+    PackageIdentifier packageIdentifier2 = signatureFactory.getPackageSignature("java.lang.invoke");
+    boolean sameObject = packageIdentifier1 == packageIdentifier2;
     assertFalse(sameObject);
   }
 
@@ -184,7 +184,7 @@ public class SignatureFactoryTest {
     assertFalse(sameObject);
 
     boolean samePackageSignatureObject =
-        classSignature1.getPackageSignature() == classSignature2.getPackageSignature();
+        classSignature1.getPackageIdentifier() == classSignature2.getPackageIdentifier();
     assertTrue(samePackageSignatureObject);
     String className = "A";
 
@@ -225,7 +225,7 @@ public class SignatureFactoryTest {
     JavaClassType classSignature2 = typeFactory.getClassType("System", "java.lang");
     // Class Signatures are unique but not their package
     boolean samePackageSignature =
-        classSignature1.getPackageSignature() == classSignature2.getPackageSignature();
+        classSignature1.getPackageIdentifier() == classSignature2.getPackageIdentifier();
     assertTrue(samePackageSignature);
 
     // but they are equal
@@ -453,7 +453,7 @@ public class SignatureFactoryTest {
     DefaultFactories factories = DefaultFactories.create();
     DefaultSignatureFactory signatureFactory = factories.getSignatureFactory();
     DefaultTypeFactory typeFactory = factories.getTypeFactory();
-    PackageSignature packageSignature = signatureFactory.getPackageSignature(null);
+    PackageIdentifier packageIdentifier = signatureFactory.getPackageSignature(null);
   }
 
   @Test(expected = NullPointerException.class)

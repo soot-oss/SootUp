@@ -3,7 +3,7 @@ package de.upb.soot.namespaces;
 import com.google.common.base.Preconditions;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.ModulePackageSignature;
+import de.upb.soot.signatures.ModulePackageIdentifier;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.ArrayType;
@@ -85,7 +85,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassType signature) {
 
     String modulename =
-        ((ModulePackageSignature) signature.getPackageSignature())
+        ((ModulePackageIdentifier) signature.getPackageIdentifier())
             .getModuleSignature()
             .getModuleName();
     // lookup the ns for the class provider from the cache and use him...

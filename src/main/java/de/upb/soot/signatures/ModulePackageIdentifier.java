@@ -25,7 +25,7 @@ package de.upb.soot.signatures;
 import com.google.common.base.Objects;
 
 /** Represents the signature of a Java 9 package, referencing its module. */
-public class ModulePackageSignature extends PackageSignature {
+public class ModulePackageIdentifier extends PackageIdentifier {
 
   private final ModuleSignature moduleSignature;
 
@@ -36,7 +36,7 @@ public class ModulePackageSignature extends PackageSignature {
    * @param packageName the package's name
    * @param moduleSignature the module declaring the package
    */
-  protected ModulePackageSignature(
+  protected ModulePackageIdentifier(
       final String packageName, final ModuleSignature moduleSignature) {
     super(packageName);
     this.moduleSignature = moduleSignature;
@@ -53,7 +53,7 @@ public class ModulePackageSignature extends PackageSignature {
     if (!super.equals(o)) {
       return false;
     }
-    ModulePackageSignature that = (ModulePackageSignature) o;
+    ModulePackageIdentifier that = (ModulePackageIdentifier) o;
     return Objects.equal(moduleSignature, that.moduleSignature)
         && Objects.equal(getPackageName(), that.getPackageName());
   }

@@ -29,10 +29,10 @@ import com.google.common.base.Objects;
  *
  * @author Andreas Dann
  */
-public class PackageSignature {
+public class PackageIdentifier {
 
   /** Represents the default package. */
-  public static final PackageSignature DEFAULT_PACKAGE = new PackageSignature("");
+  public static final PackageIdentifier DEFAULT_PACKAGE = new PackageIdentifier("");
 
   private final String packageName;
 
@@ -42,7 +42,7 @@ public class PackageSignature {
    *
    * @param packageName the package's name
    */
-  protected PackageSignature(final String packageName) {
+  protected PackageIdentifier(final String packageName) {
     this.packageName = packageName;
   }
 
@@ -54,7 +54,7 @@ public class PackageSignature {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    PackageSignature that = (PackageSignature) o;
+    PackageIdentifier that = (PackageIdentifier) o;
     return Objects.equal(packageName, that.packageName);
   }
 

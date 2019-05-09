@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 
 public interface SignatureFactory {
 
-  PackageSignature getPackageSignature(String packageName);
+  PackageIdentifier getPackageSignature(String packageName);
 
   MethodSignature getMethodSignature(
       String methodName,

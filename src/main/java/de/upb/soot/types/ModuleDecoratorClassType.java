@@ -21,7 +21,7 @@ public class ModuleDecoratorClassType extends JavaClassType {
    * @param moduleSignature the module signature to add
    */
   public ModuleDecoratorClassType(JavaClassType classSignature, ModuleSignature moduleSignature) {
-    super(classSignature.getClassName(), classSignature.getPackageSignature());
+    super(classSignature.getClassName(), classSignature.getPackageIdentifier());
     this.wrappedSignature = classSignature;
     // FIXME: use factory
     this.moduleSignature = moduleSignature;

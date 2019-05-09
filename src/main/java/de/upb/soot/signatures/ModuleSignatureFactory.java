@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 public class ModuleSignatureFactory extends DefaultSignatureFactory {
 
   public static final JavaClassType MODULE_INFO_CLASS =
-      new JavaClassType("module-info", PackageSignature.DEFAULT_PACKAGE);
+      new JavaClassType("module-info", PackageIdentifier.DEFAULT_PACKAGE);
 
   private static final Map<String, ModuleSignature> modules = new HashMap<>();
 
@@ -83,31 +83,31 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
   }
 
   @Override
-  public ModulePackageSignature getPackageSignature(final String packageName) {
+  public ModulePackageIdentifier getPackageSignature(final String packageName) {
     return getPackageSignature(packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
   }
 
   /**
-   * Returns a unique PackageSignature. The methodRef looks up a cache if it already contains a
+   * Returns a unique PackageIdentifier. The methodRef looks up a cache if it already contains a
    * signature with the given package and module name. If the cache lookup fails a new signature is
    * created.
    *
    * @param packageName the package name; must not be null use empty string for the default package
    * @param moduleName the module containing the package; must not be null use empty string for the
    *     unnamed module {@link ModuleSignature#UNNAMED_MODULE}
-   * @return a ModulePackageSignature
+   * @return a ModulePackageIdentifier
    * @throws NullPointerException if the given module name or package name is null. Use the empty
    *     string to denote the unnamed module or the default package.
    */
-  public ModulePackageSignature getPackageSignature(
+  public ModulePackageIdentifier getPackageSignature(
       final String packageName, final String moduleName) {
     Preconditions.checkNotNull(moduleName);
     Preconditions.checkNotNull(packageName);
     String fqId = moduleName + "." + packageName;
-    ModulePackageSignature packageSignature = (ModulePackageSignature) packages.get(fqId);
+    ModulePackageIdentifier packageSignature = (ModulePackageIdentifier) packages.get(fqId);
     if (packageSignature == null) {
       ModuleSignature moduleSignature = getModuleSignature(moduleName);
-      packageSignature = new ModulePackageSignature(packageName, moduleSignature);
+      packageSignature = new ModulePackageIdentifier(packageName, moduleSignature);
       packages.put(fqId, packageSignature);
     }
     return packageSignature;
