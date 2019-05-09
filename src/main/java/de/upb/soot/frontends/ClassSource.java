@@ -1,13 +1,23 @@
 package de.upb.soot.frontends;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.base.Objects;
+import com.ibm.wala.cast.tree.CAstSourcePositionMap;
+import de.upb.soot.core.Modifier;
+import de.upb.soot.core.SootField;
+import de.upb.soot.core.SootMethod;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Basic class for storing information that is needed to reify a {@link de.upb.soot.core.SootClass}.
@@ -16,13 +26,7 @@ import javax.annotation.Nullable;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public abstract class ClassSource {
-  private final INamespace srcNamespace;
-  // TODO: AD unfortunately I need to change it in the ModuleFinder, since I only know a module's
-  // name after resolving its
-  // module-info.class
-  private JavaClassType classSignature;
-  private final Path sourcePath;
+public abstract class ClassSource extends AbstractClassSource {
 
   /**
    * Creates and a {@link ClassSource} for a specific source file. The file should be passed as
@@ -39,56 +43,35 @@ public abstract class ClassSource {
    *     {@link ClassSource}, backed up by the given file
    */
   public ClassSource(INamespace srcNamespace, Path sourcePath, JavaClassType classSignature) {
+    super(srcNamespace, classSignature, sourcePath);
     checkNotNull(srcNamespace);
-    this.srcNamespace = srcNamespace;
-    this.classSignature = classSignature;
-    this.sourcePath = sourcePath;
   }
 
-  public JavaClassType getClassType() {
-    return classSignature;
+  // TODO We should probably eliminate the type parameters here.
+  //   An IClassSourceContent should be directly associated with and
+  //   know about its JavaClassType, so users don't need to pass this
+  //   as a parameter twice.
+
+  @Nonnull
+  public Collection<SootMethod> resolveMethods()
+      throws ResolveException {
+    // TODO: Not sure whether this should even have a default implementation
+    return Collections.emptyList();
   }
 
-  public Path getSourcePath() {
-    return sourcePath;
+  @Nonnull
+  public Collection<SootField> resolveFields() throws ResolveException {
+    // TODO: Not sure whether this should even have a default implementation
+    return Collections.emptyList();
   }
 
-  /** Create or provide a representation of the actual manifestation of the class. */
-  public IClassSourceContent getContent() {
-    // TODO: Find a better common supertype for this.
-    return srcNamespace.getClassProvider().getContent(this);
-  }
+  public abstract Set<Modifier> resolveModifiers();
 
-  public IClassProvider getClassProvider() {
-    return srcNamespace.getClassProvider();
-  }
+  public abstract Set<JavaClassType> resolveInterfaces();
 
-  public void setClassSignature(JavaClassType classSignature) {
-    this.classSignature = classSignature;
-  }
+  public abstract Optional<JavaClassType> resolveSuperclass();
 
-  /**
-   * Even if a the signature changes, the classource remains the same, e.g., if it is associated to
-   * an automatic module s
-   *
-   * @param o the object to compare with
-   * @return both objects are logically equal
-   */
-  @Override
-  public boolean equals(@Nullable Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ClassSource that = (ClassSource) o;
-    return Objects.equal(srcNamespace, that.srcNamespace)
-        && Objects.equal(sourcePath, that.sourcePath);
-  }
+  public abstract Optional<JavaClassType> resolveOuterClass();
 
-  @Override
-  public int hashCode() {
-    return Objects.hashCode(srcNamespace, sourcePath);
-  }
+  public abstract CAstSourcePositionMap.Position resolvePosition();
 }

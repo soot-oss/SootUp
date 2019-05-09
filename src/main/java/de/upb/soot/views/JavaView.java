@@ -1,25 +1,25 @@
 package de.upb.soot.views;
 
-import static de.upb.soot.util.Utils.valueOrElse;
-
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.SourceType;
 import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootModuleInfo;
+import de.upb.soot.core.SourceType;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+import static de.upb.soot.util.Utils.valueOrElse;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
@@ -165,7 +165,13 @@ public class JavaView extends AbstractView {
         .map(
             it -> {
               // TODO Don't use a fixed SourceType here.
-              return new SootClass(it, SourceType.Application);
+              if (it instanceof ClassSource) {
+                return new SootClass((ClassSource) it, SourceType.Application);
+
+              } else if (it instanceof ModuleClassSource) {
+                return new SootModuleInfo((ModuleClassSource) it, false);
+              }
+              return null;
             })
         .map(it -> valueOrElse(this.map.putIfAbsent(it.getType(), it), it))
         .orElse(null);
@@ -178,7 +184,7 @@ public class JavaView extends AbstractView {
 
     this.markAsFullyResolved();
 
-    for (ClassSource cs :
+    for (AbstractClassSource cs :
         this.getProject().getNamespace().getClassSources(getSignatureFactory(), getTypeFactory())) {
       if (!this.map.containsKey(cs.getClassType())) this.__resolveSootClass(cs.getClassType());
     }

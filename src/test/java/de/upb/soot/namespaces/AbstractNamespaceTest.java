@@ -2,6 +2,7 @@ package de.upb.soot.namespaces;
 
 import categories.Java8Test;
 import de.upb.soot.DefaultFactories;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
@@ -78,12 +79,12 @@ public abstract class AbstractNamespaceTest {
 
   protected void testClassReceival(
       AbstractNamespace ns, JavaClassType sig, int minClassesFound, int maxClassesFound) {
-    final Optional<ClassSource> clazz = ns.getClassSource(sig);
+    final Optional<? extends AbstractClassSource> clazz = ns.getClassSource(sig);
 
     Assert.assertTrue(clazz.isPresent());
     Assert.assertEquals(sig, clazz.get().getClassType());
 
-    final Collection<ClassSource> classSources =
+    final Collection<? extends AbstractClassSource> classSources =
         ns.getClassSources(getSignatureFactory(), getTypeFactory());
     Assert.assertNotNull(classSources);
     Assert.assertFalse(classSources.isEmpty());

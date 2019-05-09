@@ -1,18 +1,16 @@
 package de.upb.soot.namespaces;
 
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.TypeFactory;
 import de.upb.soot.util.NotYetImplementedException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
 import javax.annotation.Nonnull;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Composes a namespace out of other namespaces hence removing the necessity to adapt every API to
@@ -49,8 +47,8 @@ public class CompositeNamespace implements INamespace {
    * @return The {@link ClassSource} instance found or created... Or an empty Optional.
    */
   @Override
-  public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassType signature) {
-    List<ClassSource> result =
+  public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
+    List<AbstractClassSource> result =
         namespaces.stream()
             .map(n -> n.getClassSource(signature))
             .filter(Optional::isPresent)
@@ -80,7 +78,7 @@ public class CompositeNamespace implements INamespace {
   }
 
   @Override
-  public @Nonnull Collection<ClassSource> getClassSources(
+  public @Nonnull Collection<AbstractClassSource> getClassSources(
       @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory) {
     // TODO Auto-generated methodRef stub
     throw new NotYetImplementedException("Getting class sources is not implemented, yet.");

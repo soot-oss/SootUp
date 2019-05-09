@@ -1,19 +1,19 @@
 package de.upb.soot.frontends.java;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
 import categories.Java8Test;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
-import java.nio.file.Paths;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.nio.file.Paths;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @Category(Java8Test.class)
 public class WalaJavaClassProviderTest {
@@ -33,12 +33,12 @@ public class WalaJavaClassProviderTest {
 
     assertEquals(type, classSource.getClassType());
 
-    IClassSourceContent content = classSource.getContent();
+    ClassSource content = classSource;
     assertNotNull(content);
-    assertEquals(3, content.resolveMethods(type).size());
-    assertEquals(0, content.resolveFields(type).size());
+    assertEquals(3, content.resolveMethods().size());
+    assertEquals(0, content.resolveFields().size());
 
-    assertEquals(content, provider.getContent(classSource));
+    assertEquals(content, (classSource));
   }
 
   @Test

@@ -1,21 +1,22 @@
 package de.upb.soot.core;
 
-import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
-
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.IModuleClassSourceContent;
+import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
 import de.upb.soot.util.concurrent.Lazy;
+
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.Nonnull;
 
-public class SootModuleInfo extends AbstractClass {
+import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
+
+public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
 
   /** */
   private static final long serialVersionUID = -6856798288630958622L;
@@ -28,7 +29,7 @@ public class SootModuleInfo extends AbstractClass {
   // FIXME: or module Signature?
   private String moduleName;
 
-  private SootModuleInfo(ClassSource classSource, boolean isAutomaticModule) {
+  public SootModuleInfo(ModuleClassSource classSource, boolean isAutomaticModule) {
     super(classSource);
     this.classSignature = classSource.getClassType();
     this.isAutomaticModule = isAutomaticModule;
@@ -89,12 +90,12 @@ public class SootModuleInfo extends AbstractClass {
   private final Lazy<Set<JavaClassType>> _lazyProvidedServices =
       synchronizedLazy(this::lazyProvidesInitializer);
 
-  private IModuleClassSourceContent getModuleClassSourceContent() throws ResolveException {
-    if (!(this.classSource.getContent() instanceof IModuleClassSourceContent)) {
+  private ModuleClassSource getModuleClassSourceContent() throws ResolveException {
+    if (!(this.classSource instanceof ModuleClassSource)) {
       throw new ResolveException("Not a module");
     }
     // FIXME: this is ugly
-    return (IModuleClassSourceContent) this.classSource.getContent();
+    return (ModuleClassSource) this.classSource;
   }
 
   @Nonnull

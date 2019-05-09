@@ -25,6 +25,7 @@ package de.upb.soot.frontends;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
+
 import java.nio.file.Path;
 
 // TODO Why do we need both this interface plus INamespace?
@@ -37,12 +38,9 @@ import java.nio.file.Path;
  */
 public interface IClassProvider {
 
-  ClassSource createClassSource(
+  AbstractClassSource createClassSource(
       INamespace srcNamespace, Path sourcePath, JavaClassType classSignature);
 
   /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
   FileType getHandledFileType();
-
-  /** Create or provide a representation of the actual manifestation of the class. */
-  IClassSourceContent getContent(ClassSource classSource);
 }

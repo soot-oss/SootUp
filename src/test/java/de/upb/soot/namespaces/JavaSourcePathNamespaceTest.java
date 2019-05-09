@@ -1,22 +1,21 @@
 package de.upb.soot.namespaces;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import categories.Java8Test;
 import de.upb.soot.DefaultFactories;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.frontends.java.WalaJavaClassProvider;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
-import java.util.Collection;
-import java.util.Optional;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.util.Collection;
+import java.util.Optional;
+
+import static org.junit.Assert.*;
 
 @Category(Java8Test.class)
 public class JavaSourcePathNamespaceTest {
@@ -29,16 +28,17 @@ public class JavaSourcePathNamespaceTest {
         new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageSignature.DEFAULT_PACKAGE);
 
-    Optional<ClassSource> classSourceOptional = namespace.getClassSource(type);
+    Optional<? extends AbstractClassSource> classSourceOptional = namespace.getClassSource(type);
     assertTrue(classSourceOptional.isPresent());
-    ClassSource classSource = classSourceOptional.get();
+    AbstractClassSource classSource = classSourceOptional.get();
 
     assertEquals(type, classSource.getClassType());
 
-    IClassSourceContent content = classSource.getContent();
+    AbstractClassSource content = classSource;
     assertNotNull(content);
-    assertEquals(3, content.resolveMethods(type).size());
-    assertEquals(0, content.resolveFields(type).size());
+    assertTrue(content instanceof ClassSource);
+    assertEquals(3, ((ClassSource) content).resolveMethods().size());
+    assertEquals(0, ((ClassSource) content).resolveFields().size());
   }
 
   @Test
@@ -60,7 +60,7 @@ public class JavaSourcePathNamespaceTest {
         new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
 
     DefaultFactories defaultFactories = DefaultFactories.create();
-    Collection<ClassSource> classSources =
+    Collection<? extends AbstractClassSource> classSources =
         namespace.getClassSources(
             defaultFactories.getSignatureFactory(), defaultFactories.getTypeFactory());
 
@@ -68,7 +68,7 @@ public class JavaSourcePathNamespaceTest {
     Optional<JavaClassType> optionalFoundType =
         classSources.stream()
             .filter(classSource -> classSource.getClassType().equals(type))
-            .map(ClassSource::getClassType)
+            .map(AbstractClassSource::getClassType)
             .findFirst();
     assertTrue(optionalFoundType.isPresent() && optionalFoundType.get().equals(type));
 

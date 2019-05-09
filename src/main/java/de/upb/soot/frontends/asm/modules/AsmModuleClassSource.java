@@ -1,24 +1,32 @@
 package de.upb.soot.frontends.asm.modules;
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap;
+import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootModuleInfo;
-import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.IModuleClassSourceContent;
-import de.upb.soot.frontends.asm.AbstractAsmSourceContent;
+import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.frontends.asm.AsmUtil;
+import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
+import org.objectweb.asm.tree.*;
+
+import javax.annotation.Nonnull;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.annotation.Nonnull;
-import org.objectweb.asm.tree.ModuleExportNode;
-import org.objectweb.asm.tree.ModuleOpenNode;
-import org.objectweb.asm.tree.ModuleProvideNode;
-import org.objectweb.asm.tree.ModuleRequireNode;
+import java.util.EnumSet;
+import java.util.Set;
 
-public class AsmModuleClassSourceContent extends AbstractAsmSourceContent
-    implements IModuleClassSourceContent {
+public class AsmModuleClassSource extends ModuleClassSource {
 
-  public AsmModuleClassSourceContent(@Nonnull ClassSource classSource) {
-    super(classSource);
+  private final ModuleNode module;
+
+  public AsmModuleClassSource(
+      INamespace srcNamespace,
+      Path sourcePath,
+      JavaClassType classSignature,
+      @Nonnull ModuleNode moduleNode) {
+    super(srcNamespace, sourcePath, classSignature);
+    this.module = moduleNode;
   }
 
   @Override
@@ -118,5 +126,16 @@ public class AsmModuleClassSourceContent extends AbstractAsmSourceContent
     }
 
     return uses;
+  }
+
+  @Override
+  public Set<Modifier> resolveModifiers() {
+    EnumSet<Modifier> modifiers = AsmUtil.getModifiers(module.access);
+    return modifiers;
+  }
+
+  @Override
+  public CAstSourcePositionMap.Position resolvePosition() {
+    return null;
   }
 }
