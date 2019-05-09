@@ -45,7 +45,7 @@ public enum FileType {
   JIMPLE("jimple");
 
   static final int[] CAFEBABE_MAGICNUMBER = new int[] {0xCA, 0xFE, 0xBA, 0xBE};
-  static int[] ARCHIVE_MAGICNUMBER = new int[] {0x50, 0x4B, 0x03, 0x04};
+  static final int[] ARCHIVE_MAGICNUMBER = new int[] {0x50, 0x4B, 0x03, 0x04};
 
   public static final @Nonnull EnumSet<FileType> ARCHIVE_TYPES = EnumSet.of(JAR, ZIP, APK);
 
