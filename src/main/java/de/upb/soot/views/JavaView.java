@@ -5,7 +5,7 @@ import static de.upb.soot.util.Utils.valueOrElse;
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.ClassType;
+import de.upb.soot.core.SourceType;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.types.JavaClassType;
@@ -164,8 +164,8 @@ public class JavaView extends AbstractView {
         .getClassSource(signature)
         .map(
             it -> {
-              // TODO Don't use a fixed ClassType here.
-              return new SootClass(it, ClassType.Application);
+              // TODO Don't use a fixed SourceType here.
+              return new SootClass(it, SourceType.Application);
             })
         .map(it -> valueOrElse(this.map.putIfAbsent(it.getType(), it), it))
         .orElse(null);

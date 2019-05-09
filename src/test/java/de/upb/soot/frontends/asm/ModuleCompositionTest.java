@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.soot.Project;
 import de.upb.soot.core.Body;
-import de.upb.soot.core.ClassType;
+import de.upb.soot.core.SourceType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
@@ -140,7 +140,7 @@ public class ModuleCompositionTest {
                         .build()),
                 null,
                 EnumSet.of(Modifier.PUBLIC)),
-            ClassType.Application);
+            SourceType.Application);
 
     // Print some information
     // System.out.println("Field sub-signature: " + nameFieldSubSignature);

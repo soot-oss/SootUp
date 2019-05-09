@@ -69,15 +69,15 @@ import javax.annotation.Nonnull;
  */
 public class SootClass extends AbstractClass implements Serializable {
 
-  public SootClass(ClassSource classSource, ClassType classType) {
+  public SootClass(ClassSource classSource, SourceType sourceType) {
     super(classSource);
-    this.classType = classType;
+    this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
   }
 
   private static final long serialVersionUID = -4145583783298080555L;
 
-  private final ClassType classType;
+  private final SourceType sourceType;
   @Nonnull private final JavaClassType classSignature;
 
   // TODO: [JMP] Create type signature for this dummy type and move it closer to its usage.
@@ -332,12 +332,12 @@ public class SootClass extends AbstractClass implements Serializable {
 
   /** Returns true if this class is an application class. */
   public boolean isApplicationClass() {
-    return classType.equals(ClassType.Application);
+    return sourceType.equals(SourceType.Application);
   }
 
   /** Returns true if this class is a library class. */
   public boolean isLibraryClass() {
-    return classType.equals(ClassType.Library);
+    return sourceType.equals(SourceType.Library);
   }
 
   // FIXME: get rid of these logic
@@ -359,7 +359,7 @@ public class SootClass extends AbstractClass implements Serializable {
 
   /** Returns true if this class is a phantom class. */
   public boolean isPhantomClass() {
-    return classType.equals(ClassType.Phantom);
+    return sourceType.equals(SourceType.Phantom);
   }
 
   /** Convenience methodRef returning true if this class is private. */

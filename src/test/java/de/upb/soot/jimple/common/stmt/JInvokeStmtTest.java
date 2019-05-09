@@ -24,7 +24,7 @@ package de.upb.soot.jimple.common.stmt;
 
 import categories.Java8Test;
 import de.upb.soot.DefaultFactories;
-import de.upb.soot.core.ClassType;
+import de.upb.soot.core.SourceType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
@@ -86,7 +86,7 @@ public class JInvokeStmtTest {
             new NoPositionInformation(),
             EnumSet.of(Modifier.PUBLIC));
 
-    SootClass sootClass = new SootClass(javaClassSource, ClassType.Application);
+    SootClass sootClass = new SootClass(javaClassSource, SourceType.Application);
 
     // JStaticInvokeExpr
     MethodSignature statMethodSig =

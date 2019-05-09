@@ -1,7 +1,6 @@
 package de.upb.soot.core;
 
-// TODO Rename this
-public enum ClassType {
+public enum SourceType {
   Phantom,
   Application,
   Library

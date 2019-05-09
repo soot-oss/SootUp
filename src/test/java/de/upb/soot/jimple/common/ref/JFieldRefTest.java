@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import categories.Java8Test;
 import de.upb.soot.DefaultFactories;
 import de.upb.soot.Project;
-import de.upb.soot.core.ClassType;
+import de.upb.soot.core.SourceType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
@@ -53,7 +53,7 @@ public class JFieldRefTest {
                 Collections.emptySet(),
                 null,
                 EnumSet.of(Modifier.PUBLIC)),
-            ClassType.Application);
+            SourceType.Application);
     JStaticFieldRef ref = Jimple.newStaticFieldRef(fieldSig);
     assertEquals("<dummyMainClass: int dummyField>", ref.toString());
 
@@ -89,7 +89,7 @@ public class JFieldRefTest {
                 Collections.emptySet(),
                 null,
                 EnumSet.of(Modifier.PUBLIC)),
-            ClassType.Application);
+            SourceType.Application);
     Local base = new Local("obj", declaringClassSignature);
     JInstanceFieldRef ref = Jimple.newInstanceFieldRef(base, fieldSig);
     assertEquals("obj.<dummyMainClass: int dummyField>", ref.toString());

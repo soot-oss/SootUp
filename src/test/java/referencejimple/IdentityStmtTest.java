@@ -3,7 +3,7 @@ package referencejimple;
 import com.ibm.wala.cast.loader.AstMethod;
 import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.Body;
-import de.upb.soot.core.ClassType;
+import de.upb.soot.core.SourceType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
@@ -114,7 +114,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
             new NoPositionInformation(),
             EnumSet.of(Modifier.PUBLIC));
 
-    sootClass = new SootClass(javaClassSource, ClassType.Application);
+    sootClass = new SootClass(javaClassSource, SourceType.Application);
   }
 
   SootMethod init(@Nonnull FieldSignature initFieldSignature) {

@@ -20,7 +20,7 @@ import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.soot.Project;
 import de.upb.soot.core.Body;
-import de.upb.soot.core.ClassType;
+import de.upb.soot.core.SourceType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
@@ -89,7 +89,7 @@ public class WalaIRToJimpleConverter {
   @Deprecated
   public SootClass convertClass(AstClass walaClass) {
     ClassSource classSource = convertToClassSource(walaClass);
-    return new SootClass(classSource, ClassType.Application);
+    return new SootClass(classSource, SourceType.Application);
   }
 
   ClassSource convertToClassSource(AstClass walaClass) {
