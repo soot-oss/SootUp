@@ -4,7 +4,6 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.types.*;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,7 +27,8 @@ public final class AsmUtil {
    * @param classSource The source.
    * @param classNode The node to initialize
    */
-  protected static void initAsmClassSource(@Nonnull Path classSource, @Nonnull ClassNode classNode)
+  protected static void initAsmClassSource(
+      @Nonnull Path classSource, @Nonnull AsmJavaClassProvider.SootClassNode classNode)
       throws AsmFrontendException {
     try {
       try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {

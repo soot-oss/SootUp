@@ -19,7 +19,7 @@ public class AsmJavaClassProvider implements IClassProvider {
   @Override
   public AbstractClassSource createClassSource(
       INamespace srcNamespace, Path sourcePath, JavaClassType classSignature) {
-    ClassNode classNode = new ClassNode();
+    SootClassNode classNode = new SootClassNode();
 
     AsmUtil.initAsmClassSource(sourcePath, classNode);
 
@@ -37,7 +37,7 @@ public class AsmJavaClassProvider implements IClassProvider {
     return FileType.CLASS;
   }
 
-  private static class SootClassNode extends ClassNode {
+  static class SootClassNode extends ClassNode {
 
     public SootClassNode() {
       super(AsmUtil.SUPPORTED_ASM_OPCODE);
