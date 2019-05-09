@@ -1,7 +1,7 @@
 package de.upb.soot;
 
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.PackageIdentifier;
+import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.NotYetImplementedException;
 
@@ -19,7 +19,7 @@ public class Scope {
   }
 
   /** Define a scope consists of multiple packages. */
-  public Scope(PackageIdentifier... packages) {
+  public Scope(PackageName... packages) {
     // TODO Auto-generated constructor stub
   }
 

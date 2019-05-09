@@ -23,7 +23,6 @@
 package de.upb.soot.jimple.common.stmt;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.ResolvingLevel;
@@ -41,9 +40,8 @@ import de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr;
 import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
-import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import java.net.URI;
 import java.nio.file.Path;
@@ -66,9 +64,8 @@ public class JInvokeStmtTest {
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
 
-    DefaultFactories factories = DefaultFactories.create();
-    DefaultSignatureFactory dsm = factories.getSignatureFactory();
-    DefaultTypeFactory dtf = factories.getTypeFactory();
+    DefaultIdentifierFactory dif = DefaultIdentifierFactory.getInstance();
+    DefaultIdentifierFactory dtf = DefaultIdentifierFactory.getInstance();
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
     JavaClassSource javaClassSource =
@@ -97,7 +94,7 @@ public class JInvokeStmtTest {
 
     // JStaticInvokeExpr
     MethodSignature statMethodSig =
-        dsm.getMethodSignature("print", "java.system.Out", "void", Arrays.asList("String"));
+        dif.getMethodSignature("print", "java.system.Out", "void", Arrays.asList("String"));
     IStmt staticInvokeStmt =
         new JInvokeStmt(
             new JStaticInvokeExpr(
@@ -115,7 +112,7 @@ public class JInvokeStmtTest {
 
     // JSpecialInvoke
     MethodSignature smethodSig =
-        dsm.getMethodSignature("<init>", "java.lang.Object", "void", Arrays.asList());
+        dif.getMethodSignature("<init>", "java.lang.Object", "void", Arrays.asList());
     IStmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
@@ -132,7 +129,7 @@ public class JInvokeStmtTest {
 
     // JInterfaceInvoke
     MethodSignature imethodSig =
-        dsm.getMethodSignature("remove", "java.util.Iterator", "void", Arrays.asList());
+        dif.getMethodSignature("remove", "java.util.Iterator", "void", Arrays.asList());
     IStmt interfaceInvokeStmt =
         new JInvokeStmt(
             new JInterfaceInvokeExpr(
@@ -149,10 +146,10 @@ public class JInvokeStmtTest {
 
     // JDynamicInvoke
     MethodSignature dmethodSig =
-        dsm.getMethodSignature(
+        dif.getMethodSignature(
             "mylambda", SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME, "void", Arrays.asList());
     MethodSignature bootstrapMethodSig =
-        dsm.getMethodSignature("run", "Runnable", "void", Arrays.asList());
+        dif.getMethodSignature("run", "Runnable", "void", Arrays.asList());
     List<? extends Value> bootstrapArgs = Arrays.asList();
     List<? extends Value> methodArgs = Arrays.asList();
 

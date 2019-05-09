@@ -1,20 +1,25 @@
 package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
+import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.ModulePackageIdentifier;
-import de.upb.soot.signatures.ModuleSignatureFactory;
-import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.FieldSignature;
+import de.upb.soot.signatures.FieldSubSignature;
+import de.upb.soot.signatures.IdentifierFactory;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.MethodSubSignature;
+import de.upb.soot.signatures.ModulePackageName;
+import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.ModuleTypeFactory;
+import de.upb.soot.types.ModuleIdentifierFactory;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
-import de.upb.soot.types.TypeFactory;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -55,27 +60,27 @@ public class JavaModulePathNamespace extends AbstractNamespace {
 
   @Override
   public @Nonnull Collection<ClassSource> getClassSources(
-      @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory) {
+      @Nonnull IdentifierFactory identifierFactory) {
     Preconditions.checkArgument(
-        signatureFactory instanceof ModuleSignatureFactory,
-        "Factory must be a ModuleSignatureFactory");
+        identifierFactory instanceof ModuleIdentifierFactory,
+        "Factory must be a ModuleIdentifierFactory");
 
     Set<ClassSource> found = new HashSet<>();
     Collection<String> availableModules = moduleFinder.discoverAllModules();
     for (String module : availableModules) {
       AbstractNamespace ns = moduleFinder.discoverModule(module);
-      TypeFactory typeFactoryWrapper = typeFactory;
+      IdentifierFactory identifierFactoryWrapper = identifierFactory;
 
       if (!(ns instanceof JrtFileSystemNamespace)) {
         /*
          * we need a wrapper to create correct types for the found classes, all other ignore modules by default, or have
          * no clue about modules.
          */
-        typeFactoryWrapper = new TypeFactoryWrapper(typeFactory, module);
+        identifierFactoryWrapper = new IdentifierFactoryWrapper(identifierFactoryWrapper, module);
       }
 
       // FIXME: [JMP] `ns` may be `null`
-      found.addAll(ns.getClassSources(signatureFactory, typeFactoryWrapper));
+      found.addAll(ns.getClassSources(identifierFactoryWrapper));
     }
 
     return found;
@@ -85,9 +90,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassType signature) {
 
     String modulename =
-        ((ModulePackageIdentifier) signature.getPackageIdentifier())
-            .getModuleSignature()
-            .getModuleName();
+        ((ModulePackageName) signature.getPackageName()).getModuleSignature().getModuleName();
     // lookup the ns for the class provider from the cache and use him...
     AbstractNamespace ns = moduleFinder.discoverModule(modulename);
 
@@ -105,12 +108,12 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     return ns.getClassSource(signature);
   }
 
-  private static class TypeFactoryWrapper implements TypeFactory {
+  private static class IdentifierFactoryWrapper implements IdentifierFactory {
 
-    private final TypeFactory factory;
+    private final IdentifierFactory factory;
     private final String moduleName;
 
-    private TypeFactoryWrapper(TypeFactory factory, String moduleName) {
+    private IdentifierFactoryWrapper(IdentifierFactory factory, String moduleName) {
       this.factory = factory;
       this.moduleName = moduleName;
     }
@@ -143,8 +146,8 @@ public class JavaModulePathNamespace extends AbstractNamespace {
 
     @Override
     public @Nonnull JavaClassType fromPath(@Nonnull Path file) {
-      if (factory instanceof ModuleTypeFactory) {
-        ModuleTypeFactory moduleSignatureFactory = (ModuleTypeFactory) factory;
+      if (factory instanceof ModuleIdentifierFactory) {
+        ModuleIdentifierFactory moduleSignatureFactory = (ModuleIdentifierFactory) factory;
         String fullyQualifiedName =
             FilenameUtils.removeExtension(file.toString()).replace('/', '.');
         String packageName = "";
@@ -157,6 +160,113 @@ public class JavaModulePathNamespace extends AbstractNamespace {
         return moduleSignatureFactory.getClassType(className, packageName, this.moduleName);
       }
       return factory.fromPath(file);
+    }
+
+    @Override
+    public PackageName getPackageName(String packageName) {
+      return factory.getPackageName(packageName);
+    }
+
+    @Override
+    public MethodSignature getMethodSignature(
+        String methodName,
+        String fullyQualifiedNameDeclClass,
+        String fqReturnType,
+        List<String> parameters) {
+      return factory.getMethodSignature(
+          methodName, fullyQualifiedNameDeclClass, fqReturnType, parameters);
+    }
+
+    @Override
+    public MethodSignature getMethodSignature(
+        String methodName,
+        JavaClassType declaringClassSignature,
+        String fqReturnType,
+        List<String> parameters) {
+      return factory.getMethodSignature(
+          methodName, declaringClassSignature, fqReturnType, parameters);
+    }
+
+    @Override
+    public MethodSignature getMethodSignature(
+        String methodName,
+        JavaClassType declaringClassSignature,
+        Type fqReturnType,
+        List<Type> parameters) {
+      return factory.getMethodSignature(
+          methodName, declaringClassSignature, fqReturnType, parameters);
+    }
+
+    @Override
+    @Nonnull
+    public MethodSignature getMethodSignature(
+        @Nonnull SootClass declaringClass, @Nonnull MethodSubSignature subSignature) {
+      return factory.getMethodSignature(declaringClass, subSignature);
+    }
+
+    @Override
+    @Nonnull
+    public MethodSignature getMethodSignature(
+        @Nonnull JavaClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature) {
+      return factory.getMethodSignature(declaringClassSignature, subSignature);
+    }
+
+    @Override
+    @Nonnull
+    public MethodSignature parseMethodSignature(@Nonnull String methodSignature) {
+      return factory.parseMethodSignature(methodSignature);
+    }
+
+    @Override
+    @Nonnull
+    public MethodSubSignature getMethodSubSignature(
+        @Nonnull String name,
+        @Nonnull Iterable<? extends Type> parameterSignatures,
+        @Nonnull Type returnType) {
+      return factory.getMethodSubSignature(name, parameterSignatures, returnType);
+    }
+
+    @Override
+    @Nonnull
+    public MethodSubSignature parseMethodSubSignature(@Nonnull String methodSubSignature) {
+      return factory.parseMethodSubSignature(methodSubSignature);
+    }
+
+    @Override
+    @Nonnull
+    public FieldSignature parseFieldSignature(@Nonnull String fieldSignature) {
+      return factory.parseFieldSignature(fieldSignature);
+    }
+
+    @Override
+    public FieldSignature getFieldSignature(
+        String fieldName, JavaClassType declaringClassSignature, String fieldType) {
+      return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
+    }
+
+    @Override
+    public FieldSignature getFieldSignature(
+        String fieldName, JavaClassType declaringClassSignature, Type fieldType) {
+      return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
+    }
+
+    @Override
+    @Nonnull
+    public FieldSignature getFieldSignature(
+        @Nonnull JavaClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature) {
+      return factory.getFieldSignature(declaringClassSignature, subSignature);
+    }
+
+    @Override
+    @Nonnull
+    public FieldSubSignature getFieldSubSignature(@Nonnull String name, @Nonnull Type type) {
+      return factory.getFieldSubSignature(name, type);
+    }
+
+    @Override
+    @Nonnull
+    public FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature) {
+      return factory.parseFieldSubSignature(subSignature);
     }
   }
 }

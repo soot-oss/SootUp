@@ -2,7 +2,7 @@ package de.upb.soot.frontends.asm;
 
 import de.upb.soot.core.Modifier;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
@@ -167,7 +167,7 @@ public final class AsmUtil {
         }
         String name = desc.substring(1, desc.length() - 1);
         name = toQualifiedName(name);
-        baseType = DefaultTypeFactory.getInstance().getType(toQualifiedName(name));
+        baseType = DefaultIdentifierFactory.getInstance().getType(toQualifiedName(name));
         break;
       default:
         throw new AssertionError("Unknown descriptor: " + desc);
@@ -175,7 +175,7 @@ public final class AsmUtil {
     if (!(baseType instanceof JavaClassType) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
-    return nrDims > 0 ? DefaultTypeFactory.getInstance().getArrayType(baseType, nrDims) : baseType;
+    return nrDims > 0 ? DefaultIdentifierFactory.getInstance().getArrayType(baseType, nrDims) : baseType;
   }
 
   @Nonnull
@@ -233,7 +233,7 @@ public final class AsmUtil {
             }
 
             String cls = desc.substring(begin, idx++);
-            baseType = DefaultTypeFactory.getInstance().getType(toQualifiedName(cls));
+            baseType = DefaultIdentifierFactory.getInstance().getType(toQualifiedName(cls));
             break this_type;
           default:
             throw new AssertionError("Unknown type: " + c);
@@ -241,7 +241,7 @@ public final class AsmUtil {
       }
 
       if (baseType != null && nrDims > 0) {
-        types.add(DefaultTypeFactory.getInstance().getArrayType(baseType, nrDims));
+        types.add(DefaultIdentifierFactory.getInstance().getArrayType(baseType, nrDims));
 
       } else {
         types.add(baseType);
@@ -257,7 +257,7 @@ public final class AsmUtil {
     }
 
     return StreamSupport.stream(modules.spliterator(), false)
-        .map(p -> (DefaultTypeFactory.getInstance().getClassType(toQualifiedName(p))))
+        .map(p -> (DefaultIdentifierFactory.getInstance().getClassType(toQualifiedName(p))))
         .collect(Collectors.toList());
   }
 }

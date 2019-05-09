@@ -49,7 +49,7 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
     Path baseDir = Paths.get("target/test-classes/");
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(baseDir);
     final JavaClassType sig =
-        getTypeFactory().getClassType("NotExisting", "de.upb.soot.namespaces");
+        getIdentifierFactory().getClassType("NotExisting", "de.upb.soot.namespaces");
     final Optional<ClassSource> classSource = pathBasedNamespace.getClassSource(sig);
     Assert.assertFalse(classSource.isPresent());
   }
@@ -60,7 +60,7 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
     Path baseDir = Paths.get("target/classes/");
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(baseDir);
     final JavaClassType sig =
-        getTypeFactory().getClassType("PathBasedNamespace", "de.upb.soot.namespaces");
+        getIdentifierFactory().getClassType("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
   }
 
@@ -70,7 +70,7 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
     Path jar = Paths.get("target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(jar);
     final JavaClassType sig =
-        getTypeFactory().getClassType("PathBasedNamespace", "de.upb.soot.namespaces");
+        getIdentifierFactory().getClassType("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
   }
 }

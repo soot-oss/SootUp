@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
 /** Represents the fully qualified signature of a methodRef. */
 public class MethodSignature extends AbstractClassMemberSignature {
 
-  protected MethodSignature(
+  public MethodSignature(
       JavaClassType declaringClassSignature,
       String methodName,
       Iterable<Type> parameters,
@@ -40,12 +40,12 @@ public class MethodSignature extends AbstractClassMemberSignature {
 
   /**
    * Internal: Constructs a MethodSignature. Instances should only be created by a {@link
-   * DefaultSignatureFactory}
+   * IdentifierFactory}
    *
    * @param declaringClass the declaring class signature
    * @param subSignature the sub-signature
    */
-  protected MethodSignature(
+  public MethodSignature(
       final @Nonnull JavaClassType declaringClass, final @Nonnull MethodSubSignature subSignature) {
     super(declaringClass, subSignature);
 

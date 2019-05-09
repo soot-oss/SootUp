@@ -5,10 +5,9 @@ import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.IdentifierFactory;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.types.Type;
-import de.upb.soot.types.TypeFactory;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -83,13 +82,9 @@ public interface IView {
   //  @Nonnull
   //  JavaClassType getRefType(@Nonnull Type classSignature);
 
-  /** Returns the {@link SignatureFactory} for this view. */
+  /** Returns the {@link IdentifierFactory} for this view. */
   @Nonnull
-  SignatureFactory getSignatureFactory();
-
-  /** Returns the {@link TypeFactory} for this view. */
-  @Nonnull
-  TypeFactory getTypeFactory();
+  IdentifierFactory getIdentifierFactory();
 
   /** Return the {@link Options} of this view. */
   @Nonnull

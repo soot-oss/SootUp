@@ -28,9 +28,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.ModuleSignatureFactory;
-import de.upb.soot.signatures.PackageIdentifier;
+import de.upb.soot.signatures.PackageName;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
 import java.nio.file.FileSystem;
@@ -45,18 +43,18 @@ public class JavaClassType extends ReferenceType {
 
   private final String className;
 
-  private final PackageIdentifier packageIdentifier;
+  private final PackageName packageName;
 
   private final boolean isInnerClass;
 
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
-   * {@link DefaultSignatureFactory}
+   * {@link de.upb.soot.signatures.IdentifierFactory}
    *
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
-   * @param packageIdentifier the corresponding package
+   * @param packageName the corresponding package
    */
-  public JavaClassType(final String className, final PackageIdentifier packageIdentifier) {
+  public JavaClassType(final String className, final PackageName packageName) {
     String realClassName = className;
     boolean innerClass = false;
     // use $ to separate inner and outer class name
@@ -68,7 +66,7 @@ public class JavaClassType extends ReferenceType {
       innerClass = true;
     }
     this.className = realClassName;
-    this.packageIdentifier = packageIdentifier;
+    this.packageName = packageName;
     this.isInnerClass = innerClass;
   }
 
@@ -82,13 +80,13 @@ public class JavaClassType extends ReferenceType {
     }
     JavaClassType that = (JavaClassType) o;
     return Objects.equal(className, that.className)
-        && Objects.equal(packageIdentifier, that.packageIdentifier)
+        && Objects.equal(packageName, that.packageName)
         && isInnerClass == that.isInnerClass;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(className, packageIdentifier, isInnerClass);
+    return Objects.hashCode(className, packageName, isInnerClass);
   }
 
   /**
@@ -99,8 +97,8 @@ public class JavaClassType extends ReferenceType {
    */
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
-    if (!Strings.isNullOrEmpty(packageIdentifier.getPackageName())) {
-      sb.append(packageIdentifier.toString());
+    if (!Strings.isNullOrEmpty(packageName.getPackageName())) {
+      sb.append(packageName.toString());
       sb.append('.');
     }
     sb.append(className);
@@ -131,7 +129,7 @@ public class JavaClassType extends ReferenceType {
   }
 
   public boolean isModuleInfo() {
-    return this.className.equals(ModuleSignatureFactory.MODULE_INFO_CLASS.className);
+    return this.className.equals(ModuleIdentifierFactory.MODULE_INFO_CLASS.className);
   }
 
   /** The simple class name. */
@@ -140,8 +138,8 @@ public class JavaClassType extends ReferenceType {
   }
 
   /** The package in which the class resides. */
-  public PackageIdentifier getPackageIdentifier() {
-    return packageIdentifier;
+  public PackageName getPackageName() {
+    return packageName;
   }
 
   /** Whether the class is an inner class * */

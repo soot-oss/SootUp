@@ -3,7 +3,6 @@ package de.upb.soot.jimple.common.ref;
 import static org.junit.Assert.assertEquals;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
 import de.upb.soot.Project;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
@@ -15,7 +14,8 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.IdentifierFactory;
+import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
@@ -30,13 +30,13 @@ public class JFieldRefTest {
 
   @Test
   public void testJStaticFieldRef() {
-    DefaultFactories factories = DefaultFactories.create();
-    IView view =
+        IView view =
         new JavaView(
-            new Project(null, factories.getSignatureFactory(), factories.getTypeFactory()));
-    SignatureFactory fact = view.getSignatureFactory();
+            new Project(null, DefaultIdentifierFactory.getInstance()
+            ));
+    IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
-        factories.getTypeFactory().getClassType("dummyMainClass");
+        DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 
@@ -65,13 +65,13 @@ public class JFieldRefTest {
 
   @Test
   public void testJInstanceFieldRef() {
-    DefaultFactories factories = DefaultFactories.create();
-    IView view =
+        IView view =
         new JavaView(
-            new Project(null, factories.getSignatureFactory(), factories.getTypeFactory()));
-    SignatureFactory fact = view.getSignatureFactory();
+            new Project(null, DefaultIdentifierFactory.getInstance()
+            ));
+    IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
-        factories.getTypeFactory().getClassType("dummyMainClass");
+        DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 

@@ -3,9 +3,8 @@ package de.upb.soot.frontends.java;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import java.util.Optional;
 import org.junit.Before;
@@ -16,15 +15,14 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class Java7EnhancementsTest {
   private WalaClassLoader loader;
-  private DefaultTypeFactory typeFactory;
+  private DefaultIdentifierFactory typeFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/java-target/java7";
     loader = new WalaClassLoader(srcDir, null);
-    DefaultFactories factories = DefaultFactories.create();
-    typeFactory = factories.getTypeFactory();
+        typeFactory = DefaultIdentifierFactory.getInstance();
   }
 
   @Test

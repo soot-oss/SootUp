@@ -1,15 +1,9 @@
 package de.upb.soot.types;
 
 import com.google.common.base.Objects;
-import de.upb.soot.ModuleFactories;
 import de.upb.soot.signatures.ModuleSignature;
-import de.upb.soot.signatures.ModuleSignatureFactory;
 
 public class ModuleDecoratorClassType extends JavaClassType {
-
-  private static final ModuleFactories FACTORIES = ModuleFactories.create();
-  private static final ModuleTypeFactory TYPE_FACTORY = FACTORIES.getTypeFactory();
-  private static final ModuleSignatureFactory SIGNATURE_FACTORY = FACTORIES.getSignatureFactory();
 
   private final JavaClassType wrappedSignature;
   private final ModuleSignature moduleSignature;
@@ -21,7 +15,7 @@ public class ModuleDecoratorClassType extends JavaClassType {
    * @param moduleSignature the module signature to add
    */
   public ModuleDecoratorClassType(JavaClassType classSignature, ModuleSignature moduleSignature) {
-    super(classSignature.getClassName(), classSignature.getPackageIdentifier());
+    super(classSignature.getClassName(), classSignature.getPackageName());
     this.wrappedSignature = classSignature;
     // FIXME: use factory
     this.moduleSignature = moduleSignature;

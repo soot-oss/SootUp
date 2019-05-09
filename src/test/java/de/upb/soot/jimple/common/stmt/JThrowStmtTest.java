@@ -23,10 +23,9 @@
 package de.upb.soot.jimple.common.stmt;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.DefaultIdentifierFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -38,8 +37,7 @@ public class JThrowStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    DefaultFactories factories = DefaultFactories.create();
-    DefaultTypeFactory typeFactory = factories.getTypeFactory();
+        DefaultIdentifierFactory typeFactory = DefaultIdentifierFactory.getInstance();
 
     Local local = new Local("$r0", typeFactory.getType("java.lang.Exception"));
     Local localEqual = new Local("$r0", typeFactory.getType("java.lang.Exception"));

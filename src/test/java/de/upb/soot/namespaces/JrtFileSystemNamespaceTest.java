@@ -1,8 +1,8 @@
 package de.upb.soot.namespaces;
 
 import categories.Java9Test;
-import de.upb.soot.ModuleFactories;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.ModuleIdentifierFactory;
 import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +15,7 @@ public class JrtFileSystemNamespaceTest extends AbstractNamespaceTest {
   @Test
   public void getClassSource() {
     JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
-    final JavaClassType sig = getTypeFactory().getClassType("java.lang.System");
+    final JavaClassType sig = getIdentifierFactory().getClassType("java.lang.System");
     testClassReceival(ns, sig, 1);
   }
 
@@ -24,20 +24,19 @@ public class JrtFileSystemNamespaceTest extends AbstractNamespaceTest {
   public void getClassSourceModule() {
     JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
     final JavaClassType sig =
-        ModuleFactories.create().getTypeFactory().getClassType("System", "java.lang", "java.base");
+        ModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
     testClassReceival(ns, sig, 1);
   }
 
   @Test
   public void getClassSourcesClasspath() {
     JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
-    ns.getClassSources(getSignatureFactory(), getTypeFactory());
+    ns.getClassSources(getIdentifierFactory());
   }
 
   @Test
   public void getClassSourcesModulePath() {
     JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
-    ModuleFactories.create();
   }
 
   @Test

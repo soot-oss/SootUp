@@ -29,20 +29,20 @@ import com.google.common.base.Objects;
  *
  * @author Andreas Dann
  */
-public class PackageIdentifier {
+public class PackageName {
 
   /** Represents the default package. */
-  public static final PackageIdentifier DEFAULT_PACKAGE = new PackageIdentifier("");
+  public static final PackageName DEFAULT_PACKAGE = new PackageName("");
 
   private final String packageName;
 
   /**
    * Internal: Constructs a Package Signature of a Java package. Instances should only be created by
-   * a {@link DefaultSignatureFactory}
+   * a {@link Remove}
    *
    * @param packageName the package's name
    */
-  protected PackageIdentifier(final String packageName) {
+  public PackageName(final String packageName) {
     this.packageName = packageName;
   }
 
@@ -54,7 +54,7 @@ public class PackageIdentifier {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    PackageIdentifier that = (PackageIdentifier) o;
+    PackageName that = (PackageName) o;
     return Objects.equal(packageName, that.packageName);
   }
 

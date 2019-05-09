@@ -5,9 +5,8 @@ import de.upb.soot.Project;
 import de.upb.soot.Scope;
 import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
-import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.IdentifierFactory;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
-import de.upb.soot.types.TypeFactory;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
@@ -28,14 +27,8 @@ public abstract class AbstractView implements IView {
 
   @Override
   @Nonnull
-  public SignatureFactory getSignatureFactory() {
-    return this.getProject().getSignatureFactory();
-  }
-
-  @Nonnull
-  @Override
-  public TypeFactory getTypeFactory() {
-    return this.getProject().getTypeFactory();
+  public IdentifierFactory getIdentifierFactory() {
+    return this.getProject().getIdentifierFactory();
   }
 
   @Override

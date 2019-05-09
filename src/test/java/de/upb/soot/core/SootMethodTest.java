@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
 import de.upb.soot.Project;
 import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.frontends.java.WalaIRMethodSourceContent;
@@ -14,6 +13,7 @@ import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
@@ -30,11 +30,13 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    DefaultFactories factories = DefaultFactories.create();
     IView view =
         new JavaView(
-            new Project(null, factories.getSignatureFactory(), factories.getTypeFactory()));
-    JavaClassType type = view.getTypeFactory().getClassType("java.lang.String");
+            new Project(
+                null,
+                DefaultIdentifierFactory.getInstance()
+            ));
+    JavaClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     List<IStmt> stmts = new ArrayList<>();
     LocalGenerator generator = new LocalGenerator();
@@ -54,7 +56,7 @@ public class SootMethodTest {
     assertEquals(2, body.getLocalCount());
 
     MethodSignature methodSignature =
-        view.getSignatureFactory()
+        view.getIdentifierFactory()
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     SootMethod dummyMainMethod =
         new SootMethod(
@@ -71,7 +73,7 @@ public class SootMethodTest {
             new JavaClassSource(
                 new JavaSourcePathNamespace(Collections.emptySet()),
                 null,
-                view.getTypeFactory().getClassType("dummyMain")),
+                view.getIdentifierFactory().getClassType("dummyMain")),
             ClassType.Application,
             null,
             Collections.emptySet(),

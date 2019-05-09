@@ -10,8 +10,7 @@ import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import java.io.File;
@@ -46,10 +45,7 @@ public class JavaViewTest {
 
     this.signatures =
         Collections.unmodifiableList(
-            namespace
-                .getClassSources(
-                    DefaultSignatureFactory.getInstance(), DefaultTypeFactory.getInstance())
-                .stream()
+            namespace.getClassSources(DefaultIdentifierFactory.getInstance()).stream()
                 .map(ClassSource::getClassType)
                 .sorted(Comparator.comparing(JavaClassType::toString))
                 .collect(Collectors.toList()));
@@ -88,7 +84,7 @@ public class JavaViewTest {
 
   private void resolveUndefinedClass() {
     JavaClassType signature =
-        DefaultTypeFactory.getInstance().getClassType("com.example.NonExistingClass");
+        DefaultIdentifierFactory.getInstance().getClassType("com.example.NonExistingClass");
 
     if (this.signatures.contains(signature)) {
       Assert.fail("FATAL ERROR: Non-existing class exists in signature list!");

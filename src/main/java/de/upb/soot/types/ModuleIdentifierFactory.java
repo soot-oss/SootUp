@@ -1,45 +1,24 @@
-package de.upb.soot.signatures;
-
-/*-
- * #%L
- * Soot
- * %%
- * Copyright (C) 2018 Andreas Dann
- * %%
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 2.1 of the
- * License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Lesser Public License for more details.
- *
- * You should have received a copy of the GNU General Lesser Public
- * License along with this program.  If not, see
- * <http://www.gnu.org/licenses/lgpl-2.1.html>.
- * #L%
- */
+package de.upb.soot.types;
 
 import com.google.common.base.Preconditions;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.ModuleTypeFactory;
+import de.upb.soot.signatures.ModulePackageName;
+import de.upb.soot.signatures.ModuleSignature;
+import de.upb.soot.signatures.PackageName;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
-/**
- * Factory to create valid signatures for Java classes in a modulepath.
- *
- * @author Andreas Dann
- */
-public class ModuleSignatureFactory extends DefaultSignatureFactory {
+public class ModuleIdentifierFactory extends DefaultIdentifierFactory {
 
   public static final JavaClassType MODULE_INFO_CLASS =
-      new JavaClassType("module-info", PackageIdentifier.DEFAULT_PACKAGE);
+      new JavaClassType("module-info", PackageName.DEFAULT_PACKAGE);
 
   private static final Map<String, ModuleSignature> modules = new HashMap<>();
+
+  private static final ModuleIdentifierFactory INSTANCE = new ModuleIdentifierFactory();
+
+  public static ModuleIdentifierFactory getInstance() {
+    return INSTANCE;
+  }
 
   static {
     /*
@@ -52,12 +31,27 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
     modules.put(ModuleSignature.UNNAMED_MODULE.getModuleName(), ModuleSignature.UNNAMED_MODULE);
   }
 
+  @Override
+  public JavaClassType getClassType(final String className, final String packageName) {
+    return getClassType(className, packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
+  }
+
   /**
-   * FIXME: Check with mbenz if it is easer (and makes more sense), to make a module signature a
-   * decorator for a class signature..., IMHO: easier Factory to create module signatures.
+   * Always creates a new ClassSignature. In opposite to PackageSignatures and ModuleSignatures,
+   * ClassSignatures are not cached because the are unique per class, and thus reusing them does not
+   * make sense.
+   *
+   * @param className the simple name of the class
+   * @param packageName the declaring package
+   * @param moduleName the declaring module
+   * @return a ClassSignature for a Java 9 class
+   * @throws NullPointerException if the given module name or package name is null. Use the empty
+   *     string to denote the unnamed module or the default package.
    */
-  public ModuleSignatureFactory(Supplier<ModuleTypeFactory> typeFactory) {
-    super(typeFactory);
+  public JavaClassType getClassType(
+      final String className, final String packageName, final String moduleName) {
+    PackageName packageIdentifier = getPackageSignature(packageName, moduleName);
+    return new JavaClassType(className, packageIdentifier);
   }
 
   /**
@@ -83,31 +77,29 @@ public class ModuleSignatureFactory extends DefaultSignatureFactory {
   }
 
   @Override
-  public ModulePackageIdentifier getPackageSignature(final String packageName) {
+  public ModulePackageName getPackageName(final String packageName) {
     return getPackageSignature(packageName, ModuleSignature.UNNAMED_MODULE.getModuleName());
   }
 
   /**
-   * Returns a unique PackageIdentifier. The methodRef looks up a cache if it already contains a
-   * signature with the given package and module name. If the cache lookup fails a new signature is
-   * created.
+   * Returns a unique PackageName. The methodRef looks up a cache if it already contains a signature
+   * with the given package and module name. If the cache lookup fails a new signature is created.
    *
    * @param packageName the package name; must not be null use empty string for the default package
    * @param moduleName the module containing the package; must not be null use empty string for the
    *     unnamed module {@link ModuleSignature#UNNAMED_MODULE}
-   * @return a ModulePackageIdentifier
+   * @return a ModulePackageName
    * @throws NullPointerException if the given module name or package name is null. Use the empty
    *     string to denote the unnamed module or the default package.
    */
-  public ModulePackageIdentifier getPackageSignature(
-      final String packageName, final String moduleName) {
+  public ModulePackageName getPackageSignature(final String packageName, final String moduleName) {
     Preconditions.checkNotNull(moduleName);
     Preconditions.checkNotNull(packageName);
     String fqId = moduleName + "." + packageName;
-    ModulePackageIdentifier packageSignature = (ModulePackageIdentifier) packages.get(fqId);
+    ModulePackageName packageSignature = (ModulePackageName) packages.get(fqId);
     if (packageSignature == null) {
       ModuleSignature moduleSignature = getModuleSignature(moduleName);
-      packageSignature = new ModulePackageIdentifier(packageName, moduleSignature);
+      packageSignature = new ModulePackageName(packageName, moduleSignature);
       packages.put(fqId, packageSignature);
     }
     return packageSignature;

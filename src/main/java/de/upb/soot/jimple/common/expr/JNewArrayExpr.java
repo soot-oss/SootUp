@@ -32,7 +32,7 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.types.ArrayType;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.util.ArrayList;
@@ -127,11 +127,11 @@ public class JNewArrayExpr implements Expr {
   @Override
   public Type getType() {
     if (baseType instanceof ArrayType) {
-      return DefaultTypeFactory.getInstance()
+      return DefaultIdentifierFactory.getInstance()
           .getArrayType(
               ((ArrayType) baseType).getBaseType(), ((ArrayType) baseType).getDimension() + 1);
     } else {
-      return DefaultTypeFactory.getInstance().getArrayType(baseType, 1);
+      return DefaultIdentifierFactory.getInstance().getArrayType(baseType, 1);
     }
   }
 

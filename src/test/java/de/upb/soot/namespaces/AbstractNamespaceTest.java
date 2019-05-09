@@ -1,13 +1,12 @@
 package de.upb.soot.namespaces;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
-import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.IdentifierFactory;
+import de.upb.soot.types.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.TypeFactory;
 import java.util.Collection;
 import java.util.Optional;
 import org.junit.Assert;
@@ -43,25 +42,17 @@ import org.mockito.internal.matchers.LessOrEqual;
 public abstract class AbstractNamespaceTest {
 
   protected static final int CLASSES_IN_JAR = 25;
-  private SignatureFactory signatureFactory;
-  private TypeFactory typeFactory;
+  private IdentifierFactory identifierFactory;
   private IClassProvider classProvider;
 
   @Before
   public void setUp() {
-    DefaultFactories defaultFactories = DefaultFactories.create();
-
-    signatureFactory = defaultFactories.getSignatureFactory();
-    typeFactory = defaultFactories.getTypeFactory();
+    identifierFactory = DefaultIdentifierFactory.getInstance();
     classProvider = createClassProvider();
   }
 
-  protected SignatureFactory getSignatureFactory() {
-    return signatureFactory;
-  }
-
-  protected TypeFactory getTypeFactory() {
-    return typeFactory;
+  protected IdentifierFactory getIdentifierFactory() {
+    return identifierFactory;
   }
 
   protected IClassProvider getClassProvider() {
@@ -83,8 +74,7 @@ public abstract class AbstractNamespaceTest {
     Assert.assertTrue(clazz.isPresent());
     Assert.assertEquals(sig, clazz.get().getClassType());
 
-    final Collection<ClassSource> classSources =
-        ns.getClassSources(getSignatureFactory(), getTypeFactory());
+    final Collection<ClassSource> classSources = ns.getClassSources(getIdentifierFactory());
     Assert.assertNotNull(classSources);
     Assert.assertFalse(classSources.isEmpty());
     Assert.assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));
