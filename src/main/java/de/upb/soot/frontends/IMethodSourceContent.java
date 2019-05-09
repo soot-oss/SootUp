@@ -30,6 +30,10 @@ import javax.annotation.Nullable;
 
 /** A class which knows how to produce Body's for SootMethods. */
 public interface IMethodSourceContent {
+
+  // TODO Maybe we should also remove the SootMethod parameter here.
+  //  See comment in IClassSourceContent for details.
+
   /** Returns a filled-out body for the given SootMethod. */
   @Nullable
   Body resolveBody(@Nonnull SootMethod m) throws ResolveException;

@@ -58,11 +58,10 @@ public class SootMethodTest {
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     SootMethod dummyMainMethod =
         new SootMethod(
-            new WalaIRMethodSourceContent(methodSignature),
+            new WalaIRMethodSourceContent(methodSignature, body),
             methodSignature,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
             Collections.emptyList(),
-            body,
             null);
 
     SootClass mainClass =

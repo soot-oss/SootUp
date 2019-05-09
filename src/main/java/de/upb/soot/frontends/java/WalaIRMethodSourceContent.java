@@ -1,5 +1,6 @@
 package de.upb.soot.frontends.java;
 
+import com.google.common.base.Preconditions;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.IMethodSourceContent;
@@ -9,16 +10,20 @@ import javax.annotation.Nonnull;
 /** @author Linghui Luo */
 public class WalaIRMethodSourceContent implements IMethodSourceContent {
 
-  private MethodSignature methodSignature;
+  private final MethodSignature methodSignature;
+  private final Body body;
 
-  public WalaIRMethodSourceContent(MethodSignature methodSignature) {
+  public WalaIRMethodSourceContent(MethodSignature methodSignature, Body body) {
     this.methodSignature = methodSignature;
+    this.body = body;
   }
 
   @Override
   public Body resolveBody(@Nonnull SootMethod m) {
-    // TODO Auto-generated method stub
-    return null;
+    Preconditions.checkArgument(
+        m.getSubSignature().equals(methodSignature.getSubSignature()),
+        "This instance can only resolve the body for " + methodSignature);
+    return body;
   }
 
   @Nonnull

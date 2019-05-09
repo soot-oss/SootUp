@@ -20,11 +20,11 @@ import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.soot.Project;
 import de.upb.soot.core.Body;
-import de.upb.soot.core.SourceType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.core.SourceType;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
@@ -256,12 +256,12 @@ public class WalaIRToJimpleConverter {
             .getMethodSignature(
                 walaMethod.getName().toString(), classSig, returnType.toString(), sigs);
 
+    Body body = createBody(methodSig, modifiers, walaMethod);
     return new SootMethod(
-        new WalaIRMethodSourceContent(methodSig),
+        new WalaIRMethodSourceContent(methodSig, body),
         methodSig,
         modifiers,
         thrownExceptions,
-        createBody(methodSig, modifiers, walaMethod),
         debugInfo);
   }
 

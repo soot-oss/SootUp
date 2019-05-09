@@ -22,7 +22,6 @@ package de.upb.soot.core;
  */
 
 import static de.upb.soot.util.Utils.immutableListOf;
-import static de.upb.soot.util.concurrent.Lazy.initializedLazy;
 import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
 
 import com.google.common.collect.ImmutableList;
@@ -69,9 +68,6 @@ public class SootMethod extends SootClassMember implements IMethod {
   /** Tells this methodRef how to find out where its body lives. */
   @Nonnull private final IMethodSourceContent methodSource;
 
-  /** Active body associated with this method. */
-  @Nullable private Body activeBody;
-
   // TODO Simplify constructor
   /** Constructs a SootMethod object with the given attributes. */
   public SootMethod(
@@ -84,17 +80,6 @@ public class SootMethod extends SootClassMember implements IMethod {
               debugInfo // FIXME: remove Wala DebuggingInformation from this Class, IMHO it does not
       // belong to a sootmethod
       ) {
-    this(source, methodSignature, modifiers, thrownExceptions, null, debugInfo);
-  }
-
-  /** Constructs a SootMethod object with the given attributes. */
-  public SootMethod(
-      @Nonnull IMethodSourceContent source,
-      @Nonnull MethodSignature methodSignature,
-      @Nonnull Iterable<Modifier> modifiers,
-      @Nonnull Iterable<JavaClassType> thrownExceptions,
-      @Nullable Body activeBody,
-      @Nullable DebuggingInformation debugInfo) {
     super(methodSignature, modifiers);
 
     this.methodSource = source;
@@ -102,14 +87,7 @@ public class SootMethod extends SootClassMember implements IMethod {
     this.exceptions = immutableListOf(thrownExceptions);
     this.debugInfo = debugInfo;
 
-    // TODO Also use Lazy class here
-    if (activeBody != null) {
-      //noinspection ThisEscapedInObjectConstruction
-      activeBody.setMethod(this);
-      this._lazyBody = initializedLazy(activeBody);
-    } else {
-      this._lazyBody = synchronizedLazy(this::lazyBodyInitializer);
-    }
+    this._lazyBody = synchronizedLazy(this::lazyBodyInitializer);
   }
 
   @Nullable
@@ -312,7 +290,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
     interface ModifiersStep extends SootClassMember.Builder.ModifiersStep<ThrownExceptionsStep> {}
 
-    interface ThrownExceptionsStep extends ActiveBodyStep {
+    interface ThrownExceptionsStep extends DebugStep {
       /**
        * Sets the exceptions thrown by the method to build. This step is optional.
        *
@@ -320,18 +298,7 @@ public class SootMethod extends SootClassMember implements IMethod {
        * @return This fluent builder.
        */
       @Nonnull
-      ActiveBodyStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value);
-    }
-
-    interface ActiveBodyStep extends DebugStep {
-      /**
-       * Sets the {@link Body active body}. This step is optional.
-       *
-       * @param value The value to set.
-       * @return This fluent builder.
-       */
-      @Nonnull
-      DebugStep withActiveBody(@Nullable Body value);
+      DebugStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value);
     }
 
     interface DebugStep extends Builder {
@@ -472,32 +439,8 @@ public class SootMethod extends SootClassMember implements IMethod {
      * @param value The value to set.
      */
     @Nonnull
-    public ActiveBodyStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value) {
+    public DebugStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value) {
       this._thrownExceptions = value;
-
-      return this;
-    }
-
-    @Nullable private Body _activeBody;
-
-    /**
-     * Gets the active body.
-     *
-     * @return The value to get.
-     */
-    @Nullable
-    protected Body getActiveBody() {
-      return this._activeBody;
-    }
-
-    /**
-     * Sets the active body.
-     *
-     * @param value The value to set.
-     */
-    @Nonnull
-    public DebugStep withActiveBody(@Nullable Body value) {
-      this._activeBody = value;
 
       return this;
     }
@@ -534,7 +477,6 @@ public class SootMethod extends SootClassMember implements IMethod {
           this.getSignature(),
           this.getModifiers(),
           this.getThrownExceptions(),
-          this.getActiveBody(),
           this.getDebugInfo());
     }
 
