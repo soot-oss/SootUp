@@ -46,7 +46,7 @@ public class LocalGenerator {
   private Map<Integer, Local> paraLocals = new HashMap<>();
 
   /**
-   * Creates Locals {@Link de.upb.soot.jimple.basic.Local} with a standard naming scheme without
+   * Creates Locals {@Link Local} with a standard naming scheme without
    * checking whether the name is already taken.
    */
   public LocalGenerator() {}
@@ -86,7 +86,6 @@ public class LocalGenerator {
   }
 
   private Local generate(Type type, boolean isField) {
-
     // cache Local names if body is given to speedup checks whether the local name is already taken
     if (body != null) {
       for (Local l : body.getLocals()) {
