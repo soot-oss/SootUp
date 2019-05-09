@@ -46,8 +46,8 @@ public class LocalGenerator {
   private Map<Integer, Local> paraLocals = new HashMap<>();
 
   /**
-   * Creates Locals {@Link Local} with a standard naming scheme without
-   * checking whether the name is already taken.
+   * Creates Locals {@link Local} with a standard naming scheme without checking whether the name is
+   * already taken.
    */
   public LocalGenerator() {}
 
