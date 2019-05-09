@@ -22,7 +22,6 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
-
 import static org.junit.Assert.assertEquals;
 
 import categories.Java8Test;

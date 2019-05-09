@@ -22,7 +22,6 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
-
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,13 +63,13 @@ public enum FileType {
     FileInputStream fis = new FileInputStream(file);
     DataInputStream dis = new DataInputStream(fis);
     int[] magicNumber = new int[4];
-    for (int i = 0; dis.available() > 0 && i < 4; i++) {
-      magicNumber[i] = dis.readUnsignedByte();
-    }
+    magicNumber[0] = dis.readUnsignedByte();
+    magicNumber[1] = dis.readUnsignedByte();
+    magicNumber[2] = dis.readUnsignedByte();
+    magicNumber[3] = dis.readUnsignedByte();
     dis.close();
     fis.close();
 
-    // TODO: [ms] shall we support deprecated pack2000 format? (-> CAFED00D)
     if (Arrays.equals(magicNumber, new int[] {0xCA, 0xFE, 0xBA, 0xBE})) {
       foundType = FileType.CLASS;
     } else if (Arrays.equals(magicNumber, new int[] {0x50, 0x4B, 0x03, 0x04})) {
