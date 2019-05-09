@@ -109,7 +109,7 @@ public class Printer {
         classPrefix = classPrefix.trim();
       }
 
-      out.print(classPrefix + " " + cl.getType().toQuotedString() + "");
+      out.print(classPrefix + " " + cl.getType() + "");
     }
 
     // Print extension
@@ -117,7 +117,7 @@ public class Printer {
       Optional<JavaClassType> superclassSignature = cl.getSuperclassSignature();
 
       superclassSignature.ifPresent(
-          javaClassSignature -> out.print(" extends " + javaClassSignature.toQuotedString()));
+          javaClassSignature -> out.print(" extends " + javaClassSignature));
     }
 
     // Print interfaces
@@ -127,11 +127,11 @@ public class Printer {
       if (interfaceIt.hasNext()) {
         out.print(" implements ");
 
-        out.print(interfaceIt.next().toQuotedString());
+        out.print(interfaceIt.next());
 
         while (interfaceIt.hasNext()) {
           out.print(",");
-          out.print(" " + interfaceIt.next().toQuotedString());
+          out.print(" " + interfaceIt.next());
         }
       }
     }
@@ -313,7 +313,7 @@ public class Printer {
 
         out.println(
             "        catch "
-                + trap.getException().toQuotedString()
+                + trap.getException()
                 + " from "
                 + up.labels().get(trap.getBeginStmt())
                 + " to "

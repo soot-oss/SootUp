@@ -32,7 +32,6 @@ import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.views.IView;
-import de.upb.soot.views.JavaView;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -99,6 +98,7 @@ public class JavaClassType extends ReferenceType {
    */
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
+    // TODO: [ms] enforce at signature generation?
     if (!Strings.isNullOrEmpty(packageSignature.getPackageName())) {
       sb.append(packageSignature.toString());
       sb.append('.');
@@ -155,28 +155,6 @@ public class JavaClassType extends ReferenceType {
     @Nonnull
     private static final Pattern SPLIT_PATTERN =
         Pattern.compile(Character.toString(SPLIT_CHAR), Pattern.LITERAL);
-  }
-
-  @Override
-  public @Nonnull String toQuotedString() {
-    String s = this.getFullyQualifiedName();
-    StringBuilder res = new StringBuilder(s.length() + 16);
-
-    for (String part : SplitPatternHolder.SPLIT_PATTERN.split(s)) {
-      if (res.length() > 0) {
-        res.append(SplitPatternHolder.SPLIT_CHAR);
-      }
-
-      if (part.startsWith("-") || JavaView.RESERVED_NAMES.contains(part)) {
-        res.append('\'');
-        res.append(part);
-        res.append('\'');
-      } else {
-        res.append(part);
-      }
-    }
-
-    return res.toString();
   }
 
   /**

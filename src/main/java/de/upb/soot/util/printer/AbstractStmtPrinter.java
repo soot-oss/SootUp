@@ -23,7 +23,6 @@ package de.upb.soot.util.printer;
 
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -119,14 +118,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   @Override
   public void local(Local l) {
     handleIndent();
-    if (quotableLocals == null) {
-      initializeQuotableLocals();
-    }
-    if (quotableLocals.contains(l.getName())) {
-      output.append("'").append(l.getName()).append("'");
-    } else {
-      output.append(l.getName());
-    }
+    output.append(l.getName());
   }
 
   @Override
@@ -152,10 +144,5 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
       output.append(indent);
     }
     startOfLine = false;
-  }
-
-  protected void initializeQuotableLocals() {
-    quotableLocals = new HashSet<>();
-    quotableLocals.addAll(Jimple.jimpleKeywordList());
   }
 }
