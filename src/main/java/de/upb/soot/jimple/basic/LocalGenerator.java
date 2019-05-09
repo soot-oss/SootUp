@@ -39,22 +39,22 @@ import java.util.*;
  */
 public class LocalGenerator {
   private Body body;
+  private HashSet<String> filteredLocalNames = new HashSet<>();
 
   private List<Local> locals = new ArrayList<>();
   private Local thisLocal;
   private Map<Integer, Local> paraLocals = new HashMap<>();
-  private HashSet<String> filteredLocalNames = new HashSet<>();
 
-  /*
-   * Creates Locals @Local with a standard naming scheme without checking whether the name is already taken.
-   * */
+  /**
+   * Creates Locals {@Link de.upb.soot.jimple.basic.Local} with a standard naming scheme without
+   * checking whether the name is already taken.
+   */
   public LocalGenerator() {}
 
-  /*
-   * Creates Locals @Local with a standard naming scheme.
-   * Checks if the Local is already existing in the Body.
-   * (If you mix using LocalGenerator and own creation of Local)
-   * */
+  /**
+   * Creates {@link Local}s with a standard naming scheme. Checks if the Local is already existing
+   * in the Body. (If you mix using LocalGenerator and own creation of Local)
+   */
   public LocalGenerator(Body body) {
     this.body = body;
   }
@@ -67,12 +67,12 @@ public class LocalGenerator {
     return this.thisLocal;
   }
 
-  /** generates a new @Local given the type for field. */
+  /** generates a new {@link Local} given the type for field. */
   public Local generateField(Type type) {
     return generate(type, true);
   }
 
-  /** generates a new @Local given the type for local. */
+  /** generates a new {@link Local} given the type for local. */
   public Local generateLocal(Type type) {
     return generate(type, false);
   }
@@ -102,7 +102,7 @@ public class LocalGenerator {
     String localName;
     // determine locals name
     do {
-      // non-fields traditionally begin with "$"
+      /** non-field {@link Local}s traditionally begin with "$" */
       name.setLength(isField ? 0 : 1);
 
       if (type.equals(PrimitiveType.getInt())) {
