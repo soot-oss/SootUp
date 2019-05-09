@@ -85,8 +85,6 @@ public class SootMethod extends SootClassMember implements IMethod {
     this.parameterTypes = immutableListOf(methodSignature.getParameterSignatures());
     this.exceptions = immutableListOf(thrownExceptions);
     this.debugInfo = debugInfo;
-
-    this._lazyBody = synchronizedLazy(this::lazyBodyInitializer);
   }
 
   @Nullable
@@ -142,7 +140,7 @@ public class SootMethod extends SootClassMember implements IMethod {
     return parameterTypes;
   }
 
-  private final @Nonnull Lazy<Body> _lazyBody;
+  private final @Nonnull Lazy<Body> _lazyBody = synchronizedLazy(this::lazyBodyInitializer);
 
   /** Retrieves the active body for this methodRef. */
   @Nullable
