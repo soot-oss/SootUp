@@ -93,14 +93,16 @@ public class WalaIRToJimpleConverter {
     JavaClassType superClass = null;
     if (sc != null) {
       superClass =
-          view.getIdentifierFactory().getClassType(convertClassNameFromWala(sc.getName().toString()));
+          view.getIdentifierFactory()
+              .getClassType(convertClassNameFromWala(sc.getName().toString()));
     }
 
     // get interfaces
     Set<JavaClassType> interfaces = new HashSet<>();
     for (IClass i : walaClass.getDirectInterfaces()) {
       JavaClassType inter =
-          view.getIdentifierFactory().getClassType(convertClassNameFromWala(i.getName().toString()));
+          view.getIdentifierFactory()
+              .getClassType(convertClassNameFromWala(i.getName().toString()));
       interfaces.add(inter);
     }
 
@@ -112,7 +114,8 @@ public class WalaIRToJimpleConverter {
       IClass ec = javaClass.getEnclosingClass();
       if (ec != null) {
         outerClass =
-            view.getIdentifierFactory().getClassType(convertClassNameFromWala(ec.getName().toString()));
+            view.getIdentifierFactory()
+                .getClassType(convertClassNameFromWala(ec.getName().toString()));
       }
     }
 

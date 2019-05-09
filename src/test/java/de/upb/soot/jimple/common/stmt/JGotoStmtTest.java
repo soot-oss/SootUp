@@ -39,7 +39,7 @@ public class JGotoStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-        DefaultIdentifierFactory typeFactory = DefaultIdentifierFactory.getInstance();
+    DefaultIdentifierFactory typeFactory = DefaultIdentifierFactory.getInstance();
 
     Local local1 = new Local("$r0", typeFactory.getType("java.lang.Exception"));
     Local local2 = new Local("$r0", typeFactory.getType("somepackage.dummy.Exception"));

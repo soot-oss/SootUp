@@ -175,7 +175,9 @@ public final class AsmUtil {
     if (!(baseType instanceof JavaClassType) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
-    return nrDims > 0 ? DefaultIdentifierFactory.getInstance().getArrayType(baseType, nrDims) : baseType;
+    return nrDims > 0
+        ? DefaultIdentifierFactory.getInstance().getArrayType(baseType, nrDims)
+        : baseType;
   }
 
   @Nonnull

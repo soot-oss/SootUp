@@ -37,7 +37,7 @@ public class JThrowStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-        DefaultIdentifierFactory typeFactory = DefaultIdentifierFactory.getInstance();
+    DefaultIdentifierFactory typeFactory = DefaultIdentifierFactory.getInstance();
 
     Local local = new Local("$r0", typeFactory.getType("java.lang.Exception"));
     Local localEqual = new Local("$r0", typeFactory.getType("java.lang.Exception"));

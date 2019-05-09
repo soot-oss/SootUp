@@ -30,12 +30,7 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    IView view =
-        new JavaView(
-            new Project(
-                null,
-                DefaultIdentifierFactory.getInstance()
-            ));
+    IView view = new JavaView(new Project(null, DefaultIdentifierFactory.getInstance()));
     JavaClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     List<IStmt> stmts = new ArrayList<>();

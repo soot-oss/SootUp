@@ -36,8 +36,7 @@ public class ModulePackageName extends PackageName {
    * @param packageName the package's name
    * @param moduleSignature the module declaring the package
    */
-  public ModulePackageName(
-      final String packageName, final ModuleSignature moduleSignature) {
+  public ModulePackageName(final String packageName, final ModuleSignature moduleSignature) {
     super(packageName);
     this.moduleSignature = moduleSignature;
   }

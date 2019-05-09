@@ -116,7 +116,9 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
   }
 
   private static Set<SootField> resolveFields(
-      List<FieldNode> fieldNodes, IdentifierFactory identifierFactory, JavaClassType classSignature) {
+      List<FieldNode> fieldNodes,
+      IdentifierFactory identifierFactory,
+      JavaClassType classSignature) {
     // FIXME: add support for annotation
     return fieldNodes.stream()
         .map(

@@ -1292,7 +1292,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       // returnType,
       // !instance);
       MethodSignature methodSignature =
-          DefaultIdentifierFactory.getInstance().getMethodSignature(insn.name, cls, returnType, sigTypes);
+          DefaultIdentifierFactory.getInstance()
+              .getMethodSignature(insn.name, cls, returnType, sigTypes);
       // MethodRef ref = Jimple.newMethodRef(view, methodSignature, !instance);
       int nrArgs = sigTypes.size();
       final Operand[] args;
@@ -1427,7 +1428,8 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
       // we always model invokeDynamic method refs as static method references
       // of methods on the type SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME
       MethodSignature methodRef =
-          DefaultIdentifierFactory.getInstance().getMethodSignature(insn.name, bclass, returnType, parameterTypes);
+          DefaultIdentifierFactory.getInstance()
+              .getMethodSignature(insn.name, bclass, returnType, parameterTypes);
 
       JDynamicInvokeExpr indy =
           Jimple.newDynamicInvokeExpr(

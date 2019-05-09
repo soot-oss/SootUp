@@ -23,9 +23,7 @@ public class Project {
   }
 
   /** Create a project from an arbitrary list of namespaces */
-  public Project(
-      @Nonnull INamespace namespaces,
-      @Nonnull IdentifierFactory identifierFactory) {
+  public Project(@Nonnull INamespace namespaces, @Nonnull IdentifierFactory identifierFactory) {
     this.namespace = namespaces;
     this.identifierFactory = identifierFactory;
   }
