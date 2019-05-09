@@ -57,7 +57,7 @@ public class IfInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<String> actualStmts =
@@ -98,7 +98,7 @@ public class IfInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<String> actualStmts =
@@ -129,7 +129,7 @@ public class IfInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<String> actualStmts =
@@ -165,7 +165,7 @@ public class IfInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<String> actualStmts =
@@ -197,7 +197,7 @@ public class IfInstructionConversionTest {
                 Arrays.asList("double", "double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<String> actualStmts =

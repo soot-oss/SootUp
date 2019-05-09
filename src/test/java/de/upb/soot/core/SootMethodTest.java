@@ -86,6 +86,6 @@ public class SootMethodTest {
         mainClass
             .getMethod(methodSignature)
             .orElseThrow(() -> new RuntimeException("Failed getting method " + methodSignature))
-            .hasActiveBody());
+            .hasBody());
   }
 }

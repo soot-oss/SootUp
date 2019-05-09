@@ -184,13 +184,11 @@ public class Printer {
 
         if (!Modifier.isAbstract(method.getModifiers())
             && !Modifier.isNative(method.getModifiers())) {
-          if (!method.hasActiveBody()) {
+          if (!method.hasBody()) {
             // methodRef.retrieveActiveBody(); // force loading the body
-            if (!method.hasActiveBody()) {
-              throw new RuntimeException("methodRef " + method.getName() + " has no active body!");
-            }
+            throw new RuntimeException("methodRef " + method.getName() + " has no body!");
           }
-          printTo(method.getActiveBody(), out);
+          printTo(method.getBody(), out);
 
           if (methodIt.hasNext()) {
             out.println();

@@ -86,7 +86,7 @@ public class ModuleCompositionTest {
 
     // Print method content
     // System.out.println("Method body:    ---Yay, InvokeDynamic is loading, now!---");
-    // System.out.println(foundMethod.getActiveBody());
+    // System.out.println(foundMethod.getBody());
 
     // System.out.println();
     // System.out.println("--- EXAMPLE 2: Using Builders ---");
