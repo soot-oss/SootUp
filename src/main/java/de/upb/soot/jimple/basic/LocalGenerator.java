@@ -43,6 +43,7 @@ public class LocalGenerator {
   private List<Local> locals = new ArrayList<>();
   private Local thisLocal;
   private Map<Integer, Local> paraLocals = new HashMap<>();
+  private HashSet<String> filteredLocalNames = new HashSet<>();
 
   /*
    * Creates Locals @Local with a standard naming scheme without checking whether the name is already taken.
@@ -86,22 +87,22 @@ public class LocalGenerator {
 
   private Local generate(Type type, boolean isField) {
 
-    StringBuilder name = new StringBuilder(7);
-    name.append("$");
-
     // cache Local names if body is given to speedup checks whether the local name is already taken
-    HashSet<String> typeFilteredLocalNames = new HashSet<>();
     if (body != null) {
       for (Local l : body.getLocals()) {
-        if( l.getType().equals(type)) {
-          typeFilteredLocalNames.add(l.getName());
+        // update only names of type relevant Locals
+        if (type.equals(l.getType())) {
+          filteredLocalNames.add(l.getName());
         }
       }
     }
 
+    StringBuilder name = new StringBuilder(7);
+    name.append("$");
     String localName;
     // determine locals name
     do {
+      // non-fields traditionally begin with "$"
       name.setLength(isField ? 0 : 1);
 
       if (type.equals(PrimitiveType.getInt())) {
@@ -127,12 +128,11 @@ public class LocalGenerator {
       } else if (type.equals(UnknownType.getInstance())) {
         appendNextUnknownTypeName(name);
       } else {
-        throw new RuntimeException(
-            "Unhandled Type of Local variable to Generate - Not Implemented");
+        throw new RuntimeException("Unhandled Type of Local variable to Generate");
       }
 
       localName = name.toString();
-    } while ((body != null) && typeFilteredLocalNames.contains(localName));
+    } while ((body != null) && filteredLocalNames.contains(localName));
 
     return createLocal(localName, type);
   }
