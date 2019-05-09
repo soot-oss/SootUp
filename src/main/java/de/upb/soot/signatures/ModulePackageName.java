@@ -31,7 +31,7 @@ public class ModulePackageName extends PackageName {
 
   /**
    * Internal: Constructs a Package Signature for Java 9 Packages. Instances should only be created
-   * by a {@link Remove}
+   * by a {@link de.upb.soot.IdentifierFactory}
    *
    * @param packageName the package's name
    * @param moduleSignature the module declaring the package
