@@ -73,7 +73,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -166,7 +166,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -239,7 +239,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -302,7 +302,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -393,7 +393,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -484,7 +484,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -545,7 +545,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -637,7 +637,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -705,7 +705,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -766,7 +766,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -827,7 +827,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -888,7 +888,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -979,7 +979,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1050,7 +1050,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1132,7 +1132,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1182,7 +1182,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1244,7 +1244,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1335,7 +1335,7 @@ public class BinaryOpInstructionConversionTest {
                 "logicalOr", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1428,7 +1428,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1480,7 +1480,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1545,7 +1545,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1610,7 +1610,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1675,7 +1675,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1740,7 +1740,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();
@@ -1825,7 +1825,7 @@ public class BinaryOpInstructionConversionTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<IStmt> stmts = body.getStmts();

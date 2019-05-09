@@ -66,10 +66,10 @@ public class PrimitiveType extends Type {
    * @param name the primitive's name
    */
   private PrimitiveType(@Nonnull String name) {
-    this._name = name;
+    this.name = name;
   }
 
-  @Nonnull private final String _name;
+  @Nonnull private final String name;
 
   /**
    * Gets the primitive type's name.
@@ -78,19 +78,13 @@ public class PrimitiveType extends Type {
    */
   @Nonnull
   public String getName() {
-    return this._name;
+    return name;
   }
 
   @Override
   @Nonnull
   public String toString() {
-    return _name;
-  }
-
-  @Override
-  @Nonnull
-  public String toQuotedString() {
-    return "'" + this._name + "'";
+    return name;
   }
 
   @Nonnull

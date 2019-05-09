@@ -13,7 +13,7 @@ public class ArrayType extends ReferenceType {
     this.dimension = dimension;
   }
 
-  // Todo please implemnt it
+  // TODO [LL] please implement it
 
   @Override
   public String toString() {

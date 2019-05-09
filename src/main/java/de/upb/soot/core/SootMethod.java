@@ -45,7 +45,7 @@ import javax.annotation.Nullable;
 /**
  * Soot's counterpart of the source language's method concept. Soot representation of a Java method.
  * Can be declared to belong to a SootClass. Does not contain the actual code, which belongs to a
- * Body. The getActiveBody() method points to the currently-active body.
+ * Body. The getBody() method points to the currently-active body.
  *
  * @author Linghui Luo
  * @author Jan Martin Persch
@@ -70,7 +70,7 @@ public class SootMethod extends SootClassMember implements IMethod {
   @Nonnull private final IMethodSourceContent methodSource;
 
   /** Active body associated with this method. */
-  @Nullable private Body activeBody;
+  @Nullable private Body body;
 
   /** Constructs a SootMethod object with the given attributes. */
   public SootMethod(
@@ -92,7 +92,7 @@ public class SootMethod extends SootClassMember implements IMethod {
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
       @Nonnull Iterable<JavaClassType> thrownExceptions,
-      @Nullable Body activeBody,
+      @Nullable Body body,
       @Nullable DebuggingInformation debugInfo) {
     super(methodSignature, modifiers);
 
@@ -101,10 +101,10 @@ public class SootMethod extends SootClassMember implements IMethod {
     this.exceptions = immutableListOf(thrownExceptions);
     this.debugInfo = debugInfo;
 
-    if (activeBody != null) {
+    if (body != null) {
       //noinspection ThisEscapedInObjectConstruction
-      activeBody.setMethod(this);
-      this._lazyBody = initializedLazy(activeBody);
+      body.setMethod(this);
+      this._lazyBody = initializedLazy(body);
     } else {
       this._lazyBody = synchronizedLazy(this::lazyBodyInitializer);
     }
@@ -167,13 +167,13 @@ public class SootMethod extends SootClassMember implements IMethod {
 
   /** Retrieves the active body for this methodRef. */
   @Nullable
-  public Body getActiveBody() {
+  public Body getBody() {
     return this._lazyBody.get(); // TODO: [JMP] Refactor to return `.getAsOptional()`
   }
 
   /** Returns true if this method has an active body. */
-  public boolean hasActiveBody() {
-    return this.getActiveBody() != null;
+  public boolean hasBody() {
+    return this.getBody() != null;
   }
 
   @Nonnull
@@ -250,10 +250,10 @@ public class SootMethod extends SootClassMember implements IMethod {
     Iterator<JavaClassType> exceptionIt = this.getExceptionSignatures().iterator();
 
     if (exceptionIt.hasNext()) {
-      builder.append(" throws ").append(exceptionIt.next().toQuotedString());
+      builder.append(" throws ").append(exceptionIt.next());
 
       while (exceptionIt.hasNext()) {
-        builder.append(", ").append(exceptionIt.next().toQuotedString());
+        builder.append(", ").append(exceptionIt.next());
       }
     }
 
@@ -310,7 +310,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
     interface ModifiersStep extends SootClassMember.Builder.ModifiersStep<ThrownExceptionsStep> {}
 
-    interface ThrownExceptionsStep extends ActiveBodyStep {
+    interface ThrownExceptionsStep extends BodyStep {
       /**
        * Sets the exceptions thrown by the method to build. This step is optional.
        *
@@ -318,10 +318,10 @@ public class SootMethod extends SootClassMember implements IMethod {
        * @return This fluent builder.
        */
       @Nonnull
-      ActiveBodyStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value);
+      BodyStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value);
     }
 
-    interface ActiveBodyStep extends DebugStep {
+    interface BodyStep extends DebugStep {
       /**
        * Sets the {@link Body active body}. This step is optional.
        *
@@ -329,7 +329,7 @@ public class SootMethod extends SootClassMember implements IMethod {
        * @return This fluent builder.
        */
       @Nonnull
-      DebugStep withActiveBody(@Nullable Body value);
+      DebugStep withBody(@Nullable Body value);
     }
 
     interface DebugStep extends Builder {
@@ -470,13 +470,13 @@ public class SootMethod extends SootClassMember implements IMethod {
      * @param value The value to set.
      */
     @Nonnull
-    public ActiveBodyStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value) {
+    public BodyStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value) {
       this._thrownExceptions = value;
 
       return this;
     }
 
-    @Nullable private Body _activeBody;
+    @Nullable private Body body;
 
     /**
      * Gets the active body.
@@ -484,8 +484,8 @@ public class SootMethod extends SootClassMember implements IMethod {
      * @return The value to get.
      */
     @Nullable
-    protected Body getActiveBody() {
-      return this._activeBody;
+    protected Body getBody() {
+      return this.body;
     }
 
     /**
@@ -494,8 +494,8 @@ public class SootMethod extends SootClassMember implements IMethod {
      * @param value The value to set.
      */
     @Nonnull
-    public DebugStep withActiveBody(@Nullable Body value) {
-      this._activeBody = value;
+    public DebugStep withBody(@Nullable Body value) {
+      this.body = value;
 
       return this;
     }
@@ -532,7 +532,7 @@ public class SootMethod extends SootClassMember implements IMethod {
           this.getSignature(),
           this.getModifiers(),
           this.getThrownExceptions(),
-          this.getActiveBody(),
+          this.getBody(),
           this.getDebugInfo());
     }
 
