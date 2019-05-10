@@ -40,7 +40,6 @@ import javax.annotation.Nullable;
  * @author Markus Schmidt
  */
 public class LocalGenerator {
-  private final Body body;
   @Nullable private final HashSet<String> existingLocalNames;
 
   private final List<Local> locals = new ArrayList<>();
@@ -52,7 +51,6 @@ public class LocalGenerator {
    * already taken.
    */
   public LocalGenerator() {
-    this.body = null;
     this.existingLocalNames = null;
   }
 
@@ -61,10 +59,10 @@ public class LocalGenerator {
    * in the Body. (If you mix using LocalGenerator and own creation of Local)
    */
   public LocalGenerator(@Nonnull Body body) {
-    this.body = body;
     Collection<Local> existingLocals = body.getLocals();
-    this.existingLocalNames = new HashSet<>(existingLocals.size());
-    // cache Local names if body is given to speedup checks whether the local name is already taken
+    existingLocalNames = new HashSet<>(existingLocals.size());
+    // cache Local names if body is given to speedup checks whether the local name is already
+    // taken
     for (Local l : existingLocals) {
       existingLocalNames.add(l.getName());
     }
@@ -133,7 +131,7 @@ public class LocalGenerator {
       }
 
       localName = name.toString();
-    } while ((body != null) && existingLocalNames.contains(localName));
+    } while ((existingLocalNames != null) && existingLocalNames.contains(localName));
 
     return createLocal(localName, type);
   }
