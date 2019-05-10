@@ -5,7 +5,6 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
-
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;

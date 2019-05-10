@@ -4,10 +4,9 @@ import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.types.Type;
 import de.upb.soot.views.IView;
-
-import javax.annotation.Nonnull;
 import java.util.Optional;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 /**
  * Abstract class represents a class/module lives in {@link IView}. It may have different

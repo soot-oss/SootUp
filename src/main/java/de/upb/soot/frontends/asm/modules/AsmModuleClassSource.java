@@ -7,14 +7,13 @@ import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.frontends.asm.AsmUtil;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
-import org.objectweb.asm.tree.*;
-
-import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
+import javax.annotation.Nonnull;
+import org.objectweb.asm.tree.*;
 
 public class AsmModuleClassSource extends ModuleClassSource {
 

@@ -9,7 +9,6 @@ import categories.Java8Test;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.types.DefaultTypeFactory;

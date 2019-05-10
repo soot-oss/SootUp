@@ -2,7 +2,6 @@ package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.ModulePackageSignature;
 import de.upb.soot.signatures.ModuleSignatureFactory;
@@ -39,7 +38,8 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
+  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+      @Nonnull JavaClassType signature) {
     if (signature.getPackageSignature() instanceof ModulePackageSignature) {
       return this.getClassSourceInternalForModule(signature);
     }

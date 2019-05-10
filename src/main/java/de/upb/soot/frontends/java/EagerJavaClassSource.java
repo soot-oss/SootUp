@@ -9,10 +9,9 @@ import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
-
-import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.*;
+import javax.annotation.Nonnull;
 
 /**
  * A class source for resolving from .java files using wala java source front-end.

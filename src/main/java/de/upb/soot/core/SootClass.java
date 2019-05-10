@@ -21,6 +21,10 @@ package de.upb.soot.core;
  * #L%
  */
 
+import static de.upb.soot.util.Utils.ImmutableCollectors.toImmutableSet;
+import static de.upb.soot.util.Utils.iterableToStream;
+import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
+
 import com.google.common.collect.Iterables;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.frontends.ClassSource;
@@ -32,16 +36,11 @@ import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
 import de.upb.soot.util.concurrent.Lazy;
-
-import javax.annotation.Nonnull;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
-
-import static de.upb.soot.util.Utils.ImmutableCollectors.toImmutableSet;
-import static de.upb.soot.util.Utils.iterableToStream;
-import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
+import javax.annotation.Nonnull;
 
 /*
  * Incomplete and inefficient implementation.
@@ -431,8 +430,7 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
   // }
 
   // FIXME: get rid of the wala class position
-  private final Lazy<Position> lazyPosition =
-      synchronizedLazy(() -> classSource.resolvePosition());
+  private final Lazy<Position> lazyPosition = synchronizedLazy(() -> classSource.resolvePosition());
 
   @Nonnull
   public Position getPosition() {

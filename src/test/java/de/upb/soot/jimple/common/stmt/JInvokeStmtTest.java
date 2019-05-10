@@ -24,11 +24,11 @@ package de.upb.soot.jimple.common.stmt;
 
 import categories.Java8Test;
 import de.upb.soot.DefaultFactories;
-import de.upb.soot.core.SourceType;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.core.SourceType;
 import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.NoPositionInformation;

@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import categories.Java9Test;
 import de.upb.soot.ModuleFactories;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.ModuleTypeFactory;
@@ -49,7 +48,8 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
         new JavaModulePathNamespace(
             "target/test-classes/de/upb/soot/namespaces/modules", getClassProvider());
     final JavaClassType sig = getTypeFactory().getClassType("module-info", "", "fancyMod");
-    Optional<? extends AbstractClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
+    Optional<? extends AbstractClassSource> classSource =
+        javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
   }
 
@@ -71,7 +71,8 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
             "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",
             getClassProvider());
     final JavaClassType sig = getTypeFactory().getClassType("module-info", "", "de.upb.mod");
-    Optional<? extends AbstractClassSource> classSource = javaClassPathNamespace.getClassSource(sig);
+    Optional<? extends AbstractClassSource> classSource =
+        javaClassPathNamespace.getClassSource(sig);
     assertTrue(classSource.isPresent());
   }
 

@@ -1,7 +1,6 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.frontends.java.WalaJavaClassProvider;

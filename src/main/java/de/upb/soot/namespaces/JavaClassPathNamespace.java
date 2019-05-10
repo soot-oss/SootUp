@@ -25,7 +25,6 @@ package de.upb.soot.namespaces;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
@@ -146,7 +145,8 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
+  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+      @Nonnull JavaClassType signature) {
     for (AbstractNamespace ns : cpEntries) {
       final Optional<? extends AbstractClassSource> classSource = ns.getClassSource(signature);
       if (classSource.isPresent()) {

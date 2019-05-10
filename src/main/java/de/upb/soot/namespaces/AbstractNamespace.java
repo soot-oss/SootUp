@@ -1,7 +1,6 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.types.JavaClassType;

@@ -2,11 +2,6 @@ package de.upb.soot.frontends.asm;
 
 import de.upb.soot.core.Modifier;
 import de.upb.soot.types.*;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.Opcodes;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -14,6 +9,10 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
 
 public final class AsmUtil {
 

@@ -18,15 +18,15 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public class Project {
+public class Project<N extends INamespace> {
   /** Create a project from an arbitrary list of namespaces */
-  public Project(@Nonnull INamespace namespace) {
+  public Project(@Nonnull N namespace) {
     this(namespace, DefaultSignatureFactory.getInstance(), DefaultTypeFactory.getInstance());
   }
 
   /** Create a project from an arbitrary list of namespaces */
   public Project(
-      @Nonnull INamespace namespaces,
+      @Nonnull N namespaces,
       @Nonnull SignatureFactory signatureFactory,
       @Nonnull TypeFactory typeFactory) {
     this.namespace = namespaces;
@@ -34,11 +34,11 @@ public class Project {
     this.typeFactory = typeFactory;
   }
 
-  @Nonnull private final INamespace namespace;
+  @Nonnull private final N namespace;
 
   /** Gets the namespace. */
   @Nonnull
-  public INamespace getNamespace() {
+  public N getNamespace() {
     return this.namespace;
   }
 

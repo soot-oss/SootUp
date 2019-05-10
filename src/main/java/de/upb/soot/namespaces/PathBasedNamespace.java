@@ -1,7 +1,6 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
@@ -118,7 +117,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    public @Nonnull Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
+    public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+        @Nonnull JavaClassType signature) {
       return getClassSourceInternal(signature, path);
     }
   }
@@ -130,7 +130,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    public @Nonnull Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
+    public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+        @Nonnull JavaClassType signature) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
         return getClassSourceInternal(signature, archiveRoot);

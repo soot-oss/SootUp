@@ -6,11 +6,10 @@ import de.upb.soot.frontends.asm.modules.AsmModuleClassSource;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
+import java.nio.file.Path;
+import javax.annotation.Nonnull;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.ClassNode;
-
-import javax.annotation.Nonnull;
-import java.nio.file.Path;
 
 public class AsmJavaClassProvider implements IClassProvider {
 

@@ -9,7 +9,7 @@ public class AsmFrontendException extends ResolveException {
     super(message);
   }
 
-  public AsmFrontendException(String message, Exception e){
+  public AsmFrontendException(String message, Exception e) {
     super(message, e);
   }
 }

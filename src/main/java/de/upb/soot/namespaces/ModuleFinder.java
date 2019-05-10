@@ -1,7 +1,6 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.modules.AsmModuleClassSource;
 import de.upb.soot.signatures.ModuleSignature;
@@ -250,7 +249,8 @@ public class ModuleFinder {
     return moduleName;
   }
 
-  private void createProperModuleSignature(AbstractClassSource moduleInfoSource, String moduleName) {
+  private void createProperModuleSignature(
+      AbstractClassSource moduleInfoSource, String moduleName) {
     // create proper moduleInfoSignature
     // add the module name, which was unknown before
     // moduleInfoSource.setClassSignature();

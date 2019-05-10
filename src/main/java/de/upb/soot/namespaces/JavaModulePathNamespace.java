@@ -83,7 +83,8 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
+  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+      @Nonnull JavaClassType signature) {
 
     String modulename =
         ((ModulePackageSignature) signature.getPackageSignature())

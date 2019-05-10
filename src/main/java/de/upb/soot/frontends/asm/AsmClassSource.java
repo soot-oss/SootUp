@@ -13,30 +13,27 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldNode;
-import org.objectweb.asm.tree.MethodNode;
-
-import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodNode;
 
 class AsmClassSource extends ClassSource {
 
-    @Nonnull
-    private final ClassNode classNode;
+  @Nonnull private final ClassNode classNode;
 
-    public AsmClassSource(
+  public AsmClassSource(
       INamespace namespace,
       Path sourcePath,
       JavaClassType javaClassType,
       @Nonnull ClassNode classNode) {
     super(namespace, sourcePath, javaClassType);
-        this.classNode = classNode;
-    }
+    this.classNode = classNode;
+  }
 
   private static Set<SootField> resolveFields(
       List<FieldNode> fieldNodes, SignatureFactory signatureFactory, JavaClassType classSignature) {
@@ -92,40 +89,37 @@ class AsmClassSource extends ClassSource {
   }
 
   @Nonnull
-  public Collection<SootMethod> resolveMethods()
-      throws ResolveException {
+  public Collection<SootMethod> resolveMethods() throws ResolveException {
     SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
-    return resolveMethods(classNode.methods, signatureFactory, classSignature).collect(Collectors.toSet());
+    return resolveMethods(classNode.methods, signatureFactory, classSignature)
+        .collect(Collectors.toSet());
   }
 
   @Nonnull
-  public Collection<SootField> resolveFields()
-      throws ResolveException {
+  public Collection<SootField> resolveFields() throws ResolveException {
     SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
     return resolveFields(classNode.fields, signatureFactory, classSignature);
   }
 
-    public Set<Modifier> resolveModifiers() {
-        EnumSet<Modifier> modifiers = AsmUtil.getModifiers(classNode.access);
-        return modifiers;
-    }
+  public Set<Modifier> resolveModifiers() {
+    EnumSet<Modifier> modifiers = AsmUtil.getModifiers(classNode.access);
+    return modifiers;
+  }
 
-    public Set<JavaClassType> resolveInterfaces() {
-        return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
-    }
+  public Set<JavaClassType> resolveInterfaces() {
+    return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
+  }
 
-    public Optional<JavaClassType> resolveSuperclass() {
-        return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.superName));
-    }
+  public Optional<JavaClassType> resolveSuperclass() {
+    return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.superName));
+  }
 
-    public Optional<JavaClassType> resolveOuterClass() {
-        return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
-    }
+  public Optional<JavaClassType> resolveOuterClass() {
+    return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
+  }
 
-    public CAstSourcePositionMap.Position resolvePosition() {
-        // FIXME: what is this??? the source code line number of the complete file?
-        return null;
-    }
-
-
+  public CAstSourcePositionMap.Position resolvePosition() {
+    // FIXME: what is this??? the source code line number of the complete file?
+    return null;
+  }
 }

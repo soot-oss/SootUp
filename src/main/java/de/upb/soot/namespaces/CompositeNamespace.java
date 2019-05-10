@@ -7,10 +7,9 @@ import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.TypeFactory;
 import de.upb.soot.util.NotYetImplementedException;
-
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 /**
  * Composes a namespace out of other namespaces hence removing the necessity to adapt every API to

@@ -1,23 +1,20 @@
 package de.upb.soot.frontends;
 
-import com.google.common.base.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import javax.annotation.Nonnull;
 
 /**
  * Basic class for storing information that is needed to reify a {@link de.upb.soot.core.SootClass}.
@@ -53,8 +50,7 @@ public abstract class ClassSource extends AbstractClassSource {
   //   as a parameter twice.
 
   @Nonnull
-  public Collection<SootMethod> resolveMethods()
-      throws ResolveException {
+  public Collection<SootMethod> resolveMethods() throws ResolveException {
     // TODO: Not sure whether this should even have a default implementation
     return Collections.emptyList();
   }

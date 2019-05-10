@@ -1,5 +1,7 @@
 package de.upb.soot.namespaces;
 
+import static org.junit.Assert.*;
+
 import categories.Java8Test;
 import de.upb.soot.DefaultFactories;
 import de.upb.soot.frontends.AbstractClassSource;
@@ -9,13 +11,10 @@ import de.upb.soot.frontends.java.WalaJavaClassProvider;
 import de.upb.soot.signatures.PackageSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-
 import java.util.Collection;
 import java.util.Optional;
-
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class JavaSourcePathNamespaceTest {

@@ -6,9 +6,8 @@ import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
-
-import javax.annotation.Nullable;
 import java.nio.file.Path;
+import javax.annotation.Nullable;
 
 /** @author Linghui Luo */
 public class WalaJavaClassProvider implements IClassProvider {
