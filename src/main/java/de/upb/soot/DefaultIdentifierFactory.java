@@ -1,68 +1,184 @@
-package de.upb.soot.signatures;
+package de.upb.soot;
 
 import com.google.common.base.Preconditions;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.signatures.FieldSignature;
+import de.upb.soot.signatures.FieldSubSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.MethodSubSignature;
+import de.upb.soot.signatures.PackageName;
+import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.NullType;
+import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
-import de.upb.soot.types.TypeFactory;
+import de.upb.soot.types.VoidType;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ClassUtils;
 
-/**
- * Factory to create valid signatures for Java classes in a classpath.
- *
- * @author Andreas Dann
- */
-public class DefaultSignatureFactory implements SignatureFactory {
+public class DefaultIdentifierFactory implements IdentifierFactory {
 
-  private static final @Nonnull DefaultSignatureFactory INSTANCE =
-      new DefaultSignatureFactory(DefaultTypeFactory::getInstance);
+  @Nonnull private static final DefaultIdentifierFactory INSTANCE = new DefaultIdentifierFactory();
 
-  public static @Nonnull DefaultSignatureFactory getInstance() {
+  /** Caches the created PackageNames for packages. */
+  protected final Map<String, PackageName> packages = new HashMap<>();
+
+  public static DefaultIdentifierFactory getInstance() {
     return INSTANCE;
   }
 
-  /** Caches the created signatures for packages. */
-  protected final Map<String, PackageSignature> packages = new HashMap<>();
-
-  private final Supplier<? extends TypeFactory> typeFactorySupplier;
-
-  public DefaultSignatureFactory(@Nonnull Supplier<? extends TypeFactory> typeFactorySupplier) {
-    this.typeFactorySupplier = typeFactorySupplier;
+  public DefaultIdentifierFactory() {
     /* Represents the default package. */
-    packages.put(
-        PackageSignature.DEFAULT_PACKAGE.getPackageName(), PackageSignature.DEFAULT_PACKAGE);
+    packages.put(PackageName.DEFAULT_PACKAGE.getPackageName(), PackageName.DEFAULT_PACKAGE);
   }
 
   /**
-   * Returns a unique PackageSignature. The methodRef looks up a cache if it already contains a
-   * signature with the given package name. If the cache lookup fails a new signature is created.
+   * Always creates a new ClassSignature. In opposite to PackageSignatures, ClassSignatures are not
+   * cached because the are unique per class, and thus reusing them does not make sense.
    *
+   * @param className the simple class name
    * @param packageName the Java package name; must not be null use empty string for the default
-   *     package {@link PackageSignature#DEFAULT_PACKAGE}
-   * @return a PackageSignature
+   *     package {@link PackageName#DEFAULT_PACKAGE} the Java package name
+   * @return a ClassSignature for a Java class
    * @throws NullPointerException if the given package name is null. Use the empty string to denote
    *     the default package.
    */
   @Override
-  public PackageSignature getPackageSignature(final String packageName) {
-    Preconditions.checkNotNull(packageName);
-    PackageSignature packageSignature = packages.get(packageName);
-    if (packageSignature == null) {
-      packageSignature = new PackageSignature(packageName);
-      packages.put(packageName, packageSignature);
+  public JavaClassType getClassType(final String className, final String packageName) {
+    PackageName packageIdentifier = getPackageName(packageName);
+    return new JavaClassType(className, packageIdentifier);
+  }
+
+  /**
+   * Always creates a new ClassSignature.
+   *
+   * @param fullyQualifiedClassName the fully-qualified name of the class
+   * @return a ClassSignature for a Java Class
+   */
+  @Override
+  public JavaClassType getClassType(final String fullyQualifiedClassName) {
+    String className = ClassUtils.getShortClassName(fullyQualifiedClassName);
+    String packageName = ClassUtils.getPackageName(fullyQualifiedClassName);
+    return getClassType(className, packageName);
+  }
+
+  /**
+   * Returns a Type which can be a {@link JavaClassType},{@link PrimitiveType}, {@link VoidType}, or
+   * {@link NullType}.
+   *
+   * @param typeDesc the fully-qualified name of the class or for primitives its simple name, e.g.,
+   *     int, null, void, ...
+   * @return the type signature
+   */
+  @Override
+  public Type getType(final String typeDesc) {
+    int len = typeDesc.length();
+    int idx = 0;
+    StringBuilder stringBuilder = new StringBuilder();
+    int nrDims = 0;
+    int closed = 0;
+
+    // check if this is an array type ...
+    while (idx != len) {
+      char c = typeDesc.charAt(idx++);
+      switch (c) {
+        case '[':
+          ++nrDims;
+          break;
+        case ']':
+          ++closed;
+          break;
+        default:
+          stringBuilder.append(c);
+          break;
+      }
     }
-    return packageSignature;
+    if (nrDims != closed) {
+      throw new IllegalArgumentException("Invalid type descriptor");
+    }
+
+    String typeName = stringBuilder.toString();
+
+    // FIXME: [JMP] Is lower case correct here? 'Int' is not the same as 'int', because 'Int' is a
+    // reference type.
+    String typeNameLowerCase = typeName.toLowerCase();
+    Type ret;
+
+    switch (typeNameLowerCase) {
+      case "null":
+        ret = NullType.getInstance();
+        break;
+      case "void":
+        ret = VoidType.getInstance();
+        break;
+      default:
+        ret =
+            this.getPrimitiveType(typeNameLowerCase)
+                .map(obj -> (Type) obj)
+                .orElseGet(() -> getClassType(typeName));
+    }
+
+    if (nrDims > 0) {
+      ret = new ArrayType(ret, nrDims);
+    }
+    return ret;
+  }
+
+  @Override
+  public @Nonnull Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName) {
+    return PrimitiveType.find(typeName);
+  }
+
+  @Override
+  public ArrayType getArrayType(Type baseType, int dim) {
+    return new ArrayType(baseType, dim);
+  }
+
+  @Override
+  @Nonnull
+  public JavaClassType fromPath(@Nonnull final Path file) {
+    String separator = file.getFileSystem().getSeparator();
+    String path = file.toString();
+
+    String fullyQualifiedName =
+        FilenameUtils.removeExtension(
+                path.startsWith(separator) ? path.substring(separator.length()) : path)
+            .replace(separator, ".");
+
+    return this.getClassType(fullyQualifiedName);
+  }
+
+  /**
+   * Returns a unique PackageName. The methodRef looks up a cache if it already contains a signature
+   * with the given package name. If the cache lookup fails a new signature is created.
+   *
+   * @param packageName the Java package name; must not be null use empty string for the default
+   *     package {@link PackageName#DEFAULT_PACKAGE}
+   * @return a PackageName
+   * @throws NullPointerException if the given package name is null. Use the empty string to denote
+   *     the default package.
+   */
+  @Override
+  public PackageName getPackageName(final String packageName) {
+    Preconditions.checkNotNull(packageName);
+    PackageName packageIdentifier = packages.get(packageName);
+    if (packageIdentifier == null) {
+      packageIdentifier = new PackageName(packageName);
+      packages.put(packageName, packageIdentifier);
+    }
+    return packageIdentifier;
   }
 
   /**
@@ -80,12 +196,11 @@ public class DefaultSignatureFactory implements SignatureFactory {
       final String fullyQualifiedNameDeclClass,
       final String fqReturnType,
       final List<String> parameters) {
-    JavaClassType declaringClass =
-        typeFactorySupplier.get().getClassType(fullyQualifiedNameDeclClass);
-    Type returnType = typeFactorySupplier.get().getType(fqReturnType);
+    JavaClassType declaringClass = getClassType(fullyQualifiedNameDeclClass);
+    Type returnType = getType(fqReturnType);
     List<Type> parameterSignatures = new ArrayList<>();
     for (String fqParameterName : parameters) {
-      Type parameterSignature = typeFactorySupplier.get().getType(fqParameterName);
+      Type parameterSignature = getType(fqParameterName);
       parameterSignatures.add(parameterSignature);
     }
     return new MethodSignature(declaringClass, methodName, parameterSignatures, returnType);
@@ -106,10 +221,10 @@ public class DefaultSignatureFactory implements SignatureFactory {
       final JavaClassType declaringClassSignature,
       final String fqReturnType,
       final List<String> parameters) {
-    Type returnType = typeFactorySupplier.get().getType(fqReturnType);
+    Type returnType = getType(fqReturnType);
     List<Type> parameterSignatures = new ArrayList<>();
     for (String fqParameterName : parameters) {
-      Type parameterSignature = typeFactorySupplier.get().getType(fqParameterName);
+      Type parameterSignature = getType(fqParameterName);
       parameterSignatures.add(parameterSignature);
     }
     return new MethodSignature(
@@ -174,15 +289,15 @@ public class DefaultSignatureFactory implements SignatureFactory {
    * <p><b><i>Soot syntax examples:</i></b>
    *
    * <pre><code>
-   * &lt;de.upb.soot.signatures.DefaultSignatureFactory: de.upb.soot.signatures.MethodSignature parseMethodSignature(java.lang.String)&gt;
-   * &lt;de.upb.soot.signatures.DefaultSignatureFactory: de.upb.soot.signatures.MethodSignature getMethodSignature(java.lang.String, de.upb.soot.types.JavaClassType)&gt;
+   * &lt;de.upb.soot.signatures.Remove: de.upb.soot.signatures.MethodSignature parseMethodSignature(java.lang.String)&gt;
+   * &lt;de.upb.soot.signatures.Remove: de.upb.soot.signatures.MethodSignature getMethodSignature(java.lang.String, de.upb.soot.types.JavaClassType)&gt;
    * </code></pre>
    *
    * <p><b><i>JavaDoc-like syntax examples:</i></b>
    *
    * <pre><code>
-   * de.upb.soot.signatures.DefaultSignatureFactory#parseMethodSignature(java.lang.String): de.upb.soot.signatures.MethodSignature
-   * de.upb.soot.signatures.DefaultSignatureFactory#getMethodSignature(java.lang.String, de.upb.soot.types.JavaClassType): de.upb.soot.signatures.MethodSignature
+   * de.upb.soot.signatures.Remove#parseMethodSignature(java.lang.String): de.upb.soot.signatures.MethodSignature
+   * de.upb.soot.signatures.Remove#getMethodSignature(java.lang.String, de.upb.soot.types.JavaClassType): de.upb.soot.signatures.MethodSignature
    * </code></pre>
    *
    * @param methodSignature A Soot- or JavaDoc-like method signature.
@@ -230,8 +345,7 @@ public class DefaultSignatureFactory implements SignatureFactory {
                     })
                 .collect(Collectors.toList());
 
-    return DefaultSignatureFactory.getInstance()
-        .getMethodSignature(methodName, className, returnName, argsList);
+    return getMethodSignature(methodName, className, returnName, argsList);
   }
 
   @Nonnull
@@ -320,11 +434,10 @@ public class DefaultSignatureFactory implements SignatureFactory {
 
                       return true;
                     })
-                .map(typeName -> typeFactorySupplier.get().getType(typeName))
+                .map(typeName -> getType(typeName))
                 .collect(Collectors.toList());
 
-    return DefaultSignatureFactory.getInstance()
-        .getMethodSubSignature(methodName, argsList, typeFactorySupplier.get().getType(returnName));
+    return getMethodSubSignature(methodName, argsList, getType(returnName));
   }
 
   @Nonnull
@@ -354,13 +467,13 @@ public class DefaultSignatureFactory implements SignatureFactory {
    * <p><b><i>Soot syntax examples:</i></b>
    *
    * <pre><code>
-   * &lt;de.upb.soot.signatures.DefaultSignatureFactory: de.upb.soot.signatures.DefaultSignatureFactory INSTANCE&gt;
+   * &lt;de.upb.soot.signatures.Remove: de.upb.soot.signatures.Remove INSTANCE&gt;
    * </code></pre>
    *
    * <p><b><i>JavaDoc-like syntax examples:</i></b>
    *
    * <pre><code>
-   * de.upb.soot.signatures.DefaultSignatureFactory#INSTANCE: de.upb.soot.signatures.DefaultSignatureFactory
+   * de.upb.soot.signatures.Remove#INSTANCE: de.upb.soot.signatures.Remove
    * </code></pre>
    *
    * @param fieldSignature A Soot- or JavaDoc-like field signature.
@@ -387,14 +500,13 @@ public class DefaultSignatureFactory implements SignatureFactory {
     if (className.isEmpty() || fieldName.isEmpty() || typeName.isEmpty())
       throw createInvalidFieldSignatureException();
 
-    return DefaultSignatureFactory.getInstance()
-        .getFieldSignature(fieldName, typeFactorySupplier.get().getClassType(className), typeName);
+    return getFieldSignature(fieldName, getClassType(className), typeName);
   }
 
   @Override
   public FieldSignature getFieldSignature(
       final String fieldName, final JavaClassType declaringClassSignature, final String fieldType) {
-    Type type = typeFactorySupplier.get().getType(fieldType);
+    Type type = getType(fieldType);
     return new FieldSignature(declaringClassSignature, fieldName, type);
   }
 
@@ -444,13 +556,13 @@ public class DefaultSignatureFactory implements SignatureFactory {
    * <p><b><i>Soot syntax example:</i></b>
    *
    * <pre><code>
-   * &lt;de.upb.soot.signatures.DefaultSignatureFactory INSTANCE&gt;
+   * &lt;de.upb.soot.signatures.Remove INSTANCE&gt;
    * </code></pre>
    *
    * <p><b><i>JavaDoc-like syntax example:</i></b>
    *
    * <pre><code>
-   * #INSTANCE: de.upb.soot.signatures.DefaultSignatureFactory
+   * #INSTANCE: de.upb.soot.signatures.Remove
    * </code></pre>
    *
    * @param subSignature A Soot- or Kotlin-like method sub-signature.
@@ -474,7 +586,6 @@ public class DefaultSignatureFactory implements SignatureFactory {
 
     if (fieldName.isEmpty() || typeName.isEmpty()) throw createInvalidFieldSubSignatureException();
 
-    return DefaultSignatureFactory.getInstance()
-        .getFieldSubSignature(fieldName, typeFactorySupplier.get().getType(typeName));
+    return getFieldSubSignature(fieldName, getType(typeName));
   }
 }

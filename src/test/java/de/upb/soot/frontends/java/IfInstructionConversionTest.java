@@ -5,12 +5,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.JavaClassType;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,17 +28,15 @@ public class IfInstructionConversionTest {
   // TODO: Failed tests
 
   private WalaClassLoader loader;
-  private DefaultSignatureFactory sigFactory;
-  private DefaultTypeFactory typeFactory;
+
+  private DefaultIdentifierFactory typeFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir, null);
-    DefaultFactories factories = DefaultFactories.create();
-    sigFactory = factories.getSignatureFactory();
-    typeFactory = factories.getTypeFactory();
+    typeFactory = DefaultIdentifierFactory.getInstance();
     declareClassSig =
         typeFactory.getClassType("de.upb.soot.concrete.controlStatements.ControlStatements");
   }
@@ -49,7 +45,7 @@ public class IfInstructionConversionTest {
   public void test1() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            typeFactory.getMethodSignature(
                 "simpleIfElseIfTakeThen",
                 declareClassSig,
                 "void",
@@ -93,7 +89,7 @@ public class IfInstructionConversionTest {
   public void test2() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            typeFactory.getMethodSignature(
                 "simpleIfElse", declareClassSig, "boolean", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -124,7 +120,7 @@ public class IfInstructionConversionTest {
   public void test3() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            typeFactory.getMethodSignature(
                 "simpleIfElse", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -157,7 +153,7 @@ public class IfInstructionConversionTest {
   public void test4() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            typeFactory.getMethodSignature(
                 "simpleIf",
                 declareClassSig,
                 "boolean",
@@ -190,7 +186,7 @@ public class IfInstructionConversionTest {
   public void test5() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            typeFactory.getMethodSignature(
                 "simpleIfElseIfTakeElse",
                 declareClassSig,
                 "void",
@@ -233,7 +229,7 @@ public class IfInstructionConversionTest {
   public void test6() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            typeFactory.getMethodSignature(
                 "simpleIf", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -245,7 +241,7 @@ public class IfInstructionConversionTest {
   public void test7() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            typeFactory.getMethodSignature(
                 "simpleIfTrue", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -257,7 +253,7 @@ public class IfInstructionConversionTest {
   public void test8() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            typeFactory.getMethodSignature(
                 "simpleIfIntExpr", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();

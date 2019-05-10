@@ -24,11 +24,10 @@ package de.upb.soot.namespaces;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.TypeFactory;
 import de.upb.soot.util.Utils;
 import java.io.File;
 import java.io.IOException;
@@ -134,12 +133,12 @@ public class JavaClassPathNamespace extends AbstractNamespace {
 
   @Override
   public @Nonnull Collection<ClassSource> getClassSources(
-      @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory) {
+      @Nonnull IdentifierFactory identifierFactory) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
     Set<ClassSource> found = new HashSet<>();
     for (AbstractNamespace ns : cpEntries) {
-      found.addAll(ns.getClassSources(signatureFactory, typeFactory));
+      found.addAll(ns.getClassSources(identifierFactory));
     }
     return found;
   }

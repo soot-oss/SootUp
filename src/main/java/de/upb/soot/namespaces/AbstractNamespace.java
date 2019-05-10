@@ -59,7 +59,7 @@ public abstract class AbstractNamespace implements INamespace {
   }
 
   /*
-   * @Override public Collection<SootClass> getClasses(SignatureFactory factory) {
+   * @Override public Collection<SootClass> getClasses(IdentifierFactory factory) {
    *
    * // FIXME: here we must take the classSources and invoke akka... return getClassSources(factory).stream().map(cs ->
    * classProvider.getSootClass(cs)).collect(Collectors.toList()); }

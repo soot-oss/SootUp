@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.common.ref;
 
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
@@ -32,7 +33,6 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.types.ArrayType;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.NullType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
@@ -139,14 +139,14 @@ public class JArrayRef implements ConcreteRef {
       if (type instanceof ArrayType) {
         arrayType = (ArrayType) type;
       } else {
-        arrayType = DefaultTypeFactory.getInstance().getArrayType(type, 1);
+        arrayType = DefaultIdentifierFactory.getInstance().getArrayType(type, 1);
       }
 
       // FIXME: [JMP] Should unwrapping not be done by the `ArrayType` itself?
       if (arrayType.getDimension() == 1) {
         return arrayType.getBaseType();
       } else {
-        return DefaultTypeFactory.getInstance()
+        return DefaultIdentifierFactory.getInstance()
             .getArrayType(arrayType.getBaseType(), arrayType.getDimension() - 1);
       }
     }

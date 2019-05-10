@@ -5,12 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-import de.upb.soot.DefaultFactories;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.JavaClassType;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,8 +27,8 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class PositionInfoTest {
   private WalaClassLoader loader;
-  private DefaultSignatureFactory sigFactory;
-  private DefaultTypeFactory typeFactory;
+
+  private DefaultIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
   private SootMethod method;
 
@@ -38,10 +36,8 @@ public class PositionInfoTest {
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir, null);
-    DefaultFactories factories = DefaultFactories.create();
-    sigFactory = factories.getSignatureFactory();
-    typeFactory = factories.getTypeFactory();
-    declareClassSig = typeFactory.getClassType("InstructionCollection");
+    identifierFactory = DefaultIdentifierFactory.getInstance();
+    declareClassSig = identifierFactory.getClassType("InstructionCollection");
   }
 
   void loadCurrentMethod(
@@ -51,7 +47,7 @@ public class PositionInfoTest {
       List<String> parameters) {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 methodName, declaringClassSignature, fqReturnType, parameters));
     assertTrue(m.isPresent());
     method = m.get();

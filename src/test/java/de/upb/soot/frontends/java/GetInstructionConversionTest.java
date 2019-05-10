@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
@@ -17,9 +17,7 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
-import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
 import java.util.Collections;
@@ -34,17 +32,14 @@ import org.junit.experimental.categories.Category;
 public class GetInstructionConversionTest {
 
   private WalaClassLoader loader;
-  private DefaultSignatureFactory sigFactory;
-  private DefaultTypeFactory typeFactory;
+  private DefaultIdentifierFactory typeFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/wala-tests/";
     loader = new WalaClassLoader(srcDir, null);
-    DefaultFactories factories = DefaultFactories.create();
-    sigFactory = factories.getSignatureFactory();
-    typeFactory = factories.getTypeFactory();
+    typeFactory = DefaultIdentifierFactory.getInstance();
     declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");
   }
 
@@ -52,7 +47,7 @@ public class GetInstructionConversionTest {
   public void test() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            typeFactory.getMethodSignature(
                 "getA_X", declareClassSig, "int", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();

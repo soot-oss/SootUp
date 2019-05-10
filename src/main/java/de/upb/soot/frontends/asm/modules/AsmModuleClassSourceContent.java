@@ -34,7 +34,7 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
   @Nonnull
   public AbstractClass resolveClass(@Nonnull ResolvingLevel level, @Nonnull IView view)
       throws AsmFrontendException {
-    JavaClassType cs = view.getTypeFactory().getClassType(this.signature);
+    JavaClassType cs = view.getIdentifierFactory().getClassType(this.signature);
     SootModuleInfo.SootModuleInfoBuilder builder = null;
     if (module == null) {
       throw new IllegalArgumentException("This is not a module-info file");
@@ -132,7 +132,8 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
       // add requies
       for (ModuleRequireNode moduleRequireNode : module.requires) {
         JavaClassType classSignature =
-            view.getTypeFactory().getClassType(AsmUtil.toQualifiedName(moduleRequireNode.module));
+            view.getIdentifierFactory()
+                .getClassType(AsmUtil.toQualifiedName(moduleRequireNode.module));
         if (classSignature.isModuleInfo()) {
           // sootModuleInfo.addRequire(sootClassOptional.get(), moduleRequireNode.access,
           // moduleRequireNode.version);
@@ -148,7 +149,8 @@ public class AsmModuleClassSourceContent extends ClassNode implements IClassSour
       // add provides
       for (ModuleProvideNode moduleProvideNode : module.provides) {
         JavaClassType serviceSignature =
-            view.getTypeFactory().getClassType(AsmUtil.toQualifiedName(moduleProvideNode.service));
+            view.getIdentifierFactory()
+                .getClassType(AsmUtil.toQualifiedName(moduleProvideNode.service));
         Iterable<JavaClassType> providersSignatures =
             AsmUtil.asmIdToSignature(moduleProvideNode.providers);
         for (JavaClassType sootClassSignature : providersSignatures) {

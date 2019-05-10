@@ -24,6 +24,8 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 
+// TODO Rename this too?
+
 /** Represents a Java 9 module. */
 public class ModuleSignature implements ISignature {
   /**
@@ -38,11 +40,11 @@ public class ModuleSignature implements ISignature {
 
   /**
    * Construct Module Signature of a Java 9 module. Instances should only be created a {@link
-   * DefaultSignatureFactory}
+   * Remove}
    *
    * @param moduleName module's name
    */
-  protected ModuleSignature(final String moduleName) {
+  public ModuleSignature(final String moduleName) {
     this.moduleName = moduleName;
   }
 
