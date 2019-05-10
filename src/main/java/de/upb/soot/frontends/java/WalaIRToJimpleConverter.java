@@ -244,11 +244,7 @@ public class WalaIRToJimpleConverter {
 
     Body body = createBody(methodSig, modifiers, walaMethod);
     return new SootMethod(
-        new WalaIRMethodSource(methodSig, body),
-        methodSig,
-        modifiers,
-        thrownExceptions,
-        debugInfo);
+        new WalaIRMethodSource(methodSig, body), methodSig, modifiers, thrownExceptions, debugInfo);
   }
 
   public Type convertType(TypeReference type) {

@@ -117,8 +117,7 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 /** @author Andreas Dann */
-class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
-    implements IMethodSource {
+class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implements IMethodSource {
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
 

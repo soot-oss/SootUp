@@ -63,8 +63,7 @@ class AsmClassSource extends ClassSource {
                 throw new AsmFrontendException(
                     String.format("Failed to create Method Signature %s", methodSource));
               }
-              AsmMethodSource asmClassClassSourceContent =
-                  (AsmMethodSource) methodSource;
+              AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
 
               List<JavaClassType> exceptions = new ArrayList<>();
               Iterable<JavaClassType> exceptionsSignatures =
