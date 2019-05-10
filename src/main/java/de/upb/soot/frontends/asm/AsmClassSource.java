@@ -59,12 +59,12 @@ class AsmClassSource extends ClassSource {
     return methodNodes.stream()
         .map(
             methodSource -> {
-              if (!(methodSource instanceof AsmMethodSourceContent)) {
+              if (!(methodSource instanceof AsmMethodSource)) {
                 throw new AsmFrontendException(
                     String.format("Failed to create Method Signature %s", methodSource));
               }
-              AsmMethodSourceContent asmClassClassSourceContent =
-                  (AsmMethodSourceContent) methodSource;
+              AsmMethodSource asmClassClassSourceContent =
+                  (AsmMethodSource) methodSource;
 
               List<JavaClassType> exceptions = new ArrayList<>();
               Iterable<JavaClassType> exceptionsSignatures =

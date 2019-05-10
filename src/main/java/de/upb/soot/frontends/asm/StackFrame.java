@@ -44,14 +44,14 @@ final class StackFrame {
   @Nullable private Local[] inStackLocals;
   @Nullable private ValueBox[] boxes;
   @Nullable private ArrayList<Operand[]> in;
-  @Nonnull private final AsmMethodSourceContent src;
+  @Nonnull private final AsmMethodSource src;
 
   /**
    * Constructs a new stack frame.
    *
    * @param src source the frame belongs to.
    */
-  StackFrame(@Nonnull AsmMethodSourceContent src) {
+  StackFrame(@Nonnull AsmMethodSource src) {
     this.src = src;
   }
 

@@ -8,7 +8,7 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SourceType;
-import de.upb.soot.frontends.IMethodSourceContent;
+import de.upb.soot.frontends.IMethodSource;
 import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
@@ -39,7 +39,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
-class DummyMethodSource implements IMethodSourceContent {
+class DummyMethodSource implements IMethodSource {
   private Body body;
   private MethodSignature methodSignature;
 
@@ -143,7 +143,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     stmts.add(Jimple.newReturnVoidStmt(nop));
 
     Body body = new Body(locals, traps, stmts, new NoPositionInformation());
-    IMethodSourceContent methodSource = new DummyMethodSource(methodSignature, body);
+    IMethodSource methodSource = new DummyMethodSource(methodSignature, body);
 
     return new SootMethod(
         methodSource,

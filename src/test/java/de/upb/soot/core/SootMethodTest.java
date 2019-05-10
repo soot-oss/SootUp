@@ -7,7 +7,7 @@ import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.frontends.java.EagerJavaClassSource;
-import de.upb.soot.frontends.java.WalaIRMethodSourceContent;
+import de.upb.soot.frontends.java.WalaIRMethodSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -56,7 +56,7 @@ public class SootMethodTest {
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     SootMethod dummyMainMethod =
         new SootMethod(
-            new WalaIRMethodSourceContent(methodSignature, body),
+            new WalaIRMethodSource(methodSignature, body),
             methodSignature,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
             Collections.emptyList(),
