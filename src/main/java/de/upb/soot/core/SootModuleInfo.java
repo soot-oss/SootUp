@@ -94,7 +94,7 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
       throw new ResolveException("Not a module");
     }
     // FIXME: this is ugly
-    return (ModuleClassSource) this.classSource;
+    return this.classSource;
   }
 
   @Nonnull

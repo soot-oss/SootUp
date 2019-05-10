@@ -2,10 +2,6 @@ package de.upb.soot;
 
 import de.upb.soot.buildactor.ViewBuilder;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.SignatureFactory;
-import de.upb.soot.types.DefaultTypeFactory;
-import de.upb.soot.types.TypeFactory;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
 import javax.annotation.Nonnull;
@@ -21,17 +17,13 @@ import javax.annotation.Nonnull;
 public class Project<N extends INamespace> {
   /** Create a project from an arbitrary list of namespaces */
   public Project(@Nonnull N namespace) {
-    this(namespace, DefaultSignatureFactory.getInstance(), DefaultTypeFactory.getInstance());
+    this(namespace, DefaultIdentifierFactory.getInstance());
   }
 
   /** Create a project from an arbitrary list of namespaces */
-  public Project(
-      @Nonnull N namespaces,
-      @Nonnull SignatureFactory signatureFactory,
-      @Nonnull TypeFactory typeFactory) {
+  public Project(@Nonnull N namespaces, @Nonnull DefaultIdentifierFactory identifierFactory) {
     this.namespace = namespaces;
-    this.signatureFactory = signatureFactory;
-    this.typeFactory = typeFactory;
+    this.identifierFactory = identifierFactory;
   }
 
   @Nonnull private final N namespace;
@@ -42,17 +34,11 @@ public class Project<N extends INamespace> {
     return this.namespace;
   }
 
-  @Nonnull private final SignatureFactory signatureFactory;
-
-  @Nonnull private final TypeFactory typeFactory;
+  @Nonnull private final IdentifierFactory identifierFactory;
 
   @Nonnull
-  public SignatureFactory getSignatureFactory() {
-    return this.signatureFactory;
-  }
-
-  public TypeFactory getTypeFactory() {
-    return typeFactory;
+  public IdentifierFactory getIdentifierFactory() {
+    return this.identifierFactory;
   }
 
   /**

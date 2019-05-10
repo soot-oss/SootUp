@@ -1,11 +1,10 @@
 package de.upb.soot.namespaces;
 
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.TypeFactory;
 import de.upb.soot.util.NotYetImplementedException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -78,7 +77,7 @@ public class CompositeNamespace implements INamespace {
 
   @Override
   public @Nonnull Collection<AbstractClassSource> getClassSources(
-      @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory) {
+      @Nonnull IdentifierFactory identifierFactory) {
     // TODO Auto-generated methodRef stub
     throw new NotYetImplementedException("Getting class sources is not implemented, yet.");
   }

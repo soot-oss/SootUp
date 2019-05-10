@@ -1,14 +1,12 @@
 package de.upb.soot.namespaces;
 
 import com.google.common.base.Preconditions;
+import de.upb.soot.IdentifierFactory;
+import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.ModulePackageSignature;
-import de.upb.soot.signatures.ModuleSignatureFactory;
-import de.upb.soot.signatures.SignatureFactory;
+import de.upb.soot.signatures.ModulePackageName;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.ModuleTypeFactory;
-import de.upb.soot.types.TypeFactory;
 import de.upb.soot.util.Utils;
 import java.io.IOException;
 import java.net.URI;
@@ -40,7 +38,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
       @Nonnull JavaClassType signature) {
-    if (signature.getPackageSignature() instanceof ModulePackageSignature) {
+    if (signature.getPackageName() instanceof ModulePackageName) {
       return this.getClassSourceInternalForModule(signature);
     }
     return this.getClassSourceInternalForClassPath(signature);
@@ -70,11 +68,9 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   private @Nonnull Optional<? extends AbstractClassSource> getClassSourceInternalForModule(
       @Nonnull JavaClassType classSignature) {
-    Preconditions.checkArgument(
-        classSignature.getPackageSignature() instanceof ModulePackageSignature);
+    Preconditions.checkArgument(classSignature.getPackageName() instanceof ModulePackageName);
 
-    ModulePackageSignature modulePackageSignature =
-        (ModulePackageSignature) classSignature.getPackageSignature();
+    ModulePackageName modulePackageSignature = (ModulePackageName) classSignature.getPackageName();
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path module =
@@ -93,14 +89,14 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   // get the factory, which I should use the create the correspond class signatures
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory) {
+      @Nonnull IdentifierFactory identifierFactory) {
 
     final Path archiveRoot = theFileSystem.getPath("modules");
-    return walkDirectory(archiveRoot, signatureFactory, typeFactory);
+    return walkDirectory(archiveRoot, identifierFactory);
   }
 
   protected @Nonnull Collection<? extends AbstractClassSource> walkDirectory(
-      @Nonnull Path dirPath, @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory) {
+      @Nonnull Path dirPath, @Nonnull IdentifierFactory identifierFactory) {
 
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
@@ -116,8 +112,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
                               this.fromPath(
                                   p.subpath(2, p.getNameCount()),
                                   p.subpath(1, 2),
-                                  signatureFactory,
-                                  typeFactory)))))
+                                  identifierFactory)))))
           .collect(Collectors.toList());
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
@@ -153,14 +148,10 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   // how to create the module name if we have a jar file..., or a multi jar, or the jrt file system
   // nevertheless, one general methodRef for all signatures seems reasonable
   private @Nonnull JavaClassType fromPath(
-      final Path filename,
-      final Path moduleDir,
-      final SignatureFactory signatureFactory,
-      final TypeFactory typeFactory) {
+      final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
     // else use the module system and create fully class signature
-    if (signatureFactory instanceof ModuleSignatureFactory
-        || typeFactory instanceof ModuleTypeFactory) {
+    if (identifierFactory instanceof ModuleIdentifierFactory) {
       // FIXME: adann clean this up!
       // String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
       // int index = filename.lastIndexOf('.');
@@ -170,14 +161,14 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
       // String packagename = packageFileName.toString().replace('/', '.');
       // String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
       //
-      JavaClassType sig = typeFactory.fromPath(filename);
+      JavaClassType sig = identifierFactory.fromPath(filename);
 
-      return ((ModuleTypeFactory) typeFactory)
+      return ((ModuleIdentifierFactory) identifierFactory)
           .getClassType(
-              sig.getClassName(), sig.getPackageSignature().getPackageName(), moduleDir.toString());
+              sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString());
     }
 
     // if we are using the normal signature factory, than trim the module from the path
-    return typeFactory.fromPath(filename);
+    return identifierFactory.fromPath(filename);
   }
 }

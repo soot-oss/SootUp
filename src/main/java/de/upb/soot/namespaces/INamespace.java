@@ -22,12 +22,11 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.TypeFactory;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -61,5 +60,5 @@ public interface INamespace {
 
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory);
+      @Nonnull IdentifierFactory identifierFactory);
 }

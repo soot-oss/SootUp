@@ -3,6 +3,7 @@ package de.upb.soot.frontends.asm;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.Modifier;
@@ -14,7 +15,6 @@ import de.upb.soot.frontends.IMethodSourceContent;
 import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
@@ -54,7 +54,7 @@ public class ModuleCompositionTest {
     IView view = p.createOnDemandView();
 
     // Create java class signature
-    JavaClassType utilsClassSignature = p.getTypeFactory().getClassType("de.upb.soot.Utils");
+    JavaClassType utilsClassSignature = p.getIdentifierFactory().getClassType("de.upb.soot.Utils");
 
     // Resolve signature to `SootClass`
     SootClass utilsClass =
@@ -68,7 +68,7 @@ public class ModuleCompositionTest {
 
     // Parse sub-signature for "optionalToStream" method
     MethodSubSignature optionalToStreamMethodSubSignature =
-        DefaultSignatureFactory.getInstance()
+        DefaultIdentifierFactory.getInstance()
             .parseMethodSubSignature(
                 "java.util.stream.Stream optionalToStream(java.util.Optional)");
 
@@ -95,10 +95,10 @@ public class ModuleCompositionTest {
 
     // Parse sub-signature for "name" field
     FieldSubSignature nameFieldSubSignature =
-        DefaultSignatureFactory.getInstance().parseFieldSubSignature("java.lang.String name");
+        DefaultIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String name");
 
     // Create the class signature
-    JavaClassType classSignature = view.getTypeFactory().getClassType("x.y.z.foo.Bar");
+    JavaClassType classSignature = view.getIdentifierFactory().getClassType("x.y.z.foo.Bar");
 
     // Build a soot class
 
@@ -129,7 +129,7 @@ public class ModuleCompositionTest {
                               @Override
                               @Nonnull
                               public MethodSignature getSignature() {
-                                return DefaultSignatureFactory.getInstance()
+                                return DefaultIdentifierFactory.getInstance()
                                     .getMethodSignature(
                                         utilsClass, optionalToStreamMethodSubSignature);
                               }

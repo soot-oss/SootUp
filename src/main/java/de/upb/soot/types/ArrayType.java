@@ -8,7 +8,7 @@ public class ArrayType extends ReferenceType {
 
   private final int dimension;
 
-  protected ArrayType(Type baseType, int dimension) {
+  public ArrayType(Type baseType, int dimension) {
     this.baseType = baseType;
     this.dimension = dimension;
   }

@@ -1,10 +1,9 @@
 package de.upb.soot.namespaces;
 
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.TypeFactory;
 import de.upb.soot.util.Utils;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -75,7 +74,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
   }
 
   protected @Nonnull Collection<? extends AbstractClassSource> walkDirectory(
-      @Nonnull Path dirPath, @Nonnull TypeFactory factory) {
+      @Nonnull Path dirPath, @Nonnull IdentifierFactory factory) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
 
@@ -112,8 +111,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
 
     @Override
     public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-        @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory) {
-      return walkDirectory(path, typeFactory);
+        @Nonnull IdentifierFactory identifierFactory) {
+      return walkDirectory(path, identifierFactory);
     }
 
     @Override
@@ -142,10 +141,10 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
 
     @Override
     public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-        @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory) {
+        @Nonnull IdentifierFactory identifierFactory) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
-        return walkDirectory(archiveRoot, typeFactory);
+        return walkDirectory(archiveRoot, identifierFactory);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

@@ -1,16 +1,16 @@
 package de.upb.soot.frontends.asm;
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
+import de.upb.soot.DefaultIdentifierFactory;
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import java.nio.file.Path;
@@ -36,7 +36,9 @@ class AsmClassSource extends ClassSource {
   }
 
   private static Set<SootField> resolveFields(
-      List<FieldNode> fieldNodes, SignatureFactory signatureFactory, JavaClassType classSignature) {
+      List<FieldNode> fieldNodes,
+      IdentifierFactory signatureFactory,
+      JavaClassType classSignature) {
     // FIXME: add support for annotation
     return fieldNodes.stream()
         .map(
@@ -53,7 +55,7 @@ class AsmClassSource extends ClassSource {
   }
 
   private static Stream<SootMethod> resolveMethods(
-      List<MethodNode> methodNodes, SignatureFactory signatureFactory, JavaClassType cs) {
+      List<MethodNode> methodNodes, IdentifierFactory signatureFactory, JavaClassType cs) {
     return methodNodes.stream()
         .map(
             methodSource -> {
@@ -90,15 +92,15 @@ class AsmClassSource extends ClassSource {
 
   @Nonnull
   public Collection<SootMethod> resolveMethods() throws ResolveException {
-    SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
-    return resolveMethods(classNode.methods, signatureFactory, classSignature)
+    IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+    return resolveMethods(classNode.methods, identifierFactory, classSignature)
         .collect(Collectors.toSet());
   }
 
   @Nonnull
   public Collection<SootField> resolveFields() throws ResolveException {
-    SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
-    return resolveFields(classNode.fields, signatureFactory, classSignature);
+    IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+    return resolveFields(classNode.fields, identifierFactory, classSignature);
   }
 
   public Set<Modifier> resolveModifiers() {

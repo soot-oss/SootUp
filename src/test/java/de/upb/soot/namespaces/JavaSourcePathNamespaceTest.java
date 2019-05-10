@@ -3,12 +3,12 @@ package de.upb.soot.namespaces;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.java.WalaJavaClassProvider;
-import de.upb.soot.signatures.PackageSignature;
+import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
 import java.util.Collection;
@@ -25,7 +25,7 @@ public class JavaSourcePathNamespaceTest {
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     INamespace namespace =
         new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
-    JavaClassType type = new JavaClassType("Array1", PackageSignature.DEFAULT_PACKAGE);
+    JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     Optional<? extends AbstractClassSource> classSourceOptional = namespace.getClassSource(type);
     assertTrue(classSourceOptional.isPresent());
@@ -58,12 +58,11 @@ public class JavaSourcePathNamespaceTest {
     INamespace namespace =
         new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
 
-    DefaultFactories defaultFactories = DefaultFactories.create();
+    DefaultIdentifierFactory defaultFactories = DefaultIdentifierFactory.getInstance();
     Collection<? extends AbstractClassSource> classSources =
-        namespace.getClassSources(
-            defaultFactories.getSignatureFactory(), defaultFactories.getTypeFactory());
+        namespace.getClassSources(defaultFactories);
 
-    JavaClassType type = new JavaClassType("Array1", PackageSignature.DEFAULT_PACKAGE);
+    JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
     Optional<JavaClassType> optionalFoundType =
         classSources.stream()
             .filter(classSource -> classSource.getClassType().equals(type))

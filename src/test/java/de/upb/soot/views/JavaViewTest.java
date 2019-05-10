@@ -1,17 +1,13 @@
 package de.upb.soot.views;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import categories.Java8Test;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import java.io.File;
@@ -46,10 +42,7 @@ public class JavaViewTest {
 
     this.signatures =
         Collections.unmodifiableList(
-            namespace
-                .getClassSources(
-                    DefaultSignatureFactory.getInstance(), DefaultTypeFactory.getInstance())
-                .stream()
+            namespace.getClassSources(DefaultIdentifierFactory.getInstance()).stream()
                 .map(AbstractClassSource::getClassType)
                 .sorted(Comparator.comparing(JavaClassType::toString))
                 .collect(Collectors.toList()));
@@ -88,7 +81,7 @@ public class JavaViewTest {
 
   private void resolveUndefinedClass() {
     JavaClassType signature =
-        DefaultTypeFactory.getInstance().getClassType("com.example.NonExistingClass");
+        DefaultIdentifierFactory.getInstance().getClassType("com.example.NonExistingClass");
 
     if (this.signatures.contains(signature)) {
       Assert.fail("FATAL ERROR: Non-existing class exists in signature list!");

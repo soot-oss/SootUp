@@ -184,7 +184,7 @@ public class JavaView extends AbstractView {
     this.markAsFullyResolved();
 
     for (AbstractClassSource cs :
-        this.getProject().getNamespace().getClassSources(getSignatureFactory(), getTypeFactory())) {
+        this.getProject().getNamespace().getClassSources(getIdentifierFactory())) {
       if (!this.map.containsKey(cs.getClassType())) this.__resolveSootClass(cs.getClassType());
     }
   }
