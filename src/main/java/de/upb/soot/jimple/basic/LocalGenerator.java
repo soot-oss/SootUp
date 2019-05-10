@@ -8,6 +8,8 @@ import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
 import de.upb.soot.types.VoidType;
 import java.util.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /*-
  * #%L
@@ -38,29 +40,38 @@ import java.util.*;
  * @author Markus Schmidt
  */
 public class LocalGenerator {
-  private Body body;
-  private HashSet<String> filteredLocalNames = new HashSet<>();
+  private final Body body;
+  @Nullable private final HashSet<String> existingLocalNames;
 
-  private List<Local> locals = new ArrayList<>();
-  private Local thisLocal;
-  private Map<Integer, Local> paraLocals = new HashMap<>();
+  private final List<Local> locals = new ArrayList<>();
+  @Nullable private Local thisLocal;
+  private final Map<Integer, Local> paraLocals = new HashMap<>();
 
   /**
    * Creates Locals {@link Local} with a standard naming scheme without checking whether the name is
    * already taken.
    */
-  public LocalGenerator() {}
+  public LocalGenerator() {
+    this.body = null;
+    this.existingLocalNames = null;
+  }
 
   /**
    * Creates {@link Local}s with a standard naming scheme. Checks if the Local is already existing
    * in the Body. (If you mix using LocalGenerator and own creation of Local)
    */
-  public LocalGenerator(Body body) {
+  public LocalGenerator(@Nonnull Body body) {
     this.body = body;
+    Collection<Local> existingLocals = body.getLocals();
+    this.existingLocalNames = new HashSet<>(existingLocals.size());
+    // cache Local names if body is given to speedup checks whether the local name is already taken
+    for (Local l : existingLocals) {
+      existingLocalNames.add(l.getName());
+    }
   }
 
   /** generate this local with given type */
-  public Local generateThisLocal(Type type) {
+  public Local generateThisLocal(@Nonnull Type type) {
     if (this.thisLocal == null) {
       this.thisLocal = generateField(type);
     }
@@ -68,16 +79,16 @@ public class LocalGenerator {
   }
 
   /** generates a new {@link Local} given the type for field. */
-  public Local generateField(Type type) {
+  public Local generateField(@Nonnull Type type) {
     return generate(type, true);
   }
 
   /** generates a new {@link Local} given the type for local. */
-  public Local generateLocal(Type type) {
+  public Local generateLocal(@Nonnull Type type) {
     return generate(type, false);
   }
 
-  public Local generateParameterLocal(Type type, int index) {
+  public Local generateParameterLocal(@Nonnull Type type, int index) {
     if (!this.paraLocals.containsKey(index)) {
       Local paraLocal = generate(type, false);
       this.paraLocals.put(index, paraLocal);
@@ -85,23 +96,14 @@ public class LocalGenerator {
     return this.paraLocals.get(index);
   }
 
-  private Local generate(Type type, boolean isField) {
-    // cache Local names if body is given to speedup checks whether the local name is already taken
-    if (body != null) {
-      for (Local l : body.getLocals()) {
-        // update only names of type relevant Locals
-        if (type.equals(l.getType())) {
-          filteredLocalNames.add(l.getName());
-        }
-      }
-    }
+  private Local generate(@Nonnull Type type, boolean isField) {
 
     StringBuilder name = new StringBuilder(7);
     name.append("$");
     String localName;
     // determine locals name
     do {
-      /** non-field {@link Local}s traditionally begin with "$" */
+      // non-field Locals traditionally begin with "$"
       name.setLength(isField ? 0 : 1);
 
       if (type.equals(PrimitiveType.getInt())) {
@@ -131,7 +133,7 @@ public class LocalGenerator {
       }
 
       localName = name.toString();
-    } while ((body != null) && filteredLocalNames.contains(localName));
+    } while ((body != null) && existingLocalNames.contains(localName));
 
     return createLocal(localName, type);
   }
