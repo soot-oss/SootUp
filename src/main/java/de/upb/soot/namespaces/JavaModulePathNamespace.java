@@ -5,7 +5,7 @@ import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.ModuleSignature;
-import de.upb.soot.types.GlobalScope;
+import de.upb.soot.types.GlobalTypeScope;
 import de.upb.soot.types.JavaClassType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +74,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
 
     if (signature.getScope() instanceof ModuleSignature) {
       return getClassSource(signature, (ModuleSignature) signature.getScope());
-    } else if (signature.getScope() instanceof GlobalScope) {
+    } else if (signature.getScope() instanceof GlobalTypeScope) {
       // FIXME: return any matching class name, by checking the complete path...
 
     }

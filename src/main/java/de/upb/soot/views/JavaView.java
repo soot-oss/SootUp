@@ -1,7 +1,5 @@
 package de.upb.soot.views;
 
-import static de.upb.soot.util.Utils.valueOrElse;
-
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
@@ -14,11 +12,12 @@ import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
@@ -153,27 +152,28 @@ public class JavaView extends AbstractView {
 
     if (sootClass != null) return Optional.of(sootClass);
     else if (this.isFullyResolved()) return Optional.empty();
-    else return Optional.ofNullable(this.__resolveSootClass(type));
+    else return this.__resolveSootClass(type);
   }
 
   @Nullable
-  private AbstractClass __resolveSootClass(@Nonnull JavaClassType signature) {
-    return this.getProject()
-        .getNamespace()
-        .getClassSource(signature)
-        .map(
-            it -> {
-              // TODO Don't use a fixed SourceType here.
-              if (it instanceof ClassSource) {
-                return new SootClass((ClassSource) it, SourceType.Application);
+  private Optional<AbstractClass> __resolveSootClass(@Nonnull JavaClassType signature) {
+    Optional<AbstractClass> abstractClass =
+        this.getProject()
+            .getNamespace()
+            .getClassSource(signature)
+            .map(
+                it -> {
+                  // TODO Don't use a fixed SourceType here.
+                  if (it instanceof ClassSource) {
+                    return new SootClass((ClassSource) it, SourceType.Application);
 
-              } else if (it instanceof ModuleClassSource) {
-                return new SootModuleInfo((ModuleClassSource) it, false);
-              }
-              return null;
-            })
-        .map(it -> valueOrElse(this.map.putIfAbsent(it.getType(), it), it))
-        .orElse(null);
+                  } else if (it instanceof ModuleClassSource) {
+                    return new SootModuleInfo((ModuleClassSource) it, false);
+                  }
+                  return null;
+                });
+    abstractClass.ifPresent(it -> this.map.put(it.getType(), it));
+    return abstractClass;
   }
 
   public synchronized void resolveAll() {

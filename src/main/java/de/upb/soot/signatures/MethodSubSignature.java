@@ -5,9 +5,10 @@ import com.google.common.collect.ImmutableList;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.concurrent.Lazy;
+
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 
 /**
  * Defines a method sub-signature, containing the method name, the parameter type signatures, and

@@ -4,7 +4,7 @@ import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.ModuleSignature;
-import de.upb.soot.types.GlobalScope;
+import de.upb.soot.types.GlobalTypeScope;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
 
@@ -38,7 +38,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
     if (signature.getScope() instanceof ModuleSignature) {
       return this.getClassSourceInternalForModule(
           signature, (ModuleSignature) signature.getScope());
-    } else if (signature.getScope() instanceof GlobalScope) {
+    } else if (signature.getScope() instanceof GlobalTypeScope) {
       // FIXME: return any matching class name, by checking the complete path...
       this.getClassSourceInternalForClassPath(signature);
     }

@@ -75,7 +75,7 @@ public class JavaClassType extends ReferenceType {
     this.className = realClassName;
     this.packageName = packageName;
     this.isInnerClass = innerClass;
-    this.scope = GlobalScope.getInstance();
+    this.scope = GlobalTypeScope.getInstance();
   }
 
   @Override
