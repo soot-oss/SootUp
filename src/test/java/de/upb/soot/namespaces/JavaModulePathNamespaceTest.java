@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.types.JavaClassType;
@@ -17,18 +18,18 @@ import org.powermock.reflect.Whitebox;
 @Category(Java9Test.class)
 public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
-  private ModuleIdentifierFactory identifierFactory;
+  private DefaultIdentifierFactory identifierFactory;
 
   @Before
   @Override
   public void setUp() {
     super.setUp();
 
-    identifierFactory = ModuleIdentifierFactory.getInstance();
+    identifierFactory = DefaultIdentifierFactory.getInstance();
   }
 
   @Override
-  protected ModuleIdentifierFactory getIdentifierFactory() {
+  protected DefaultIdentifierFactory getIdentifierFactory() {
     return identifierFactory;
   }
 

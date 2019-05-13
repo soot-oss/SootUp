@@ -1,12 +1,14 @@
 package de.upb.soot.namespaces;
 
 import categories.Java9Test;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
-import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.internal.matchers.GreaterOrEqual;
+
+import java.util.Collection;
 
 @Category(Java9Test.class)
 public class JrtFileSystemNamespaceTest extends AbstractNamespaceTest {
@@ -23,7 +25,7 @@ public class JrtFileSystemNamespaceTest extends AbstractNamespaceTest {
   public void getClassSourceModule() {
     JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
     final JavaClassType sig =
-        ModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
+        DefaultIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
     testClassReceival(ns, sig, 1);
   }
 

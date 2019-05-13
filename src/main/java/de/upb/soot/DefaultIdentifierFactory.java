@@ -72,6 +72,16 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
     return moduleSignature;
   }
 
+  @Override
+  public JavaClassType getClassType(
+      final String className, final String packageName, String moduleName) {
+    PackageName packageIdentifier = getPackageName(packageName);
+    JavaClassType javaClassType = new JavaClassType(className, packageIdentifier);
+    ModuleSignature moduleSignature = getModuleSignature(moduleName);
+    javaClassType.setScope(moduleSignature);
+    return javaClassType;
+  }
+
   /**
    * Always creates a new ClassSignature.
    *

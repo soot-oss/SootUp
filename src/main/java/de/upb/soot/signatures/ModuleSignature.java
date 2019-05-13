@@ -29,6 +29,9 @@ import de.upb.soot.types.JavaClassTypeScope;
 // TODO Rename this too?
 
 /** Represents a Java 9 module. */
+
+// FIXME: or use directly a module as Scope not the signature...
+  //and then build a module graph ...
 public class ModuleSignature implements ISignature, JavaClassTypeScope {
   /**
    * The unnamed module. If a request is made to load a type whose package is not defined in any
@@ -36,6 +39,8 @@ public class ModuleSignature implements ISignature, JavaClassTypeScope {
    * associated with a module, the type is associated with the unnamed module. @see <a
    * href=http://openjdk.java.net/projects/jigsaw/spec/sotms/#the-unnamed-module>http://openjdk.java.net/projects/jigsaw/spec/sotms/#the-unnamed-module</a>
    */
+
+  // FIXME: vs the global scope??? or is it the same in module mode??
   public static final ModuleSignature UNNAMED_MODULE = new ModuleSignature("");
 
   public static final JavaClassType MODULE_INFO_CLASS =

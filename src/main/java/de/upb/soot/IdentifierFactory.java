@@ -97,6 +97,9 @@ public interface IdentifierFactory {
 
   JavaClassType getClassType(String className, String packageName);
 
+  JavaClassType getClassType(String className, String packageName, String moduleName);
+
+
   JavaClassType getClassType(String fullyQualifiedClassName);
 
   Type getType(String typeName);
