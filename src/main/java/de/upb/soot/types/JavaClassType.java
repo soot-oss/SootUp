@@ -22,31 +22,36 @@ package de.upb.soot.types;
  * #L%
  */
 
-import static de.upb.soot.util.Utils.Functional.tryCastTo;
-
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import de.upb.soot.IdentifierFactory;
-import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.namespaces.FileType;
+import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.signatures.PackageName;
 import de.upb.soot.views.IView;
+
+import javax.annotation.Nonnull;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import javax.annotation.Nonnull;
+
+import static de.upb.soot.util.Utils.Functional.tryCastTo;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
 public class JavaClassType extends ReferenceType {
+
 
   private final String className;
 
   private final PackageName packageName;
 
   private final boolean isInnerClass;
+
+  /** The scope in which this classtype is valid or defined, e.g., Module or a Classloader */
+  private JavaClassTypeScope scope;
 
   // TODO Can we hide this somehow from the public API surface?
   /**
@@ -70,6 +75,7 @@ public class JavaClassType extends ReferenceType {
     this.className = realClassName;
     this.packageName = packageName;
     this.isInnerClass = innerClass;
+    this.scope = GlobalScope.getInstance();
   }
 
   @Override
@@ -132,7 +138,7 @@ public class JavaClassType extends ReferenceType {
   }
 
   public boolean isModuleInfo() {
-    return this.className.equals(ModuleIdentifierFactory.MODULE_INFO_CLASS.className);
+    return this.className.equals(ModuleSignature.MODULE_INFO_CLASS.className);
   }
 
   /** The simple class name. */
@@ -169,5 +175,13 @@ public class JavaClassType extends ReferenceType {
   public Optional<SootClass> resolve(@Nonnull IView view) {
     // TODO: [JMP] Clarify: What if cast fails? Return empty or throw cast exception?
     return view.getClass(this).flatMap(tryCastTo(SootClass.class));
+  }
+
+  public JavaClassTypeScope getScope() {
+    return scope;
+  }
+
+  public void setScope(JavaClassTypeScope scope) {
+    this.scope = scope;
   }
 }

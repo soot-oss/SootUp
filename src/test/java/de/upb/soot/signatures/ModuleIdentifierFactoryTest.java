@@ -8,7 +8,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
-import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

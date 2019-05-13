@@ -1,19 +1,16 @@
 package de.upb.soot;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.FieldSubSignature;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.MethodSubSignature;
-import de.upb.soot.signatures.PackageName;
+import de.upb.soot.signatures.*;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
+
+import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 
 /*-
  * #%L
@@ -103,6 +100,9 @@ public interface IdentifierFactory {
   JavaClassType getClassType(String fullyQualifiedClassName);
 
   Type getType(String typeName);
+
+  @Nonnull
+  ModuleSignature getModuleSignature(@Nonnull String moduleName);
 
   @Nonnull
   Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName);

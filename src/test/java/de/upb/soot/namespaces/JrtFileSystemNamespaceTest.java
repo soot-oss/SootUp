@@ -1,7 +1,6 @@
 package de.upb.soot.namespaces;
 
 import categories.Java9Test;
-import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collection;
 import org.junit.Assert;

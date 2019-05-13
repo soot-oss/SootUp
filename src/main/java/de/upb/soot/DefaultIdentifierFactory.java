@@ -2,31 +2,17 @@ package de.upb.soot;
 
 import com.google.common.base.Preconditions;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.FieldSubSignature;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.MethodSubSignature;
-import de.upb.soot.signatures.PackageName;
-import de.upb.soot.types.ArrayType;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.NullType;
-import de.upb.soot.types.PrimitiveType;
-import de.upb.soot.types.Type;
-import de.upb.soot.types.VoidType;
+import de.upb.soot.signatures.*;
+import de.upb.soot.types.*;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ClassUtils;
+
+import javax.annotation.Nonnull;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ClassUtils;
 
 public class DefaultIdentifierFactory implements IdentifierFactory {
 
@@ -34,6 +20,8 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
 
   /** Caches the created PackageNames for packages. */
   protected final Map<String, PackageName> packages = new HashMap<>();
+  /** Caches the created ModuleSignatures. */
+  protected static final Map<String, ModuleSignature> modules = new HashMap<>();
 
   public static DefaultIdentifierFactory getInstance() {
     return INSTANCE;
@@ -42,6 +30,7 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
   public DefaultIdentifierFactory() {
     /* Represents the default package. */
     packages.put(PackageName.DEFAULT_PACKAGE.getPackageName(), PackageName.DEFAULT_PACKAGE);
+    modules.put(ModuleSignature.UNNAMED_MODULE.getModuleName(), ModuleSignature.UNNAMED_MODULE);
   }
 
   /**
@@ -59,6 +48,28 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
   public JavaClassType getClassType(final String className, final String packageName) {
     PackageName packageIdentifier = getPackageName(packageName);
     return new JavaClassType(className, packageIdentifier);
+  }
+
+  /**
+   * Returns a unique ModuleSignature. The methodRef looks up a cache if it already contains a
+   * signature with the given module name. If the cache lookup fails a new signature is created.
+   * Returns a unique ModuleSignature. The methodRef looks up a cache if it already contains a
+   * signature with the given module name. If the cache lookup fails a new signature is created.
+   *
+   * @param moduleName the module name; Must not be null. Use the empty string for the unnamed
+   *     module
+   * @return a ModuleSignature
+   * @throws NullPointerException if the given module name is null. Use the empty string to denote
+   *     the unnamed module.
+   */
+  public ModuleSignature getModuleSignature(final String moduleName) {
+    Preconditions.checkNotNull(moduleName);
+    ModuleSignature moduleSignature = modules.get(moduleName);
+    if (moduleSignature == null) {
+      moduleSignature = new ModuleSignature(moduleName);
+      modules.put(moduleName, moduleSignature);
+    }
+    return moduleSignature;
   }
 
   /**

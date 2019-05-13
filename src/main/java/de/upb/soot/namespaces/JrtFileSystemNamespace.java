@@ -1,26 +1,22 @@
 package de.upb.soot.namespaces;
 
-import com.google.common.base.Preconditions;
 import de.upb.soot.IdentifierFactory;
-import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.ModulePackageName;
+import de.upb.soot.signatures.ModuleSignature;
+import de.upb.soot.types.GlobalScope;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
+
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 
 /**
  * Base class for {@link INamespace}s that can be located by a {@link Path} object.
@@ -38,10 +34,15 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
       @Nonnull JavaClassType signature) {
-    if (signature.getPackageName() instanceof ModulePackageName) {
-      return this.getClassSourceInternalForModule(signature);
+
+    if (signature.getScope() instanceof ModuleSignature) {
+      return this.getClassSourceInternalForModule(
+          signature, (ModuleSignature) signature.getScope());
+    } else if (signature.getScope() instanceof GlobalScope) {
+      // FIXME: return any matching class name, by checking the complete path...
+      this.getClassSourceInternalForClassPath(signature);
     }
-    return this.getClassSourceInternalForClassPath(signature);
+    return Optional.empty();
   }
 
   private @Nonnull Optional<AbstractClassSource> getClassSourceInternalForClassPath(
@@ -67,15 +68,10 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   }
 
   private @Nonnull Optional<? extends AbstractClassSource> getClassSourceInternalForModule(
-      @Nonnull JavaClassType classSignature) {
-    Preconditions.checkArgument(classSignature.getPackageName() instanceof ModulePackageName);
-
-    ModulePackageName modulePackageSignature = (ModulePackageName) classSignature.getPackageName();
+      @Nonnull JavaClassType classSignature, ModuleSignature moduleSignature) {
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
-    final Path module =
-        theFileSystem.getPath(
-            "modules", modulePackageSignature.getModuleSignature().getModuleName());
+    final Path module = theFileSystem.getPath("modules", moduleSignature.getModuleName());
     Path foundClass = module.resolve(filepath);
 
     if (Files.isRegularFile(foundClass)) {
@@ -142,33 +138,11 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
     return foundModules;
   }
 
-  // TODO: originally, I could create a ModuleSingatre in any case, however, then
-  // every signature factory needs a methodRef create from path
-  // however, I cannot think of a general way for java 9 modules anyway....
-  // how to create the module name if we have a jar file..., or a multi jar, or the jrt file system
-  // nevertheless, one general methodRef for all signatures seems reasonable
   private @Nonnull JavaClassType fromPath(
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
-    // else use the module system and create fully class signature
-    if (identifierFactory instanceof ModuleIdentifierFactory) {
-      // FIXME: adann clean this up!
-      // String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
-      // int index = filename.lastIndexOf('.');
-      // Path parentDir = filename.subpath(0, 2);
-      // Path packageFileName = parentDir.relativize(filename);
-      // // get the package
-      // String packagename = packageFileName.toString().replace('/', '.');
-      // String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
-      //
-      JavaClassType sig = identifierFactory.fromPath(filename);
-
-      return ((ModuleIdentifierFactory) identifierFactory)
-          .getClassType(
-              sig.getClassName(), sig.getPackageName().getPackageName(), moduleDir.toString());
-    }
-
-    // if we are using the normal signature factory, than trim the module from the path
-    return identifierFactory.fromPath(filename);
+    JavaClassType sig = identifierFactory.fromPath(filename);
+    sig.setScope(identifierFactory.getModuleSignature(moduleDir.toString()));
+    return sig;
   }
 }

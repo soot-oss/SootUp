@@ -1,32 +1,20 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.modules.AsmModuleClassSource;
 import de.upb.soot.signatures.ModuleSignature;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.ModuleDecoratorClassType;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Discovers all modules in a given module path. For automatic modules, names are generated.
@@ -142,8 +130,7 @@ public class ModuleFinder {
 
           if (attrs.isDirectory()) {
             Path moduleInfoFile =
-                ModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(
-                    classProvider.getHandledFileType());
+                ModuleSignature.MODULE_INFO_CLASS.toPath(classProvider.getHandledFileType());
             Path mi = entry.resolve(moduleInfoFile);
             if (Files.exists(mi)) {
               buildModuleForExplodedModule(entry);
@@ -163,14 +150,13 @@ public class ModuleFinder {
     PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(dir);
 
     Path moduleInfoFile =
-        dir.resolve(
-            ModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(classProvider.getHandledFileType()));
+        dir.resolve(ModuleSignature.MODULE_INFO_CLASS.toPath(classProvider.getHandledFileType()));
     if (!Files.exists(moduleInfoFile) && !Files.isRegularFile(moduleInfoFile)) {
       return;
     }
     // get the module's name out of this module-info file
     Optional<? extends AbstractClassSource> moduleInfoClassSource =
-        namespace.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
+        namespace.getClassSource(ModuleSignature.MODULE_INFO_CLASS);
     if (moduleInfoClassSource.isPresent()) {
       AbstractClassSource moduleInfoSource = moduleInfoClassSource.get();
       // get the module name
@@ -191,14 +177,14 @@ public class ModuleFinder {
       final Path archiveRoot = zipFileSystem.getPath("/");
       Path mi =
           archiveRoot.resolve(
-              ModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(
+              ModuleSignature.MODULE_INFO_CLASS.toPath(
                   classProvider.getHandledFileType(), zipFileSystem));
       if (Files.exists(mi)) {
 
         // we have a modular jar
         // get the module name
         // create proper moduleInfoSignature
-        moduleInfoFile = namespace.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
+        moduleInfoFile = namespace.getClassSource(ModuleSignature.MODULE_INFO_CLASS);
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -245,20 +231,8 @@ public class ModuleFinder {
     // FIXME: here is no view or anything to resolve the content...??? Why do I need a view anyway?
 
     String moduleName = parseModuleInfoClassFile(moduleInfoClass);
-    createProperModuleSignature(moduleInfoSource, moduleName);
 
     return moduleName;
-  }
-
-  private void createProperModuleSignature(
-      AbstractClassSource moduleInfoSource, String moduleName) {
-    // create proper moduleInfoSignature
-    // add the module name, which was unknown before
-    // moduleInfoSource.setClassSignature();
-    ModuleSignature moduleSignature = ModuleIdentifierFactory.getModuleSignature(moduleName);
-    JavaClassType sig =
-        new ModuleDecoratorClassType(ModuleIdentifierFactory.MODULE_INFO_CLASS, moduleSignature);
-    moduleInfoSource.setClassSignature(sig);
   }
 
   /**

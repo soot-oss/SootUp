@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
 import de.upb.soot.IdentifierFactory;
-import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.types.JavaClassType;
 import java.util.Optional;

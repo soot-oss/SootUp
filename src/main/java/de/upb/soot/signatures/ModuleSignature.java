@@ -23,11 +23,13 @@ package de.upb.soot.signatures;
  */
 
 import com.google.common.base.Objects;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.JavaClassTypeScope;
 
 // TODO Rename this too?
 
 /** Represents a Java 9 module. */
-public class ModuleSignature implements ISignature {
+public class ModuleSignature implements ISignature, JavaClassTypeScope {
   /**
    * The unnamed module. If a request is made to load a type whose package is not defined in any
    * module then the module system load it from the classpath. To ensure that every type is
@@ -35,6 +37,9 @@ public class ModuleSignature implements ISignature {
    * href=http://openjdk.java.net/projects/jigsaw/spec/sotms/#the-unnamed-module>http://openjdk.java.net/projects/jigsaw/spec/sotms/#the-unnamed-module</a>
    */
   public static final ModuleSignature UNNAMED_MODULE = new ModuleSignature("");
+
+  public static final JavaClassType MODULE_INFO_CLASS =
+      new JavaClassType("module-info", PackageName.DEFAULT_PACKAGE);
 
   private final String moduleName;
 
@@ -73,5 +78,10 @@ public class ModuleSignature implements ISignature {
   /** The name of the module. */
   public String getModuleName() {
     return moduleName;
+  }
+
+  @Override
+  public ModuleSignature getScope() {
+    return this;
   }
 }
