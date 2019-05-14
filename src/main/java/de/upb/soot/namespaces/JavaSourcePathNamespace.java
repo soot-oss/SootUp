@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the {@link INamespace} interface for the Java source code path.
@@ -19,6 +21,8 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  */
 public class JavaSourcePathNamespace extends AbstractNamespace {
+
+  private static final Logger log = LoggerFactory.getLogger(JavaSourcePathNamespace.class);
 
   @Nonnull private final Set<String> sourcePaths;
   private final String exclusionFilePath;
@@ -60,9 +64,8 @@ public class JavaSourcePathNamespace extends AbstractNamespace {
     for (String path : sourcePaths) {
       try {
         return Optional.of(getClassProvider().createClassSource(this, Paths.get(path), type));
-      } catch (ResolveException ignored) {
-        // TODO This is really ugly. Maybe we can make createClassSource return an optional /
-        //   nullable?
+      } catch (ResolveException e) {
+        log.debug(type + " not found in sourcePath " + path, e);
       }
     }
     return Optional.empty();

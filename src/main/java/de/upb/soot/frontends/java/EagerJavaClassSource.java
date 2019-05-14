@@ -1,6 +1,5 @@
 package de.upb.soot.frontends.java;
 
-import com.google.common.base.Preconditions;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
@@ -10,7 +9,11 @@ import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -62,39 +65,33 @@ public class EagerJavaClassSource extends ClassSource {
     return sootFields;
   }
 
+  @Nonnull
   @Override
   public Set<Modifier> resolveModifiers() {
-    checkExpectedType(this.classSignature);
     return modifiers;
   }
 
+  @Nonnull
   @Override
   public Set<JavaClassType> resolveInterfaces() {
-    checkExpectedType(this.classSignature);
     return interfaces;
   }
 
+  @Nonnull
   @Override
   public Optional<JavaClassType> resolveSuperclass() {
-    checkExpectedType(this.classSignature);
     return Optional.ofNullable(superClass);
   }
 
+  @Nonnull
   @Override
   public Optional<JavaClassType> resolveOuterClass() {
-    checkExpectedType(this.classSignature);
     return Optional.ofNullable(outerClass);
   }
 
   @Override
   public Position resolvePosition() {
-    checkExpectedType(this.classSignature);
     return position;
-  }
-
-  private void checkExpectedType(JavaClassType type) {
-    Preconditions.checkArgument(
-        this.classSignature.equals(this.classSignature), "Expected type " + this.classSignature);
   }
 
   @Override
