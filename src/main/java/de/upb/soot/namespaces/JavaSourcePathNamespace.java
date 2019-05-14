@@ -1,13 +1,19 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.IdentifierFactory;
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.frontends.ResolveException;
+import de.upb.soot.frontends.java.WalaClassLoader;
+import de.upb.soot.frontends.java.WalaJavaClassProvider;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.util.NotYetImplementedException;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the {@link INamespace} interface for the Java source code path.
@@ -16,32 +22,52 @@ import javax.annotation.Nonnull;
  */
 public class JavaSourcePathNamespace extends AbstractNamespace {
 
-  @Nonnull private final Set<String> sourcePath;
+  private static final Logger log = LoggerFactory.getLogger(JavaSourcePathNamespace.class);
+
+  @Nonnull private final Set<String> sourcePaths;
+  private final String exclusionFilePath;
 
   /**
    * Create a {@link JavaSourcePathNamespace} which locates java source code in the given source
    * path.
    *
-   * @param sourcePath the source code path to search in
+   * @param sourcePaths the source code path to search in
    */
-  public JavaSourcePathNamespace(@Nonnull Set<String> sourcePath) {
-    // FIXME: [JMP] Is `null` intended here?
-    super(null);
+  public JavaSourcePathNamespace(@Nonnull Set<String> sourcePaths) {
+    this(sourcePaths, null);
+  }
 
-    this.sourcePath = sourcePath;
+  /**
+   * Create a {@link JavaSourcePathNamespace} which locates java source code in the given source
+   * path.
+   *
+   * @param sourcePaths the source code path to search in
+   */
+  public JavaSourcePathNamespace(
+      @Nonnull Set<String> sourcePaths, @Nullable String exclusionFilePath) {
+    super(new WalaJavaClassProvider(exclusionFilePath));
+
+    this.sourcePaths = sourcePaths;
+    this.exclusionFilePath = exclusionFilePath;
   }
 
   @Override
   @Nonnull
-  public Collection<ClassSource> getClassSources(@Nonnull IdentifierFactory identifierFactory) {
-    // TODO Auto-generated methodRef stub
-    throw new NotYetImplementedException("Getting class sources is not implemented, yet.");
+  public Collection<? extends AbstractClassSource> getClassSources(
+      @Nonnull IdentifierFactory identifierFactory) {
+    return new WalaClassLoader(sourcePaths, exclusionFilePath).getClassSources();
   }
 
   @Override
   @Nonnull
-  public Optional<ClassSource> getClassSource(@Nonnull JavaClassType classSignature) {
-    // TODO Auto-generated methodRef stub
-    throw new NotYetImplementedException("Getting class source is not implemented, yet.");
+  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
+    for (String path : sourcePaths) {
+      try {
+        return Optional.of(getClassProvider().createClassSource(this, Paths.get(path), type));
+      } catch (ResolveException e) {
+        log.debug(type + " not found in sourcePath " + path, e);
+      }
+    }
+    return Optional.empty();
   }
 }

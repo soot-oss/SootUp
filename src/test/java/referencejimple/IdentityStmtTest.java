@@ -3,14 +3,13 @@ package referencejimple;
 import com.ibm.wala.cast.loader.AstMethod;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
-import de.upb.soot.core.ClassType;
 import de.upb.soot.core.Modifier;
-import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.IMethodSourceContent;
-import de.upb.soot.frontends.JavaClassSource;
+import de.upb.soot.core.SourceType;
+import de.upb.soot.frontends.IMethodSource;
+import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -40,7 +39,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
-class DummyMethodSource implements IMethodSourceContent {
+class DummyMethodSource implements IMethodSource {
   private Body body;
   private MethodSignature methodSignature;
 
@@ -70,11 +69,6 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     DefaultIdentifierFactory dif = DefaultIdentifierFactory.getInstance();
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
-    JavaClassSource javaClassSource =
-        new JavaClassSource(
-            new JavaClassPathNamespace("src/main/java/de/upb/soot"),
-            dummyPath,
-            dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"));
 
     JavaClassType superClassSignature = dif.getClassType("java.lang.Object");
     classSignature = dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
@@ -103,11 +97,11 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     // atExceptionThrow();
     // atExceptionThrowAndCatch();
 
-    sootClass =
-        new SootClass(
-            ResolvingLevel.BODIES,
-            javaClassSource,
-            ClassType.Application,
+    EagerJavaClassSource javaClassSource =
+        new EagerJavaClassSource(
+            new JavaClassPathNamespace("src/main/java/de/upb/soot"),
+            dummyPath,
+            dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
             superClassSignature,
             new HashSet<>(),
             null,
@@ -115,6 +109,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
             methods,
             new NoPositionInformation(),
             EnumSet.of(Modifier.PUBLIC));
+
+    sootClass = new SootClass(javaClassSource, SourceType.Application);
   }
 
   SootMethod init(@Nonnull FieldSignature initFieldSignature) {
@@ -147,7 +143,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     stmts.add(Jimple.newReturnVoidStmt(nop));
 
     Body body = new Body(locals, traps, stmts, new NoPositionInformation());
-    IMethodSourceContent methodSource = new DummyMethodSource(methodSignature, body);
+    IMethodSource methodSource = new DummyMethodSource(methodSignature, body);
 
     return new SootMethod(
         methodSource,

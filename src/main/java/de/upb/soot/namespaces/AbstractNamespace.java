@@ -1,6 +1,6 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.types.JavaClassType;
@@ -82,6 +82,6 @@ public abstract class AbstractNamespace implements INamespace {
   }
 
   @Override
-  public abstract @Nonnull Optional<ClassSource> getClassSource(
+  public abstract @Nonnull Optional<? extends AbstractClassSource> getClassSource(
       @Nonnull JavaClassType classSignature);
 }

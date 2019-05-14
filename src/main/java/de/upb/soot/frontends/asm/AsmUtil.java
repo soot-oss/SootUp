@@ -2,33 +2,18 @@ package de.upb.soot.frontends.asm;
 
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Modifier;
-import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.PrimitiveType;
-import de.upb.soot.types.Type;
-import de.upb.soot.types.VoidType;
+import de.upb.soot.types.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
 
 public final class AsmUtil {
 
@@ -42,51 +27,17 @@ public final class AsmUtil {
    * @param classSource The source.
    * @param classNode The node to initialize
    */
-  public static void initAsmClassSource(
-      @Nonnull ClassSource classSource, @Nonnull ClassNode classNode) {
-    URI uri = classSource.getSourcePath().toUri();
-
+  protected static void initAsmClassSource(
+      @Nonnull Path classSource, @Nonnull AsmJavaClassProvider.SootClassNode classNode)
+      throws AsmFrontendException {
     try {
-      if (classSource.getSourcePath().getFileSystem().isOpen()) {
-        Path sourceFile = java.nio.file.Paths.get(uri);
+      try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
+        ClassReader clsr = new ClassReader(sourceFileInputStream);
 
-        initClassNode(sourceFile, classNode);
-      } else {
-        // A zip file system needs to be re-opened, otherwise it crashes
-        // http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
-
-        Map<String, String> env = new HashMap<>();
-        env.put("create", "false");
-
-        // Info: The `__zipfs` variable is intentionally unused. It is required
-        // to create the ZIP file system, but the file system instance itself
-        // has not explicitly to be used – this happens in the background.
-        try (FileSystem __zipfs = FileSystems.newFileSystem(uri, env)) {
-          Path sourceFile = Paths.get(uri);
-
-          initClassNode(sourceFile, classNode);
-        }
+        clsr.accept(classNode, ClassReader.SKIP_FRAMES);
       }
-
     } catch (IOException e) {
-      e.printStackTrace();
-      // TODO: Exception handling
-    }
-  }
-
-  /**
-   * Initializes the specified class node from a class file.
-   *
-   * @param sourceFile The source file.
-   * @param classNode The class node.
-   * @throws IOException An error occurred.
-   */
-  private static void initClassNode(@Nonnull Path sourceFile, @Nonnull ClassNode classNode)
-      throws IOException {
-    try (InputStream sourceFileInputStream = Files.newInputStream(sourceFile)) {
-      ClassReader clsr = new ClassReader(sourceFileInputStream);
-
-      clsr.accept(classNode, ClassReader.SKIP_FRAMES);
+      throw new AsmFrontendException(e.getMessage());
     }
   }
 
@@ -253,13 +204,22 @@ public final class AsmUtil {
   }
 
   @Nonnull
-  public static Collection<JavaClassType> asmIdToSignature(@Nullable Iterable<String> modules) {
-    if (modules == null) {
+  public static Collection<JavaClassType> asmIdToSignature(
+      @Nullable Iterable<String> asmClassNames) {
+    if (asmClassNames == null) {
       return Collections.emptyList();
     }
 
-    return StreamSupport.stream(modules.spliterator(), false)
-        .map(p -> (DefaultIdentifierFactory.getInstance().getClassType(toQualifiedName(p))))
+    return StreamSupport.stream(asmClassNames.spliterator(), false)
+        .map(p -> asmIDToSignature(p))
         .collect(Collectors.toList());
+  }
+
+  @Nullable
+  public static JavaClassType asmIDToSignature(@Nonnull String asmClassName) {
+    if (asmClassName == null || asmClassName.isEmpty()) {
+      return null;
+    }
+    return DefaultIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
   }
 }

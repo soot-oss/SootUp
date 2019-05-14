@@ -23,7 +23,7 @@ package de.upb.soot.namespaces;
  */
 
 import categories.Java8Test;
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,7 +50,8 @@ public class PathBasedNamespaceTest extends AbstractNamespaceTest {
     PathBasedNamespace pathBasedNamespace = PathBasedNamespace.createForClassContainer(baseDir);
     final JavaClassType sig =
         getIdentifierFactory().getClassType("NotExisting", "de.upb.soot.namespaces");
-    final Optional<ClassSource> classSource = pathBasedNamespace.getClassSource(sig);
+    final Optional<? extends AbstractClassSource> classSource =
+        pathBasedNamespace.getClassSource(sig);
     Assert.assertFalse(classSource.isPresent());
   }
 

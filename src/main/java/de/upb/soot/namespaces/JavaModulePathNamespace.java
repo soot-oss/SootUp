@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.core.SootClass;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.FieldSignature;
@@ -59,13 +60,13 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public @Nonnull Collection<ClassSource> getClassSources(
+  public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
     Preconditions.checkArgument(
         identifierFactory instanceof ModuleIdentifierFactory,
-        "Factory must be a ModuleIdentifierFactory");
+        "Factory must be a ModuleSignatureFactory");
 
-    Set<ClassSource> found = new HashSet<>();
+    Set<AbstractClassSource> found = new HashSet<>();
     Collection<String> availableModules = moduleFinder.discoverAllModules();
     for (String module : availableModules) {
       AbstractNamespace ns = moduleFinder.discoverModule(module);
@@ -87,7 +88,8 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   }
 
   @Override
-  public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassType signature) {
+  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+      @Nonnull JavaClassType signature) {
 
     String modulename =
         ((ModulePackageName) signature.getPackageName()).getModuleSignature().getModuleName();
