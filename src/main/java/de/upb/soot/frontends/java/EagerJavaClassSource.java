@@ -62,24 +62,28 @@ public class EagerJavaClassSource extends ClassSource {
     return sootFields;
   }
 
+  @Nonnull
   @Override
   public Set<Modifier> resolveModifiers() {
     checkExpectedType(this.classSignature);
     return modifiers;
   }
 
+  @Nonnull
   @Override
   public Set<JavaClassType> resolveInterfaces() {
     checkExpectedType(this.classSignature);
     return interfaces;
   }
 
+  @Nonnull
   @Override
   public Optional<JavaClassType> resolveSuperclass() {
     checkExpectedType(this.classSignature);
     return Optional.ofNullable(superClass);
   }
 
+  @Nonnull
   @Override
   public Optional<JavaClassType> resolveOuterClass() {
     checkExpectedType(this.classSignature);

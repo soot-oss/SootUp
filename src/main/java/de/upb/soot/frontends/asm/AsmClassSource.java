@@ -102,19 +102,23 @@ class AsmClassSource extends ClassSource {
     return resolveFields(classNode.fields, identifierFactory, classSignature);
   }
 
+  @Nonnull
   public Set<Modifier> resolveModifiers() {
     EnumSet<Modifier> modifiers = AsmUtil.getModifiers(classNode.access);
     return modifiers;
   }
 
+  @Nonnull
   public Set<JavaClassType> resolveInterfaces() {
     return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
   }
 
+  @Nonnull
   public Optional<JavaClassType> resolveSuperclass() {
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.superName));
   }
 
+  @Nonnull
   public Optional<JavaClassType> resolveOuterClass() {
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
   }

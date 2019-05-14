@@ -11,7 +11,6 @@ import de.upb.soot.types.JavaClassType;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -44,29 +43,22 @@ public abstract class ClassSource extends AbstractClassSource {
     checkNotNull(srcNamespace);
   }
 
-  // TODO We should probably eliminate the type parameters here.
-  //   An IClassSourceContent should be directly associated with and
-  //   know about its JavaClassType, so users don't need to pass this
-  //   as a parameter twice.
+  @Nonnull
+  public abstract Collection<SootMethod> resolveMethods() throws ResolveException;
 
   @Nonnull
-  public Collection<SootMethod> resolveMethods() throws ResolveException {
-    // TODO: Not sure whether this should even have a default implementation
-    return Collections.emptyList();
-  }
+  public abstract Collection<SootField> resolveFields() throws ResolveException;
 
   @Nonnull
-  public Collection<SootField> resolveFields() throws ResolveException {
-    // TODO: Not sure whether this should even have a default implementation
-    return Collections.emptyList();
-  }
-
   public abstract Set<Modifier> resolveModifiers();
 
+  @Nonnull
   public abstract Set<JavaClassType> resolveInterfaces();
 
+  @Nonnull
   public abstract Optional<JavaClassType> resolveSuperclass();
 
+  @Nonnull
   public abstract Optional<JavaClassType> resolveOuterClass();
 
   public abstract CAstSourcePositionMap.Position resolvePosition();
