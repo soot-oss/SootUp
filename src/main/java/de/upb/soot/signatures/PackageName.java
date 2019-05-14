@@ -29,20 +29,20 @@ import com.google.common.base.Objects;
  *
  * @author Andreas Dann
  */
-public class PackageSignature {
+public class PackageName {
 
   /** Represents the default package. */
-  public static final PackageSignature DEFAULT_PACKAGE = new PackageSignature("");
+  public static final PackageName DEFAULT_PACKAGE = new PackageName("");
 
   private final String packageName;
 
   /**
    * Internal: Constructs a Package Signature of a Java package. Instances should only be created by
-   * a {@link DefaultSignatureFactory}
+   * a {@link Remove}
    *
    * @param packageName the package's name
    */
-  protected PackageSignature(final String packageName) {
+  public PackageName(final String packageName) {
     this.packageName = packageName;
   }
 
@@ -54,7 +54,7 @@ public class PackageSignature {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    PackageSignature that = (PackageSignature) o;
+    PackageName that = (PackageName) o;
     return Objects.equal(packageName, that.packageName);
   }
 

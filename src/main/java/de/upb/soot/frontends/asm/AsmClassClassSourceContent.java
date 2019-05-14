@@ -1,5 +1,7 @@
 package de.upb.soot.frontends.asm;
 
+import de.upb.soot.DefaultIdentifierFactory;
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.ClassType;
 import de.upb.soot.core.IMethod;
@@ -11,11 +13,8 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.SignatureFactory;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.views.IView;
@@ -50,7 +49,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
   public AbstractClass resolveClass(@Nonnull ResolvingLevel level, @Nonnull IView view)
       throws AsmFrontendException {
 
-    JavaClassType cs = view.getTypeFactory().getClassType(this.signature);
+    JavaClassType cs = view.getIdentifierFactory().getClassType(this.signature);
     SootClass.SootClassSurrogateBuilder builder;
 
     // FIXME: currently ugly because, the original class is always re-resolved but never copied...
@@ -108,7 +107,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
 
     // Add super class
     JavaClassType mySuperClass =
-        DefaultTypeFactory.getInstance().getClassType(AsmUtil.toQualifiedName(superName));
+        DefaultIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(superName));
 
     // Add interfaces
     Set<JavaClassType> interfaces = new HashSet<>(AsmUtil.asmIdToSignature(this.interfaces));
@@ -117,7 +116,9 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
   }
 
   private static Set<SootField> resolveFields(
-      List<FieldNode> fieldNodes, SignatureFactory signatureFactory, JavaClassType classSignature) {
+      List<FieldNode> fieldNodes,
+      IdentifierFactory identifierFactory,
+      JavaClassType classSignature) {
     // FIXME: add support for annotation
     return fieldNodes.stream()
         .map(
@@ -125,7 +126,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
               String fieldName = fieldNode.name;
               Type fieldType = AsmUtil.toJimpleType(fieldNode.desc);
               FieldSignature fieldSignature =
-                  signatureFactory.getFieldSignature(fieldName, classSignature, fieldType);
+                  identifierFactory.getFieldSignature(fieldName, classSignature, fieldType);
               EnumSet<Modifier> modifiers = AsmUtil.getModifiers(fieldNode.access);
 
               return new SootField(fieldSignature, modifiers);
@@ -134,7 +135,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
   }
 
   private static Stream<SootMethod> resolveMethods(
-      List<MethodNode> methodNodes, SignatureFactory signatureFactory, JavaClassType cs) {
+      List<MethodNode> methodNodes, IdentifierFactory identifierFactory, JavaClassType cs) {
     return methodNodes.stream()
         .map(
             methodSource -> {
@@ -158,7 +159,7 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
               Type retType = sigTypes.remove(sigTypes.size() - 1);
 
               MethodSignature methodSignature =
-                  signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
+                  identifierFactory.getMethodSignature(methodName, cs, retType, sigTypes);
 
               return SootMethod.builder()
                   .withSource(asmClassClassSourceContent)
@@ -186,9 +187,9 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
     }
 
     Set<SootField> fields =
-        resolveFields(this.fields, view.getSignatureFactory(), sootClass.getType());
+        resolveFields(this.fields, view.getIdentifierFactory(), sootClass.getType());
     Set<IMethod> methods =
-        resolveMethods(this.methods, view.getSignatureFactory(), cs).collect(Collectors.toSet());
+        resolveMethods(this.methods, view.getIdentifierFactory(), cs).collect(Collectors.toSet());
 
     return signatureStep.signature(fields, methods);
   }
@@ -197,16 +198,16 @@ class AsmClassClassSourceContent extends org.objectweb.asm.tree.ClassNode
   @Nonnull
   public Iterable<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
       throws ResolveException {
-    SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
-    return resolveMethods(methods, signatureFactory, signature).collect(Collectors.toSet());
+    IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+    return resolveMethods(methods, identifierFactory, signature).collect(Collectors.toSet());
   }
 
   @Override
   @Nonnull
   public Iterable<SootField> resolveFields(@Nonnull JavaClassType classSignature)
       throws ResolveException {
-    SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
-    return resolveFields(fields, signatureFactory, classSignature);
+    IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+    return resolveFields(fields, identifierFactory, classSignature);
   }
 
   @Nonnull
