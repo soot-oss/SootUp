@@ -3,7 +3,7 @@ package de.upb.soot.buildactor;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
-import de.upb.soot.ModuleFactories;
+import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
@@ -21,11 +21,8 @@ public class ModuleBuilderActorTest {
 
     final JavaModulePathNamespace javaClassPathNamespace =
         new JavaModulePathNamespace("target/test-classes/de/upb/soot/namespaces/modules");
-    ModuleFactories factories = ModuleFactories.create();
 
-    Project project =
-        new Project(
-            javaClassPathNamespace, factories.getSignatureFactory(), factories.getTypeFactory());
+    Project project = new Project(javaClassPathNamespace, ModuleIdentifierFactory.getInstance());
 
     // de.upb.soot.views.JavaView view = new de.upb.soot.views.JavaView(project);
 
@@ -44,7 +41,7 @@ public class ModuleBuilderActorTest {
     de.upb.soot.views.IView iView = createNewScene();
 
     final JavaClassType sig =
-        ModuleFactories.create().getTypeFactory().getClassType("module-info", "", "de.upb.mod");
+        ModuleIdentifierFactory.getInstance().getClassType("module-info", "", "de.upb.mod");
     // Optional<ClassSource> source = stuffAViewNeeds.pollNamespaces(sig);
 
     // assertTrue(source.isPresent());
@@ -63,7 +60,7 @@ public class ModuleBuilderActorTest {
     de.upb.soot.views.IView iView = createNewScene();
 
     final JavaClassType sig =
-        ModuleFactories.create().getTypeFactory().getClassType("module-info", "", "de.upb.mod");
+        ModuleIdentifierFactory.getInstance().getClassType("module-info", "", "de.upb.mod");
 
     Optional<AbstractClass> result = iView.getClass(sig);
     assertTrue(result.isPresent());

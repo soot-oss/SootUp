@@ -1,9 +1,18 @@
-package de.upb.soot.signatures;
+package de.upb.soot;
 
 import de.upb.soot.core.SootClass;
+import de.upb.soot.signatures.FieldSignature;
+import de.upb.soot.signatures.FieldSubSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.MethodSubSignature;
+import de.upb.soot.signatures.PackageName;
+import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /*-
@@ -28,9 +37,9 @@ import javax.annotation.Nonnull;
  * #L%
  */
 
-public interface SignatureFactory {
+public interface IdentifierFactory {
 
-  PackageSignature getPackageSignature(String packageName);
+  PackageName getPackageName(String packageName);
 
   MethodSignature getMethodSignature(
       String methodName,
@@ -88,4 +97,17 @@ public interface SignatureFactory {
 
   @Nonnull
   FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature);
+
+  JavaClassType getClassType(String className, String packageName);
+
+  JavaClassType getClassType(String fullyQualifiedClassName);
+
+  Type getType(String typeName);
+
+  @Nonnull
+  Optional<PrimitiveType> getPrimitiveType(@Nonnull String typeName);
+
+  ArrayType getArrayType(Type baseType, int dim);
+
+  JavaClassType fromPath(Path file);
 }

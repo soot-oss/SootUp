@@ -1,11 +1,11 @@
 package de.upb.soot.namespaces;
 
+import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.frontends.asm.modules.AsmModuleClassSourceContent;
 import de.upb.soot.signatures.ModuleSignature;
-import de.upb.soot.signatures.ModuleSignatureFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.ModuleDecoratorClassType;
 import java.io.File;
@@ -143,7 +143,8 @@ public class ModuleFinder {
 
           if (attrs.isDirectory()) {
             Path moduleInfoFile =
-                ModuleSignatureFactory.MODULE_INFO_CLASS.toPath(classProvider.getHandledFileType());
+                ModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(
+                    classProvider.getHandledFileType());
             Path mi = entry.resolve(moduleInfoFile);
             if (Files.exists(mi)) {
               buildModuleForExplodedModule(entry);
@@ -164,13 +165,13 @@ public class ModuleFinder {
 
     Path moduleInfoFile =
         dir.resolve(
-            ModuleSignatureFactory.MODULE_INFO_CLASS.toPath(classProvider.getHandledFileType()));
+            ModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(classProvider.getHandledFileType()));
     if (!Files.exists(moduleInfoFile) && !Files.isRegularFile(moduleInfoFile)) {
       return;
     }
     // get the module's name out of this module-info file
     Optional<ClassSource> moduleInfoClassSource =
-        namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
+        namespace.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
     if (moduleInfoClassSource.isPresent()) {
       ClassSource moduleInfoSource = moduleInfoClassSource.get();
       // get the module name
@@ -191,14 +192,14 @@ public class ModuleFinder {
       final Path archiveRoot = zipFileSystem.getPath("/");
       Path mi =
           archiveRoot.resolve(
-              ModuleSignatureFactory.MODULE_INFO_CLASS.toPath(
+              ModuleIdentifierFactory.MODULE_INFO_CLASS.toPath(
                   classProvider.getHandledFileType(), zipFileSystem));
       if (Files.exists(mi)) {
 
         // we have a modular jar
         // get the module name
         // create proper moduleInfoSignature
-        moduleInfoFile = namespace.getClassSource(ModuleSignatureFactory.MODULE_INFO_CLASS);
+        moduleInfoFile = namespace.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -254,9 +255,9 @@ public class ModuleFinder {
     // create proper moduleInfoSignature
     // add the module name, which was unknown before
     // moduleInfoSource.setClassSignature();
-    ModuleSignature moduleSignature = ModuleSignatureFactory.getModuleSignature(moduleName);
+    ModuleSignature moduleSignature = ModuleIdentifierFactory.getModuleSignature(moduleName);
     JavaClassType sig =
-        new ModuleDecoratorClassType(ModuleSignatureFactory.MODULE_INFO_CLASS, moduleSignature);
+        new ModuleDecoratorClassType(ModuleIdentifierFactory.MODULE_INFO_CLASS, moduleSignature);
     moduleInfoSource.setClassSignature(sig);
   }
 
