@@ -42,11 +42,6 @@ public class JLengthExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public Object clone() {
-    return new JLengthExpr(Jimple.cloneIfNecessary(getOp()));
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseLengthExpr(this, o);
   }

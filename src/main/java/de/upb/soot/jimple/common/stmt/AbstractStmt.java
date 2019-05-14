@@ -46,10 +46,6 @@ public abstract class AbstractStmt implements IStmt {
     this.positionInfo = positionInfo;
   }
 
-  /** Returns a deep clone of this object. */
-  @Override
-  public abstract AbstractStmt clone();
-
   /**
    * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically
    * updated as the structure changes. Note that they are returned in usual evaluation order. (this

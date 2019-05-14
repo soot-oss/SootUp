@@ -64,12 +64,6 @@ public class JIfStmt extends AbstractStmt {
   }
 
   @Override
-  public JIfStmt clone() {
-    return new JIfStmt(
-        Jimple.cloneIfNecessary(getCondition()), getTarget(), getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     IStmt t = getTarget();
     String target = "(branch)";

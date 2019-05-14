@@ -67,9 +67,4 @@ public class NullConstant implements Constant {
   public String toString() {
     return this.getType().toString();
   }
-
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

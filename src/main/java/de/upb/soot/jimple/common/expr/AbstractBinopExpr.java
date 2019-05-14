@@ -90,9 +90,6 @@ public abstract class AbstractBinopExpr implements Expr {
   public abstract String getSymbol();
 
   @Override
-  public abstract Object clone();
-
-  @Override
   public String toString() {
     Value op1 = op1Box.getValue();
     Value op2 = op2Box.getValue();

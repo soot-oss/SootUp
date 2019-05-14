@@ -57,11 +57,6 @@ public class JArrayRef implements ConcreteRef {
   }
 
   @Override
-  public Object clone() {
-    return new JArrayRef(Jimple.cloneIfNecessary(getBase()), Jimple.cloneIfNecessary(getIndex()));
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseArrayRef(this, o);
   }

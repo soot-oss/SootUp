@@ -40,10 +40,6 @@ public interface Constant extends Value, Immediate {
     return Collections.emptyList();
   }
 
-  /** Clones the current constant. Not implemented here. */
-  @Override
-  Object clone();
-
   @Override
   default boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseConstant(this, o);

@@ -41,11 +41,6 @@ public class JReturnVoidStmt extends AbstractStmt {
   }
 
   @Override
-  public JReturnVoidStmt clone() {
-    return new JReturnVoidStmt(getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     return Jimple.RETURN;
   }

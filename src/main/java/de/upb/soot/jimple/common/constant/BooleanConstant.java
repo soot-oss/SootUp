@@ -90,9 +90,4 @@ public class BooleanConstant
   public String toString() {
     return Integer.toString(value);
   }
-
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

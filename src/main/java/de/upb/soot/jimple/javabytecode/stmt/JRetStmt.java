@@ -54,11 +54,6 @@ public class JRetStmt extends AbstractStmt {
   }
 
   @Override
-  public JRetStmt clone() {
-    return new JRetStmt(Jimple.cloneIfNecessary(getStmtAddress()), getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     return Jimple.RET + " " + stmtAddressBox.getValue().toString();
   }

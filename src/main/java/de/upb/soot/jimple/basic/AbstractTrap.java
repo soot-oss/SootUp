@@ -139,8 +139,4 @@ public class AbstractTrap implements Trap, Serializable {
     this.exception = exception;
   }
 
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

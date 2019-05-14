@@ -197,9 +197,4 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   public double getValue() {
     return value;
   }
-
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

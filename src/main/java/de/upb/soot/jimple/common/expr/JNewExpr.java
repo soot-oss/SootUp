@@ -47,11 +47,6 @@ public class JNewExpr implements Expr {
   }
 
   @Override
-  public Object clone() {
-    return new JNewExpr(type);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseNewExpr(this, o);
   }

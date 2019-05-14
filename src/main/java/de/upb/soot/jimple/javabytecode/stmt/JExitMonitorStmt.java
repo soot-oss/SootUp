@@ -48,11 +48,6 @@ public class JExitMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public JExitMonitorStmt clone() {
-    return new JExitMonitorStmt(Jimple.cloneIfNecessary(getOp()), getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     return Jimple.EXITMONITOR + " " + opBox.getValue().toString();
   }

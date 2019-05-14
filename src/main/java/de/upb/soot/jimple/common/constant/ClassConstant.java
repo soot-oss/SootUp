@@ -168,9 +168,4 @@ public class ClassConstant implements Constant {
   public String toString() {
     return "class " + StringTools.getQuotedStringOf(value);
   }
-
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

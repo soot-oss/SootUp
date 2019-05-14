@@ -2,13 +2,14 @@ package de.upb.soot.jimple.basic;
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import com.ibm.wala.cast.tree.impl.LineNumberPosition;
+import de.upb.soot.util.Copyable;
 
 /**
  * This class stores position information stored for a statement.
  *
  * @author Linghui Luo
  */
-public class PositionInfo {
+public class PositionInfo implements Copyable {
   private final Position stmtPosition;
   private final Position[] operandPositions;
 
@@ -67,11 +68,6 @@ public class PositionInfo {
     } else {
       return new NoPositionInformation();
     }
-  }
-
-  @Override
-  public PositionInfo clone() {
-    return new PositionInfo(stmtPosition, operandPositions);
   }
 
   @Override

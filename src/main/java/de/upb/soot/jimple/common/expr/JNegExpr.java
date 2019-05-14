@@ -44,11 +44,6 @@ public class JNegExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public Object clone() {
-    return new JNegExpr(Jimple.cloneIfNecessary(getOp()));
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseNegExpr(this, o);
   }

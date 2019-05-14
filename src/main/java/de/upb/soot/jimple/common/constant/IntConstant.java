@@ -182,9 +182,4 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
   public int getValue() {
     return value;
   }
-
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

@@ -34,7 +34,6 @@ import de.upb.soot.jimple.visitor.IExprVisitor;
 import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.IStmtPrinter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class JStaticInvokeExpr extends AbstractInvokeExpr {
@@ -48,16 +47,6 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
-  }
-
-  @Override
-  public Object clone() {
-    List<Value> clonedArgs = new ArrayList<>(getArgCount());
-
-    for (int i = 0; i < getArgCount(); i++) {
-      clonedArgs.add(i, getArg(i));
-    }
-    return new JStaticInvokeExpr(methodSignature, clonedArgs);
   }
 
   @Override

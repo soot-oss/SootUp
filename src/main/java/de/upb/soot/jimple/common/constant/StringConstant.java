@@ -76,9 +76,4 @@ public class StringConstant implements Constant {
   public String getValue() {
     return value;
   }
-
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

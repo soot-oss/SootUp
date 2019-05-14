@@ -183,9 +183,4 @@ public class FloatConstant implements RealConstant<FloatConstant> {
   public float getValue() {
     return value;
   }
-
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

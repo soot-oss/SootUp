@@ -41,11 +41,6 @@ public class JNopStmt extends AbstractStmt {
   }
 
   @Override
-  public JNopStmt clone() {
-    return new JNopStmt(getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     return Jimple.NOP;
   }

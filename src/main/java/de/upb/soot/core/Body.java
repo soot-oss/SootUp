@@ -31,6 +31,7 @@ import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.EscapedWriter;
 import de.upb.soot.util.Utils;
 import de.upb.soot.util.printer.Printer;
@@ -63,7 +64,7 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  */
-public class Body implements Serializable {
+public class Body implements Serializable, Copyable {
   /** */
   private static final long serialVersionUID = -755840890323977315L;
 
@@ -278,12 +279,6 @@ public class Body implements Serializable {
 
   public Position getPosition() {
     return this.position;
-  }
-
-  /** Clones the current body, making deep copies of the contents. */
-  @Override
-  public Object clone() {
-    return new Body(this.locals, this.traps, this.stmts, this.position);
   }
 
   // FIXME "This code does not work and has to be adapted in future features."
