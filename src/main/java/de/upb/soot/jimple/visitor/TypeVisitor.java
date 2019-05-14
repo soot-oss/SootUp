@@ -6,7 +6,7 @@ import de.upb.soot.types.NullType;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.VoidType;
 
-public interface ITypeVisitor {
+public interface TypeVisitor {
 
   void caseBooleanType(PrimitiveType t);
 

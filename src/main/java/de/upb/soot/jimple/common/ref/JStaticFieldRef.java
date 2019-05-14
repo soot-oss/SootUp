@@ -2,9 +2,9 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class JStaticFieldRef extends FieldRef {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.fieldSignature(fieldSignature);
   }
 
@@ -47,7 +47,7 @@ public class JStaticFieldRef extends FieldRef {
   }
 
   @Override
-  public void accept(IVisitor v) {
+  public void accept(Visitor v) {
     // TODO Auto-generated methodRef stub
   }
 }

@@ -1,3 +1,3 @@
 package de.upb.soot.signatures;
 
-public interface ISignature {}
+public interface Signature {}

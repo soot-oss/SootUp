@@ -1,7 +1,7 @@
 package de.upb.soot.graph;
 
 import de.upb.soot.core.Body;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import java.util.HashMap;
 
 /*-
@@ -27,10 +27,10 @@ import java.util.HashMap;
  */
 
 /**
- * Represents a CFG where the nodes are IStmt instances, and where no edges are included to account
+ * Represents a CFG where the nodes are Stmt instances, and where no edges are included to account
  * for control flow associated with exceptions.
  *
- * @see IStmt
+ * @see Stmt
  * @see AbstractStmtGraph
  */
 public class BriefStmtGraph extends AbstractStmtGraph {

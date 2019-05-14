@@ -8,7 +8,7 @@ import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public class InvokeTest {
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -81,7 +81,7 @@ public class InvokeTest {
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -112,7 +112,7 @@ public class InvokeTest {
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -140,7 +140,7 @@ public class InvokeTest {
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -173,7 +173,7 @@ public class InvokeTest {
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -202,7 +202,7 @@ public class InvokeTest {
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -231,7 +231,7 @@ public class InvokeTest {
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -270,7 +270,7 @@ public class InvokeTest {
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -301,7 +301,7 @@ public class InvokeTest {
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -330,7 +330,7 @@ public class InvokeTest {
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =

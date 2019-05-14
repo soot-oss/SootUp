@@ -4,7 +4,7 @@ import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collection;
@@ -43,7 +43,7 @@ public abstract class AbstractNamespaceTest {
 
   protected static final int CLASSES_IN_JAR = 25;
   private IdentifierFactory identifierFactory;
-  private IClassProvider classProvider;
+  private ClassProvider classProvider;
 
   @Before
   public void setUp() {
@@ -55,11 +55,11 @@ public abstract class AbstractNamespaceTest {
     return identifierFactory;
   }
 
-  protected IClassProvider getClassProvider() {
+  protected ClassProvider getClassProvider() {
     return classProvider;
   }
 
-  protected IClassProvider createClassProvider() {
+  protected ClassProvider createClassProvider() {
     return new AsmJavaClassProvider();
   }
 

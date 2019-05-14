@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.signatures.ModulePackageName;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
- * Base class for {@link INamespace}s that can be located by a {@link Path} object.
+ * Base class for {@link SourceLocation}s that can be located by a {@link Path} object.
  *
  * @author Andreas Dann created on 06.06.18
  */
@@ -31,7 +31,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
-  protected JrtFileSystemNamespace(IClassProvider classProvider) {
+  protected JrtFileSystemNamespace(ClassProvider classProvider) {
     super(classProvider);
   }
 

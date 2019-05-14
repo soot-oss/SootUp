@@ -1,7 +1,7 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.types.JavaClassType;
 import java.util.Optional;
@@ -30,31 +30,31 @@ import javax.annotation.Nonnull;
  */
 
 /**
- * Basic implementation of {@link INamespace}, encapsulating common behavior. Also used to keep the
- * {@link INamespace} interface clean from internal methods like {@link
+ * Basic implementation of {@link SourceLocation}, encapsulating common behavior. Also used to keep
+ * the {@link SourceLocation} interface clean from internal methods like {@link
  * AbstractNamespace#getClassSource(JavaClassType)}.
  *
  * @author Manuel Benz created on 22.05.18
  */
-public abstract class AbstractNamespace implements INamespace {
-  protected final @Nonnull IClassProvider classProvider;
+public abstract class AbstractNamespace implements SourceLocation {
+  protected final @Nonnull ClassProvider classProvider;
 
   /**
    * Create the namespace.
    *
    * @param classProvider The class provider to be used
    */
-  public AbstractNamespace(@Nonnull IClassProvider classProvider) {
+  public AbstractNamespace(@Nonnull ClassProvider classProvider) {
     this.classProvider = classProvider;
   }
 
   /**
-   * Returns the {@link IClassProvider} instance for this namespace.
+   * Returns the {@link ClassProvider} instance for this namespace.
    *
    * @return The class provider for this namespace
    */
   @Override
-  public @Nonnull IClassProvider getClassProvider() {
+  public @Nonnull ClassProvider getClassProvider() {
     return classProvider;
   }
 
@@ -75,9 +75,9 @@ public abstract class AbstractNamespace implements INamespace {
    * instance of {@link AsmJavaClassProvider} to read Java Bytecode. This might be more brilliant in
    * the future.
    *
-   * @return An instance of {@link IClassProvider} to be used.
+   * @return An instance of {@link ClassProvider} to be used.
    */
-  protected static @Nonnull IClassProvider getDefaultClassProvider() {
+  protected static @Nonnull ClassProvider getDefaultClassProvider() {
     return new AsmJavaClassProvider();
   }
 

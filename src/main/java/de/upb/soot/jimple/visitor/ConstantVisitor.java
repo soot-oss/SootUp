@@ -25,8 +25,34 @@
 
 package de.upb.soot.jimple.visitor;
 
-/** Basic interface used for visited objects in the Visitor design pattern. */
-public interface IAcceptor {
-  /** Called when this object is visited. */
-  void accept(IVisitor v);
+import de.upb.soot.jimple.common.constant.BooleanConstant;
+import de.upb.soot.jimple.common.constant.ClassConstant;
+import de.upb.soot.jimple.common.constant.DoubleConstant;
+import de.upb.soot.jimple.common.constant.FloatConstant;
+import de.upb.soot.jimple.common.constant.IntConstant;
+import de.upb.soot.jimple.common.constant.LongConstant;
+import de.upb.soot.jimple.common.constant.MethodHandle;
+import de.upb.soot.jimple.common.constant.NullConstant;
+import de.upb.soot.jimple.common.constant.StringConstant;
+
+public interface ConstantVisitor extends Visitor {
+  void caseBooleanConstant(BooleanConstant v);
+
+  void caseDoubleConstant(DoubleConstant v);
+
+  void caseFloatConstant(FloatConstant v);
+
+  void caseIntConstant(IntConstant v);
+
+  void caseLongConstant(LongConstant v);
+
+  void caseNullConstant(NullConstant v);
+
+  void caseStringConstant(StringConstant v);
+
+  void caseClassConstant(ClassConstant v);
+
+  void caseMethodHandle(MethodHandle handle);
+
+  void defaultCase(Object object);
 }

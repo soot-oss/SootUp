@@ -5,8 +5,8 @@ import static org.junit.Assert.*;
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.java.WalaJavaClassProvider;
 import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.JavaClassType;
@@ -23,7 +23,7 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassSource() {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    INamespace namespace =
+    SourceLocation namespace =
         new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
@@ -44,10 +44,10 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassProvider() {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    INamespace namespace =
+    SourceLocation namespace =
         new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
 
-    IClassProvider classProvider = namespace.getClassProvider();
+    ClassProvider classProvider = namespace.getClassProvider();
     assertTrue(classProvider instanceof WalaJavaClassProvider);
   }
 
@@ -55,7 +55,7 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassSources() {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    INamespace namespace =
+    SourceLocation namespace =
         new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
 
     DefaultIdentifierFactory defaultFactories = DefaultIdentifierFactory.getInstance();

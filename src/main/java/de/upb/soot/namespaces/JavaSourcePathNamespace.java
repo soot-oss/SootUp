@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of the {@link INamespace} interface for the Java source code path.
+ * An implementation of the {@link SourceLocation} interface for the Java source code path.
  *
  * @author Linghui Luo
  */

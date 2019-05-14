@@ -26,7 +26,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
 import java.io.File;
@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of the {@link INamespace} interface for the Java class path. Handles
+ * An implementation of the {@link SourceLocation} interface for the Java class path. Handles
  * directories, archives (including wildcard denoted archives) as stated in the official
  * documentation: https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html
  *
@@ -71,7 +71,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     this(classPath, getDefaultClassProvider());
   }
 
-  public JavaClassPathNamespace(@Nonnull String classPath, @Nonnull IClassProvider provider) {
+  public JavaClassPathNamespace(@Nonnull String classPath, @Nonnull ClassProvider provider) {
     super(provider);
 
     if (isNullOrEmpty(classPath)) {

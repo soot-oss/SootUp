@@ -126,7 +126,7 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
   @Nonnull
   private final Lazy<Set<SootMethod>> _lazyMethods = synchronizedLazy(this::lazyMethodInitializer);
 
-  /** Gets the {@link IMethod methods} of this {@link SootClass} in an immutable set. */
+  /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
   @Nonnull
   public Set<SootMethod> getMethods() {
     return this._lazyMethods.get();
@@ -135,7 +135,7 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
   @Nonnull
   private final Lazy<Set<SootField>> _lazyFields = synchronizedLazy(this::lazyFieldInitializer);
 
-  /** Gets the {@link IField fields} of this {@link SootClass} in an immutable set. */
+  /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
   @Override
   @Nonnull
   public Set<SootField> getFields() {

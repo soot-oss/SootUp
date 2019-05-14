@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.PrimitiveType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -45,9 +45,9 @@ public class JExitMonitorStmtTest {
     Local night = new Local("night", PrimitiveType.getBoolean());
     Local light = new Local("light", PrimitiveType.getBoolean());
 
-    IStmt stmt = new JExitMonitorStmt(sandman, nop);
-    IStmt nightStmt = new JExitMonitorStmt(night, nop);
-    IStmt lightStmt = new JExitMonitorStmt(light, nop);
+    Stmt stmt = new JExitMonitorStmt(sandman, nop);
+    Stmt nightStmt = new JExitMonitorStmt(night, nop);
+    Stmt lightStmt = new JExitMonitorStmt(light, nop);
 
     // toString
     assertEquals("exitmonitor sandman", stmt.toString());

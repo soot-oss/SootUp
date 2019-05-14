@@ -23,25 +23,25 @@ package de.upb.soot.util.printer;
 
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.Type;
 
-/** Interface for different methods of printing out a IStmt. */
-public interface IStmtPrinter {
-  void startStmt(IStmt u);
+/** Interface for different methods of printing out a Stmt. */
+public interface StmtPrinter {
+  void startStmt(Stmt u);
 
-  void endStmt(IStmt u);
+  void endStmt(Stmt u);
 
-  void startStmtBox(IStmtBox u);
+  void startStmtBox(StmtBox u);
 
-  void endStmtBox(IStmtBox u);
+  void endStmtBox(StmtBox u);
 
   void startValueBox(ValueBox u);
 
@@ -75,7 +75,7 @@ public interface IStmtPrinter {
 
   void fieldSignature(FieldSignature fieldSig);
 
-  void stmtRef(IStmt u, boolean branchTarget);
+  void stmtRef(Stmt u, boolean branchTarget);
 
   void identityRef(IdentityRef r);
 

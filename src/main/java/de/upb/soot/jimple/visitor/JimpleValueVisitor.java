@@ -25,34 +25,8 @@
 
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.common.constant.BooleanConstant;
-import de.upb.soot.jimple.common.constant.ClassConstant;
-import de.upb.soot.jimple.common.constant.DoubleConstant;
-import de.upb.soot.jimple.common.constant.FloatConstant;
-import de.upb.soot.jimple.common.constant.IntConstant;
-import de.upb.soot.jimple.common.constant.LongConstant;
-import de.upb.soot.jimple.common.constant.MethodHandle;
-import de.upb.soot.jimple.common.constant.NullConstant;
-import de.upb.soot.jimple.common.constant.StringConstant;
+import de.upb.soot.jimple.basic.Local;
 
-public interface IConstantVisitor extends IVisitor {
-  void caseBooleanConstant(BooleanConstant v);
-
-  void caseDoubleConstant(DoubleConstant v);
-
-  void caseFloatConstant(FloatConstant v);
-
-  void caseIntConstant(IntConstant v);
-
-  void caseLongConstant(LongConstant v);
-
-  void caseNullConstant(NullConstant v);
-
-  void caseStringConstant(StringConstant v);
-
-  void caseClassConstant(ClassConstant v);
-
-  void caseMethodHandle(MethodHandle handle);
-
-  void defaultCase(Object object);
+public interface JimpleValueVisitor extends ConstantVisitor, ExprVisitor {
+  void caseLocal(Local jimpleLocal);
 }

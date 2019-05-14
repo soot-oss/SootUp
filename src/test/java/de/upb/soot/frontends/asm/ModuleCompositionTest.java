@@ -11,7 +11,7 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SourceType;
-import de.upb.soot.frontends.IMethodSource;
+import de.upb.soot.frontends.MethodSource;
 import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
@@ -119,7 +119,7 @@ public class ModuleCompositionTest {
                 Utils.immutableSet(
                     SootMethod.builder()
                         .withSource(
-                            new IMethodSource() {
+                            new MethodSource() {
                               @Override
                               @Nullable
                               public Body resolveBody(@Nonnull SootMethod m) {

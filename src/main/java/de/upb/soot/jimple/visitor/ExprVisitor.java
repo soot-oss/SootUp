@@ -56,7 +56,7 @@ import de.upb.soot.jimple.common.expr.JSubExpr;
 import de.upb.soot.jimple.common.expr.JUshrExpr;
 import de.upb.soot.jimple.common.expr.JXorExpr;
 
-public interface IExprVisitor extends IVisitor {
+public interface ExprVisitor extends Visitor {
   void caseAddExpr(JAddExpr v);
 
   void caseAndExpr(JAndExpr v);

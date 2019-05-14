@@ -6,4 +6,4 @@ package de.upb.soot.callgraph;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface ICallGraphAlgorithm {}
+public interface CallGraphAlgorithm {}

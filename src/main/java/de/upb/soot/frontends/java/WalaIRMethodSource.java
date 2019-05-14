@@ -3,12 +3,12 @@ package de.upb.soot.frontends.java;
 import com.google.common.base.Preconditions;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.IMethodSource;
+import de.upb.soot.frontends.MethodSource;
 import de.upb.soot.signatures.MethodSignature;
 import javax.annotation.Nonnull;
 
 /** @author Linghui Luo */
-public class WalaIRMethodSource implements IMethodSource {
+public class WalaIRMethodSource implements MethodSource {
 
   private final MethodSignature methodSignature;
   private final Body body;

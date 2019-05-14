@@ -1,7 +1,7 @@
 package de.upb.soot.jimple.common.constant;
 
 import de.upb.soot.DefaultIdentifierFactory;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
 import java.util.Collections;
 import java.util.List;
@@ -59,7 +59,7 @@ public class MethodType implements Constant {
   }
 
   @Override
-  public void accept(IVisitor v) {}
+  public void accept(Visitor v) {}
 
   @Override
   public Object clone() {

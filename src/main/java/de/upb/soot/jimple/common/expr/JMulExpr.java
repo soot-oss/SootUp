@@ -27,8 +27,8 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 
 public class JMulExpr extends AbstractFloatBinopExpr {
   /** */
@@ -44,8 +44,8 @@ public class JMulExpr extends AbstractFloatBinopExpr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseMulExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseMulExpr(this);
   }
 
   @Override

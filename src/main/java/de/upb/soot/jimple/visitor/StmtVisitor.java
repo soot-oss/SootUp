@@ -41,7 +41,7 @@ import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 
-public interface IStmtVisitor extends IVisitor {
+public interface StmtVisitor extends Visitor {
   void caseBreakpointStmt(JBreakpointStmt stmt);
 
   void caseInvokeStmt(JInvokeStmt stmt);

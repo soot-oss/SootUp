@@ -25,7 +25,7 @@ package de.upb.soot.namespaces;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface INamespace {
+public interface SourceLocation {
 
   /**
    * Create or find a class source for a given signature.
@@ -53,10 +53,10 @@ public interface INamespace {
   /**
    * The class provider attached to this namespace.
    *
-   * @return An instance of {@link IClassProvider} to be used.
+   * @return An instance of {@link ClassProvider} to be used.
    */
   @Nonnull
-  IClassProvider getClassProvider();
+  ClassProvider getClassProvider();
 
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(

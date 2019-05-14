@@ -4,9 +4,9 @@ import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Options;
 import de.upb.soot.Project;
 import de.upb.soot.Scope;
-import de.upb.soot.callgraph.ICallGraph;
-import de.upb.soot.callgraph.ICallGraphAlgorithm;
-import de.upb.soot.typehierarchy.ITypeHierarchy;
+import de.upb.soot.callgraph.CallGraph;
+import de.upb.soot.callgraph.CallGraphAlgorithm;
+import de.upb.soot.typehierarchy.TypeHierarchy;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
@@ -33,21 +33,21 @@ public abstract class AbstractView implements IView {
 
   @Override
   @Nonnull
-  public ICallGraph createCallGraph() {
+  public CallGraph createCallGraph() {
     // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
   @Nonnull
-  public ICallGraph createCallGraph(ICallGraphAlgorithm algorithm) {
+  public CallGraph createCallGraph(CallGraphAlgorithm algorithm) {
     // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
   @Nonnull
-  public ITypeHierarchy createTypeHierarchy() {
+  public TypeHierarchy createTypeHierarchy() {
     // TODO Auto-generated methodRef stub
     return null;
   }

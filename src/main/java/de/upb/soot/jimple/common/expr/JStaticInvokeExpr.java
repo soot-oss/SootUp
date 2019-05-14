@@ -30,10 +30,10 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,7 +82,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);
     up.literal(" ");
     up.methodSignature(methodSignature);
@@ -92,7 +92,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseStaticInvokeExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseStaticInvokeExpr(this);
   }
 }

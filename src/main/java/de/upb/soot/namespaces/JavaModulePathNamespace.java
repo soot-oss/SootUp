@@ -5,8 +5,8 @@ import de.upb.soot.IdentifierFactory;
 import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of the {@link INamespace} interface for the Java modulepath. Handles
+ * An implementation of the {@link SourceLocation} interface for the Java modulepath. Handles
  * directories, archives (including wildcard denoted archives) as stated in the official
  * documentation:
  *
@@ -50,11 +50,10 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   /**
    * Creates a {@link JavaModulePathNamespace} which locates classes in the given module path.
    *
-   * @param modulePath The class path to search in The {@link IClassProvider} for generating {@link
+   * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
    *     ClassSource}es for the files found on the class path
    */
-  public JavaModulePathNamespace(
-      @Nonnull String modulePath, @Nonnull IClassProvider classProvider) {
+  public JavaModulePathNamespace(@Nonnull String modulePath, @Nonnull ClassProvider classProvider) {
     super(classProvider);
     this.moduleFinder = new ModuleFinder(classProvider, modulePath);
   }

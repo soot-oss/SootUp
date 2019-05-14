@@ -22,8 +22,8 @@
 package de.upb.soot.util.printer;
 
 import de.upb.soot.core.Body;
-import de.upb.soot.core.IField;
-import de.upb.soot.core.IMethod;
+import de.upb.soot.core.Field;
+import de.upb.soot.core.Method;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
@@ -32,7 +32,7 @@ import de.upb.soot.graph.AbstractStmtGraph;
 import de.upb.soot.graph.BriefStmtGraph;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Trap;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import java.io.PrintWriter;
@@ -143,7 +143,7 @@ public class Printer {
 
     // Print fields
     {
-      Iterator<? extends IField> fieldIt = cl.getFields().iterator();
+      Iterator<? extends Field> fieldIt = cl.getFields().iterator();
 
       if (fieldIt.hasNext()) {
         while (fieldIt.hasNext()) {
@@ -168,7 +168,7 @@ public class Printer {
   }
 
   private void printMethod(SootClass cl, PrintWriter out) {
-    Iterator<? extends IMethod> methodIt = cl.getMethods().iterator();
+    Iterator<? extends Method> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       if (cl.getMethods().size() != 0) {
         out.println();
@@ -249,10 +249,10 @@ public class Printer {
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
   private void printStatementsInBody(
       Body body, PrintWriter out, LabeledStmtPrinter up, AbstractStmtGraph unitGraph) {
-    Collection<IStmt> units = body.getStmts();
-    IStmt previousStmt;
+    Collection<Stmt> units = body.getStmts();
+    Stmt previousStmt;
 
-    for (IStmt currentStmt : units) {
+    for (Stmt currentStmt : units) {
       previousStmt = currentStmt;
 
       // Print appropriate header.
@@ -269,7 +269,7 @@ public class Printer {
           } else {
             // Or if the previous node does not have body statement as a successor.
 
-            List<IStmt> succs = unitGraph.getSuccsOf(previousStmt);
+            List<Stmt> succs = unitGraph.getSuccsOf(previousStmt);
 
             if (succs.get(0) != currentStmt) {
               up.newline();
@@ -336,7 +336,7 @@ public class Printer {
   }
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
-  private void printLocalsInBody(Body body, IStmtPrinter up) {
+  private void printLocalsInBody(Body body, StmtPrinter up) {
     // Print out local variables
     {
       Map<Type, List<Local>> typeToLocals = new LinkedHashMap<>(body.getLocalCount() * 2 + 1, 0.7f);

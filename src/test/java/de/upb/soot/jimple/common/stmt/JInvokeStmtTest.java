@@ -78,7 +78,7 @@ public class JInvokeStmtTest {
     // JStaticInvokeExpr
     MethodSignature statMethodSig =
         dif.getMethodSignature("print", "java.system.Out", "void", Arrays.asList("String"));
-    IStmt staticInvokeStmt =
+    Stmt staticInvokeStmt =
         new JInvokeStmt(
             new JStaticInvokeExpr(
                 statMethodSig, Arrays.asList(StringConstant.getInstance("Towel"))),
@@ -96,7 +96,7 @@ public class JInvokeStmtTest {
     // JSpecialInvoke
     MethodSignature smethodSig =
         dif.getMethodSignature("<init>", "java.lang.Object", "void", Arrays.asList());
-    IStmt specialInvokeStmt =
+    Stmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
                 new Local("$r0", sootClass.getType()), smethodSig, Arrays.asList()),
@@ -113,7 +113,7 @@ public class JInvokeStmtTest {
     // JInterfaceInvoke
     MethodSignature imethodSig =
         dif.getMethodSignature("remove", "java.util.Iterator", "void", Arrays.asList());
-    IStmt interfaceInvokeStmt =
+    Stmt interfaceInvokeStmt =
         new JInvokeStmt(
             new JInterfaceInvokeExpr(
                 new Local("r2", sootClass.getType()), imethodSig, Arrays.asList()),
@@ -136,7 +136,7 @@ public class JInvokeStmtTest {
     List<? extends Value> bootstrapArgs = Arrays.asList();
     List<? extends Value> methodArgs = Arrays.asList();
 
-    IStmt dynamicInvokeStmt =
+    Stmt dynamicInvokeStmt =
         new JInvokeStmt(
             new JDynamicInvokeExpr(bootstrapMethodSig, bootstrapArgs, dmethodSig, methodArgs), nop);
 

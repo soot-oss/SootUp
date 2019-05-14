@@ -1,16 +1,10 @@
 package de.upb.soot.frontends;
 
-import de.upb.soot.core.Body;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.signatures.MethodSignature;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 /*-
  * #%L
- * Soot - a J*va Optimization Framework
+ * Soot
  * %%
- * Copyright (C) 1999 Patrick Lam
+ * Copyright (C) 22.05.2018 Manuel Benz
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as
@@ -28,17 +22,22 @@ import javax.annotation.Nullable;
  * #L%
  */
 
-/** A class which knows how to produce Body's for SootMethods. */
-public interface IMethodSource {
+import de.upb.soot.namespaces.FileType;
+import de.upb.soot.namespaces.SourceLocation;
+import de.upb.soot.types.JavaClassType;
+import java.nio.file.Path;
 
-  // TODO Maybe we should also remove the SootMethod parameter here.
-  //  See comment in IClassSourceContent for details.
+/**
+ * Responsible for creating {@link ClassSource}es based on the handled file type (.class, .jimple,
+ * .java, .dex, etc).
+ *
+ * @author Manuel Benz
+ */
+public interface ClassProvider {
 
-  /** Returns a filled-out body for the given SootMethod. */
-  @Nullable
-  Body resolveBody(@Nonnull SootMethod m) throws ResolveException;
+  AbstractClassSource createClassSource(
+      SourceLocation srcNamespace, Path sourcePath, JavaClassType classSignature);
 
-  // FIXME: [JMP] This method is never used
-  @Nonnull
-  MethodSignature getSignature();
+  /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
+  FileType getHandledFileType();
 }

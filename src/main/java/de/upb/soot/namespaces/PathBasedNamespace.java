@@ -2,7 +2,7 @@ package de.upb.soot.namespaces;
 
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
 import java.io.IOException;
@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
  */
 
 /**
- * Base class for {@link INamespace}s that can be located by a {@link Path} object.
+ * Base class for {@link SourceLocation}s that can be located by a {@link Path} object.
  *
  * @author Manuel Benz created on 22.05.18
  */
@@ -49,7 +49,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     this(path, getDefaultClassProvider());
   }
 
-  private PathBasedNamespace(@Nonnull Path path, @Nonnull IClassProvider classProvider) {
+  private PathBasedNamespace(@Nonnull Path path, @Nonnull ClassProvider classProvider) {
     super(classProvider);
     this.path = path;
   }

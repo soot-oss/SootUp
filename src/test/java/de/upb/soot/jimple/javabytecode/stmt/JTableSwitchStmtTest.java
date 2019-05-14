@@ -29,9 +29,9 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.constant.IntConstant;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JNopStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -43,12 +43,12 @@ public class JTableSwitchStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    ArrayList<IStmt> targets = new ArrayList<>();
+    ArrayList<Stmt> targets = new ArrayList<>();
     targets.add(new JReturnStmt(IntConstant.getInstance(1), nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(2), nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(3), nop));
     targets.add(new JNopStmt(nop));
-    IStmt stmt =
+    Stmt stmt =
         new JTableSwitchStmt(
             IntConstant.getInstance(123),
             1,
@@ -57,12 +57,12 @@ public class JTableSwitchStmtTest {
             new JReturnStmt(IntConstant.getInstance(666), nop),
             nop);
 
-    ArrayList<IStmt> targets2 = new ArrayList<>();
+    ArrayList<Stmt> targets2 = new ArrayList<>();
     targets.add(new JReturnStmt(IntConstant.getInstance(1), nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(2), nop));
     targets.add(new JNopStmt(nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(3), nop));
-    IStmt stmt2 =
+    Stmt stmt2 =
         new JTableSwitchStmt(
             IntConstant.getInstance(123),
             1,
@@ -70,7 +70,7 @@ public class JTableSwitchStmtTest {
             targets2,
             new JReturnStmt(IntConstant.getInstance(666), nop),
             nop);
-    IStmt stmt3 =
+    Stmt stmt3 =
         new JTableSwitchStmt(
             IntConstant.getInstance(456),
             1,
@@ -78,7 +78,7 @@ public class JTableSwitchStmtTest {
             targets,
             new JReturnStmt(IntConstant.getInstance(666), nop),
             nop);
-    IStmt stmt4 =
+    Stmt stmt4 =
         new JTableSwitchStmt(
             IntConstant.getInstance(123),
             2,
@@ -86,7 +86,7 @@ public class JTableSwitchStmtTest {
             targets,
             new JReturnStmt(IntConstant.getInstance(666), nop),
             nop);
-    IStmt stmt5 =
+    Stmt stmt5 =
         new JTableSwitchStmt(
             IntConstant.getInstance(123),
             1,
@@ -94,7 +94,7 @@ public class JTableSwitchStmtTest {
             targets,
             new JReturnStmt(IntConstant.getInstance(666), nop),
             nop);
-    IStmt stmt6 =
+    Stmt stmt6 =
         new JTableSwitchStmt(IntConstant.getInstance(123), 1, 4, targets, new JNopStmt(nop), nop);
 
     // toString

@@ -27,10 +27,10 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Trap;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
-import de.upb.soot.namespaces.INamespace;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
+import de.upb.soot.namespaces.SourceLocation;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.*;
@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
 public class WalaIRToJimpleConverter {
 
   protected JavaView view;
-  private INamespace srcNamespace;
+  private SourceLocation srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
   private HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
@@ -387,7 +387,7 @@ public class WalaIRToJimpleConverter {
     AbstractCFG<?, ?> cfg = walaMethod.cfg();
     if (cfg != null) {
       List<Trap> traps = new ArrayList<>();
-      List<IStmt> stmts = new ArrayList<>();
+      List<Stmt> stmts = new ArrayList<>();
       LocalGenerator localGenerator = new LocalGenerator();
       // convert all wala instructions to jimple statements
       SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
@@ -402,7 +402,7 @@ public class WalaIRToJimpleConverter {
         if (!Modifier.isStatic(modifiers)) {
           JavaClassType thisType = methodSignature.getDeclClassSignature();
           Local thisLocal = localGenerator.generateThisLocal(thisType);
-          IStmt stmt =
+          Stmt stmt =
               Jimple.newIdentityStmt(
                   thisLocal,
                   Jimple.newThisRef(thisType),
@@ -423,7 +423,7 @@ public class WalaIRToJimpleConverter {
           if (!walaMethod.isStatic()) {
             index = startPara - 1;
           }
-          IStmt stmt =
+          Stmt stmt =
               Jimple.newIdentityStmt(
                   paraLocal,
                   Jimple.newParameterRef(type, index),
@@ -436,24 +436,24 @@ public class WalaIRToJimpleConverter {
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
         InstructionConverter instConverter =
             new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
-        Map<IStmt, Integer> stmt2IIndex = new HashMap<>();
+        Map<Stmt, Integer> stmt2IIndex = new HashMap<>();
         for (SSAInstruction inst : insts) {
-          List<IStmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
+          List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);
           if (!retStmts.isEmpty()) {
-            for (IStmt stmt : retStmts) {
+            for (Stmt stmt : retStmts) {
               stmts.add(stmt);
               stmt2IIndex.put(stmt, inst.iindex);
             }
           }
         }
         // set target for goto or conditional statements
-        for (IStmt stmt : stmt2IIndex.keySet()) {
+        for (Stmt stmt : stmt2IIndex.keySet()) {
           instConverter.setTarget(stmt, stmt2IIndex.get(stmt));
         }
 
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
-          IStmt ret = null;
+          Stmt ret = null;
           if (stmts.isEmpty() || !(stmts.get(stmts.size() - 1) instanceof JReturnVoidStmt)) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with

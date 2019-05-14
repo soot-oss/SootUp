@@ -2,7 +2,7 @@ package de.upb.soot.namespaces;
 
 import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.frontends.asm.modules.AsmModuleClassSource;
 import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.types.JavaClassType;
@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
  * @author Andreas Dann on 28.06.18
  */
 public class ModuleFinder {
-  private @Nonnull IClassProvider classProvider;
+  private @Nonnull ClassProvider classProvider;
   // associate a module name with the namespace, that represents the module
   private @Nonnull Map<String, AbstractNamespace> moduleNamespace = new HashMap<>();
   private int next = 0;
@@ -53,7 +53,7 @@ public class ModuleFinder {
    * @param classProvider the class provider for resolving found classes
    * @param modulePath the module path
    */
-  public ModuleFinder(@Nonnull IClassProvider classProvider, @Nonnull String modulePath) {
+  public ModuleFinder(@Nonnull ClassProvider classProvider, @Nonnull String modulePath) {
     this.classProvider = classProvider;
     this.modulePathEntries =
         JavaClassPathNamespace.explode(modulePath).collect(Collectors.toList());

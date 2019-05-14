@@ -6,7 +6,7 @@ import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.namespaces.INamespace;
+import de.upb.soot.namespaces.SourceLocation;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -32,7 +32,7 @@ public class EagerJavaClassSource extends ClassSource {
   private final EnumSet<Modifier> modifiers;
 
   public EagerJavaClassSource(
-      INamespace srcNamespace,
+      SourceLocation srcNamespace,
       Path sourcePath,
       JavaClassType classType,
       JavaClassType superClass,

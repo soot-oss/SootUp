@@ -3,10 +3,10 @@ package de.upb.soot.views;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Options;
 import de.upb.soot.Scope;
-import de.upb.soot.callgraph.ICallGraph;
-import de.upb.soot.callgraph.ICallGraphAlgorithm;
+import de.upb.soot.callgraph.CallGraph;
+import de.upb.soot.callgraph.CallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.typehierarchy.ITypeHierarchy;
+import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
@@ -47,7 +47,7 @@ public interface IView {
    * @return A call graph valid in the view
    */
   @Nonnull
-  ICallGraph createCallGraph();
+  CallGraph createCallGraph();
 
   /**
    * Provides the call graph using a provided algorithm.
@@ -56,7 +56,7 @@ public interface IView {
    * @return A call graph valid in the view
    */
   @Nonnull
-  ICallGraph createCallGraph(ICallGraphAlgorithm algorithm);
+  CallGraph createCallGraph(CallGraphAlgorithm algorithm);
 
   /**
    * Provides a type hierarchy.
@@ -64,7 +64,7 @@ public interface IView {
    * @return A type hierarchy valid in the view
    */
   @Nonnull
-  ITypeHierarchy createTypeHierarchy();
+  TypeHierarchy createTypeHierarchy();
 
   /**
    * Returns the scope if the view is scoped.
@@ -112,7 +112,7 @@ public interface IView {
   //    Optional<AbstractClass> op = this.getView().getClass(signature);
   //    if (op.isPresent()) {
   //      AbstractClass klass = op.get();
-  //      Optional<? extends IMethod> m = klass.getMethod(bsm);
+  //      Optional<? extends Method> m = klass.getMethod(bsm);
   //      return m.map(c -> (SootMethod) c);
   //    }
   //    return Optional.empty();

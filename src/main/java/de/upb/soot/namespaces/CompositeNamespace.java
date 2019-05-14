@@ -2,8 +2,8 @@ package de.upb.soot.namespaces;
 
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.NotYetImplementedException;
 import java.util.*;
@@ -18,8 +18,8 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Jan Martin Persch
  */
-public class CompositeNamespace implements INamespace {
-  private @Nonnull List<INamespace> namespaces;
+public class CompositeNamespace implements SourceLocation {
+  private @Nonnull List<SourceLocation> namespaces;
 
   /**
    * Creates a new instance of the {@link CompositeNamespace} class.
@@ -27,8 +27,8 @@ public class CompositeNamespace implements INamespace {
    * @param namespaces The composited namespaces.
    * @throws IllegalArgumentException <i>namespaces</i> is empty.
    */
-  public CompositeNamespace(@Nonnull Collection<? extends INamespace> namespaces) {
-    List<INamespace> unmodifiableNamespaces =
+  public CompositeNamespace(@Nonnull Collection<? extends SourceLocation> namespaces) {
+    List<SourceLocation> unmodifiableNamespaces =
         Collections.unmodifiableList(new ArrayList<>(namespaces));
 
     if (unmodifiableNamespaces.isEmpty()) {
@@ -65,13 +65,13 @@ public class CompositeNamespace implements INamespace {
   /**
    * Provides the class provider of the first namespace in the composition.
    *
-   * @return An instance of {@link IClassProvider} to be used.
+   * @return An instance of {@link ClassProvider} to be used.
    */
   @Override
-  public @Nonnull IClassProvider getClassProvider() {
+  public @Nonnull ClassProvider getClassProvider() {
     return namespaces.stream()
         .findFirst()
-        .map(INamespace::getClassProvider)
+        .map(SourceLocation::getClassProvider)
         .orElseThrow(() -> new RuntimeException("FATAL ERROR: No class provider found."));
   }
 

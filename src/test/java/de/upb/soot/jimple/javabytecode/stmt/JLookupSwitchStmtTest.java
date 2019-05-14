@@ -29,10 +29,10 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.constant.IntConstant;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JNopStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -45,15 +45,15 @@ public class JLookupSwitchStmtTest {
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
     ArrayList<IntConstant> lookupValues = new ArrayList<>();
-    ArrayList<IStmt> targets = new ArrayList<>();
+    ArrayList<Stmt> targets = new ArrayList<>();
 
-    IStmt stmt =
+    Stmt stmt =
         new JLookupSwitchStmt(
             IntConstant.getInstance(42), lookupValues, targets, new JNopStmt(nop), nop);
-    IStmt stmtDifferentKey =
+    Stmt stmtDifferentKey =
         new JLookupSwitchStmt(
             IntConstant.getInstance(123), lookupValues, targets, new JNopStmt(nop), nop);
-    IStmt stmtDifferentDefault =
+    Stmt stmtDifferentDefault =
         new JLookupSwitchStmt(
             IntConstant.getInstance(42),
             lookupValues,
@@ -70,7 +70,7 @@ public class JLookupSwitchStmtTest {
     lookupValues.add(IntConstant.getInstance(42));
     lookupValues.add(IntConstant.getInstance(33102));
 
-    IStmt stmtDifferentLookupAndTarget =
+    Stmt stmtDifferentLookupAndTarget =
         new JLookupSwitchStmt(
             IntConstant.getInstance(123), lookupValues, targets, new JNopStmt(nop), nop);
     assertEquals(

@@ -1,5 +1,5 @@
 /* Soot - a J*va Optimization Framework
- * Copyright (C) 1997-1999 Etienne Gagnon
+ * Copyright (C) 1997-1999 Raja Vallee-Rai
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,8 +22,31 @@
  * See the 'credits' file distributed with Soot for the complete list of
  * contributors.  (Soot is distributed at http://www.sable.mcgill.ca/soot)
  */
+/*
+ *  The original class name was UnitBox in soot, renamed by Linghui Luo, 22.06.2018
+ */
 
-package de.upb.soot.jimple.visitor;
+package de.upb.soot.jimple.basic;
 
-/** Basic interface used in the implementation of the Visitor design pattern. */
-public interface IVisitor {}
+import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.util.printer.StmtPrinter;
+import java.io.Serializable;
+
+public interface StmtBox extends Serializable {
+  /** Sets this box to contain the given unit. Subject to canContainValue() checks. */
+  void setStmt(Stmt u);
+
+  /** Returns the unit contained within this box. */
+  Stmt getStmt();
+
+  /**
+   * Returns true if the StmtBox is holding a Stmt that is the target of a branch (ie a Stmt at the
+   * beginning of a CFG block). This is the default case.
+   *
+   * <p>Returns false if the StmtBox is holding a Stmt that indicates the end of a CFG block and may
+   * require specialised processing for SSA.
+   */
+  boolean isBranchTarget();
+
+  void toString(StmtPrinter up);
+}

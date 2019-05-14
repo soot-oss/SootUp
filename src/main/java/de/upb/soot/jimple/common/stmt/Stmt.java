@@ -1,18 +1,18 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.basic.EquivTo;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
-import de.upb.soot.jimple.visitor.IAcceptor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.visitor.Acceptor;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.io.Serializable;
 import java.util.List;
 
-public interface IStmt extends EquivTo, IAcceptor, Serializable {
+public interface Stmt extends EquivTo, Acceptor, Serializable {
   /** Returns a list of Boxes containing Values used in this Stmt. */
   List<ValueBox> getUseBoxes();
 
@@ -20,16 +20,16 @@ public interface IStmt extends EquivTo, IAcceptor, Serializable {
   List<ValueBox> getDefBoxes();
 
   /** Returns a list of Boxes containing Stmts defined in this Stmt; typically branch targets. */
-  List<IStmtBox> getStmtBoxes();
+  List<StmtBox> getStmtBoxes();
 
   /** Returns a list of Boxes pointing to this Stmt. */
-  List<IStmtBox> getBoxesPointingToThis();
+  List<StmtBox> getBoxesPointingToThis();
 
   /** Adds a box to the list returned by getBoxesPointingToThis. */
-  void addBoxPointingToThis(IStmtBox b);
+  void addBoxPointingToThis(StmtBox b);
 
   /** Removes a box from the list returned by getBoxesPointingToThis. */
-  void removeBoxPointingToThis(IStmtBox b);
+  void removeBoxPointingToThis(StmtBox b);
 
   /** Clears any pointers to and from this Stmt's StmtBoxes. */
   void clearStmtBoxes();
@@ -37,7 +37,7 @@ public interface IStmt extends EquivTo, IAcceptor, Serializable {
   /** Returns a list of Boxes containing any Value either used or defined in this Stmt. */
   List<ValueBox> getUseAndDefBoxes();
 
-  IStmt clone();
+  Stmt clone();
 
   /**
    * Returns true if execution after this statement may continue at the following statement.
@@ -55,9 +55,9 @@ public interface IStmt extends EquivTo, IAcceptor, Serializable {
    * Redirects jumps to this Stmt to newLocation. In general, you shouldn't have to use this
    * directly.
    */
-  void redirectJumpsToThisTo(IStmt newLocation);
+  void redirectJumpsToThisTo(Stmt newLocation);
 
-  void toString(IStmtPrinter up);
+  void toString(StmtPrinter up);
 
   boolean containsInvokeExpr();
 

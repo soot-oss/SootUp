@@ -25,8 +25,5 @@
 
 package de.upb.soot.jimple.visitor;
 
-import de.upb.soot.jimple.basic.Local;
-
-public interface IJimpleValueVisitor extends IConstantVisitor, IExprVisitor {
-  void caseLocal(Local jimpleLocal);
-}
+/** Basic interface used in the implementation of the Visitor design pattern. */
+public interface Visitor {}
