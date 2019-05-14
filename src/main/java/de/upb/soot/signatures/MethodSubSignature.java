@@ -1,11 +1,12 @@
 package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.concurrent.Lazy;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
@@ -94,8 +95,8 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
     return new MethodSignature(declClassSignature, this);
   }
 
-  private final Lazy<String> _cachedToString =
-      Lazy.synchronizedLazy(
+  private final Supplier<String> _cachedToString =
+      Suppliers.memoize(
           () ->
               String.format(
                   "%s %s(%s)",
