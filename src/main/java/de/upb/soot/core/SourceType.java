@@ -1,6 +1,6 @@
 package de.upb.soot.core;
 
-public enum ClassType {
+public enum SourceType {
   Phantom,
   Application,
   Library

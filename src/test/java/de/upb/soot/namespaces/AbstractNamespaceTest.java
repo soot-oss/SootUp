@@ -3,7 +3,7 @@ package de.upb.soot.namespaces;
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.IdentifierFactory;
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.types.JavaClassType;
@@ -69,12 +69,13 @@ public abstract class AbstractNamespaceTest {
 
   protected void testClassReceival(
       AbstractNamespace ns, JavaClassType sig, int minClassesFound, int maxClassesFound) {
-    final Optional<ClassSource> clazz = ns.getClassSource(sig);
+    final Optional<? extends AbstractClassSource> clazz = ns.getClassSource(sig);
 
     Assert.assertTrue(clazz.isPresent());
     Assert.assertEquals(sig, clazz.get().getClassType());
 
-    final Collection<ClassSource> classSources = ns.getClassSources(getIdentifierFactory());
+    final Collection<? extends AbstractClassSource> classSources =
+        ns.getClassSources(getIdentifierFactory());
     Assert.assertNotNull(classSources);
     Assert.assertFalse(classSources.isEmpty());
     Assert.assertThat(classSources.size(), new GreaterOrEqual<>(minClassesFound));

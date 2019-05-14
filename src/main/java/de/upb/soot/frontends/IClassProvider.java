@@ -35,12 +35,9 @@ import java.nio.file.Path;
  */
 public interface IClassProvider {
 
-  ClassSource createClassSource(
+  AbstractClassSource createClassSource(
       INamespace srcNamespace, Path sourcePath, JavaClassType classSignature);
 
   /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
   FileType getHandledFileType();
-
-  /** Create or provide a representation of the actual manifestation of the class. */
-  IClassSourceContent getContent(ClassSource classSource);
 }

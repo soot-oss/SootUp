@@ -26,7 +26,7 @@ import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.IMethodSourceContent;
+import de.upb.soot.frontends.IMethodSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
@@ -117,8 +117,7 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 /** @author Andreas Dann */
-class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
-    implements IMethodSourceContent {
+class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implements IMethodSource {
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
 
@@ -158,7 +157,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
 
   @Nonnull private final CastAndReturnInliner castAndReturnInliner = new CastAndReturnInliner();
 
-  public AsmMethodSourceContent(
+  public AsmMethodSource(
       int access,
       @Nonnull String name,
       @Nonnull String desc,
@@ -1724,7 +1723,7 @@ class AsmMethodSourceContent extends org.objectweb.asm.commons.JSRInlinerAdapter
     }
 
     Edge(AbstractInsnNode insn) {
-      this(insn, new ArrayList<>(AsmMethodSourceContent.this.stack));
+      this(insn, new ArrayList<>(AsmMethodSource.this.stack));
     }
   }
 

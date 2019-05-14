@@ -1,15 +1,12 @@
 package de.upb.soot.views;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
@@ -46,7 +43,7 @@ public class JavaViewTest {
     this.signatures =
         Collections.unmodifiableList(
             namespace.getClassSources(DefaultIdentifierFactory.getInstance()).stream()
-                .map(ClassSource::getClassType)
+                .map(AbstractClassSource::getClassType)
                 .sorted(Comparator.comparing(JavaClassType::toString))
                 .collect(Collectors.toList()));
 
