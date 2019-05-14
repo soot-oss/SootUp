@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
-import de.upb.soot.frontends.JavaClassSource;
-import de.upb.soot.frontends.java.WalaIRMethodSourceContent;
+import de.upb.soot.frontends.java.EagerJavaClassSource;
+import de.upb.soot.frontends.java.WalaIRMethodSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -30,7 +30,8 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    IView view = new JavaView(new Project(null, DefaultIdentifierFactory.getInstance()));
+    DefaultIdentifierFactory factories = DefaultIdentifierFactory.getInstance();
+    IView view = new JavaView(new Project(null, factories));
     JavaClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     List<IStmt> stmts = new ArrayList<>();
@@ -55,28 +56,26 @@ public class SootMethodTest {
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     SootMethod dummyMainMethod =
         new SootMethod(
-            new WalaIRMethodSourceContent(methodSignature),
+            new WalaIRMethodSource(methodSignature, body),
             methodSignature,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
             Collections.emptyList(),
-            body,
             null);
 
     SootClass mainClass =
         new SootClass(
-            ResolvingLevel.BODIES,
-            new JavaClassSource(
+            new EagerJavaClassSource(
                 new JavaSourcePathNamespace(Collections.emptySet()),
                 null,
-                view.getIdentifierFactory().getClassType("dummyMain")),
-            ClassType.Application,
-            null,
-            Collections.emptySet(),
-            null,
-            Collections.emptySet(),
-            Collections.singleton(dummyMainMethod),
-            null,
-            EnumSet.of(Modifier.PUBLIC));
+                view.getIdentifierFactory().getClassType("dummyMain"),
+                null,
+                Collections.emptySet(),
+                null,
+                Collections.emptySet(),
+                Collections.singleton(dummyMainMethod),
+                null,
+                EnumSet.of(Modifier.PUBLIC)),
+            SourceType.Application);
 
     assertEquals(mainClass.getMethods().size(), 1);
     assertTrue(

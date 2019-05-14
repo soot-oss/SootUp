@@ -1,6 +1,6 @@
 package de.upb.soot.core;
 
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.signatures.ISignature;
 import de.upb.soot.types.Type;
 import de.upb.soot.views.IView;
@@ -14,15 +14,15 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractClass {
+public abstract class AbstractClass<T extends AbstractClassSource> {
 
-  protected final ClassSource classSource;
+  protected final T classSource;
 
-  public AbstractClass(ClassSource cs) {
+  public AbstractClass(T cs) {
     this.classSource = cs;
   }
 
-  public ClassSource getClassSource() {
+  public AbstractClassSource getClassSource() {
     return classSource;
   }
 

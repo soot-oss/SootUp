@@ -14,23 +14,23 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public class Project {
+public class Project<N extends INamespace> {
   /** Create a project from an arbitrary list of namespaces */
-  public Project(@Nonnull INamespace namespace) {
+  public Project(@Nonnull N namespace) {
     this(namespace, DefaultIdentifierFactory.getInstance());
   }
 
   /** Create a project from an arbitrary list of namespaces */
-  public Project(@Nonnull INamespace namespaces, @Nonnull IdentifierFactory identifierFactory) {
+  public Project(@Nonnull N namespaces, @Nonnull DefaultIdentifierFactory identifierFactory) {
     this.namespace = namespaces;
     this.identifierFactory = identifierFactory;
   }
 
-  @Nonnull private final INamespace namespace;
+  @Nonnull private final N namespace;
 
   /** Gets the namespace. */
   @Nonnull
-  public INamespace getNamespace() {
+  public N getNamespace() {
     return this.namespace;
   }
 

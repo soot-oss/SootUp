@@ -48,12 +48,13 @@ public class JavaClassType extends ReferenceType {
 
   private final boolean isInnerClass;
 
+  // TODO Can we hide this somehow from the public API surface?
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
    * {@link IdentifierFactory}
    *
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
-   * @param packageName the corresponding package
+   * @param packageSignature the corresponding package
    */
   public JavaClassType(final String className, final PackageName packageName) {
     String realClassName = className;
