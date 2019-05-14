@@ -43,6 +43,8 @@ import com.ibm.wala.ssa.SymbolTable;
 import com.ibm.wala.types.FieldReference;
 import com.ibm.wala.types.MethodReference;
 import com.ibm.wala.types.TypeReference;
+import de.upb.soot.DefaultIdentifierFactory;
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.jimple.Jimple;
@@ -82,14 +84,11 @@ import de.upb.soot.jimple.common.stmt.JThrowStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.ArrayType;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
-import de.upb.soot.types.TypeFactory;
 import de.upb.soot.types.UnknownType;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -118,8 +117,7 @@ public class InstructionConverter {
   protected final Map<JLookupSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
   protected Map<JLookupSwitchStmt, List<IStmt>> targetStmtsOfLookUpSwitchStmts;
   private final Map<Integer, Local> locals;
-  private final SignatureFactory sigFactory;
-  private final TypeFactory typeFactory;
+  private final IdentifierFactory identifierFactory;
 
   public InstructionConverter(
       WalaIRToJimpleConverter converter,
@@ -136,8 +134,7 @@ public class InstructionConverter {
     this.targetsOfLookUpSwitchStmts = new HashMap<>();
     this.defaultOfLookUpSwitchStmts = new HashMap<>();
     this.locals = new HashMap<>();
-    this.sigFactory = converter.view.getSignatureFactory();
-    this.typeFactory = converter.view.getTypeFactory();
+    this.identifierFactory = converter.view.getIdentifierFactory();
   }
 
   public List<IStmt> convertInstruction(DebuggingInformation debugInfo, SSAInstruction inst) {
@@ -286,7 +283,8 @@ public class InstructionConverter {
     int exceptionValue = inst.getException();
     Local local =
         getLocal(
-            DefaultTypeFactory.getInstance().getClassType("java.lang.Throwable"), exceptionValue);
+            DefaultIdentifierFactory.getInstance().getClassType("java.lang.Throwable"),
+            exceptionValue);
     JCaughtExceptionRef caught = Jimple.newCaughtExceptionRef();
 
     Position[] operandPos = new Position[1];
@@ -319,7 +317,8 @@ public class InstructionConverter {
     List<IStmt> stmts = new ArrayList<>();
     // create a static field for checking if assertion is disabled.
     JavaClassType cSig = methodSignature.getDeclClassSignature();
-    FieldSignature fieldSig = sigFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean");
+    FieldSignature fieldSig =
+        identifierFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean");
     SootField assertionsDisabled =
         new SootField(fieldSig, EnumSet.of(Modifier.FINAL, Modifier.STATIC));
 
@@ -361,7 +360,7 @@ public class InstructionConverter {
     // create failed assertion code.
 
     ReferenceType assertionErrorType =
-        DefaultTypeFactory.getInstance().getClassType("java.lang.AssertionError");
+        DefaultIdentifierFactory.getInstance().getClassType("java.lang.AssertionError");
     Local failureLocal = localGenerator.generateLocal(assertionErrorType);
     JNewExpr newExpr = Jimple.newNewExpr(assertionErrorType);
 
@@ -372,7 +371,7 @@ public class InstructionConverter {
             new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
     stmts.add(newAssignStmt);
     MethodSignature methodSig =
-        sigFactory.getMethodSignature(
+        identifierFactory.getMethodSignature(
             "<init>", "java.lang.AssertionError", "void", Collections.emptyList());
     JSpecialInvokeExpr invoke = Jimple.newSpecialInvokeExpr(failureLocal, methodSig);
     JInvokeStmt invokeStmt =
@@ -407,7 +406,8 @@ public class InstructionConverter {
       Value left;
       if (!walaMethod.isStatic()) {
         FieldSignature fieldSig =
-            sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
+            identifierFactory.getFieldSignature(
+                "val$" + access.variableName, cSig, type.toString());
         SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
         left = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
@@ -434,7 +434,8 @@ public class InstructionConverter {
       Value rvalue = null;
       if (!walaMethod.isStatic()) {
         FieldSignature fieldSig =
-            sigFactory.getFieldSignature("val$" + access.variableName, cSig, type.toString());
+            identifierFactory.getFieldSignature(
+                "val$" + access.variableName, cSig, type.toString());
         SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
         rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
         converter.addSootField(field); // add this field to class
@@ -458,7 +459,7 @@ public class InstructionConverter {
 
     // TODO check modifier
     FieldSignature fieldSig =
-        sigFactory.getFieldSignature("this$0", cSig, enclosingType.toString());
+        identifierFactory.getFieldSignature("this$0", cSig, enclosingType.toString());
 
     JInstanceFieldRef rvalue = Jimple.newInstanceFieldRef(localGenerator.getThisLocal(), fieldSig);
 
@@ -585,9 +586,10 @@ public class InstructionConverter {
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassType classSig =
-        typeFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
+        identifierFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig =
-        sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
+        identifierFactory.getFieldSignature(
+            fieldRef.getName().toString(), classSig, fieldType.toString());
     Value fieldValue;
     if (inst.isStatic()) {
       fieldValue = Jimple.newStaticFieldRef(fieldSig);
@@ -740,7 +742,7 @@ public class InstructionConverter {
     MethodSignature methodSig =
         converter
             .view
-            .getSignatureFactory()
+            .getIdentifierFactory()
             .getMethodSignature(
                 target.getName().toString(), declaringClassSignature, returnType, parameters);
 
@@ -950,9 +952,10 @@ public class InstructionConverter {
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassType classSig =
-        typeFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
+        identifierFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig =
-        sigFactory.getFieldSignature(fieldRef.getName().toString(), classSig, fieldType.toString());
+        identifierFactory.getFieldSignature(
+            fieldRef.getName().toString(), classSig, fieldType.toString());
     Value rvalue = null;
     if (inst.isStatic()) {
       rvalue = Jimple.newStaticFieldRef(fieldSig);

@@ -67,7 +67,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass extends AbstractClass implements Serializable {
+public class SootClass extends AbstractClass<ClassSource> implements Serializable {
 
   public SootClass(ClassSource classSource, SourceType sourceType) {
     super(classSource);
@@ -94,7 +94,7 @@ public class SootClass extends AbstractClass implements Serializable {
     Iterable<SootField> fields;
 
     try {
-      fields = this.classSource.getContent().resolveFields(this.getType());
+      fields = this.classSource.resolveFields();
     } catch (ResolveException e) {
       fields = Utils.emptyImmutableSet();
 
@@ -111,7 +111,7 @@ public class SootClass extends AbstractClass implements Serializable {
     Iterable<SootMethod> methods;
 
     try {
-      methods = this.classSource.getContent().resolveMethods(this.getType());
+      methods = this.classSource.resolveMethods();
     } catch (ResolveException e) {
       methods = Utils.emptyImmutableSet();
 
@@ -217,7 +217,7 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   private final Lazy<Set<Modifier>> lazyModifiers =
-      synchronizedLazy(() -> classSource.getContent().resolveModifiers(getType()));
+      synchronizedLazy(() -> classSource.resolveModifiers());
 
   /** Returns the modifiers of this class in an immutable set. */
   @Nonnull
@@ -226,7 +226,7 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   private final Lazy<Set<JavaClassType>> lazyInterfaces =
-      synchronizedLazy(() -> classSource.getContent().resolveInterfaces(getType()));
+      synchronizedLazy(() -> classSource.resolveInterfaces());
 
   /**
    * Returns the number of interfaces being directly implemented by this class. Note that direct
@@ -257,7 +257,7 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   private final Lazy<Optional<JavaClassType>> lazySuperclass =
-      synchronizedLazy(() -> classSource.getContent().resolveSuperclass(getType()));
+      synchronizedLazy(() -> classSource.resolveSuperclass());
 
   /**
    * WARNING: interfaces are subclasses of the java.lang.Object class! Does this class have a
@@ -277,7 +277,7 @@ public class SootClass extends AbstractClass implements Serializable {
   }
 
   private final Lazy<Optional<JavaClassType>> lazyOuterClass =
-      synchronizedLazy(() -> classSource.getContent().resolveOuterClass(getType()));
+      synchronizedLazy(() -> classSource.resolveOuterClass());
 
   public boolean hasOuterClass() {
     return lazyOuterClass.get().isPresent();
@@ -430,8 +430,7 @@ public class SootClass extends AbstractClass implements Serializable {
   // }
 
   // FIXME: get rid of the wala class position
-  private final Lazy<Position> lazyPosition =
-      synchronizedLazy(() -> classSource.getContent().resolvePosition(getType()));
+  private final Lazy<Position> lazyPosition = synchronizedLazy(() -> classSource.resolvePosition());
 
   @Nonnull
   public Position getPosition() {

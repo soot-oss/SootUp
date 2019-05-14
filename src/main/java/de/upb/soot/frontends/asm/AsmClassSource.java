@@ -1,36 +1,44 @@
 package de.upb.soot.frontends.asm;
 
+import com.ibm.wala.cast.tree.CAstSourcePositionMap;
+import de.upb.soot.DefaultIdentifierFactory;
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.signatures.DefaultSignatureFactory;
+import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
-class AsmClassClassSourceContent extends AbstractAsmSourceContent {
+class AsmClassSource extends ClassSource {
 
-  public AsmClassClassSourceContent(@Nonnull ClassSource classSource) {
-    super(classSource);
+  @Nonnull private final ClassNode classNode;
+
+  public AsmClassSource(
+      INamespace namespace,
+      Path sourcePath,
+      JavaClassType javaClassType,
+      @Nonnull ClassNode classNode) {
+    super(namespace, sourcePath, javaClassType);
+    this.classNode = classNode;
   }
 
   private static Set<SootField> resolveFields(
-      List<FieldNode> fieldNodes, SignatureFactory signatureFactory, JavaClassType classSignature) {
+      List<FieldNode> fieldNodes,
+      IdentifierFactory signatureFactory,
+      JavaClassType classSignature) {
     // FIXME: add support for annotation
     return fieldNodes.stream()
         .map(
@@ -47,16 +55,15 @@ class AsmClassClassSourceContent extends AbstractAsmSourceContent {
   }
 
   private static Stream<SootMethod> resolveMethods(
-      List<MethodNode> methodNodes, SignatureFactory signatureFactory, JavaClassType cs) {
+      List<MethodNode> methodNodes, IdentifierFactory signatureFactory, JavaClassType cs) {
     return methodNodes.stream()
         .map(
             methodSource -> {
-              if (!(methodSource instanceof AsmMethodSourceContent)) {
+              if (!(methodSource instanceof AsmMethodSource)) {
                 throw new AsmFrontendException(
                     String.format("Failed to create Method Signature %s", methodSource));
               }
-              AsmMethodSourceContent asmClassClassSourceContent =
-                  (AsmMethodSourceContent) methodSource;
+              AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
 
               List<JavaClassType> exceptions = new ArrayList<>();
               Iterable<JavaClassType> exceptionsSignatures =
@@ -82,34 +89,38 @@ class AsmClassClassSourceContent extends AbstractAsmSourceContent {
             });
   }
 
-  @Override
   @Nonnull
-  public Collection<SootMethod> resolveMethods(@Nonnull JavaClassType signature)
-      throws ResolveException {
-    SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
-    return resolveMethods(this.methods, signatureFactory, signature).collect(Collectors.toSet());
+  public Collection<SootMethod> resolveMethods() throws ResolveException {
+    IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+    return resolveMethods(classNode.methods, identifierFactory, classSignature)
+        .collect(Collectors.toSet());
   }
 
-  @Override
   @Nonnull
-  public Collection<SootField> resolveFields(@Nonnull JavaClassType classSignature)
-      throws ResolveException {
-    SignatureFactory signatureFactory = DefaultSignatureFactory.getInstance();
-    return resolveFields(fields, signatureFactory, classSignature);
+  public Collection<SootField> resolveFields() throws ResolveException {
+    IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+    return resolveFields(classNode.fields, identifierFactory, classSignature);
   }
 
-  @Override
-  @Nonnull
-  public MethodVisitor visitMethod(
-      int access,
-      @Nonnull String name,
-      @Nonnull String desc,
-      @Nonnull String signature,
-      @Nonnull String[] exceptions) {
+  public Set<Modifier> resolveModifiers() {
+    EnumSet<Modifier> modifiers = AsmUtil.getModifiers(classNode.access);
+    return modifiers;
+  }
 
-    AsmMethodSourceContent mn =
-        new AsmMethodSourceContent(access, name, desc, signature, exceptions);
-    methods.add(mn);
-    return mn;
+  public Set<JavaClassType> resolveInterfaces() {
+    return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
+  }
+
+  public Optional<JavaClassType> resolveSuperclass() {
+    return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.superName));
+  }
+
+  public Optional<JavaClassType> resolveOuterClass() {
+    return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
+  }
+
+  public CAstSourcePositionMap.Position resolvePosition() {
+    // FIXME: what is this??? the source code line number of the complete file?
+    return null;
   }
 }

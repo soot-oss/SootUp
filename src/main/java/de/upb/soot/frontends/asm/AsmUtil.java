@@ -1,12 +1,12 @@
 package de.upb.soot.frontends.asm;
 
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Modifier;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.types.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -14,7 +14,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.ClassNode;
 
 public final class AsmUtil {
 
@@ -29,50 +28,16 @@ public final class AsmUtil {
    * @param classNode The node to initialize
    */
   protected static void initAsmClassSource(
-      @Nonnull ClassSource classSource, @Nonnull ClassNode classNode) {
-    URI uri = classSource.getSourcePath().toUri();
-
+      @Nonnull Path classSource, @Nonnull AsmJavaClassProvider.SootClassNode classNode)
+      throws AsmFrontendException {
     try {
-      if (classSource.getSourcePath().getFileSystem().isOpen()) {
-        Path sourceFile = java.nio.file.Paths.get(uri);
+      try (InputStream sourceFileInputStream = Files.newInputStream(classSource)) {
+        ClassReader clsr = new ClassReader(sourceFileInputStream);
 
-        initClassNode(sourceFile, classNode);
-      } else {
-        // A zip file system needs to be re-opened, otherwise it crashes
-        // http://docs.oracle.com/javase/7/docs/technotes/guides/io/fsp/zipfilesystemprovider.html
-
-        Map<String, String> env = new HashMap<>();
-        env.put("create", "false");
-
-        // Info: The `__zipfs` variable is intentionally unused. It is required
-        // to create the ZIP file system, but the file system instance itself
-        // has not explicitly to be used – this happens in the background.
-        try (FileSystem __zipfs = FileSystems.newFileSystem(uri, env)) {
-          Path sourceFile = Paths.get(uri);
-
-          initClassNode(sourceFile, classNode);
-        }
+        clsr.accept(classNode, ClassReader.SKIP_FRAMES);
       }
-
     } catch (IOException e) {
-      e.printStackTrace();
-      // TODO: Exception handling
-    }
-  }
-
-  /**
-   * Initializes the specified class node from a class file.
-   *
-   * @param sourceFile The source file.
-   * @param classNode The class node.
-   * @throws IOException An error occurred.
-   */
-  private static void initClassNode(@Nonnull Path sourceFile, @Nonnull ClassNode classNode)
-      throws IOException {
-    try (InputStream sourceFileInputStream = Files.newInputStream(sourceFile)) {
-      ClassReader clsr = new ClassReader(sourceFileInputStream);
-
-      clsr.accept(classNode, ClassReader.SKIP_FRAMES);
+      throw new AsmFrontendException(e.getMessage());
     }
   }
 
@@ -153,7 +118,7 @@ public final class AsmUtil {
         }
         String name = desc.substring(1, desc.length() - 1);
         name = toQualifiedName(name);
-        baseType = DefaultTypeFactory.getInstance().getType(toQualifiedName(name));
+        baseType = DefaultIdentifierFactory.getInstance().getType(toQualifiedName(name));
         break;
       default:
         throw new AssertionError("Unknown descriptor: " + desc);
@@ -161,7 +126,9 @@ public final class AsmUtil {
     if (!(baseType instanceof JavaClassType) && desc.length() > 1) {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
-    return nrDims > 0 ? DefaultTypeFactory.getInstance().getArrayType(baseType, nrDims) : baseType;
+    return nrDims > 0
+        ? DefaultIdentifierFactory.getInstance().getArrayType(baseType, nrDims)
+        : baseType;
   }
 
   @Nonnull
@@ -219,7 +186,7 @@ public final class AsmUtil {
             }
 
             String cls = desc.substring(begin, idx++);
-            baseType = DefaultTypeFactory.getInstance().getType(toQualifiedName(cls));
+            baseType = DefaultIdentifierFactory.getInstance().getType(toQualifiedName(cls));
             break this_type;
           default:
             throw new AssertionError("Unknown type: " + c);
@@ -227,7 +194,7 @@ public final class AsmUtil {
       }
 
       if (baseType != null && nrDims > 0) {
-        types.add(DefaultTypeFactory.getInstance().getArrayType(baseType, nrDims));
+        types.add(DefaultIdentifierFactory.getInstance().getArrayType(baseType, nrDims));
 
       } else {
         types.add(baseType);
@@ -253,6 +220,6 @@ public final class AsmUtil {
     if (asmClassName == null || asmClassName.isEmpty()) {
       return null;
     }
-    return DefaultTypeFactory.getInstance().getClassType(toQualifiedName(asmClassName));
+    return DefaultIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
   }
 }

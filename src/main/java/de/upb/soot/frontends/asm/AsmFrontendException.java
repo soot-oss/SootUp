@@ -8,4 +8,8 @@ public class AsmFrontendException extends ResolveException {
   public AsmFrontendException(@Nullable String message) {
     super(message);
   }
+
+  public AsmFrontendException(String message, Exception e) {
+    super(message, e);
+  }
 }

@@ -5,10 +5,9 @@ import static org.junit.Assert.assertNotNull;
 
 import categories.Java8Test;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.signatures.PackageSignature;
+import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
 import java.nio.file.Paths;
@@ -26,19 +25,19 @@ public class WalaJavaClassProviderTest {
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     JavaSourcePathNamespace namespace =
         new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
-    JavaClassType type = new JavaClassType("Array1", PackageSignature.DEFAULT_PACKAGE);
+    JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     WalaJavaClassProvider provider = new WalaJavaClassProvider(exclusionFilePath);
     ClassSource classSource = provider.createClassSource(namespace, Paths.get(srcDir), type);
 
     assertEquals(type, classSource.getClassType());
 
-    IClassSourceContent content = classSource.getContent();
+    ClassSource content = classSource;
     assertNotNull(content);
-    assertEquals(3, content.resolveMethods(type).size());
-    assertEquals(0, content.resolveFields(type).size());
+    assertEquals(3, content.resolveMethods().size());
+    assertEquals(0, content.resolveFields().size());
 
-    assertEquals(content, provider.getContent(classSource));
+    assertEquals(content, (classSource));
   }
 
   @Test

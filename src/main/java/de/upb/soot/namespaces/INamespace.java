@@ -22,12 +22,11 @@ package de.upb.soot.namespaces;
  * #L%
  */
 
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.TypeFactory;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -49,7 +48,7 @@ public interface INamespace {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<ClassSource> getClassSource(@Nonnull JavaClassType signature);
+  Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType signature);
 
   /**
    * The class provider attached to this namespace.
@@ -60,6 +59,6 @@ public interface INamespace {
   IClassProvider getClassProvider();
 
   @Nonnull
-  Collection<ClassSource> getClassSources(
-      @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory);
+  Collection<? extends AbstractClassSource> getClassSources(
+      @Nonnull IdentifierFactory identifierFactory);
 }

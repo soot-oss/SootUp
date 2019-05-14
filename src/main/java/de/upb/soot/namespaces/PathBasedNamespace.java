@@ -1,10 +1,9 @@
 package de.upb.soot.namespaces;
 
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.IdentifierFactory;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.SignatureFactory;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.TypeFactory;
 import de.upb.soot.util.Utils;
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -74,8 +73,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
   }
 
-  protected @Nonnull Collection<ClassSource> walkDirectory(
-      @Nonnull Path dirPath, @Nonnull TypeFactory factory) {
+  protected @Nonnull Collection<? extends AbstractClassSource> walkDirectory(
+      @Nonnull Path dirPath, @Nonnull IdentifierFactory factory) {
     try {
       final FileType handledFileType = classProvider.getHandledFileType();
 
@@ -92,7 +91,7 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
   }
 
-  protected @Nonnull Optional<ClassSource> getClassSourceInternal(
+  protected @Nonnull Optional<? extends AbstractClassSource> getClassSourceInternal(
       @Nonnull JavaClassType signature, @Nonnull Path path) {
     Path pathToClass =
         path.resolve(signature.toPath(classProvider.getHandledFileType(), path.getFileSystem()));
@@ -111,13 +110,14 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    public @Nonnull Collection<ClassSource> getClassSources(
-        @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory) {
-      return walkDirectory(path, typeFactory);
+    public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
+        @Nonnull IdentifierFactory identifierFactory) {
+      return walkDirectory(path, identifierFactory);
     }
 
     @Override
-    public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassType signature) {
+    public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+        @Nonnull JavaClassType signature) {
       return getClassSourceInternal(signature, path);
     }
   }
@@ -129,7 +129,8 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassType signature) {
+    public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+        @Nonnull JavaClassType signature) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
         return getClassSourceInternal(signature, archiveRoot);
@@ -139,11 +140,11 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
 
     @Override
-    public @Nonnull Collection<ClassSource> getClassSources(
-        @Nonnull SignatureFactory signatureFactory, TypeFactory typeFactory) {
+    public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
+        @Nonnull IdentifierFactory identifierFactory) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
-        return walkDirectory(archiveRoot, typeFactory);
+        return walkDirectory(archiveRoot, identifierFactory);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
