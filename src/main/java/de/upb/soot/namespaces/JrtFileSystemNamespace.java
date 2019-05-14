@@ -3,7 +3,7 @@ package de.upb.soot.namespaces;
 import com.google.common.base.Preconditions;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.ModuleIdentifierFactory;
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.signatures.ModulePackageName;
 import de.upb.soot.types.JavaClassType;
@@ -36,14 +36,15 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   }
 
   @Override
-  public @Nonnull Optional<ClassSource> getClassSource(@Nonnull JavaClassType signature) {
+  public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
+      @Nonnull JavaClassType signature) {
     if (signature.getPackageName() instanceof ModulePackageName) {
       return this.getClassSourceInternalForModule(signature);
     }
     return this.getClassSourceInternalForClassPath(signature);
   }
 
-  private @Nonnull Optional<ClassSource> getClassSourceInternalForClassPath(
+  private @Nonnull Optional<AbstractClassSource> getClassSourceInternalForClassPath(
       @Nonnull JavaClassType classSignature) {
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
@@ -65,7 +66,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
     return Optional.empty();
   }
 
-  private @Nonnull Optional<ClassSource> getClassSourceInternalForModule(
+  private @Nonnull Optional<? extends AbstractClassSource> getClassSourceInternalForModule(
       @Nonnull JavaClassType classSignature) {
     Preconditions.checkArgument(classSignature.getPackageName() instanceof ModulePackageName);
 
@@ -87,14 +88,14 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   // get the factory, which I should use the create the correspond class signatures
   @Override
-  public @Nonnull Collection<ClassSource> getClassSources(
+  public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
 
     final Path archiveRoot = theFileSystem.getPath("modules");
     return walkDirectory(archiveRoot, identifierFactory);
   }
 
-  protected @Nonnull Collection<ClassSource> walkDirectory(
+  protected @Nonnull Collection<? extends AbstractClassSource> walkDirectory(
       @Nonnull Path dirPath, @Nonnull IdentifierFactory identifierFactory) {
 
     final FileType handledFileType = classProvider.getHandledFileType();

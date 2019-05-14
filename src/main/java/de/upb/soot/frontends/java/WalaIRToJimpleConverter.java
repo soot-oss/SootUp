@@ -20,15 +20,8 @@ import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
-import de.upb.soot.core.Body;
-import de.upb.soot.core.ClassType;
-import de.upb.soot.core.Modifier;
-import de.upb.soot.core.ResolvingLevel;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootMethod;
+import de.upb.soot.core.*;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.JavaClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -40,22 +33,12 @@ import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.NullType;
-import de.upb.soot.types.PrimitiveType;
-import de.upb.soot.types.Type;
-import de.upb.soot.types.VoidType;
+import de.upb.soot.types.*;
 import de.upb.soot.views.JavaView;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nullable;
 
 /**
@@ -64,6 +47,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  */
 public class WalaIRToJimpleConverter {
+
   protected JavaView view;
   private INamespace srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
@@ -71,10 +55,9 @@ public class WalaIRToJimpleConverter {
   private Set<SootField> sootFields;
 
   public WalaIRToJimpleConverter(Set<String> sourceDirPath) {
-    // TODO According to the annotation, we shouldn't pass in null here
-    Project project = new Project(null, DefaultIdentifierFactory.getInstance());
-
     srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
+    Project project = new Project(srcNamespace, DefaultIdentifierFactory.getInstance());
+
     view = new JavaView(project);
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
@@ -85,9 +68,16 @@ public class WalaIRToJimpleConverter {
    *
    * @return A SootClass converted from walaClass
    */
+  @Deprecated
   public SootClass convertClass(AstClass walaClass) {
-    ClassSource classSource = createClassSource(walaClass);
-    JavaClassType classSig = classSource.getClassType();
+    ClassSource classSource = convertToClassSource(walaClass);
+    return new SootClass(classSource, SourceType.Application);
+  }
+
+  ClassSource convertToClassSource(AstClass walaClass) {
+    String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
+    JavaClassType classSig =
+        DefaultIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
     // get super class
     IClass sc = walaClass.getSuperclass();
     JavaClassType superClass = null;
@@ -150,10 +140,8 @@ public class WalaIRToJimpleConverter {
       sootMethods.add(sootMethod);
     }
 
-    return new SootClass(
-        ResolvingLevel.BODIES,
-        classSource,
-        ClassType.Application,
+    return createClassSource(
+        walaClass,
         superClass,
         interfaces,
         outerClass,
@@ -163,14 +151,32 @@ public class WalaIRToJimpleConverter {
         modifiers);
   }
 
-  /** Create a {@link JavaClassSource} object for the given walaClass. */
-  public JavaClassSource createClassSource(AstClass walaClass) {
+  /** Create a {@link EagerJavaClassSource} object for the given walaClass. */
+  public EagerJavaClassSource createClassSource(
+      AstClass walaClass,
+      JavaClassType superClass,
+      Set<JavaClassType> interfaces,
+      JavaClassType outerClass,
+      Set<SootField> sootFields,
+      Set<SootMethod> sootMethods,
+      Position position,
+      EnumSet<Modifier> modifiers) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSignature =
         DefaultIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
-    return new JavaClassSource(srcNamespace, sourcePath, classSignature);
+    return new EagerJavaClassSource(
+        srcNamespace,
+        sourcePath,
+        classSignature,
+        superClass,
+        interfaces,
+        outerClass,
+        sootFields,
+        sootMethods,
+        position,
+        modifiers);
   }
 
   /**
@@ -236,13 +242,9 @@ public class WalaIRToJimpleConverter {
             .getMethodSignature(
                 walaMethod.getName().toString(), classSig, returnType.toString(), sigs);
 
+    Body body = createBody(methodSig, modifiers, walaMethod);
     return new SootMethod(
-        new WalaIRMethodSourceContent(methodSig),
-        methodSig,
-        modifiers,
-        thrownExceptions,
-        createBody(methodSig, modifiers, walaMethod),
-        debugInfo);
+        new WalaIRMethodSource(methodSig, body), methodSig, modifiers, thrownExceptions, debugInfo);
   }
 
   public Type convertType(TypeReference type) {

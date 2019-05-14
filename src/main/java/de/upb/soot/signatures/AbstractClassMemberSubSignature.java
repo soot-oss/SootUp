@@ -3,7 +3,6 @@ package de.upb.soot.signatures;
 import com.google.common.base.Objects;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.Utils;
 import de.upb.soot.util.concurrent.Lazy;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -93,7 +92,7 @@ public abstract class AbstractClassMemberSubSignature {
       @Nonnull JavaClassType declClassSignature);
 
   private final Lazy<String> _cachedToString =
-      Utils.synchronizedLazy(() -> String.format("%s %s", getSignature(), getName()));
+      Lazy.synchronizedLazy(() -> String.format("%s %s", getSignature(), getName()));
 
   @Override
   @Nonnull

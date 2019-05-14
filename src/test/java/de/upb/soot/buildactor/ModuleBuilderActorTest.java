@@ -10,7 +10,6 @@ import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
 import de.upb.soot.types.JavaClassType;
 import java.util.Optional;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -36,7 +35,6 @@ public class ModuleBuilderActorTest {
   }
 
   @Test
-  @Ignore
   public void refiyMessageModuleInfoTest() {
     de.upb.soot.views.IView iView = createNewScene();
 
@@ -55,7 +53,6 @@ public class ModuleBuilderActorTest {
   }
 
   @Test
-  @Ignore
   public void resolveMessageModuleInfoTest() {
     de.upb.soot.views.IView iView = createNewScene();
 
@@ -63,9 +60,6 @@ public class ModuleBuilderActorTest {
         ModuleIdentifierFactory.getInstance().getClassType("module-info", "", "de.upb.mod");
 
     Optional<AbstractClass> result = iView.getClass(sig);
-    assertTrue(result.isPresent());
-    assertTrue(result.get() instanceof SootModuleInfo);
-
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
   }

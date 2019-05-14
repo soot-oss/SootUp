@@ -4,7 +4,6 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.Utils;
 import de.upb.soot.util.concurrent.Lazy;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -96,7 +95,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
   }
 
   private final Lazy<String> _cachedToString =
-      Utils.synchronizedLazy(
+      Lazy.synchronizedLazy(
           () ->
               String.format(
                   "%s %s(%s)",
