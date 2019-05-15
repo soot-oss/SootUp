@@ -1,18 +1,17 @@
 package de.upb.soot.core;
 
-import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
-
+import com.google.common.base.Suppliers;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
-import de.upb.soot.util.concurrent.Lazy;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
 public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
@@ -75,23 +74,23 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   }
 
   @Nonnull
-  private final Lazy<Set<ModuleReference>> _lazyRequiredModules =
-      synchronizedLazy(this::lazyFieldInitializer);
+  private final Supplier<Set<ModuleReference>> _lazyRequiredModules =
+      Suppliers.memoize(this::lazyFieldInitializer);
 
-  private final Lazy<Set<PackageReference>> _lazyExportedPackages =
-      synchronizedLazy(this::lazyExportsInitializer);
-  private final Lazy<Set<PackageReference>> _lazyOpenedPackages =
-      synchronizedLazy(this::lazyOpenssInitializer);
+  private final Supplier<Set<PackageReference>> _lazyExportedPackages =
+      Suppliers.memoize(this::lazyExportsInitializer);
+  private final Supplier<Set<PackageReference>> _lazyOpenedPackages =
+      Suppliers.memoize(this::lazyOpenssInitializer);
 
-  private final Lazy<Set<JavaClassType>> _lazyUsedServices =
-      synchronizedLazy(this::lazyUsesInitializer);
+  private final Supplier<Set<JavaClassType>> _lazyUsedServices =
+      Suppliers.memoize(this::lazyUsesInitializer);
 
-  private final Lazy<Set<JavaClassType>> _lazyProvidedServices =
-      synchronizedLazy(this::lazyProvidesInitializer);
+  private final Supplier<Set<JavaClassType>> _lazyProvidedServices =
+      Suppliers.memoize(this::lazyProvidesInitializer);
 
   private ModuleClassSource getModuleClassSourceContent() throws ResolveException {
-    if (!(this.classSource instanceof ModuleClassSource)) {
-      throw new ResolveException("Not a module");
+    if (this.classSource == null) {
+      throw new ResolveException("Module classSource is null");
     }
     // FIXME: this is ugly
     return this.classSource;
@@ -101,7 +100,7 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   private Set<ModuleReference> lazyFieldInitializer() {
     Set<ModuleReference> requires;
     try {
-      requires = new HashSet(getModuleClassSourceContent().requires());
+      requires = new HashSet<>(getModuleClassSourceContent().requires());
     } catch (ResolveException e) {
       requires = Utils.emptyImmutableSet();
 
