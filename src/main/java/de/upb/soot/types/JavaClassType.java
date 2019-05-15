@@ -78,6 +78,25 @@ public class JavaClassType extends ReferenceType {
     this.scope = GlobalTypeScope.getInstance();
   }
 
+
+  public JavaClassType(final String className, final PackageName packageName, JavaClassTypeScope javaClassTypeScope) {
+    String realClassName = className;
+    boolean innerClass = false;
+    // use $ to separate inner and outer class name
+    if (realClassName.contains(".")) {
+      realClassName = realClassName.replace(".", "$");
+    }
+    // if the constructor was invoked with an ASM classname
+    if (realClassName.contains("$")) {
+      innerClass = true;
+    }
+    this.className = realClassName;
+    this.packageName = packageName;
+    this.isInnerClass = innerClass;
+    this.scope = GlobalTypeScope.getInstance();
+  }
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

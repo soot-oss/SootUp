@@ -1,7 +1,5 @@
 package de.upb.soot.core;
 
-import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
-
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.frontends.ResolveException;
@@ -9,11 +7,14 @@ import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
 import de.upb.soot.util.concurrent.Lazy;
+
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
-import javax.annotation.Nonnull;
+
+import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
 
 public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
 
@@ -21,17 +22,14 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   private static final long serialVersionUID = -6856798288630958622L;
 
   @Nonnull private final JavaClassType classSignature;
-  // FIXME: how to create automatic modules
-  private boolean isAutomaticModule;
   private EnumSet<Modifier> modifiers;
 
   // FIXME: or module Signature?
   private String moduleName;
 
-  public SootModuleInfo(ModuleClassSource classSource, boolean isAutomaticModule) {
+  public SootModuleInfo(ModuleClassSource classSource) {
     super(classSource);
     this.classSignature = classSource.getClassType();
-    this.isAutomaticModule = isAutomaticModule;
     this.moduleName = getModuleClassSourceContent().getModuleName();
   }
 
@@ -95,6 +93,10 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
     }
     // FIXME: this is ugly
     return this.classSource;
+  }
+
+  public final Set<PackageReference> getExportedPackages() {
+    return _lazyExportedPackages.get();
   }
 
   @Nonnull
@@ -170,10 +172,6 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
       throw new IllegalStateException(e);
     }
     return uses;
-  }
-
-  public boolean isAutomaticModule() {
-    return isAutomaticModule;
   }
 
   @Override

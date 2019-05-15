@@ -24,15 +24,14 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.JavaClassTypeScope;
 
 // TODO Rename this too?
 
 /** Represents a Java 9 module. */
 
 // FIXME: or use directly a module as Scope not the signature...
-  //and then build a module graph ...
-public class ModuleSignature implements ISignature, JavaClassTypeScope {
+// and then build a module graph ...
+public class ModuleSignature implements ISignature {
   /**
    * The unnamed module. If a request is made to load a type whose package is not defined in any
    * module then the module system load it from the classpath. To ensure that every type is
@@ -83,10 +82,5 @@ public class ModuleSignature implements ISignature, JavaClassTypeScope {
   /** The name of the module. */
   public String getModuleName() {
     return moduleName;
-  }
-
-  @Override
-  public ModuleSignature getScope() {
-    return this;
   }
 }
