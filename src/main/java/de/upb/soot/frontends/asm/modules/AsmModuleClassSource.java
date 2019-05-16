@@ -25,18 +25,21 @@ public class AsmModuleClassSource extends ModuleClassSource {
 
   private final ModuleNode module;
 
+  private ModuleSignature moduleSignature;
+
   public AsmModuleClassSource(
       INamespace srcNamespace,
       Path sourcePath,
       JavaClassType classSignature,
-      @Nonnull ModuleNode moduleNode) {
+      @Nonnull ModuleNode moduleNode, ModuleSignature moduleSignature) {
     super(srcNamespace, sourcePath, classSignature);
+    this.moduleSignature = moduleSignature;
     this.module = moduleNode;
   }
 
   @Override
-  public String getModuleName() {
-    return this.module.name;
+  public ModuleSignature getModuleName() {
+    return moduleSignature;
   }
 
   @Override

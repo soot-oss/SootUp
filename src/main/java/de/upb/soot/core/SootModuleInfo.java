@@ -8,12 +8,13 @@ import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
+
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
 
 public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
 
@@ -21,17 +22,14 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   private static final long serialVersionUID = -6856798288630958622L;
 
   @Nonnull private final JavaClassType classSignature;
-  // FIXME: how to create automatic modules
-  private boolean isAutomaticModule;
-  private EnumSet<Modifier> modifiers;
+  @Nonnull private final ModuleSignature moduleName;
 
-  // FIXME: or module Signature?
-  private String moduleName;
+  private EnumSet<Modifier> modifiers;
 
   public SootModuleInfo(ModuleClassSource classSource) {
     super(classSource);
     this.classSignature = classSource.getClassType();
-    this.moduleName = getModuleClassSourceContent().getModuleName();
+    this.moduleName = classSource.getModuleName();
   }
 
   public static class ModuleReference {
@@ -47,8 +45,13 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   }
 
   public static class PackageReference {
+    public String getPackageName() {
+      return packageName;
+    }
+
     private String packageName;
     private EnumSet<Modifier> modifers;
+
     private Set<ModuleSignature> targetModules;
 
     public PackageReference(
@@ -64,12 +67,8 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
       return this.targetModules.isEmpty();
     }
 
-    public boolean exportedTo(SootModuleInfo moduleInfo) {
-      if (isPublic()) {
-        return true;
-      }
-      // FIXME: check for automatic modules ?
-      return targetModules.contains(moduleInfo);
+    public Set<ModuleSignature> getTargetModules() {
+      return targetModules;
     }
   }
 
@@ -98,6 +97,10 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
 
   public final Set<PackageReference> getExportedPackages() {
     return _lazyExportedPackages.get();
+  }
+
+  public final Set<PackageReference> getOpenedPackages() {
+    return _lazyOpenedPackages.get();
   }
 
   @Nonnull
@@ -178,6 +181,10 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   @Override
   public String getName() {
     return classSignature.getClassName();
+  }
+
+  public ModuleSignature getModuleSignature() {
+    return moduleName;
   }
 
   @Override

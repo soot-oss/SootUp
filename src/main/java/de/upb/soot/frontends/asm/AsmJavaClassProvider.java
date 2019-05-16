@@ -1,15 +1,17 @@
 package de.upb.soot.frontends.asm;
 
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
 import de.upb.soot.frontends.asm.modules.AsmModuleClassSource;
 import de.upb.soot.namespaces.FileType;
 import de.upb.soot.namespaces.INamespace;
 import de.upb.soot.types.JavaClassType;
-import java.nio.file.Path;
-import javax.annotation.Nonnull;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.ClassNode;
+
+import javax.annotation.Nonnull;
+import java.nio.file.Path;
 
 public class AsmJavaClassProvider implements IClassProvider {
 
@@ -23,7 +25,12 @@ public class AsmJavaClassProvider implements IClassProvider {
     AsmUtil.initAsmClassSource(sourcePath, classNode);
 
     if (classSignature.isModuleInfo()) {
-      return new AsmModuleClassSource(srcNamespace, sourcePath, classSignature, classNode.module);
+      return new AsmModuleClassSource(
+          srcNamespace,
+          sourcePath,
+          classSignature,
+          classNode.module,
+          DefaultIdentifierFactory.getInstance().getModuleSignature(classNode.module.name));
 
     } else {
       return new AsmClassSource(srcNamespace, sourcePath, classSignature, classNode);

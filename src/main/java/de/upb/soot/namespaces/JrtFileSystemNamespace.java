@@ -12,20 +12,16 @@ import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
 
 import javax.annotation.Nonnull;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,6 +34,8 @@ import java.util.stream.Collectors;
 public class JrtFileSystemNamespace extends AbstractNamespace {
 
   private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
+
+  private final HashMap<String, JavaSystemModule> javaSystemModuleHashMap = new HashMap<>();
 
   public JrtFileSystemNamespace(IClassProvider classProvider) {
     super(classProvider);
@@ -154,11 +152,11 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
             // create the system Java Modules
             SootModuleInfo moduleInfo = new SootModuleInfo((ModuleClassSource) classSource);
 
-            // FIXME: get the name of all packages...
-            Collection<String> packages = getAllPackageNames(entry);
-
+            String moduleName = entry.subpath(1, 2).toString();
             JavaSystemModule systemModule =
-                new JavaSystemModule(moduleInfo, packages, entry.subpath(1, 2).toString(), this);
+                new JavaSystemModule(moduleInfo, entry, moduleName, this);
+
+            this.javaSystemModuleHashMap.put(moduleName, systemModule);
 
             foundModules.add(systemModule);
           }
@@ -170,85 +168,16 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
     return foundModules;
   }
 
-  // FIXME: a bit dirty...
-  private Collection<String> getAllPackageNames(Path aPath) {
-    Collection<String> packages = new HashSet<>();
-
-    for (String foundClass : getClassesUnderDirectory(aPath)) {
-      int index = foundClass.lastIndexOf('.');
-      if (index > 0) {
-
-        String packageName = foundClass.substring(0, index);
-        packages.add(packageName);
-      }
-    }
-    return packages;
-  }
-
-  /**
-   * FIXME: this is a dirty hack... to find all packages a module defines... because I don't want to
-   * create class sources.... or anything else... I just want the package names... However, it will
-   * crash with a Dex-Namespace...
-   *
-   * @param aPath the directory
-   * @return List of found classes
-   */
-  private List<String> getClassesUnderDirectory(Path aPath) {
-    List<String> foundFiles = new ArrayList<>();
-
-    FileVisitor<Path> fileVisitor =
-        new FileVisitor<Path>() {
-
-          @Override
-          public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-              throws IOException {
-            return FileVisitResult.CONTINUE;
-          }
-
-          @Override
-          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-              throws IOException {
-
-            String fileName = aPath.relativize(file).toString().replace(File.separatorChar, '.');
-
-            if (fileName.endsWith(classProvider.getHandledFileType().getExtension())) {
-              int index =
-                  fileName.lastIndexOf("." + classProvider.getHandledFileType().getExtension());
-              foundFiles.add(fileName.substring(0, index));
-            }
-
-            return FileVisitResult.CONTINUE;
-          }
-
-          @Override
-          public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-            return FileVisitResult.CONTINUE;
-          }
-
-          @Override
-          public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-            return FileVisitResult.CONTINUE;
-          }
-        };
-    try {
-      Files.walkFileTree(aPath, fileVisitor);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
-    return foundFiles;
-  }
-
   private static class JavaSystemModule extends JavaModule {
 
     private String systemModuleName;
 
     public JavaSystemModule(
         @Nonnull SootModuleInfo sootModuleInfo,
-        @Nonnull Collection<String> packages,
+        @Nonnull Path aPath,
         String name,
         INamespace namespace) {
-      super(sootModuleInfo, packages, namespace);
+      super(sootModuleInfo, aPath, namespace);
       this.systemModuleName = name;
     }
 
@@ -262,7 +191,16 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
     JavaClassType sig = identifierFactory.fromPath(filename);
-    sig.setScope(identifierFactory.getModuleSignature(moduleDir.toString()));
+    String moduleName = moduleDir.toString();
+
+    // FIXME: IMHO: it does not make sense to discover all JDK modules directly...
+    if (this.javaSystemModuleHashMap.isEmpty()) {
+      this.discoverModules();
+    }
+
+    JavaSystemModule scope = this.javaSystemModuleHashMap.get(moduleName);
+
+    sig.setScope(scope);
     return sig;
   }
 }

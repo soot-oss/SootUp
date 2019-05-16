@@ -18,10 +18,6 @@ public class JavaModuleGraph {
   private final Map<ModuleSignature, JavaModule> nameToModule;
   private ModuleFinder moduleFinder;
 
-
-
-
-
   private JavaModuleGraph() {
     this.graph = Collections.emptyMap();
     this.modules = Collections.emptySet();
@@ -36,19 +32,10 @@ public class JavaModuleGraph {
     nameToModule = new HashMap<>();
   }
 
-
   public Optional<JavaModule> findModule(@Nonnull ModuleSignature name) {
     JavaModule m = nameToModule.get(name);
-    if (m != null)
-      return Optional.of(m);
-
-    /*if (!parents.isEmpty()) {
-      return configurations()
-              .skip(1)  // skip this configuration
-              .map(cf -> cf.nameToModule.get(name))
-              .filter(Objects::nonNull)
-              .findFirst();
-    }*/
+    if (m != null) return Optional.of(m);
+    // FIXME: ...
 
     return Optional.empty();
   }
