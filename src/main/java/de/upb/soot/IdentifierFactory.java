@@ -1,7 +1,12 @@
 package de.upb.soot;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.signatures.*;
+import de.upb.soot.signatures.FieldSignature;
+import de.upb.soot.signatures.FieldSubSignature;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.MethodSubSignature;
+import de.upb.soot.signatures.ModuleSignature;
+import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
@@ -96,9 +101,6 @@ public interface IdentifierFactory {
   FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature);
 
   JavaClassType getClassType(String className, String packageName);
-
-  JavaClassType getClassType(String className, String packageName, String moduleName);
-
 
   JavaClassType getClassType(String fullyQualifiedClassName);
 

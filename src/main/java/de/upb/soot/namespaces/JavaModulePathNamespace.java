@@ -37,8 +37,6 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     this(modulePath, getDefaultClassProvider());
   }
 
-
-
   /**
    * Creates a {@link JavaModulePathNamespace} which locates classes in the given module path.
    *
@@ -63,7 +61,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     Set<AbstractClassSource> found = new HashSet<>();
     Collection<JavaModule> availableModules = moduleGraph.getAllModules();
     for (JavaModule javaModule : availableModules) {
-      AbstractNamespace ns = javaModule.getNamespace();
+      INamespace ns = javaModule.getNamespace();
       if (ns == null) {
         continue;
       }
@@ -96,7 +94,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
       @Nonnull JavaClassType signature, JavaModule javaModule) {
 
     // lookup the ns for the class provider from the cache and use him...
-    AbstractNamespace ns = javaModule.getNamespace();
+    INamespace ns = javaModule.getNamespace();
 
     if (ns == null) {
       try {

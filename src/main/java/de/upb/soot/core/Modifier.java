@@ -27,8 +27,9 @@
 
 package de.upb.soot.core;
 
-import java.util.Set;
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
+import java.util.Set;
 
 /**
  * An Enum that provides static methods and constants to represent and work with with Java modifiers
@@ -136,6 +137,10 @@ public enum Modifier {
 
   public static boolean isDeclaredSynchronized(@Nonnull Set<Modifier> m) {
     return m.contains(DECLARED_SYNCHRONIZED);
+  }
+
+  public static boolean isRequiresTransitive(EnumSet<Modifier> modifiers) {
+    return modifiers.contains(REQUIRES_TRANSITIVE);
   }
 
   /**

@@ -8,10 +8,8 @@ import de.upb.soot.callgraph.ICallGraph;
 import de.upb.soot.callgraph.ICallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.core.SourceType;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.namespaces.JavaModulePathNamespace;
 import de.upb.soot.typehierarchy.ITypeHierarchy;
 import de.upb.soot.types.GlobalTypeScope;
@@ -21,7 +19,12 @@ import de.upb.soot.types.Type;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class JavaModuleView implements IView {
@@ -103,8 +106,6 @@ public class JavaModuleView implements IView {
                   if (it instanceof ClassSource) {
                     // FIXME: use wrapper??
                     return new SootClass((ClassSource) it, SourceType.Application);
-                  } else if (it instanceof ModuleClassSource) {
-                    return new SootModuleInfo((ModuleClassSource) it, false);
                   }
                   return null;
                 });

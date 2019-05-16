@@ -34,6 +34,10 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
 
   public static class ModuleReference {
 
+    public ModuleSignature getModuleInfo() {
+      return moduleInfo;
+    }
+
     private ModuleSignature moduleInfo;
     private EnumSet<Modifier> modifiers;
     private ClassSource classSource;
@@ -41,6 +45,10 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
     public ModuleReference(ModuleSignature moduleInfo, EnumSet<Modifier> accessModifier) {
       this.moduleInfo = moduleInfo;
       this.modifiers = accessModifier;
+    }
+
+    public boolean isTransitive() {
+      return Modifier.isRequiresTransitive(this.modifiers);
     }
   }
 
@@ -101,6 +109,10 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
 
   public final Set<PackageReference> getOpenedPackages() {
     return _lazyOpenedPackages.get();
+  }
+
+  public final Set<ModuleReference> getRequires() {
+    return _lazyRequiredModules.get();
   }
 
   @Nonnull

@@ -67,7 +67,6 @@ public class ModuleFinder {
     // and cache the result...
     getSystemModules().forEach(x -> resovledModules.put(x.getName(), x));
 
-
     // the rest of the modules are discovered on demand...
   }
 
@@ -168,8 +167,7 @@ public class ModuleFinder {
     }
   }
 
-  private void buildModuleForExplodedModule(@Nonnull Path dir)
-      throws ClassResolvingException {
+  private void buildModuleForExplodedModule(@Nonnull Path dir) throws ClassResolvingException {
     // create the namespace for this module dir
     PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(dir);
 
@@ -190,7 +188,7 @@ public class ModuleFinder {
       Collection<String> packazes = Collections.emptyList();
 
       // create a JavaModule
-      JavaModule javaModule = new JavaModule(moduleInfo, packazes, namespace);
+      JavaModule javaModule = new JavaModule(moduleInfo, dir, namespace);
 
       this.resovledModules.put(javaModule.getName(), javaModule);
     }
@@ -228,7 +226,7 @@ public class ModuleFinder {
       Collection<String> packazes = Collections.emptyList();
 
       // create a JavaModule
-      JavaModule javaModule = new JavaModule(moduleInfo, packazes,  namespace);
+      JavaModule javaModule = new JavaModule(moduleInfo, jar, namespace);
 
       this.resovledModules.put(javaModule.getName(), javaModule);
     } else {
@@ -243,7 +241,7 @@ public class ModuleFinder {
       Collection<String> packazes = Collections.emptyList();
 
       // create a JavaModule
-      JavaModule javaAutomaticModule = new JavaModule(moduleName, packazes,  namespace);
+      JavaModule javaAutomaticModule = new JavaModule(moduleName, jar, namespace);
 
       this.resovledModules.put(moduleName, javaAutomaticModule);
     }

@@ -168,7 +168,7 @@ public class JavaView extends AbstractView {
                     return new SootClass((ClassSource) it, SourceType.Application);
 
                   } else if (it instanceof ModuleClassSource) {
-                    return new SootModuleInfo((ModuleClassSource) it, false);
+                    return new SootModuleInfo((ModuleClassSource) it);
                   }
                   return null;
                 });
