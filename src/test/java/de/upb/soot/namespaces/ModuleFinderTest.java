@@ -9,6 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Map;
+
+import de.upb.soot.signatures.scope.ModuleFinder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;

@@ -3,6 +3,19 @@ pipeline {
 
     stages {
 
+        stage('Check Format') {
+            agent {
+                  docker {
+                    image 'maven:3-jdk-8-alpine'
+                    args '-v $HOME/.m2:/root/.m2'
+                  }
+            }
+
+            steps {
+              sh 'mvn com.coveo:fmt-maven-plugin:check'
+            }
+        }
+
         stage('Build') {
           parallel{
             stage('Build with JDK8'){
@@ -53,7 +66,6 @@ pipeline {
 
             steps {
               sh 'mvn verify -PJava8'
-              sh 'mvn com.coveo:fmt-maven-plugin:check'
             }
 
             post {
@@ -76,7 +88,6 @@ pipeline {
 
             steps {
               sh 'mvn verify -PJava9'
-              sh 'mvn com.coveo:fmt-maven-plugin:check'
             }
             post {
               always {

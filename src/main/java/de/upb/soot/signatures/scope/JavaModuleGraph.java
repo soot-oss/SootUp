@@ -1,9 +1,9 @@
 package de.upb.soot.signatures.scope;
 
-import de.upb.soot.namespaces.ModuleFinder;
 import de.upb.soot.signatures.ModuleSignature;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,5 +51,9 @@ public class JavaModuleGraph {
     }*/
 
     return Optional.empty();
+  }
+
+  public Collection<JavaModule> getAllModules() {
+    return null;
   }
 }

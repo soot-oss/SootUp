@@ -1,19 +1,31 @@
 package de.upb.soot.namespaces;
 
 import de.upb.soot.IdentifierFactory;
+import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.IClassProvider;
+import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.signatures.ModuleSignature;
+import de.upb.soot.signatures.scope.JavaModule;
 import de.upb.soot.types.GlobalTypeScope;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.nio.file.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,7 +39,7 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
 
   private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
-  protected JrtFileSystemNamespace(IClassProvider classProvider) {
+  public JrtFileSystemNamespace(IClassProvider classProvider) {
     super(classProvider);
   }
 
@@ -35,9 +47,9 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
       @Nonnull JavaClassType signature) {
 
-    if (signature.getScope() instanceof ModuleSignature) {
+    if (signature.getScope() instanceof JavaSystemModule) {
       return this.getClassSourceInternalForModule(
-          signature, (ModuleSignature) signature.getScope());
+          signature, (JavaSystemModule) signature.getScope());
     } else if (signature.getScope() instanceof GlobalTypeScope) {
       // FIXME: return any matching class name, by checking the complete path...
       this.getClassSourceInternalForClassPath(signature);
@@ -68,10 +80,10 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
   }
 
   private @Nonnull Optional<? extends AbstractClassSource> getClassSourceInternalForModule(
-      @Nonnull JavaClassType classSignature, ModuleSignature moduleSignature) {
+      @Nonnull JavaClassType classSignature, JavaSystemModule moduleSignature) {
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
-    final Path module = theFileSystem.getPath("modules", moduleSignature.getModuleName());
+    final Path module = theFileSystem.getPath("modules", moduleSignature.getName());
     Path foundClass = module.resolve(filepath);
 
     if (Files.isRegularFile(foundClass)) {
@@ -120,15 +132,35 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
    *
    * @return Collection of found module names.
    */
-  public @Nonnull Collection<String> discoverModules() {
+  // FIXME: I'm not a fan of defining the code here, but I cannot think of a better solution for
+  // now...
+  public @Nonnull Collection<JavaModule> discoverModules() {
     final Path moduleRoot = theFileSystem.getPath("modules");
-    List<String> foundModules = new ArrayList<>();
+    List<JavaModule> foundModules = new ArrayList<>();
 
     try (DirectoryStream<Path> stream = Files.newDirectoryStream(moduleRoot)) {
       {
         for (Path entry : stream) {
           if (Files.isDirectory(entry)) {
-            foundModules.add(entry.subpath(1, 2).toString());
+            // get the module-info.class
+            Path moduledesc =
+                entry.resolve(
+                    ModuleSignature.MODULE_INFO_CLASS.toPath(
+                        classProvider.getHandledFileType(), theFileSystem));
+            AbstractClassSource classSource =
+                classProvider.createClassSource(
+                    this, moduledesc, ModuleSignature.MODULE_INFO_CLASS);
+
+            // create the system Java Modules
+            SootModuleInfo moduleInfo = new SootModuleInfo((ModuleClassSource) classSource);
+
+            // FIXME: get the name of all packages...
+            Collection<String> packages = getAllPackageNames(entry);
+
+            JavaSystemModule systemModule =
+                new JavaSystemModule(moduleInfo, packages, entry.subpath(1, 2).toString(), this);
+
+            foundModules.add(systemModule);
           }
         }
       }
@@ -136,6 +168,94 @@ public class JrtFileSystemNamespace extends AbstractNamespace {
       e.printStackTrace();
     }
     return foundModules;
+  }
+
+  // FIXME: a bit dirty...
+  private Collection<String> getAllPackageNames(Path aPath) {
+    Collection<String> packages = new HashSet<>();
+
+    for (String foundClass : getClassesUnderDirectory(aPath)) {
+      int index = foundClass.lastIndexOf('.');
+      if (index > 0) {
+
+        String packageName = foundClass.substring(0, index);
+        packages.add(packageName);
+      }
+    }
+    return packages;
+  }
+
+  /**
+   * FIXME: this is a dirty hack... to find all packages a module defines... because I don't want to
+   * create class sources.... or anything else... I just want the package names... However, it will
+   * crash with a Dex-Namespace...
+   *
+   * @param aPath the directory
+   * @return List of found classes
+   */
+  private List<String> getClassesUnderDirectory(Path aPath) {
+    List<String> foundFiles = new ArrayList<>();
+
+    FileVisitor<Path> fileVisitor =
+        new FileVisitor<Path>() {
+
+          @Override
+          public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+              throws IOException {
+            return FileVisitResult.CONTINUE;
+          }
+
+          @Override
+          public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+              throws IOException {
+
+            String fileName = aPath.relativize(file).toString().replace(File.separatorChar, '.');
+
+            if (fileName.endsWith(classProvider.getHandledFileType().getExtension())) {
+              int index =
+                  fileName.lastIndexOf("." + classProvider.getHandledFileType().getExtension());
+              foundFiles.add(fileName.substring(0, index));
+            }
+
+            return FileVisitResult.CONTINUE;
+          }
+
+          @Override
+          public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+            return FileVisitResult.CONTINUE;
+          }
+
+          @Override
+          public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            return FileVisitResult.CONTINUE;
+          }
+        };
+    try {
+      Files.walkFileTree(aPath, fileVisitor);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return foundFiles;
+  }
+
+  private static class JavaSystemModule extends JavaModule {
+
+    private String systemModuleName;
+
+    public JavaSystemModule(
+        @Nonnull SootModuleInfo sootModuleInfo,
+        @Nonnull Collection<String> packages,
+        String name,
+        INamespace namespace) {
+      super(sootModuleInfo, packages, namespace);
+      this.systemModuleName = name;
+    }
+
+    @Override
+    public String getName() {
+      return systemModuleName;
+    }
   }
 
   private @Nonnull JavaClassType fromPath(

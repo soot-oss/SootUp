@@ -6,14 +6,20 @@ import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.frontends.asm.AsmUtil;
 import de.upb.soot.namespaces.INamespace;
+import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.types.JavaClassType;
+import org.objectweb.asm.tree.ModuleExportNode;
+import org.objectweb.asm.tree.ModuleNode;
+import org.objectweb.asm.tree.ModuleOpenNode;
+import org.objectweb.asm.tree.ModuleProvideNode;
+import org.objectweb.asm.tree.ModuleRequireNode;
+
+import javax.annotation.Nonnull;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import org.objectweb.asm.tree.*;
 
 public class AsmModuleClassSource extends ModuleClassSource {
 
@@ -39,15 +45,15 @@ public class AsmModuleClassSource extends ModuleClassSource {
 
     // add requies
     for (ModuleRequireNode moduleRequireNode : module.requires) {
-      JavaClassType classSignature = AsmUtil.asmIDToSignature(moduleRequireNode.module);
-      if (classSignature.isModuleInfo()) {
+      ModuleSignature classSignature = AsmUtil.asmIdToModuleSignature(moduleRequireNode.module);
+
         // sootModuleInfo.addRequire(sootClassOptional.get(), moduleRequireNode.access,
         // moduleRequireNode.version);
         SootModuleInfo.ModuleReference reference =
             new SootModuleInfo.ModuleReference(
                 classSignature, AsmUtil.getModifiers(moduleRequireNode.access));
         requieres.add(reference);
-      }
+
     }
     return null;
   }
@@ -56,12 +62,12 @@ public class AsmModuleClassSource extends ModuleClassSource {
   public Collection<SootModuleInfo.PackageReference> exports() {
     ArrayList<SootModuleInfo.PackageReference> exports = new ArrayList<>();
     for (ModuleExportNode exportNode : module.exports) {
-      Iterable<JavaClassType> optionals = AsmUtil.asmIdToSignature(exportNode.modules);
-      ArrayList<JavaClassType> modules = new ArrayList<>();
-      for (JavaClassType sootClassOptional : optionals) {
-        if (sootClassOptional.isModuleInfo()) {
+      Iterable<ModuleSignature> optionals = AsmUtil.asmIdToModuleSignature(exportNode.modules);
+      ArrayList<ModuleSignature> modules = new ArrayList<>();
+      for (ModuleSignature sootClassOptional : optionals) {
+
           modules.add(sootClassOptional);
-        }
+
       }
       // FIXME: create constructs here
       // sootModuleInfo.addExport(exportNode.packaze, exportNode.access, modules);
@@ -78,12 +84,12 @@ public class AsmModuleClassSource extends ModuleClassSource {
     ArrayList<SootModuleInfo.PackageReference> opens = new ArrayList<>();
     /// add opens
     for (ModuleOpenNode moduleOpenNode : module.opens) {
-      Iterable<JavaClassType> optionals = AsmUtil.asmIdToSignature(moduleOpenNode.modules);
-      ArrayList<JavaClassType> modules = new ArrayList<>();
-      for (JavaClassType sootClassOptional : optionals) {
-        if (sootClassOptional.isModuleInfo()) {
+      Iterable<ModuleSignature> optionals = AsmUtil.asmIdToModuleSignature(moduleOpenNode.modules);
+      ArrayList<ModuleSignature> modules = new ArrayList<>();
+      for (ModuleSignature sootClassOptional : optionals) {
+
           modules.add(sootClassOptional);
-        }
+
       }
 
       SootModuleInfo.PackageReference reference =

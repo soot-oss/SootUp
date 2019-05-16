@@ -4,7 +4,9 @@ import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.signatures.ModuleSignature;
+import de.upb.soot.signatures.scope.JavaModule;
+import de.upb.soot.signatures.scope.JavaModuleGraph;
+import de.upb.soot.signatures.scope.ModuleFinder;
 import de.upb.soot.types.GlobalTypeScope;
 import de.upb.soot.types.JavaClassType;
 import org.slf4j.Logger;
@@ -29,11 +31,13 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   private static final @Nonnull Logger logger =
       LoggerFactory.getLogger(JavaModulePathNamespace.class);
 
-  private final ModuleFinder moduleFinder;
+  private final JavaModuleGraph moduleGraph;
 
   public JavaModulePathNamespace(@Nonnull String modulePath) {
     this(modulePath, getDefaultClassProvider());
   }
+
+
 
   /**
    * Creates a {@link JavaModulePathNamespace} which locates classes in the given module path.
@@ -44,7 +48,12 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   public JavaModulePathNamespace(
       @Nonnull String modulePath, @Nonnull IClassProvider classProvider) {
     super(classProvider);
-    this.moduleFinder = new ModuleFinder(classProvider, modulePath);
+
+    moduleGraph = new JavaModuleGraph(new ModuleFinder(classProvider, modulePath));
+  }
+
+  public JavaModuleGraph getModuleGraph() {
+    return moduleGraph;
   }
 
   @Override
@@ -52,15 +61,17 @@ public class JavaModulePathNamespace extends AbstractNamespace {
       @Nonnull IdentifierFactory identifierFactory) {
 
     Set<AbstractClassSource> found = new HashSet<>();
-    Collection<String> availableModules = moduleFinder.discoverAllModules();
-    for (String module : availableModules) {
-      AbstractNamespace ns = moduleFinder.discoverModule(module);
-
+    Collection<JavaModule> availableModules = moduleGraph.getAllModules();
+    for (JavaModule javaModule : availableModules) {
+      AbstractNamespace ns = javaModule.getNamespace();
+      if (ns == null) {
+        continue;
+      }
       // enrich the class sources with the Module scope...
       Collection<? extends AbstractClassSource> classSources =
           ns.getClassSources(identifierFactory);
       for (AbstractClassSource classSource : classSources) {
-        classSource.getClassType().setScope(identifierFactory.getModuleSignature(module));
+        classSource.getClassType().setScope(javaModule);
       }
       found.addAll(classSources);
     }
@@ -72,8 +83,8 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
       @Nonnull JavaClassType signature) {
 
-    if (signature.getScope() instanceof ModuleSignature) {
-      return getClassSource(signature, (ModuleSignature) signature.getScope());
+    if (signature.getScope() instanceof JavaModule) {
+      return getClassSource(signature, (JavaModule) signature.getScope());
     } else if (signature.getScope() instanceof GlobalTypeScope) {
       // FIXME: return any matching class name, by checking the complete path...
 
@@ -82,11 +93,10 @@ public class JavaModulePathNamespace extends AbstractNamespace {
   }
 
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType signature, ModuleSignature moduleSignatureJavaClassTypeScope) {
+      @Nonnull JavaClassType signature, JavaModule javaModule) {
 
-    String modulename = moduleSignatureJavaClassTypeScope.getScope().getModuleName();
     // lookup the ns for the class provider from the cache and use him...
-    AbstractNamespace ns = moduleFinder.discoverModule(modulename);
+    AbstractNamespace ns = javaModule.getNamespace();
 
     if (ns == null) {
       try {
@@ -98,7 +108,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
       }
     }
     Optional<? extends AbstractClassSource> classSource = ns.getClassSource(signature);
-    classSource.ifPresent(x -> x.getClassType().setScope(moduleSignatureJavaClassTypeScope));
+    classSource.ifPresent(x -> x.getClassType().setScope(javaModule));
     return classSource;
   }
 }

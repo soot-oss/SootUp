@@ -2,6 +2,7 @@ package de.upb.soot.frontends.asm;
 
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Modifier;
+import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.types.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -221,5 +222,26 @@ public final class AsmUtil {
       return null;
     }
     return DefaultIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
+  }
+
+
+  @Nonnull
+  public static Collection<ModuleSignature> asmIdToModuleSignature(
+          @Nullable Iterable<String> asmClassNames) {
+    if (asmClassNames == null) {
+      return Collections.emptyList();
+    }
+
+    return StreamSupport.stream(asmClassNames.spliterator(), false)
+            .map(p -> asmIdToModuleSignature(p))
+            .collect(Collectors.toList());
+  }
+
+  @Nullable
+  public static ModuleSignature asmIdToModuleSignature(@Nonnull String asmClassName) {
+    if (asmClassName == null || asmClassName.isEmpty()) {
+      return null;
+    }
+    return DefaultIdentifierFactory.getInstance().getModuleSignature(toQualifiedName(asmClassName));
   }
 }
