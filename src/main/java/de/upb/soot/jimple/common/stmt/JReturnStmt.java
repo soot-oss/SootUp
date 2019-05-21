@@ -82,4 +82,8 @@ public class JReturnStmt extends AbstractOpStmt {
   public int equivHashCode() {
     return super.equivHashCode();
   }
+
+  public JReturnStmt withOp(Value op) {
+    return new JReturnStmt(op, getPositionInfo());
+  }
 }

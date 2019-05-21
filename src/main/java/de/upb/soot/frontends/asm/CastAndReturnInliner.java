@@ -68,8 +68,7 @@ class CastAndReturnInliner {
               JReturnStmt retStmt = (JReturnStmt) nextStmt;
               if (retStmt.getOp() == assign.getLeftOp()) {
                 // We need to replace the GOTO with the return
-                JReturnStmt newStmt = retStmt.clone();
-                newStmt.setOp(ce.getOp());
+                JReturnStmt newStmt = retStmt.withOp(ce.getOp());
 
                 for (Trap t : bodyTraps) {
                   for (IStmtBox ubox : t.getStmtBoxes()) {
