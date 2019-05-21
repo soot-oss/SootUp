@@ -34,13 +34,16 @@ import org.junit.experimental.categories.Category;
 
 /** @author Manuel Benz created on 06.06.18 */
 @Category(Java8Test.class)
-public class PathBasedNamespaceTest extends AbstractAnalysisInputLocationTest {
+public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLocationTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void failsOnFile() {
     // TODO adapt to new testing folder structure
     PathBasedAnalysisInputLocation.createForClassContainer(
-        Paths.get("target/test-classes/de/upb/soot/namespaces/PathBasedNamespaceTest.class"));
+        Paths.get(
+            "target/test-classes/de/upb/soot/namespaces/"
+                + PathBasedAnalysisInputLocationTest.class.getSimpleName()
+                + " .class"));
   }
 
   @Test
@@ -76,7 +79,8 @@ public class PathBasedNamespaceTest extends AbstractAnalysisInputLocationTest {
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
     final JavaClassType sig =
         getIdentifierFactory()
-            .getClassType("PathBasedAnalysisInputLocation", "de.upb.soot.namespaces");
+            .getClassType(
+                PathBasedAnalysisInputLocation.class.getSimpleName(), "de.upb.soot.namespaces");
     testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
   }
 }
