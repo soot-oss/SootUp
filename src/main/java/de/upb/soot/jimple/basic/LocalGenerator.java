@@ -1,6 +1,5 @@
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.core.Body;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.ReferenceType;
@@ -40,32 +39,16 @@ import javax.annotation.Nullable;
  * @author Markus Schmidt
  */
 public class LocalGenerator {
-  @Nullable private final HashSet<String> existingLocalNames;
-
-  private final List<Local> locals = new ArrayList<>();
+  private final Set<Local> locals;
   @Nullable private Local thisLocal;
   private final Map<Integer, Local> paraLocals = new HashMap<>();
 
   /**
-   * Creates Locals {@link Local} with a standard naming scheme without checking whether the name is
-   * already taken.
+   * Creates Locals {@link Local} with a standard naming scheme. If a Set of Locals is provided the
+   * LocalGenerator is checking whether the name is already taken.
    */
-  public LocalGenerator() {
-    this.existingLocalNames = null;
-  }
-
-  /**
-   * Creates {@link Local}s with a standard naming scheme. Checks if the Local is already existing
-   * in the Body. (If you mix using LocalGenerator and own creation of Local)
-   */
-  public LocalGenerator(@Nonnull Body body) {
-    Collection<Local> existingLocals = body.getLocals();
-    existingLocalNames = new HashSet<>(existingLocals.size());
-    // cache Local names if body is given to speedup checks whether the local name is already
-    // taken
-    for (Local l : existingLocals) {
-      existingLocalNames.add(l.getName());
-    }
+  public LocalGenerator(@Nonnull Set<Local> existingLocals) {
+    locals = existingLocals;
   }
 
   /** generate this local with given type */
@@ -131,7 +114,7 @@ public class LocalGenerator {
       }
 
       localName = name.toString();
-    } while ((existingLocalNames != null) && existingLocalNames.contains(localName));
+    } while (locals.contains(localName));
 
     return createLocal(localName, type);
   }
@@ -200,7 +183,7 @@ public class LocalGenerator {
 
   /** Return all locals created for the body referenced in this LocalGenrator. */
   public List<Local> getLocals() {
-    return this.locals;
+    return new ArrayList<>(this.locals);
   }
 
   public Local getThisLocal() {

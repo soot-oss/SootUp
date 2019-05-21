@@ -53,6 +53,16 @@ public class Local implements Value, Numberable, Immediate {
   }
 
   @Override
+  public boolean equals(Object o) {
+    return equivTo(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return equivHashCode();
+  }
+
+  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseLocal(this, o);
   }
