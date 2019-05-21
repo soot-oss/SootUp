@@ -6,13 +6,17 @@ import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.NotYetImplementedException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
- * Composes a namespace out of other inputLocations hence removing the necessity to adapt every API
- * to allow for multiple inputLocations
+ * Composes an input location out of other inputLocations hence removing the necessity to adapt
+ * every API to allow for multiple inputLocations
  *
  * @author Linghui Luo
  * @author Ben Hermann

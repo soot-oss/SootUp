@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
 public class ModuleFinder {
   private @Nonnull ClassProvider classProvider;
   // associate a module name with the input location, that represents the module
-  private @Nonnull Map<String, AbstractAnalysisInputLocation> moduleNamespace = new HashMap<>();
+  private @Nonnull Map<String, AbstractAnalysisInputLocation> moduleInputLocation = new HashMap<>();
   private int next = 0;
 
   private @Nonnull List<Path> modulePathEntries;
@@ -57,35 +57,35 @@ public class ModuleFinder {
     this.classProvider = classProvider;
     this.modulePathEntries =
         JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
-    // add the namespace for the jrt virtual file system
-    // FIXME: Set Jrt File namespace by default?
+    // add the input location for the jrt virtual file system
+    // FIXME: Set Jrt File input location by default?
     jrtFileSystemNamespace = new JrtFileSystemAnalysisInputLocation(classProvider);
 
     // discover all system's modules
     Collection<String> modules = jrtFileSystemNamespace.discoverModules();
-    modules.forEach(m -> moduleNamespace.put(m, jrtFileSystemNamespace));
+    modules.forEach(m -> moduleInputLocation.put(m, jrtFileSystemNamespace));
 
     // the rest of the modules are discovered on demand...
   }
 
   /**
-   * Returns the namespace that manages the module.
+   * Returns the input location that manages the module.
    *
    * @param moduleName the module name
-   * @return the namespace that resolves classes contained in the module
+   * @return the input location that resolves classes contained in the module
    */
   public @Nullable AbstractAnalysisInputLocation discoverModule(@Nonnull String moduleName) {
-    AbstractAnalysisInputLocation namespaceForModule = moduleNamespace.get(moduleName);
-    if (namespaceForModule != null) {
-      return namespaceForModule;
+    AbstractAnalysisInputLocation inputLocationForModule = moduleInputLocation.get(moduleName);
+    if (inputLocationForModule != null) {
+      return inputLocationForModule;
     }
     while (modulePathHasNextEntry()) {
       Path path = modulePathEntries.get(next);
       discoverModulesIn(path);
       next++;
-      namespaceForModule = moduleNamespace.get(moduleName);
-      if (namespaceForModule != null) {
-        return namespaceForModule;
+      inputLocationForModule = moduleInputLocation.get(moduleName);
+      if (inputLocationForModule != null) {
+        return inputLocationForModule;
       }
     }
     return null;
@@ -107,7 +107,7 @@ public class ModuleFinder {
       discoverModulesIn(path);
       next++;
     }
-    return Collections.unmodifiableCollection(moduleNamespace.keySet());
+    return Collections.unmodifiableCollection(moduleInputLocation.keySet());
   }
 
   // TODO: in general it makes sense to traverse the directories further and associate packages with
@@ -159,8 +159,8 @@ public class ModuleFinder {
   }
 
   private void buildModuleForExplodedModule(@Nonnull Path dir) throws ClassResolvingException {
-    // create the namespace for this module dir
-    PathBasedAnalysisInputLocation namespace =
+    // create the input location for this module dir
+    PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.createForClassContainer(dir);
 
     Path moduleInfoFile =
@@ -171,12 +171,12 @@ public class ModuleFinder {
     }
     // get the module's name out of this module-info file
     Optional<? extends AbstractClassSource> moduleInfoClassSource =
-        namespace.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
+        inputLocation.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
     if (moduleInfoClassSource.isPresent()) {
       AbstractClassSource moduleInfoSource = moduleInfoClassSource.get();
       // get the module name
       String moduleName = this.getModuleName(moduleInfoSource);
-      this.moduleNamespace.put(moduleName, namespace);
+      this.moduleInputLocation.put(moduleName, inputLocation);
     }
   }
 
@@ -186,7 +186,7 @@ public class ModuleFinder {
    * @param jar the jar file
    */
   private void buildModuleForJar(@Nonnull Path jar) {
-    PathBasedAnalysisInputLocation namespace =
+    PathBasedAnalysisInputLocation inputLocation =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
     Optional<? extends AbstractClassSource> moduleInfoFile = Optional.empty();
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
@@ -200,7 +200,7 @@ public class ModuleFinder {
         // we have a modular jar
         // get the module name
         // create proper moduleInfoSignature
-        moduleInfoFile = namespace.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
+        moduleInfoFile = inputLocation.getClassSource(ModuleIdentifierFactory.MODULE_INFO_CLASS);
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -215,7 +215,7 @@ public class ModuleFinder {
         classResolvingException.printStackTrace();
       }
 
-      this.moduleNamespace.put(moduleName, namespace);
+      this.moduleInputLocation.put(moduleName, inputLocation);
     } else {
       // no module-info treat as automatic module
       // create module name from the jar file
@@ -223,7 +223,7 @@ public class ModuleFinder {
 
       // make module base on the filename of the jar
       String moduleName = createModuleNameForAutomaticModule(filename);
-      this.moduleNamespace.put(moduleName, namespace);
+      this.moduleInputLocation.put(moduleName, inputLocation);
     }
   }
 

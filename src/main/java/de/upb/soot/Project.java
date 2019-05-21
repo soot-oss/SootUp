@@ -15,14 +15,14 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  */
 public class Project<S extends AnalysisInputLocation> {
-  /** Create a project from an arbitrary list of namespaces */
+  /** Create a project from an arbitrary list of input locations */
   public Project(@Nonnull S inputLocation) {
     this(inputLocation, DefaultIdentifierFactory.getInstance());
   }
 
-  /** Create a project from an arbitrary list of namespaces */
-  public Project(@Nonnull S namespaces, @Nonnull DefaultIdentifierFactory identifierFactory) {
-    this.inputLocation = namespaces;
+  /** Create a project from an arbitrary list of input locations */
+  public Project(@Nonnull S inputLocations, @Nonnull DefaultIdentifierFactory identifierFactory) {
+    this.inputLocation = inputLocations;
     this.identifierFactory = identifierFactory;
   }
 
@@ -42,8 +42,8 @@ public class Project<S extends AnalysisInputLocation> {
   }
 
   /**
-   * Create a complete view from everything in all provided namespaces. This methodRef starts the
-   * reification process.
+   * Create a complete view from everything in all provided input locations. This methodRef starts
+   * the reification process.
    *
    * @return A complete view on the provided code
    */
@@ -62,7 +62,7 @@ public class Project<S extends AnalysisInputLocation> {
   }
 
   /**
-   * Returns a partial view on the code based on the provided scope and all namespaces in the
+   * Returns a partial view on the code based on the provided scope and all input locations in the
    * project. This methodRef starts the reification process.
    *
    * @param s A scope of interest for the view

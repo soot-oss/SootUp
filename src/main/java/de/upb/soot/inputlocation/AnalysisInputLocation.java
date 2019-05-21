@@ -51,7 +51,7 @@ public interface AnalysisInputLocation {
   Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType signature);
 
   /**
-   * The class provider attached to this namespace.
+   * The class provider attached to this input location.
    *
    * @return An instance of {@link ClassProvider} to be used.
    */
