@@ -23,8 +23,8 @@ package de.upb.soot.core;
 
 import static de.upb.soot.util.Utils.ImmutableCollectors.toImmutableSet;
 import static de.upb.soot.util.Utils.iterableToStream;
-import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.frontends.ClassSource;
@@ -35,10 +35,10 @@ import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
-import de.upb.soot.util.concurrent.Lazy;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
@@ -124,7 +124,8 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
   }
 
   @Nonnull
-  private final Lazy<Set<SootMethod>> _lazyMethods = synchronizedLazy(this::lazyMethodInitializer);
+  private final Supplier<Set<SootMethod>> _lazyMethods =
+      Suppliers.memoize(this::lazyMethodInitializer);
 
   /** Gets the {@link Method methods} of this {@link SootClass} in an immutable set. */
   @Nonnull
@@ -133,7 +134,8 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
   }
 
   @Nonnull
-  private final Lazy<Set<SootField>> _lazyFields = synchronizedLazy(this::lazyFieldInitializer);
+  private final Supplier<Set<SootField>> _lazyFields =
+      Suppliers.memoize(this::lazyFieldInitializer);
 
   /** Gets the {@link Field fields} of this {@link SootClass} in an immutable set. */
   @Override
@@ -216,8 +218,8 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
         .findAny();
   }
 
-  private final Lazy<Set<Modifier>> lazyModifiers =
-      synchronizedLazy(() -> classSource.resolveModifiers());
+  private final Supplier<Set<Modifier>> lazyModifiers =
+      Suppliers.memoize(classSource::resolveModifiers);
 
   /** Returns the modifiers of this class in an immutable set. */
   @Nonnull
@@ -225,8 +227,8 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
     return lazyModifiers.get();
   }
 
-  private final Lazy<Set<JavaClassType>> lazyInterfaces =
-      synchronizedLazy(() -> classSource.resolveInterfaces());
+  private final Supplier<Set<JavaClassType>> lazyInterfaces =
+      Suppliers.memoize(classSource::resolveInterfaces);
 
   /**
    * Returns the number of interfaces being directly implemented by this class. Note that direct
@@ -256,8 +258,8 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
     return false;
   }
 
-  private final Lazy<Optional<JavaClassType>> lazySuperclass =
-      synchronizedLazy(() -> classSource.resolveSuperclass());
+  private final Supplier<Optional<JavaClassType>> lazySuperclass =
+      Suppliers.memoize(classSource::resolveSuperclass);
 
   /**
    * WARNING: interfaces are subclasses of the java.lang.Object class! Does this class have a
@@ -276,8 +278,8 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
     return lazySuperclass.get();
   }
 
-  private final Lazy<Optional<JavaClassType>> lazyOuterClass =
-      synchronizedLazy(() -> classSource.resolveOuterClass());
+  private final Supplier<Optional<JavaClassType>> lazyOuterClass =
+      Suppliers.memoize(classSource::resolveOuterClass);
 
   public boolean hasOuterClass() {
     return lazyOuterClass.get().isPresent();
@@ -430,7 +432,7 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
   // }
 
   // FIXME: get rid of the wala class position
-  private final Lazy<Position> lazyPosition = synchronizedLazy(() -> classSource.resolvePosition());
+  private final Supplier<Position> lazyPosition = Suppliers.memoize(classSource::resolvePosition);
 
   @Nonnull
   public Position getPosition() {
