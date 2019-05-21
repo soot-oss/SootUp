@@ -90,7 +90,7 @@ public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
             new AsmJavaClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules");
     Path p = Paths.get("target/test-classes/de/upb/soot/namespaces/modules/testMod");
     Whitebox.invokeMethod(moduleFinder, "buildModuleForExplodedModule", p);
-    Field field = Whitebox.getField(moduleFinder.getClass(), "moduleNamespace");
+    Field field = Whitebox.getField(moduleFinder.getClass(), "moduleInputLocation");
     Map<String, AbstractAnalysisInputLocation> values =
         (Map<String, AbstractAnalysisInputLocation>) field.get(moduleFinder);
     assertTrue(values.containsKey("fancyMod"));
