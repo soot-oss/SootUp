@@ -67,7 +67,8 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
         PathBasedAnalysisInputLocation.createForClassContainer(baseDir);
     final JavaClassType sig =
         getIdentifierFactory()
-            .getClassType("PathBasedAnalysisInputLocation", "de.upb.soot.namespaces");
+            .getClassType(
+                PathBasedAnalysisInputLocation.class.getSimpleName(), "de.upb.soot.namespaces");
     testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
   }
 
