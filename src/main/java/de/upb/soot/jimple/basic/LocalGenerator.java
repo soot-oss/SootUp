@@ -44,8 +44,8 @@ public class LocalGenerator {
   private final Map<Integer, Local> paraLocals = new HashMap<>();
 
   /**
-   * Creates Locals {@link Local} with a standard naming scheme. If a Set of Locals is provided the
-   * LocalGenerator is checking whether the name is already taken.
+   * Creates Locals {@link Local} with a standard naming scheme. If a Set of Locals is provided, the
+   * LocalGenerator checks whether the name is already taken.
    */
   public LocalGenerator(@Nonnull Set<Local> existingLocals) {
     locals = existingLocals;
@@ -182,8 +182,8 @@ public class LocalGenerator {
   }
 
   /** Return all locals created for the body referenced in this LocalGenrator. */
-  public List<Local> getLocals() {
-    return new ArrayList<>(this.locals);
+  public Set<Local> getLocals() {
+    return this.locals;
   }
 
   public Local getThisLocal() {

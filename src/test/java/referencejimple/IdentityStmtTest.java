@@ -20,22 +20,17 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.namespaces.JavaClassPathNamespace;
+import de.upb.soot.signatures.DefaultSignatureFactory;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.VoidType;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
