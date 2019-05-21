@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 import static org.junit.Assert.assertTrue;
 

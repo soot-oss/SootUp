@@ -5,8 +5,8 @@ import static org.junit.Assert.assertNotNull;
 
 import categories.Java8Test;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.namespaces.FileType;
-import de.upb.soot.namespaces.JavaSourcePathAnalysisInputLocation;
+import de.upb.soot.inputlocation.FileType;
+import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;

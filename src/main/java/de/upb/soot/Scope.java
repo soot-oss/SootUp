@@ -1,6 +1,6 @@
 package de.upb.soot;
 
-import de.upb.soot.namespaces.AnalysisInputLocation;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.NotYetImplementedException;

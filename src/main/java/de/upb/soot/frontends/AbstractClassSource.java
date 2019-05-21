@@ -1,7 +1,7 @@
 package de.upb.soot.frontends;
 
 import com.google.common.base.Objects;
-import de.upb.soot.namespaces.AnalysisInputLocation;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 import javax.annotation.Nullable;

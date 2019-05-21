@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 import com.google.common.base.Preconditions;
 import de.upb.soot.IdentifierFactory;

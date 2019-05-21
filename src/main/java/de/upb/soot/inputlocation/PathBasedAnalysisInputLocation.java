@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;

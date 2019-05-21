@@ -22,8 +22,8 @@ package de.upb.soot.frontends;
  * #L%
  */
 
-import de.upb.soot.namespaces.AnalysisInputLocation;
-import de.upb.soot.namespaces.FileType;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.inputlocation.FileType;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 

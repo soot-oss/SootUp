@@ -7,7 +7,7 @@ import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
-import de.upb.soot.namespaces.JavaModulePathAnalysisInputLocation;
+import de.upb.soot.inputlocation.JavaModulePathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import java.util.Optional;
 import org.junit.Test;

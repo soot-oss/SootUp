@@ -1,7 +1,7 @@
 package de.upb.soot;
 
 import de.upb.soot.buildactor.ViewBuilder;
-import de.upb.soot.namespaces.AnalysisInputLocation;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
 import javax.annotation.Nonnull;

@@ -8,7 +8,7 @@ import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.namespaces.AnalysisInputLocation;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;

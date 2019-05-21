@@ -7,7 +7,7 @@ import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.namespaces.JavaClassPathAnalysisInputLocation;
+import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import java.io.File;
