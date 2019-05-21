@@ -13,8 +13,8 @@ import de.upb.soot.util.NotYetImplementedException;
  */
 public class Scope {
 
-  /** Define a scope consists of multiple namespaces. */
-  public Scope(AnalysisInputLocation... namespaces) {
+  /** Define a scope consists of multiple inputLocations. */
+  public Scope(AnalysisInputLocation... inputLocations) {
     // TODO Auto-generated constructor stub
   }
 

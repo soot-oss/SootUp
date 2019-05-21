@@ -32,7 +32,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /**
- * Public interface to a namespace. Namespaces are sources for {@link SootClass}es, e.g. Java
+ * Public interface to an input location. Namespaces are sources for {@link SootClass}es, e.g. Java
  * Classpath, Android APK, JAR file, etc. The strategy to traverse something.
  *
  * @author Manuel Benz created on 22.05.18

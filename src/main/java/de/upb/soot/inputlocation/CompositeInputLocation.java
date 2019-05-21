@@ -11,35 +11,36 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
- * Composes a namespace out of other namespaces hence removing the necessity to adapt every API to
- * allow for multiple namespaces
+ * Composes a namespace out of other inputLocations hence removing the necessity to adapt every API
+ * to allow for multiple inputLocations
  *
  * @author Linghui Luo
  * @author Ben Hermann
  * @author Jan Martin Persch
  */
-public class CompositeNamespace implements AnalysisInputLocation {
-  private @Nonnull List<AnalysisInputLocation> namespaces;
+public class CompositeInputLocation implements AnalysisInputLocation {
+  private @Nonnull List<AnalysisInputLocation> inputLocations;
 
   /**
-   * Creates a new instance of the {@link CompositeNamespace} class.
+   * Creates a new instance of the {@link CompositeInputLocation} class.
    *
-   * @param namespaces The composited namespaces.
-   * @throws IllegalArgumentException <i>namespaces</i> is empty.
+   * @param inputLocations The composited input locations.
+   * @throws IllegalArgumentException <i>inputLocations</i> is empty.
    */
-  public CompositeNamespace(@Nonnull Collection<? extends AnalysisInputLocation> namespaces) {
-    List<AnalysisInputLocation> unmodifiableNamespaces =
-        Collections.unmodifiableList(new ArrayList<>(namespaces));
+  public CompositeInputLocation(
+      @Nonnull Collection<? extends AnalysisInputLocation> inputLocations) {
+    List<AnalysisInputLocation> unmodifiableInputLocations =
+        Collections.unmodifiableList(new ArrayList<>(inputLocations));
 
-    if (unmodifiableNamespaces.isEmpty()) {
-      throw new IllegalArgumentException("The namespaces collection must not be empty.");
+    if (unmodifiableInputLocations.isEmpty()) {
+      throw new IllegalArgumentException("The inputLocations collection must not be empty.");
     }
 
-    this.namespaces = unmodifiableNamespaces;
+    this.inputLocations = unmodifiableInputLocations;
   }
 
   /**
-   * Provides the first class source instance found in the namespaces represented.
+   * Provides the first class source instance found in the inputLocations represented.
    *
    * @param signature The class to be searched.
    * @return The {@link ClassSource} instance found or created... Or an empty Optional.
@@ -47,7 +48,7 @@ public class CompositeNamespace implements AnalysisInputLocation {
   @Override
   public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
     List<AbstractClassSource> result =
-        namespaces.stream()
+        inputLocations.stream()
             .map(n -> n.getClassSource(signature))
             .filter(Optional::isPresent)
             .map(Optional::get)
@@ -69,7 +70,7 @@ public class CompositeNamespace implements AnalysisInputLocation {
    */
   @Override
   public @Nonnull ClassProvider getClassProvider() {
-    return namespaces.stream()
+    return inputLocations.stream()
         .findFirst()
         .map(AnalysisInputLocation::getClassProvider)
         .orElseThrow(() -> new RuntimeException("FATAL ERROR: No class provider found."));

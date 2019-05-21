@@ -16,22 +16,22 @@ import javax.annotation.Nonnull;
  */
 public class Project<S extends AnalysisInputLocation> {
   /** Create a project from an arbitrary list of namespaces */
-  public Project(@Nonnull S namespace) {
-    this(namespace, DefaultIdentifierFactory.getInstance());
+  public Project(@Nonnull S inputLocation) {
+    this(inputLocation, DefaultIdentifierFactory.getInstance());
   }
 
   /** Create a project from an arbitrary list of namespaces */
   public Project(@Nonnull S namespaces, @Nonnull DefaultIdentifierFactory identifierFactory) {
-    this.namespace = namespaces;
+    this.inputLocation = namespaces;
     this.identifierFactory = identifierFactory;
   }
 
-  @Nonnull private final S namespace;
+  @Nonnull private final S inputLocation;
 
-  /** Gets the namespace. */
+  /** Gets the inputLocation. */
   @Nonnull
-  public S getNamespace() {
-    return this.namespace;
+  public S getInputLocation() {
+    return this.inputLocation;
   }
 
   @Nonnull private final IdentifierFactory identifierFactory;

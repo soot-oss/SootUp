@@ -39,7 +39,7 @@ import javax.annotation.Nullable;
  */
 public class ModuleFinder {
   private @Nonnull ClassProvider classProvider;
-  // associate a module name with the namespace, that represents the module
+  // associate a module name with the input location, that represents the module
   private @Nonnull Map<String, AbstractAnalysisInputLocation> moduleNamespace = new HashMap<>();
   private int next = 0;
 

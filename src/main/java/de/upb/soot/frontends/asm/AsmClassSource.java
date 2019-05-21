@@ -27,11 +27,11 @@ class AsmClassSource extends ClassSource {
   @Nonnull private final ClassNode classNode;
 
   public AsmClassSource(
-      AnalysisInputLocation namespace,
+      AnalysisInputLocation inputLocation,
       Path sourcePath,
       JavaClassType javaClassType,
       @Nonnull ClassNode classNode) {
-    super(namespace, sourcePath, javaClassType);
+    super(inputLocation, sourcePath, javaClassType);
     this.classNode = classNode;
   }
 

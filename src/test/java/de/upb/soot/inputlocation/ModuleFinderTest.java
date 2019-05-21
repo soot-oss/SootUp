@@ -34,8 +34,8 @@ public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
         new ModuleFinder(
             this.getClassProvider(),
             "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
-    AbstractAnalysisInputLocation namespace = moduleFinder.discoverModule("Soot");
-    assertTrue(namespace instanceof PathBasedAnalysisInputLocation);
+    AbstractAnalysisInputLocation inputLocation = moduleFinder.discoverModule("Soot");
+    assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
   }
 
   @Test
@@ -44,8 +44,8 @@ public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
         new ModuleFinder(
             this.getClassProvider(),
             "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
-    AbstractAnalysisInputLocation namespace = moduleFinder.discoverModule("java.base");
-    assertTrue(namespace instanceof JrtFileSystemAnalysisInputLocation);
+    AbstractAnalysisInputLocation inputLocation = moduleFinder.discoverModule("java.base");
+    assertTrue(inputLocation instanceof JrtFileSystemAnalysisInputLocation);
   }
 
   @Test

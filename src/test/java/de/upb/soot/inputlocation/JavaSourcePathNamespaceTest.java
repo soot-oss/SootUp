@@ -23,11 +23,12 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassSource() {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    AnalysisInputLocation namespace =
+    AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(Utils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
-    Optional<? extends AbstractClassSource> classSourceOptional = namespace.getClassSource(type);
+    Optional<? extends AbstractClassSource> classSourceOptional =
+        inputLocation.getClassSource(type);
     assertTrue(classSourceOptional.isPresent());
     AbstractClassSource classSource = classSourceOptional.get();
 
@@ -44,10 +45,10 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassProvider() {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    AnalysisInputLocation namespace =
+    AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(Utils.immutableSet(srcDir), exclusionFilePath);
 
-    ClassProvider classProvider = namespace.getClassProvider();
+    ClassProvider classProvider = inputLocation.getClassProvider();
     assertTrue(classProvider instanceof WalaJavaClassProvider);
   }
 
@@ -55,12 +56,12 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassSources() {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    AnalysisInputLocation namespace =
+    AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(Utils.immutableSet(srcDir), exclusionFilePath);
 
     DefaultIdentifierFactory defaultFactories = DefaultIdentifierFactory.getInstance();
     Collection<? extends AbstractClassSource> classSources =
-        namespace.getClassSources(defaultFactories);
+        inputLocation.getClassSources(defaultFactories);
 
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
     Optional<JavaClassType> optionalFoundType =

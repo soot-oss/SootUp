@@ -107,7 +107,7 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
     final Stream<Path> exploded =
         Stream.of(paths.split(regex)).flatMap(JavaClassPathAnalysisInputLocation::handleWildCards);
-    // we need to filter out duplicates of the same files to not generate duplicate namespaces
+    // we need to filter out duplicates of the same files to not generate duplicate input locations
     return exploded.map(Path::normalize).distinct();
   }
 

@@ -1,6 +1,9 @@
 package de.upb.soot.views;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
@@ -38,16 +41,17 @@ public class JavaViewTest {
 
     assertTrue(new File(jarFile).exists());
 
-    JavaClassPathAnalysisInputLocation namespace = new JavaClassPathAnalysisInputLocation(jarFile);
+    JavaClassPathAnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(jarFile);
 
     this.signatures =
         Collections.unmodifiableList(
-            namespace.getClassSources(DefaultIdentifierFactory.getInstance()).stream()
+            inputLocation.getClassSources(DefaultIdentifierFactory.getInstance()).stream()
                 .map(AbstractClassSource::getClassType)
                 .sorted(Comparator.comparing(JavaClassType::toString))
                 .collect(Collectors.toList()));
 
-    Project project = new Project(namespace);
+    Project project = new Project<>(inputLocation);
 
     this.view = new JavaView(project);
   }

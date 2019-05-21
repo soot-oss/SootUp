@@ -159,7 +159,7 @@ public class JavaView extends AbstractView {
   @Nullable
   private AbstractClass __resolveSootClass(@Nonnull JavaClassType signature) {
     return this.getProject()
-        .getNamespace()
+        .getInputLocation()
         .getClassSource(signature)
         .map(
             it -> {
@@ -184,7 +184,7 @@ public class JavaView extends AbstractView {
     this.markAsFullyResolved();
 
     for (AbstractClassSource cs :
-        this.getProject().getNamespace().getClassSources(getIdentifierFactory())) {
+        this.getProject().getInputLocation().getClassSources(getIdentifierFactory())) {
       if (!this.map.containsKey(cs.getClassType())) this.__resolveSootClass(cs.getClassType());
     }
   }
