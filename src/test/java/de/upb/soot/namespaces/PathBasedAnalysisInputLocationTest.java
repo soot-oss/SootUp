@@ -40,10 +40,7 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
   public void failsOnFile() {
     // TODO adapt to new testing folder structure
     PathBasedAnalysisInputLocation.createForClassContainer(
-        Paths.get(
-            "target/test-classes/de/upb/soot/namespaces/"
-                + PathBasedAnalysisInputLocationTest.class.getSimpleName()
-                + " .class"));
+        Paths.get("target/test-classes/de/upb/soot/namespaces/PathBasedNamespace.class"));
   }
 
   @Test
@@ -68,7 +65,8 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
     final JavaClassType sig =
         getIdentifierFactory()
             .getClassType(
-                PathBasedAnalysisInputLocation.class.getSimpleName(), "de.upb.soot.namespaces");
+                PathBasedAnalysisInputLocation.class.getSimpleName(),
+                PathBasedAnalysisInputLocation.class.getPackage().getName());
     testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
   }
 
@@ -79,9 +77,7 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
     final JavaClassType sig =
-        getIdentifierFactory()
-            .getClassType(
-                PathBasedAnalysisInputLocation.class.getSimpleName(), "de.upb.soot.namespaces");
+        getIdentifierFactory().getClassType("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
   }
 }
