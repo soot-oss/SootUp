@@ -22,8 +22,8 @@ package de.upb.soot.frontends;
  * #L%
  */
 
+import de.upb.soot.namespaces.AnalysisInputLocation;
 import de.upb.soot.namespaces.FileType;
-import de.upb.soot.namespaces.SourceLocation;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 
@@ -36,7 +36,7 @@ import java.nio.file.Path;
 public interface ClassProvider {
 
   AbstractClassSource createClassSource(
-      SourceLocation srcNamespace, Path sourcePath, JavaClassType classSignature);
+      AnalysisInputLocation srcNamespace, Path sourcePath, JavaClassType classSignature);
 
   /** Returns the file type that is handled by this provider, e.g. class, jimple, java */
   FileType getHandledFileType();

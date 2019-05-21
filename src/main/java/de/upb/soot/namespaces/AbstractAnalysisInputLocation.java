@@ -30,13 +30,13 @@ import javax.annotation.Nonnull;
  */
 
 /**
- * Basic implementation of {@link SourceLocation}, encapsulating common behavior. Also used to keep
- * the {@link SourceLocation} interface clean from internal methods like {@link
- * AbstractNamespace#getClassSource(JavaClassType)}.
+ * Basic implementation of {@link AnalysisInputLocation}, encapsulating common behavior. Also used
+ * to keep the {@link AnalysisInputLocation} interface clean from internal methods like {@link
+ * AbstractAnalysisInputLocation#getClassSource(JavaClassType)}.
  *
  * @author Manuel Benz created on 22.05.18
  */
-public abstract class AbstractNamespace implements SourceLocation {
+public abstract class AbstractAnalysisInputLocation implements AnalysisInputLocation {
   protected final @Nonnull ClassProvider classProvider;
 
   /**
@@ -44,7 +44,7 @@ public abstract class AbstractNamespace implements SourceLocation {
    *
    * @param classProvider The class provider to be used
    */
-  public AbstractNamespace(@Nonnull ClassProvider classProvider) {
+  public AbstractAnalysisInputLocation(@Nonnull ClassProvider classProvider) {
     this.classProvider = classProvider;
   }
 

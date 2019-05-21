@@ -18,8 +18,8 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Jan Martin Persch
  */
-public class CompositeNamespace implements SourceLocation {
-  private @Nonnull List<SourceLocation> namespaces;
+public class CompositeNamespace implements AnalysisInputLocation {
+  private @Nonnull List<AnalysisInputLocation> namespaces;
 
   /**
    * Creates a new instance of the {@link CompositeNamespace} class.
@@ -27,8 +27,8 @@ public class CompositeNamespace implements SourceLocation {
    * @param namespaces The composited namespaces.
    * @throws IllegalArgumentException <i>namespaces</i> is empty.
    */
-  public CompositeNamespace(@Nonnull Collection<? extends SourceLocation> namespaces) {
-    List<SourceLocation> unmodifiableNamespaces =
+  public CompositeNamespace(@Nonnull Collection<? extends AnalysisInputLocation> namespaces) {
+    List<AnalysisInputLocation> unmodifiableNamespaces =
         Collections.unmodifiableList(new ArrayList<>(namespaces));
 
     if (unmodifiableNamespaces.isEmpty()) {
@@ -71,7 +71,7 @@ public class CompositeNamespace implements SourceLocation {
   public @Nonnull ClassProvider getClassProvider() {
     return namespaces.stream()
         .findFirst()
-        .map(SourceLocation::getClassProvider)
+        .map(AnalysisInputLocation::getClassProvider)
         .orElseThrow(() -> new RuntimeException("FATAL ERROR: No class provider found."));
   }
 

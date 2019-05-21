@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface SourceLocation {
+public interface AnalysisInputLocation {
 
   /**
    * Create or find a class source for a given signature.

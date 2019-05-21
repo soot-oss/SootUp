@@ -40,12 +40,12 @@ import javax.annotation.Nullable;
 public class ModuleFinder {
   private @Nonnull ClassProvider classProvider;
   // associate a module name with the namespace, that represents the module
-  private @Nonnull Map<String, AbstractNamespace> moduleNamespace = new HashMap<>();
+  private @Nonnull Map<String, AbstractAnalysisInputLocation> moduleNamespace = new HashMap<>();
   private int next = 0;
 
   private @Nonnull List<Path> modulePathEntries;
 
-  private @Nonnull JrtFileSystemNamespace jrtFileSystemNamespace;
+  private @Nonnull JrtFileSystemAnalysisInputLocation jrtFileSystemNamespace;
 
   /**
    * Helper Class to discover modules in a given module path.
@@ -56,10 +56,10 @@ public class ModuleFinder {
   public ModuleFinder(@Nonnull ClassProvider classProvider, @Nonnull String modulePath) {
     this.classProvider = classProvider;
     this.modulePathEntries =
-        JavaClassPathNamespace.explode(modulePath).collect(Collectors.toList());
+        JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
     // add the namespace for the jrt virtual file system
     // FIXME: Set Jrt File namespace by default?
-    jrtFileSystemNamespace = new JrtFileSystemNamespace(classProvider);
+    jrtFileSystemNamespace = new JrtFileSystemAnalysisInputLocation(classProvider);
 
     // discover all system's modules
     Collection<String> modules = jrtFileSystemNamespace.discoverModules();
@@ -74,8 +74,8 @@ public class ModuleFinder {
    * @param moduleName the module name
    * @return the namespace that resolves classes contained in the module
    */
-  public @Nullable AbstractNamespace discoverModule(@Nonnull String moduleName) {
-    AbstractNamespace namespaceForModule = moduleNamespace.get(moduleName);
+  public @Nullable AbstractAnalysisInputLocation discoverModule(@Nonnull String moduleName) {
+    AbstractAnalysisInputLocation namespaceForModule = moduleNamespace.get(moduleName);
     if (namespaceForModule != null) {
       return namespaceForModule;
     }
@@ -160,7 +160,8 @@ public class ModuleFinder {
 
   private void buildModuleForExplodedModule(@Nonnull Path dir) throws ClassResolvingException {
     // create the namespace for this module dir
-    PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(dir);
+    PathBasedAnalysisInputLocation namespace =
+        PathBasedAnalysisInputLocation.createForClassContainer(dir);
 
     Path moduleInfoFile =
         dir.resolve(
@@ -185,7 +186,8 @@ public class ModuleFinder {
    * @param jar the jar file
    */
   private void buildModuleForJar(@Nonnull Path jar) {
-    PathBasedNamespace namespace = PathBasedNamespace.createForClassContainer(jar);
+    PathBasedAnalysisInputLocation namespace =
+        PathBasedAnalysisInputLocation.createForClassContainer(jar);
     Optional<? extends AbstractClassSource> moduleInfoFile = Optional.empty();
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");

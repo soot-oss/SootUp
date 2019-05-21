@@ -3,7 +3,7 @@ package de.upb.soot.frontends;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootModuleInfo;
-import de.upb.soot.namespaces.SourceLocation;
+import de.upb.soot.namespaces.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import java.util.Set;
 public abstract class ModuleClassSource extends AbstractClassSource {
 
   public ModuleClassSource(
-      SourceLocation srcNamespace, Path sourcePath, JavaClassType classSignature) {
+      AnalysisInputLocation srcNamespace, Path sourcePath, JavaClassType classSignature) {
     super(srcNamespace, classSignature, sourcePath);
   }
 

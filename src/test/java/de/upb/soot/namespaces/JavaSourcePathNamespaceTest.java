@@ -23,8 +23,8 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassSource() {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    SourceLocation namespace =
-        new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
+    AnalysisInputLocation namespace =
+        new JavaSourcePathAnalysisInputLocation(Utils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     Optional<? extends AbstractClassSource> classSourceOptional = namespace.getClassSource(type);
@@ -44,8 +44,8 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassProvider() {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    SourceLocation namespace =
-        new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
+    AnalysisInputLocation namespace =
+        new JavaSourcePathAnalysisInputLocation(Utils.immutableSet(srcDir), exclusionFilePath);
 
     ClassProvider classProvider = namespace.getClassProvider();
     assertTrue(classProvider instanceof WalaJavaClassProvider);
@@ -55,8 +55,8 @@ public class JavaSourcePathNamespaceTest {
   public void testGetClassSources() {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    SourceLocation namespace =
-        new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
+    AnalysisInputLocation namespace =
+        new JavaSourcePathAnalysisInputLocation(Utils.immutableSet(srcDir), exclusionFilePath);
 
     DefaultIdentifierFactory defaultFactories = DefaultIdentifierFactory.getInstance();
     Collection<? extends AbstractClassSource> classSources =

@@ -1,7 +1,7 @@
 package de.upb.soot;
 
 import de.upb.soot.buildactor.ViewBuilder;
-import de.upb.soot.namespaces.SourceLocation;
+import de.upb.soot.namespaces.AnalysisInputLocation;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
 import javax.annotation.Nonnull;
@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public class Project<S extends SourceLocation> {
+public class Project<S extends AnalysisInputLocation> {
   /** Create a project from an arbitrary list of namespaces */
   public Project(@Nonnull S namespace) {
     this(namespace, DefaultIdentifierFactory.getInstance());

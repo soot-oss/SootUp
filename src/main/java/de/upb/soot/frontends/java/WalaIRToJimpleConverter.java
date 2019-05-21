@@ -29,8 +29,8 @@ import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.SourceLocation;
+import de.upb.soot.namespaces.AnalysisInputLocation;
+import de.upb.soot.namespaces.JavaSourcePathAnalysisInputLocation;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.*;
@@ -49,13 +49,13 @@ import javax.annotation.Nullable;
 public class WalaIRToJimpleConverter {
 
   protected JavaView view;
-  private SourceLocation srcNamespace;
+  private AnalysisInputLocation srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
   private HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
 
   public WalaIRToJimpleConverter(Set<String> sourceDirPath) {
-    srcNamespace = new JavaSourcePathNamespace(sourceDirPath);
+    srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
     Project project = new Project(srcNamespace, DefaultIdentifierFactory.getInstance());
 
     view = new JavaView(project);

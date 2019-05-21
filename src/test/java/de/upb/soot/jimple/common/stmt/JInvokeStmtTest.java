@@ -35,7 +35,7 @@ import de.upb.soot.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr;
 import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.soot.namespaces.JavaClassPathNamespace;
+import de.upb.soot.namespaces.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
 import java.net.URI;
@@ -62,7 +62,7 @@ public class JInvokeStmtTest {
     Set<SootMethod> methods = new LinkedHashSet<>();
     EagerJavaClassSource javaClassSource =
         new EagerJavaClassSource(
-            new JavaClassPathNamespace("src/main/java/de/upb/soot"),
+            new JavaClassPathAnalysisInputLocation("src/main/java/de/upb/soot"),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
             superClassSignature,

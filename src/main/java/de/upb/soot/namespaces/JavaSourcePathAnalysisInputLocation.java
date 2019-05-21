@@ -16,34 +16,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of the {@link SourceLocation} interface for the Java source code path.
+ * An implementation of the {@link AnalysisInputLocation} interface for the Java source code path.
  *
  * @author Linghui Luo
  */
-public class JavaSourcePathNamespace extends AbstractNamespace {
+public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLocation {
 
-  private static final Logger log = LoggerFactory.getLogger(JavaSourcePathNamespace.class);
+  private static final Logger log =
+      LoggerFactory.getLogger(JavaSourcePathAnalysisInputLocation.class);
 
   @Nonnull private final Set<String> sourcePaths;
   private final String exclusionFilePath;
 
   /**
-   * Create a {@link JavaSourcePathNamespace} which locates java source code in the given source
-   * path.
+   * Create a {@link JavaSourcePathAnalysisInputLocation} which locates java source code in the
+   * given source path.
    *
    * @param sourcePaths the source code path to search in
    */
-  public JavaSourcePathNamespace(@Nonnull Set<String> sourcePaths) {
+  public JavaSourcePathAnalysisInputLocation(@Nonnull Set<String> sourcePaths) {
     this(sourcePaths, null);
   }
 
   /**
-   * Create a {@link JavaSourcePathNamespace} which locates java source code in the given source
-   * path.
+   * Create a {@link JavaSourcePathAnalysisInputLocation} which locates java source code in the
+   * given source path.
    *
    * @param sourcePaths the source code path to search in
    */
-  public JavaSourcePathNamespace(
+  public JavaSourcePathAnalysisInputLocation(
       @Nonnull Set<String> sourcePaths, @Nullable String exclusionFilePath) {
     super(new WalaJavaClassProvider(exclusionFilePath));
 

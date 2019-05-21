@@ -1,6 +1,6 @@
 package de.upb.soot;
 
-import de.upb.soot.namespaces.SourceLocation;
+import de.upb.soot.namespaces.AnalysisInputLocation;
 import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.NotYetImplementedException;
@@ -14,7 +14,7 @@ import de.upb.soot.util.NotYetImplementedException;
 public class Scope {
 
   /** Define a scope consists of multiple namespaces. */
-  public Scope(SourceLocation... namespaces) {
+  public Scope(AnalysisInputLocation... namespaces) {
     // TODO Auto-generated constructor stub
   }
 

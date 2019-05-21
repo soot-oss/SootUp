@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import categories.Java8Test;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.namespaces.FileType;
-import de.upb.soot.namespaces.JavaSourcePathNamespace;
+import de.upb.soot.namespaces.JavaSourcePathAnalysisInputLocation;
 import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
@@ -23,8 +23,8 @@ public class WalaJavaClassProviderTest {
 
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    JavaSourcePathNamespace namespace =
-        new JavaSourcePathNamespace(Utils.immutableSet(srcDir), exclusionFilePath);
+    JavaSourcePathAnalysisInputLocation namespace =
+        new JavaSourcePathAnalysisInputLocation(Utils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     WalaJavaClassProvider provider = new WalaJavaClassProvider(exclusionFilePath);

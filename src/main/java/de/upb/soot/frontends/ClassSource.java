@@ -6,7 +6,7 @@ import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.namespaces.SourceLocation;
+import de.upb.soot.namespaces.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -30,7 +30,7 @@ public abstract class ClassSource extends AbstractClassSource {
    * Implementations should use {@link java.nio.file.Files#newInputStream(Path, OpenOption...)} to
    * access the file.
    *
-   * @param srcNamespace The {@link SourceLocation} that holds the given file
+   * @param srcNamespace The {@link AnalysisInputLocation} that holds the given file
    * @param sourcePath Path to the source file of the to-be-created {@link ClassSource}. The given
    *     path has to exist and requires to be handled by this {@link ClassProvider}. Implementations
    *     might double check this if wanted.
@@ -38,7 +38,8 @@ public abstract class ClassSource extends AbstractClassSource {
    * @return A not yet resolved {@link ClassSource}, backed up by the given file A not yet resolved
    *     {@link ClassSource}, backed up by the given file
    */
-  public ClassSource(SourceLocation srcNamespace, Path sourcePath, JavaClassType classSignature) {
+  public ClassSource(
+      AnalysisInputLocation srcNamespace, Path sourcePath, JavaClassType classSignature) {
     super(srcNamespace, classSignature, sourcePath);
     checkNotNull(srcNamespace);
   }

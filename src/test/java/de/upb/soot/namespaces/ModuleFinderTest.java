@@ -15,7 +15,7 @@ import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
 
 @Category(Java9Test.class)
-public class ModuleFinderTest extends AbstractNamespaceTest {
+public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
 
   @Test
   public void discoverModule() {
@@ -34,8 +34,8 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
         new ModuleFinder(
             this.getClassProvider(),
             "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
-    AbstractNamespace namespace = moduleFinder.discoverModule("Soot");
-    assertTrue(namespace instanceof PathBasedNamespace);
+    AbstractAnalysisInputLocation namespace = moduleFinder.discoverModule("Soot");
+    assertTrue(namespace instanceof PathBasedAnalysisInputLocation);
   }
 
   @Test
@@ -44,8 +44,8 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
         new ModuleFinder(
             this.getClassProvider(),
             "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
-    AbstractNamespace namespace = moduleFinder.discoverModule("java.base");
-    assertTrue(namespace instanceof JrtFileSystemNamespace);
+    AbstractAnalysisInputLocation namespace = moduleFinder.discoverModule("java.base");
+    assertTrue(namespace instanceof JrtFileSystemAnalysisInputLocation);
   }
 
   @Test
@@ -91,8 +91,8 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
     Path p = Paths.get("target/test-classes/de/upb/soot/namespaces/modules/testMod");
     Whitebox.invokeMethod(moduleFinder, "buildModuleForExplodedModule", p);
     Field field = Whitebox.getField(moduleFinder.getClass(), "moduleNamespace");
-    Map<String, AbstractNamespace> values =
-        (Map<String, AbstractNamespace>) field.get(moduleFinder);
+    Map<String, AbstractAnalysisInputLocation> values =
+        (Map<String, AbstractAnalysisInputLocation>) field.get(moduleFinder);
     assertTrue(values.containsKey("fancyMod"));
   }
 }
