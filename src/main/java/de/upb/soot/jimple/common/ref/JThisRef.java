@@ -78,5 +78,4 @@ public class JThisRef implements IdentityRef {
   public void accept(IVisitor sw) {
     // TODO
   }
-
 }
