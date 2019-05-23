@@ -76,6 +76,7 @@ import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
 import de.upb.soot.jimple.common.stmt.$AbstractSwitchStmtAccessor;
 import de.upb.soot.jimple.common.stmt.$JGotoStmtAccessor;
+import de.upb.soot.jimple.common.stmt.$JIfStmtAccessor;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
@@ -1042,7 +1043,7 @@ public class InstructionConverter {
     if (this.targetsOfIfStmts.containsValue(iindex)) {
       for (JIfStmt ifStmt : this.targetsOfIfStmts.keySet()) {
         if (this.targetsOfIfStmts.get(ifStmt).equals(iindex)) {
-          ifStmt.setTarget(stmt);
+          $JIfStmtAccessor.setTarget(ifStmt, stmt);
         }
       }
     }

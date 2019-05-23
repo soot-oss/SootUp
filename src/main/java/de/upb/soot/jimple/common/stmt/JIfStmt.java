@@ -103,7 +103,7 @@ public class JIfStmt extends AbstractStmt {
     return targetBox.getStmt();
   }
 
-  public void setTarget(IStmt target) {
+  void setTarget(IStmt target) {
 $StmtBoxAccessor.setStmt(    targetBox, target);
   }
 
