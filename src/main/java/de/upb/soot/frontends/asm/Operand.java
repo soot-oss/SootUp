@@ -60,7 +60,6 @@ final class Operand {
    *
    * @param vb the value box.
    */
-  @SuppressWarnings("unchecked")
   void removeBox(@Nullable ValueBox vb) {
     if (vb == null) {
       return;
@@ -73,7 +72,6 @@ final class Operand {
    *
    * @param vb the value box.
    */
-  @SuppressWarnings("unchecked")
   void addBox(@Nonnull ValueBox vb) {
     boxes.add(vb);
   }
