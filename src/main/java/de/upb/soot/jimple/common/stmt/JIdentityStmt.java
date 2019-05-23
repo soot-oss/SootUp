@@ -67,14 +67,6 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
     getRightBox().toString(up);
   }
 
-  public void setLeftOp(Value local) {
-    getLeftBox().setValue(local);
-  }
-
-  public void setRightOp(Value identityRef) {
-    getRightBox().setValue(identityRef);
-  }
-
   @Override
   public void accept(IVisitor sw) {
     ((IStmtVisitor) sw).caseIdentityStmt(this);

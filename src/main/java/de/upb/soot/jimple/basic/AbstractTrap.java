@@ -123,18 +123,6 @@ public class AbstractTrap implements Trap, Serializable {
     return exception;
   }
 
-  public void setBeginStmt(IStmt beginStmt) {
-    beginStmtBox.setStmt(beginStmt);
-  }
-
-  public void setEndStmt(IStmt endStmt) {
-    endStmtBox.setStmt(endStmt);
-  }
-
-  public void setHandlerStmt(IStmt handlerStmt) {
-    handlerStmtBox.setStmt(handlerStmt);
-  }
-
   public void setException(JavaClassType exception) {
     this.exception = exception;
   }

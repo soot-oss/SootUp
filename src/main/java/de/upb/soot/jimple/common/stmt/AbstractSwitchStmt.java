@@ -80,10 +80,6 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return keyBox.getValue();
   }
 
-  public final void setKey(Value key) {
-    keyBox.setValue(key);
-  }
-
   public final ValueBox getKeyBox() {
     return keyBox;
   }

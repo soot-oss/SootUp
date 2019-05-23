@@ -28,7 +28,7 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.util.printer.IStmtPrinter;
 
 /** Reference implementation for ValueBox; just add a canContainValue methodRef. */
-public abstract class AbstractValueBox implements ValueBox {
+public abstract class AbstractValueBox extends ValueBox {
   /** */
   private static final long serialVersionUID = -796126298513013484L;
 

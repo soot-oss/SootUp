@@ -150,10 +150,6 @@ public class JNewMultiArrayExpr implements Expr {
     return toReturn;
   }
 
-  public void setSize(int index, Value size) {
-    sizeBoxes[index].setValue(size);
-  }
-
   @Override
   public final List<ValueBox> getUseBoxes() {
     List<ValueBox> list = new ArrayList<>();

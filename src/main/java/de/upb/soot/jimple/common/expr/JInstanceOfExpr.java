@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.$ValueBoxAccessor;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -84,7 +85,7 @@ public class JInstanceOfExpr implements Expr {
   }
 
   public void setOp(Value op) {
-    opBox.setValue(op);
+    $ValueBoxAccessor.setValue(opBox, op);
   }
 
   public ValueBox getOpBox() {

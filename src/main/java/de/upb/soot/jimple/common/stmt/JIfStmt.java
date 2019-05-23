@@ -94,10 +94,6 @@ public class JIfStmt extends AbstractStmt {
     return conditionBox.getValue();
   }
 
-  public void setCondition(Value condition) {
-    conditionBox.setValue(condition);
-  }
-
   public ValueBox getConditionBox() {
     return conditionBox;
   }

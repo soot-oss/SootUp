@@ -12,6 +12,7 @@
 package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.$ValueBoxAccessor;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -66,7 +67,7 @@ public class JInstanceFieldRef extends FieldRef {
   }
 
   public void setBase(Value base) {
-    baseBox.setValue(base);
+    $ValueBoxAccessor.setValue(baseBox, base);
   }
 
   /** Returns a list useBoxes of type ValueBox. */

@@ -72,10 +72,6 @@ public class JInvokeStmt extends AbstractStmt {
     invokeExprBox.toString(up);
   }
 
-  public void setInvokeExpr(Value invokeExpr) {
-    invokeExprBox.setValue(invokeExpr);
-  }
-
   @Override
   public AbstractInvokeExpr getInvokeExpr() {
     return (AbstractInvokeExpr) invokeExprBox.getValue();

@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import de.upb.soot.jimple.basic.$ValueBoxAccessor;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -48,7 +49,7 @@ public abstract class AbstractOpStmt extends AbstractStmt {
   }
 
   public final void setOp(Value op) {
-    opBox.setValue(op);
+    $ValueBoxAccessor.setValue(opBox, op);
   }
 
   public final ValueBox getOpBox() {

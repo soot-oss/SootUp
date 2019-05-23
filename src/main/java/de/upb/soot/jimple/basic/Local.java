@@ -95,7 +95,7 @@ public final class Local implements Value, Numberable, Immediate {
   }
 
   /** Sets the name of this object as given. */
-  public void setName(String name) {
+  void setName(String name) {
     this.name = (name == null) ? null : name.intern();
   }
 
@@ -106,7 +106,7 @@ public final class Local implements Value, Numberable, Immediate {
   }
 
   /** Sets the type of this local. */
-  public void setType(Type t) {
+  void setType(Type t) {
     this.type = t;
   }
 

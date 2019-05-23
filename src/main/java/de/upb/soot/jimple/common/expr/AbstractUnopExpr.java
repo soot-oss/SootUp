@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.jimple.basic.$ValueBoxAccessor;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public abstract class AbstractUnopExpr implements Expr {
   }
 
   public void setOp(Value op) {
-    opBox.setValue(op);
+    $ValueBoxAccessor.setValue(opBox, op);
   }
 
   public ValueBox getOpBox() {

@@ -22,6 +22,7 @@ package de.upb.soot.frontends.asm;
  * #L%
  */
 
+import de.upb.soot.jimple.basic.$ValueBoxAccessor;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -41,7 +42,7 @@ final class Operand {
   @Nonnull final AbstractInsnNode insn;
   @Nonnull final Value value;
   @Nullable Local stack;
-  @Nullable private Object boxes;
+  @Nonnull private final List<ValueBox> boxes = new ArrayList<>();
 
   /**
    * Constructs a new stack operand.
@@ -64,12 +65,7 @@ final class Operand {
     if (vb == null) {
       return;
     }
-    if (boxes == vb) {
-      boxes = null;
-    } else if (boxes instanceof List) {
-      List<ValueBox> list = (List<ValueBox>) boxes;
-      list.remove(vb);
-    }
+    boxes.remove(vb);
   }
 
   /**
@@ -79,30 +75,15 @@ final class Operand {
    */
   @SuppressWarnings("unchecked")
   void addBox(@Nonnull ValueBox vb) {
-    if (boxes instanceof List) {
-      List<ValueBox> list = (List<ValueBox>) boxes;
-      list.add(vb);
-    } else if (boxes instanceof ValueBox) {
-      ValueBox ovb = (ValueBox) boxes;
-      List<ValueBox> list = new ArrayList<>();
-      list.add(ovb);
-      list.add(vb);
-      boxes = list;
-    } else {
-      boxes = vb;
-    }
+    boxes.add(vb);
   }
 
   /** Updates all value boxes registered to this operand. */
   @SuppressWarnings("unchecked")
   void updateBoxes() {
     Value val = stackOrValue();
-    if (boxes instanceof List) {
-      for (ValueBox vb : (List<ValueBox>) boxes) {
-        vb.setValue(val);
-      }
-    } else if (boxes instanceof ValueBox) {
-      ((ValueBox) boxes).setValue(val);
+    for (ValueBox vb : boxes) {
+      $ValueBoxAccessor.setValue(vb, val);
     }
   }
 

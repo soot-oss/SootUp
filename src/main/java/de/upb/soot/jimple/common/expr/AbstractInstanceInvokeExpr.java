@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.jimple.basic.$ValueBoxAccessor;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IExprVisitor;
@@ -55,7 +56,7 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   }
 
   public void setBase(Value base) {
-    baseBox.setValue(base);
+    $ValueBoxAccessor.setValue(baseBox, base);
   }
 
   @Override
