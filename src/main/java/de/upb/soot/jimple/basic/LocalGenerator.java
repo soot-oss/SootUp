@@ -6,10 +6,9 @@ import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
 import de.upb.soot.types.VoidType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /*-
  * #%L
@@ -37,33 +36,40 @@ import java.util.Map;
  * Generates locals for Body.
  *
  * @author Linghui Luo
+ * @author Markus Schmidt
  */
 public class LocalGenerator {
-  private List<Local> locals = new ArrayList<>();
-  private Local thisLocal;
-  private Map<Integer, Local> paraLocals = new HashMap<>();
+  private final Set<Local> locals;
+  @Nullable private Local thisLocal;
+  private final Map<Integer, Local> paraLocals = new HashMap<>();
 
-  public LocalGenerator() {}
+  /**
+   * Creates Locals {@link Local} with a standard naming scheme. If a Set of Locals is provided, the
+   * LocalGenerator checks whether the name is already taken.
+   */
+  public LocalGenerator(@Nonnull Set<Local> existingLocals) {
+    locals = existingLocals;
+  }
 
   /** generate this local with given type */
-  public Local generateThisLocal(Type type) {
+  public Local generateThisLocal(@Nonnull Type type) {
     if (this.thisLocal == null) {
       this.thisLocal = generateField(type);
     }
     return this.thisLocal;
   }
 
-  /** generates a new @Local given the type for field. */
-  public Local generateField(Type type) {
+  /** generates a new {@link Local} given the type for field. */
+  public Local generateField(@Nonnull Type type) {
     return generate(type, true);
   }
 
-  /** generates a new @Local given the type for local. */
-  public Local generateLocal(Type type) {
+  /** generates a new {@link Local} given the type for local. */
+  public Local generateLocal(@Nonnull Type type) {
     return generate(type, false);
   }
 
-  public Local generateParameterLocal(Type type, int index) {
+  public Local generateParameterLocal(@Nonnull Type type, int index) {
     if (!this.paraLocals.containsKey(index)) {
       Local paraLocal = generate(type, false);
       this.paraLocals.put(index, paraLocal);
@@ -71,38 +77,46 @@ public class LocalGenerator {
     return this.paraLocals.get(index);
   }
 
-  private Local generate(Type type, boolean isField) {
-    StringBuilder name = new StringBuilder(7);
-    if (!isField) {
-      name.append("$");
-    }
+  private Local generate(@Nonnull Type type, boolean isField) {
 
-    if (type.equals(PrimitiveType.getInt())) {
-      appendNextIntName(name);
-    } else if (type.equals(PrimitiveType.getByte())) {
-      appendNextByteName(name);
-    } else if (type.equals(PrimitiveType.getShort())) {
-      appendNextShortName(name);
-    } else if (type.equals(PrimitiveType.getBoolean())) {
-      appendNextBooleanName(name);
-    } else if (type.equals(VoidType.getInstance())) {
-      appendNextVoidName(name);
-    } else if (type.equals(PrimitiveType.getChar())) {
-      appendNextCharName(name);
-    } else if (type.equals(PrimitiveType.getDouble())) {
-      appendNextDoubleName(name);
-    } else if (type.equals(PrimitiveType.getFloat())) {
-      appendNextFloatName(name);
-    } else if (type.equals(PrimitiveType.getLong())) {
-      appendNextLongName(name);
-    } else if (type instanceof ReferenceType) {
-      appendNextRefLikeTypeName(name);
-    } else if (type.equals(UnknownType.getInstance())) {
-      appendNextUnknownTypeName(name);
-    } else {
-      throw new RuntimeException("Unhandled Type of Local variable to Generate - Not Implemented");
-    }
-    return createLocal(name.toString(), type);
+    StringBuilder name = new StringBuilder(7);
+    name.append("$");
+    String localName;
+    // determine locals name
+    do {
+      // non-field Locals traditionally begin with "$"
+      name.setLength(isField ? 0 : 1);
+
+      if (type.equals(PrimitiveType.getInt())) {
+        appendNextIntName(name);
+      } else if (type.equals(PrimitiveType.getByte())) {
+        appendNextByteName(name);
+      } else if (type.equals(PrimitiveType.getShort())) {
+        appendNextShortName(name);
+      } else if (type.equals(PrimitiveType.getBoolean())) {
+        appendNextBooleanName(name);
+      } else if (type.equals(VoidType.getInstance())) {
+        appendNextVoidName(name);
+      } else if (type.equals(PrimitiveType.getChar())) {
+        appendNextCharName(name);
+      } else if (type.equals(PrimitiveType.getDouble())) {
+        appendNextDoubleName(name);
+      } else if (type.equals(PrimitiveType.getFloat())) {
+        appendNextFloatName(name);
+      } else if (type.equals(PrimitiveType.getLong())) {
+        appendNextLongName(name);
+      } else if (type instanceof ReferenceType) {
+        appendNextRefLikeTypeName(name);
+      } else if (type.equals(UnknownType.getInstance())) {
+        appendNextUnknownTypeName(name);
+      } else {
+        throw new RuntimeException("Unhandled Type of Local variable to Generate");
+      }
+
+      localName = name.toString();
+    } while (locals.contains(localName));
+
+    return createLocal(localName, type);
   }
 
   private int tempInt = 0;
@@ -168,7 +182,7 @@ public class LocalGenerator {
   }
 
   /** Return all locals created for the body referenced in this LocalGenrator. */
-  public List<Local> getLocals() {
+  public Set<Local> getLocals() {
     return this.locals;
   }
 

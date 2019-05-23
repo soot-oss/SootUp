@@ -50,11 +50,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -68,7 +64,7 @@ public class Body implements Serializable {
   private static final long serialVersionUID = -755840890323977315L;
 
   /** The locals for this Body. */
-  protected final List<Local> locals;
+  protected final Set<Local> locals;
 
   /** The traps for this Body. */
   protected final List<Trap> traps;
@@ -98,11 +94,11 @@ public class Body implements Serializable {
    * @param locals please use {@link LocalGenerator} to generate local for a body.
    */
   public Body(
-      @Nonnull List<Local> locals,
+      @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
       @Nonnull List<IStmt> stmts,
       @Nullable Position position) {
-    this.locals = Collections.unmodifiableList(locals);
+    this.locals = Collections.unmodifiableSet(locals);
     this.traps = Collections.unmodifiableList(traps);
     this.stmts = Collections.unmodifiableList(stmts);
     this.position = position;
@@ -183,7 +179,7 @@ public class Body implements Serializable {
   }
 
   /** Returns a backed chain of the locals declared in this Body. */
-  public Collection<Local> getLocals() {
+  public Set<Local> getLocals() {
     return locals;
   }
 

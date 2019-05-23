@@ -181,7 +181,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
       return null;
     }
 
-    List<Local> bodyLocals = new ArrayList<>();
+    Set<Local> bodyLocals = new HashSet<>();
     List<Trap> bodyTraps = new ArrayList<>();
     List<IStmt> bodyStmts = new ArrayList<>();
     // FIXME: add real line number
