@@ -12,4 +12,6 @@ public class $StmtBoxAccessor {
   public static void setStmt(IStmtBox box, IStmt stmt) {
     box.setStmt(stmt);
   }
+
+  private $StmtBoxAccessor() {}
 }

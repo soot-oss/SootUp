@@ -80,6 +80,7 @@ public final class Local implements Value, Immediate {
   /** Returns a clone of the current JimpleLocal. */
   @Override
   public Object clone() {
+    // TODO Don't merge like this
     throw new RuntimeException("This method will be removed in another PR");
   }
 

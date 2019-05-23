@@ -10,4 +10,6 @@ public class $ValueBoxAccessor {
   public static void setValue(ValueBox box, Value value) {
     box.setValue(value);
   }
+
+  private $ValueBoxAccessor() {}
 }

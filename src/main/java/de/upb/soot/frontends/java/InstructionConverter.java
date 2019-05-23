@@ -74,6 +74,7 @@ import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
+import de.upb.soot.jimple.common.stmt.$AbstractSwitchStmtAccessor;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
@@ -1056,19 +1057,19 @@ public class InstructionConverter {
     if (this.defaultOfLookUpSwitchStmts.containsValue(iindex)) {
       for (JLookupSwitchStmt lookupSwitch : this.defaultOfLookUpSwitchStmts.keySet()) {
         if (this.defaultOfLookUpSwitchStmts.get(lookupSwitch).equals(iindex)) {
-          lookupSwitch.setDefaultTarget(stmt);
+          $AbstractSwitchStmtAccessor.setDefaultTarget(lookupSwitch, stmt);
         }
       }
     }
-    for (JLookupSwitchStmt lookupSwith : this.targetsOfLookUpSwitchStmts.keySet()) {
-      if (this.targetsOfLookUpSwitchStmts.get(lookupSwith).contains(iindex)) {
-        List<IStmt> targets = lookupSwith.getTargets();
+    for (JLookupSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()) {
+      if (this.targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iindex)) {
+        List<IStmt> targets = lookupSwitch.getTargets();
         if (targets.contains(null)) { // targets only contains
           // placeholder
           targets = new ArrayList<>();
         }
         targets.add(stmt);
-        lookupSwith.setTargets(targets);
+        $AbstractSwitchStmtAccessor.setTargets(lookupSwitch, targets);
       }
     }
   }

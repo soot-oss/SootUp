@@ -69,7 +69,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return defaultTargetBox.getStmt();
   }
 
-  public final void setDefaultTarget(IStmt defaultTarget) {
+  final void setDefaultTarget(IStmt defaultTarget) {
     $StmtBoxAccessor.setStmt(defaultTargetBox, defaultTarget);
   }
 
@@ -106,10 +106,6 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return targetBoxes[index];
   }
 
-  public final void setTarget(int index, IStmt target) {
-    $StmtBoxAccessor.setStmt(targetBoxes[index], target);
-  }
-
   /** Returns a list targets of type Stmt. */
   public final List<IStmt> getTargets() {
     List<IStmt> targets = new ArrayList<>();
@@ -126,20 +122,9 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
    *
    * @param targets A list of type Stmt.
    */
-  public final void setTargets(List<? extends IStmt> targets) {
+  final void setTargets(List<? extends IStmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
       $StmtBoxAccessor.setStmt(targetBoxes[i], targets.get(i));
-    }
-  }
-
-  /**
-   * Sets the setStmt box for targetBoxes array.
-   *
-   * @param targets An array of type Stmt.
-   */
-  public final void setTargets(IStmt[] targets) {
-    for (int i = 0; i < targets.length; i++) {
-      $StmtBoxAccessor.setStmt(targetBoxes[i], targets[i]);
     }
   }
 
