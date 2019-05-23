@@ -22,8 +22,8 @@ package de.upb.soot.core;
  */
 
 import static de.upb.soot.util.Utils.immutableListOf;
-import static de.upb.soot.util.concurrent.Lazy.synchronizedLazy;
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import de.upb.soot.frontends.MethodSource;
@@ -33,11 +33,11 @@ import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.builder.BuilderException;
-import de.upb.soot.util.concurrent.Lazy;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -140,7 +140,7 @@ public class SootMethod extends SootClassMember implements Method {
     return parameterTypes;
   }
 
-  private final @Nonnull Lazy<Body> _lazyBody = synchronizedLazy(this::lazyBodyInitializer);
+  private final @Nonnull Supplier<Body> _lazyBody = Suppliers.memoize(this::lazyBodyInitializer);
 
   /** Retrieves the active body for this methodRef. */
   @Nullable
