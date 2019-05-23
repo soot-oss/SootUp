@@ -39,7 +39,9 @@ import java.util.List;
  *
  * @author Linghui Luo
  */
-public class Local implements Value, Numberable, Immediate {
+public final class Local implements Value, Numberable, Immediate {
+  // This class is final since it implements equals and hashCode
+
   /** */
   private static final long serialVersionUID = 4469815713329368282L;
 
@@ -50,6 +52,18 @@ public class Local implements Value, Numberable, Immediate {
   public Local(String name, Type type) {
     setName(name);
     setType(type);
+  }
+
+  // Can be safely suppressed, JimpleComparator performs this check
+  @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+  @Override
+  public boolean equals(Object o) {
+    return equivTo(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return equivHashCode();
   }
 
   @Override

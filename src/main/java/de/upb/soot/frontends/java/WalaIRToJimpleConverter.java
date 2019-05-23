@@ -388,7 +388,7 @@ public class WalaIRToJimpleConverter {
     if (cfg != null) {
       List<Trap> traps = new ArrayList<>();
       List<IStmt> stmts = new ArrayList<>();
-      LocalGenerator localGenerator = new LocalGenerator();
+      LocalGenerator localGenerator = new LocalGenerator(new HashSet<>());
       // convert all wala instructions to jimple statements
       SSAInstruction[] insts = (SSAInstruction[]) cfg.getInstructions();
       if (insts.length > 0) {

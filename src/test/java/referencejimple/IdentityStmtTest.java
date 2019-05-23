@@ -28,14 +28,7 @@ import de.upb.soot.types.VoidType;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
@@ -116,14 +109,14 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
   SootMethod init(@Nonnull FieldSignature initFieldSignature) {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
     DefaultIdentifierFactory dif = DefaultIdentifierFactory.getInstance();
-    LocalGenerator generator = new LocalGenerator();
+    LocalGenerator generator = new LocalGenerator(new HashSet<>());
 
     MethodSignature methodSignature =
         dif.getMethodSignature(
             "<init>", classSignature, VoidType.getInstance().toString(), Arrays.asList(""));
     AstMethod.DebuggingInformation debugInfo = null;
 
-    List<Local> locals = new LinkedList<>();
+    HashSet<Local> locals = new HashSet<>();
     List<Trap> traps = new LinkedList<>();
     List<IStmt> stmts = new LinkedList<>();
 
