@@ -52,7 +52,6 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     //    Optional<AbstractClass> declaringClass = view.getClass(method.declClassSignature);
     //    if (declaringClass.isPresent()) {
     //      SootClass cls = (SootClass) declaringClass.get();
-    //      cls.checkLevelIgnoreResolving(ResolvingLevel.HIERARCHY);
     //      // now check if the class is valid
     //      if (!cls.isInterface() && !cls.isPhantomClass()) {
     //        throw new RuntimeException("Trying to create interface invoke expression for

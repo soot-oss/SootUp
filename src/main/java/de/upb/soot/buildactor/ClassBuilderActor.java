@@ -3,12 +3,9 @@ package de.upb.soot.buildactor;
 import akka.actor.AbstractLoggingActor;
 import akka.actor.Props;
 import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.IMethod;
-import de.upb.soot.core.ResolvingLevel;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.IClassProvider;
-import de.upb.soot.frontends.IClassSourceContent;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.views.IView;
 
@@ -50,8 +47,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
   private void reify(ReifyMessage m) {
     log().info("Start reifying for [{}].", classSource.getClassType().toString());
     // FIXME: new content
-    IClassProvider classProvider = classSource.getClassProvider();
-    IClassSourceContent content = classProvider.getContent(classSource);
+    AbstractClassSource content = classSource;
 
     // FIXME --- if module info ... dispatch
     // actually I don't want if clauses. I want to dispatch based on the type of the classSource?
@@ -59,7 +55,8 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     // FIXME: somewhere a soot class needs to be created or returned???
     AbstractClass sootClass = null;
     try {
-      sootClass = content.resolveClass(ResolvingLevel.DANGLING, view);
+      // TODO Fix this, resolveClass no longer exists
+      //      sootClass = content.resolveClass(ResolvingLevel.DANGLING, view);
     } catch (ResolveException e) {
       e.printStackTrace();
       // FIXME: error handling
@@ -76,7 +73,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
       throw new IllegalStateException();
     }
 
-    for (IMethod i : sootClass.getMethods()) {
+    for (Object i : sootClass.getMethods()) {
       SootMethod method = (SootMethod) i;
       akka.actor.ActorRef methodActor =
           getContext().actorOf(de.upb.soot.buildactor.ClassBuilderActor.props(sootClass, method));
