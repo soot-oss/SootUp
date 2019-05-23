@@ -10,6 +10,6 @@ public class $StmtBoxAccessor {
   // don't suggest these classes in autocomplete.
 
   public static void setStmt(IStmtBox box, IStmt stmt) {
-$StmtBoxAccessor.setStmt(    box, stmt);
+    box.setStmt(stmt);
   }
 }
