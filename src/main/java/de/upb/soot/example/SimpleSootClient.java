@@ -3,9 +3,9 @@ package de.upb.soot.example;
 import de.upb.soot.Project;
 import de.upb.soot.Scope;
 import de.upb.soot.callgraph.CallGraph;
-import de.upb.soot.namespaces.JavaClassPathNamespace;
-import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.namespaces.SourceLocation;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.views.IView;
 import java.util.Collections;
@@ -22,9 +22,10 @@ public class SimpleSootClient {
     String javaClassPath = "example/classes/";
     String javaSourcePath = "example/src";
 
-    SourceLocation cpBased = new JavaClassPathNamespace(javaClassPath);
+    AnalysisInputLocation cpBased = new JavaClassPathAnalysisInputLocation(javaClassPath);
 
-    SourceLocation walaSource = new JavaSourcePathNamespace(Collections.singleton(javaSourcePath));
+    AnalysisInputLocation walaSource =
+        new JavaSourcePathAnalysisInputLocation(Collections.singleton(javaSourcePath));
 
     Project p = new Project(walaSource);
 

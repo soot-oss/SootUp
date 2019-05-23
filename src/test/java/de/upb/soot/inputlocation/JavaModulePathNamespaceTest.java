@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -16,7 +16,7 @@ import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
 
 @Category(Java9Test.class)
-public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
+public class JavaModulePathNamespaceTest extends AbstractAnalysisInputLocationTest {
 
   private ModuleIdentifierFactory identifierFactory;
 
@@ -35,8 +35,8 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
   @Test
   public void singleDir() {
-    final JavaModulePathNamespace javaClassPathNamespace =
-        new JavaModulePathNamespace(
+    final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
+        new JavaModulePathAnalysisInputLocation(
             "target/test-classes/de/upb/soot/namespaces/modules", getClassProvider());
     final JavaClassType sig = getIdentifierFactory().getClassType("module-info", "", "fancyMod");
     Optional<? extends AbstractClassSource> classSource =
@@ -47,8 +47,8 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
   @Test
   @Ignore // does not work before adapting module loading in soot
   public void singleDir2() {
-    final JavaModulePathNamespace javaClassPathNamespace =
-        new JavaModulePathNamespace(
+    final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
+        new JavaModulePathAnalysisInputLocation(
             "target/test-classes/de/upb/soot/namespaces/modules", getClassProvider());
     final JavaClassType sig = getIdentifierFactory().getClassType("module-info", "", "fancyMod");
     // TODO: check for a better minClassFoundNumber
@@ -58,8 +58,8 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
   @Test
   public void singleJar() {
-    final JavaModulePathNamespace javaClassPathNamespace =
-        new JavaModulePathNamespace(
+    final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
+        new JavaModulePathAnalysisInputLocation(
             "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",
             getClassProvider());
     final JavaClassType sig = getIdentifierFactory().getClassType("module-info", "", "de.upb.mod");
@@ -70,12 +70,13 @@ public class JavaModulePathNamespaceTest extends AbstractNamespaceTest {
 
   @Test
   public void testTypeWrapper() throws Exception {
-    final JavaModulePathNamespace javaClassPathNamespace =
-        new JavaModulePathNamespace(
+    final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
+        new JavaModulePathAnalysisInputLocation(
             "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",
             getClassProvider());
     Class<?> signatureClass =
-        Whitebox.getInnerClassType(JavaModulePathNamespace.class, "IdentifierFactoryWrapper");
+        Whitebox.getInnerClassType(
+            JavaModulePathAnalysisInputLocation.class, "IdentifierFactoryWrapper");
     // Constructor constructor = Whitebox.getConstructor(signatureClass, IdentifierFactory.class,
     // String.class);
     Object typeFactoryWrapper =

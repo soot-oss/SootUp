@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
@@ -30,28 +30,28 @@ import javax.annotation.Nonnull;
  */
 
 /**
- * Basic implementation of {@link SourceLocation}, encapsulating common behavior. Also used to keep
- * the {@link SourceLocation} interface clean from internal methods like {@link
- * AbstractNamespace#getClassSource(JavaClassType)}.
+ * Basic implementation of {@link AnalysisInputLocation}, encapsulating common behavior. Also used
+ * to keep the {@link AnalysisInputLocation} interface clean from internal methods like {@link
+ * AbstractAnalysisInputLocation#getClassSource(JavaClassType)}.
  *
  * @author Manuel Benz created on 22.05.18
  */
-public abstract class AbstractNamespace implements SourceLocation {
+public abstract class AbstractAnalysisInputLocation implements AnalysisInputLocation {
   protected final @Nonnull ClassProvider classProvider;
 
   /**
-   * Create the namespace.
+   * Create the input location.
    *
    * @param classProvider The class provider to be used
    */
-  public AbstractNamespace(@Nonnull ClassProvider classProvider) {
+  public AbstractAnalysisInputLocation(@Nonnull ClassProvider classProvider) {
     this.classProvider = classProvider;
   }
 
   /**
-   * Returns the {@link ClassProvider} instance for this namespace.
+   * Returns the {@link ClassProvider} instance for this input location.
    *
-   * @return The class provider for this namespace
+   * @return The class provider for this input location
    */
   @Override
   public @Nonnull ClassProvider getClassProvider() {
@@ -71,7 +71,7 @@ public abstract class AbstractNamespace implements SourceLocation {
    */
 
   /**
-   * Constructs a default class provider for use with namespaces. Currently, this provides an
+   * Constructs a default class provider for use with input locations. Currently, this provides an
    * instance of {@link AsmJavaClassProvider} to read Java Bytecode. This might be more brilliant in
    * the future.
    *

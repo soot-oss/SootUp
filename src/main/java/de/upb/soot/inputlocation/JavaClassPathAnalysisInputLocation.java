@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 /*-
  * #%L
@@ -49,29 +49,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of the {@link SourceLocation} interface for the Java class path. Handles
+ * An implementation of the {@link AnalysisInputLocation} interface for the Java class path. Handles
  * directories, archives (including wildcard denoted archives) as stated in the official
  * documentation: https://docs.oracle.com/javase/8/docs/technotes/tools/windows/classpath.html
  *
  * @author Manuel Benz created on 22.05.18
  */
-public class JavaClassPathNamespace extends AbstractNamespace {
+public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLocation {
   private static final @Nonnull Logger logger =
-      LoggerFactory.getLogger(JavaClassPathNamespace.class);
+      LoggerFactory.getLogger(JavaClassPathAnalysisInputLocation.class);
   private static final @Nonnull String WILDCARD_CHAR = "*";
 
-  protected @Nonnull Collection<AbstractNamespace> cpEntries;
+  protected @Nonnull Collection<AbstractAnalysisInputLocation> cpEntries;
 
   /**
-   * Creates a {@link JavaClassPathNamespace} which locates classes in the given class path.
+   * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
+   * path.
    *
    * @param classPath The class path to search in
    */
-  public JavaClassPathNamespace(@Nonnull String classPath) {
+  public JavaClassPathAnalysisInputLocation(@Nonnull String classPath) {
     this(classPath, getDefaultClassProvider());
   }
 
-  public JavaClassPathNamespace(@Nonnull String classPath, @Nonnull ClassProvider provider) {
+  public JavaClassPathAnalysisInputLocation(
+      @Nonnull String classPath, @Nonnull ClassProvider provider) {
     super(provider);
 
     if (isNullOrEmpty(classPath)) {
@@ -104,8 +106,8 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     // the classpath is split at every path separator which is not escaped
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
     final Stream<Path> exploded =
-        Stream.of(paths.split(regex)).flatMap(JavaClassPathNamespace::handleWildCards);
-    // we need to filter out duplicates of the same files to not generate duplicate namespaces
+        Stream.of(paths.split(regex)).flatMap(JavaClassPathAnalysisInputLocation::handleWildCards);
+    // we need to filter out duplicates of the same files to not generate duplicate input locations
     return exploded.map(Path::normalize).distinct();
   }
 
@@ -137,7 +139,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
     Set<AbstractClassSource> found = new HashSet<>();
-    for (AbstractNamespace ns : cpEntries) {
+    for (AbstractAnalysisInputLocation ns : cpEntries) {
       found.addAll(ns.getClassSources(identifierFactory));
     }
     return found;
@@ -146,7 +148,7 @@ public class JavaClassPathNamespace extends AbstractNamespace {
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
       @Nonnull JavaClassType signature) {
-    for (AbstractNamespace ns : cpEntries) {
+    for (AbstractAnalysisInputLocation ns : cpEntries) {
       final Optional<? extends AbstractClassSource> classSource = ns.getClassSource(signature);
       if (classSource.isPresent()) {
         return classSource;
@@ -155,10 +157,10 @@ public class JavaClassPathNamespace extends AbstractNamespace {
     return Optional.empty();
   }
 
-  private @Nonnull Optional<AbstractNamespace> nsForPath(@Nonnull Path path) {
+  private @Nonnull Optional<AbstractAnalysisInputLocation> nsForPath(@Nonnull Path path) {
     if (Files.exists(path)
         && (java.nio.file.Files.isDirectory(path) || PathUtils.isArchive(path))) {
-      return Optional.of(PathBasedNamespace.createForClassContainer(path));
+      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();

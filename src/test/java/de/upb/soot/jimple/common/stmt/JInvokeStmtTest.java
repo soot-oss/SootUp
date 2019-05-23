@@ -26,6 +26,7 @@ import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.*;
 import de.upb.soot.frontends.java.EagerJavaClassSource;
+import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.NoPositionInformation;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -35,7 +36,6 @@ import de.upb.soot.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.soot.jimple.common.expr.JInterfaceInvokeExpr;
 import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.jimple.common.expr.JStaticInvokeExpr;
-import de.upb.soot.namespaces.JavaClassPathNamespace;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
 import java.net.URI;
@@ -62,7 +62,7 @@ public class JInvokeStmtTest {
     Set<SootMethod> methods = new LinkedHashSet<>();
     EagerJavaClassSource javaClassSource =
         new EagerJavaClassSource(
-            new JavaClassPathNamespace("src/main/java/de/upb/soot"),
+            new JavaClassPathAnalysisInputLocation("src/main/java/de/upb/soot"),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
             superClassSignature,

@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 import categories.Java9Test;
 import de.upb.soot.ModuleIdentifierFactory;
@@ -10,11 +10,12 @@ import org.junit.experimental.categories.Category;
 import org.mockito.internal.matchers.GreaterOrEqual;
 
 @Category(Java9Test.class)
-public class JrtFileSystemNamespaceTest extends AbstractNamespaceTest {
+public class JrtFileSystemNamespaceTest extends AbstractAnalysisInputLocationTest {
 
   @Test
   public void getClassSource() {
-    JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
+    JrtFileSystemAnalysisInputLocation ns =
+        new JrtFileSystemAnalysisInputLocation(getClassProvider());
     final JavaClassType sig = getIdentifierFactory().getClassType("java.lang.System");
     testClassReceival(ns, sig, 1);
   }
@@ -22,7 +23,8 @@ public class JrtFileSystemNamespaceTest extends AbstractNamespaceTest {
   @Test
   // FIXME findout why this test is slow > 1 sec
   public void getClassSourceModule() {
-    JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
+    JrtFileSystemAnalysisInputLocation ns =
+        new JrtFileSystemAnalysisInputLocation(getClassProvider());
     final JavaClassType sig =
         ModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
     testClassReceival(ns, sig, 1);
@@ -30,18 +32,21 @@ public class JrtFileSystemNamespaceTest extends AbstractNamespaceTest {
 
   @Test
   public void getClassSourcesClasspath() {
-    JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
+    JrtFileSystemAnalysisInputLocation ns =
+        new JrtFileSystemAnalysisInputLocation(getClassProvider());
     ns.getClassSources(getIdentifierFactory());
   }
 
   @Test
   public void getClassSourcesModulePath() {
-    JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
+    JrtFileSystemAnalysisInputLocation ns =
+        new JrtFileSystemAnalysisInputLocation(getClassProvider());
   }
 
   @Test
   public void discoverModules() {
-    JrtFileSystemNamespace ns = new JrtFileSystemNamespace(getClassProvider());
+    JrtFileSystemAnalysisInputLocation ns =
+        new JrtFileSystemAnalysisInputLocation(getClassProvider());
     Collection<String> modules = ns.discoverModules();
     Assert.assertThat(modules.size(), new GreaterOrEqual<>(70));
   }

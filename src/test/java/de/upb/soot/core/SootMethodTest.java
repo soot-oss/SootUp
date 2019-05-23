@@ -8,11 +8,11 @@ import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.frontends.java.WalaIRMethodSource;
+import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.namespaces.JavaSourcePathNamespace;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
@@ -65,7 +65,7 @@ public class SootMethodTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new JavaSourcePathNamespace(Collections.emptySet()),
+                new JavaSourcePathAnalysisInputLocation(Collections.emptySet()),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),
                 null,

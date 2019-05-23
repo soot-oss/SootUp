@@ -1,13 +1,13 @@
 package de.upb.soot.frontends;
 
 import com.google.common.base.Objects;
-import de.upb.soot.namespaces.SourceLocation;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 
 public class AbstractClassSource {
-  protected final SourceLocation srcNamespace;
+  protected final AnalysisInputLocation srcNamespace;
   protected final Path sourcePath;
   // TODO: AD unfortunately I need to change it in the ModuleFinder, since I only know a module's
   // name after resolving its
@@ -15,7 +15,7 @@ public class AbstractClassSource {
   protected JavaClassType classSignature;
 
   public AbstractClassSource(
-      SourceLocation srcNamespace, JavaClassType classSignature, Path sourcePath) {
+      AnalysisInputLocation srcNamespace, JavaClassType classSignature, Path sourcePath) {
     this.srcNamespace = srcNamespace;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;

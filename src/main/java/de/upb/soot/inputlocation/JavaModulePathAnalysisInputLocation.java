@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 import com.google.common.base.Preconditions;
 import de.upb.soot.IdentifierFactory;
@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of the {@link SourceLocation} interface for the Java modulepath. Handles
+ * An implementation of the {@link AnalysisInputLocation} interface for the Java modulepath. Handles
  * directories, archives (including wildcard denoted archives) as stated in the official
  * documentation:
  *
@@ -37,23 +37,25 @@ import org.slf4j.LoggerFactory;
  * @see <a
  *     href=http://docs.oracle.com/javase/9/docs/api/java/lang/module/ModuleFinder.html#of-java.nio.file.Path...->ModuleFinder</a>
  */
-public class JavaModulePathNamespace extends AbstractNamespace {
+public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLocation {
   private static final @Nonnull Logger logger =
-      LoggerFactory.getLogger(JavaModulePathNamespace.class);
+      LoggerFactory.getLogger(JavaModulePathAnalysisInputLocation.class);
 
   private final ModuleFinder moduleFinder;
 
-  public JavaModulePathNamespace(@Nonnull String modulePath) {
+  public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
     this(modulePath, getDefaultClassProvider());
   }
 
   /**
-   * Creates a {@link JavaModulePathNamespace} which locates classes in the given module path.
+   * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
+   * path.
    *
    * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
    *     ClassSource}es for the files found on the class path
    */
-  public JavaModulePathNamespace(@Nonnull String modulePath, @Nonnull ClassProvider classProvider) {
+  public JavaModulePathAnalysisInputLocation(
+      @Nonnull String modulePath, @Nonnull ClassProvider classProvider) {
     super(classProvider);
     this.moduleFinder = new ModuleFinder(classProvider, modulePath);
   }
@@ -68,10 +70,10 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     Set<AbstractClassSource> found = new HashSet<>();
     Collection<String> availableModules = moduleFinder.discoverAllModules();
     for (String module : availableModules) {
-      AbstractNamespace ns = moduleFinder.discoverModule(module);
+      AbstractAnalysisInputLocation ns = moduleFinder.discoverModule(module);
       IdentifierFactory identifierFactoryWrapper = identifierFactory;
 
-      if (!(ns instanceof JrtFileSystemNamespace)) {
+      if (!(ns instanceof JrtFileSystemAnalysisInputLocation)) {
         /*
          * we need a wrapper to create correct types for the found classes, all other ignore modules by default, or have
          * no clue about modules.
@@ -93,7 +95,7 @@ public class JavaModulePathNamespace extends AbstractNamespace {
     String modulename =
         ((ModulePackageName) signature.getPackageName()).getModuleSignature().getModuleName();
     // lookup the ns for the class provider from the cache and use him...
-    AbstractNamespace ns = moduleFinder.discoverModule(modulename);
+    AbstractAnalysisInputLocation ns = moduleFinder.discoverModule(modulename);
 
     if (ns == null) {
       try {

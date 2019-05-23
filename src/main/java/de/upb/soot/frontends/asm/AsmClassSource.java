@@ -8,7 +8,7 @@ import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.namespaces.SourceLocation;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
@@ -27,11 +27,11 @@ class AsmClassSource extends ClassSource {
   @Nonnull private final ClassNode classNode;
 
   public AsmClassSource(
-      SourceLocation namespace,
+      AnalysisInputLocation inputLocation,
       Path sourcePath,
       JavaClassType javaClassType,
       @Nonnull ClassNode classNode) {
-    super(namespace, sourcePath, javaClassType);
+    super(inputLocation, sourcePath, javaClassType);
     this.classNode = classNode;
   }
 

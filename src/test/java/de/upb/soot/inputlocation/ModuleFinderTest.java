@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 import static org.junit.Assert.assertTrue;
 
@@ -15,7 +15,7 @@ import org.junit.experimental.categories.Category;
 import org.powermock.reflect.Whitebox;
 
 @Category(Java9Test.class)
-public class ModuleFinderTest extends AbstractNamespaceTest {
+public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
 
   @Test
   public void discoverModule() {
@@ -34,8 +34,8 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
         new ModuleFinder(
             this.getClassProvider(),
             "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
-    AbstractNamespace namespace = moduleFinder.discoverModule("Soot");
-    assertTrue(namespace instanceof PathBasedNamespace);
+    AbstractAnalysisInputLocation inputLocation = moduleFinder.discoverModule("Soot");
+    assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
   }
 
   @Test
@@ -44,8 +44,8 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
         new ModuleFinder(
             this.getClassProvider(),
             "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
-    AbstractNamespace namespace = moduleFinder.discoverModule("java.base");
-    assertTrue(namespace instanceof JrtFileSystemNamespace);
+    AbstractAnalysisInputLocation inputLocation = moduleFinder.discoverModule("java.base");
+    assertTrue(inputLocation instanceof JrtFileSystemAnalysisInputLocation);
   }
 
   @Test
@@ -90,9 +90,9 @@ public class ModuleFinderTest extends AbstractNamespaceTest {
             new AsmJavaClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules");
     Path p = Paths.get("target/test-classes/de/upb/soot/namespaces/modules/testMod");
     Whitebox.invokeMethod(moduleFinder, "buildModuleForExplodedModule", p);
-    Field field = Whitebox.getField(moduleFinder.getClass(), "moduleNamespace");
-    Map<String, AbstractNamespace> values =
-        (Map<String, AbstractNamespace>) field.get(moduleFinder);
+    Field field = Whitebox.getField(moduleFinder.getClass(), "moduleInputLocation");
+    Map<String, AbstractAnalysisInputLocation> values =
+        (Map<String, AbstractAnalysisInputLocation>) field.get(moduleFinder);
     assertTrue(values.containsKey("fancyMod"));
   }
 }

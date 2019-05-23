@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 /*-
  * #%L
@@ -32,14 +32,14 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /**
- * Public interface to a namespace. Namespaces are sources for {@link SootClass}es, e.g. Java
+ * Public interface to an input location. Namespaces are sources for {@link SootClass}es, e.g. Java
  * Classpath, Android APK, JAR file, etc. The strategy to traverse something.
  *
  * @author Manuel Benz created on 22.05.18
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public interface SourceLocation {
+public interface AnalysisInputLocation {
 
   /**
    * Create or find a class source for a given signature.
@@ -51,7 +51,7 @@ public interface SourceLocation {
   Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType signature);
 
   /**
-   * The class provider attached to this namespace.
+   * The class provider attached to this input location.
    *
    * @return An instance of {@link ClassProvider} to be used.
    */

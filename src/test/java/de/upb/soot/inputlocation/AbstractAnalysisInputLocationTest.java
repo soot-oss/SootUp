@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
@@ -39,7 +39,7 @@ import org.mockito.internal.matchers.LessOrEqual;
 
 /** @author Manuel Benz created on 07.06.18 */
 @Category(Java8Test.class)
-public abstract class AbstractNamespaceTest {
+public abstract class AbstractAnalysisInputLocationTest {
 
   protected static final int CLASSES_IN_JAR = 25;
   private IdentifierFactory identifierFactory;
@@ -63,12 +63,16 @@ public abstract class AbstractNamespaceTest {
     return new AsmJavaClassProvider();
   }
 
-  protected void testClassReceival(AbstractNamespace ns, JavaClassType sig, int minClassesFound) {
+  protected void testClassReceival(
+      AbstractAnalysisInputLocation ns, JavaClassType sig, int minClassesFound) {
     testClassReceival(ns, sig, minClassesFound, -1);
   }
 
   protected void testClassReceival(
-      AbstractNamespace ns, JavaClassType sig, int minClassesFound, int maxClassesFound) {
+      AbstractAnalysisInputLocation ns,
+      JavaClassType sig,
+      int minClassesFound,
+      int maxClassesFound) {
     final Optional<? extends AbstractClassSource> clazz = ns.getClassSource(sig);
 
     Assert.assertTrue(clazz.isPresent());

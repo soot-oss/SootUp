@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
@@ -38,35 +38,36 @@ import javax.annotation.Nonnull;
  */
 
 /**
- * Base class for {@link SourceLocation}s that can be located by a {@link Path} object.
+ * Base class for {@link AnalysisInputLocation}s that can be located by a {@link Path} object.
  *
  * @author Manuel Benz created on 22.05.18
  */
-public abstract class PathBasedNamespace extends AbstractNamespace {
+public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInputLocation {
   protected final Path path;
 
-  private PathBasedNamespace(@Nonnull Path path) {
+  private PathBasedAnalysisInputLocation(@Nonnull Path path) {
     this(path, getDefaultClassProvider());
   }
 
-  private PathBasedNamespace(@Nonnull Path path, @Nonnull ClassProvider classProvider) {
+  private PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull ClassProvider classProvider) {
     super(classProvider);
     this.path = path;
   }
 
   /**
-   * Creates a {@link PathBasedNamespace} depending on the given {@link Path}, e.g., differs between
-   * directories, archives (and possibly network path's in the future).
+   * Creates a {@link PathBasedAnalysisInputLocation} depending on the given {@link Path}, e.g.,
+   * differs between directories, archives (and possibly network path's in the future).
    *
    * @param path The path to search in
-   * @return A {@link PathBasedNamespace} implementation dependent on the given {@link Path}'s
-   *     {@link FileSystem}
+   * @return A {@link PathBasedAnalysisInputLocation} implementation dependent on the given {@link
+   *     Path}'s {@link FileSystem}
    */
-  public static @Nonnull PathBasedNamespace createForClassContainer(@Nonnull Path path) {
+  public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
+      @Nonnull Path path) {
     if (Files.isDirectory(path)) {
-      return new DirectoryBasedNamespace(path);
+      return new DirectoryBasedAnalysisInputLocation(path);
     } else if (PathUtils.isArchive(path)) {
-      return new ArchiveBasedNamespace(path);
+      return new ArchiveBasedAnalysisInputLocation(path);
     } else {
       throw new IllegalArgumentException(
           "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, etc.");
@@ -103,9 +104,10 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
   }
 
-  private static final class DirectoryBasedNamespace extends PathBasedNamespace {
+  private static final class DirectoryBasedAnalysisInputLocation
+      extends PathBasedAnalysisInputLocation {
 
-    private DirectoryBasedNamespace(@Nonnull Path path) {
+    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path) {
       super(path);
     }
 
@@ -122,9 +124,10 @@ public abstract class PathBasedNamespace extends AbstractNamespace {
     }
   }
 
-  private static final class ArchiveBasedNamespace extends PathBasedNamespace {
+  private static final class ArchiveBasedAnalysisInputLocation
+      extends PathBasedAnalysisInputLocation {
 
-    private ArchiveBasedNamespace(@Nonnull Path path) {
+    private ArchiveBasedAnalysisInputLocation(@Nonnull Path path) {
       super(path);
     }
 

@@ -1,4 +1,4 @@
-package de.upb.soot.namespaces;
+package de.upb.soot.inputlocation;
 
 import com.google.common.base.Preconditions;
 import de.upb.soot.IdentifierFactory;
@@ -23,15 +23,15 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
- * Base class for {@link SourceLocation}s that can be located by a {@link Path} object.
+ * Base class for {@link AnalysisInputLocation}s that can be located by a {@link Path} object.
  *
  * @author Andreas Dann created on 06.06.18
  */
-public class JrtFileSystemNamespace extends AbstractNamespace {
+public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLocation {
 
   private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
-  protected JrtFileSystemNamespace(ClassProvider classProvider) {
+  protected JrtFileSystemAnalysisInputLocation(ClassProvider classProvider) {
     super(classProvider);
   }
 
