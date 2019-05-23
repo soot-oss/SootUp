@@ -32,12 +32,12 @@ import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.io.Serializable;
 
-public interface IStmtBox extends Serializable {
+public abstract class IStmtBox implements Serializable {
   /** Sets this box to contain the given unit. Subject to canContainValue() checks. */
-  void setStmt(IStmt u);
+  abstract void setStmt(IStmt u);
 
   /** Returns the unit contained within this box. */
-  IStmt getStmt();
+  public abstract IStmt getStmt();
 
   /**
    * Returns true if the StmtBox is holding a Stmt that is the target of a branch (ie a Stmt at the
@@ -46,7 +46,7 @@ public interface IStmtBox extends Serializable {
    * <p>Returns false if the StmtBox is holding a Stmt that indicates the end of a CFG block and may
    * require specialised processing for SSA.
    */
-  boolean isBranchTarget();
+  public abstract boolean isBranchTarget();
 
-  void toString(IStmtPrinter up);
+  public abstract void toString(IStmtPrinter up);
 }

@@ -39,7 +39,7 @@ public abstract class AbstractValueBox extends ValueBox {
   }
 
   @Override
-  public void setValue(Value value) {
+  void setValue(Value value) {
     if (value == null) {
       throw new IllegalArgumentException("value may not be null");
     }

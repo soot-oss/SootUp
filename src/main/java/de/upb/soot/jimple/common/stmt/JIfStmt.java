@@ -26,6 +26,7 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
+import de.upb.soot.jimple.basic.$StmtBoxAccessor;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -103,7 +104,7 @@ public class JIfStmt extends AbstractStmt {
   }
 
   public void setTarget(IStmt target) {
-    targetBox.setStmt(target);
+$StmtBoxAccessor.setStmt(    targetBox, target);
   }
 
   public IStmtBox getTargetBox() {

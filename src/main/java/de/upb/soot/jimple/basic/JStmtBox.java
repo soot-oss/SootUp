@@ -34,7 +34,7 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class JStmtBox implements IStmtBox {
+public class JStmtBox extends IStmtBox {
   /** */
   private static final long serialVersionUID = 7292172470036407386L;
 
@@ -50,7 +50,7 @@ public class JStmtBox implements IStmtBox {
   }
 
   @Override
-  public void setStmt(@Nullable IStmt stmt) {
+  void setStmt(@Nullable IStmt stmt) {
     // Remove this from set of back pointers.
     if (this.stmt != null) {
       this.stmt.removeBoxPointingToThis(this);

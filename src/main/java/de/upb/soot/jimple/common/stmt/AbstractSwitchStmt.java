@@ -25,6 +25,7 @@
 
 package de.upb.soot.jimple.common.stmt;
 
+import de.upb.soot.jimple.basic.$StmtBoxAccessor;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
@@ -69,7 +70,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   }
 
   public final void setDefaultTarget(IStmt defaultTarget) {
-    defaultTargetBox.setStmt(defaultTarget);
+    $StmtBoxAccessor.setStmt(defaultTargetBox, defaultTarget);
   }
 
   public final IStmtBox getDefaultTargetBox() {
@@ -106,7 +107,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   }
 
   public final void setTarget(int index, IStmt target) {
-    targetBoxes[index].setStmt(target);
+    $StmtBoxAccessor.setStmt(targetBoxes[index], target);
   }
 
   /** Returns a list targets of type Stmt. */
@@ -127,7 +128,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
    */
   public final void setTargets(List<? extends IStmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
-      targetBoxes[i].setStmt(targets.get(i));
+      $StmtBoxAccessor.setStmt(targetBoxes[i], targets.get(i));
     }
   }
 
@@ -138,7 +139,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
    */
   public final void setTargets(IStmt[] targets) {
     for (int i = 0; i < targets.length; i++) {
-      targetBoxes[i].setStmt(targets[i]);
+      $StmtBoxAccessor.setStmt(targetBoxes[i], targets[i]);
     }
   }
 

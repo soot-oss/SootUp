@@ -114,17 +114,13 @@ public class AbstractTrap implements Trap, Serializable {
   @Override
   public void clearStmtBoxes() {
     for (IStmtBox box : getStmtBoxes()) {
-      box.setStmt(null);
+      $StmtBoxAccessor.setStmt(box, null);
     }
   }
 
   @Override
   public JavaClassType getException() {
     return exception;
-  }
-
-  public void setException(JavaClassType exception) {
-    this.exception = exception;
   }
 
   @Override
