@@ -47,7 +47,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   /**
    * List of lookup values from the corresponding bytecode instruction, represented as IntConstants.
    */
-  List<IntConstant> lookupValues;
+  private final List<IntConstant> lookupValues;
 
   // This method is necessary to deal with constructor-must-be-first-ism.
   private static IStmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
@@ -106,7 +106,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
       IStmtBox defaultTargetBox,
       PositionInfo positionInfo) {
     super(positionInfo, keyBox, defaultTargetBox, targetBoxes);
-    setLookupValues(lookupValues);
+    this.lookupValues = new ArrayList<>(lookupValues);
   }
 
   @Override
@@ -179,10 +179,6 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     up.literal(";");
     up.newline();
     up.literal("}");
-  }
-
-  public void setLookupValues(List<IntConstant> lookupValues) {
-    this.lookupValues = new ArrayList<>(lookupValues);
   }
 
   public void setLookupValue(int index, int value) {
