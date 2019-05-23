@@ -44,7 +44,7 @@ public class JParameterRef implements IdentityRef {
   /** */
   private static final long serialVersionUID = -5198809451267425640L;
 
-  private int num;
+  private final int num;
   private Type paramType;
 
   /**
@@ -86,11 +86,6 @@ public class JParameterRef implements IdentityRef {
   /** Returns the index of this ParameterRef. */
   public int getIndex() {
     return num;
-  }
-
-  /** Sets the index of this ParameterRef. */
-  public void setIndex(int index) {
-    num = index;
   }
 
   @Override

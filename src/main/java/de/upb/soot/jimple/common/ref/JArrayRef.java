@@ -27,9 +27,7 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.$ValueBoxAccessor;
 import de.upb.soot.jimple.basic.JimpleComparator;
-import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.IVisitor;
@@ -90,20 +88,12 @@ public class JArrayRef implements ConcreteRef {
     return baseBox.getValue();
   }
 
-  public void setBase(Local base) {
-    $ValueBoxAccessor.setValue(baseBox, base);
-  }
-
   public ValueBox getBaseBox() {
     return baseBox;
   }
 
   public Value getIndex() {
     return indexBox.getValue();
-  }
-
-  public void setIndex(Value index) {
-    $ValueBoxAccessor.setValue(indexBox, index);
   }
 
   public ValueBox getIndexBox() {
