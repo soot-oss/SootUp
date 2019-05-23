@@ -367,7 +367,7 @@ public class Printer {
           up.literal(" ");
 
           final int len = localList.size();
-          if (0 < len) {
+          if (len > 0) {
             up.local(localList.get(0));
             for (int k = 1; k < len; k++) {
               up.literal(", ");

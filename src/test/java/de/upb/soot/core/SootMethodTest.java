@@ -17,10 +17,7 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -35,7 +32,7 @@ public class SootMethodTest {
     JavaClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     List<Stmt> stmts = new ArrayList<>();
-    LocalGenerator generator = new LocalGenerator();
+    LocalGenerator generator = new LocalGenerator(new HashSet<>());
     stmts.add(
         Jimple.newIdentityStmt(
             generator.generateLocal(type),
