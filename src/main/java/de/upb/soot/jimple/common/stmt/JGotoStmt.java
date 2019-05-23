@@ -79,6 +79,8 @@ public class JGotoStmt extends AbstractStmt {
     return targetBox.getStmt();
   }
 
+  /** Violates immutability. Only use this for legacy code. */
+  @Deprecated
   void setTarget(IStmt target) {
     $StmtBoxAccessor.setStmt(targetBox, target);
   }

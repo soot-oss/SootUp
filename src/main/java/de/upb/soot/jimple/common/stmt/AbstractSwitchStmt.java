@@ -118,10 +118,11 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   }
 
   /**
-   * Sets the setStmt box for targetBoxes array.
+   * Violates immutability. Only use in legacy code. Sets the setStmt box for targetBoxes array.
    *
    * @param targets A list of type Stmt.
    */
+  @Deprecated
   final void setTargets(List<? extends IStmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
       $StmtBoxAccessor.setStmt(targetBoxes[i], targets.get(i));

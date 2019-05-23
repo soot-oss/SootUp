@@ -9,10 +9,14 @@ public class $AbstractSwitchStmtAccessor {
   // of this Soot implementation detail. Some IDEs such as IntelliJ
   // don't suggest these classes in autocomplete.
 
+  /** Violates immutability. Only use this for legacy code. */
+  @Deprecated
   public static void setTargets(AbstractSwitchStmt stmt, List<? extends IStmt> targets) {
     stmt.setTargets(targets);
   }
 
+  /** Violates immutability. Only use this for legacy code. */
+  @Deprecated
   public static void setDefaultTarget(AbstractSwitchStmt stmt, IStmt defaultTarget) {
     stmt.setDefaultTarget(defaultTarget);
   }

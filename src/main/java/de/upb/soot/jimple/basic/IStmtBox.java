@@ -33,7 +33,11 @@ import de.upb.soot.util.printer.IStmtPrinter;
 import java.io.Serializable;
 
 public abstract class IStmtBox implements Serializable {
-  /** Sets this box to contain the given unit. Subject to canContainValue() checks. */
+  /**
+   * Violates immutability. Only use this in legacy code. Sets this box to contain the given unit.
+   * Subject to canContainValue() checks.
+   */
+  @Deprecated
   abstract void setStmt(IStmt u);
 
   /** Returns the unit contained within this box. */

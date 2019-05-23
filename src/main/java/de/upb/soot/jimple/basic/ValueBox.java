@@ -35,6 +35,8 @@ import java.io.Serializable;
  */
 public abstract class ValueBox implements Serializable {
 
+  /** Violates immutability. Only use this for legacy code. */
+  @Deprecated
   abstract void setValue(Value value);
 
   /** Returns the value contained in this box. */

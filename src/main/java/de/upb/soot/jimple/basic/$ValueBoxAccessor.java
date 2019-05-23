@@ -7,6 +7,8 @@ public class $ValueBoxAccessor {
   // of this Soot implementation detail. Some IDEs such as IntelliJ
   // don't suggest these classes in autocomplete.
 
+  /** Violates immutability. Only use this for legacy code. */
+  @Deprecated
   public static void setValue(ValueBox box, Value value) {
     box.setValue(value);
   }
