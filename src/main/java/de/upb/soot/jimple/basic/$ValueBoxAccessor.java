@@ -8,6 +8,6 @@ public class $ValueBoxAccessor {
   // don't suggest these classes in autocomplete.
 
   public static void setValue(ValueBox box, Value value) {
-    setValue(box, value);
+    box.setValue(value);
   }
 }
