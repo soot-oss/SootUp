@@ -123,10 +123,6 @@ public class JNewMultiArrayExpr implements Expr {
     return baseType;
   }
 
-  public void setBaseType(ArrayType baseType) {
-    this.baseType = baseType;
-  }
-
   public ValueBox getSizeBox(int index) {
     return sizeBoxes[index];
   }

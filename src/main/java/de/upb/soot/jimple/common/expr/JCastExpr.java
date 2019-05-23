@@ -26,7 +26,6 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.$ValueBoxAccessor;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -82,10 +81,6 @@ public class JCastExpr implements Expr {
     return opBox.getValue();
   }
 
-  public void setOp(Value op) {
-    $ValueBoxAccessor.setValue(opBox, op);
-  }
-
   public ValueBox getOpBox() {
     return opBox;
   }
@@ -97,15 +92,6 @@ public class JCastExpr implements Expr {
     list.add(opBox);
 
     return list;
-  }
-
-  // TODO: dulicate getter? -> getType()
-  public Type getCastType() {
-    return type;
-  }
-
-  public void setCastType(Type castType) {
-    this.type = castType;
   }
 
   @Override

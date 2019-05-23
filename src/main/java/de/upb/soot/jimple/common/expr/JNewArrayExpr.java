@@ -27,7 +27,6 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.$ValueBoxAccessor;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -98,20 +97,12 @@ public class JNewArrayExpr implements Expr {
     return baseType;
   }
 
-  public void setBaseType(Type type) {
-    baseType = type;
-  }
-
   public ValueBox getSizeBox() {
     return sizeBox;
   }
 
   public Value getSize() {
     return sizeBox.getValue();
-  }
-
-  public void setSize(Value size) {
-    $ValueBoxAccessor.setValue(sizeBox, size);
   }
 
   /** Returns a list of type ValueBox, contains a list of values of sizeBox. */

@@ -79,10 +79,6 @@ public class JNewExpr implements Expr {
     return type;
   }
 
-  public void setBaseType(ReferenceType type) {
-    this.type = type;
-  }
-
   @Override
   public Type getType() {
     return type;

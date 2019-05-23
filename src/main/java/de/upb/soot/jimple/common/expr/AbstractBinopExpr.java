@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.jimple.basic.$ValueBoxAccessor;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -54,14 +53,6 @@ public abstract class AbstractBinopExpr implements Expr {
 
   public ValueBox getOp2Box() {
     return op2Box;
-  }
-
-  public void setOp1(Value op1) {
-    $ValueBoxAccessor.setValue(op1Box, op1);
-  }
-
-  public void setOp2(Value op2) {
-    $ValueBoxAccessor.setValue(op2Box, op2);
   }
 
   @Override
