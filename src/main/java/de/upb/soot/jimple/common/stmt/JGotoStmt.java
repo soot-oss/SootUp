@@ -79,8 +79,8 @@ public class JGotoStmt extends AbstractStmt {
     return targetBox.getStmt();
   }
 
-  public void setTarget(IStmt target) {
-$StmtBoxAccessor.setStmt(    targetBox, target);
+  void setTarget(IStmt target) {
+    $StmtBoxAccessor.setStmt(targetBox, target);
   }
 
   public IStmtBox getTargetBox() {
