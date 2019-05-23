@@ -42,8 +42,8 @@ public class JNewMultiArrayExpr implements Expr {
   /** */
   private static final long serialVersionUID = -473132292740722571L;
 
-  private ArrayType baseType;
-  protected final ValueBox[] sizeBoxes;
+  private final ArrayType baseType;
+  private final ValueBox[] sizeBoxes;
 
   /**
    * Initiates a JNewMultiArrayExpr.

@@ -42,7 +42,7 @@ public class JNewArrayExpr implements Expr {
   /** */
   private static final long serialVersionUID = 4481534412297120257L;
 
-  private Type baseType;
+  private final Type baseType;
   private final ValueBox sizeBox;
 
   public JNewArrayExpr(Type type, Value size) {

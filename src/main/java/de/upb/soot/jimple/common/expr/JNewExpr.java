@@ -40,7 +40,7 @@ public class JNewExpr implements Expr {
   /** */
   private static final long serialVersionUID = 2039425094688972405L;
 
-  private ReferenceType type;
+  private final ReferenceType type;
 
   public JNewExpr(ReferenceType type) {
     this.type = type;

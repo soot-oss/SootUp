@@ -42,7 +42,7 @@ public class JInstanceOfExpr implements Expr {
   private static final long serialVersionUID = -3584505247110961970L;
 
   private final ValueBox opBox;
-  private Type checkType;
+  private final Type checkType;
 
   public JInstanceOfExpr(Value op, Type checkType) {
     this.opBox = Jimple.newImmediateBox(op);
