@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
  * @author Aaloan Miftah
  */
 @SuppressWarnings("serial")
-class StmtContainer implements IStmt {
+class StmtContainer extends IStmt {
 
   @Nonnull final IStmt[] units;
 
@@ -68,11 +68,6 @@ class StmtContainer implements IStmt {
 
   @Override
   public void removeBoxPointingToThis(IStmtBox b) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void clearStmtBoxes() {
     throw new UnsupportedOperationException();
   }
 

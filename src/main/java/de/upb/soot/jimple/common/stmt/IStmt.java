@@ -8,79 +8,155 @@ import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.IAcceptor;
+import de.upb.soot.jimple.visitor.IVisitor;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 
-public interface IStmt extends EquivTo, IAcceptor, Serializable {
-  /** Returns a list of Boxes containing Values used in this Stmt. */
-  List<ValueBox> getUseBoxes();
+public abstract class IStmt implements EquivTo, IAcceptor, Serializable {
 
-  /** Returns a list of Boxes containing Values defined in this Stmt. */
-  List<ValueBox> getDefBoxes();
+  /** List of UnitBoxes pointing to this Unit. */
+  @Nullable private List<IStmtBox> boxesPointingToThis = null;
 
-  /** Returns a list of Boxes containing Stmts defined in this Stmt; typically branch targets. */
-  List<IStmtBox> getStmtBoxes();
+  /**
+   * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically
+   * updated as the structure changes. Note that they are returned in usual evaluation order. (this
+   * is important for aggregation)
+   */
+  public List<ValueBox> getUseBoxes() {
+    return Collections.emptyList();
+  }
 
-  /** Returns a list of Boxes pointing to this Stmt. */
-  List<IStmtBox> getBoxesPointingToThis();
+  /**
+   * Returns a list of Boxes containing Values defined in this Unit. The list of boxes is
+   * dynamically updated as the structure changes.
+   */
+  public List<ValueBox> getDefBoxes() {
+    return Collections.emptyList();
+  }
 
-  /** Adds a box to the list returned by getBoxesPointingToThis. */
-  void addBoxPointingToThis(IStmtBox b);
+  /**
+   * Returns a list of Boxes containing Units defined in this Unit; typically branch targets. The
+   * list of boxes is dynamically updated as the structure changes.
+   */
+  public List<IStmtBox> getStmtBoxes() {
+    return Collections.emptyList();
+  }
 
-  /** Removes a box from the list returned by getBoxesPointingToThis. */
-  void removeBoxPointingToThis(IStmtBox b);
+  /** Returns a list of Boxes pointing to this Unit. */
+  public List<IStmtBox> getBoxesPointingToThis() {
+    if (boxesPointingToThis == null) {
+      return Collections.emptyList();
+    }
+    return Collections.unmodifiableList(boxesPointingToThis);
+  }
 
-  /** Clears any pointers to and from this Stmt's StmtBoxes. */
-  void clearStmtBoxes();
+  public void addBoxPointingToThis(IStmtBox b) {
+    if (boxesPointingToThis == null) {
+      boxesPointingToThis = new ArrayList<>();
+    }
+    boxesPointingToThis.add(b);
+  }
 
-  /** Returns a list of Boxes containing any Value either used or defined in this Stmt. */
-  List<ValueBox> getUseAndDefBoxes();
+  public void removeBoxPointingToThis(IStmtBox b) {
+    if (boxesPointingToThis != null) {
+      boxesPointingToThis.remove(b);
+    }
+  }
 
-  IStmt clone();
+  /** Returns a list of ValueBoxes, either used or defined in this Unit. */
+  public List<ValueBox> getUseAndDefBoxes() {
+    List<ValueBox> useBoxes = getUseBoxes();
+    List<ValueBox> defBoxes = getDefBoxes();
+    if (useBoxes.isEmpty()) {
+      return defBoxes;
+    } else {
+      if (defBoxes.isEmpty()) {
+        return useBoxes;
+      } else {
+        List<ValueBox> valueBoxes = new ArrayList<>();
+        valueBoxes.addAll(defBoxes);
+        valueBoxes.addAll(useBoxes);
+        return valueBoxes;
+      }
+    }
+  }
+
+  public abstract IStmt clone();
 
   /**
    * Returns true if execution after this statement may continue at the following statement.
    * GotoStmt will return false but IfStmt will return true.
    */
-  boolean fallsThrough();
+  public abstract boolean fallsThrough();
 
   /**
    * Returns true if execution after this statement does not necessarily continue at the following
    * statement. GotoStmt and IfStmt will both return true.
    */
-  boolean branches();
+  public abstract boolean branches();
 
-  /**
-   * Redirects jumps to this Stmt to newLocation. In general, you shouldn't have to use this
-   * directly.
-   */
-  void redirectJumpsToThisTo(IStmt newLocation);
+  public abstract void toString(IStmtPrinter up);
 
-  void toString(IStmtPrinter up);
+  /** Used to implement the Switchable construct. */
+  @Override
+  public void accept(IVisitor sw) {}
 
-  boolean containsInvokeExpr();
+  public void redirectJumpsToThisTo(IStmt newLocation) {
+    List<IStmtBox> boxesPointing = getBoxesPointingToThis();
 
-  AbstractInvokeExpr getInvokeExpr();
+    // important to have a static copy
+    List<IStmtBox> boxesCopy = new ArrayList<>(boxesPointing);
 
-  ValueBox getInvokeExprBox();
+    for (IStmtBox box : boxesCopy) {
+      if (box.getStmt() != this) {
+        throw new RuntimeException("Something weird's happening");
+      }
 
-  boolean containsArrayRef();
+      if (box.isBranchTarget()) {
+        IStmtBox.$Accessor.setStmt(box, newLocation);
+      }
+    }
+  }
 
-  JArrayRef getArrayRef();
+  public boolean containsInvokeExpr() {
+    return false;
+  }
 
-  ValueBox getArrayRefBox();
+  public AbstractInvokeExpr getInvokeExpr() {
+    throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
+  }
 
-  boolean containsFieldRef();
+  public ValueBox getInvokeExprBox() {
+    throw new RuntimeException("getInvokeExprBox() called with no invokeExpr present!");
+  }
 
-  JFieldRef getFieldRef();
+  public boolean containsArrayRef() {
+    return false;
+  }
 
-  ValueBox getFieldRefBox();
+  public JArrayRef getArrayRef() {
+    throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
+  }
 
-  /**
-   * Return the position information of this statement.
-   *
-   * @return he position information of this statement
-   */
-  PositionInfo getPositionInfo();
+  public ValueBox getArrayRefBox() {
+    throw new RuntimeException("getArrayRefBox() called with no ArrayRef present!");
+  }
+
+  public boolean containsFieldRef() {
+    return false;
+  }
+
+  public JFieldRef getFieldRef() {
+    throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
+  }
+
+  public ValueBox getFieldRefBox() {
+    throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
+  }
+
+  public abstract PositionInfo getPositionInfo();
 }
