@@ -161,8 +161,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   @Deprecated
   public static class $Accessor {
     // This class deliberately starts with a $-sign to discourage usage
-    // of this Soot implementation detail. Some IDEs such as IntelliJ
-    // don't suggest these classes in autocomplete.
+    // of this Soot implementation detail.
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
