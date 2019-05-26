@@ -25,7 +25,7 @@
 
 package de.upb.soot.jimple.basic;
 
-public class ImmediateBox extends AbstractValueBox {
+public class ImmediateBox extends ValueBox {
   /** */
   private static final long serialVersionUID = 3668742132688653821L;
 

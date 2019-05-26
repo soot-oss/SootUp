@@ -35,17 +35,44 @@ import java.io.Serializable;
  */
 public abstract class ValueBox implements Serializable {
 
-  /** Violates immutability. Only use this for legacy code. */
-  @Deprecated
-  abstract void setValue(Value value);
-
-  /** Returns the value contained in this box. */
-  public abstract Value getValue();
-
   /** Returns true if the given Value fits in this box. */
   public abstract boolean canContainValue(Value value);
 
-  public abstract void toString(IStmtPrinter up);
+  private Value value;
+
+  public ValueBox(Value value) {
+    setValue(value);
+  }
+
+  /** Violates immutability. Only use this for legacy code. */
+  @Deprecated
+  private void setValue(Value value) {
+    if (value == null) {
+      throw new IllegalArgumentException("value may not be null");
+    }
+    if (canContainValue(value)) {
+      this.value = value;
+    } else {
+      throw new RuntimeException(
+          "Box " + this + " cannot contain value: " + value + "(" + value.getClass() + ")");
+    }
+  }
+
+  /** Returns the value contained in this box. */
+  public Value getValue() {
+    return value;
+  }
+
+  public void toString(IStmtPrinter up) {
+    up.startValueBox(this);
+    value.toString(up);
+    up.endValueBox(this);
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "(" + value + ")";
+  }
 
   /** This class is for internal use only. It will be removed in the future. */
   @Deprecated
