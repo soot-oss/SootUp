@@ -68,7 +68,8 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return defaultTargetBox.getStmt();
   }
 
-  private final void setDefaultTarget(IStmt defaultTarget) {
+  @Deprecated
+  private void setDefaultTarget(IStmt defaultTarget) {
     IStmtBox.$Accessor.setStmt(defaultTargetBox, defaultTarget);
   }
 
@@ -122,7 +123,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
    * @param targets A list of type Stmt.
    */
   @Deprecated
-  private final void setTargets(List<? extends IStmt> targets) {
+  private void setTargets(List<? extends IStmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
       IStmtBox.$Accessor.setStmt(targetBoxes[i], targets.get(i));
     }

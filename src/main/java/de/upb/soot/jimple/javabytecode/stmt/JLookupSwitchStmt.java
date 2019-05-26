@@ -181,10 +181,6 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     up.literal("}");
   }
 
-  public void setLookupValue(int index, int value) {
-    lookupValues.set(index, IntConstant.getInstance(value));
-  }
-
   public int getLookupValueCount() {
     return lookupValues.size();
   }
