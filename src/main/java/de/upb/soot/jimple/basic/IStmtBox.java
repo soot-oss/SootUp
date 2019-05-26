@@ -46,7 +46,7 @@ public abstract class IStmtBox implements Serializable {
   private void setStmt(@Nullable IStmt stmt) {
     // Remove this from set of back pointers.
     if (this.stmt != null) {
-      this.stmt.removeBoxPointingToThis(this);
+      IStmt.$Accessor.removeBoxPointingToThis(this.stmt, this);
     }
 
     // Perform link
@@ -54,7 +54,7 @@ public abstract class IStmtBox implements Serializable {
 
     // Add this to back pointers
     if (this.stmt != null) {
-      this.stmt.addBoxPointingToThis(this);
+      IStmt.$Accessor.addBoxPointingToThis(this.stmt, this);
     }
   }
 

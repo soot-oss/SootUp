@@ -54,14 +54,16 @@ public abstract class IStmt implements EquivTo, IAcceptor, Serializable {
     return Collections.unmodifiableList(boxesPointingToThis);
   }
 
-  public void addBoxPointingToThis(IStmtBox b) {
+  @Deprecated
+  private void addBoxPointingToThis(IStmtBox b) {
     if (boxesPointingToThis == null) {
       boxesPointingToThis = new ArrayList<>();
     }
     boxesPointingToThis.add(b);
   }
 
-  public void removeBoxPointingToThis(IStmtBox b) {
+  @Deprecated
+  private void removeBoxPointingToThis(IStmtBox b) {
     if (boxesPointingToThis != null) {
       boxesPointingToThis.remove(b);
     }
@@ -105,23 +107,6 @@ public abstract class IStmt implements EquivTo, IAcceptor, Serializable {
   @Override
   public void accept(IVisitor sw) {}
 
-  public void redirectJumpsToThisTo(IStmt newLocation) {
-    List<IStmtBox> boxesPointing = getBoxesPointingToThis();
-
-    // important to have a static copy
-    List<IStmtBox> boxesCopy = new ArrayList<>(boxesPointing);
-
-    for (IStmtBox box : boxesCopy) {
-      if (box.getStmt() != this) {
-        throw new RuntimeException("Something weird's happening");
-      }
-
-      if (box.isBranchTarget()) {
-        IStmtBox.$Accessor.setStmt(box, newLocation);
-      }
-    }
-  }
-
   public boolean containsInvokeExpr() {
     return false;
   }
@@ -159,4 +144,25 @@ public abstract class IStmt implements EquivTo, IAcceptor, Serializable {
   }
 
   public abstract PositionInfo getPositionInfo();
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void addBoxPointingToThis(IStmt stmt, IStmtBox box) {
+      stmt.addBoxPointingToThis(box);
+    }
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void removeBoxPointingToThis(IStmt stmt, IStmtBox box) {
+      stmt.removeBoxPointingToThis(box);
+    }
+
+    private $Accessor() {}
+  }
 }

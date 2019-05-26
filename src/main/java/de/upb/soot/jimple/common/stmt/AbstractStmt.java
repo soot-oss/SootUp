@@ -34,7 +34,7 @@ public abstract class AbstractStmt extends IStmt {
   private final PositionInfo positionInfo;
 
   public AbstractStmt(PositionInfo positionInfo) {
-    this. positionInfo = positionInfo;
+    this.positionInfo = positionInfo;
   }
 
   @Override

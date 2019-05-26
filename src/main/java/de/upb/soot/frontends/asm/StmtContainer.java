@@ -62,16 +62,6 @@ class StmtContainer extends IStmt {
   }
 
   @Override
-  public void addBoxPointingToThis(IStmtBox b) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void removeBoxPointingToThis(IStmtBox b) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public List<ValueBox> getUseAndDefBoxes() {
     throw new UnsupportedOperationException();
   }
@@ -88,11 +78,6 @@ class StmtContainer extends IStmt {
 
   @Override
   public boolean branches() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void redirectJumpsToThisTo(IStmt newLocation) {
     throw new UnsupportedOperationException();
   }
 
