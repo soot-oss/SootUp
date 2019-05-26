@@ -40,8 +40,8 @@ public class JGotoStmt extends AbstractStmt {
   /** */
   private static final long serialVersionUID = -7771670610404109177L;
 
-  final IStmtBox targetBox;
-  final List<IStmtBox> targetBoxes;
+  private final IStmtBox targetBox;
+  private final List<IStmtBox> targetBoxes;
 
   public JGotoStmt(IStmt target, PositionInfo positionInfo) {
     this(Jimple.newStmtBox(target), positionInfo);
