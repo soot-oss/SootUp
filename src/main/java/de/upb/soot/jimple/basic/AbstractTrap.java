@@ -114,7 +114,7 @@ public class AbstractTrap implements Trap, Serializable {
   @Override
   public void clearStmtBoxes() {
     for (IStmtBox box : getStmtBoxes()) {
-      $StmtBoxAccessor.setStmt(box, null);
+      IStmtBox.$Accessor.setStmt(box, null);
     }
   }
 

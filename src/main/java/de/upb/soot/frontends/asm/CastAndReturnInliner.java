@@ -22,7 +22,6 @@ package de.upb.soot.frontends.asm;
  * #L%
  */
 
-import de.upb.soot.jimple.basic.$StmtBoxAccessor;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.expr.JCastExpr;
@@ -75,13 +74,13 @@ class CastAndReturnInliner {
                 for (Trap t : bodyTraps) {
                   for (IStmtBox ubox : t.getStmtBoxes()) {
                     if (ubox.getStmt() == gtStmt) {
-                      $StmtBoxAccessor.setStmt(ubox, newStmt);
+                      IStmtBox.$Accessor.setStmt(ubox, newStmt);
                     }
                   }
                 }
 
                 while (!gtStmt.getBoxesPointingToThis().isEmpty()) {
-                  $StmtBoxAccessor.setStmt(gtStmt.getBoxesPointingToThis().get(0), newStmt);
+                  IStmtBox.$Accessor.setStmt(gtStmt.getBoxesPointingToThis().get(0), newStmt);
                 }
                 // original code
                 // body.getUnits().swapWith(gtStmt, newStmt);

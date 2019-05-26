@@ -53,4 +53,19 @@ public abstract class IStmtBox implements Serializable {
   public abstract boolean isBranchTarget();
 
   public abstract void toString(IStmtPrinter up);
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setStmt(IStmtBox box, IStmt stmt) {
+      box.setStmt(stmt);
+    }
+
+    private $Accessor() {}
+  }
 }

@@ -28,7 +28,6 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.IMethodSource;
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.$StmtBoxAccessor;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -2007,7 +2006,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
           // We directly place this label
           Collection<IStmtBox> traps = trapHandlers.get((LabelNode) insn);
           for (IStmtBox ub : traps) {
-            $StmtBoxAccessor.setStmt(ub, caughtEx);
+            IStmtBox.$Accessor.setStmt(ub, caughtEx);
           }
         }
       }
@@ -2018,7 +2017,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
         Collection<IStmtBox> boxes = labels.get(ln);
         if (boxes != null) {
           for (IStmtBox box : boxes) {
-            $StmtBoxAccessor.setStmt(
+            IStmtBox.$Accessor.setStmt(
                 box, u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
           }
         }
@@ -2033,7 +2032,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
 
       Collection<IStmtBox> traps = trapHandlers.get(ln);
       for (IStmtBox ub : traps) {
-        $StmtBoxAccessor.setStmt(ub, handler);
+        IStmtBox.$Accessor.setStmt(ub, handler);
       }
 
       // We need to jump to the original implementation
@@ -2053,7 +2052,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
       Collection<IStmtBox> boxes = labels.get(ln);
       if (boxes != null) {
         for (IStmtBox box : boxes) {
-          $StmtBoxAccessor.setStmt(box, end);
+          IStmtBox.$Accessor.setStmt(box, end);
         }
       }
     }

@@ -50,6 +50,7 @@ public class JStmtBox extends IStmtBox {
   }
 
   @Override
+  @Deprecated
   void setStmt(@Nullable IStmt stmt) {
     // Remove this from set of back pointers.
     if (this.stmt != null) {

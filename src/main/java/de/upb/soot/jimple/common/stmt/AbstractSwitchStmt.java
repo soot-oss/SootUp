@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.basic.$StmtBoxAccessor;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
@@ -69,8 +68,8 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return defaultTargetBox.getStmt();
   }
 
-  final void setDefaultTarget(IStmt defaultTarget) {
-    $StmtBoxAccessor.setStmt(defaultTargetBox, defaultTarget);
+  private final void setDefaultTarget(IStmt defaultTarget) {
+    IStmtBox.$Accessor.setStmt(defaultTargetBox, defaultTarget);
   }
 
   public final IStmtBox getDefaultTargetBox() {
@@ -123,9 +122,9 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
    * @param targets A list of type Stmt.
    */
   @Deprecated
-  final void setTargets(List<? extends IStmt> targets) {
+  private final void setTargets(List<? extends IStmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
-      $StmtBoxAccessor.setStmt(targetBoxes[i], targets.get(i));
+      IStmtBox.$Accessor.setStmt(targetBoxes[i], targets.get(i));
     }
   }
 
@@ -155,5 +154,27 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     }
 
     return res;
+  }
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail. Some IDEs such as IntelliJ
+    // don't suggest these classes in autocomplete.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setTargets(AbstractSwitchStmt stmt, List<? extends IStmt> targets) {
+      stmt.setTargets(targets);
+    }
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setDefaultTarget(AbstractSwitchStmt stmt, IStmt defaultTarget) {
+      stmt.setDefaultTarget(defaultTarget);
+    }
+
+    private $Accessor() {}
   }
 }

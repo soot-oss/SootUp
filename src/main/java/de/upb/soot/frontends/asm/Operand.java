@@ -22,7 +22,6 @@ package de.upb.soot.frontends.asm;
  * #L%
  */
 
-import de.upb.soot.jimple.basic.$ValueBoxAccessor;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -77,11 +76,10 @@ final class Operand {
   }
 
   /** Updates all value boxes registered to this operand. */
-  @SuppressWarnings("unchecked")
   void updateBoxes() {
     Value val = stackOrValue();
     for (ValueBox vb : boxes) {
-      $ValueBoxAccessor.setValue(vb, val);
+      ValueBox.$Accessor.setValue(vb, val);
     }
   }
 

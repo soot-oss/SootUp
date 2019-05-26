@@ -74,9 +74,7 @@ import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
-import de.upb.soot.jimple.common.stmt.$AbstractSwitchStmtAccessor;
-import de.upb.soot.jimple.common.stmt.$JGotoStmtAccessor;
-import de.upb.soot.jimple.common.stmt.$JIfStmtAccessor;
+import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
@@ -1043,7 +1041,7 @@ public class InstructionConverter {
     if (this.targetsOfIfStmts.containsValue(iindex)) {
       for (JIfStmt ifStmt : this.targetsOfIfStmts.keySet()) {
         if (this.targetsOfIfStmts.get(ifStmt).equals(iindex)) {
-          $JIfStmtAccessor.setTarget(ifStmt, stmt);
+          JIfStmt.$Accessor.setTarget(ifStmt, stmt);
         }
       }
     }
@@ -1052,14 +1050,14 @@ public class InstructionConverter {
     if (this.targetsOfGotoStmts.containsValue(iindex)) {
       for (JGotoStmt gotoStmt : this.targetsOfGotoStmts.keySet()) {
         if (this.targetsOfGotoStmts.get(gotoStmt).equals(iindex)) {
-          $JGotoStmtAccessor.setTarget(gotoStmt, stmt);
+          JGotoStmt.$Accessor.setTarget(gotoStmt, stmt);
         }
       }
     }
     if (this.defaultOfLookUpSwitchStmts.containsValue(iindex)) {
       for (JLookupSwitchStmt lookupSwitch : this.defaultOfLookUpSwitchStmts.keySet()) {
         if (this.defaultOfLookUpSwitchStmts.get(lookupSwitch).equals(iindex)) {
-          $AbstractSwitchStmtAccessor.setDefaultTarget(lookupSwitch, stmt);
+          AbstractSwitchStmt.$Accessor.setDefaultTarget(lookupSwitch, stmt);
         }
       }
     }
@@ -1071,7 +1069,7 @@ public class InstructionConverter {
           targets = new ArrayList<>();
         }
         targets.add(stmt);
-        $AbstractSwitchStmtAccessor.setTargets(lookupSwitch, targets);
+        AbstractSwitchStmt.$Accessor.setTargets(lookupSwitch, targets);
       }
     }
   }

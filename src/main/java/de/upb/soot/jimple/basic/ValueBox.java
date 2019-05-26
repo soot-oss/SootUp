@@ -46,4 +46,19 @@ public abstract class ValueBox implements Serializable {
   public abstract boolean canContainValue(Value value);
 
   public abstract void toString(IStmtPrinter up);
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setValue(ValueBox box, Value value) {
+      box.setValue(value);
+    }
+
+    private $Accessor() {}
+  }
 }

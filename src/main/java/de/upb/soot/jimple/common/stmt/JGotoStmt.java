@@ -26,7 +26,6 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.$StmtBoxAccessor;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -81,8 +80,8 @@ public class JGotoStmt extends AbstractStmt {
 
   /** Violates immutability. Only use this for legacy code. */
   @Deprecated
-  void setTarget(IStmt target) {
-    $StmtBoxAccessor.setStmt(targetBox, target);
+  private void setTarget(IStmt target) {
+    IStmtBox.$Accessor.setStmt(targetBox, target);
   }
 
   public IStmtBox getTargetBox() {
@@ -117,5 +116,20 @@ public class JGotoStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return targetBox.getStmt().equivHashCode();
+  }
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setTarget(JGotoStmt stmt, IStmt target) {
+      stmt.setTarget(target);
+    }
+
+    private $Accessor() {}
   }
 }

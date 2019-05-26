@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.basic.$StmtBoxAccessor;
 import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -109,7 +108,7 @@ public abstract class AbstractStmt implements IStmt {
   @Override
   public void clearStmtBoxes() {
     for (IStmtBox ub : getStmtBoxes()) {
-      $StmtBoxAccessor.setStmt(ub, null);
+      IStmtBox.$Accessor.setStmt(ub, null);
     }
   }
 
@@ -149,7 +148,7 @@ public abstract class AbstractStmt implements IStmt {
       }
 
       if (box.isBranchTarget()) {
-        $StmtBoxAccessor.setStmt(box, newLocation);
+        IStmtBox.$Accessor.setStmt(box, newLocation);
       }
     }
   }
