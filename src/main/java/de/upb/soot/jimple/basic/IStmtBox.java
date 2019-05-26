@@ -31,17 +31,36 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.util.printer.IStmtPrinter;
 import java.io.Serializable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public abstract class IStmtBox implements Serializable {
-  /**
-   * Violates immutability. Only use this in legacy code. Sets this box to contain the given unit.
-   * Subject to canContainValue() checks.
-   */
-  @Deprecated
-  abstract void setStmt(IStmt u);
 
-  /** Returns the unit contained within this box. */
-  public abstract IStmt getStmt();
+  @Nullable protected IStmt stmt;
+
+  public IStmtBox(@Nullable IStmt stmt) {
+    this.stmt = stmt;
+  }
+
+  @Deprecated
+  private void setStmt(@Nullable IStmt stmt) {
+    // Remove this from set of back pointers.
+    if (this.stmt != null) {
+      this.stmt.removeBoxPointingToThis(this);
+    }
+
+    // Perform link
+    this.stmt = stmt;
+
+    // Add this to back pointers
+    if (this.stmt != null) {
+      this.stmt.addBoxPointingToThis(this);
+    }
+  }
+
+  public @Nullable IStmt getStmt() {
+    return stmt;
+  }
 
   /**
    * Returns true if the StmtBox is holding a Stmt that is the target of a branch (ie a Stmt at the
@@ -52,7 +71,11 @@ public abstract class IStmtBox implements Serializable {
    */
   public abstract boolean isBranchTarget();
 
-  public abstract void toString(IStmtPrinter up);
+  public void toString(@Nonnull IStmtPrinter up) {
+    up.startStmtBox(this);
+    up.stmtRef(stmt, isBranchTarget());
+    up.endStmtBox(this);
+  }
 
   /** This class is for internal use only. It will be removed in the future. */
   @Deprecated
