@@ -32,7 +32,6 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.StmtPrinter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
@@ -64,15 +63,6 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     for (int i = 0; i < args.size(); i++) {
       this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
     }
-  }
-
-  @Override
-  public Object clone() {
-    List<Value> argList = new ArrayList<>(getArgCount());
-    for (int i = 0; i < getArgCount(); i++) {
-      argList.add(i, Jimple.cloneIfNecessary(getArg(i)));
-    }
-    return new JInterfaceInvokeExpr(Jimple.cloneIfNecessary(getBase()), methodSignature, argList);
   }
 
   @Override

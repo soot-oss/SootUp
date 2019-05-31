@@ -78,9 +78,4 @@ public class JThisRef implements IdentityRef {
   public void accept(Visitor sw) {
     // TODO
   }
-
-  @Override
-  public Object clone() {
-    return new JThisRef(thisType);
-  }
 }

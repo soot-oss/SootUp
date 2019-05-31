@@ -48,11 +48,6 @@ public class JThrowStmt extends AbstractOpStmt {
   }
 
   @Override
-  public JThrowStmt clone() {
-    return new JThrowStmt(Jimple.cloneIfNecessary(getOp()), getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     return "throw " + opBox.getValue().toString();
   }

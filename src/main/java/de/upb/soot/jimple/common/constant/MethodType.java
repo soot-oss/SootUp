@@ -60,9 +60,4 @@ public class MethodType implements Constant {
 
   @Override
   public void accept(Visitor v) {}
-
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

@@ -38,9 +38,6 @@ public abstract class AbstractUnopExpr implements Expr {
     this.opBox = opBox;
   }
 
-  @Override
-  public abstract Object clone();
-
   public Value getOp() {
     return opBox.getValue();
   }

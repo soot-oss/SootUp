@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
@@ -68,10 +67,5 @@ public class JShlExpr extends AbstractIntLongBinopExpr {
     }
 
     return UnknownType.getInstance();
-  }
-
-  @Override
-  public Object clone() {
-    return new JShlExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
 }

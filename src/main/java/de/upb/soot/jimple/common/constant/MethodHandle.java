@@ -163,9 +163,4 @@ public class MethodHandle implements Constant {
       return methodRef.equals(other.methodRef);
     }
   }
-
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

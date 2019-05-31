@@ -77,13 +77,6 @@ public final class Local implements Value, Immediate {
     return Objects.hash(name, type);
   }
 
-  /** Returns a clone of the current JimpleLocal. */
-  @Override
-  public Object clone() {
-    // TODO Don't merge like this
-    throw new RuntimeException("This method will be removed in another PR");
-  }
-
   /** Returns the name of this object. */
   @Nonnull
   public String getName() {

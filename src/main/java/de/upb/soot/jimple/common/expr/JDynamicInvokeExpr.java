@@ -99,22 +99,6 @@ public class JDynamicInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public Object clone() {
-    List<Value> clonedBsmArgs = new ArrayList<>(getBootstrapArgCount());
-    for (int i = 0; i < getBootstrapArgCount(); i++) {
-      clonedBsmArgs.add(i, getBootstrapArg(i));
-    }
-
-    List<Value> clonedArgs = new ArrayList<>(getArgCount());
-    for (int i = 0; i < getArgCount(); i++) {
-      clonedArgs.add(i, getArg(i));
-    }
-
-    return new JDynamicInvokeExpr(
-        bootstrapMethodSignature, clonedBsmArgs, methodSignature, tag, clonedArgs);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseDynamicInvokeExpr(this, o);
   }

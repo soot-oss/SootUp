@@ -50,11 +50,6 @@ public class JInstanceOfExpr implements Expr {
   }
 
   @Override
-  public Object clone() {
-    return new JInstanceOfExpr(Jimple.cloneIfNecessary(getOp()), checkType);
-  }
-
-  @Override
   public String toString() {
     return opBox.getValue().toString() + " " + Jimple.INSTANCEOF + " " + checkType.toString();
   }

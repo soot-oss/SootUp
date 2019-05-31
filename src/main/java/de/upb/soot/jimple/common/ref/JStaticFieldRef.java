@@ -17,11 +17,6 @@ public class JStaticFieldRef extends FieldRef {
   }
 
   @Override
-  public Object clone() {
-    return new JStaticFieldRef(fieldSignature);
-  }
-
-  @Override
   public String toString() {
     return fieldSignature.toString();
   }

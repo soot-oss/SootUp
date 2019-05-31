@@ -47,11 +47,6 @@ public class JReturnStmt extends AbstractOpStmt {
   }
 
   @Override
-  public JReturnStmt clone() {
-    return new JReturnStmt(Jimple.cloneIfNecessary(getOp()), getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     return Jimple.RETURN + " " + opBox.getValue().toString();
   }
@@ -86,5 +81,9 @@ public class JReturnStmt extends AbstractOpStmt {
   @Override
   public int equivHashCode() {
     return super.equivHashCode();
+  }
+
+  public JReturnStmt withOp(Value op) {
+    return new JReturnStmt(op, getPositionInfo());
   }
 }

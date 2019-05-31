@@ -66,12 +66,6 @@ public class JParameterRef implements IdentityRef {
     return num * 101 + paramType.hashCode() * 17;
   }
 
-  /** Create a new ParameterRef object with the same paramType and number. */
-  @Override
-  public Object clone() {
-    return new JParameterRef(paramType, num);
-  }
-
   /** Converts the given ParameterRef into a String i.e. <code>@parameter0: .int</code>. */
   @Override
   public String toString() {

@@ -54,17 +54,6 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     return targetBoxes;
   }
 
-  @Override
-  public JTableSwitchStmt clone() {
-    return new JTableSwitchStmt(
-        Jimple.cloneIfNecessary(getKey()),
-        lowIndex,
-        highIndex,
-        getTargets(),
-        getDefaultTarget(),
-        getPositionInfo().clone());
-  }
-
   public JTableSwitchStmt(
       Value key,
       int lowIndex,

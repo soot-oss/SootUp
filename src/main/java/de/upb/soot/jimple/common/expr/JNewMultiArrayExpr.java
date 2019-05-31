@@ -60,17 +60,6 @@ public class JNewMultiArrayExpr implements Expr {
   }
 
   @Override
-  public Object clone() {
-    List<Value> clonedSizes = new ArrayList<>(getSizeCount());
-
-    for (int i = 0; i < getSizeCount(); i++) {
-      clonedSizes.add(i, Jimple.cloneIfNecessary(getSize(i)));
-    }
-
-    return new JNewMultiArrayExpr(baseType, clonedSizes);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseNewMultiArrayExpr(this, o);
   }

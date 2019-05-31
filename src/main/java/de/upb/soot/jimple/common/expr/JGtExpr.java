@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
@@ -46,10 +45,5 @@ public class JGtExpr extends AbstractConditionExpr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseGtExpr(this);
-  }
-
-  @Override
-  public Object clone() {
-    return new JGtExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
 }

@@ -48,11 +48,6 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public JEnterMonitorStmt clone() {
-    return new JEnterMonitorStmt(Jimple.cloneIfNecessary(getOp()), getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     return Jimple.ENTERMONITOR + " " + opBox.getValue().toString();
   }

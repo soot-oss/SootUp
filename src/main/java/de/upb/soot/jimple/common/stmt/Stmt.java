@@ -9,6 +9,7 @@ import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.Acceptor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public abstract class Stmt implements EquivTo, Acceptor, Serializable {
+public abstract class Stmt implements EquivTo, Acceptor, Serializable, Copyable {
 
   /** List of UnitBoxes pointing to this Unit. */
   @Nullable private List<StmtBox> boxesPointingToThis = null;

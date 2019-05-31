@@ -57,11 +57,6 @@ public class JBreakpointStmt extends AbstractStmt {
   }
 
   @Override
-  public JBreakpointStmt clone() {
-    return new JBreakpointStmt(getPositionInfo().clone());
-  }
-
-  @Override
   public boolean fallsThrough() {
     return true;
   }

@@ -51,9 +51,6 @@ public abstract class AbstractInvokeExpr implements Expr {
     return this.methodSignature;
   }
 
-  @Override
-  public abstract Object clone();
-
   public Value getArg(int index) {
     return argBoxes[index].getValue();
   }

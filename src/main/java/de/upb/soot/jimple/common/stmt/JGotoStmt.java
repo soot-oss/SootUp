@@ -53,11 +53,6 @@ public class JGotoStmt extends AbstractStmt {
   }
 
   @Override
-  public JGotoStmt clone() {
-    return new JGotoStmt(getTarget(), getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     Stmt t = getTarget();
     String target = "(branch)";
