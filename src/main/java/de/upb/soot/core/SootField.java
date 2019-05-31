@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootField extends SootClassMember implements IField {
+public class SootField extends SootClassMember implements Field {
 
   private static final long serialVersionUID = -5101396409117866687L;
 

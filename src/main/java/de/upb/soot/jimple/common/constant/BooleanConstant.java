@@ -1,7 +1,7 @@
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.visitor.IConstantVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ConstantVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 import javax.annotation.Nonnull;
@@ -53,8 +53,8 @@ public class BooleanConstant
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IConstantVisitor) sw).caseBooleanConstant(this);
+  public void accept(Visitor sw) {
+    ((ConstantVisitor) sw).caseBooleanConstant(this);
   }
 
   @Nonnull

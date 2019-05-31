@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public abstract class AbstractClassMemberSignature implements ISignature {
+public abstract class AbstractClassMemberSignature implements Signature {
 
   /** The signature of the declaring class. */
   @Nonnull private final JavaClassType declClassSignature;

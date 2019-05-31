@@ -56,7 +56,7 @@ import de.upb.soot.jimple.common.expr.JSubExpr;
 import de.upb.soot.jimple.common.expr.JUshrExpr;
 import de.upb.soot.jimple.common.expr.JXorExpr;
 
-public abstract class AbstractExprVisitor implements IExprVisitor {
+public abstract class AbstractExprVisitor implements ExprVisitor {
   Object result;
 
   @Override

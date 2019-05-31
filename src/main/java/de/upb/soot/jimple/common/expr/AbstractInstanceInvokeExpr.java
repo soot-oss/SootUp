@@ -27,8 +27,8 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.MethodSignature;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,8 +77,8 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   public abstract Object clone();
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseInstanceInvokeExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseInstanceInvokeExpr(this);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */

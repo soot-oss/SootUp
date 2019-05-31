@@ -27,7 +27,7 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -38,8 +38,8 @@ public class JBreakpointStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    IStmt stmt = new JBreakpointStmt(nop);
-    IStmt stmt2 = new JBreakpointStmt(nop);
+    Stmt stmt = new JBreakpointStmt(nop);
+    Stmt stmt2 = new JBreakpointStmt(nop);
 
     // toString
     assertEquals("breakpoint", stmt.toString());

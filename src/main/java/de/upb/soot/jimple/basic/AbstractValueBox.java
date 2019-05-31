@@ -25,7 +25,7 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 
 /** Reference implementation for ValueBox; just add a canContainValue methodRef. */
 public abstract class AbstractValueBox implements ValueBox {
@@ -57,7 +57,7 @@ public abstract class AbstractValueBox implements ValueBox {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.startValueBox(this);
     value.toString(up);
     up.endValueBox(this);

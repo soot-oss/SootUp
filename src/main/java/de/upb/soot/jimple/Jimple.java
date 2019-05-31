@@ -25,7 +25,6 @@
 package de.upb.soot.jimple;
 
 import de.upb.soot.jimple.basic.ConditionExprBox;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.IdentityRefBox;
 import de.upb.soot.jimple.basic.ImmediateBox;
 import de.upb.soot.jimple.basic.InvokeExprBox;
@@ -34,6 +33,7 @@ import de.upb.soot.jimple.basic.JTrap;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalBox;
 import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.IntConstant;
@@ -75,7 +75,6 @@ import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
@@ -85,6 +84,7 @@ import de.upb.soot.jimple.common.stmt.JNopStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.soot.jimple.common.stmt.JThrowStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.javabytecode.stmt.JBreakpointStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JEnterMonitorStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JExitMonitorStmt;
@@ -533,11 +533,11 @@ public class Jimple {
   }
 
   /** Constructs a GotoStmt(Stmt) grammar chunk. */
-  public static JGotoStmt newGotoStmt(IStmt target, PositionInfo posInfo) {
+  public static JGotoStmt newGotoStmt(Stmt target, PositionInfo posInfo) {
     return new JGotoStmt(target, posInfo);
   }
 
-  public static JGotoStmt newGotoStmt(IStmtBox stmtBox, PositionInfo posInfo) {
+  public static JGotoStmt newGotoStmt(StmtBox stmtBox, PositionInfo posInfo) {
     return new JGotoStmt(stmtBox, posInfo);
   }
 
@@ -562,12 +562,12 @@ public class Jimple {
   }
 
   /** Constructs a IfStmt(Condition, Stmt) grammar chunk. */
-  public static JIfStmt newIfStmt(Value condition, IStmt target, PositionInfo posInfo) {
+  public static JIfStmt newIfStmt(Value condition, Stmt target, PositionInfo posInfo) {
     return new JIfStmt(condition, target, posInfo);
   }
 
   /** Constructs a IfStmt(Condition, UnitBox) grammar chunk. */
-  public static JIfStmt newIfStmt(Value condition, IStmtBox target, PositionInfo posInfo) {
+  public static JIfStmt newIfStmt(Value condition, StmtBox target, PositionInfo posInfo) {
     return new JIfStmt(condition, target, posInfo);
   }
 
@@ -592,8 +592,8 @@ public class Jimple {
       Value key,
       int lowIndex,
       int highIndex,
-      List<? extends IStmt> targets,
-      IStmt defaultTarget,
+      List<? extends Stmt> targets,
+      Stmt defaultTarget,
       PositionInfo posInfo) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
@@ -602,8 +602,8 @@ public class Jimple {
       Value key,
       int lowIndex,
       int highIndex,
-      List<? extends IStmtBox> targets,
-      IStmtBox defaultTarget,
+      List<? extends StmtBox> targets,
+      StmtBox defaultTarget,
       PositionInfo posInfo) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
@@ -614,8 +614,8 @@ public class Jimple {
   public static JLookupSwitchStmt newLookupSwitchStmt(
       Value key,
       List<IntConstant> lookupValues,
-      List<? extends IStmt> targets,
-      IStmt defaultTarget,
+      List<? extends Stmt> targets,
+      Stmt defaultTarget,
       PositionInfo posInfo) {
     return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
@@ -623,8 +623,8 @@ public class Jimple {
   public static JLookupSwitchStmt newLookupSwitchStmt(
       Value key,
       List<IntConstant> lookupValues,
-      List<? extends IStmtBox> targets,
-      IStmtBox defaultTarget,
+      List<? extends StmtBox> targets,
+      StmtBox defaultTarget,
       PositionInfo posInfo) {
     return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
@@ -672,7 +672,7 @@ public class Jimple {
     return new ImmediateBox(value);
   }
 
-  public static IStmtBox newStmtBox(IStmt stmt) {
+  public static StmtBox newStmtBox(Stmt stmt) {
     return new JStmtBox(stmt);
   }
 
@@ -703,7 +703,7 @@ public class Jimple {
   }
 
   public static JTrap newTrap(
-      JavaClassType exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
+      JavaClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
     return new JTrap(exception, beginStmt, endStmt, handlerStmt);
   }
 }

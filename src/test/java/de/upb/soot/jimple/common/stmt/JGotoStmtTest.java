@@ -24,10 +24,10 @@ package de.upb.soot.jimple.common.stmt;
 
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.JStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.StmtBox;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -44,13 +44,13 @@ public class JGotoStmtTest {
     Local local1 = new Local("$r0", typeFactory.getType("java.lang.Exception"));
     Local local2 = new Local("$r0", typeFactory.getType("somepackage.dummy.Exception"));
 
-    // IStmt
-    IStmt targetStmt = new JThrowStmt(local1, nop);
-    IStmt gStmt = new JGotoStmt(targetStmt, nop);
+    // Stmt
+    Stmt targetStmt = new JThrowStmt(local1, nop);
+    Stmt gStmt = new JGotoStmt(targetStmt, nop);
 
-    // IStmtBox
-    IStmtBox targetStmtBox = new JStmtBox(targetStmt);
-    IStmt gStmtBox = new JGotoStmt(targetStmtBox, nop);
+    // StmtBox
+    StmtBox targetStmtBox = new JStmtBox(targetStmt);
+    Stmt gStmtBox = new JGotoStmt(targetStmtBox, nop);
 
     // toString
     Assert.assertEquals("goto [?= throw $r0]", gStmt.toString());

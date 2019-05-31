@@ -187,13 +187,13 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
 
   @Nonnull
   @Override
-  public Set<IMethod> getMethods() {
+  public Set<Method> getMethods() {
     return Utils.emptyImmutableSet();
   }
 
   @Nonnull
   @Override
-  public Set<IField> getFields() {
+  public Set<Field> getFields() {
     return Utils.emptyImmutableSet();
   }
 }

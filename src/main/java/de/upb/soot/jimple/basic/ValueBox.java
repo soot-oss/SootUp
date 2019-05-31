@@ -25,7 +25,7 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.io.Serializable;
 
 /**
@@ -43,5 +43,5 @@ public interface ValueBox extends Serializable {
   /** Returns true if the given Value fits in this box. */
   boolean canContainValue(Value value);
 
-  void toString(IStmtPrinter up);
+  void toString(StmtPrinter up);
 }

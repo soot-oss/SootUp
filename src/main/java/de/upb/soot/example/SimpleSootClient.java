@@ -2,11 +2,11 @@ package de.upb.soot.example;
 
 import de.upb.soot.Project;
 import de.upb.soot.Scope;
-import de.upb.soot.callgraph.ICallGraph;
-import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.namespaces.JavaClassPathNamespace;
-import de.upb.soot.namespaces.JavaSourcePathNamespace;
-import de.upb.soot.typehierarchy.ITypeHierarchy;
+import de.upb.soot.callgraph.CallGraph;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
+import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.views.IView;
 import java.util.Collections;
 
@@ -22,17 +22,18 @@ public class SimpleSootClient {
     String javaClassPath = "example/classes/";
     String javaSourcePath = "example/src";
 
-    INamespace cpBased = new JavaClassPathNamespace(javaClassPath);
+    AnalysisInputLocation cpBased = new JavaClassPathAnalysisInputLocation(javaClassPath);
 
-    INamespace walaSource = new JavaSourcePathNamespace(Collections.singleton(javaSourcePath));
+    AnalysisInputLocation walaSource =
+        new JavaSourcePathAnalysisInputLocation(Collections.singleton(javaSourcePath));
 
     Project p = new Project(walaSource);
 
     // 1. simple case
     IView fullView = p.createFullView();
 
-    ICallGraph cg = fullView.createCallGraph();
-    ITypeHierarchy t = fullView.createTypeHierarchy();
+    CallGraph cg = fullView.createCallGraph();
+    TypeHierarchy t = fullView.createTypeHierarchy();
 
     // here goes my own analysis
 

@@ -12,11 +12,11 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Immediate;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.RValueBox;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.StmtBoxOwner;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -24,9 +24,9 @@ import de.upb.soot.jimple.basic.VariableBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
-import de.upb.soot.jimple.visitor.IStmtVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.visitor.StmtVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
 
 /** The Class JAssignStmt. */
@@ -288,7 +288,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getUnitBoxes()
    */
   @Override
-  public List<IStmtBox> getStmtBoxes() {
+  public List<StmtBox> getStmtBoxes() {
     // handle possible PhiExpr's
     Value rvalue = getRightBox().getValue();
     if (rvalue instanceof StmtBoxOwner) {
@@ -314,7 +314,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @see de.upb.soot.jimple.common.stmt.Stmt#toString(de.upb.soot.StmtPrinter)
    */
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     getLeftBox().toString(up);
     up.literal(" = ");
     getRightBox().toString(up);
@@ -354,11 +354,11 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   /*
    * (non-Javadoc)
    *
-   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#accept(de.upb.soot.jimple.visitor.IVisitor)
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#accept(de.upb.soot.jimple.visitor.Visitor)
    */
   @Override
-  public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseAssignStmt(this);
+  public void accept(Visitor sw) {
+    ((StmtVisitor) sw).caseAssignStmt(this);
   }
 
   @Override

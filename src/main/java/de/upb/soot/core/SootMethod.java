@@ -26,7 +26,7 @@ import static de.upb.soot.util.Utils.immutableListOf;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-import de.upb.soot.frontends.IMethodSource;
+import de.upb.soot.frontends.MethodSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootMethod extends SootClassMember implements IMethod {
+public class SootMethod extends SootClassMember implements Method {
   /** */
   private static final long serialVersionUID = -7438746401781827520L;
 
@@ -66,11 +66,11 @@ public class SootMethod extends SootClassMember implements IMethod {
   @Nonnull protected final ImmutableList<JavaClassType> exceptions;
 
   /** Tells this methodRef how to find out where its body lives. */
-  @Nonnull private final IMethodSource methodSource;
+  @Nonnull private final MethodSource methodSource;
 
   /** Constructs a SootMethod object with the given attributes. */
   public SootMethod(
-      @Nonnull IMethodSource source,
+      @Nonnull MethodSource source,
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
       @Nonnull Iterable<JavaClassType> thrownExceptions,
@@ -265,13 +265,13 @@ public class SootMethod extends SootClassMember implements IMethod {
   public interface Builder extends SootClassMember.Builder<SootMethod> {
     interface MethodSourceStep {
       /**
-       * Sets the {@link IMethodSource}.
+       * Sets the {@link MethodSource}.
        *
        * @param value The value to set.
        * @return This fluent builder.
        */
       @Nonnull
-      MethodSignatureStep withSource(@Nonnull IMethodSource value);
+      MethodSignatureStep withSource(@Nonnull MethodSource value);
     }
 
     interface MethodSignatureStep {
@@ -346,7 +346,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
     // region Properties
 
-    @Nullable private IMethodSource _source;
+    @Nullable private MethodSource _source;
 
     /**
      * Gets the method source content.
@@ -354,7 +354,7 @@ public class SootMethod extends SootClassMember implements IMethod {
      * @return The value to get.
      */
     @Nonnull
-    protected IMethodSource getSource() {
+    protected MethodSource getSource() {
       return ensureValue(this._source, "source");
     }
 
@@ -364,7 +364,7 @@ public class SootMethod extends SootClassMember implements IMethod {
      * @param value The value to set.
      */
     @Nonnull
-    public MethodSignatureStep withSource(@Nonnull IMethodSource value) {
+    public MethodSignatureStep withSource(@Nonnull MethodSource value) {
       this._source = value;
 
       return this;

@@ -11,10 +11,10 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SourceType;
-import de.upb.soot.frontends.IMethodSource;
+import de.upb.soot.frontends.MethodSource;
 import de.upb.soot.frontends.java.EagerJavaClassSource;
-import de.upb.soot.namespaces.JavaClassPathNamespace;
-import de.upb.soot.namespaces.JavaSourcePathNamespace;
+import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
@@ -48,7 +48,7 @@ public class ModuleCompositionTest {
     assertTrue(new File(jarFile).exists());
 
     // Create a project
-    Project p = new Project(new JavaClassPathNamespace(jarFile));
+    Project p = new Project(new JavaClassPathAnalysisInputLocation(jarFile));
 
     // Get the view
     IView view = p.createOnDemandView();
@@ -105,7 +105,7 @@ public class ModuleCompositionTest {
     SootClass c =
         new SootClass(
             new EagerJavaClassSource(
-                new JavaSourcePathNamespace(Collections.emptySet()),
+                new JavaSourcePathAnalysisInputLocation(Collections.emptySet()),
                 null,
                 classSignature,
                 null,
@@ -119,7 +119,7 @@ public class ModuleCompositionTest {
                 Utils.immutableSet(
                     SootMethod.builder()
                         .withSource(
-                            new IMethodSource() {
+                            new MethodSource() {
                               @Override
                               @Nullable
                               public Body resolveBody(@Nonnull SootMethod m) {
