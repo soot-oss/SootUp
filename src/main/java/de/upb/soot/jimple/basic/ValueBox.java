@@ -25,7 +25,7 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.io.Serializable;
 
 /**
@@ -63,7 +63,7 @@ public abstract class ValueBox implements Serializable {
     return value;
   }
 
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.startValueBox(this);
     value.toString(up);
     up.endValueBox(this);

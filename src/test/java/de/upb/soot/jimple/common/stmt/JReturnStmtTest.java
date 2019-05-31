@@ -36,7 +36,7 @@ public class JReturnStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    IStmt rStmt = new JReturnStmt(IntConstant.getInstance(42), nop);
+    Stmt rStmt = new JReturnStmt(IntConstant.getInstance(42), nop);
 
     // equivTo
     Assert.assertTrue(rStmt.equivTo(rStmt));

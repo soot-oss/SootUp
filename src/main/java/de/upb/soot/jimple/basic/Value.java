@@ -25,9 +25,9 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.jimple.visitor.IAcceptor;
+import de.upb.soot.jimple.visitor.Acceptor;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.io.Serializable;
 import java.util.List;
 
@@ -37,7 +37,7 @@ import java.util.List;
  *
  * <p>Values are typed, clonable and must declare which other Values they use (contain).
  */
-public interface Value extends IAcceptor, EquivTo, Serializable {
+public interface Value extends Acceptor, EquivTo, Serializable {
   /**
    * Returns a List of boxes corresponding to Values which are used by (ie contained within) this
    * Value.
@@ -50,5 +50,5 @@ public interface Value extends IAcceptor, EquivTo, Serializable {
   /** Returns a clone of this Value. */
   Object clone();
 
-  void toString(IStmtPrinter up);
+  void toString(StmtPrinter up);
 }

@@ -29,7 +29,7 @@ import com.google.common.base.Strings;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.namespaces.FileType;
+import de.upb.soot.inputlocation.FileType;
 import de.upb.soot.signatures.PackageName;
 import de.upb.soot.views.IView;
 import java.nio.file.FileSystem;

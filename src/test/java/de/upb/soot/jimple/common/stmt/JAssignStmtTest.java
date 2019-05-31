@@ -41,9 +41,9 @@ import org.junit.experimental.categories.Category;
 public class JAssignStmtTest {
 
   Comparator c =
-      new Comparator<IStmt>() {
+      new Comparator<Stmt>() {
         @Override
-        public int compare(IStmt o1, IStmt o2) {
+        public int compare(Stmt o1, Stmt o2) {
           return o1.containsFieldRef() && o2.containsFieldRef() ? 1 : 0;
         }
 
@@ -63,9 +63,9 @@ public class JAssignStmtTest {
     Local local = new Local("$i0", PrimitiveType.getInt());
     Local field = new Local("i2", PrimitiveType.getInt());
 
-    IStmt lStmt = new JAssignStmt(local, numConst1, nop);
-    IStmt fStmt = new JAssignStmt(field, numConst1, nop);
-    IStmt deepStmt = new JAssignStmt(local, new JAddExpr(numConst1, numConst2), nop);
+    Stmt lStmt = new JAssignStmt(local, numConst1, nop);
+    Stmt fStmt = new JAssignStmt(field, numConst1, nop);
+    Stmt deepStmt = new JAssignStmt(local, new JAddExpr(numConst1, numConst2), nop);
 
     // equivTo : equals
     Assert.assertTrue(lStmt.equivTo(new JAssignStmt(local, numConst1, nop)));

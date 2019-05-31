@@ -1,6 +1,6 @@
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -42,16 +42,16 @@ public class AbstractTrap implements Trap, Serializable {
   protected transient JavaClassType exception;
 
   /** The first unit being trapped. */
-  protected IStmtBox beginStmtBox;
+  protected StmtBox beginStmtBox;
 
   /** The unit just before the last unit being trapped. */
-  protected IStmtBox endStmtBox;
+  protected StmtBox endStmtBox;
 
   /** The unit to which execution flows after the caught exception is triggered. */
-  protected IStmtBox handlerStmtBox;
+  protected StmtBox handlerStmtBox;
 
   /** The list of unitBoxes referred to in this Trap (begin, end and handler. */
-  protected List<IStmtBox> unitBoxes;
+  protected List<StmtBox> unitBoxes;
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
@@ -67,10 +67,7 @@ public class AbstractTrap implements Trap, Serializable {
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
   protected AbstractTrap(
-      JavaClassType exception,
-      IStmtBox beginStmtBox,
-      IStmtBox endStmtBox,
-      IStmtBox handlerStmtBox) {
+      JavaClassType exception, StmtBox beginStmtBox, StmtBox endStmtBox, StmtBox handlerStmtBox) {
     this.exception = exception;
     this.beginStmtBox = beginStmtBox;
     this.endStmtBox = endStmtBox;
@@ -80,41 +77,41 @@ public class AbstractTrap implements Trap, Serializable {
   }
 
   @Override
-  public IStmt getBeginStmt() {
+  public Stmt getBeginStmt() {
     return beginStmtBox.getStmt();
   }
 
   @Override
-  public IStmt getEndStmt() {
+  public Stmt getEndStmt() {
     return endStmtBox.getStmt();
   }
 
   @Override
-  public IStmt getHandlerStmt() {
+  public Stmt getHandlerStmt() {
     return handlerStmtBox.getStmt();
   }
 
-  public IStmtBox getHandlerStmtBox() {
+  public StmtBox getHandlerStmtBox() {
     return handlerStmtBox;
   }
 
-  public IStmtBox getBeginStmtBox() {
+  public StmtBox getBeginStmtBox() {
     return beginStmtBox;
   }
 
-  public IStmtBox getEndStmtBox() {
+  public StmtBox getEndStmtBox() {
     return endStmtBox;
   }
 
   @Override
-  public List<IStmtBox> getStmtBoxes() {
+  public List<StmtBox> getStmtBoxes() {
     return unitBoxes;
   }
 
   @Override
   public void clearStmtBoxes() {
-    for (IStmtBox box : getStmtBoxes()) {
-      IStmtBox.$Accessor.setStmt(box, null);
+    for (StmtBox box : getStmtBoxes()) {
+      StmtBox.$Accessor.setStmt(box, null);
     }
   }
 

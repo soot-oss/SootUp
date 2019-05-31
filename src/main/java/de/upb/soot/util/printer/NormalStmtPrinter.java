@@ -11,7 +11,7 @@ import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.Type;
 
-/** IStmtPrinter implementation for normal (full) Jimple */
+/** StmtPrinter implementation for normal (full) Jimple */
 public class NormalStmtPrinter extends LabeledStmtPrinter {
 
   public NormalStmtPrinter(Body b) {

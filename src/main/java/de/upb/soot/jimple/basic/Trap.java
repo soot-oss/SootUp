@@ -1,6 +1,6 @@
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
 
 /**
@@ -15,9 +15,9 @@ public interface Trap extends StmtBoxOwner {
 
   JavaClassType getException();
 
-  IStmt getBeginStmt();
+  Stmt getBeginStmt();
 
-  IStmt getEndStmt();
+  Stmt getEndStmt();
 
-  IStmt getHandlerStmt();
+  Stmt getHandlerStmt();
 }

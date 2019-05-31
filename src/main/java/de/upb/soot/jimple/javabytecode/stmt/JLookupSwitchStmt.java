@@ -26,17 +26,17 @@
 package de.upb.soot.jimple.javabytecode.stmt;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.visitor.IStmtVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.visitor.StmtVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -50,8 +50,8 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   private final List<IntConstant> lookupValues;
 
   // This method is necessary to deal with constructor-must-be-first-ism.
-  private static IStmtBox[] getTargetBoxesArray(List<? extends IStmt> targets) {
-    IStmtBox[] targetBoxes = new IStmtBox[targets.size()];
+  private static StmtBox[] getTargetBoxesArray(List<? extends Stmt> targets) {
+    StmtBox[] targetBoxes = new StmtBox[targets.size()];
     for (int i = 0; i < targetBoxes.length; i++) {
       targetBoxes[i] = Jimple.newStmtBox(targets.get(i));
     }
@@ -73,8 +73,8 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   public JLookupSwitchStmt(
       Value key,
       List<IntConstant> lookupValues,
-      List<? extends IStmt> targets,
-      IStmt defaultTarget,
+      List<? extends Stmt> targets,
+      Stmt defaultTarget,
       PositionInfo positionInfo) {
     this(
         Jimple.newImmediateBox(key),
@@ -88,13 +88,13 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   public JLookupSwitchStmt(
       Value key,
       List<IntConstant> lookupValues,
-      List<? extends IStmtBox> targets,
-      IStmtBox defaultTarget,
+      List<? extends StmtBox> targets,
+      StmtBox defaultTarget,
       PositionInfo positionInfo) {
     this(
         Jimple.newImmediateBox(key),
         lookupValues,
-        targets.toArray(new IStmtBox[0]),
+        targets.toArray(new StmtBox[0]),
         defaultTarget,
         positionInfo);
   }
@@ -102,8 +102,8 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   protected JLookupSwitchStmt(
       ValueBox keyBox,
       List<IntConstant> lookupValues,
-      IStmtBox[] targetBoxes,
-      IStmtBox defaultTargetBox,
+      StmtBox[] targetBoxes,
+      StmtBox defaultTargetBox,
       PositionInfo positionInfo) {
     super(positionInfo, keyBox, defaultTargetBox, targetBoxes);
     this.lookupValues = new ArrayList<>(lookupValues);
@@ -123,7 +123,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     builder.append("{").append(endOfLine);
 
     for (int i = 0; i < lookupValues.size(); i++) {
-      IStmt target = getTarget(i);
+      Stmt target = getTarget(i);
       builder
           .append("    " + Jimple.CASE + " ")
           .append(lookupValues.get(i))
@@ -135,7 +135,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
           .append(endOfLine);
     }
 
-    IStmt target = getDefaultTarget();
+    Stmt target = getDefaultTarget();
     builder
         .append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " ")
         .append(target == this ? "self" : target)
@@ -148,7 +148,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.LOOKUPSWITCH);
     up.literal("(");
     keyBox.toString(up);
@@ -194,8 +194,8 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseLookupSwitchStmt(this);
+  public void accept(Visitor sw) {
+    ((StmtVisitor) sw).caseLookupSwitchStmt(this);
   }
 
   @Override

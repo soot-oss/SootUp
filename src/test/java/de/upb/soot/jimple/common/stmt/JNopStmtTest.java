@@ -38,7 +38,7 @@ public class JNopStmtTest {
   @Test
   public void test() {
     PositionInfo nopos = PositionInfo.createNoPositionInfo();
-    IStmt nop = new JNopStmt(nopos);
+    Stmt nop = new JNopStmt(nopos);
 
     Assert.assertTrue(nop.equivTo(nop));
     Assert.assertTrue(nop.equivTo(new JNopStmt(nopos)));

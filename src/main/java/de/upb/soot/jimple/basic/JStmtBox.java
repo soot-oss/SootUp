@@ -29,14 +29,14 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import javax.annotation.Nullable;
 
-public class JStmtBox extends IStmtBox {
+public class JStmtBox extends StmtBox {
   /** */
   private static final long serialVersionUID = 7292172470036407386L;
 
-  public JStmtBox(@Nullable IStmt stmt) {
+  public JStmtBox(@Nullable Stmt stmt) {
     super(stmt);
   }
 

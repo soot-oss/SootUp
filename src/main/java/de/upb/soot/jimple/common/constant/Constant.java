@@ -29,7 +29,7 @@ import de.upb.soot.jimple.basic.Immediate;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,7 +59,7 @@ public interface Constant extends Value, Immediate {
   }
 
   @Override
-  default void toString(IStmtPrinter up) {
+  default void toString(StmtPrinter up) {
     up.constant(this);
   }
 }

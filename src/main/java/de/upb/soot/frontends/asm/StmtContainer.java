@@ -1,15 +1,15 @@
 package de.upb.soot.frontends.asm;
 
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -19,22 +19,22 @@ import javax.annotation.Nonnull;
  * @author Aaloan Miftah
  */
 @SuppressWarnings("serial")
-class StmtContainer extends IStmt {
+class StmtContainer extends Stmt {
 
-  @Nonnull final IStmt[] units;
+  @Nonnull final Stmt[] units;
 
-  StmtContainer(@Nonnull IStmt... units) {
+  StmtContainer(@Nonnull Stmt... units) {
     this.units = units;
   }
 
   /**
    * Searches the depth of the StmtContainer until the actual first Unit represented is found.
    *
-   * @return the first IStmt of the container
+   * @return the first Stmt of the container
    */
   @Nonnull
-  IStmt getFirstUnit() {
-    IStmt ret = units[0];
+  Stmt getFirstUnit() {
+    Stmt ret = units[0];
     while (ret instanceof StmtContainer) {
       ret = ((StmtContainer) ret).units[0];
     }
@@ -52,12 +52,12 @@ class StmtContainer extends IStmt {
   }
 
   @Override
-  public List<IStmtBox> getStmtBoxes() {
+  public List<StmtBox> getStmtBoxes() {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public List<IStmtBox> getBoxesPointingToThis() {
+  public List<StmtBox> getBoxesPointingToThis() {
     throw new UnsupportedOperationException();
   }
 
@@ -67,7 +67,7 @@ class StmtContainer extends IStmt {
   }
 
   @Override
-  public IStmt clone() {
+  public Stmt clone() {
     throw new UnsupportedOperationException();
   }
 
@@ -82,7 +82,7 @@ class StmtContainer extends IStmt {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     throw new UnsupportedOperationException();
   }
 
@@ -137,7 +137,7 @@ class StmtContainer extends IStmt {
   }
 
   @Override
-  public void accept(IVisitor v) {
+  public void accept(Visitor v) {
     throw new UnsupportedOperationException();
   }
 

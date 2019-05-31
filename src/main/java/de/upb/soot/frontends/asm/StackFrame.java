@@ -27,8 +27,8 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractDefinitionStmt;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -156,7 +156,7 @@ final class StackFrame {
                 Jimple.newAssignStmt(stack, prevOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(prevOp.insn, as);
           } else {
-            IStmt u = src.getUnit(prevOp.insn);
+            Stmt u = src.getUnit(prevOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
@@ -174,7 +174,7 @@ final class StackFrame {
                 Jimple.newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(newOp.insn, as);
           } else {
-            IStmt u = src.getUnit(newOp.insn);
+            Stmt u = src.getUnit(newOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);

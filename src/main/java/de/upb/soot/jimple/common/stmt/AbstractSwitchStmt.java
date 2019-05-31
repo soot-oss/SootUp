@@ -25,8 +25,8 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import java.util.ArrayList;
@@ -38,42 +38,42 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   /** */
   private static final long serialVersionUID = -828246813006451813L;
 
-  protected final IStmtBox defaultTargetBox;
+  protected final StmtBox defaultTargetBox;
 
   protected final ValueBox keyBox;
 
-  protected final List<IStmtBox> stmtBoxes;
+  protected final List<StmtBox> stmtBoxes;
 
-  protected final IStmtBox[] targetBoxes;
+  protected final StmtBox[] targetBoxes;
 
   protected AbstractSwitchStmt(
       PositionInfo positionInfo,
       ValueBox keyBox,
-      IStmtBox defaultTargetBox,
-      IStmtBox... targetBoxes) {
+      StmtBox defaultTargetBox,
+      StmtBox... targetBoxes) {
     super(positionInfo);
     this.keyBox = keyBox;
     this.defaultTargetBox = defaultTargetBox;
     this.targetBoxes = targetBoxes;
 
     // Build up stmtBoxes
-    List<IStmtBox> list = new ArrayList<>();
+    List<StmtBox> list = new ArrayList<>();
     stmtBoxes = Collections.unmodifiableList(list);
 
     Collections.addAll(list, targetBoxes);
     list.add(defaultTargetBox);
   }
 
-  public final IStmt getDefaultTarget() {
+  public final Stmt getDefaultTarget() {
     return defaultTargetBox.getStmt();
   }
 
   @Deprecated
-  private void setDefaultTarget(IStmt defaultTarget) {
-    IStmtBox.$Accessor.setStmt(defaultTargetBox, defaultTarget);
+  private void setDefaultTarget(Stmt defaultTarget) {
+    StmtBox.$Accessor.setStmt(defaultTargetBox, defaultTarget);
   }
 
-  public final IStmtBox getDefaultTargetBox() {
+  public final StmtBox getDefaultTargetBox() {
     return defaultTargetBox;
   }
 
@@ -98,19 +98,19 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return targetBoxes.length;
   }
 
-  public final IStmt getTarget(int index) {
+  public final Stmt getTarget(int index) {
     return targetBoxes[index].getStmt();
   }
 
-  public final IStmtBox getTargetBox(int index) {
+  public final StmtBox getTargetBox(int index) {
     return targetBoxes[index];
   }
 
   /** Returns a list targets of type Stmt. */
-  public final List<IStmt> getTargets() {
-    List<IStmt> targets = new ArrayList<>();
+  public final List<Stmt> getTargets() {
+    List<Stmt> targets = new ArrayList<>();
 
-    for (IStmtBox element : targetBoxes) {
+    for (StmtBox element : targetBoxes) {
       targets.add(element.getStmt());
     }
 
@@ -123,14 +123,14 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
    * @param targets A list of type Stmt.
    */
   @Deprecated
-  private void setTargets(List<? extends IStmt> targets) {
+  private void setTargets(List<? extends Stmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
-      IStmtBox.$Accessor.setStmt(targetBoxes[i], targets.get(i));
+      StmtBox.$Accessor.setStmt(targetBoxes[i], targets.get(i));
     }
   }
 
   @Override
-  public final List<IStmtBox> getStmtBoxes() {
+  public final List<StmtBox> getStmtBoxes() {
     return stmtBoxes;
   }
 
@@ -150,7 +150,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     int res =
         defaultTargetBox.getStmt().equivHashCode() + prime * keyBox.getValue().equivHashCode();
 
-    for (IStmtBox lv : targetBoxes) {
+    for (StmtBox lv : targetBoxes) {
       res = prime * res + lv.getStmt().equivHashCode();
     }
 
@@ -165,13 +165,13 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void setTargets(AbstractSwitchStmt stmt, List<? extends IStmt> targets) {
+    public static void setTargets(AbstractSwitchStmt stmt, List<? extends Stmt> targets) {
       stmt.setTargets(targets);
     }
 
     /** Violates immutability. Only use this for legacy code. */
     @Deprecated
-    public static void setDefaultTarget(AbstractSwitchStmt stmt, IStmt defaultTarget) {
+    public static void setDefaultTarget(AbstractSwitchStmt stmt, Stmt defaultTarget) {
       stmt.setDefaultTarget(defaultTarget);
     }
 

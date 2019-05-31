@@ -26,7 +26,7 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
 
 public class JTrap extends AbstractTrap {
@@ -34,7 +34,7 @@ public class JTrap extends AbstractTrap {
   /** */
   private static final long serialVersionUID = -1514595956359087470L;
 
-  public JTrap(JavaClassType exception, IStmt beginStmt, IStmt endStmt, IStmt handlerStmt) {
+  public JTrap(JavaClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
     super(
         exception,
         Jimple.newStmtBox(beginStmt),
@@ -42,8 +42,7 @@ public class JTrap extends AbstractTrap {
         Jimple.newStmtBox(handlerStmt));
   }
 
-  public JTrap(
-      JavaClassType exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
+  public JTrap(JavaClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
     super(exception, beginStmt, endStmt, handlerStmt);
   }
 

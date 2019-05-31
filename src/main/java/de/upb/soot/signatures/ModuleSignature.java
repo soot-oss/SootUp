@@ -27,7 +27,7 @@ import com.google.common.base.Objects;
 // TODO Rename this too?
 
 /** Represents a Java 9 module. */
-public class ModuleSignature implements ISignature {
+public class ModuleSignature implements Signature {
   /**
    * The unnamed module. If a request is made to load a type whose package is not defined in any
    * module then the module system load it from the classpath. To ensure that every type is

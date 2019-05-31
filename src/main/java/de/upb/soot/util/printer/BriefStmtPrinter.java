@@ -8,19 +8,19 @@ import de.upb.soot.jimple.common.ref.IdentityRef;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.Type;
 
-/** IStmtPrinter implementation for normal Jimple */
+/** StmtPrinter implementation for normal Jimple */
 public class BriefStmtPrinter extends LabeledStmtPrinter {
   public BriefStmtPrinter(Body body) {
     super(body);
   }
 
   @Override
-  public void startStmt(IStmt u) {
+  public void startStmt(Stmt u) {
     super.startStmt(u);
   }
 
