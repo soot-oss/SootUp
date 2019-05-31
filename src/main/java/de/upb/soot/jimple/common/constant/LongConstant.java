@@ -194,9 +194,4 @@ public class LongConstant implements ShiftableConstant<LongConstant> {
   public long getValue() {
     return value;
   }
-
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

@@ -41,11 +41,6 @@ public class JInstanceFieldRef extends FieldRef {
   }
 
   @Override
-  public Object clone() {
-    return new JInstanceFieldRef(Jimple.cloneIfNecessary(getBase()), fieldSignature);
-  }
-
-  @Override
   public String toString() {
     return baseBox.getValue().toString() + "." + fieldSignature.toString();
   }

@@ -80,15 +80,6 @@ public final class Local implements Value, Numberable, Immediate {
     return result;
   }
 
-  /** Returns a clone of the current JimpleLocal. */
-  @Override
-  public Object clone() {
-    // do not intern the name again
-    Local local = new Local(null, type);
-    local.name = name;
-    return local;
-  }
-
   /** Returns the name of this object. */
   public String getName() {
     return name;

@@ -51,11 +51,6 @@ public class JNewArrayExpr implements Expr {
   }
 
   @Override
-  public Object clone() {
-    return new JNewArrayExpr(getBaseType(), Jimple.cloneIfNecessary(getSize()));
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseNewArrayExpr(this, o);
   }

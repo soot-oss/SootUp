@@ -47,11 +47,6 @@ public class JTrap extends AbstractTrap {
   }
 
   @Override
-  public Object clone() {
-    return new JTrap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
-  }
-
-  @Override
   public String toString() {
     StringBuilder buf = new StringBuilder("Trap :");
     buf.append("\nbegin  : ");

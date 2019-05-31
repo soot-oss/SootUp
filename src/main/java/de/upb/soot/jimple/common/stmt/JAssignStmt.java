@@ -11,7 +11,6 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Immediate;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -318,19 +317,6 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     getLeftBox().toString(up);
     up.literal(" = ");
     getRightBox().toString(up);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#clone()
-   */
-  @Override
-  public JAssignStmt clone() {
-    return new JAssignStmt(
-        Jimple.cloneIfNecessary(getLeftOp()),
-        Jimple.cloneIfNecessary(getRightOp()),
-        getPositionInfo().clone());
   }
 
   /**

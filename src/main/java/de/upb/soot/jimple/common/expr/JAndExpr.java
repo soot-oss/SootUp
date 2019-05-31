@@ -25,7 +25,6 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
@@ -46,10 +45,5 @@ public class JAndExpr extends AbstractIntLongBinopExpr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseAndExpr(this);
-  }
-
-  @Override
-  public Object clone() {
-    return new JAndExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
   }
 }

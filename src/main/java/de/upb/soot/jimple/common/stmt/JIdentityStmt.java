@@ -48,14 +48,6 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   }
 
   @Override
-  public JIdentityStmt clone() {
-    return new JIdentityStmt(
-        Jimple.cloneIfNecessary(getLeftOp()),
-        Jimple.cloneIfNecessary(getRightOp()),
-        getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     return getLeftBox().getValue().toString() + " := " + getRightBox().getValue().toString();
   }

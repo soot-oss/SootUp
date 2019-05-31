@@ -74,9 +74,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public abstract Object clone();
-
-  @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseInstanceInvokeExpr(this);
   }

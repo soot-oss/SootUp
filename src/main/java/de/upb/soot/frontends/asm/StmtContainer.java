@@ -82,11 +82,6 @@ class StmtContainer implements Stmt {
   }
 
   @Override
-  public Stmt clone() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public boolean fallsThrough() {
     throw new UnsupportedOperationException();
   }

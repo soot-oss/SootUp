@@ -8,11 +8,12 @@ import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.Acceptor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.io.Serializable;
 import java.util.List;
 
-public interface Stmt extends EquivTo, Acceptor, Serializable {
+public interface Stmt extends EquivTo, Acceptor, Serializable, Copyable {
   /** Returns a list of Boxes containing Values used in this Stmt. */
   List<ValueBox> getUseBoxes();
 
@@ -36,8 +37,6 @@ public interface Stmt extends EquivTo, Acceptor, Serializable {
 
   /** Returns a list of Boxes containing any Value either used or defined in this Stmt. */
   List<ValueBox> getUseAndDefBoxes();
-
-  Stmt clone();
 
   /**
    * Returns true if execution after this statement may continue at the following statement.

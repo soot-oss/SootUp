@@ -49,11 +49,6 @@ public class JCastExpr implements Expr {
   }
 
   @Override
-  public Object clone() {
-    return new JCastExpr(Jimple.cloneIfNecessary(getOp()), type);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseCastExpr(this, o);
   }

@@ -57,7 +57,4 @@ public abstract class FieldRef implements ConcreteRef {
   public Type getType() {
     return fieldSignature.getSignature();
   }
-
-  @Override
-  public abstract Object clone();
 }

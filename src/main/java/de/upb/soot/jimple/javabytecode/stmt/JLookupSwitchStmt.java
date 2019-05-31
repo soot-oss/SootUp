@@ -58,17 +58,6 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     return targetBoxes;
   }
 
-  @Override
-  public JLookupSwitchStmt clone() {
-    int lookupValueCount = lookupValues.size();
-    List<IntConstant> clonedLookupValues = new ArrayList<>(lookupValueCount);
-    for (int i = 0; i < lookupValueCount; i++) {
-      clonedLookupValues.add(i, IntConstant.getInstance(getLookupValue(i)));
-    }
-    return new JLookupSwitchStmt(
-        getKey(), clonedLookupValues, getTargets(), getDefaultTarget(), getPositionInfo().clone());
-  }
-
   /** Constructs a new JLookupSwitchStmt. lookupValues should be a list of IntConst s. */
   public JLookupSwitchStmt(
       Value key,

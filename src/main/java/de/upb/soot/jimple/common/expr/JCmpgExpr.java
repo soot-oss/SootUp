@@ -47,9 +47,4 @@ public class JCmpgExpr extends AbstractIntBinopExpr {
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseCmpgExpr(this);
   }
-
-  @Override
-  public Object clone() {
-    return new JCmpgExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
-  }
 }

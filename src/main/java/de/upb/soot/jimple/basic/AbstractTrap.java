@@ -135,9 +135,4 @@ public class AbstractTrap implements Trap, Serializable {
   public void setException(JavaClassType exception) {
     this.exception = exception;
   }
-
-  @Override
-  public Object clone() {
-    throw new RuntimeException();
-  }
 }

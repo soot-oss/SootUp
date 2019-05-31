@@ -52,11 +52,6 @@ public class JCaughtExceptionRef implements IdentityRef {
   }
 
   @Override
-  public Object clone() {
-    return new JCaughtExceptionRef();
-  }
-
-  @Override
   public String toString() {
     return "@caughtexception";
   }

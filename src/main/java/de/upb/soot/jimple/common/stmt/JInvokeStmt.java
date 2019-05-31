@@ -53,11 +53,6 @@ public class JInvokeStmt extends AbstractStmt {
   }
 
   @Override
-  public JInvokeStmt clone() {
-    return new JInvokeStmt(Jimple.cloneIfNecessary(getInvokeExpr()), getPositionInfo().clone());
-  }
-
-  @Override
   public boolean containsInvokeExpr() {
     return true;
   }
