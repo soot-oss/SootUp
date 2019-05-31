@@ -47,11 +47,6 @@ public abstract class AbstractOpStmt extends AbstractStmt {
     return opBox.getValue();
   }
 
-  public final void setOp(Value op) {
-    // TODO Don't merge like this
-    throw new RuntimeException("This method will be removed in another PR");
-  }
-
   public final ValueBox getOpBox() {
     return opBox;
   }
