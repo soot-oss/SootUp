@@ -30,7 +30,7 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -109,7 +109,7 @@ public abstract class AbstractInvokeExpr implements Expr {
     }
   }
 
-  protected void argBoxesToPrinter(IStmtPrinter up) {
+  protected void argBoxesToPrinter(StmtPrinter up) {
     if (argBoxes != null) {
       final int len = argBoxes.length;
       if (0 < len) {

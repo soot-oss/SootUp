@@ -8,8 +8,9 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SourceType;
-import de.upb.soot.frontends.IMethodSource;
+import de.upb.soot.frontends.MethodSource;
 import de.upb.soot.frontends.java.EagerJavaClassSource;
+import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -18,8 +19,7 @@ import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.constant.IntConstant;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.namespaces.JavaClassPathNamespace;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
@@ -32,7 +32,7 @@ import java.util.*;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
-class DummyMethodSource implements IMethodSource {
+class DummyMethodSource implements MethodSource {
   private Body body;
   private MethodSignature methodSignature;
 
@@ -92,7 +92,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     EagerJavaClassSource javaClassSource =
         new EagerJavaClassSource(
-            new JavaClassPathNamespace("src/main/java/de/upb/soot"),
+            new JavaClassPathAnalysisInputLocation("src/main/java/de/upb/soot"),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
             superClassSignature,
@@ -118,7 +118,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     HashSet<Local> locals = new HashSet<>();
     List<Trap> traps = new LinkedList<>();
-    List<IStmt> stmts = new LinkedList<>();
+    List<Stmt> stmts = new LinkedList<>();
 
     JavaClassType typeSignature = dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
     //    new RefType(view, dsm.getTypeSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
@@ -136,7 +136,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     stmts.add(Jimple.newReturnVoidStmt(nop));
 
     Body body = new Body(locals, traps, stmts, new NoPositionInformation());
-    IMethodSource methodSource = new DummyMethodSource(methodSignature, body);
+    MethodSource methodSource = new DummyMethodSource(methodSignature, body);
 
     return new SootMethod(
         methodSource,

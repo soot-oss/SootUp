@@ -28,10 +28,10 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.PrimitiveType;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 
 public class JLengthExpr extends AbstractUnopExpr {
   /** */
@@ -58,7 +58,7 @@ public class JLengthExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.LENGTHOF);
     up.literal(" ");
     opBox.toString(up);
@@ -70,7 +70,7 @@ public class JLengthExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseLengthExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseLengthExpr(this);
   }
 }

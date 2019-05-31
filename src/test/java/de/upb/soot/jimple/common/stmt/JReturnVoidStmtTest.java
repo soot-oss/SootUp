@@ -36,7 +36,7 @@ public class JReturnVoidStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    IStmt rStmt = new JReturnVoidStmt(nop);
+    Stmt rStmt = new JReturnVoidStmt(nop);
 
     // equivTo
     Assert.assertTrue(rStmt.equivTo(rStmt));

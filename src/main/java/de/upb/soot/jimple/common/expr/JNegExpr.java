@@ -28,12 +28,12 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 
 public class JNegExpr extends AbstractUnopExpr {
   /** */
@@ -60,7 +60,7 @@ public class JNegExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.NEG);
     up.literal(" ");
     opBox.toString(up);
@@ -88,7 +88,7 @@ public class JNegExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseNegExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseNegExpr(this);
   }
 }

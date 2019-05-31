@@ -33,12 +33,12 @@ import de.upb.soot.jimple.common.expr.JShrExpr;
 import de.upb.soot.jimple.common.expr.JSubExpr;
 import de.upb.soot.jimple.common.expr.JUshrExpr;
 import de.upb.soot.jimple.common.expr.JXorExpr;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.stmt.JIfStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
 import java.util.Arrays;
@@ -76,7 +76,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -169,7 +169,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(6, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -242,7 +242,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -305,7 +305,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -396,7 +396,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -487,7 +487,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -548,7 +548,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -640,7 +640,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(6, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -708,7 +708,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -769,7 +769,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -830,7 +830,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -891,7 +891,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -982,7 +982,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(6, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1053,7 +1053,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(7, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1135,7 +1135,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(4, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1185,7 +1185,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1247,7 +1247,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1338,7 +1338,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1431,7 +1431,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(4, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1483,7 +1483,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1548,7 +1548,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1613,7 +1613,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1678,7 +1678,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1743,7 +1743,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(7, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1828,7 +1828,7 @@ public class BinaryOpInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(7, stmts.size());
 
     assertInstanceOfSatisfying(

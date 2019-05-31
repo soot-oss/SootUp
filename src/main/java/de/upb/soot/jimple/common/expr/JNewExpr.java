@@ -28,11 +28,11 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,7 +63,7 @@ public class JNewExpr implements Expr {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.NEW);
     up.literal(" ");
     up.typeSignature(type);
@@ -89,7 +89,7 @@ public class JNewExpr implements Expr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseNewExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseNewExpr(this);
   }
 }

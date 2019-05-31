@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.IdentifierFactory;
-import de.upb.soot.namespaces.FileType;
+import de.upb.soot.inputlocation.FileType;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.NullType;

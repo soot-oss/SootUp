@@ -3,9 +3,9 @@ package de.upb.soot.util.printer;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.common.ref.IdentityRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.Type;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,9 +15,9 @@ import java.util.Set;
 
 public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   /** branch targets * */
-  protected Map<IStmt, String> labels;
+  protected Map<Stmt, String> labels;
   /** for unit references in Phi nodes * */
-  protected Map<IStmt, String> references;
+  protected Map<Stmt, String> references;
 
   protected String labelIndent = "\u0020\u0020\u0020\u0020\u0020";
 
@@ -25,11 +25,11 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     createLabelMaps(b);
   }
 
-  public Map<IStmt, String> labels() {
+  public Map<Stmt, String> labels() {
     return labels;
   }
 
-  public Map<IStmt, String> references() {
+  public Map<Stmt, String> references() {
     return references;
   }
 
@@ -49,7 +49,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public abstract void typeSignature(Type t);
 
   @Override
-  public void stmtRef(IStmt u, boolean branchTarget) {
+  public void stmtRef(Stmt u, boolean branchTarget) {
     String oldIndent = getIndent();
 
     // normal case, ie labels
@@ -80,18 +80,18 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   }
 
   private void createLabelMaps(Body body) {
-    Collection<IStmt> stmts = body.getStmts();
+    Collection<Stmt> stmts = body.getStmts();
 
     labels = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
     references = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
 
     // Create statement name table
-    Set<IStmt> labelStmts = new HashSet<>();
-    Set<IStmt> refStmts = new HashSet<>();
+    Set<Stmt> labelStmts = new HashSet<>();
+    Set<Stmt> refStmts = new HashSet<>();
 
     // Build labelStmts and refStmts
-    for (IStmtBox box : body.getAllStmtBoxes()) {
-      IStmt stmt = box.getStmt();
+    for (StmtBox box : body.getAllStmtBoxes()) {
+      Stmt stmt = box.getStmt();
 
       if (box.isBranchTarget()) {
         labelStmts.add(stmt);
@@ -110,7 +110,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     int refCount = 0;
 
     // Traverse the stmts and assign a label if necessary
-    for (IStmt s : stmts) {
+    for (Stmt s : stmts) {
       if (labelStmts.contains(s)) {
         labels.put(s, String.format(formatString, ++labelCount));
       }

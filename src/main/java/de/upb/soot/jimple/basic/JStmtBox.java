@@ -29,18 +29,18 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class JStmtBox implements IStmtBox {
+public class JStmtBox implements StmtBox {
   /** */
   private static final long serialVersionUID = 7292172470036407386L;
 
-  @Nullable protected IStmt stmt;
+  @Nullable protected Stmt stmt;
 
-  public JStmtBox(@Nullable IStmt stmt) {
+  public JStmtBox(@Nullable Stmt stmt) {
     this.stmt = stmt;
   }
 
@@ -50,7 +50,7 @@ public class JStmtBox implements IStmtBox {
   }
 
   @Override
-  public void setStmt(@Nullable IStmt stmt) {
+  public void setStmt(@Nullable Stmt stmt) {
     // Remove this from set of back pointers.
     if (this.stmt != null) {
       this.stmt.removeBoxPointingToThis(this);
@@ -66,12 +66,12 @@ public class JStmtBox implements IStmtBox {
   }
 
   @Override
-  public @Nullable IStmt getStmt() {
+  public @Nullable Stmt getStmt() {
     return stmt;
   }
 
   @Override
-  public void toString(@Nonnull IStmtPrinter up) {
+  public void toString(@Nonnull StmtPrinter up) {
     up.startStmtBox(this);
     up.stmtRef(stmt, isBranchTarget());
     up.endStmtBox(this);

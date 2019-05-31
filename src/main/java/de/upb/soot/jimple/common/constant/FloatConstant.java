@@ -25,8 +25,8 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.visitor.IConstantVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ConstantVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 import javax.annotation.Nonnull;
@@ -176,8 +176,8 @@ public class FloatConstant implements RealConstant<FloatConstant> {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IConstantVisitor) sw).caseFloatConstant(this);
+  public void accept(Visitor sw) {
+    ((ConstantVisitor) sw).caseFloatConstant(this);
   }
 
   public float getValue() {

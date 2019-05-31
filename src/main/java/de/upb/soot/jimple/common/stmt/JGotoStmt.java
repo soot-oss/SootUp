@@ -26,12 +26,12 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.jimple.visitor.IStmtVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.visitor.StmtVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,14 +39,14 @@ public class JGotoStmt extends AbstractStmt {
   /** */
   private static final long serialVersionUID = -7771670610404109177L;
 
-  final IStmtBox targetBox;
-  final List<IStmtBox> targetBoxes;
+  final StmtBox targetBox;
+  final List<StmtBox> targetBoxes;
 
-  public JGotoStmt(IStmt target, PositionInfo positionInfo) {
+  public JGotoStmt(Stmt target, PositionInfo positionInfo) {
     this(Jimple.newStmtBox(target), positionInfo);
   }
 
-  public JGotoStmt(IStmtBox box, PositionInfo positionInfo) {
+  public JGotoStmt(StmtBox box, PositionInfo positionInfo) {
     super(positionInfo);
     targetBox = box;
     targetBoxes = Collections.singletonList(box);
@@ -54,7 +54,7 @@ public class JGotoStmt extends AbstractStmt {
 
   @Override
   public String toString() {
-    IStmt t = getTarget();
+    Stmt t = getTarget();
     String target = "(branch)";
     if (!t.branches()) {
       target = t.toString();
@@ -63,32 +63,32 @@ public class JGotoStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.GOTO);
     up.literal(" ");
     targetBox.toString(up);
   }
 
-  public IStmt getTarget() {
+  public Stmt getTarget() {
     return targetBox.getStmt();
   }
 
-  public void setTarget(IStmt target) {
+  public void setTarget(Stmt target) {
     targetBox.setStmt(target);
   }
 
-  public IStmtBox getTargetBox() {
+  public StmtBox getTargetBox() {
     return targetBox;
   }
 
   @Override
-  public List<IStmtBox> getStmtBoxes() {
+  public List<StmtBox> getStmtBoxes() {
     return targetBoxes;
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseGotoStmt(this);
+  public void accept(Visitor sw) {
+    ((StmtVisitor) sw).caseGotoStmt(this);
   }
 
   @Override

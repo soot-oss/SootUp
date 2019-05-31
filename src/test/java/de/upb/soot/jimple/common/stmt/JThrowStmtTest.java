@@ -44,7 +44,7 @@ public class JThrowStmtTest {
     Local localDifferent = new Local("$r1", typeFactory.getType("java.lang.Exception"));
     Local localDifferent2 = new Local("$r0", typeFactory.getType("sompepackage.MyException"));
 
-    IStmt tStmt = new JThrowStmt(local, nop);
+    Stmt tStmt = new JThrowStmt(local, nop);
 
     // equivTo
     Assert.assertTrue(tStmt.equivTo(tStmt));

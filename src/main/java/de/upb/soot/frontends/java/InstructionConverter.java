@@ -74,13 +74,13 @@ import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIfStmt;
 import de.upb.soot.jimple.common.stmt.JInvokeStmt;
 import de.upb.soot.jimple.common.stmt.JNopStmt;
 import de.upb.soot.jimple.common.stmt.JThrowStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
@@ -115,7 +115,7 @@ public class InstructionConverter {
   protected final Map<JGotoStmt, Integer> targetsOfGotoStmts;
   protected final Map<JLookupSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
   protected final Map<JLookupSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
-  protected Map<JLookupSwitchStmt, List<IStmt>> targetStmtsOfLookUpSwitchStmts;
+  protected Map<JLookupSwitchStmt, List<Stmt>> targetStmtsOfLookUpSwitchStmts;
   private final Map<Integer, Local> locals;
   private final IdentifierFactory identifierFactory;
 
@@ -137,8 +137,8 @@ public class InstructionConverter {
     this.identifierFactory = converter.view.getIdentifierFactory();
   }
 
-  public List<IStmt> convertInstruction(DebuggingInformation debugInfo, SSAInstruction inst) {
-    List<IStmt> stmts = new ArrayList<>();
+  public List<Stmt> convertInstruction(DebuggingInformation debugInfo, SSAInstruction inst) {
+    List<Stmt> stmts = new ArrayList<>();
     // System.out.println(sootMethod.getSignature());
     // System.out.println(inst);
     if (inst instanceof SSAConditionalBranchInstruction) {
@@ -208,7 +208,7 @@ public class InstructionConverter {
     return stmts;
   }
 
-  private IStmt convertArrayStoreInstruction(
+  private Stmt convertArrayStoreInstruction(
       DebuggingInformation debugInfo, SSAArrayStoreInstruction inst) {
     Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
     int i = inst.getIndex();
@@ -237,7 +237,7 @@ public class InstructionConverter {
         new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
   }
 
-  private IStmt convertArrayLoadInstruction(
+  private Stmt convertArrayLoadInstruction(
       DebuggingInformation debugInfo, SSAArrayLoadInstruction inst) {
     Local base = getLocal(UnknownType.getInstance(), inst.getArrayRef());
     int i = inst.getIndex();
@@ -262,7 +262,7 @@ public class InstructionConverter {
         new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
   }
 
-  private IStmt convertArrayLengthInstruction(
+  private Stmt convertArrayLengthInstruction(
       DebuggingInformation debugInfo, SSAArrayLengthInstruction inst) {
     int result = inst.getDef();
     Local left = getLocal(PrimitiveType.getInt(), result);
@@ -278,7 +278,7 @@ public class InstructionConverter {
         left, right, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
   }
 
-  private IStmt convertGetCaughtExceptionInstruction(
+  private Stmt convertGetCaughtExceptionInstruction(
       DebuggingInformation debugInfo, SSAGetCaughtExceptionInstruction inst) {
     int exceptionValue = inst.getException();
     Local local =
@@ -295,7 +295,7 @@ public class InstructionConverter {
         local, caught, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
   }
 
-  private IStmt convertMonitorInstruction(
+  private Stmt convertMonitorInstruction(
       DebuggingInformation debugInfo, SSAMonitorInstruction inst) {
     Value op = getLocal(UnknownType.getInstance(), inst.getRef());
 
@@ -312,9 +312,9 @@ public class InstructionConverter {
     }
   }
 
-  private List<IStmt> convertAssertInstruction(
+  private List<Stmt> convertAssertInstruction(
       DebuggingInformation debugInfo, AstAssertInstruction inst) {
-    List<IStmt> stmts = new ArrayList<>();
+    List<Stmt> stmts = new ArrayList<>();
     // create a static field for checking if assertion is disabled.
     JavaClassType cSig = methodSignature.getDeclClassSignature();
     FieldSignature fieldSig =
@@ -390,8 +390,8 @@ public class InstructionConverter {
     return stmts;
   }
 
-  private List<IStmt> convertAstLexicalWrite(DebuggingInformation debugInfo, AstLexicalWrite inst) {
-    List<IStmt> stmts = new ArrayList<>();
+  private List<Stmt> convertAstLexicalWrite(DebuggingInformation debugInfo, AstLexicalWrite inst) {
+    List<Stmt> stmts = new ArrayList<>();
     for (int i = 0; i < inst.getAccessCount(); i++) {
       Access access = inst.getAccess(i);
       Type type = converter.convertType(access.type);
@@ -423,8 +423,8 @@ public class InstructionConverter {
     return stmts;
   }
 
-  private List<IStmt> convertAstLexicalRead(DebuggingInformation debugInfo, AstLexicalRead inst) {
-    List<IStmt> stmts = new ArrayList<>();
+  private List<Stmt> convertAstLexicalRead(DebuggingInformation debugInfo, AstLexicalRead inst) {
+    List<Stmt> stmts = new ArrayList<>();
     for (int i = 0; i < inst.getAccessCount(); i++) {
       Access access = inst.getAccess(i);
       Type type = converter.convertType(access.type);
@@ -451,7 +451,7 @@ public class InstructionConverter {
     return stmts;
   }
 
-  private IStmt convertEnclosingObjectReference(
+  private Stmt convertEnclosingObjectReference(
       DebuggingInformation debugInfo, EnclosingObjectReference inst) {
     Type enclosingType = converter.convertType(inst.getEnclosingType());
     Value variable = getLocal(enclosingType, inst.getDef());
@@ -468,7 +468,7 @@ public class InstructionConverter {
         variable, rvalue, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
   }
 
-  private IStmt convertCheckCastInstruction(
+  private Stmt convertCheckCastInstruction(
       DebuggingInformation debugInfo, SSACheckCastInstruction inst) {
     TypeReference[] types = inst.getDeclaredResultTypes();
     Local result = getLocal(converter.convertType(types[0]), inst.getResult());
@@ -487,7 +487,7 @@ public class InstructionConverter {
         result, castExpr, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
   }
 
-  private IStmt convertLoadMetadataInstruction(
+  private Stmt convertLoadMetadataInstruction(
       DebuggingInformation debugInfo, SSALoadMetadataInstruction inst) {
     Local lval = getLocal(converter.convertType(inst.getType()), inst.getDef());
     TypeReference token = (TypeReference) inst.getToken();
@@ -498,15 +498,14 @@ public class InstructionConverter {
         lval, c, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
   }
 
-  private IStmt convertSwitchInstruction(
-      DebuggingInformation debugInfo, SSASwitchInstruction inst) {
+  private Stmt convertSwitchInstruction(DebuggingInformation debugInfo, SSASwitchInstruction inst) {
     int val = inst.getUse(0);
     Local local = getLocal(UnknownType.getInstance(), val);
     int[] cases = inst.getCasesAndLabels();
     int defaultCase = inst.getDefault();
     List<IntConstant> lookupValues = new ArrayList<>();
     List<Integer> targetsList = new ArrayList<>();
-    List<? extends IStmt> targets = new ArrayList<>();
+    List<? extends Stmt> targets = new ArrayList<>();
     for (int i = 0; i < cases.length; i++) {
       int c = cases[i];
       if (i % 2 == 0) {
@@ -517,7 +516,7 @@ public class InstructionConverter {
         targets.add(null); // add null as placeholder for targets
       }
     }
-    IStmt defaultTarget = null;
+    Stmt defaultTarget = null;
 
     Position[] operandPos = new Position[2];
     // TODO: [ms] how to organize the operands
@@ -539,7 +538,7 @@ public class InstructionConverter {
     return stmt;
   }
 
-  private IStmt convertThrowInstruction(DebuggingInformation debugInfo, SSAThrowInstruction inst) {
+  private Stmt convertThrowInstruction(DebuggingInformation debugInfo, SSAThrowInstruction inst) {
     int exception = inst.getException();
     Local local = getLocal(UnknownType.getInstance(), exception);
 
@@ -551,7 +550,7 @@ public class InstructionConverter {
         local, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
   }
 
-  private IStmt convertUnaryOpInstruction(
+  private Stmt convertUnaryOpInstruction(
       DebuggingInformation debugInfo, SSAUnaryOpInstruction inst) {
     int def = inst.getDef();
     int use = inst.getUse(0);
@@ -581,7 +580,7 @@ public class InstructionConverter {
     }
   }
 
-  private IStmt convertPutInstruction(DebuggingInformation debugInfo, SSAPutInstruction inst) {
+  private Stmt convertPutInstruction(DebuggingInformation debugInfo, SSAPutInstruction inst) {
     FieldReference fieldRef = inst.getDeclaredField();
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
@@ -616,7 +615,7 @@ public class InstructionConverter {
         new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
   }
 
-  private IStmt convertNewInstruction(DebuggingInformation debugInfo, SSANewInstruction inst) {
+  private Stmt convertNewInstruction(DebuggingInformation debugInfo, SSANewInstruction inst) {
     int result = inst.getDef();
     Type type = converter.convertType(inst.getNewSite().getDeclaredType());
     Value var = getLocal(type, result);
@@ -644,13 +643,13 @@ public class InstructionConverter {
         var, rvalue, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
   }
 
-  private IStmt convertComparisonInstruction(
+  private Stmt convertComparisonInstruction(
       DebuggingInformation debugInfo, SSAComparisonInstruction inst) {
     // TODO imlement
     return Jimple.newNopStmt(new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), null));
   }
 
-  private IStmt convertInstanceofInstruction(
+  private Stmt convertInstanceofInstruction(
       DebuggingInformation debugInfo, SSAInstanceofInstruction inst) {
     int result = inst.getDef();
     int ref = inst.getRef();
@@ -669,7 +668,7 @@ public class InstructionConverter {
         left, expr, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
   }
 
-  private IStmt convertConversionInstruction(
+  private Stmt convertConversionInstruction(
       DebuggingInformation debugInfo, SSAConversionInstruction inst) {
     Type fromType = converter.convertType(inst.getFromType());
     Type toType = converter.convertType(inst.getToType());
@@ -693,7 +692,7 @@ public class InstructionConverter {
         lvalue, cast, new PositionInfo(debugInfo.getInstructionPosition(inst.iindex), operandPos));
   }
 
-  private IStmt convertInvokeInstruction(
+  private Stmt convertInvokeInstruction(
       DebuggingInformation debugInfo, AstJavaInvokeInstruction invokeInst) {
     Value invoke;
     CallSiteReference callee = invokeInst.getCallSite();
@@ -780,11 +779,11 @@ public class InstructionConverter {
     }
   }
 
-  private List<IStmt> convertBranchInstruction(
+  private List<Stmt> convertBranchInstruction(
       DebuggingInformation debugInfo, SSAConditionalBranchInstruction condInst) {
     PositionInfo posInfo =
         new PositionInfo(debugInfo.getInstructionPosition(condInst.iindex), null);
-    List<IStmt> stmts = new ArrayList<IStmt>();
+    List<Stmt> stmts = new ArrayList<Stmt>();
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
     Value value1 = extractValueAndAddAssignStmt(posInfo, stmts, val1);
@@ -815,7 +814,7 @@ public class InstructionConverter {
     return stmts;
   }
 
-  private Value extractValueAndAddAssignStmt(PositionInfo posInfo, List<IStmt> addTo, int val) {
+  private Value extractValueAndAddAssignStmt(PositionInfo posInfo, List<Stmt> addTo, int val) {
     Value value;
     Integer constant = null;
     if (symbolTable.isZero(val)) {
@@ -837,8 +836,7 @@ public class InstructionConverter {
     return value;
   }
 
-  private IStmt convertReturnInstruction(
-      DebuggingInformation debugInfo, SSAReturnInstruction inst) {
+  private Stmt convertReturnInstruction(DebuggingInformation debugInfo, SSAReturnInstruction inst) {
     int result = inst.getResult();
     if (inst.returnsVoid()) {
       // this is return void stmt
@@ -859,7 +857,7 @@ public class InstructionConverter {
     }
   }
 
-  private IStmt convertBinaryOpInstruction(
+  private Stmt convertBinaryOpInstruction(
       DebuggingInformation debugInfo, SSABinaryOpInstruction binOpInst) {
     int def = binOpInst.getDef();
     int val1 = binOpInst.getUse(0);
@@ -936,8 +934,7 @@ public class InstructionConverter {
         new PositionInfo(debugInfo.getInstructionPosition(binOpInst.iindex), operandPos));
   }
 
-  private IStmt convertGoToInstruction(
-      DebuggingInformation debugInfo, SSAGotoInstruction gotoInst) {
+  private Stmt convertGoToInstruction(DebuggingInformation debugInfo, SSAGotoInstruction gotoInst) {
     JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
     JGotoStmt gotoStmt =
         Jimple.newGotoStmt(
@@ -946,7 +943,7 @@ public class InstructionConverter {
     return gotoStmt;
   }
 
-  private IStmt convertGetInstruction(DebuggingInformation debugInfo, SSAGetInstruction inst) {
+  private Stmt convertGetInstruction(DebuggingInformation debugInfo, SSAGetInstruction inst) {
     int def = inst.getDef(0);
     FieldReference fieldRef = inst.getDeclaredField();
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
@@ -1036,7 +1033,7 @@ public class InstructionConverter {
    * @param stmt the converted jimple stmt.
    * @param iindex the instruction index of the corresponding instruction in Wala.
    */
-  protected void setTarget(IStmt stmt, int iindex) {
+  protected void setTarget(Stmt stmt, int iindex) {
     if (this.targetsOfIfStmts.containsValue(iindex)) {
       for (JIfStmt ifStmt : this.targetsOfIfStmts.keySet()) {
         if (this.targetsOfIfStmts.get(ifStmt).equals(iindex)) {
@@ -1062,7 +1059,7 @@ public class InstructionConverter {
     }
     for (JLookupSwitchStmt lookupSwith : this.targetsOfLookUpSwitchStmts.keySet()) {
       if (this.targetsOfLookUpSwitchStmts.get(lookupSwith).contains(iindex)) {
-        List<IStmt> targets = lookupSwith.getTargets();
+        List<Stmt> targets = lookupSwith.getTargets();
         if (targets.contains(null)) { // targets only contains
           // placeholder
           targets = new ArrayList<>();

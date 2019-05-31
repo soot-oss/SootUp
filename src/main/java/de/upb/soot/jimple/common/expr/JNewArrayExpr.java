@@ -30,11 +30,11 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,7 +73,7 @@ public class JNewArrayExpr implements Expr {
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.NEWARRAY);
     up.literal(" ");
     up.literal("(");
@@ -131,7 +131,7 @@ public class JNewArrayExpr implements Expr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseNewArrayExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseNewArrayExpr(this);
   }
 }

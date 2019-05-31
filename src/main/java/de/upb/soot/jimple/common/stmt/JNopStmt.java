@@ -28,9 +28,9 @@ package de.upb.soot.jimple.common.stmt;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.jimple.visitor.IStmtVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.visitor.StmtVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.printer.StmtPrinter;
 
 public class JNopStmt extends AbstractStmt {
   /** */
@@ -46,13 +46,13 @@ public class JNopStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.NOP);
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseNopStmt(this);
+  public void accept(Visitor sw) {
+    ((StmtVisitor) sw).caseNopStmt(this);
   }
 
   @Override

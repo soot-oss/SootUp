@@ -13,10 +13,10 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
@@ -55,7 +55,7 @@ public class GetInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(3, stmts.size());
 
     assertInstanceOfSatisfying(

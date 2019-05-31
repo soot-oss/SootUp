@@ -26,8 +26,8 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 
 public class JRemExpr extends AbstractFloatBinopExpr {
   /** */
@@ -43,7 +43,7 @@ public class JRemExpr extends AbstractFloatBinopExpr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseRemExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseRemExpr(this);
   }
 }

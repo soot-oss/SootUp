@@ -32,7 +32,7 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
 
 public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
@@ -71,7 +71,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
 
     up.literal(Jimple.SPECIALINVOKE);
     up.literal(" ");

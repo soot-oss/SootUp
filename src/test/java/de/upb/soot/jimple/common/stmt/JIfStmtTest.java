@@ -39,11 +39,11 @@ public class JIfStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    IStmt target = new JNopStmt(nop);
+    Stmt target = new JNopStmt(nop);
 
     Expr condition = new JEqExpr(IntConstant.getInstance(42), IntConstant.getInstance(123));
     ConditionExprBox conditionBox = new ConditionExprBox(condition);
-    IStmt ifStmt = new JIfStmt(conditionBox.getValue(), target, nop);
+    Stmt ifStmt = new JIfStmt(conditionBox.getValue(), target, nop);
 
     // toString
     Assert.assertEquals("if 42 == 123 goto nop", ifStmt.toString());

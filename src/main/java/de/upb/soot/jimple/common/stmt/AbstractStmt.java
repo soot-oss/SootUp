@@ -25,18 +25,18 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractStmt implements IStmt {
+public abstract class AbstractStmt implements Stmt {
   /** */
   private static final long serialVersionUID = 8029583017798662173L;
 
@@ -70,16 +70,16 @@ public abstract class AbstractStmt implements IStmt {
    * list of boxes is dynamically updated as the structure changes.
    */
   @Override
-  public List<IStmtBox> getStmtBoxes() {
+  public List<StmtBox> getStmtBoxes() {
     return Collections.emptyList();
   }
 
   /** List of UnitBoxes pointing to this Unit. */
-  List<IStmtBox> boxesPointingToThis = null;
+  List<StmtBox> boxesPointingToThis = null;
 
   /** Returns a list of Boxes pointing to this Unit. */
   @Override
-  public List<IStmtBox> getBoxesPointingToThis() {
+  public List<StmtBox> getBoxesPointingToThis() {
     if (boxesPointingToThis == null) {
       return Collections.emptyList();
     }
@@ -87,7 +87,7 @@ public abstract class AbstractStmt implements IStmt {
   }
 
   @Override
-  public void addBoxPointingToThis(IStmtBox b) {
+  public void addBoxPointingToThis(StmtBox b) {
     if (boxesPointingToThis == null) {
       boxesPointingToThis = new ArrayList<>();
     }
@@ -95,7 +95,7 @@ public abstract class AbstractStmt implements IStmt {
   }
 
   @Override
-  public void removeBoxPointingToThis(IStmtBox b) {
+  public void removeBoxPointingToThis(StmtBox b) {
     if (boxesPointingToThis != null) {
       boxesPointingToThis.remove(b);
     }
@@ -103,7 +103,7 @@ public abstract class AbstractStmt implements IStmt {
 
   @Override
   public void clearStmtBoxes() {
-    for (IStmtBox ub : getStmtBoxes()) {
+    for (StmtBox ub : getStmtBoxes()) {
       ub.setStmt(null);
     }
   }
@@ -129,16 +129,16 @@ public abstract class AbstractStmt implements IStmt {
 
   /** Used to implement the Switchable construct. */
   @Override
-  public void accept(IVisitor sw) {}
+  public void accept(Visitor sw) {}
 
   @Override
-  public void redirectJumpsToThisTo(IStmt newLocation) {
-    List<IStmtBox> boxesPointing = getBoxesPointingToThis();
+  public void redirectJumpsToThisTo(Stmt newLocation) {
+    List<StmtBox> boxesPointing = getBoxesPointingToThis();
 
     // important to have a static copy
-    List<IStmtBox> boxesCopy = new ArrayList<>(boxesPointing);
+    List<StmtBox> boxesCopy = new ArrayList<>(boxesPointing);
 
-    for (IStmtBox box : boxesCopy) {
+    for (StmtBox box : boxesCopy) {
       if (box.getStmt() != this) {
         throw new RuntimeException("Something weird's happening");
       }

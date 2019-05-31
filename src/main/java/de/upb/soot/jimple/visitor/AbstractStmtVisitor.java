@@ -41,7 +41,7 @@ import de.upb.soot.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.jimple.javabytecode.stmt.JTableSwitchStmt;
 
-public abstract class AbstractStmtVisitor implements IStmtVisitor {
+public abstract class AbstractStmtVisitor implements StmtVisitor {
   Object result;
 
   @Override

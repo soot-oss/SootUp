@@ -2,8 +2,8 @@ package de.upb.soot.graph;
 
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.basic.IStmtBox;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.basic.StmtBox;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,20 +13,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Represents a CFG where the nodes are {@link IStmt} instances and edges represent unexceptional
- * and (possibly) exceptional control flow between <tt>IStmt</tt>s.
+ * Represents a CFG where the nodes are {@link Stmt} instances and edges represent unexceptional and
+ * (possibly) exceptional control flow between <tt>Stmt</tt>s.
  *
  * <p>This is an abstract class, providing the facilities used to build CFGs for specific purposes.
  */
-public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
-  protected List<IStmt> heads;
-  protected List<IStmt> tails;
+public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
+  protected List<Stmt> heads;
+  protected List<Stmt> tails;
 
-  protected Map<IStmt, List<IStmt>> stmtToSuccs;
-  protected Map<IStmt, List<IStmt>> stmtToPreds;
+  protected Map<Stmt, List<Stmt>> stmtToSuccs;
+  protected Map<Stmt, List<Stmt>> stmtToPreds;
   protected SootMethod method;
   protected Body body;
-  protected Collection<IStmt> orderedStmts;
+  protected Collection<Stmt> orderedStmts;
 
   /**
    * Performs the work that is required to construct any sort of <tt>IStmtGraph</tt>.
@@ -43,48 +43,48 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
    * Utility methodRef for <tt>IStmtGraph</tt> constructors. It computes the edges corresponding to
    * unexceptional control flow.
    *
-   * @param stmtToSuccs A {@link Map} from {@link IStmt}s to {@link List}s of {@link IStmt}s. This
-   *     is an ``out parameter''; callers must pass an empty {@link Map}.
-   *     <tt>buildUnexceptionalEdges</tt> will add a mapping for every <tt>IStmt</tt> in the body to
+   * @param stmtToSuccs A {@link Map} from {@link Stmt}s to {@link List}s of {@link Stmt}s. This is
+   *     an ``out parameter''; callers must pass an empty {@link Map}.
+   *     <tt>buildUnexceptionalEdges</tt> will add a mapping for every <tt>Stmt</tt> in the body to
    *     a list of its unexceptional successors.
-   * @param stmtToPreds A {@link Map} from {@link IStmt}s to {@link List}s of {@link IStmt}s. This
-   *     is an ``out parameter''; callers must pass an empty {@link Map}.
-   *     <tt>buildUnexceptionalEdges</tt> will add a mapping for every <tt>IStmt</tt> in the body to
+   * @param stmtToPreds A {@link Map} from {@link Stmt}s to {@link List}s of {@link Stmt}s. This is
+   *     an ``out parameter''; callers must pass an empty {@link Map}.
+   *     <tt>buildUnexceptionalEdges</tt> will add a mapping for every <tt>Stmt</tt> in the body to
    *     a list of its unexceptional predecessors.
    */
   protected void buildUnexceptionalEdges(
-      Map<IStmt, List<IStmt>> stmtToSuccs, Map<IStmt, List<IStmt>> stmtToPreds) {
-    Iterator<IStmt> stmtIt = orderedStmts.iterator();
-    IStmt currentIStmt, nextIStmt;
+      Map<Stmt, List<Stmt>> stmtToSuccs, Map<Stmt, List<Stmt>> stmtToPreds) {
+    Iterator<Stmt> stmtIt = orderedStmts.iterator();
+    Stmt currentStmt, nextStmt;
 
-    nextIStmt = stmtIt.hasNext() ? stmtIt.next() : null;
+    nextStmt = stmtIt.hasNext() ? stmtIt.next() : null;
 
-    while (nextIStmt != null) {
-      currentIStmt = nextIStmt;
-      nextIStmt = stmtIt.hasNext() ? stmtIt.next() : null;
+    while (nextStmt != null) {
+      currentStmt = nextStmt;
+      nextStmt = stmtIt.hasNext() ? stmtIt.next() : null;
 
-      ArrayList<IStmt> successors = new ArrayList<>();
+      ArrayList<Stmt> successors = new ArrayList<>();
 
-      if (currentIStmt.fallsThrough()) {
+      if (currentStmt.fallsThrough()) {
         // Add the next stmt as the successor
-        if (nextIStmt != null) {
-          successors.add(nextIStmt);
+        if (nextStmt != null) {
+          successors.add(nextStmt);
 
-          List<IStmt> preds = stmtToPreds.computeIfAbsent(nextIStmt, k -> new ArrayList<>());
-          preds.add(currentIStmt);
+          List<Stmt> preds = stmtToPreds.computeIfAbsent(nextStmt, k -> new ArrayList<>());
+          preds.add(currentStmt);
         }
       }
 
-      if (currentIStmt.branches()) {
-        for (IStmtBox targetBox : currentIStmt.getStmtBoxes()) {
-          IStmt target = targetBox.getStmt();
+      if (currentStmt.branches()) {
+        for (StmtBox targetBox : currentStmt.getStmtBoxes()) {
+          Stmt target = targetBox.getStmt();
           // Arbitrary bytecode can branch to the same
           // target it falls through to, so we screen for duplicates:
           if (!successors.contains(target)) {
             successors.add(target);
 
-            List<IStmt> preds = stmtToPreds.computeIfAbsent(target, k -> new ArrayList<>());
-            preds.add(currentIStmt);
+            List<Stmt> preds = stmtToPreds.computeIfAbsent(target, k -> new ArrayList<>());
+            preds.add(currentStmt);
           }
         }
       }
@@ -92,7 +92,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
       // Store away successors
       if (!successors.isEmpty()) {
         successors.trimToSize();
-        stmtToSuccs.put(currentIStmt, successors);
+        stmtToSuccs.put(currentStmt, successors);
       }
     }
   }
@@ -102,30 +102,30 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
    * stmtToPreds and stmtToSuccs maps have been built.
    *
    * <p><code>IStmtGraph</code> provides an implementation of <code>buildHeadsAndTails()</code>
-   * which defines the graph's set of heads to include the first {@link IStmt} in the graph's body,
-   * together with any other <tt>IStmt</tt> which has no predecessors. It defines the graph's set of
-   * tails to include all <tt>IStmt</tt>s with no successors. Subclasses of <code>IStmtGraph</code>
+   * which defines the graph's set of heads to include the first {@link Stmt} in the graph's body,
+   * together with any other <tt>Stmt</tt> which has no predecessors. It defines the graph's set of
+   * tails to include all <tt>Stmt</tt>s with no successors. Subclasses of <code>IStmtGraph</code>
    * may override this methodRef to change the criteria for classifying a node as a head or tail.
    */
   protected void buildHeadsAndTails() {
     tails = new ArrayList<>();
     heads = new ArrayList<>();
 
-    for (IStmt s : orderedStmts) {
-      List<IStmt> succs = stmtToSuccs.get(s);
+    for (Stmt s : orderedStmts) {
+      List<Stmt> succs = stmtToSuccs.get(s);
       if (succs == null || succs.isEmpty()) {
         tails.add(s);
       }
-      List<IStmt> preds = stmtToPreds.get(s);
+      List<Stmt> preds = stmtToPreds.get(s);
       if (preds == null || preds.isEmpty()) {
         heads.add(s);
       }
     }
 
-    // Add the first IStmt, even if it is the target of
+    // Add the first Stmt, even if it is the target of
     // a branch.
     if (!orderedStmts.isEmpty()) {
-      IStmt entryPoint = orderedStmts.iterator().next();
+      Stmt entryPoint = orderedStmts.iterator().next();
       if (!heads.contains(entryPoint)) {
         heads.add(entryPoint);
       }
@@ -133,25 +133,25 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   }
 
   /**
-   * Utility methodRef that produces a new map from the {@link IStmt}s of this graph's body to the
+   * Utility methodRef that produces a new map from the {@link Stmt}s of this graph's body to the
    * union of the values stored in the two argument {@link Map}s, used to combine the maps of
    * exceptional and unexceptional predecessors and successors into maps of all predecessors and
-   * successors. The values stored in both argument maps must be {@link List}s of {@link IStmt}s,
-   * which are assumed not to contain any duplicate <tt>IStmt</tt>s.
+   * successors. The values stored in both argument maps must be {@link List}s of {@link Stmt}s,
+   * which are assumed not to contain any duplicate <tt>Stmt</tt>s.
    *
    * @param mapA The first map to be combined.
    * @param mapB The second map to be combined.
    */
-  protected Map<IStmt, List<IStmt>> combineMapValues(
-      Map<IStmt, List<IStmt>> mapA, Map<IStmt, List<IStmt>> mapB) {
+  protected Map<Stmt, List<Stmt>> combineMapValues(
+      Map<Stmt, List<Stmt>> mapA, Map<Stmt, List<Stmt>> mapB) {
     // The duplicate screen
-    Map<IStmt, List<IStmt>> result = new HashMap<>(mapA.size() * 2 + 1, 0.7f);
-    for (IStmt stmt : orderedStmts) {
-      List<IStmt> listA = mapA.get(stmt);
+    Map<Stmt, List<Stmt>> result = new HashMap<>(mapA.size() * 2 + 1, 0.7f);
+    for (Stmt stmt : orderedStmts) {
+      List<Stmt> listA = mapA.get(stmt);
       if (listA == null) {
         listA = Collections.emptyList();
       }
-      List<IStmt> listB = mapB.get(stmt);
+      List<Stmt> listB = mapB.get(stmt);
       if (listB == null) {
         listB = Collections.emptyList();
       }
@@ -160,8 +160,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
       if (resultSize == 0) {
         result.put(stmt, Collections.emptyList());
       } else {
-        List<IStmt> resultList = new ArrayList<>(resultSize);
-        List<IStmt> list;
+        List<Stmt> resultList = new ArrayList<>(resultSize);
+        List<Stmt> list;
         // As a minor optimization of the duplicate screening,
         // copy the longer list first.
         if (listA.size() >= listB.size()) {
@@ -171,7 +171,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
           resultList.addAll(listB);
           list = listA;
         }
-        for (IStmt element : list) {
+        for (Stmt element : list) {
           // It is possible for there to be both an exceptional
           // and an unexceptional edge connecting two IStmts
           // (though probably not in a class generated by
@@ -192,22 +192,19 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   /**
    * Utility methodRef for adding an edge to maps representing the CFG.
    *
-   * @param stmtToSuccs The {@link Map} from {@link IStmt}s to {@link List}s of their successors.
-   * @param stmtToPreds The {@link Map} from {@link IStmt}s to {@link List}s of their successors.
-   * @param head The {@link IStmt} from which the edge starts.
-   * @param tail The {@link IStmt} to which the edge flows.
+   * @param stmtToSuccs The {@link Map} from {@link Stmt}s to {@link List}s of their successors.
+   * @param stmtToPreds The {@link Map} from {@link Stmt}s to {@link List}s of their successors.
+   * @param head The {@link Stmt} from which the edge starts.
+   * @param tail The {@link Stmt} to which the edge flows.
    */
   protected void addEdge(
-      Map<IStmt, List<IStmt>> stmtToSuccs,
-      Map<IStmt, List<IStmt>> stmtToPreds,
-      IStmt head,
-      IStmt tail) {
-    List<IStmt> headsSuccs = stmtToSuccs.computeIfAbsent(head, k -> new ArrayList<>(3));
+      Map<Stmt, List<Stmt>> stmtToSuccs, Map<Stmt, List<Stmt>> stmtToPreds, Stmt head, Stmt tail) {
+    List<Stmt> headsSuccs = stmtToSuccs.computeIfAbsent(head, k -> new ArrayList<>(3));
     // We expect this list to
     // remain short.
     if (!headsSuccs.contains(tail)) {
       headsSuccs.add(tail);
-      List<IStmt> tailsPreds = stmtToPreds.computeIfAbsent(tail, k -> new ArrayList<>());
+      List<Stmt> tailsPreds = stmtToPreds.computeIfAbsent(tail, k -> new ArrayList<>());
       tailsPreds.add(head);
     }
   }
@@ -228,7 +225,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
    * @param to end point for the path.
    * @return null if there is no such path.
    */
-  public List<IStmt> getExtendedBasicBlockPathBetween(IStmt from, IStmt to) {
+  public List<Stmt> getExtendedBasicBlockPathBetween(Stmt from, Stmt to) {
     AbstractStmtGraph g = this;
 
     // if this holds, we're doomed to failure!!!
@@ -238,7 +235,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
 
     // pathStack := list of succs lists
     // pathStackIndex := last visited index in pathStack
-    List<IStmt> pathStack = new ArrayList<>();
+    List<Stmt> pathStack = new ArrayList<>();
     List<Integer> pathStackIndex = new ArrayList<>();
 
     pathStack.add(from);
@@ -249,7 +246,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
     while (pathStackIndex.get(0) != psiMax) {
       int p = pathStackIndex.get(level);
 
-      List<IStmt> succs = g.getSuccsOf((pathStack.get(level)));
+      List<Stmt> succs = g.getSuccsOf((pathStack.get(level)));
       if (p >= succs.size()) {
         // no more succs - backtrack to previous level.
 
@@ -262,42 +259,42 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
         continue;
       }
 
-      IStmt betweenIStmt = (succs.get(p));
+      Stmt betweenStmt = (succs.get(p));
 
       // we win!
-      if (betweenIStmt == to) {
+      if (betweenStmt == to) {
         pathStack.add(to);
         return pathStack;
       }
 
-      // check preds of betweenIStmt to see if we should visit its kids.
-      if (g.getPredsOf(betweenIStmt).size() > 1) {
+      // check preds of betweenStmt to see if we should visit its kids.
+      if (g.getPredsOf(betweenStmt).size() > 1) {
         pathStackIndex.set(level, p + 1);
         continue;
       }
 
-      // visit kids of betweenIStmt.
+      // visit kids of betweenStmt.
       level++;
       pathStackIndex.add(0);
-      pathStack.add(betweenIStmt);
+      pathStack.add(betweenStmt);
     }
     return null;
   }
 
   /* DirectedGraph implementation */
   @Override
-  public List<IStmt> getHeads() {
+  public List<Stmt> getHeads() {
     return heads;
   }
 
   @Override
-  public List<IStmt> getTails() {
+  public List<Stmt> getTails() {
     return tails;
   }
 
   @Override
-  public List<IStmt> getPredsOf(IStmt u) {
-    List<IStmt> l = stmtToPreds.get(u);
+  public List<Stmt> getPredsOf(Stmt u) {
+    List<Stmt> l = stmtToPreds.get(u);
     if (l == null) {
       return Collections.emptyList();
     }
@@ -306,8 +303,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   }
 
   @Override
-  public List<IStmt> getSuccsOf(IStmt u) {
-    List<IStmt> l = stmtToSuccs.get(u);
+  public List<Stmt> getSuccsOf(Stmt u) {
+    List<Stmt> l = stmtToSuccs.get(u);
     if (l == null) {
       return Collections.emptyList();
     }
@@ -321,14 +318,14 @@ public abstract class AbstractStmtGraph implements DirectedGraph<IStmt> {
   }
 
   @Override
-  public Iterator<IStmt> iterator() {
+  public Iterator<Stmt> iterator() {
     return orderedStmts.iterator();
   }
 
   @Override
   public String toString() {
     StringBuilder buf = new StringBuilder();
-    for (IStmt u : orderedStmts) {
+    for (Stmt u : orderedStmts) {
       buf.append("// preds: ").append(getPredsOf(u)).append('\n');
       buf.append(u).append('\n');
       buf.append("// succs ").append(getSuccsOf(u)).append('\n');

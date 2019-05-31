@@ -1,7 +1,7 @@
 package de.upb.soot;
 
 import de.upb.soot.buildactor.ViewBuilder;
-import de.upb.soot.namespaces.INamespace;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
 import javax.annotation.Nonnull;
@@ -14,24 +14,24 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public class Project<N extends INamespace> {
-  /** Create a project from an arbitrary list of namespaces */
-  public Project(@Nonnull N namespace) {
-    this(namespace, DefaultIdentifierFactory.getInstance());
+public class Project<S extends AnalysisInputLocation> {
+  /** Create a project from an arbitrary list of input locations */
+  public Project(@Nonnull S inputLocation) {
+    this(inputLocation, DefaultIdentifierFactory.getInstance());
   }
 
-  /** Create a project from an arbitrary list of namespaces */
-  public Project(@Nonnull N namespaces, @Nonnull DefaultIdentifierFactory identifierFactory) {
-    this.namespace = namespaces;
+  /** Create a project from an arbitrary list of input locations */
+  public Project(@Nonnull S inputLocations, @Nonnull DefaultIdentifierFactory identifierFactory) {
+    this.inputLocation = inputLocations;
     this.identifierFactory = identifierFactory;
   }
 
-  @Nonnull private final N namespace;
+  @Nonnull private final S inputLocation;
 
-  /** Gets the namespace. */
+  /** Gets the inputLocation. */
   @Nonnull
-  public N getNamespace() {
-    return this.namespace;
+  public S getInputLocation() {
+    return this.inputLocation;
   }
 
   @Nonnull private final IdentifierFactory identifierFactory;
@@ -42,8 +42,8 @@ public class Project<N extends INamespace> {
   }
 
   /**
-   * Create a complete view from everything in all provided namespaces. This methodRef starts the
-   * reification process.
+   * Create a complete view from everything in all provided input locations. This methodRef starts
+   * the reification process.
    *
    * @return A complete view on the provided code
    */
@@ -62,7 +62,7 @@ public class Project<N extends INamespace> {
   }
 
   /**
-   * Returns a partial view on the code based on the provided scope and all namespaces in the
+   * Returns a partial view on the code based on the provided scope and all input locations in the
    * project. This methodRef starts the reification process.
    *
    * @param s A scope of interest for the view

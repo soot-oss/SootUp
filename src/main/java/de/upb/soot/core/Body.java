@@ -22,15 +22,15 @@ package de.upb.soot.core;
  */
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.util.Copyable;
 import de.upb.soot.util.EscapedWriter;
 import de.upb.soot.util.Utils;
@@ -51,7 +51,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -71,7 +76,7 @@ public class Body implements Serializable, Copyable {
   protected final List<Trap> traps;
 
   /** The stmts for this Body. */
-  protected final List<IStmt> stmts;
+  protected final List<Stmt> stmts;
 
   @Nullable private final Position position;
 
@@ -97,7 +102,7 @@ public class Body implements Serializable, Copyable {
   public Body(
       @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
-      @Nonnull List<IStmt> stmts,
+      @Nonnull List<Stmt> stmts,
       @Nullable Position position) {
     this.locals = Collections.unmodifiableSet(locals);
     this.traps = Collections.unmodifiableList(traps);
@@ -190,8 +195,8 @@ public class Body implements Serializable, Copyable {
   }
 
   /** Return unit containing the \@this-assignment * */
-  public IStmt getThisStmt() {
-    for (IStmt u : getStmts()) {
+  public Stmt getThisStmt() {
+    for (Stmt u : getStmts()) {
       if (u instanceof JIdentityStmt && ((JIdentityStmt) u).getRightOp() instanceof JThisRef) {
         return u;
       }
@@ -207,7 +212,7 @@ public class Body implements Serializable, Copyable {
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. * */
   public Local getParameterLocal(int i) {
-    for (IStmt s : getStmts()) {
+    for (Stmt s : getStmts()) {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
         JIdentityStmt is = (JIdentityStmt) s;
         JParameterRef pr = (JParameterRef) is.getRightOp();
@@ -230,7 +235,7 @@ public class Body implements Serializable, Copyable {
   public Collection<Local> getParameterLocals() {
     final int numParams = getMethod().getParameterCount();
     final List<Local> retVal = new ArrayList<>(numParams);
-    for (IStmt u : stmts) {
+    for (Stmt u : stmts) {
       if (u instanceof JIdentityStmt) {
         JIdentityStmt is = (JIdentityStmt) u;
         if (is.getRightOp() instanceof JParameterRef) {
@@ -250,7 +255,7 @@ public class Body implements Serializable, Copyable {
    *
    * @return the statements in this Body
    */
-  public List<IStmt> getStmts() {
+  public List<Stmt> getStmts() {
     return Collections.unmodifiableList(stmts);
   }
 
@@ -316,9 +321,9 @@ public class Body implements Serializable, Copyable {
   }
 
   /** Returns the first non-identity stmt in this body. */
-  public IStmt getFirstNonIdentityStmt() {
-    Iterator<IStmt> it = getStmts().iterator();
-    IStmt o = null;
+  public Stmt getFirstNonIdentityStmt() {
+    Iterator<Stmt> it = getStmts().iterator();
+    Stmt o = null;
     while (it.hasNext()) {
       if (!((o = it.next()) instanceof JIdentityStmt)) {
         break;
@@ -350,9 +355,9 @@ public class Body implements Serializable, Copyable {
    *
    * @return A collection of all the StmtBoxes held by this body's units.
    */
-  public Collection<IStmtBox> getAllStmtBoxes() {
-    List<IStmtBox> stmtBoxList = new ArrayList<>();
-    for (IStmt item : stmts) {
+  public Collection<StmtBox> getAllStmtBoxes() {
+    List<StmtBox> stmtBoxList = new ArrayList<>();
+    for (Stmt item : stmts) {
       stmtBoxList.addAll(item.getStmtBoxes());
     }
 
