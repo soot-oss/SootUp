@@ -39,8 +39,8 @@ public class JGotoStmt extends AbstractStmt {
   /** */
   private static final long serialVersionUID = -7771670610404109177L;
 
-  final StmtBox targetBox;
-  final List<StmtBox> targetBoxes;
+  private final StmtBox targetBox;
+  private final List<StmtBox> targetBoxes;
 
   public JGotoStmt(Stmt target, PositionInfo positionInfo) {
     this(Jimple.newStmtBox(target), positionInfo);
@@ -73,8 +73,10 @@ public class JGotoStmt extends AbstractStmt {
     return targetBox.getStmt();
   }
 
-  public void setTarget(Stmt target) {
-    targetBox.setStmt(target);
+  /** Violates immutability. Only use this for legacy code. */
+  @Deprecated
+  private void setTarget(Stmt target) {
+    StmtBox.$Accessor.setStmt(targetBox, target);
   }
 
   public StmtBox getTargetBox() {
@@ -109,5 +111,20 @@ public class JGotoStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return targetBox.getStmt().equivHashCode();
+  }
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setTarget(JGotoStmt stmt, Stmt target) {
+      stmt.setTarget(target);
+    }
+
+    private $Accessor() {}
   }
 }

@@ -73,11 +73,6 @@ public class JRetStmt extends AbstractStmt {
     return stmtAddressBox;
   }
 
-  // TODO: remove setter to support immutability?
-  public void setStmtAddress(Value stmtAddress) {
-    stmtAddressBox.setValue(stmtAddress);
-  }
-
   @Override
   public List<ValueBox> getUseBoxes() {
 

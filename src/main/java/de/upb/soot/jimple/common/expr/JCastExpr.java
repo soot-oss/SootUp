@@ -76,10 +76,6 @@ public class JCastExpr implements Expr {
     return opBox.getValue();
   }
 
-  public void setOp(Value op) {
-    opBox.setValue(op);
-  }
-
   public ValueBox getOpBox() {
     return opBox;
   }
@@ -91,15 +87,6 @@ public class JCastExpr implements Expr {
     list.add(opBox);
 
     return list;
-  }
-
-  // TODO: dulicate getter? -> getType()
-  public Type getCastType() {
-    return type;
-  }
-
-  public void setCastType(Type castType) {
-    this.type = castType;
   }
 
   @Override

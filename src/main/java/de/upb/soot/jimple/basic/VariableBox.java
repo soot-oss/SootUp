@@ -27,7 +27,7 @@ package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.common.ref.ConcreteRef;
 
-public class VariableBox extends AbstractValueBox {
+public class VariableBox extends ValueBox {
   /** */
   private static final long serialVersionUID = 9045705549481103168L;
 

@@ -162,7 +162,7 @@ final class StackFrame {
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == prevOp.stack : "Invalid stack local!";
-            lvb.setValue(stack);
+            ValueBox.$Accessor.setValue(lvb, stack);
             prevOp.stack = stack;
           }
           prevOp.updateBoxes();
@@ -180,13 +180,13 @@ final class StackFrame {
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == newOp.stack : "Invalid stack local!";
-            lvb.setValue(stack);
+            ValueBox.$Accessor.setValue(lvb, stack);
             newOp.stack = stack;
           }
           newOp.updateBoxes();
         }
         if (box != null) {
-          box.setValue(stack);
+          ValueBox.$Accessor.setValue(box, stack);
         }
         inStackLocals[i] = stack;
       }

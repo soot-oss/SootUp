@@ -68,8 +68,9 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return defaultTargetBox.getStmt();
   }
 
-  public final void setDefaultTarget(Stmt defaultTarget) {
-    defaultTargetBox.setStmt(defaultTarget);
+  @Deprecated
+  private void setDefaultTarget(Stmt defaultTarget) {
+    StmtBox.$Accessor.setStmt(defaultTargetBox, defaultTarget);
   }
 
   public final StmtBox getDefaultTargetBox() {
@@ -78,10 +79,6 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   public final Value getKey() {
     return keyBox.getValue();
-  }
-
-  public final void setKey(Value key) {
-    keyBox.setValue(key);
   }
 
   public final ValueBox getKeyBox() {
@@ -109,10 +106,6 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return targetBoxes[index];
   }
 
-  public final void setTarget(int index, Stmt target) {
-    targetBoxes[index].setStmt(target);
-  }
-
   /** Returns a list targets of type Stmt. */
   public final List<Stmt> getTargets() {
     List<Stmt> targets = new ArrayList<>();
@@ -125,24 +118,14 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   }
 
   /**
-   * Sets the setStmt box for targetBoxes array.
+   * Violates immutability. Only use in legacy code. Sets the setStmt box for targetBoxes array.
    *
    * @param targets A list of type Stmt.
    */
-  public final void setTargets(List<? extends Stmt> targets) {
+  @Deprecated
+  private void setTargets(List<? extends Stmt> targets) {
     for (int i = 0; i < targets.size(); i++) {
-      targetBoxes[i].setStmt(targets.get(i));
-    }
-  }
-
-  /**
-   * Sets the setStmt box for targetBoxes array.
-   *
-   * @param targets An array of type Stmt.
-   */
-  public final void setTargets(Stmt[] targets) {
-    for (int i = 0; i < targets.length; i++) {
-      targetBoxes[i].setStmt(targets[i]);
+      StmtBox.$Accessor.setStmt(targetBoxes[i], targets.get(i));
     }
   }
 
@@ -172,5 +155,26 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     }
 
     return res;
+  }
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setTargets(AbstractSwitchStmt stmt, List<? extends Stmt> targets) {
+      stmt.setTargets(targets);
+    }
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setDefaultTarget(AbstractSwitchStmt stmt, Stmt defaultTarget) {
+      stmt.setDefaultTarget(defaultTarget);
+    }
+
+    private $Accessor() {}
   }
 }

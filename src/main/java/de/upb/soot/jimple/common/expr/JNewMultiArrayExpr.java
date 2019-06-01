@@ -42,8 +42,8 @@ public class JNewMultiArrayExpr implements Expr {
   /** */
   private static final long serialVersionUID = -473132292740722571L;
 
-  private ArrayType baseType;
-  protected final ValueBox[] sizeBoxes;
+  private final ArrayType baseType;
+  private final ValueBox[] sizeBoxes;
 
   /**
    * Initiates a JNewMultiArrayExpr.
@@ -112,10 +112,6 @@ public class JNewMultiArrayExpr implements Expr {
     return baseType;
   }
 
-  public void setBaseType(ArrayType baseType) {
-    this.baseType = baseType;
-  }
-
   public ValueBox getSizeBox(int index) {
     return sizeBoxes[index];
   }
@@ -137,10 +133,6 @@ public class JNewMultiArrayExpr implements Expr {
     }
 
     return toReturn;
-  }
-
-  public void setSize(int index, Value size) {
-    sizeBoxes[index].setValue(size);
   }
 
   @Override

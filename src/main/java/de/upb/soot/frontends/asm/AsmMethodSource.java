@@ -2006,7 +2006,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
           // We directly place this label
           Collection<StmtBox> traps = trapHandlers.get((LabelNode) insn);
           for (StmtBox ub : traps) {
-            ub.setStmt(caughtEx);
+            StmtBox.$Accessor.setStmt(ub, caughtEx);
           }
         }
       }
@@ -2017,7 +2017,8 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
         Collection<StmtBox> boxes = labels.get(ln);
         if (boxes != null) {
           for (StmtBox box : boxes) {
-            box.setStmt(u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
+            StmtBox.$Accessor.setStmt(
+                box, u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
           }
         }
       }
@@ -2031,7 +2032,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
 
       Collection<StmtBox> traps = trapHandlers.get(ln);
       for (StmtBox ub : traps) {
-        ub.setStmt(handler);
+        StmtBox.$Accessor.setStmt(ub, handler);
       }
 
       // We need to jump to the original implementation
@@ -2051,7 +2052,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
       Collection<StmtBox> boxes = labels.get(ln);
       if (boxes != null) {
         for (StmtBox box : boxes) {
-          box.setStmt(end);
+          StmtBox.$Accessor.setStmt(box, end);
         }
       }
     }

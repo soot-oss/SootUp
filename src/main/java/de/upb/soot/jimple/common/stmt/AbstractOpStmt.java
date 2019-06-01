@@ -47,10 +47,6 @@ public abstract class AbstractOpStmt extends AbstractStmt {
     return opBox.getValue();
   }
 
-  public final void setOp(Value op) {
-    opBox.setValue(op);
-  }
-
   public final ValueBox getOpBox() {
     return opBox;
   }

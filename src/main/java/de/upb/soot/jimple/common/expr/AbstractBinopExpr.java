@@ -55,14 +55,6 @@ public abstract class AbstractBinopExpr implements Expr {
     return op2Box;
   }
 
-  public void setOp1(Value op1) {
-    op1Box.setValue(op1);
-  }
-
-  public void setOp2(Value op2) {
-    op2Box.setValue(op2);
-  }
-
   @Override
   public final List<ValueBox> getUseBoxes() {
 

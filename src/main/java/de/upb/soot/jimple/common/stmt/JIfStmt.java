@@ -42,10 +42,10 @@ public class JIfStmt extends AbstractStmt {
   /** */
   private static final long serialVersionUID = -5625186075843518011L;
 
-  final ValueBox conditionBox;
-  final StmtBox targetBox;
+  private final ValueBox conditionBox;
+  private final StmtBox targetBox;
 
-  final List<StmtBox> targetBoxes;
+  private final List<StmtBox> targetBoxes;
 
   public JIfStmt(Value condition, Stmt target, PositionInfo positionInfo) {
     this(condition, Jimple.newStmtBox(target), positionInfo);
@@ -88,10 +88,6 @@ public class JIfStmt extends AbstractStmt {
     return conditionBox.getValue();
   }
 
-  public void setCondition(Value condition) {
-    conditionBox.setValue(condition);
-  }
-
   public ValueBox getConditionBox() {
     return conditionBox;
   }
@@ -100,8 +96,10 @@ public class JIfStmt extends AbstractStmt {
     return targetBox.getStmt();
   }
 
-  public void setTarget(Stmt target) {
-    targetBox.setStmt(target);
+  /** Violates immutability. Only use this for legacy code. */
+  @Deprecated
+  private void setTarget(Stmt target) {
+    StmtBox.$Accessor.setStmt(targetBox, target);
   }
 
   public StmtBox getTargetBox() {
@@ -145,5 +143,20 @@ public class JIfStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return conditionBox.getValue().equivHashCode() + 31 * targetBox.getStmt().equivHashCode();
+  }
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setTarget(JIfStmt stmt, Stmt target) {
+      stmt.setTarget(target);
+    }
+
+    private $Accessor() {}
   }
 }

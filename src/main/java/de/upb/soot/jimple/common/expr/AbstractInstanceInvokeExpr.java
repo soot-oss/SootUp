@@ -54,10 +54,6 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     return baseBox;
   }
 
-  public void setBase(Value base) {
-    baseBox.setValue(base);
-  }
-
   @Override
   public List<ValueBox> getUseBoxes() {
     List<ValueBox> list = new ArrayList<>();

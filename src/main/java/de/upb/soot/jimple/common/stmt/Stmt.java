@@ -8,78 +8,159 @@ import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.Acceptor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 
-public interface Stmt extends EquivTo, Acceptor, Serializable, Copyable {
-  /** Returns a list of Boxes containing Values used in this Stmt. */
-  List<ValueBox> getUseBoxes();
+public abstract class Stmt implements EquivTo, Acceptor, Serializable, Copyable {
 
-  /** Returns a list of Boxes containing Values defined in this Stmt. */
-  List<ValueBox> getDefBoxes();
+  /** List of UnitBoxes pointing to this Unit. */
+  @Nullable private List<StmtBox> boxesPointingToThis = null;
 
-  /** Returns a list of Boxes containing Stmts defined in this Stmt; typically branch targets. */
-  List<StmtBox> getStmtBoxes();
+  /**
+   * Returns a list of Boxes containing Values used in this Unit. The list of boxes is dynamically
+   * updated as the structure changes. Note that they are returned in usual evaluation order. (this
+   * is important for aggregation)
+   */
+  public List<ValueBox> getUseBoxes() {
+    return Collections.emptyList();
+  }
 
-  /** Returns a list of Boxes pointing to this Stmt. */
-  List<StmtBox> getBoxesPointingToThis();
+  /**
+   * Returns a list of Boxes containing Values defined in this Unit. The list of boxes is
+   * dynamically updated as the structure changes.
+   */
+  public List<ValueBox> getDefBoxes() {
+    return Collections.emptyList();
+  }
 
-  /** Adds a box to the list returned by getBoxesPointingToThis. */
-  void addBoxPointingToThis(StmtBox b);
+  /**
+   * Returns a list of Boxes containing Units defined in this Unit; typically branch targets. The
+   * list of boxes is dynamically updated as the structure changes.
+   */
+  public List<StmtBox> getStmtBoxes() {
+    return Collections.emptyList();
+  }
 
-  /** Removes a box from the list returned by getBoxesPointingToThis. */
-  void removeBoxPointingToThis(StmtBox b);
+  /** Returns a list of Boxes pointing to this Unit. */
+  public List<StmtBox> getBoxesPointingToThis() {
+    if (boxesPointingToThis == null) {
+      return Collections.emptyList();
+    }
+    return Collections.unmodifiableList(boxesPointingToThis);
+  }
 
-  /** Clears any pointers to and from this Stmt's StmtBoxes. */
-  void clearStmtBoxes();
+  @Deprecated
+  private void addBoxPointingToThis(StmtBox b) {
+    if (boxesPointingToThis == null) {
+      boxesPointingToThis = new ArrayList<>();
+    }
+    boxesPointingToThis.add(b);
+  }
 
-  /** Returns a list of Boxes containing any Value either used or defined in this Stmt. */
-  List<ValueBox> getUseAndDefBoxes();
+  @Deprecated
+  private void removeBoxPointingToThis(StmtBox b) {
+    if (boxesPointingToThis != null) {
+      boxesPointingToThis.remove(b);
+    }
+  }
+
+  /** Returns a list of ValueBoxes, either used or defined in this Unit. */
+  public List<ValueBox> getUseAndDefBoxes() {
+    List<ValueBox> useBoxes = getUseBoxes();
+    List<ValueBox> defBoxes = getDefBoxes();
+    if (useBoxes.isEmpty()) {
+      return defBoxes;
+    } else {
+      if (defBoxes.isEmpty()) {
+        return useBoxes;
+      } else {
+        List<ValueBox> valueBoxes = new ArrayList<>();
+        valueBoxes.addAll(defBoxes);
+        valueBoxes.addAll(useBoxes);
+        return valueBoxes;
+      }
+    }
+  }
 
   /**
    * Returns true if execution after this statement may continue at the following statement.
    * GotoStmt will return false but IfStmt will return true.
    */
-  boolean fallsThrough();
+  public abstract boolean fallsThrough();
 
   /**
    * Returns true if execution after this statement does not necessarily continue at the following
    * statement. GotoStmt and IfStmt will both return true.
    */
-  boolean branches();
+  public abstract boolean branches();
 
-  /**
-   * Redirects jumps to this Stmt to newLocation. In general, you shouldn't have to use this
-   * directly.
-   */
-  void redirectJumpsToThisTo(Stmt newLocation);
+  public abstract void toString(StmtPrinter up);
 
-  void toString(StmtPrinter up);
+  /** Used to implement the Switchable construct. */
+  public void accept(Visitor sw) {}
 
-  boolean containsInvokeExpr();
+  public boolean containsInvokeExpr() {
+    return false;
+  }
 
-  AbstractInvokeExpr getInvokeExpr();
+  public AbstractInvokeExpr getInvokeExpr() {
+    throw new RuntimeException("getInvokeExpr() called with no invokeExpr present!");
+  }
 
-  ValueBox getInvokeExprBox();
+  public ValueBox getInvokeExprBox() {
+    throw new RuntimeException("getInvokeExprBox() called with no invokeExpr present!");
+  }
 
-  boolean containsArrayRef();
+  public boolean containsArrayRef() {
+    return false;
+  }
 
-  JArrayRef getArrayRef();
+  public JArrayRef getArrayRef() {
+    throw new RuntimeException("getArrayRef() called with no ArrayRef present!");
+  }
 
-  ValueBox getArrayRefBox();
+  public ValueBox getArrayRefBox() {
+    throw new RuntimeException("getArrayRefBox() called with no ArrayRef present!");
+  }
 
-  boolean containsFieldRef();
+  public boolean containsFieldRef() {
+    return false;
+  }
 
-  JFieldRef getFieldRef();
+  public JFieldRef getFieldRef() {
+    throw new RuntimeException("getFieldRef() called with no JFieldRef present!");
+  }
 
-  ValueBox getFieldRefBox();
+  public ValueBox getFieldRefBox() {
+    throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
+  }
 
-  /**
-   * Return the position information of this statement.
-   *
-   * @return he position information of this statement
-   */
-  PositionInfo getPositionInfo();
+  public abstract PositionInfo getPositionInfo();
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void addBoxPointingToThis(Stmt stmt, StmtBox box) {
+      stmt.addBoxPointingToThis(box);
+    }
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void removeBoxPointingToThis(Stmt stmt, StmtBox box) {
+      stmt.removeBoxPointingToThis(box);
+    }
+
+    private $Accessor() {}
+  }
 }

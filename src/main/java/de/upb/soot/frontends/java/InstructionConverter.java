@@ -74,6 +74,7 @@ import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JInstanceFieldRef;
 import de.upb.soot.jimple.common.ref.JStaticFieldRef;
+import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIfStmt;
@@ -1037,7 +1038,7 @@ public class InstructionConverter {
     if (this.targetsOfIfStmts.containsValue(iindex)) {
       for (JIfStmt ifStmt : this.targetsOfIfStmts.keySet()) {
         if (this.targetsOfIfStmts.get(ifStmt).equals(iindex)) {
-          ifStmt.setTarget(stmt);
+          JIfStmt.$Accessor.setTarget(ifStmt, stmt);
         }
       }
     }
@@ -1046,26 +1047,26 @@ public class InstructionConverter {
     if (this.targetsOfGotoStmts.containsValue(iindex)) {
       for (JGotoStmt gotoStmt : this.targetsOfGotoStmts.keySet()) {
         if (this.targetsOfGotoStmts.get(gotoStmt).equals(iindex)) {
-          gotoStmt.setTarget(stmt);
+          JGotoStmt.$Accessor.setTarget(gotoStmt, stmt);
         }
       }
     }
     if (this.defaultOfLookUpSwitchStmts.containsValue(iindex)) {
       for (JLookupSwitchStmt lookupSwitch : this.defaultOfLookUpSwitchStmts.keySet()) {
         if (this.defaultOfLookUpSwitchStmts.get(lookupSwitch).equals(iindex)) {
-          lookupSwitch.setDefaultTarget(stmt);
+          AbstractSwitchStmt.$Accessor.setDefaultTarget(lookupSwitch, stmt);
         }
       }
     }
-    for (JLookupSwitchStmt lookupSwith : this.targetsOfLookUpSwitchStmts.keySet()) {
-      if (this.targetsOfLookUpSwitchStmts.get(lookupSwith).contains(iindex)) {
-        List<Stmt> targets = lookupSwith.getTargets();
+    for (JLookupSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()) {
+      if (this.targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iindex)) {
+        List<Stmt> targets = lookupSwitch.getTargets();
         if (targets.contains(null)) { // targets only contains
           // placeholder
           targets = new ArrayList<>();
         }
         targets.add(stmt);
-        lookupSwith.setTargets(targets);
+        AbstractSwitchStmt.$Accessor.setTargets(lookupSwitch, targets);
       }
     }
   }

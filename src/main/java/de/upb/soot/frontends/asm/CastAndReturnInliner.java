@@ -73,13 +73,13 @@ class CastAndReturnInliner {
                 for (Trap t : bodyTraps) {
                   for (StmtBox ubox : t.getStmtBoxes()) {
                     if (ubox.getStmt() == gtStmt) {
-                      ubox.setStmt(newStmt);
+                      StmtBox.$Accessor.setStmt(ubox, newStmt);
                     }
                   }
                 }
 
                 while (!gtStmt.getBoxesPointingToThis().isEmpty()) {
-                  gtStmt.getBoxesPointingToThis().get(0).setStmt(newStmt);
+                  StmtBox.$Accessor.setStmt(gtStmt.getBoxesPointingToThis().get(0), newStmt);
                 }
                 // original code
                 // body.getUnits().swapWith(gtStmt, newStmt);

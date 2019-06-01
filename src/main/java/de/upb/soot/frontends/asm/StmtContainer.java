@@ -19,7 +19,7 @@ import javax.annotation.Nonnull;
  * @author Aaloan Miftah
  */
 @SuppressWarnings("serial")
-class StmtContainer implements Stmt {
+class StmtContainer extends Stmt {
 
   @Nonnull final Stmt[] units;
 
@@ -62,21 +62,6 @@ class StmtContainer implements Stmt {
   }
 
   @Override
-  public void addBoxPointingToThis(StmtBox b) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void removeBoxPointingToThis(StmtBox b) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void clearStmtBoxes() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public List<ValueBox> getUseAndDefBoxes() {
     throw new UnsupportedOperationException();
   }
@@ -88,11 +73,6 @@ class StmtContainer implements Stmt {
 
   @Override
   public boolean branches() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void redirectJumpsToThisTo(Stmt newLocation) {
     throw new UnsupportedOperationException();
   }
 

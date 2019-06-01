@@ -42,10 +42,6 @@ public abstract class AbstractUnopExpr implements Expr {
     return opBox.getValue();
   }
 
-  public void setOp(Value op) {
-    opBox.setValue(op);
-  }
-
   public ValueBox getOpBox() {
     return opBox;
   }

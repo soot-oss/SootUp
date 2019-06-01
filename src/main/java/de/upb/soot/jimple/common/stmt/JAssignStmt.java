@@ -319,24 +319,6 @@ public class JAssignStmt extends AbstractDefinitionStmt {
     getRightBox().toString(up);
   }
 
-  /**
-   * Sets the left op.
-   *
-   * @param variable the new left op
-   */
-  public void setLeftOp(Value variable) {
-    getLeftOpBox().setValue(variable);
-  }
-
-  /**
-   * Sets the right op.
-   *
-   * @param rvalue the new right op
-   */
-  public void setRightOp(Value rvalue) {
-    getRightOpBox().setValue(rvalue);
-  }
-
   /*
    * (non-Javadoc)
    *

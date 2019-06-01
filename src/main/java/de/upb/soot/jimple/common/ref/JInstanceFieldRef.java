@@ -60,10 +60,6 @@ public class JInstanceFieldRef extends FieldRef {
     return baseBox;
   }
 
-  public void setBase(Value base) {
-    baseBox.setValue(base);
-  }
-
   /** Returns a list useBoxes of type ValueBox. */
   @Override
   public final List<ValueBox> getUseBoxes() {

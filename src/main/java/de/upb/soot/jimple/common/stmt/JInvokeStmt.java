@@ -41,7 +41,7 @@ public class JInvokeStmt extends AbstractStmt {
   /** */
   private static final long serialVersionUID = 3929309661335452051L;
 
-  final ValueBox invokeExprBox;
+  private final ValueBox invokeExprBox;
 
   public JInvokeStmt(Value c, PositionInfo positionInfo) {
     this(Jimple.newInvokeExprBox(c), positionInfo);
@@ -65,10 +65,6 @@ public class JInvokeStmt extends AbstractStmt {
   @Override
   public void toString(StmtPrinter up) {
     invokeExprBox.toString(up);
-  }
-
-  public void setInvokeExpr(Value invokeExpr) {
-    invokeExprBox.setValue(invokeExpr);
   }
 
   @Override

@@ -42,7 +42,7 @@ public class JNewArrayExpr implements Expr {
   /** */
   private static final long serialVersionUID = 4481534412297120257L;
 
-  private Type baseType;
+  private final Type baseType;
   private final ValueBox sizeBox;
 
   public JNewArrayExpr(Type type, Value size) {
@@ -92,20 +92,12 @@ public class JNewArrayExpr implements Expr {
     return baseType;
   }
 
-  public void setBaseType(Type type) {
-    baseType = type;
-  }
-
   public ValueBox getSizeBox() {
     return sizeBox;
   }
 
   public Value getSize() {
     return sizeBox.getValue();
-  }
-
-  public void setSize(Value size) {
-    sizeBox.setValue(size);
   }
 
   /** Returns a list of type ValueBox, contains a list of values of sizeBox. */

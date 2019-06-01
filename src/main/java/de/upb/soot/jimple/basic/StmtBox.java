@@ -31,13 +31,36 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.io.Serializable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public interface StmtBox extends Serializable {
-  /** Sets this box to contain the given unit. Subject to canContainValue() checks. */
-  void setStmt(Stmt u);
+public abstract class StmtBox implements Serializable {
 
-  /** Returns the unit contained within this box. */
-  Stmt getStmt();
+  @Nullable protected Stmt stmt;
+
+  public StmtBox(@Nullable Stmt stmt) {
+    this.stmt = stmt;
+  }
+
+  @Deprecated
+  private void setStmt(@Nullable Stmt stmt) {
+    // Remove this from set of back pointers.
+    if (this.stmt != null) {
+      Stmt.$Accessor.removeBoxPointingToThis(this.stmt, this);
+    }
+
+    // Perform link
+    this.stmt = stmt;
+
+    // Add this to back pointers
+    if (this.stmt != null) {
+      Stmt.$Accessor.addBoxPointingToThis(this.stmt, this);
+    }
+  }
+
+  public @Nullable Stmt getStmt() {
+    return stmt;
+  }
 
   /**
    * Returns true if the StmtBox is holding a Stmt that is the target of a branch (ie a Stmt at the
@@ -46,7 +69,26 @@ public interface StmtBox extends Serializable {
    * <p>Returns false if the StmtBox is holding a Stmt that indicates the end of a CFG block and may
    * require specialised processing for SSA.
    */
-  boolean isBranchTarget();
+  public abstract boolean isBranchTarget();
 
-  void toString(StmtPrinter up);
+  public void toString(@Nonnull StmtPrinter up) {
+    up.startStmtBox(this);
+    up.stmtRef(stmt, isBranchTarget());
+    up.endStmtBox(this);
+  }
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setStmt(StmtBox box, Stmt stmt) {
+      box.setStmt(stmt);
+    }
+
+    private $Accessor() {}
+  }
 }

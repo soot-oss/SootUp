@@ -70,10 +70,6 @@ public abstract class AbstractInvokeExpr implements Expr {
     return argBoxes == null ? 0 : argBoxes.length;
   }
 
-  public void setArg(int index, Value arg) {
-    argBoxes[index].setValue(arg);
-  }
-
   public ValueBox getArgBox(int index) {
     return argBoxes[index];
   }
