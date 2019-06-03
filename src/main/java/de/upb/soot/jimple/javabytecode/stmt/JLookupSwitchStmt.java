@@ -36,12 +36,14 @@ import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-public class JLookupSwitchStmt extends AbstractSwitchStmt {
+import javax.annotation.Nonnull;
+// TODO Wrap List return values in unmodifiable list
+public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copyable {
   /** */
   private static final long serialVersionUID = 7072376393810033195L;
   /**
@@ -88,7 +90,7 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
         positionInfo);
   }
 
-  protected JLookupSwitchStmt(
+  private JLookupSwitchStmt(
       ValueBox keyBox,
       List<IntConstant> lookupValues,
       StmtBox[] targetBoxes,
@@ -202,5 +204,29 @@ public class JLookupSwitchStmt extends AbstractSwitchStmt {
     }
 
     return res;
+  }
+
+  @Nonnull
+  public JLookupSwitchStmt withKey(Value key) {
+    return new JLookupSwitchStmt(
+        key, lookupValues, getTargets(), getDefaultTarget(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JLookupSwitchStmt withTargets(List<? extends Stmt> targets) {
+    return new JLookupSwitchStmt(
+        getKey(), lookupValues, targets, getDefaultTarget(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JLookupSwitchStmt withDefaultTarget(Stmt defaultTarget) {
+    return new JLookupSwitchStmt(
+        getKey(), lookupValues, getTargets(), defaultTarget, getPositionInfo());
+  }
+
+  @Nonnull
+  public JLookupSwitchStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JLookupSwitchStmt(
+        getKey(), lookupValues, getTargets(), getDefaultTarget(), positionInfo);
   }
 }

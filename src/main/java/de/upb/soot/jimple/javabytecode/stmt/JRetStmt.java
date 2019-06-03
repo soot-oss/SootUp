@@ -33,22 +33,24 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JRetStmt extends AbstractStmt {
+public final class JRetStmt extends AbstractStmt implements Copyable {
   /** */
   private static final long serialVersionUID = -5082469551010642932L;
 
-  final ValueBox stmtAddressBox;
+  private final ValueBox stmtAddressBox;
   // List useBoxes;
 
   public JRetStmt(Value stmtAddress, PositionInfo positionInfo) {
     this(Jimple.newLocalBox(stmtAddress), positionInfo);
   }
 
-  protected JRetStmt(ValueBox stmtAddressBox, PositionInfo positionInfo) {
+  private JRetStmt(ValueBox stmtAddressBox, PositionInfo positionInfo) {
     super(positionInfo);
     this.stmtAddressBox = stmtAddressBox;
   }
@@ -105,5 +107,15 @@ public class JRetStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return stmtAddressBox.getValue().equivHashCode();
+  }
+
+  @Nonnull
+  public JRetStmt withStmtAddress(Value stmtAddress) {
+    return new JRetStmt(stmtAddress, getPositionInfo());
+  }
+
+  @Nonnull
+  public JRetStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JRetStmt(getStmtAddress(), positionInfo);
   }
 }
