@@ -31,7 +31,8 @@ public class InstanceofInstructionConverstionTest {
   @Test
   public void test() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 "instanceOf",
                 declareClassSig,
