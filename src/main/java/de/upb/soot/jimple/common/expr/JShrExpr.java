@@ -34,7 +34,7 @@ import de.upb.soot.types.UnknownType;
 import de.upb.soot.util.Copyable;
 import javax.annotation.Nonnull;
 
-public final class JShrExpr extends AbstractIntLongBinopExpr  implements Copyable {
+public final class JShrExpr extends AbstractIntLongBinopExpr implements Copyable {
   /** */
   private static final long serialVersionUID = -7941135238649612445L;
 

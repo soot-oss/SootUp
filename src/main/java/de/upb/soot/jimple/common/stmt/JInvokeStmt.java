@@ -114,11 +114,13 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
     return invokeExprBox.getValue().equivHashCode();
   }
 
-  @Nonnull public JInvokeStmt withInvokeExpr(Value invokeExpr) {
+  @Nonnull
+  public JInvokeStmt withInvokeExpr(Value invokeExpr) {
     return new JInvokeStmt(invokeExprBox, getPositionInfo());
   }
 
-  @Nonnull public JInvokeStmt withPositionInfo(PositionInfo positionInfo#) {
+  @Nonnull
+  public JInvokeStmt withPositionInfo(PositionInfo positionInfo) {
     return new JInvokeStmt(invokeExprBox, positionInfo);
   }
 }

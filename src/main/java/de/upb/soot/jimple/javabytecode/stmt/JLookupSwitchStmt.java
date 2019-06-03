@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
+
 // TODO Wrap List return values in unmodifiable list
 public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copyable {
   /** */
