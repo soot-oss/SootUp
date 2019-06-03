@@ -32,8 +32,10 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class AbstractInvokeExpr implements Expr {
   /** */
@@ -57,13 +59,9 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   /** Returns a list of arguments, consisting of values contained in the box. */
   public List<Value> getArgs() {
-    List<Value> l = new ArrayList<>();
-    if (argBoxes != null) {
-      for (ValueBox element : argBoxes) {
-        l.add(element.getValue());
-      }
-    }
-    return l;
+    return argBoxes != null
+        ? Arrays.stream(argBoxes).map(ValueBox::getValue).collect(Collectors.toList())
+        : Collections.emptyList();
   }
 
   public int getArgCount() {

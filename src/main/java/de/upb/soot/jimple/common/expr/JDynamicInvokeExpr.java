@@ -36,7 +36,6 @@ import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -176,12 +175,9 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
 
   /** Returns a list containing elements of type ValueBox. */
   public List<Value> getBootstrapArgs() {
-    List<Value> l = new ArrayList<>();
-    for (ValueBox element : bootstrapMethodSignatureArgBoxes) {
-      l.add(element.getValue());
-    }
-
-    return l;
+    return Arrays.stream(bootstrapMethodSignatureArgBoxes)
+        .map(ValueBox::getValue)
+        .collect(Collectors.toList());
   }
 
   public int getHandleTag() {
@@ -191,40 +187,24 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   @Nonnull
   public JDynamicInvokeExpr withBootstrapMethodSignature(MethodSignature bootstrapMethodSignature) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature,
-        getBootstrapArgs(),
-        getMethodSignature(),
-        Arrays.stream(argBoxes).map(ValueBox::getValue).collect(Collectors.toList()));
+        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), getArgs());
   }
 
   @Nonnull
   public JDynamicInvokeExpr withBootstrapArgs(List<? extends Value> bootstrapArgs) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature,
-        bootstrapArgs,
-        getMethodSignature(),
-        Arrays.stream(argBoxes).map(ValueBox::getValue).collect(Collectors.toList()));
+        bootstrapMethodSignature, bootstrapArgs, getMethodSignature(), getArgs());
   }
 
   @Nonnull
   public JDynamicInvokeExpr withMethodSignature(MethodSignature methodSignature) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature,
-        Arrays.stream(bootstrapMethodSignatureArgBoxes)
-            .map(ValueBox::getValue)
-            .collect(Collectors.toList()),
-        getMethodSignature(),
-        Arrays.stream(argBoxes).map(ValueBox::getValue).collect(Collectors.toList()));
+        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), getArgs());
   }
 
   @Nonnull
   public JDynamicInvokeExpr withMethodArgs(List<? extends Value> methodArgs) {
     return new JDynamicInvokeExpr(
-        bootstrapMethodSignature,
-        Arrays.stream(bootstrapMethodSignatureArgBoxes)
-            .map(ValueBox::getValue)
-            .collect(Collectors.toList()),
-        getMethodSignature(),
-        methodArgs);
+        bootstrapMethodSignature, getBootstrapArgs(), getMethodSignature(), methodArgs);
   }
 }
