@@ -28,8 +28,9 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
+import javax.annotation.Nonnull;
 
-public class JTrap extends AbstractTrap {
+public final class JTrap extends AbstractTrap {
 
   /** */
   private static final long serialVersionUID = -1514595956359087470L;
@@ -56,5 +57,25 @@ public class JTrap extends AbstractTrap {
     buf.append("\nhandler: ");
     buf.append(getHandlerStmt());
     return new String(buf);
+  }
+
+  @Nonnull
+  public JTrap withException(JavaClassType exception) {
+    return new JTrap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
+  }
+
+  @Nonnull
+  public JTrap withBeginStmt(Stmt beginStmt) {
+    return new JTrap(getException(), beginStmt, getEndStmt(), getHandlerStmt());
+  }
+
+  @Nonnull
+  public JTrap withHandlerStmt(Stmt handlerStmt) {
+    return new JTrap(getException(), getBeginStmt(), getEndStmt(), handlerStmt);
+  }
+
+  @Nonnull
+  public JTrap withEndStmt(Stmt endStmt) {
+    return new JTrap(getException(), getBeginStmt(), endStmt, getHandlerStmt());
   }
 }
