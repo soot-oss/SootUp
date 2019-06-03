@@ -28,9 +28,10 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.util.Copyable;
 import javax.annotation.Nonnull;
 
-public final class JTrap extends AbstractTrap {
+public final class JTrap extends AbstractTrap implements Copyable {
 
   /** */
   private static final long serialVersionUID = -1514595956359087470L;
