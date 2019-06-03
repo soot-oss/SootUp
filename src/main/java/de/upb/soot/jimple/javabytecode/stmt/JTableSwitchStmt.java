@@ -227,13 +227,6 @@ public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyab
     return ret;
   }
 
-  //  Value key,
-  //  int lowIndex,
-  //  int highIndex,
-  //  List<? extends Stmt> targets,
-  //  Stmt defaultTarget,
-  //  PositionInfo positionInfo
-
   @Nonnull
   public JTableSwitchStmt withKey(Value key) {
     return new JTableSwitchStmt(
