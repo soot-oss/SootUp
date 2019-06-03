@@ -28,6 +28,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.OverridingClassSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.signatures.AbstractClassMemberSignature;
 import de.upb.soot.signatures.FieldSubSignature;
@@ -39,6 +40,7 @@ import de.upb.soot.util.Utils;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
@@ -449,6 +451,18 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
   @Nonnull
   public String getName() {
     return this.classSignature.getFullyQualifiedName();
+  }
+
+  /**
+   * Creates a new SootClass based on a new {@link OverridingClassSource}. This is useful to change
+   * selected parts of a {@link SootClass} without recreating it completely. {@link
+   * OverridingClassSource} allows for replacing specific parts of a class, such as fields and
+   * methods.
+   */
+  @Nonnull
+  public SootClass withOverridingClassSource(
+      Function<OverridingClassSource, OverridingClassSource> overrider) {
+    return new SootClass(overrider.apply(new OverridingClassSource(classSource)), sourceType);
   }
 
   @Nonnull
