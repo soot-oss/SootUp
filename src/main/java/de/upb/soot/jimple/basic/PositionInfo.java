@@ -3,13 +3,14 @@ package de.upb.soot.jimple.basic;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import com.ibm.wala.cast.tree.impl.LineNumberPosition;
 import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
 /**
  * This class stores position information stored for a statement.
  *
  * @author Linghui Luo
  */
-public class PositionInfo implements Copyable {
+public final class PositionInfo implements Copyable {
   private final Position stmtPosition;
   private final Position[] operandPositions;
 
@@ -84,5 +85,15 @@ public class PositionInfo implements Copyable {
       s.append("No position info");
     }
     return s.toString();
+  }
+
+  @Nonnull
+  public PositionInfo withStmtPosition(Position stmtPosition) {
+    return new PositionInfo(stmtPosition, operandPositions);
+  }
+
+  @Nonnull
+  public PositionInfo withOperandPositions(Position[] operandPositions) {
+    return new PositionInfo(stmtPosition, operandPositions);
   }
 }

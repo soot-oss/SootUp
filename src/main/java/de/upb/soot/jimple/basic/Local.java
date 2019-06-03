@@ -109,4 +109,14 @@ public final class Local implements Value, Immediate {
   public void accept(Visitor sw) {
     ((JimpleValueVisitor) sw).caseLocal(this);
   }
+
+  @Nonnull
+  public Local withName(String name) {
+    return new Local(name, type);
+  }
+
+  @Nonnull
+  public Local withType(Type type) {
+    return new Local(name, type);
+  }
 }
