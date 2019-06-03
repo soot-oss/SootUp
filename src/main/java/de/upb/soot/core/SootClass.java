@@ -29,6 +29,7 @@ import com.google.common.collect.Iterables;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
+import de.upb.soot.signatures.AbstractClassMemberSignature;
 import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
@@ -84,8 +85,8 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
   @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   @Nonnull
-  private <M extends SootClassMember> Set<M> initializeClassMembers(
-      @Nonnull Iterable<? extends M> items) {
+  private <S extends AbstractClassMemberSignature, M extends SootClassMember<S>>
+      Set<M> initializeClassMembers(@Nonnull Iterable<? extends M> items) {
     return iterableToStream(items).peek(it -> it.setDeclaringClass(this)).collect(toImmutableSet());
   }
 
@@ -448,5 +449,15 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
   @Nonnull
   public String getName() {
     return this.classSignature.getFullyQualifiedName();
+  }
+
+  @Nonnull
+  public SootClass withClassSource(ClassSource classSource) {
+    return new SootClass(classSource, sourceType);
+  }
+
+  @Nonnull
+  public SootClass withSourceType(SourceType sourceType) {
+    return new SootClass(classSource, sourceType);
   }
 }

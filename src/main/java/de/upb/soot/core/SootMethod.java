@@ -32,6 +32,7 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.builder.BuilderException;
 import java.util.Collections;
 import java.util.Iterator;
@@ -49,7 +50,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootMethod extends SootClassMember implements Method {
+public final class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
   /** */
   private static final long serialVersionUID = -7438746401781827520L;
 
@@ -246,6 +247,27 @@ public class SootMethod extends SootClassMember implements Method {
     return this.debugInfo;
   }
 
+  @Nonnull
+  public SootMethod withSource(MethodSource source) {
+    return new SootMethod(source, getSignature(), getModifiers(), exceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withModifiers(Iterable<Modifier> modifiers) {
+    return new SootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withThrownExceptions(Iterable<JavaClassType> thrownExceptions) {
+    return new SootMethod(
+        methodSource, getSignature(), getModifiers(), thrownExceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withDebugInfo(DebuggingInformation debugInfo) {
+    return new SootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
+  }
+
   /**
    * Creates a {@link SootMethod} builder.
    *
@@ -262,7 +284,7 @@ public class SootMethod extends SootClassMember implements Method {
    * @see #builder()
    * @author Jan Martin Persch
    */
-  public interface Builder extends SootClassMember.Builder<SootMethod> {
+  public interface Builder extends SootClassMember.Builder<MethodSignature, SootMethod> {
     interface MethodSourceStep {
       /**
        * Sets the {@link MethodSource}.
@@ -324,7 +346,8 @@ public class SootMethod extends SootClassMember implements Method {
    *
    * @author Jan Martin Persch
    */
-  protected static class SootMethodBuilder extends SootClassMemberBuilder<SootMethod>
+  protected static class SootMethodBuilder
+      extends SootClassMemberBuilder<MethodSignature, SootMethod>
       implements Builder.MethodSourceStep,
           Builder.MethodSignatureStep,
           Builder.ModifiersStep,
@@ -338,7 +361,7 @@ public class SootMethod extends SootClassMember implements Method {
     // region Constructor
 
     /** Creates a new instance of the {@link SootMethodBuilder} class. */
-    protected SootMethodBuilder() {
+    SootMethodBuilder() {
       super(SootMethod.class);
     }
 
