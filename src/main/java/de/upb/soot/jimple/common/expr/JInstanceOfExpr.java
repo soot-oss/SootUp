@@ -33,11 +33,13 @@ import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JInstanceOfExpr implements Expr {
+public final class JInstanceOfExpr implements Expr, Copyable {
   /** */
   private static final long serialVersionUID = -3584505247110961970L;
 
@@ -103,5 +105,15 @@ public class JInstanceOfExpr implements Expr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseInstanceOfExpr(this);
+  }
+
+  @Nonnull
+  public JInstanceOfExpr withOp(Value op) {
+    return new JInstanceOfExpr(op, checkType);
+  }
+
+  @Nonnull
+  public JInstanceOfExpr withCheckType(Type checkType) {
+    return new JInstanceOfExpr(getOp(), checkType);
   }
 }

@@ -31,10 +31,12 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
+public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 7458533916011927970L;
 
@@ -96,5 +98,22 @@ public class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal("(");
     argBoxesToPrinter(up);
     up.literal(")");
+  }
+
+  // Value base, MethodSignature method, List<? extends Value> args
+
+  @Nonnull
+  public JInterfaceInvokeExpr withBase(Value base) {
+    return new JInterfaceInvokeExpr(base, methodSignature, getArgs());
+  }
+
+  @Nonnull
+  public JInterfaceInvokeExpr Method(MethodSignature method) {
+    return new JInterfaceInvokeExpr(getBase(), method, getArgs());
+  }
+
+  @Nonnull
+  public JInterfaceInvokeExpr withArgs(List<? extends Value> args) {
+    return new JInterfaceInvokeExpr(getBase(), methodSignature, args);
   }
 }

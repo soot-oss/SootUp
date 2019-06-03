@@ -28,8 +28,9 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 
-public class JGtExpr extends AbstractConditionExpr {
+public final class JGtExpr extends AbstractConditionExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 8003288012761788899L;
 
