@@ -25,11 +25,13 @@ import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /** The Class JAssignStmt. */
-public class JAssignStmt extends AbstractDefinitionStmt {
+public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
 
   /** */
   private static final long serialVersionUID = -4560269896679815285L;
@@ -126,15 +128,15 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * Instantiates a new JAssignStmt.
    *
    * @param variable the variable on the left side of the assign statement.
-   * @param rvalue the value on the right side of the assign statement.
+   * @param rValue the value on the right side of the assign statement.
    */
-  public JAssignStmt(Value variable, Value rvalue, PositionInfo positionInfo) {
-    this(new LinkedVariableBox(variable), new LinkedRValueBox(rvalue), positionInfo);
+  public JAssignStmt(Value variable, Value rValue, PositionInfo positionInfo) {
+    this(new LinkedVariableBox(variable), new LinkedRValueBox(rValue), positionInfo);
 
     ((LinkedVariableBox) getLeftBox()).setOtherBox(getRightBox());
     ((LinkedRValueBox) getRightBox()).setOtherBox(getLeftBox());
 
-    if (!getLeftBox().canContainValue(variable) || !getRightBox().canContainValue(rvalue)) {
+    if (!getLeftBox().canContainValue(variable) || !getRightBox().canContainValue(rValue)) {
       throw new RuntimeException(
           "Illegal assignment statement.  Make sure that either left side or right hand side has a local or constant.");
     }
@@ -337,5 +339,20 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   @Override
   public int equivHashCode() {
     return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
+  }
+
+  @Nonnull
+  public JAssignStmt withVariable(Value variable) {
+    return new JAssignStmt(variable, getRightOp(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JAssignStmt withRValue(Value rValue) {
+    return new JAssignStmt(getLeftOp(), rValue, getPositionInfo());
+  }
+
+  @Nonnull
+  public JAssignStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

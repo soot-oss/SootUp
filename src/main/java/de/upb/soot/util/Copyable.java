@@ -1,10 +1,10 @@
 package de.upb.soot.util;
 
 /**
- * Marker interface for classes that are immutable and can be copied. For instance:
+ * Marker interface for final classes that are immutable and can be copied. For instance:
  *
  * <pre>
- *   class Foo {
+ *   final class Foo {
  *     private final Bar bar;
  *     private final Baz baz;
  *
@@ -32,3 +32,5 @@ package de.upb.soot.util;
  * </pre>
  */
 public interface Copyable {}
+
+// TODO Remove interface from superclasses?

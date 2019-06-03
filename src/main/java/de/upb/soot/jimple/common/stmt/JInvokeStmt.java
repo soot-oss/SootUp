@@ -33,21 +33,24 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JInvokeStmt extends AbstractStmt {
+// TODO Make more stuff private and final
+public final class JInvokeStmt extends AbstractStmt implements Copyable {
   /** */
   private static final long serialVersionUID = 3929309661335452051L;
 
   private final ValueBox invokeExprBox;
 
-  public JInvokeStmt(Value c, PositionInfo positionInfo) {
-    this(Jimple.newInvokeExprBox(c), positionInfo);
+  public JInvokeStmt(Value invokeExpr, PositionInfo positionInfo) {
+    this(Jimple.newInvokeExprBox(invokeExpr), positionInfo);
   }
 
-  protected JInvokeStmt(ValueBox invokeExprBox, PositionInfo positionInfo) {
+  private JInvokeStmt(ValueBox invokeExprBox, PositionInfo positionInfo) {
     super(positionInfo);
     this.invokeExprBox = invokeExprBox;
   }
@@ -109,5 +112,13 @@ public class JInvokeStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return invokeExprBox.getValue().equivHashCode();
+  }
+
+  @Nonnull public JInvokeStmt withInvokeExpr(Value invokeExpr) {
+    return new JInvokeStmt(invokeExprBox, getPositionInfo());
+  }
+
+  @Nonnull public JInvokeStmt withPositionInfo(PositionInfo positionInfo#) {
+    return new JInvokeStmt(invokeExprBox, positionInfo);
   }
 }

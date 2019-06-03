@@ -32,9 +32,11 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JReturnStmt extends AbstractOpStmt {
+public final class JReturnStmt extends AbstractOpStmt implements Copyable {
   /** */
   private static final long serialVersionUID = 4601025616184085996L;
 
@@ -85,5 +87,15 @@ public class JReturnStmt extends AbstractOpStmt {
 
   public JReturnStmt withOp(Value op) {
     return new JReturnStmt(op, getPositionInfo());
+  }
+
+  @Nonnull
+  public JReturnStmt withReturnValue(Value returnValue) {
+    return new JReturnStmt(returnValue, getPositionInfo());
+  }
+
+  @Nonnull
+  public JReturnStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JReturnStmt(getOp(), positionInfo);
   }
 }
