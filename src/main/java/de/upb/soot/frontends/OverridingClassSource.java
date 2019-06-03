@@ -36,7 +36,7 @@ public class OverridingClassSource extends ClassSource {
 
   @Nonnull private final ClassSource delegate;
 
-  public OverridingClassSource(ClassSource delegate) {
+  public OverridingClassSource(@Nonnull ClassSource delegate) {
     super(delegate.srcNamespace, delegate.sourcePath, delegate.classSignature);
     this.delegate = delegate;
     overriddenSootMethods = null;
@@ -197,7 +197,7 @@ public class OverridingClassSource extends ClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withPosition(Position position) {
+  public OverridingClassSource withPosition(@Nullable Position position) {
     return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,

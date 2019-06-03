@@ -455,9 +455,9 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
 
   /**
    * Creates a new SootClass based on a new {@link OverridingClassSource}. This is useful to change
-   * selected parts of a {@link SootClass} without recreating it completely. {@link
-   * OverridingClassSource} allows for replacing specific parts of a class, such as fields and
-   * methods.
+   * selected parts of a {@link SootClass} without recreating a {@link ClassSource} completely.
+   * {@link OverridingClassSource} allows for replacing specific parts of a class, such as fields
+   * and methods.
    */
   @Nonnull
   public SootClass withOverridingClassSource(

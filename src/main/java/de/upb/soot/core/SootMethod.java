@@ -27,6 +27,7 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import de.upb.soot.frontends.MethodSource;
+import de.upb.soot.frontends.OverridingMethodSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
@@ -38,6 +39,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -245,6 +247,22 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
   @Nullable
   public DebuggingInformation getDebugInfo() {
     return this.debugInfo;
+  }
+
+  /**
+   * Creates a new SootMethod based on a new {@link OverridingMethodSource}. This is useful to
+   * change selected parts of a {@link SootMethod} without recreating a {@link MethodSource}
+   * completely. {@link OverridingMethodSource} allows for replacing the body of a method.
+   */
+  @Nonnull
+  public SootMethod withOverridingMethodSource(
+      Function<OverridingMethodSource, OverridingMethodSource> overrider) {
+    return new SootMethod(
+        overrider.apply(new OverridingMethodSource(methodSource)),
+        getSignature(),
+        getModifiers(),
+        exceptions,
+        debugInfo);
   }
 
   @Nonnull
