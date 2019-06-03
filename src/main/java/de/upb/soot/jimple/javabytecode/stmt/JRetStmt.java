@@ -47,7 +47,7 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
   // List useBoxes;
 
   public JRetStmt(Value stmtAddress, PositionInfo positionInfo) {
-    this(Jimple.newLocalBox(stmtAddress), positionInfo);
+    this(Jimple.newImmediateBox(stmtAddress), positionInfo);
   }
 
   private JRetStmt(ValueBox stmtAddressBox, PositionInfo positionInfo) {
