@@ -43,7 +43,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-// TODO Wrap List return values in unmodifiable list
 public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copyable {
   /** */
   private static final long serialVersionUID = 7072376393810033195L;
@@ -98,7 +97,7 @@ public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copya
       StmtBox defaultTargetBox,
       PositionInfo positionInfo) {
     super(positionInfo, keyBox, defaultTargetBox, targetBoxes);
-    this.lookupValues = new ArrayList<>(lookupValues);
+    this.lookupValues = Collections.unmodifiableList(new ArrayList<>(lookupValues));
   }
 
   @Override
@@ -108,7 +107,7 @@ public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copya
 
     builder
         .append(Jimple.LOOKUPSWITCH + "(")
-        .append(keyBox.getValue().toString())
+        .append(getKey().toString())
         .append(")")
         .append(endOfLine);
 
@@ -143,7 +142,7 @@ public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copya
   public void toString(StmtPrinter up) {
     up.literal(Jimple.LOOKUPSWITCH);
     up.literal("(");
-    keyBox.toString(up);
+    getKeyBox().toString(up);
     up.literal(")");
     up.newline();
     up.literal("{");
@@ -157,7 +156,7 @@ public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copya
       up.literal(": ");
       up.literal(Jimple.GOTO);
       up.literal(" ");
-      targetBoxes[i].toString(up);
+      getTargetBox(i).toString(up);
       up.literal(";");
       up.newline();
     }
@@ -167,7 +166,7 @@ public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copya
     up.literal(": ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    defaultTargetBox.toString(up);
+    getDefaultTargetBox().toString(up);
     up.literal(";");
     up.newline();
     up.literal("}");

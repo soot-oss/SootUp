@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-// TODO Make more stuff private and final
 public final class JInvokeStmt extends AbstractStmt implements Copyable {
   /** */
   private static final long serialVersionUID = 3929309661335452051L;

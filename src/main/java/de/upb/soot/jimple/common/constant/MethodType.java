@@ -19,7 +19,7 @@ public class MethodType implements Constant, Copyable {
 
   private MethodType(List<Type> parameterTypes, Type returnType) {
     this.returnType = returnType;
-    this.parameterTypes = parameterTypes;
+    this.parameterTypes = Collections.unmodifiableList(parameterTypes);
   }
 
   public static MethodType getInstance(List<Type> paramaterTypes, Type returnType) {

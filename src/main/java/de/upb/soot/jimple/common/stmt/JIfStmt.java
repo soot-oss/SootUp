@@ -57,7 +57,7 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
     this(Jimple.newConditionExprBox(condition), target, positionInfo);
   }
 
-  protected JIfStmt(ValueBox conditionBox, StmtBox targetBox, PositionInfo positionInfo) {
+  private JIfStmt(ValueBox conditionBox, StmtBox targetBox, PositionInfo positionInfo) {
     super(positionInfo);
     this.conditionBox = conditionBox;
     this.targetBox = targetBox;
