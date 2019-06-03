@@ -29,6 +29,7 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
 public final class JGtExpr extends AbstractConditionExpr implements Copyable {
   /** */
@@ -46,5 +47,15 @@ public final class JGtExpr extends AbstractConditionExpr implements Copyable {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseGtExpr(this);
+  }
+
+  @Nonnull
+  public JGtExpr withOp1(Value op1) {
+    return new JGtExpr(op1, getOp2());
+  }
+
+  @Nonnull
+  public JGtExpr withOp2(Value op2) {
+    return new JGtExpr(getOp1(), op2);
   }
 }
