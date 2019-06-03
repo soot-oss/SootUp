@@ -32,5 +32,3 @@ package de.upb.soot.util;
  * </pre>
  */
 public interface Copyable {}
-
-// TODO Remove interface from superclasses?
