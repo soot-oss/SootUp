@@ -30,11 +30,12 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
 
-public class JCaughtExceptionRef implements IdentityRef {
+public final class JCaughtExceptionRef implements IdentityRef, Copyable {
   /** */
   private static final long serialVersionUID = 5249007116510821231L;
 
