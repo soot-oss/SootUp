@@ -9,10 +9,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
-import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.core.SourceType;
-import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.constant.BooleanConstant;
@@ -42,7 +39,6 @@ import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.stmt.JIfStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
 import java.util.Arrays;
@@ -988,12 +984,13 @@ public class BinaryOpInstructionConversionTest {
 
   @Test
   public void testLShiftByte() {
-    MethodSignature methodSignature =
-        identifierFactory.getMethodSignature(
-            "lshiftByte", declareClassSig, "byte", Collections.singletonList("byte"));
-    ClassSource classSource = loader.getClassSource(declareClassSig).get();
-    SootMethod method =
-        new SootClass(classSource, SourceType.Application).getMethod(methodSignature).get();
+    Optional<SootMethod> m =
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
+            identifierFactory.getMethodSignature(
+                "lshiftByte", declareClassSig, "byte", Collections.singletonList("byte")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
 
     Body body = method.getBody();
     assertNotNull(body);
