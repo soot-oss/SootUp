@@ -53,24 +53,24 @@ public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return opBox.getValue().equivHashCode();
+    return getOp().equivHashCode();
   }
 
   @Override
   public String toString() {
-    return Jimple.NEG + " " + opBox.getValue().toString();
+    return Jimple.NEG + " " + getOp().toString();
   }
 
   @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.NEG);
     up.literal(" ");
-    opBox.toString(up);
+    getOpBox().toString(up);
   }
 
   @Override
   public Type getType() {
-    Value op = opBox.getValue();
+    Value op = getOp();
 
     if (op.getType().equals(PrimitiveType.getInt())
         || op.getType().equals(PrimitiveType.getByte())

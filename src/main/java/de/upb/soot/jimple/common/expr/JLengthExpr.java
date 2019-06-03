@@ -51,19 +51,19 @@ public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return opBox.getValue().equivHashCode();
+    return getOp().equivHashCode();
   }
 
   @Override
   public String toString() {
-    return Jimple.LENGTHOF + " " + opBox.getValue().toString();
+    return Jimple.LENGTHOF + " " + getOp().toString();
   }
 
   @Override
   public void toString(StmtPrinter up) {
     up.literal(Jimple.LENGTHOF);
     up.literal(" ");
-    opBox.toString(up);
+    getOpBox().toString(up);
   }
 
   @Override

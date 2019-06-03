@@ -45,7 +45,7 @@ public final class JExitMonitorStmt extends AbstractOpStmt implements Copyable {
     this(Jimple.newImmediateBox(op), positionInfo);
   }
 
-  protected JExitMonitorStmt(ValueBox opBox, PositionInfo positionInfo) {
+  private JExitMonitorStmt(ValueBox opBox, PositionInfo positionInfo) {
     super(opBox, positionInfo);
   }
 

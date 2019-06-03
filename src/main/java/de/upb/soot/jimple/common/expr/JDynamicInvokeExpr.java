@@ -46,9 +46,9 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   /** */
   private static final long serialVersionUID = 8212277443400470834L;
 
-  private MethodSignature bootstrapMethodSignature;
-  private ValueBox[] bootstrapMethodSignatureArgBoxes;
-  private int tag;
+  private final MethodSignature bootstrapMethodSignature;
+  private final ValueBox[] bootstrapMethodSignatureArgBoxes;
+  private final int tag;
 
   /** Assigns values returned by newImmediateBox to an array bsmArgBoxes of type ValueBox. */
   public JDynamicInvokeExpr(

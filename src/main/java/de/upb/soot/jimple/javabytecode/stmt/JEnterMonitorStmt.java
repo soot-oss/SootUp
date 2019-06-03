@@ -45,7 +45,7 @@ public final class JEnterMonitorStmt extends AbstractOpStmt implements Copyable 
     this(Jimple.newImmediateBox(op), positionInfo);
   }
 
-  protected JEnterMonitorStmt(ValueBox opBox, PositionInfo positionInfo) {
+  private JEnterMonitorStmt(ValueBox opBox, PositionInfo positionInfo) {
     super(opBox, positionInfo);
   }
 

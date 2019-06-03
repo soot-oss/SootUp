@@ -45,8 +45,8 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   /** */
   private static final long serialVersionUID = 7705080573810511044L;
 
-  private ValueBox baseBox;
-  private ValueBox indexBox;
+  private final ValueBox baseBox;
+  private final ValueBox indexBox;
 
   public JArrayRef(Value base, Value index) {
     this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index));

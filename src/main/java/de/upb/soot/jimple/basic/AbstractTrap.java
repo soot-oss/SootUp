@@ -42,16 +42,16 @@ public class AbstractTrap implements Trap, Serializable {
   private transient JavaClassType exception;
 
   /** The first unit being trapped. */
-  private StmtBox beginStmtBox;
+  private final StmtBox beginStmtBox;
 
   /** The unit just before the last unit being trapped. */
-  private StmtBox endStmtBox;
+  private final StmtBox endStmtBox;
 
   /** The unit to which execution flows after the caught exception is triggered. */
-  private StmtBox handlerStmtBox;
+  private final StmtBox handlerStmtBox;
 
   /** The list of unitBoxes referred to in this Trap (begin, end and handler. */
-  private List<StmtBox> unitBoxes;
+  private final List<StmtBox> unitBoxes;
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
@@ -106,13 +106,6 @@ public class AbstractTrap implements Trap, Serializable {
   @Override
   public List<StmtBox> getStmtBoxes() {
     return unitBoxes;
-  }
-
-  @Override
-  public void clearStmtBoxes() {
-    for (StmtBox box : getStmtBoxes()) {
-      StmtBox.$Accessor.setStmt(box, null);
-    }
   }
 
   @Override

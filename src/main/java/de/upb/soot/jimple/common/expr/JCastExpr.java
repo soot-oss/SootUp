@@ -43,7 +43,7 @@ public final class JCastExpr implements Expr, Copyable {
   private static final long serialVersionUID = -3186041329205869260L;
 
   private final ValueBox opBox;
-  private Type type;
+  private final Type type;
 
   public JCastExpr(Value op, Type type) {
     this.opBox = Jimple.newImmediateBox(op);

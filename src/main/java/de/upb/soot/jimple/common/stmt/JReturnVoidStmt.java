@@ -78,7 +78,7 @@ public final class JReturnVoidStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JReturnStmt withPositionInfo(PositionInfo positionInfo) {
-    return new JReturnStmt(positionInfo);
+  public JReturnVoidStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JReturnVoidStmt(positionInfo);
   }
 }

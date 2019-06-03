@@ -40,7 +40,7 @@ public abstract class FieldRef implements ConcreteRef {
 
   private final FieldSignature fieldSignature;
 
-  protected FieldRef(FieldSignature fieldSignature) {
+  FieldRef(FieldSignature fieldSignature) {
     this.fieldSignature = fieldSignature;
   }
 
