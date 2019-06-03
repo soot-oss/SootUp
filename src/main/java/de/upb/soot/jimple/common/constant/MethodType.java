@@ -3,17 +3,19 @@ package de.upb.soot.jimple.common.constant;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 
-public class MethodType implements Constant {
+public class MethodType implements Constant, Copyable {
 
   // FIXME: adapt this class
 
   private static final long serialVersionUID = 3523899677165980823L;
-  protected Type returnType;
-  protected List<Type> parameterTypes;
+  private final Type returnType;
+  private final List<Type> parameterTypes;
 
   private MethodType(List<Type> parameterTypes, Type returnType) {
     this.returnType = returnType;
@@ -60,4 +62,14 @@ public class MethodType implements Constant {
 
   @Override
   public void accept(Visitor v) {}
+
+  @Nonnull
+  public MethodType withParameterTypes(List<Type> parameterTypes) {
+    return new MethodType(parameterTypes, returnType);
+  }
+
+  @Nonnull
+  public MethodType withReturnType(Type returnType) {
+    return new MethodType(parameterTypes, returnType);
+  }
 }
