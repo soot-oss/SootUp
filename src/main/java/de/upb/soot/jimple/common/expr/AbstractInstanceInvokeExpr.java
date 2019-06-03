@@ -31,7 +31,6 @@ import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.MethodSignature;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
@@ -56,9 +55,9 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   @Override
   public List<ValueBox> getUseBoxes() {
     List<ValueBox> list = new ArrayList<>();
-    ValueBox[] argBoxes = getArgBoxes();
+    List<ValueBox> argBoxes = getArgBoxes();
     if (argBoxes != null) {
-      Collections.addAll(list, argBoxes);
+      list.addAll(argBoxes);
       for (ValueBox element : argBoxes) {
         list.addAll(element.getValue().getUseBoxes());
       }

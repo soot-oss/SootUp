@@ -66,8 +66,8 @@ public abstract class AbstractInvokeExpr implements Expr {
   }
 
   @Nullable
-  ValueBox[] getArgBoxes() {
-    return argBoxes;
+  List<ValueBox> getArgBoxes() {
+    return Collections.unmodifiableList(Arrays.asList(argBoxes));
   }
 
   public int getArgCount() {
