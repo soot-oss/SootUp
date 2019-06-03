@@ -32,10 +32,12 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JStaticInvokeExpr extends AbstractInvokeExpr {
+public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copyable {
   /** */
   private static final long serialVersionUID = -8705816067828505717L;
 
@@ -78,5 +80,15 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseStaticInvokeExpr(this);
+  }
+
+  @Nonnull
+  public JStaticInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+    return new JStaticInvokeExpr(methodSignature, getArgs());
+  }
+
+  @Nonnull
+  public JStaticInvokeExpr withArgs(List<? extends Value> args) {
+    return new JStaticInvokeExpr(getMethodSignature(), args);
   }
 }

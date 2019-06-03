@@ -33,9 +33,11 @@ import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JNegExpr extends AbstractUnopExpr {
+public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   /** */
   private static final long serialVersionUID = -5215362038683846098L;
 
@@ -90,5 +92,10 @@ public class JNegExpr extends AbstractUnopExpr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseNegExpr(this);
+  }
+
+  @Nonnull
+  public JNegExpr withOp(Value op) {
+    return new JNegExpr(op);
   }
 }

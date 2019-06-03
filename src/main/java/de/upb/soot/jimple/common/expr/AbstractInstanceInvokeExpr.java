@@ -38,9 +38,9 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   /** */
   private static final long serialVersionUID = 5554270441921308784L;
 
-  protected final ValueBox baseBox;
+  private final ValueBox baseBox;
 
-  protected AbstractInstanceInvokeExpr(
+  AbstractInstanceInvokeExpr(
       ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
     super(methodSig, argBoxes);
     this.baseBox = baseBox;

@@ -33,12 +33,14 @@ import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JNewMultiArrayExpr implements Expr {
+public final class JNewMultiArrayExpr implements Expr, Copyable {
   /** */
   private static final long serialVersionUID = -473132292740722571L;
 
@@ -155,5 +157,15 @@ public class JNewMultiArrayExpr implements Expr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseNewMultiArrayExpr(this);
+  }
+
+  @Nonnull
+  public JNewMultiArrayExpr withBaseType(ArrayType baseType) {
+    return new JNewMultiArrayExpr(baseType, getSizes());
+  }
+
+  @Nonnull
+  public JNewMultiArrayExpr withSizes(List<Value> sizes) {
+    return new JNewMultiArrayExpr(baseType, sizes);
   }
 }

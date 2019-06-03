@@ -73,7 +73,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
     builder
         .append(Jimple.INTERFACEINVOKE)
         .append(" ")
-        .append(baseBox.getValue().toString())
+        .append(getBase().toString())
         .append(".")
         .append(getMethodSignature())
         .append("(");
@@ -87,7 +87,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
   public void toString(StmtPrinter up) {
     up.literal(Jimple.INTERFACEINVOKE);
     up.literal(" ");
-    baseBox.toString(up);
+    getBaseBox().toString(up);
     up.literal(".");
     up.methodSignature(getMethodSignature());
     up.literal("(");

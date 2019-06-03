@@ -28,8 +28,10 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
-public class JSubExpr extends AbstractFloatBinopExpr {
+public final class JSubExpr extends AbstractFloatBinopExpr implements Copyable {
   /** */
   private static final long serialVersionUID = -530996592332652298L;
 
@@ -45,5 +47,15 @@ public class JSubExpr extends AbstractFloatBinopExpr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseSubExpr(this);
+  }
+
+  @Nonnull
+  public JSubExpr withOp1(Value op1) {
+    return new JSubExpr(op1, getOp2());
+  }
+
+  @Nonnull
+  public JSubExpr withOp2(Value op2) {
+    return new JSubExpr(getOp1(), op2);
   }
 }

@@ -31,8 +31,10 @@ import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
+import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
-public class JUshrExpr extends AbstractIntLongBinopExpr {
+public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 8586157170212695006L;
 
@@ -67,5 +69,15 @@ public class JUshrExpr extends AbstractIntLongBinopExpr {
     }
 
     return UnknownType.getInstance();
+  }
+
+  @Nonnull
+  public JUshrExpr withOp1(Value op1) {
+    return new JUshrExpr(op1, getOp2());
+  }
+
+  @Nonnull
+  public JUshrExpr withOp2(Value op2) {
+    return new JUshrExpr(getOp1(), op2);
   }
 }

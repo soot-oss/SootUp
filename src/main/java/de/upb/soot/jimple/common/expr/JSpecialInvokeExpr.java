@@ -31,14 +31,15 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
+public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 9170581307891035087L;
 
-  /** Stores the values of new ImmediateBox to the argBoxes array. */
   public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
     super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
   }
@@ -54,7 +55,7 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
     builder
         .append(Jimple.SPECIALINVOKE + " ")
-        .append(baseBox.getValue().toString())
+        .append(getBase().toString())
         .append(".")
         .append(getMethodSignature())
         .append("(");
@@ -67,14 +68,28 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
   public void toString(StmtPrinter up) {
-
     up.literal(Jimple.SPECIALINVOKE);
     up.literal(" ");
-    baseBox.toString(up);
+    getBaseBox().toString(up);
     up.literal(".");
     up.methodSignature(getMethodSignature());
     up.literal("(");
     argBoxesToPrinter(up);
     up.literal(")");
+  }
+
+  @Nonnull
+  public JSpecialInvokeExpr withBase(Local base) {
+    return new JSpecialInvokeExpr(base, getMethodSignature(), getArgs());
+  }
+
+  @Nonnull
+  public JSpecialInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, getArgs());
+  }
+
+  @Nonnull
+  public JSpecialInvokeExpr withArgs(List<? extends Value> args) {
+    return new JSpecialInvokeExpr((Local) getBase(), getMethodSignature(), args);
   }
 }

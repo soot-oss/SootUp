@@ -31,8 +31,10 @@ import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
+import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
-public class JShlExpr extends AbstractIntLongBinopExpr {
+public final class JShlExpr extends AbstractIntLongBinopExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 2632734994439309426L;
 
@@ -50,6 +52,7 @@ public class JShlExpr extends AbstractIntLongBinopExpr {
     ((ExprVisitor) sw).caseShlExpr(this);
   }
 
+  // TODO Deduplicate this code?
   @Override
   public Type getType() {
     Value op1 = getOp1();
@@ -67,5 +70,15 @@ public class JShlExpr extends AbstractIntLongBinopExpr {
     }
 
     return UnknownType.getInstance();
+  }
+
+  @Nonnull
+  public JShlExpr withOp1(Value op1) {
+    return new JShlExpr(op1, getOp2());
+  }
+
+  @Nonnull
+  public JShlExpr withOp2(Value op2) {
+    return new JShlExpr(getOp1(), op2);
   }
 }
