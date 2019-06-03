@@ -117,7 +117,7 @@ public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyab
 
     builder
         .append(Jimple.TABLESWITCH + "(")
-        .append(keyBox.getValue().toString())
+        .append(getKey().toString())
         .append(")")
         .append(endOfLine);
 
@@ -164,7 +164,7 @@ public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyab
   public void toString(StmtPrinter up) {
     up.literal(Jimple.TABLESWITCH);
     up.literal("(");
-    keyBox.toString(up);
+    getKeyBox().toString(up);
     up.literal(")");
     up.newline();
     up.literal("{");
@@ -181,7 +181,7 @@ public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyab
     up.literal(": ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    defaultTargetBox.toString(up);
+    getDefaultTargetBox().toString(up);
     up.literal(";");
     up.newline();
     up.literal("}");
@@ -195,7 +195,7 @@ public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyab
     up.literal(": ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    targetBoxes[targetIndex - lowIndex].toString(up);
+    getTargetBox(targetIndex - lowIndex).toString(up);
     up.literal(";");
     up.newline();
   }
