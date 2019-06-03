@@ -36,13 +36,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 public abstract class AbstractInvokeExpr implements Expr {
   /** */
   private static final long serialVersionUID = 1796920588315752175L;
 
-  protected MethodSignature methodSignature;
-  protected final ValueBox[] argBoxes;
+  private final MethodSignature methodSignature;
+  private final ValueBox[] argBoxes;
 
   protected AbstractInvokeExpr(MethodSignature method, ValueBox[] argBoxes) {
     this.methodSignature = method;
@@ -62,6 +63,11 @@ public abstract class AbstractInvokeExpr implements Expr {
     return argBoxes != null
         ? Arrays.stream(argBoxes).map(ValueBox::getValue).collect(Collectors.toList())
         : Collections.emptyList();
+  }
+
+  @Nullable
+  ValueBox[] getArgBoxes() {
+    return argBoxes;
   }
 
   public int getArgCount() {

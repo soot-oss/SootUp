@@ -52,8 +52,8 @@ public class JShlExpr extends AbstractIntLongBinopExpr {
 
   @Override
   public Type getType() {
-    Value op1 = op1Box.getValue();
-    Value op2 = op2Box.getValue();
+    Value op1 = getOp1();
+    Value op2 = getOp2();
 
     if (!isIntLikeType(op2.getType())) {
       return UnknownType.getInstance();

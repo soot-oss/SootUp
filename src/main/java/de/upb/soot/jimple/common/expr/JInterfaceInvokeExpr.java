@@ -29,7 +29,6 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
@@ -45,7 +44,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
    * argBoxes.
    */
   public JInterfaceInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
-    super(Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
+    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
 
     // FIXME: [JMP] Move this into view or somewhere, where `SootClass` and its context are
     // available
@@ -61,10 +60,6 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
     //            + " Use JVirtualInvokeExpr or JSpecialInvokeExpr instead!");
     //      }
     //    }
-
-    for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
-    }
   }
 
   @Override
@@ -80,7 +75,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
         .append(" ")
         .append(baseBox.getValue().toString())
         .append(".")
-        .append(methodSignature)
+        .append(getMethodSignature())
         .append("(");
     argBoxesToString(builder);
     builder.append(")");
@@ -94,7 +89,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.methodSignature(methodSignature);
+    up.methodSignature(getMethodSignature());
     up.literal("(");
     argBoxesToPrinter(up);
     up.literal(")");
@@ -104,7 +99,7 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
 
   @Nonnull
   public JInterfaceInvokeExpr withBase(Value base) {
-    return new JInterfaceInvokeExpr(base, methodSignature, getArgs());
+    return new JInterfaceInvokeExpr(base, getMethodSignature(), getArgs());
   }
 
   @Nonnull
@@ -114,6 +109,6 @@ public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr imple
 
   @Nonnull
   public JInterfaceInvokeExpr withArgs(List<? extends Value> args) {
-    return new JInterfaceInvokeExpr(getBase(), methodSignature, args);
+    return new JInterfaceInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }

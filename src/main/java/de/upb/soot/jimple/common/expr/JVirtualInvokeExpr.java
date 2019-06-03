@@ -29,7 +29,6 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
@@ -40,10 +39,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */
   public JVirtualInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
-    super(Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
-    for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
-    }
+    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
   }
 
   @Override
@@ -58,7 +54,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
         .append(Jimple.VIRTUALINVOKE + " ")
         .append(baseBox.getValue().toString())
         .append(".")
-        .append(methodSignature)
+        .append(getMethodSignature())
         .append("(");
     argBoxesToString(builder);
     builder.append(")");
@@ -72,7 +68,7 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     up.literal(" ");
     baseBox.toString(up);
     up.literal(".");
-    up.methodSignature(methodSignature);
+    up.methodSignature(getMethodSignature());
     up.literal("(");
     argBoxesToPrinter(up);
     up.literal(")");

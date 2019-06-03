@@ -29,7 +29,6 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.MethodSignature;
@@ -42,11 +41,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */
   public JStaticInvokeExpr(MethodSignature method, List<? extends Value> args) {
-    super(method, new ValueBox[args.size()]);
-    this.methodSignature = method;
-    for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
-    }
+    super(method, ValueBoxUtils.toValueBoxes(args));
   }
 
   @Override
@@ -63,7 +58,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append(Jimple.STATICINVOKE).append(" ").append(methodSignature).append("(");
+    builder.append(Jimple.STATICINVOKE).append(" ").append(getMethodSignature()).append("(");
     argBoxesToString(builder);
     builder.append(")");
     return builder.toString();
@@ -74,7 +69,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   public void toString(StmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);
     up.literal(" ");
-    up.methodSignature(methodSignature);
+    up.methodSignature(getMethodSignature());
     up.literal("(");
     argBoxesToPrinter(up);
     up.literal(")");

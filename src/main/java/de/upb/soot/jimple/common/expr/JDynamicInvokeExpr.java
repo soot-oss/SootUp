@@ -57,7 +57,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
       MethodSignature methodSignature,
       int tag,
       List<? extends Value> methodArgs) {
-    super(methodSignature, new ValueBox[methodArgs.size()]);
+    super(methodSignature, ValueBoxUtils.toValueBoxes(methodArgs));
     if (!methodSignature
         .toString()
         .startsWith("<" + SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME + ": ")) {
@@ -72,9 +72,6 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
 
     for (int i = 0; i < bootstrapArgs.size(); i++) {
       this.bootstrapMethodSignatureArgBoxes[i] = Jimple.newImmediateBox(bootstrapArgs.get(i));
-    }
-    for (int i = 0; i < methodArgs.size(); i++) {
-      this.argBoxes[i] = Jimple.newImmediateBox(methodArgs.get(i));
     }
   }
 
@@ -123,9 +120,9 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
     StringBuilder builder = new StringBuilder();
     builder.append(Jimple.DYNAMICINVOKE);
     builder.append(" \"");
-    builder.append(methodSignature); // quoted method name (can be any UTF8 string)
+    builder.append(getMethodSignature()); // quoted method name (can be any UTF8 string)
     builder.append("\" <");
-    builder.append(methodSignature.getSubSignature());
+    builder.append(getMethodSignature().getSubSignature());
     builder.append(">(");
 
     argBoxesToString(builder);
@@ -150,7 +147,11 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
   public void toString(StmtPrinter up) {
     up.literal(Jimple.DYNAMICINVOKE);
     up.literal(
-        " \"" + methodSignature.getName() + "\" <" + methodSignature.getSubSignature() + ">(");
+        " \""
+            + getMethodSignature().getName()
+            + "\" <"
+            + getMethodSignature().getSubSignature()
+            + ">(");
     argBoxesToPrinter(up);
 
     up.literal(") ");
