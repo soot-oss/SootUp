@@ -1,7 +1,5 @@
 package de.upb.soot.views;
 
-import static de.upb.soot.util.Utils.valueOrElse;
-
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
@@ -166,22 +164,26 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   @Nullable
   private AbstractClass<? extends AbstractClassSource> __resolveSootClass(
       @Nonnull JavaClassType signature) {
-    return this.getProject()
-        .getInputLocation()
-        .getClassSource(signature)
-        .map(
-            it -> {
-              // TODO Don't use a fixed SourceType here.
-              if (it instanceof ClassSource) {
-                return new SootClass((ClassSource) it, SourceType.Application);
+    AbstractClass<? extends AbstractClassSource> theClass =
+        this.getProject()
+            .getInputLocation()
+            .getClassSource(signature)
+            .map(
+                it -> {
+                  // TODO Don't use a fixed SourceType here.
+                  if (it instanceof ClassSource) {
+                    return new SootClass((ClassSource) it, SourceType.Application);
 
-              } else if (it instanceof ModuleClassSource) {
-                return new SootModuleInfo((ModuleClassSource) it, false);
-              }
-              return null;
-            })
-        .map(it -> valueOrElse(this.map.putIfAbsent(it.getType(), it), it))
-        .orElse(null);
+                  } else if (it instanceof ModuleClassSource) {
+                    return new SootModuleInfo((ModuleClassSource) it, false);
+                  }
+                  return null;
+                })
+            .orElse(null);
+    if (theClass != null) {
+      map.putIfAbsent(theClass.getType(), theClass);
+    }
+    return theClass;
   }
 
   public synchronized void resolveAll() {
