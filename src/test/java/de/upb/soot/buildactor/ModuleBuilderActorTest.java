@@ -7,6 +7,8 @@ import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
+import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.inputlocation.JavaModulePathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import java.util.Optional;
@@ -22,7 +24,8 @@ public class ModuleBuilderActorTest {
         new JavaModulePathAnalysisInputLocation(
             "target/test-classes/de/upb/soot/namespaces/modules");
 
-    Project project = new Project(javaClassPathNamespace, ModuleIdentifierFactory.getInstance());
+    Project<AnalysisInputLocation> project =
+        new Project<>(javaClassPathNamespace, ModuleIdentifierFactory.getInstance());
 
     // de.upb.soot.views.JavaView view = new de.upb.soot.views.JavaView(project);
 
@@ -46,7 +49,7 @@ public class ModuleBuilderActorTest {
     // assertTrue(source.isPresent());
 
     // Resolve signature to `SootClass`
-    Optional<AbstractClass> result = iView.getClass(sig);
+    Optional<AbstractClass<? extends AbstractClassSource>> result = iView.getClass(sig);
     // stuffAViewNeeds.reifyClass(source.get(), iView);
 
     assertTrue(result.isPresent());
@@ -60,7 +63,7 @@ public class ModuleBuilderActorTest {
     final JavaClassType sig =
         ModuleIdentifierFactory.getInstance().getClassType("module-info", "", "de.upb.mod");
 
-    Optional<AbstractClass> result = iView.getClass(sig);
+    Optional<AbstractClass<? extends AbstractClassSource>> result = iView.getClass(sig);
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
   }

@@ -57,7 +57,7 @@ public class Project<S extends AnalysisInputLocation> {
 
   @Nonnull
   public IView createOnDemandView() {
-    ViewBuilder vb = new ViewBuilder(this);
+    ViewBuilder<S> vb = new ViewBuilder<>(this);
     return vb.buildOnDemand();
   }
 

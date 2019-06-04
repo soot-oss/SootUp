@@ -48,7 +48,8 @@ public class ModuleCompositionTest {
     assertTrue(new File(jarFile).exists());
 
     // Create a project
-    Project p = new Project(new JavaClassPathAnalysisInputLocation(jarFile));
+    Project<JavaClassPathAnalysisInputLocation> p =
+        new Project<>(new JavaClassPathAnalysisInputLocation(jarFile));
 
     // Get the view
     IView view = p.createOnDemandView();

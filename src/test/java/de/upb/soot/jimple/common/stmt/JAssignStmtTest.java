@@ -40,7 +40,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class JAssignStmtTest {
 
-  Comparator c =
+  Comparator<Stmt> c =
       new Comparator<Stmt>() {
         @Override
         public int compare(Stmt o1, Stmt o2) {

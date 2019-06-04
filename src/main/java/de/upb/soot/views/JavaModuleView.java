@@ -4,6 +4,7 @@ import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootModuleInfo;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.inputlocation.JavaModulePathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
@@ -22,15 +23,14 @@ public abstract class JavaModuleView implements IView {
 
   @Override
   @Nonnull
-  public synchronized Stream<AbstractClass> classes() {
+  public synchronized Stream<AbstractClass<? extends AbstractClassSource>> classes() {
     return this.getClasses().stream();
   }
 
   @Override
   @Nonnull
-  public synchronized Optional<AbstractClass> getClass(@Nonnull JavaClassType type) {
-    AbstractClass sootClass = this.map.get(type);
-
+  public synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
+      @Nonnull JavaClassType type) {
     // FIXME: get the first class you find, in the annouymous module...
     return null;
   }

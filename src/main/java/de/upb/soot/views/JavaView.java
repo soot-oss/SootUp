@@ -11,10 +11,15 @@ import de.upb.soot.core.SourceType;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ModuleClassSource;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -26,7 +31,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo created on 31.07.2018
  * @author Jan Martin Persch
  */
-public class JavaView extends AbstractView {
+public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
   // region Fields
   /** Defines Java's reserved names. */
@@ -97,14 +102,15 @@ public class JavaView extends AbstractView {
           "dynamicinvoke",
           "strictfp");
 
-  @Nonnull private final Map<Type, AbstractClass> map = new HashMap<>();
+  @Nonnull
+  private final Map<Type, AbstractClass<? extends AbstractClassSource>> map = new HashMap<>();
 
   // endregion /Fields/
 
   // region Constructor
 
   /** Creates a new instance of the {@link JavaView} class. */
-  public JavaView(@Nonnull Project project) {
+  public JavaView(@Nonnull Project<S> project) {
     super(project);
   }
 
@@ -134,7 +140,7 @@ public class JavaView extends AbstractView {
 
   @Override
   @Nonnull
-  public synchronized Collection<AbstractClass> getClasses() {
+  public synchronized Collection<AbstractClass<? extends AbstractClassSource>> getClasses() {
     this.resolveAll();
 
     return Collections.unmodifiableCollection(this.map.values());
@@ -142,14 +148,15 @@ public class JavaView extends AbstractView {
 
   @Override
   @Nonnull
-  public synchronized Stream<AbstractClass> classes() {
+  public synchronized Stream<AbstractClass<? extends AbstractClassSource>> classes() {
     return this.getClasses().stream();
   }
 
   @Override
   @Nonnull
-  public synchronized Optional<AbstractClass> getClass(@Nonnull JavaClassType type) {
-    AbstractClass sootClass = this.map.get(type);
+  public synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
+      @Nonnull JavaClassType type) {
+    AbstractClass<? extends AbstractClassSource> sootClass = this.map.get(type);
 
     if (sootClass != null) return Optional.of(sootClass);
     else if (this.isFullyResolved()) return Optional.empty();
@@ -157,7 +164,8 @@ public class JavaView extends AbstractView {
   }
 
   @Nullable
-  private AbstractClass __resolveSootClass(@Nonnull JavaClassType signature) {
+  private AbstractClass<? extends AbstractClassSource> __resolveSootClass(
+      @Nonnull JavaClassType signature) {
     return this.getProject()
         .getInputLocation()
         .getClassSource(signature)

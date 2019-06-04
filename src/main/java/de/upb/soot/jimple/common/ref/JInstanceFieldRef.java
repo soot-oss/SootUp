@@ -64,7 +64,7 @@ public class JInstanceFieldRef extends FieldRef {
   @Override
   public final List<ValueBox> getUseBoxes() {
 
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>(baseBox.getValue().getUseBoxes());
+    List<ValueBox> useBoxes = new ArrayList<>(baseBox.getValue().getUseBoxes());
     useBoxes.add(baseBox);
 
     return useBoxes;
