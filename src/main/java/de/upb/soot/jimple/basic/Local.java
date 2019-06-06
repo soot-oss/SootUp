@@ -28,6 +28,7 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.jimple.visitor.JimpleValueVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +41,7 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public final class Local implements Value, Immediate {
+public final class Local implements Value, Immediate, Copyable {
   // This class is final since it implements equals and hashCode
 
   /** */
@@ -108,5 +109,15 @@ public final class Local implements Value, Immediate {
   @Override
   public void accept(Visitor sw) {
     ((JimpleValueVisitor) sw).caseLocal(this);
+  }
+
+  @Nonnull
+  public Local withName(String name) {
+    return new Local(name, type);
+  }
+
+  @Nonnull
+  public Local withType(Type type) {
+    return new Local(name, type);
   }
 }

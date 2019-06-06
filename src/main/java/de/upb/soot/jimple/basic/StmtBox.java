@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 
 public abstract class StmtBox implements Serializable {
 
-  @Nullable protected Stmt stmt;
+  @Nullable private Stmt stmt;
 
   public StmtBox(@Nullable Stmt stmt) {
     this.stmt = stmt;

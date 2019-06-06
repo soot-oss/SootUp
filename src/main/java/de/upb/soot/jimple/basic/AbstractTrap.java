@@ -39,19 +39,19 @@ import java.util.List;
 @SuppressWarnings("serial")
 public class AbstractTrap implements Trap, Serializable {
   /** The exception being caught. */
-  protected transient JavaClassType exception;
+  private transient JavaClassType exception;
 
   /** The first unit being trapped. */
-  protected StmtBox beginStmtBox;
+  private final StmtBox beginStmtBox;
 
   /** The unit just before the last unit being trapped. */
-  protected StmtBox endStmtBox;
+  private final StmtBox endStmtBox;
 
   /** The unit to which execution flows after the caught exception is triggered. */
-  protected StmtBox handlerStmtBox;
+  private final StmtBox handlerStmtBox;
 
   /** The list of unitBoxes referred to in this Trap (begin, end and handler. */
-  protected List<StmtBox> unitBoxes;
+  private final List<StmtBox> unitBoxes;
 
   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
     in.defaultReadObject();
@@ -66,7 +66,7 @@ public class AbstractTrap implements Trap, Serializable {
   }
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
-  protected AbstractTrap(
+  AbstractTrap(
       JavaClassType exception, StmtBox beginStmtBox, StmtBox endStmtBox, StmtBox handlerStmtBox) {
     this.exception = exception;
     this.beginStmtBox = beginStmtBox;
@@ -106,13 +106,6 @@ public class AbstractTrap implements Trap, Serializable {
   @Override
   public List<StmtBox> getStmtBoxes() {
     return unitBoxes;
-  }
-
-  @Override
-  public void clearStmtBoxes() {
-    for (StmtBox box : getStmtBoxes()) {
-      StmtBox.$Accessor.setStmt(box, null);
-    }
   }
 
   @Override

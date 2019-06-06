@@ -30,15 +30,17 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JThisRef implements IdentityRef {
+public final class JThisRef implements IdentityRef, Copyable {
   /** */
   private static final long serialVersionUID = 5300244196056992260L;
 
-  ReferenceType thisType;
+  private final ReferenceType thisType;
 
   public JThisRef(ReferenceType thisType) {
     this.thisType = thisType;
@@ -77,5 +79,10 @@ public class JThisRef implements IdentityRef {
   @Override
   public void accept(Visitor sw) {
     // TODO
+  }
+
+  @Nonnull
+  public JThisRef withThisType(ReferenceType thisType) {
+    return new JThisRef(thisType);
   }
 }

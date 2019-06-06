@@ -28,7 +28,9 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.OverridingClassSource;
 import de.upb.soot.frontends.ResolveException;
+import de.upb.soot.signatures.AbstractClassMemberSignature;
 import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
@@ -38,6 +40,7 @@ import de.upb.soot.util.Utils;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
@@ -84,8 +87,8 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
   @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   @Nonnull
-  private <M extends SootClassMember> Set<M> initializeClassMembers(
-      @Nonnull Iterable<? extends M> items) {
+  private <S extends AbstractClassMemberSignature, M extends SootClassMember<S>>
+      Set<M> initializeClassMembers(@Nonnull Iterable<? extends M> items) {
     return iterableToStream(items).peek(it -> it.setDeclaringClass(this)).collect(toImmutableSet());
   }
 
@@ -448,5 +451,27 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
   @Nonnull
   public String getName() {
     return this.classSignature.getFullyQualifiedName();
+  }
+
+  /**
+   * Creates a new SootClass based on a new {@link OverridingClassSource}. This is useful to change
+   * selected parts of a {@link SootClass} without recreating a {@link ClassSource} completely.
+   * {@link OverridingClassSource} allows for replacing specific parts of a class, such as fields
+   * and methods.
+   */
+  @Nonnull
+  public SootClass withOverridingClassSource(
+      Function<OverridingClassSource, OverridingClassSource> overrider) {
+    return new SootClass(overrider.apply(new OverridingClassSource(classSource)), sourceType);
+  }
+
+  @Nonnull
+  public SootClass withClassSource(ClassSource classSource) {
+    return new SootClass(classSource, sourceType);
+  }
+
+  @Nonnull
+  public SootClass withSourceType(SourceType sourceType) {
+    return new SootClass(classSource, sourceType);
   }
 }

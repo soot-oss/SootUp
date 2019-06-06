@@ -32,16 +32,18 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JCastExpr implements Expr {
+public final class JCastExpr implements Expr, Copyable {
   /** */
   private static final long serialVersionUID = -3186041329205869260L;
 
   private final ValueBox opBox;
-  private Type type;
+  private final Type type;
 
   public JCastExpr(Value op, Type type) {
     this.opBox = Jimple.newImmediateBox(op);
@@ -97,5 +99,15 @@ public class JCastExpr implements Expr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseCastExpr(this);
+  }
+
+  @Nonnull
+  public JCastExpr withOp(Value op) {
+    return new JCastExpr(op, type);
+  }
+
+  @Nonnull
+  public JCastExpr withType(Type type) {
+    return new JCastExpr(getOp(), type);
   }
 }

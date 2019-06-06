@@ -38,13 +38,13 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   /** */
   private static final long serialVersionUID = -828246813006451813L;
 
-  protected final StmtBox defaultTargetBox;
+  private final StmtBox defaultTargetBox;
 
-  protected final ValueBox keyBox;
+  private final ValueBox keyBox;
 
-  protected final List<StmtBox> stmtBoxes;
+  private final List<StmtBox> stmtBoxes;
 
-  protected final StmtBox[] targetBoxes;
+  private final StmtBox[] targetBoxes;
 
   protected AbstractSwitchStmt(
       PositionInfo positionInfo,
@@ -73,7 +73,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     StmtBox.$Accessor.setStmt(defaultTargetBox, defaultTarget);
   }
 
-  public final StmtBox getDefaultTargetBox() {
+  protected final StmtBox getDefaultTargetBox() {
     return defaultTargetBox;
   }
 
@@ -102,7 +102,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
     return targetBoxes[index].getStmt();
   }
 
-  public final StmtBox getTargetBox(int index) {
+  protected final StmtBox getTargetBox(int index) {
     return targetBoxes[index];
   }
 

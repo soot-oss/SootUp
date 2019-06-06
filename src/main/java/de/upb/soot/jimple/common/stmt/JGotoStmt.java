@@ -31,11 +31,13 @@ import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JGotoStmt extends AbstractStmt {
+public final class JGotoStmt extends AbstractStmt implements Copyable {
   /** */
   private static final long serialVersionUID = -7771670610404109177L;
 
@@ -111,6 +113,16 @@ public class JGotoStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return targetBox.getStmt().equivHashCode();
+  }
+
+  @Nonnull
+  public JGotoStmt withTarget(Stmt target) {
+    return new JGotoStmt(target, getPositionInfo());
+  }
+
+  @Nonnull
+  public JGotoStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JGotoStmt(getTarget(), positionInfo);
   }
 
   /** This class is for internal use only. It will be removed in the future. */
