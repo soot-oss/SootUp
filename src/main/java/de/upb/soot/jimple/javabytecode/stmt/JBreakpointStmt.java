@@ -31,9 +31,11 @@ import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.AbstractStmt;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JBreakpointStmt extends AbstractStmt {
+public final class JBreakpointStmt extends AbstractStmt implements Copyable {
   /** */
   private static final long serialVersionUID = 7082976523552855249L;
 
@@ -74,5 +76,10 @@ public class JBreakpointStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return 42 + 1;
+  }
+
+  @Nonnull
+  public JBreakpointStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JBreakpointStmt(positionInfo);
   }
 }

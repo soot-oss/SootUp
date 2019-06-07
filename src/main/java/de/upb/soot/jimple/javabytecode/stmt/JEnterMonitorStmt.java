@@ -33,9 +33,11 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JEnterMonitorStmt extends AbstractOpStmt {
+public final class JEnterMonitorStmt extends AbstractOpStmt implements Copyable {
   /** */
   private static final long serialVersionUID = -8580317170617446624L;
 
@@ -43,7 +45,7 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
     this(Jimple.newImmediateBox(op), positionInfo);
   }
 
-  protected JEnterMonitorStmt(ValueBox opBox, PositionInfo positionInfo) {
+  private JEnterMonitorStmt(ValueBox opBox, PositionInfo positionInfo) {
     super(opBox, positionInfo);
   }
 
@@ -77,5 +79,15 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
   @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseEnterMonitorStmt(this, o);
+  }
+
+  @Nonnull
+  public JEnterMonitorStmt withOp(Value op) {
+    return new JEnterMonitorStmt(op, getPositionInfo());
+  }
+
+  @Nonnull
+  public JEnterMonitorStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JEnterMonitorStmt(getOp(), positionInfo);
   }
 }

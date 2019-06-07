@@ -27,16 +27,19 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import de.upb.soot.frontends.MethodSource;
+import de.upb.soot.frontends.OverridingMethodSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.builder.BuilderException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -49,7 +52,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootMethod extends SootClassMember implements Method {
+public final class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
   /** */
   private static final long serialVersionUID = -7438746401781827520L;
 
@@ -248,6 +251,43 @@ public class SootMethod extends SootClassMember implements Method {
   }
 
   /**
+   * Creates a new SootMethod based on a new {@link OverridingMethodSource}. This is useful to
+   * change selected parts of a {@link SootMethod} without recreating a {@link MethodSource}
+   * completely. {@link OverridingMethodSource} allows for replacing the body of a method.
+   */
+  @Nonnull
+  public SootMethod withOverridingMethodSource(
+      Function<OverridingMethodSource, OverridingMethodSource> overrider) {
+    return new SootMethod(
+        overrider.apply(new OverridingMethodSource(methodSource)),
+        getSignature(),
+        getModifiers(),
+        exceptions,
+        debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withSource(MethodSource source) {
+    return new SootMethod(source, getSignature(), getModifiers(), exceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withModifiers(Iterable<Modifier> modifiers) {
+    return new SootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withThrownExceptions(Iterable<JavaClassType> thrownExceptions) {
+    return new SootMethod(
+        methodSource, getSignature(), getModifiers(), thrownExceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withDebugInfo(DebuggingInformation debugInfo) {
+    return new SootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
+  }
+
+  /**
    * Creates a {@link SootMethod} builder.
    *
    * @return A {@link SootMethod} builder.
@@ -263,7 +303,7 @@ public class SootMethod extends SootClassMember implements Method {
    * @see #builder()
    * @author Jan Martin Persch
    */
-  public interface Builder extends SootClassMember.Builder<SootMethod> {
+  public interface Builder extends SootClassMember.Builder<MethodSignature, SootMethod> {
     interface MethodSourceStep {
       /**
        * Sets the {@link MethodSource}.
@@ -325,7 +365,8 @@ public class SootMethod extends SootClassMember implements Method {
    *
    * @author Jan Martin Persch
    */
-  protected static class SootMethodBuilder extends SootClassMemberBuilder<SootMethod>
+  protected static class SootMethodBuilder
+      extends SootClassMemberBuilder<MethodSignature, SootMethod>
       implements Builder.MethodSourceStep,
           Builder.MethodSignatureStep,
           Builder.ModifiersStep,
@@ -339,7 +380,7 @@ public class SootMethod extends SootClassMember implements Method {
     // region Constructor
 
     /** Creates a new instance of the {@link SootMethodBuilder} class. */
-    protected SootMethodBuilder() {
+    SootMethodBuilder() {
       super(SootMethod.class);
     }
 

@@ -29,8 +29,10 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
-public class JCmpgExpr extends AbstractIntBinopExpr {
+public final class JCmpgExpr extends AbstractIntBinopExpr implements Copyable {
   /** */
   private static final long serialVersionUID = -6068747039059901760L;
 
@@ -46,5 +48,15 @@ public class JCmpgExpr extends AbstractIntBinopExpr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseCmpgExpr(this);
+  }
+
+  @Nonnull
+  public JCmpgExpr withOp1(Value op1) {
+    return new JCmpgExpr(op1, getOp2());
+  }
+
+  @Nonnull
+  public JCmpgExpr withOp2(Value op2) {
+    return new JCmpgExpr(getOp1(), op2);
   }
 }

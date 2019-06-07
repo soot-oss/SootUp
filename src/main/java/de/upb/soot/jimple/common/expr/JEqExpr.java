@@ -28,8 +28,10 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
-public class JEqExpr extends AbstractConditionExpr {
+public final class JEqExpr extends AbstractConditionExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 6070774769622462963L;
 
@@ -45,5 +47,15 @@ public class JEqExpr extends AbstractConditionExpr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseEqExpr(this);
+  }
+
+  @Nonnull
+  public JEqExpr withOp1(Value op1) {
+    return new JEqExpr(op1, getOp2());
+  }
+
+  @Nonnull
+  public JEqExpr withOp2(Value op2) {
+    return new JEqExpr(getOp1(), op2);
   }
 }

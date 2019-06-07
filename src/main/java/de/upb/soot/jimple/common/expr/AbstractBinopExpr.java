@@ -36,8 +36,13 @@ public abstract class AbstractBinopExpr implements Expr {
   /** */
   private static final long serialVersionUID = -4967924464687577438L;
 
-  protected ValueBox op1Box;
-  protected ValueBox op2Box;
+  private final ValueBox op1Box;
+  private final ValueBox op2Box;
+
+  AbstractBinopExpr(ValueBox op1Box, ValueBox op2Box) {
+    this.op1Box = op1Box;
+    this.op2Box = op2Box;
+  }
 
   public Value getOp1() {
     return op1Box.getValue();

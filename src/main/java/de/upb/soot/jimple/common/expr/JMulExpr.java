@@ -28,8 +28,10 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
-public class JMulExpr extends AbstractFloatBinopExpr {
+public final class JMulExpr extends AbstractFloatBinopExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 4239500276632139025L;
 
@@ -45,5 +47,15 @@ public class JMulExpr extends AbstractFloatBinopExpr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseMulExpr(this);
+  }
+
+  @Nonnull
+  public JMulExpr withOp1(Value op1) {
+    return new JMulExpr(op1, getOp2());
+  }
+
+  @Nonnull
+  public JMulExpr withOp2(Value op2) {
+    return new JMulExpr(getOp1(), op2);
   }
 }

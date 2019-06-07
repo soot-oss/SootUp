@@ -35,6 +35,4 @@ import java.util.List;
 public interface StmtBoxOwner {
 
   List<StmtBox> getStmtBoxes();
-
-  void clearStmtBoxes();
 }

@@ -33,12 +33,14 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JIfStmt extends AbstractStmt {
+public final class JIfStmt extends AbstractStmt implements Copyable {
   /** */
   private static final long serialVersionUID = -5625186075843518011L;
 
@@ -55,7 +57,7 @@ public class JIfStmt extends AbstractStmt {
     this(Jimple.newConditionExprBox(condition), target, positionInfo);
   }
 
-  protected JIfStmt(ValueBox conditionBox, StmtBox targetBox, PositionInfo positionInfo) {
+  private JIfStmt(ValueBox conditionBox, StmtBox targetBox, PositionInfo positionInfo) {
     super(positionInfo);
     this.conditionBox = conditionBox;
     this.targetBox = targetBox;
@@ -143,6 +145,21 @@ public class JIfStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return conditionBox.getValue().equivHashCode() + 31 * targetBox.getStmt().equivHashCode();
+  }
+
+  @Nonnull
+  public JIfStmt withCondition(Value condition) {
+    return new JIfStmt(condition, getTarget(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JIfStmt withTarget(Stmt target) {
+    return new JIfStmt(getCondition(), target, getPositionInfo());
+  }
+
+  @Nonnull
+  public JIfStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JIfStmt(getCondition(), getTarget(), positionInfo);
   }
 
   /** This class is for internal use only. It will be removed in the future. */

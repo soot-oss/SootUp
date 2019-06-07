@@ -39,15 +39,14 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
     this(Jimple.newArgBox(op1), Jimple.newArgBox(op2));
   }
 
-  protected AbstractFloatBinopExpr(ValueBox op1Box, ValueBox op2Box) {
-    this.op1Box = op1Box;
-    this.op2Box = op2Box;
+  private AbstractFloatBinopExpr(ValueBox op1Box, ValueBox op2Box) {
+    super(op1Box, op2Box);
   }
 
   @Override
   public Type getType() {
-    Value op1 = op1Box.getValue();
-    Value op2 = op2Box.getValue();
+    Value op1 = getOp1();
+    Value op2 = getOp2();
     Type op1t = op1.getType();
     Type op2t = op2.getType();
     if ((op1t.equals(PrimitiveType.getInt())

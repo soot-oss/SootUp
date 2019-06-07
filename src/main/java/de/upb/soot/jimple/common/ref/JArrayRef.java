@@ -35,22 +35,24 @@ import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.NullType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JArrayRef implements ConcreteRef {
+public final class JArrayRef implements ConcreteRef, Copyable {
   /** */
   private static final long serialVersionUID = 7705080573810511044L;
 
-  protected ValueBox baseBox;
-  protected ValueBox indexBox;
+  private final ValueBox baseBox;
+  private final ValueBox indexBox;
 
   public JArrayRef(Value base, Value index) {
     this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index));
   }
 
-  protected JArrayRef(ValueBox baseBox, ValueBox indexBox) {
+  private JArrayRef(ValueBox baseBox, ValueBox indexBox) {
     this.baseBox = baseBox;
     this.indexBox = indexBox;
   }
@@ -141,5 +143,15 @@ public class JArrayRef implements ConcreteRef {
   @Override
   public void accept(Visitor sw) {
     // TODO
+  }
+
+  @Nonnull
+  public JArrayRef withBase(Value base) {
+    return new JArrayRef(base, getIndex());
+  }
+
+  @Nonnull
+  public JArrayRef withIndex(Value index) {
+    return new JArrayRef(getBase(), index);
   }
 }

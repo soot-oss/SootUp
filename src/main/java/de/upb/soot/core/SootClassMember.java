@@ -40,15 +40,15 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public abstract class SootClassMember implements Serializable {
+public abstract class SootClassMember<S extends AbstractClassMemberSignature>
+    implements Serializable {
   private static final long serialVersionUID = -7201796736790814208L;
 
-  @Nonnull private final AbstractClassMemberSignature _signature;
+  @Nonnull private final S _signature;
   @Nonnull private final ImmutableSet<Modifier> _modifiers;
 
   /** Constructor. */
-  public SootClassMember(
-      @Nonnull AbstractClassMemberSignature signature, @Nonnull Iterable<Modifier> modifiers) {
+  SootClassMember(@Nonnull S signature, @Nonnull Iterable<Modifier> modifiers) {
     this._signature = signature;
     this._modifiers = immutableEnumSetOf(modifiers);
   }
@@ -68,7 +68,7 @@ public abstract class SootClassMember implements Serializable {
     return owner;
   }
 
-  protected final synchronized void setDeclaringClass(@Nonnull SootClass value) {
+  final synchronized void setDeclaringClass(@Nonnull SootClass value) {
     if (this._declaringClass != null) {
       throw new IllegalStateException(
           "The declaring class of this soot class member has already been set.");
@@ -139,7 +139,7 @@ public abstract class SootClassMember implements Serializable {
 
   /** Returns the Soot signature of this methodRef. Used to refer to methods unambiguously. */
   @Nonnull
-  public AbstractClassMemberSignature getSignature() {
+  public S getSignature() {
     return _signature;
   }
 
@@ -159,7 +159,7 @@ public abstract class SootClassMember implements Serializable {
    * @param <T> The type of the class to build.
    * @author Jan Martin Persch
    */
-  public interface Builder<T extends SootClassMember> {
+  public interface Builder<S extends AbstractClassMemberSignature, T extends SootClassMember<S>> {
 
     interface ModifiersStep<B> {
       /**
@@ -199,7 +199,8 @@ public abstract class SootClassMember implements Serializable {
    *
    * @author Jan Martin Persch
    */
-  protected abstract static class SootClassMemberBuilder<T extends SootClassMember>
+  abstract static class SootClassMemberBuilder<
+          S extends AbstractClassMemberSignature, T extends SootClassMember<S>>
       extends AbstractBuilder<T> {
     // region Fields
 
@@ -212,7 +213,7 @@ public abstract class SootClassMember implements Serializable {
      *
      * @param buildableClass The type of the class to build.
      */
-    protected SootClassMemberBuilder(@Nonnull Class<T> buildableClass) {
+    SootClassMemberBuilder(@Nonnull Class<T> buildableClass) {
       super(buildableClass);
     }
 

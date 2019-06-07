@@ -34,12 +34,11 @@ import de.upb.soot.types.UnknownType;
 @SuppressWarnings("serial")
 public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
 
-  protected AbstractIntLongBinopExpr(Value op1, Value op2) {
-    this.op1Box = Jimple.newArgBox(op1);
-    this.op2Box = Jimple.newArgBox(op2);
+  AbstractIntLongBinopExpr(Value op1, Value op2) {
+    super(Jimple.newArgBox(op1), Jimple.newArgBox(op2));
   }
 
-  public static boolean isIntLikeType(Type t) {
+  static boolean isIntLikeType(Type t) {
     return t.equals(PrimitiveType.getInt())
         || t.equals(PrimitiveType.getByte())
         || t.equals(PrimitiveType.getShort())
@@ -49,8 +48,8 @@ public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
 
   @Override
   public Type getType() {
-    Value op1 = op1Box.getValue();
-    Value op2 = op2Box.getValue();
+    Value op1 = getOp1();
+    Value op2 = getOp2();
 
     if (isIntLikeType(op1.getType()) && isIntLikeType(op2.getType())) {
       return PrimitiveType.getInt();

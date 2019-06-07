@@ -29,21 +29,19 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
+public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 8767212132509253058L;
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */
   public JVirtualInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
-    super(Jimple.newLocalBox(base), method, new ValueBox[args.size()]);
-    for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
-    }
+    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
   }
 
   @Override
@@ -56,9 +54,9 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
     StringBuilder builder = new StringBuilder();
     builder
         .append(Jimple.VIRTUALINVOKE + " ")
-        .append(baseBox.getValue().toString())
+        .append(getBase().toString())
         .append(".")
-        .append(methodSignature)
+        .append(getMethodSignature())
         .append("(");
     argBoxesToString(builder);
     builder.append(")");
@@ -70,11 +68,26 @@ public class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr {
   public void toString(StmtPrinter up) {
     up.literal(Jimple.VIRTUALINVOKE);
     up.literal(" ");
-    baseBox.toString(up);
+    getBaseBox().toString(up);
     up.literal(".");
-    up.methodSignature(methodSignature);
+    up.methodSignature(getMethodSignature());
     up.literal("(");
     argBoxesToPrinter(up);
     up.literal(")");
+  }
+
+  @Nonnull
+  public JVirtualInvokeExpr withBase(Value base) {
+    return new JVirtualInvokeExpr(base, getMethodSignature(), getArgs());
+  }
+
+  @Nonnull
+  public JVirtualInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+    return new JVirtualInvokeExpr(getBase(), methodSignature, getArgs());
+  }
+
+  @Nonnull
+  public JVirtualInvokeExpr withArgs(List<? extends Value> args) {
+    return new JVirtualInvokeExpr(getBase(), getMethodSignature(), args);
   }
 }

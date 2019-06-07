@@ -30,9 +30,11 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JNopStmt extends AbstractStmt {
+public final class JNopStmt extends AbstractStmt implements Copyable {
   /** */
   private static final long serialVersionUID = -614576667391055548L;
 
@@ -73,5 +75,10 @@ public class JNopStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return 42;
+  }
+
+  @Nonnull
+  public JNopStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JNopStmt(positionInfo);
   }
 }
