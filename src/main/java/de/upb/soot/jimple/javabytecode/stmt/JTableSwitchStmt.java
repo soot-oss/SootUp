@@ -35,10 +35,12 @@ import de.upb.soot.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JTableSwitchStmt extends AbstractSwitchStmt {
+public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyable {
   /** */
   private static final long serialVersionUID = -4716844468557152732L;
 
@@ -86,7 +88,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
         positionInfo);
   }
 
-  protected JTableSwitchStmt(
+  private JTableSwitchStmt(
       ValueBox keyBox,
       int lowIndex,
       int highIndex,
@@ -115,7 +117,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
 
     builder
         .append(Jimple.TABLESWITCH + "(")
-        .append(keyBox.getValue().toString())
+        .append(getKey().toString())
         .append(")")
         .append(endOfLine);
 
@@ -162,7 +164,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
   public void toString(StmtPrinter up) {
     up.literal(Jimple.TABLESWITCH);
     up.literal("(");
-    keyBox.toString(up);
+    getKeyBox().toString(up);
     up.literal(")");
     up.newline();
     up.literal("{");
@@ -179,7 +181,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     up.literal(": ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    defaultTargetBox.toString(up);
+    getDefaultTargetBox().toString(up);
     up.literal(";");
     up.newline();
     up.literal("}");
@@ -193,7 +195,7 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     up.literal(": ");
     up.literal(Jimple.GOTO);
     up.literal(" ");
-    targetBoxes[targetIndex - lowIndex].toString(up);
+    getTargetBox(targetIndex - lowIndex).toString(up);
     up.literal(";");
     up.newline();
   }
@@ -223,5 +225,41 @@ public class JTableSwitchStmt extends AbstractSwitchStmt {
     ret = prime * ret + highIndex;
     ret = prime * ret + super.equivHashCode();
     return ret;
+  }
+
+  @Nonnull
+  public JTableSwitchStmt withKey(Value key) {
+    return new JTableSwitchStmt(
+        key, lowIndex, highIndex, getTargets(), getDefaultTarget(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JTableSwitchStmt withLowIndex(int lowIndex) {
+    return new JTableSwitchStmt(
+        getKey(), lowIndex, highIndex, getTargets(), getDefaultTarget(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JTableSwitchStmt withHighIndex(int highIndex) {
+    return new JTableSwitchStmt(
+        getKey(), lowIndex, highIndex, getTargets(), getDefaultTarget(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JTableSwitchStmt withTargets(List<? extends Stmt> targets) {
+    return new JTableSwitchStmt(
+        getKey(), lowIndex, highIndex, targets, getDefaultTarget(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JTableSwitchStmt withDefaultTarget(Stmt defaultTarget) {
+    return new JTableSwitchStmt(
+        getKey(), lowIndex, highIndex, getTargets(), defaultTarget, getPositionInfo());
+  }
+
+  @Nonnull
+  public JTableSwitchStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JTableSwitchStmt(
+        getKey(), lowIndex, highIndex, getTargets(), getDefaultTarget(), positionInfo);
   }
 }

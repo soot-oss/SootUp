@@ -54,7 +54,7 @@ public abstract class ValueBox implements Serializable {
       this.value = value;
     } else {
       throw new RuntimeException(
-          "Box " + this + " cannot contain value: " + value + "(" + value.getClass() + ")");
+          "Box " + this + " cannot contain value: " + value + " (" + value.getClass() + ")");
     }
   }
 

@@ -37,14 +37,14 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
       @Nonnull Type type) {
     super(name, type);
 
-    this._parameterSignatures = ImmutableList.copyOf(parameterSignatures);
+    this.parameterSignatures = ImmutableList.copyOf(parameterSignatures);
   }
 
   // endregion /Constructor/
 
   // region Properties
 
-  @Nonnull private final List<Type> _parameterSignatures;
+  @Nonnull private final List<Type> parameterSignatures;
 
   /**
    * Gets the parameters in an immutable list.
@@ -53,7 +53,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
    */
   @Nonnull
   public List<Type> getParameterSignatures() {
-    return this._parameterSignatures;
+    return this.parameterSignatures;
   }
 
   // endregion /Properties/

@@ -33,9 +33,11 @@ import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JIdentityStmt extends AbstractDefinitionStmt {
+public final class JIdentityStmt extends AbstractDefinitionStmt implements Copyable {
   /** */
   private static final long serialVersionUID = -6269380950007213506L;
 
@@ -76,5 +78,20 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   @Override
   public int equivHashCode() {
     return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
+  }
+
+  @Nonnull
+  public JIdentityStmt withLocal(Value local) {
+    return new JIdentityStmt(local, getRightOp(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JIdentityStmt withIdentityValue(Value identityValue) {
+    return new JIdentityStmt(getLeftOp(), identityValue, getPositionInfo());
+  }
+
+  @Nonnull
+  public JIdentityStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JIdentityStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

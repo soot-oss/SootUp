@@ -32,9 +32,11 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.visitor.StmtVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JThrowStmt extends AbstractOpStmt {
+public final class JThrowStmt extends AbstractOpStmt implements Copyable {
 
   /** */
   private static final long serialVersionUID = -1145801522928664246L;
@@ -82,5 +84,15 @@ public class JThrowStmt extends AbstractOpStmt {
   @Override
   public int equivHashCode() {
     return super.equivHashCode();
+  }
+
+  @Nonnull
+  public JThrowStmt withOp(Value op) {
+    return new JThrowStmt(op, getPositionInfo());
+  }
+
+  @Nonnull
+  public JThrowStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JThrowStmt(getOp(), positionInfo);
   }
 }

@@ -32,11 +32,13 @@ import de.upb.soot.jimple.visitor.ExprVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JNewExpr implements Expr {
+public final class JNewExpr implements Expr, Copyable {
   /** */
   private static final long serialVersionUID = 2039425094688972405L;
 
@@ -87,5 +89,10 @@ public class JNewExpr implements Expr {
   @Override
   public void accept(Visitor sw) {
     ((ExprVisitor) sw).caseNewExpr(this);
+  }
+
+  @Nonnull
+  public JNewExpr withType(ReferenceType type) {
+    return new JNewExpr(type);
   }
 }

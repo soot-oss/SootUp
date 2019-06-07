@@ -65,18 +65,18 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  */
-public class Body implements Serializable, Copyable {
+public final class Body implements Serializable, Copyable {
   /** */
   private static final long serialVersionUID = -755840890323977315L;
 
   /** The locals for this Body. */
-  protected final Set<Local> locals;
+  private final Set<Local> locals;
 
   /** The traps for this Body. */
-  protected final List<Trap> traps;
+  private final List<Trap> traps;
 
   /** The stmts for this Body. */
-  protected final List<Stmt> stmts;
+  private final List<Stmt> stmts;
 
   @Nullable private final Position position;
 
@@ -151,7 +151,7 @@ public class Body implements Serializable, Copyable {
     return locals.size();
   }
 
-  protected void runValidation(BodyValidator validator) {
+  private void runValidation(BodyValidator validator) {
     final List<ValidationException> exceptionList = new ArrayList<>();
     validator.validate(this, exceptionList);
     if (!exceptionList.isEmpty()) {
@@ -259,7 +259,7 @@ public class Body implements Serializable, Copyable {
     return Collections.unmodifiableList(stmts);
   }
 
-  public void checkInit() {
+  private void checkInit() {
     runValidation(new CheckInitValidator());
   }
 
@@ -278,6 +278,7 @@ public class Body implements Serializable, Copyable {
     return streamOut.toString();
   }
 
+  @Nullable
   public Position getPosition() {
     return this.position;
   }
@@ -365,5 +366,25 @@ public class Body implements Serializable, Copyable {
       stmtBoxList.addAll(item.getStmtBoxes());
     }
     return Collections.unmodifiableCollection(stmtBoxList);
+  }
+
+  @Nonnull
+  public Body withLocals(Set<Local> locals) {
+    return new Body(locals, traps, stmts, position);
+  }
+
+  @Nonnull
+  public Body withTraps(List<Trap> traps) {
+    return new Body(locals, traps, stmts, position);
+  }
+
+  @Nonnull
+  public Body withStmt(List<Stmt> stmts) {
+    return new Body(locals, traps, stmts, position);
+  }
+
+  @Nonnull
+  public Body withPosition(Position position) {
+    return new Body(locals, traps, stmts, position);
   }
 }

@@ -32,9 +32,9 @@ import java.util.List;
 
 @SuppressWarnings("serial")
 public abstract class AbstractUnopExpr implements Expr {
-  final ValueBox opBox;
+  private final ValueBox opBox;
 
-  protected AbstractUnopExpr(ValueBox opBox) {
+  AbstractUnopExpr(ValueBox opBox) {
     this.opBox = opBox;
   }
 
