@@ -402,7 +402,7 @@ public class InstructionConverter {
       } else {
         right = getLocal(type, access.valueNumber);
       }
-      JavaClassType cSig = methodSignature.getDeclClassSignature();
+      JavaClassType cSig = methodSignature.getDeclClassSignature(); // TODO Rename this
       // TODO check modifier
       Value left;
       if (!walaMethod.isStatic()) {

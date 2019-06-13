@@ -1912,10 +1912,10 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
     int iloc = 0;
     if (!m.isStatic()) {
       Local l = getLocal(iloc++);
-      SootClass declaringClass = m.getDeclaringClass();
+      JavaClassType declaringClass = m.getDeclaringClassType();
       jbu.add(
           Jimple.newIdentityStmt(
-              l, Jimple.newThisRef(declaringClass.getType()), PositionInfo.createNoPositionInfo()));
+              l, Jimple.newThisRef(declaringClass), PositionInfo.createNoPositionInfo()));
     }
     int nrp = 0;
     for (Type ot : m.getParameterTypes()) {

@@ -42,6 +42,14 @@ import javax.annotation.Nonnull;
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
 public class JavaClassType extends ReferenceType {
 
+  /**
+   * Sometimes we need to know which class is a JDK class. There is no simple way to distinguish a
+   * user class and a JDK class, here we use the package prefix as the heuristic.
+   */
+  private static final Pattern LIBRARY_CLASS_PATTERN =
+      Pattern.compile(
+          "^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");
+
   private final String className;
 
   private final PackageName packageName;
@@ -148,6 +156,10 @@ public class JavaClassType extends ReferenceType {
   /** Whether the class is an inner class * */
   public boolean isInnerClass() {
     return isInnerClass;
+  }
+
+  public boolean isJavaLibraryClass() {
+    return LIBRARY_CLASS_PATTERN.matcher(getClassName()).find();
   }
 
   private static final class SplitPatternHolder {
