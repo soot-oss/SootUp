@@ -379,7 +379,7 @@ public final class Body implements Serializable, Copyable {
   }
 
   @Nonnull
-  public Body withStmt(List<Stmt> stmts) {
+  public Body withStmts(List<Stmt> stmts) {
     return new Body(locals, traps, stmts, position);
   }
 
