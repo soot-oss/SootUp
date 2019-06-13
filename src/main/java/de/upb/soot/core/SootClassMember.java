@@ -65,7 +65,7 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature>
   /** Returns the SootClass declaring this one. */
   @Nonnull
   public JavaClassType getDeclaringClassType() {
-    return this._signature.getDeclClassSignature();
+    return this._signature.getDeclClassType();
   }
 
   /** Returns true when this object is from a phantom class. */

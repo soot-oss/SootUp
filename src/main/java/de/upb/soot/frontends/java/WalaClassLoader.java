@@ -318,7 +318,7 @@ public class WalaClassLoader {
       buildClassHierachy();
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
-    JavaClass walaClass = loadWalaClass(signature.getDeclClassSignature(), walaToSoot);
+    JavaClass walaClass = loadWalaClass(signature.getDeclClassType(), walaToSoot);
     if (walaClass == null) {
       return Optional.empty();
     }
@@ -359,7 +359,7 @@ public class WalaClassLoader {
           }
           if (paraMatch) {
             SootMethod method =
-                walaToSoot.convertMethod(signature.getDeclClassSignature(), (AstMethod) walaMethod);
+                walaToSoot.convertMethod(signature.getDeclClassType(), (AstMethod) walaMethod);
             return Optional.ofNullable(method);
           }
         }

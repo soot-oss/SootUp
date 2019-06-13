@@ -198,7 +198,7 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
   public boolean isJavaLibraryMethod() {
-    return getSignature().getDeclClassSignature().isJavaLibraryClass();
+    return getSignature().getDeclClassType().isJavaLibraryClass();
   }
 
   /**
