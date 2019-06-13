@@ -11,6 +11,7 @@ import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.inputlocation.JavaModulePathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.views.View;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -18,7 +19,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java9Test.class)
 public class ModuleBuilderActorTest {
 
-  private de.upb.soot.views.IView createNewScene() {
+  private View createNewScene() {
 
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
@@ -40,7 +41,7 @@ public class ModuleBuilderActorTest {
 
   @Test
   public void refiyMessageModuleInfoTest() {
-    de.upb.soot.views.IView iView = createNewScene();
+    View view = createNewScene();
 
     final JavaClassType sig =
         ModuleIdentifierFactory.getInstance().getClassType("module-info", "", "de.upb.mod");
@@ -49,8 +50,8 @@ public class ModuleBuilderActorTest {
     // assertTrue(source.isPresent());
 
     // Resolve signature to `SootClass`
-    Optional<AbstractClass<? extends AbstractClassSource>> result = iView.getClass(sig);
-    // stuffAViewNeeds.reifyClass(source.get(), iView);
+    Optional<AbstractClass<? extends AbstractClassSource>> result = view.getClass(sig);
+    // stuffAViewNeeds.reifyClass(source.get(), view);
 
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
@@ -58,12 +59,12 @@ public class ModuleBuilderActorTest {
 
   @Test
   public void resolveMessageModuleInfoTest() {
-    de.upb.soot.views.IView iView = createNewScene();
+    View view = createNewScene();
 
     final JavaClassType sig =
         ModuleIdentifierFactory.getInstance().getClassType("module-info", "", "de.upb.mod");
 
-    Optional<AbstractClass<? extends AbstractClassSource>> result = iView.getClass(sig);
+    Optional<AbstractClass<? extends AbstractClassSource>> result = view.getClass(sig);
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
   }

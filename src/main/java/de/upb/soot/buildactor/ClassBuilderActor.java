@@ -7,22 +7,22 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.views.IView;
+import de.upb.soot.views.View;
 
 public class ClassBuilderActor extends AbstractLoggingActor {
 
   private final class ResolveMethodMessage {}
 
-  private final IView view;
+  private final View view;
   private final ClassSource classSource;
   private AbstractClass<? extends AbstractClassSource> sootClass;
 
-  public ClassBuilderActor(IView view, ClassSource classSource) {
+  public ClassBuilderActor(View view, ClassSource classSource) {
     this.view = view;
     this.classSource = classSource;
   }
 
-  public static Props props(IView view, ClassSource classSource) {
+  public static Props props(View view, ClassSource classSource) {
     return Props.create(ClassBuilderActor.class, view, classSource);
   }
 

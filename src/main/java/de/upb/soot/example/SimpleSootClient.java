@@ -7,7 +7,7 @@ import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.soot.typehierarchy.TypeHierarchy;
-import de.upb.soot.views.IView;
+import de.upb.soot.views.View;
 import java.util.Collections;
 
 /**
@@ -30,7 +30,7 @@ public class SimpleSootClient {
     Project<AnalysisInputLocation> p = new Project<>(walaSource);
 
     // 1. simple case
-    IView fullView = p.createFullView();
+    View fullView = p.createFullView();
 
     CallGraph cg = fullView.createCallGraph();
     TypeHierarchy t = fullView.createTypeHierarchy();
@@ -39,7 +39,7 @@ public class SimpleSootClient {
 
     // 2. advanced case
     Scope s = new Scope(cpBased);
-    IView limitedView = p.createView(s);
+    View limitedView = p.createView(s);
 
     cg = limitedView.createCallGraph();
     t = limitedView.createTypeHierarchy();

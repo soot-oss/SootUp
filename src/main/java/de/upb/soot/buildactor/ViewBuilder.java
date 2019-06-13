@@ -4,8 +4,8 @@ import static de.upb.soot.util.Utils.peek;
 
 import de.upb.soot.Project;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
-import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
+import de.upb.soot.views.View;
 import javax.annotation.Nonnull;
 
 /**
@@ -28,12 +28,12 @@ public class ViewBuilder<S extends AnalysisInputLocation> {
   }
 
   @Nonnull
-  public IView buildComplete() {
+  public View buildComplete() {
     return peek(this.buildJavaView(), JavaView::resolveAll);
   }
 
   @Nonnull
-  public IView buildOnDemand() {
+  public View buildOnDemand() {
     return this.buildJavaView();
   }
 }

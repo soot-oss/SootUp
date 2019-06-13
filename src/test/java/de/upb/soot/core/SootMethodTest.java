@@ -15,8 +15,8 @@ import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
+import de.upb.soot.views.View;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -28,7 +28,7 @@ public class SootMethodTest {
   @Test
   public void testCreateMethod() {
     DefaultIdentifierFactory factories = DefaultIdentifierFactory.getInstance();
-    IView view = new JavaView<>(new Project<>(null, factories));
+    View view = new JavaView<>(new Project<>(null, factories));
     JavaClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     List<Stmt> stmts = new ArrayList<>();

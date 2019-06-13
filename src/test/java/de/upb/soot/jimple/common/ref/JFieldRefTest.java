@@ -16,8 +16,8 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.views.IView;
 import de.upb.soot.views.JavaView;
+import de.upb.soot.views.View;
 import java.util.Collections;
 import java.util.EnumSet;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class JFieldRefTest {
 
   @Test
   public void testJStaticFieldRef() {
-    IView view = new JavaView<>(new Project<>(null, DefaultIdentifierFactory.getInstance()));
+    View view = new JavaView<>(new Project<>(null, DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
         DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");
@@ -62,7 +62,7 @@ public class JFieldRefTest {
 
   @Test
   public void testJInstanceFieldRef() {
-    IView view = new JavaView<>(new Project<>(null, DefaultIdentifierFactory.getInstance()));
+    View view = new JavaView<>(new Project<>(null, DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
         DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");

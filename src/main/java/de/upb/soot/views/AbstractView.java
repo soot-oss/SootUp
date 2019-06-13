@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractView<S extends AnalysisInputLocation> implements IView {
+public abstract class AbstractView<S extends AnalysisInputLocation> implements View {
 
   @Nonnull private final Project<S> project;
 

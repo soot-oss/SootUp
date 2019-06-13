@@ -37,7 +37,7 @@ public class AkkaClassResolver {
    * @return the initial resolved SootClass or an empty optional, if resolving fails
    */
   public Optional<AbstractClass<? extends AbstractClassSource>> getClass(
-      JavaClassType signature, IView view, ClassSource source) {
+      JavaClassType signature, View view, ClassSource source) {
     // TODO: cache
 
     // TODO: decide for phantom ---> That's a good question, and how to create them ...
@@ -47,7 +47,7 @@ public class AkkaClassResolver {
     return reifyClass(source, view);
   }
 
-  public Optional<AbstractClass<ClassSource>> resolveClass(ClassSource classSource, IView view) {
+  public Optional<AbstractClass<ClassSource>> resolveClass(ClassSource classSource, View view) {
     ActorRef cb = getOrCreateActor(classSource, view);
     Timeout timeout = new akka.util.Timeout(Duration.create(5, "seconds"));
     Future<Object> cbFuture = Patterns.ask(cb, new ResolveMessage(), timeout);
@@ -66,7 +66,7 @@ public class AkkaClassResolver {
    * @return the initial resolved class or an empty Optional, if the class initialization fails
    */
   public Optional<AbstractClass<? extends AbstractClassSource>> reifyClass(
-      ClassSource classSource, IView view) {
+      ClassSource classSource, View view) {
     ActorRef cb = getOrCreateActor(classSource, view);
     Timeout timeout = new Timeout(Duration.create(5, "seconds"));
     scala.concurrent.Future<Object> cbFuture = Patterns.ask(cb, new ReifyMessage(), timeout);
@@ -80,7 +80,7 @@ public class AkkaClassResolver {
     return Optional.empty();
   }
 
-  private ActorRef getOrCreateActor(ClassSource source, IView view) {
+  private ActorRef getOrCreateActor(ClassSource source, View view) {
     if (this.createdActors.containsKey(source)) {
       return createdActors.get(source);
     }
@@ -90,7 +90,7 @@ public class AkkaClassResolver {
     return createActorRef(source, view);
   }
 
-  private ActorRef createActorRef(ClassSource source, IView view) {
+  private ActorRef createActorRef(ClassSource source, View view) {
     ActorRef actorRef = system.actorOf(ClassBuilderActor.props(view, source));
     this.createdActors.put(source, actorRef);
     return actorRef;

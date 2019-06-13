@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang3.tuple.Pair;
 
-public abstract class JavaModuleView implements IView {
+public abstract class JavaModuleView implements View {
 
   @Nonnull private final Map<Pair<SootModuleInfo, Type>, SootClass> map = new HashMap<>();
 

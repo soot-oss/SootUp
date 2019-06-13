@@ -20,7 +20,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface IView {
+public interface View {
 
   /** Return all classes in the view. */
   @Nonnull
