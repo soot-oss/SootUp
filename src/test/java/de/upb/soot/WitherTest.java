@@ -15,12 +15,8 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,22 +53,17 @@ public class WitherTest {
     SootClass newSootClass =
         sootClass.withOverridingClassSource(
             overridingClassSource -> {
-              Set<SootMethod> newMethods = new HashSet<>(sootClass.getMethods());
-              newMethods.remove(method);
               SootMethod newMethod =
                   method.withOverridingMethodSource(
-                      overridingMethodSource -> {
-                        List<Stmt> newStmts = new ArrayList<>(body.getStmts());
-                        JIdentityStmt stmt = (JIdentityStmt) newStmts.get(0);
+                      methodSource -> {
+                        JIdentityStmt stmt = (JIdentityStmt) body.getStmts().get(0);
                         Local local = (Local) stmt.getLeftOp();
                         Local newLocal = local.withName("newName");
                         Stmt newStmt = stmt.withLocal(newLocal);
-                        newStmts.set(0, newStmt);
-                        Body newBody = body.withStmts(newStmts);
-                        return overridingMethodSource.withBody(newBody);
+
+                        return methodSource.withBodyStmts(newStmts -> newStmts.set(0, newStmt));
                       });
-              newMethods.add(newMethod);
-              return overridingClassSource.withMethods(newMethods);
+              return overridingClassSource.withReplacedMethod(method, newMethod);
             });
 
     Optional<SootMethod> newM = newSootClass.getMethod(method.getSignature());

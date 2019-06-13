@@ -28,6 +28,7 @@ import com.google.common.collect.Sets;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
@@ -138,6 +139,14 @@ public class Utils {
   }
 
   // endregion /Stream/
+
+  /**
+   * Removes the oldValue from the set and adds the newValue afterwards.
+   */
+  public static <T> void replace(Set<T> set, T oldValue, T newValue) {
+    set.remove(oldValue);
+    set.add(newValue);
+  }
 
   // region Immutable Lists
 
