@@ -17,6 +17,7 @@ import static org.objectweb.asm.tree.AbstractInsnNode.TABLESWITCH_INSN;
 import static org.objectweb.asm.tree.AbstractInsnNode.TYPE_INSN;
 import static org.objectweb.asm.tree.AbstractInsnNode.VAR_INSN;
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
@@ -24,8 +25,8 @@ import com.google.common.collect.Table;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
+import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.MethodSource;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
@@ -81,7 +82,6 @@ import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
 import de.upb.soot.types.VoidType;
-import de.upb.soot.util.NotYetImplementedException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,6 +94,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.Handle;
@@ -142,6 +143,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
   private Map<AbstractInsnNode, StackFrame> frames;
   private Multimap<LabelNode, StmtBox> trapHandlers;
   private int lastLineNumber = -1;
+  @Nullable private JavaClassType declaringClass;
 
   /*
    * Hint: in InstructionConverter convertInvokeInstruction() ling creates string for methodRef and types and stores/replaces
@@ -157,6 +159,19 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
 
   @Nonnull private final CastAndReturnInliner castAndReturnInliner = new CastAndReturnInliner();
 
+  private final Supplier<MethodSignature> lazyMethodSignature =
+      Suppliers.memoize(
+          () -> {
+            List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(desc);
+            Type retType = sigTypes.remove(sigTypes.size() - 1);
+
+            return DefaultIdentifierFactory.getInstance()
+                .getMethodSignature(name, declaringClass, retType, sigTypes);
+          });
+
+  private final Supplier<Set<Modifier>> lazyModifiers =
+      Suppliers.memoize(() -> AsmUtil.getModifiers(access));
+
   public AsmMethodSource(
       int access,
       @Nonnull String name,
@@ -169,18 +184,16 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
   @Override
   @Nonnull
   public MethodSignature getSignature() {
-    // TODO Auto-generated methodRef stub
-    throw new NotYetImplementedException("Getting method signature is not implemented, yet.");
+    return lazyMethodSignature.get();
+  }
+
+  void setDeclaringClass(@Nonnull JavaClassType declaringClass) {
+    this.declaringClass = declaringClass;
   }
 
   @Override
   @Nullable
-  public Body resolveBody(@Nonnull SootMethod sootMethod) throws AsmFrontendException {
-
-    if (!sootMethod.isConcrete()) {
-      return null;
-    }
-
+  public Body resolveBody() throws AsmFrontendException {
     Set<Local> bodyLocals = new HashSet<>();
     List<Trap> bodyTraps = new ArrayList<>();
     List<Stmt> bodyStmts = new ArrayList<>();
@@ -203,13 +216,13 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
     }
     /* convert instructions */
     try {
-      convert(sootMethod);
-    } catch (Throwable t) {
-      throw new RuntimeException("Failed to convert " + sootMethod, t);
+      convert();
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to convert " + lazyMethodSignature.get(), e);
     }
 
     /* build body (add units, locals, traps, etc.) */
-    emitLocals(sootMethod, bodyLocals, bodyStmts);
+    emitLocals(bodyLocals, bodyStmts);
     emitTraps(bodyTraps);
     emitUnits(bodyStmts);
 
@@ -232,8 +245,8 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
     try {
       // TODO: Implement body transformer
       // PackManager.v().getPack("jb").apply(jb);
-    } catch (Throwable t) {
-      throw new RuntimeException("Failed to apply jb to " + sootMethod, t);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to apply jb to " + lazyMethodSignature.get(), e);
     }
 
     return new Body(bodyLocals, bodyTraps, bodyStmts, bodyPos);
@@ -1267,7 +1280,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
     setUnit(insn, lss);
   }
 
-  private void convertMethodInsn(@Nonnull SootMethod sootmethod, @Nonnull MethodInsnNode insn) {
+  private void convertMethodInsn(@Nonnull MethodInsnNode insn) {
     int op = insn.getOpcode();
     boolean instance = op != INVOKESTATIC;
     StackFrame frame = getFrame(insn);
@@ -1354,7 +1367,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
       List<Type> types = expr.getMethodSignature().getParameterSignatures();
       Operand[] oprs;
       int nrArgs = types.size();
-      if (sootmethod.isStatic()) {
+      if (lazyModifiers.get().contains(Modifier.STATIC)) {
         oprs = nrArgs == 0 ? null : new Operand[nrArgs];
       } else {
         oprs = new Operand[nrArgs + 1];
@@ -1363,7 +1376,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
         while (nrArgs-- != 0) {
           oprs[nrArgs] = pop(types.get(nrArgs));
         }
-        if (!sootmethod.isStatic()) {
+        if (!lazyModifiers.get().contains(Modifier.STATIC)) {
           oprs[oprs.length - 1] = pop();
         }
         frame.mergeIn(oprs);
@@ -1772,7 +1785,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
   }
 
   @SuppressWarnings("StatementWithEmptyBody")
-  private void convert(@Nonnull SootMethod sootMethod) {
+  private void convert() {
     ArrayDeque<Edge> worklist = new ArrayDeque<>();
     for (LabelNode ln : trapHandlers.keySet()) {
       if (checkInlineExceptionHandler(ln)) {
@@ -1828,7 +1841,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
           addEdges(insn, dflt, swtch.labels);
           break;
         } else if (type == METHOD_INSN) {
-          convertMethodInsn(sootMethod, (MethodInsnNode) insn);
+          convertMethodInsn((MethodInsnNode) insn);
         } else if (type == INVOKE_DYNAMIC_INSN) {
           convertInvokeDynamicInsn((InvokeDynamicInsnNode) insn);
         } else if (type == MULTIANEWARRAY_INSN) {
@@ -1906,19 +1919,20 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
     return false;
   }
 
-  private void emitLocals(
-      @Nonnull SootMethod m, @Nonnull Collection<Local> jbl, @Nonnull Collection<Stmt> jbu)
+  private void emitLocals(@Nonnull Collection<Local> jbl, @Nonnull Collection<Stmt> jbu)
       throws AsmFrontendException {
+
+    MethodSignature methodSignature = lazyMethodSignature.get();
+
     int iloc = 0;
-    if (!m.isStatic()) {
+    if (!lazyModifiers.get().contains(Modifier.STATIC)) {
       Local l = getLocal(iloc++);
-      JavaClassType declaringClass = m.getDeclaringClassType();
       jbu.add(
           Jimple.newIdentityStmt(
               l, Jimple.newThisRef(declaringClass), PositionInfo.createNoPositionInfo()));
     }
     int nrp = 0;
-    for (Type ot : m.getParameterTypes()) {
+    for (Type ot : methodSignature.getParameterSignatures()) {
       Local l = getLocal(iloc);
       jbu.add(
           Jimple.newIdentityStmt(

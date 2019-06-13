@@ -92,10 +92,11 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
 
   @Nullable
   private Body lazyBodyInitializer() {
-    Body body;
+    if (!isConcrete()) return null;
 
+    Body body;
     try {
-      body = this.methodSource.resolveBody(this);
+      body = this.methodSource.resolveBody();
 
       if (body != null) {
         body.setMethod(this);

@@ -40,7 +40,8 @@ public class InvokeTest {
   public void testInvokeSpecialInstanceInit() {
     declareClassSig = identifierFactory.getClassType("InvokeSpecial");
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 "specialInvokeInstanceInit", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
@@ -70,7 +71,8 @@ public class InvokeTest {
   public void testInvokeSpecialPrivateMethod() {
     declareClassSig = identifierFactory.getClassType("InvokeSpecial");
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 "specialInvokePrivateMethod", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
@@ -98,7 +100,8 @@ public class InvokeTest {
   public void testInvokeSpecialSuperClassMethod() {
     declareClassSig = identifierFactory.getClassType("InvokeSpecial");
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 "specialInvokeSupperClassMethod",
                 declareClassSig,
@@ -129,7 +132,8 @@ public class InvokeTest {
   public void testInvokeStatic1() {
     declareClassSig = identifierFactory.getClassType("InvokeStatic");
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 "<clinit>", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
@@ -159,7 +163,8 @@ public class InvokeTest {
   public void testInvokeStatic2() {
     declareClassSig = identifierFactory.getClassType("InvokeStatic");
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 "repro",
                 declareClassSig,
@@ -191,7 +196,8 @@ public class InvokeTest {
   public void testInvokeStatic3() {
     declareClassSig = identifierFactory.getClassType("InvokeStatic");
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 "repro1", declareClassSig, "void", Arrays.asList("java.lang.Object")));
     assertTrue(m.isPresent());
@@ -220,7 +226,8 @@ public class InvokeTest {
   public void testInvokeStatic4() {
     declareClassSig = identifierFactory.getClassType("InvokeStatic");
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 "repro2", declareClassSig, "void", Arrays.asList("java.lang.Object")));
     assertTrue(m.isPresent());
@@ -259,7 +266,8 @@ public class InvokeTest {
   public void testInvokeVirtual1() {
     declareClassSig = identifierFactory.getClassType("InvokeVirtual");
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 "equals", declareClassSig, "boolean", Collections.singletonList("InvokeVirtual")));
     assertTrue(m.isPresent());
@@ -290,7 +298,8 @@ public class InvokeTest {
   public void testInvokeVirtual2() {
     declareClassSig = identifierFactory.getClassType("InvokeVirtual");
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 "interfaceMethod", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
@@ -319,7 +328,8 @@ public class InvokeTest {
   public void testInvokeVirtual3() {
     declareClassSig = identifierFactory.getClassType("InvokeVirtual");
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 "doStuf", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());

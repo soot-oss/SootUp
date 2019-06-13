@@ -46,7 +46,8 @@ public class GetInstructionConversionTest {
   @Test
   public void test() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             typeFactory.getMethodSignature(
                 "getA_X", declareClassSig, "int", Collections.emptyList()));
     assertTrue(m.isPresent());

@@ -3,10 +3,8 @@ package de.upb.soot.frontends.java;
 import com.ibm.wala.cast.java.ipa.callgraph.JavaSourceAnalysisScope;
 import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
 import com.ibm.wala.cast.java.translator.jdt.ecj.ECJClassLoaderFactory;
-import com.ibm.wala.cast.loader.AstMethod;
 import com.ibm.wala.classLoader.ClassLoaderFactory;
 import com.ibm.wala.classLoader.IClass;
-import com.ibm.wala.classLoader.IMethod;
 import com.ibm.wala.classLoader.Module;
 import com.ibm.wala.classLoader.SourceDirectoryTreeModule;
 import com.ibm.wala.dalvik.classLoader.DexFileModule;
@@ -20,11 +18,8 @@ import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.Type;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -311,60 +306,5 @@ public class WalaClassLoader {
       }
     }
     return walaClass;
-  }
-
-  public Optional<SootMethod> getSootMethod(MethodSignature signature) {
-    if (classHierarchy == null) {
-      buildClassHierachy();
-    }
-    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
-    JavaClass walaClass = loadWalaClass(signature.getDeclClassType(), walaToSoot);
-    if (walaClass == null) {
-      return Optional.empty();
-    }
-
-    for (IMethod walaMethod : walaClass.getAllMethods()) {
-      Type ret = signature.getSignature();
-      Type retType = walaToSoot.convertType(walaMethod.getReturnType());
-      if (walaMethod.getName().toString().equals(signature.getName())) {
-        if (retType.toString().equals(ret.toString())) {
-          // compare parameter types
-          boolean paraMatch = true;
-          List<Type> paras = signature.getParameterSignatures();
-          int numParas = walaMethod.getNumberOfParameters();
-          if (walaMethod.isStatic()) {
-            if (paras.size() != numParas) {
-              paraMatch = false;
-            } else {
-              for (int i = 0; i < numParas; i++) {
-                String given = paras.get(i).toString();
-                String para = walaToSoot.convertType(walaMethod.getParameterType(i)).toString();
-                if (!given.equals(para)) {
-                  paraMatch = false;
-                }
-              }
-            }
-          } else {
-            if (paras.size() != numParas - 1) {
-              paraMatch = false;
-            } else {
-              for (int i = 1; i < numParas; i++) {
-                String given = paras.get(i - 1).toString();
-                String para = walaToSoot.convertType(walaMethod.getParameterType(i)).toString();
-                if (!given.equals(para)) {
-                  paraMatch = false;
-                }
-              }
-            }
-          }
-          if (paraMatch) {
-            SootMethod method =
-                walaToSoot.convertMethod(signature.getDeclClassType(), (AstMethod) walaMethod);
-            return Optional.ofNullable(method);
-          }
-        }
-      }
-    }
-    return Optional.empty();
   }
 }

@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -80,6 +81,7 @@ public class ModuleCompositionTest {
         utilsClass
             .getMethod(optionalToStreamMethodSubSignature)
             .orElseThrow(IllegalStateException::new);
+    Assert.assertNotNull(foundMethod.getBody());
 
     // Print method
     // System.out.println("Found method:   " + foundMethod);
@@ -122,7 +124,7 @@ public class ModuleCompositionTest {
                             new MethodSource() {
                               @Override
                               @Nullable
-                              public Body resolveBody(@Nonnull SootMethod m) {
+                              public Body resolveBody() {
                                 return null;
                               }
 

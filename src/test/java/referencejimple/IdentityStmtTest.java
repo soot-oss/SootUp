@@ -42,7 +42,7 @@ class DummyMethodSource implements MethodSource {
   }
 
   @Override
-  public Body resolveBody(@Nonnull SootMethod m) {
+  public Body resolveBody() {
     return body;
   }
 
