@@ -1,7 +1,6 @@
 package de.upb.soot.frontends;
 
 import de.upb.soot.core.Body;
-import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.MethodSignature;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -10,9 +9,9 @@ import javax.annotation.Nullable;
  * Allows for replacing specific parts of a method. By default, it delegates to the {@link
  * MethodSource} delegate provided in the constructor.
  *
- * <p>To alter the results of invocations to e.g. {@link #resolveBody(SootMethod)}, simply call
- * {@link #withBody(Body)} to obtain a new {@link OverridingMethodSource}. The new instance will
- * then use the supplied value instead of calling {@link #resolveBody(SootMethod)} on the delegate.
+ * <p>To alter the results of invocations to e.g. {@link #resolveBody()}, simply call {@link
+ * #withBody(Body)} to obtain a new {@link OverridingMethodSource}. The new instance will then use
+ * the supplied value instead of calling {@link #resolveBody()} on the delegate.
  */
 public class OverridingMethodSource implements MethodSource {
 
@@ -38,8 +37,8 @@ public class OverridingMethodSource implements MethodSource {
 
   @Nullable
   @Override
-  public Body resolveBody(@Nonnull SootMethod m) throws ResolveException {
-    return overriddenBody ? body : delegate.resolveBody(m);
+  public Body resolveBody() throws ResolveException {
+    return overriddenBody ? body : delegate.resolveBody();
   }
 
   @Nonnull

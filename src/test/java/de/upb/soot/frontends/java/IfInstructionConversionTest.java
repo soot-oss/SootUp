@@ -44,7 +44,8 @@ public class IfInstructionConversionTest {
   @Test
   public void test1() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             typeFactory.getMethodSignature(
                 "simpleIfElseIfTakeThen",
                 declareClassSig,
@@ -88,7 +89,8 @@ public class IfInstructionConversionTest {
   @Test
   public void test2() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             typeFactory.getMethodSignature(
                 "simpleIfElse", declareClassSig, "boolean", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
@@ -119,7 +121,8 @@ public class IfInstructionConversionTest {
   @Test
   public void test3() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             typeFactory.getMethodSignature(
                 "simpleIfElse", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
@@ -152,7 +155,8 @@ public class IfInstructionConversionTest {
   @Test
   public void test4() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             typeFactory.getMethodSignature(
                 "simpleIf",
                 declareClassSig,
@@ -185,7 +189,8 @@ public class IfInstructionConversionTest {
   @Test
   public void test5() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             typeFactory.getMethodSignature(
                 "simpleIfElseIfTakeElse",
                 declareClassSig,
@@ -228,7 +233,8 @@ public class IfInstructionConversionTest {
   @Test
   public void test6() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             typeFactory.getMethodSignature(
                 "simpleIf", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
@@ -240,7 +246,8 @@ public class IfInstructionConversionTest {
   @Test
   public void test7() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             typeFactory.getMethodSignature(
                 "simpleIfTrue", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
@@ -252,7 +259,8 @@ public class IfInstructionConversionTest {
   @Test
   public void test8() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             typeFactory.getMethodSignature(
                 "simpleIfIntExpr", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());

@@ -46,7 +46,8 @@ public class PositionInfoTest {
       String fqReturnType,
       List<String> parameters) {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             identifierFactory.getMethodSignature(
                 methodName, declaringClassSignature, fqReturnType, parameters));
     assertTrue(m.isPresent());
