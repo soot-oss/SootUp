@@ -31,7 +31,7 @@ import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.inputlocation.FileType;
 import de.upb.soot.signatures.PackageName;
-import de.upb.soot.views.IView;
+import de.upb.soot.views.View;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -161,12 +161,12 @@ public class JavaClassType extends ReferenceType {
   /**
    * Tries to resolve this {@link JavaClassType} to the corresponding {@link SootClass}.
    *
-   * @param view The {@link IView} to resolve with.
+   * @param view The {@link View} to resolve with.
    * @return An {@link Optional} containing the {@link SootClass}, if the resolution was successful;
    *     otherwise, an {@link Optional#empty() empty Optional}.
    */
   @Nonnull
-  public Optional<SootClass> resolve(@Nonnull IView view) {
+  public Optional<SootClass> resolve(@Nonnull View view) {
     // TODO: [JMP] Clarify: What if cast fails? Return empty or throw cast exception?
     return view.getClass(this).flatMap(tryCastTo(SootClass.class));
   }

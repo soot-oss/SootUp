@@ -3,13 +3,13 @@ package de.upb.soot.core;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.signatures.Signature;
 import de.upb.soot.types.Type;
-import de.upb.soot.views.IView;
+import de.upb.soot.views.View;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * Abstract class represents a class/module lives in {@link IView}. It may have different
+ * Abstract class represents a class/module lives in {@link View}. It may have different
  * implementations, since we want to support multiple languages.
  *
  * @author Linghui Luo

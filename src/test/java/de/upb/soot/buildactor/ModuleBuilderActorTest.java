@@ -7,8 +7,11 @@ import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
+import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.inputlocation.JavaModulePathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.views.View;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -16,13 +19,14 @@ import org.junit.experimental.categories.Category;
 @Category(Java9Test.class)
 public class ModuleBuilderActorTest {
 
-  private de.upb.soot.views.IView createNewScene() {
+  private View createNewScene() {
 
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
             "target/test-classes/de/upb/soot/namespaces/modules");
 
-    Project project = new Project(javaClassPathNamespace, ModuleIdentifierFactory.getInstance());
+    Project<AnalysisInputLocation> project =
+        new Project<>(javaClassPathNamespace, ModuleIdentifierFactory.getInstance());
 
     // de.upb.soot.views.JavaView view = new de.upb.soot.views.JavaView(project);
 
@@ -37,7 +41,7 @@ public class ModuleBuilderActorTest {
 
   @Test
   public void refiyMessageModuleInfoTest() {
-    de.upb.soot.views.IView iView = createNewScene();
+    View view = createNewScene();
 
     final JavaClassType sig =
         ModuleIdentifierFactory.getInstance().getClassType("module-info", "", "de.upb.mod");
@@ -46,8 +50,8 @@ public class ModuleBuilderActorTest {
     // assertTrue(source.isPresent());
 
     // Resolve signature to `SootClass`
-    Optional<AbstractClass> result = iView.getClass(sig);
-    // stuffAViewNeeds.reifyClass(source.get(), iView);
+    Optional<AbstractClass<? extends AbstractClassSource>> result = view.getClass(sig);
+    // stuffAViewNeeds.reifyClass(source.get(), view);
 
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
@@ -55,12 +59,12 @@ public class ModuleBuilderActorTest {
 
   @Test
   public void resolveMessageModuleInfoTest() {
-    de.upb.soot.views.IView iView = createNewScene();
+    View view = createNewScene();
 
     final JavaClassType sig =
         ModuleIdentifierFactory.getInstance().getClassType("module-info", "", "de.upb.mod");
 
-    Optional<AbstractClass> result = iView.getClass(sig);
+    Optional<AbstractClass<? extends AbstractClassSource>> result = view.getClass(sig);
     assertTrue(result.isPresent());
     assertTrue(result.get() instanceof SootModuleInfo);
   }
