@@ -7,27 +7,27 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.views.IView;
+import de.upb.soot.views.View;
 
 public class ClassBuilderActor extends AbstractLoggingActor {
 
   private final class ResolveMethodMessage {}
 
-  private final IView view;
+  private final View view;
   private final ClassSource classSource;
-  private AbstractClass sootClass;
+  private AbstractClass<? extends AbstractClassSource> sootClass;
 
-  public ClassBuilderActor(IView view, ClassSource classSource) {
+  public ClassBuilderActor(View view, ClassSource classSource) {
     this.view = view;
     this.classSource = classSource;
   }
 
-  public static Props props(IView view, ClassSource classSource) {
+  public static Props props(View view, ClassSource classSource) {
     return Props.create(ClassBuilderActor.class, view, classSource);
   }
 
   public static Props props(
-      de.upb.soot.core.AbstractClass sootClass, de.upb.soot.core.SootMethod sootMethod) {
+      AbstractClass<? extends AbstractClassSource> sootClass, SootMethod sootMethod) {
     return Props.create(MethodBuilderActor.class, sootClass, sootMethod);
   }
 
@@ -53,7 +53,7 @@ public class ClassBuilderActor extends AbstractLoggingActor {
     // actually I don't want if clauses. I want to dispatch based on the type of the classSource?
 
     // FIXME: somewhere a soot class needs to be created or returned???
-    AbstractClass sootClass = null;
+    AbstractClass<? extends AbstractClassSource> sootClass = null;
     try {
       // TODO Fix this, resolveClass no longer exists
       //      sootClass = content.resolveClass(ResolvingLevel.DANGLING, view);
@@ -94,10 +94,9 @@ public class ClassBuilderActor extends AbstractLoggingActor {
   private class MethodBuilderActor extends akka.actor.AbstractLoggingActor {
 
     private final de.upb.soot.core.SootClass sootClass;
-    private de.upb.soot.core.SootMethod method;
+    private SootMethod method;
 
-    public MethodBuilderActor(
-        de.upb.soot.core.SootClass sootClass, de.upb.soot.core.SootMethod method) {
+    public MethodBuilderActor(de.upb.soot.core.SootClass sootClass, SootMethod method) {
       this.sootClass = sootClass;
       this.method = method;
     }
