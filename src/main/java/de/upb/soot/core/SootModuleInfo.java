@@ -115,7 +115,7 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   private Set<PackageReference> lazyExportsInitializer() {
     Set<PackageReference> exports;
     try {
-      exports = new HashSet(getModuleClassSourceContent().exports());
+      exports = new HashSet<>(getModuleClassSourceContent().exports());
     } catch (ResolveException e) {
       exports = Utils.emptyImmutableSet();
 
@@ -130,7 +130,7 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   private Set<PackageReference> lazyOpenssInitializer() {
     Set<PackageReference> opens;
     try {
-      opens = new HashSet(getModuleClassSourceContent().opens());
+      opens = new HashSet<>(getModuleClassSourceContent().opens());
     } catch (ResolveException e) {
       opens = Utils.emptyImmutableSet();
 
@@ -145,7 +145,7 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   private Set<JavaClassType> lazyProvidesInitializer() {
     Set<JavaClassType> provides;
     try {
-      provides = new HashSet(getModuleClassSourceContent().provides());
+      provides = new HashSet<>(getModuleClassSourceContent().provides());
     } catch (ResolveException e) {
       provides = Utils.emptyImmutableSet();
 
@@ -160,7 +160,7 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   private Set<JavaClassType> lazyUsesInitializer() {
     Set<JavaClassType> uses;
     try {
-      uses = new HashSet(getModuleClassSourceContent().uses());
+      uses = new HashSet<>(getModuleClassSourceContent().uses());
     } catch (ResolveException e) {
       uses = Utils.emptyImmutableSet();
 

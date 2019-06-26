@@ -3,7 +3,7 @@ package de.upb.soot;
 import de.upb.soot.buildactor.ViewBuilder;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.util.NotYetImplementedException;
-import de.upb.soot.views.IView;
+import de.upb.soot.views.View;
 import javax.annotation.Nonnull;
 
 /**
@@ -48,7 +48,7 @@ public class Project<S extends AnalysisInputLocation> {
    * @return A complete view on the provided code
    */
   @Nonnull
-  public IView createFullView() {
+  public View createFullView() {
     //    ViewBuilder vb = new ViewBuilder(this);
     //    return vb.buildComplete();
 
@@ -56,8 +56,8 @@ public class Project<S extends AnalysisInputLocation> {
   }
 
   @Nonnull
-  public IView createOnDemandView() {
-    ViewBuilder vb = new ViewBuilder(this);
+  public View createOnDemandView() {
+    ViewBuilder<S> vb = new ViewBuilder<>(this);
     return vb.buildOnDemand();
   }
 
@@ -69,7 +69,7 @@ public class Project<S extends AnalysisInputLocation> {
    * @return A scoped view of the provided code
    */
   @Nonnull
-  public IView createView(Scope s) {
+  public View createView(Scope s) {
     throw new NotYetImplementedException(); // TODO
   }
 }

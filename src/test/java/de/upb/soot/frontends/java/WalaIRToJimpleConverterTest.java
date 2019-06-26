@@ -10,7 +10,7 @@ import org.junit.experimental.categories.Category;
 /** @author Linghui Luo */
 @Category(Java8Test.class)
 public class WalaIRToJimpleConverterTest {
-  private WalaIRToJimpleConverter converter = new WalaIRToJimpleConverter(Collections.EMPTY_SET);
+  private WalaIRToJimpleConverter converter = new WalaIRToJimpleConverter(Collections.emptySet());
 
   @Test
   public void testConvertClassName1() {

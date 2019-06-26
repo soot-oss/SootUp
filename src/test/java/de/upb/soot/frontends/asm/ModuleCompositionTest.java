@@ -20,7 +20,7 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.Utils;
-import de.upb.soot.views.IView;
+import de.upb.soot.views.View;
 import java.io.File;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -49,10 +49,11 @@ public class ModuleCompositionTest {
     assertTrue(new File(jarFile).exists());
 
     // Create a project
-    Project p = new Project(new JavaClassPathAnalysisInputLocation(jarFile));
+    Project<JavaClassPathAnalysisInputLocation> p =
+        new Project<>(new JavaClassPathAnalysisInputLocation(jarFile));
 
     // Get the view
-    IView view = p.createOnDemandView();
+    View view = p.createOnDemandView();
 
     // Create java class signature
     JavaClassType utilsClassSignature = p.getIdentifierFactory().getClassType("de.upb.soot.Utils");

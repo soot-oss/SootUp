@@ -6,6 +6,7 @@ import de.upb.soot.Scope;
 import de.upb.soot.callgraph.CallGraph;
 import de.upb.soot.callgraph.CallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collection;
@@ -19,11 +20,11 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public interface IView {
+public interface View {
 
   /** Return all classes in the view. */
   @Nonnull
-  Collection<AbstractClass> getClasses();
+  Collection<AbstractClass<? extends AbstractClassSource>> getClasses();
 
   /**
    * Returns a stream of classes in the view.
@@ -31,7 +32,7 @@ public interface IView {
    * @return A stream of classes
    */
   @Nonnull
-  Stream<AbstractClass> classes();
+  Stream<AbstractClass<? extends AbstractClassSource>> classes();
 
   /**
    * Return a class with given signature.
@@ -39,7 +40,7 @@ public interface IView {
    * @return A class with given signature.
    */
   @Nonnull
-  Optional<AbstractClass> getClass(@Nonnull JavaClassType signature);
+  Optional<AbstractClass<? extends AbstractClassSource>> getClass(@Nonnull JavaClassType signature);
 
   /**
    * Provides the call graph using the default algorithm.

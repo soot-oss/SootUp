@@ -10,6 +10,7 @@ import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
@@ -33,7 +34,7 @@ import org.junit.experimental.categories.Category;
 public class JavaViewTest {
 
   private List<JavaClassType> signatures;
-  private JavaView view;
+  private JavaView<AnalysisInputLocation> view;
 
   @Before
   public void initialize() {
@@ -51,9 +52,9 @@ public class JavaViewTest {
                 .sorted(Comparator.comparing(JavaClassType::toString))
                 .collect(Collectors.toList()));
 
-    Project project = new Project<>(inputLocation);
+    Project<AnalysisInputLocation> project = new Project<>(inputLocation);
 
-    this.view = new JavaView(project);
+    this.view = new JavaView<>(project);
   }
 
   @Test
@@ -77,7 +78,7 @@ public class JavaViewTest {
   public void testResolveIteratively() {
     this.signatures.forEach(
         it -> {
-          AbstractClass clazz = this.view.getClass(it).orElse(null);
+          AbstractClass<? extends AbstractClassSource> clazz = this.view.getClass(it).orElse(null);
           assertNotNull("Class for signature \"" + it + "\" not found.", clazz);
           assertEquals(it, clazz.getType());
         });
@@ -109,7 +110,7 @@ public class JavaViewTest {
   public void testResolveAll() {
     this.view.resolveAll();
 
-    Collection<AbstractClass> classes = this.view.getClasses();
+    Collection<AbstractClass<? extends AbstractClassSource>> classes = this.view.getClasses();
 
     assertEquals(classes.size(), this.signatures.size());
 

@@ -784,7 +784,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSAConditionalBranchInstruction condInst) {
     PositionInfo posInfo =
         new PositionInfo(debugInfo.getInstructionPosition(condInst.iindex), null);
-    List<Stmt> stmts = new ArrayList<Stmt>();
+    List<Stmt> stmts = new ArrayList<>();
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
     Value value1 = extractValueAndAddAssignStmt(posInfo, stmts, val1);

@@ -3,8 +3,9 @@ package de.upb.soot.buildactor;
 import static de.upb.soot.util.Utils.peek;
 
 import de.upb.soot.Project;
-import de.upb.soot.views.IView;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.views.JavaView;
+import de.upb.soot.views.View;
 import javax.annotation.Nonnull;
 
 /**
@@ -14,25 +15,25 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Andreas Dann
  */
-public class ViewBuilder {
-  private @Nonnull Project project;
+public class ViewBuilder<S extends AnalysisInputLocation> {
+  private @Nonnull Project<S> project;
 
-  public ViewBuilder(@Nonnull Project project) {
+  public ViewBuilder(@Nonnull Project<S> project) {
     this.project = project;
   }
 
   @Nonnull
-  private JavaView buildJavaView() {
-    return new JavaView(this.project);
+  private JavaView<? extends AnalysisInputLocation> buildJavaView() {
+    return new JavaView<>(this.project);
   }
 
   @Nonnull
-  public IView buildComplete() {
+  public View buildComplete() {
     return peek(this.buildJavaView(), JavaView::resolveAll);
   }
 
   @Nonnull
-  public IView buildOnDemand() {
+  public View buildOnDemand() {
     return this.buildJavaView();
   }
 }
