@@ -140,9 +140,7 @@ public class Utils {
 
   // endregion /Stream/
 
-  /**
-   * Removes the oldValue from the set and adds the newValue afterwards.
-   */
+  /** Removes the oldValue from the set and adds the newValue afterwards. */
   public static <T> void replace(Set<T> set, T oldValue, T newValue) {
     set.remove(oldValue);
     set.add(newValue);
