@@ -1,6 +1,6 @@
 package de.upb.soot.buildactor;
 
-import static de.upb.soot.util.Utils.peek;
+import static de.upb.soot.util.StreamUtils.peek;
 
 import de.upb.soot.Project;
 import de.upb.soot.inputlocation.AnalysisInputLocation;

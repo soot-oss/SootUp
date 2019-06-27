@@ -21,7 +21,7 @@ package de.upb.soot.core;
  * #L%
  */
 
-import static de.upb.soot.util.Utils.immutableEnumSetOf;
+import static de.upb.soot.util.ImmutableUtils.immutableEnumSetOf;
 
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.signatures.AbstractClassMemberSignature;

@@ -4,7 +4,7 @@ import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.util.Utils;
+import de.upb.soot.util.StreamUtils;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -83,7 +83,7 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
           .filter(filePath -> PathUtils.hasExtension(filePath, handledFileType))
           .flatMap(
               p ->
-                  Utils.optionalToStream(
+                  StreamUtils.optionalToStream(
                       Optional.of(classProvider.createClassSource(this, p, factory.fromPath(p)))))
           .collect(Collectors.toList());
 
