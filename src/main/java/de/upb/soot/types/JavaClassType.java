@@ -22,7 +22,7 @@ package de.upb.soot.types;
  * #L%
  */
 
-import static de.upb.soot.util.ImmutableUtils.Functional.tryCastTo;
+import static de.upb.soot.util.FunctionalUtils.tryCastTo;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
