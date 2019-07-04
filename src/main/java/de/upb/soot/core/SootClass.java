@@ -21,9 +21,6 @@ package de.upb.soot.core;
  * #L%
  */
 
-import static de.upb.soot.util.ImmutableUtils.ImmutableCollectors.toImmutableSet;
-import static de.upb.soot.util.StreamUtils.iterableToStream;
-
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
@@ -89,7 +86,7 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
     Set<SootField> fields;
 
     try {
-      fields = Utils.immutableSetOf(this.classSource.resolveFields());
+      fields = ImmutableUtils.immutableSetOf(this.classSource.resolveFields());
     } catch (ResolveException e) {
       fields = ImmutableUtils.emptyImmutableSet();
 
@@ -106,7 +103,7 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
     Set<SootMethod> methods;
 
     try {
-      methods = Utils.immutableSetOf(this.classSource.resolveMethods());
+      methods = ImmutableUtils.immutableSetOf(this.classSource.resolveMethods());
     } catch (ResolveException e) {
       methods = ImmutableUtils.emptyImmutableSet();
 

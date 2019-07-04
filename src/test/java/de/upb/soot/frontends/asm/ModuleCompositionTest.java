@@ -56,7 +56,8 @@ public class ModuleCompositionTest {
     View view = p.createOnDemandView();
 
     // Create java class signature
-    JavaClassType utilsClassSignature = p.getIdentifierFactory().getClassType("de.upb.soot.Utils");
+    JavaClassType utilsClassSignature =
+        p.getIdentifierFactory().getClassType("de.upb.soot.ImmutableUtils");
 
     // Resolve signature to `SootClass`
     SootClass utilsClass =
