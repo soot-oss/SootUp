@@ -21,7 +21,7 @@ package de.upb.soot.core;
  * #L%
  */
 
-import static de.upb.soot.util.Utils.immutableListOf;
+import static de.upb.soot.util.ImmutableUtils.immutableListOf;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;

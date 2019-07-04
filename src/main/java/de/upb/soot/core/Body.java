@@ -33,7 +33,7 @@ import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.util.Copyable;
 import de.upb.soot.util.EscapedWriter;
-import de.upb.soot.util.Utils;
+import de.upb.soot.util.ImmutableUtils;
 import de.upb.soot.util.printer.Printer;
 import de.upb.soot.validation.BodyValidator;
 import de.upb.soot.validation.CheckEscapingValidator;
@@ -83,7 +83,7 @@ public final class Body implements Serializable, Copyable {
   /** An array containing some validators in order to validate the JimpleBody */
   @Nonnull
   private static final List<BodyValidator> validators =
-      Utils.immutableList(
+      ImmutableUtils.immutableList(
           new LocalsValidator(),
           new TrapsValidator(),
           new StmtBoxesValidator(),

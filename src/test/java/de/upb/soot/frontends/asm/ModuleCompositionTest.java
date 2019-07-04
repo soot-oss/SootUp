@@ -19,7 +19,7 @@ import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.util.Utils;
+import de.upb.soot.util.ImmutableUtils;
 import de.upb.soot.views.View;
 import java.io.File;
 import java.util.Collections;
@@ -114,12 +114,12 @@ public class ModuleCompositionTest {
                 null,
                 null,
                 null,
-                Utils.immutableSet(
+                ImmutableUtils.immutableSet(
                     SootField.builder()
                         .withSignature(nameFieldSubSignature.toFullSignature(classSignature))
                         .withModifiers(Modifier.PUBLIC)
                         .build()),
-                Utils.immutableSet(
+                ImmutableUtils.immutableSet(
                     SootMethod.builder()
                         .withSource(
                             new MethodSource() {
