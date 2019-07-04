@@ -57,7 +57,7 @@ public class ModuleCompositionTest {
 
     // Create java class signature
     JavaClassType utilsClassSignature =
-        p.getIdentifierFactory().getClassType("de.upb.soot.StringTools");
+        p.getIdentifierFactory().getClassType("de.upb.soot.util.StringTools");
 
     // Resolve signature to `SootClass`
     SootClass utilsClass =
