@@ -12,7 +12,7 @@ import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.Utils;
+import de.upb.soot.util.ImmutableUtils;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   /** Defines Java's reserved names. */
   @Nonnull
   public static final ImmutableSet<String> RESERVED_NAMES =
-      Utils.immutableSet(
+      ImmutableUtils.immutableSet(
           "newarray",
           "newmultiarray",
           "nop",

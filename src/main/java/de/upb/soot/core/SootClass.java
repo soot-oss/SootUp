@@ -21,6 +21,9 @@ package de.upb.soot.core;
  * #L%
  */
 
+import static de.upb.soot.util.ImmutableUtils.ImmutableCollectors.toImmutableSet;
+import static de.upb.soot.util.StreamUtils.iterableToStream;
+
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
@@ -32,7 +35,7 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.Utils;
+import de.upb.soot.util.ImmutableUtils;
 import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
@@ -88,7 +91,7 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
     try {
       fields = Utils.immutableSetOf(this.classSource.resolveFields());
     } catch (ResolveException e) {
-      fields = Utils.emptyImmutableSet();
+      fields = ImmutableUtils.emptyImmutableSet();
 
       // TODO: [JMP] Exception handling
       e.printStackTrace();
@@ -105,7 +108,7 @@ public class SootClass extends AbstractClass<ClassSource> implements Serializabl
     try {
       methods = Utils.immutableSetOf(this.classSource.resolveMethods());
     } catch (ResolveException e) {
-      methods = Utils.emptyImmutableSet();
+      methods = ImmutableUtils.emptyImmutableSet();
 
       // TODO: [JMP] Exception handling
       e.printStackTrace();
