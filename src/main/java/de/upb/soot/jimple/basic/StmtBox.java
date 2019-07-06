@@ -30,11 +30,10 @@ package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.util.printer.StmtPrinter;
-import java.io.Serializable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class StmtBox implements Serializable {
+public abstract class StmtBox {
 
   @Nullable private Stmt stmt;
 

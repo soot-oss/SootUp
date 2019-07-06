@@ -37,7 +37,6 @@ import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.ImmutableUtils;
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -70,15 +69,13 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootClass extends AbstractClass<ClassSource> implements Serializable {
+public class SootClass extends AbstractClass<ClassSource> {
 
   public SootClass(ClassSource classSource, SourceType sourceType) {
     super(classSource);
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
   }
-
-  private static final long serialVersionUID = -4145583783298080555L;
 
   private final SourceType sourceType;
   @Nonnull private final JavaClassType classSignature;
