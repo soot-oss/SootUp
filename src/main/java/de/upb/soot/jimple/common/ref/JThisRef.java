@@ -37,6 +37,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JThisRef implements IdentityRef, Copyable {
+  /** */
+  private static final long serialVersionUID = 5300244196056992260L;
 
   private final ReferenceType thisType;
 

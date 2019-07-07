@@ -37,6 +37,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
+  /** */
+  private static final long serialVersionUID = 9170581307891035087L;
 
   public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
     super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));

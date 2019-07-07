@@ -36,6 +36,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class JCaughtExceptionRef implements IdentityRef, Copyable {
+  /** */
+  private static final long serialVersionUID = 5249007116510821231L;
 
   public JCaughtExceptionRef() {}
 

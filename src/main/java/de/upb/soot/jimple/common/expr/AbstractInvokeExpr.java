@@ -39,6 +39,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 public abstract class AbstractInvokeExpr implements Expr {
+  /** */
+  private static final long serialVersionUID = 1796920588315752175L;
 
   private final MethodSignature methodSignature;
   private final ValueBox[] argBoxes;

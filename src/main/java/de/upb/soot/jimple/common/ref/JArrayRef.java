@@ -42,6 +42,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JArrayRef implements ConcreteRef, Copyable {
+  /** */
+  private static final long serialVersionUID = 7705080573810511044L;
 
   private final ValueBox baseBox;
   private final ValueBox indexBox;

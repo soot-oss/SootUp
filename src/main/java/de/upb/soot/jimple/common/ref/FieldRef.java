@@ -35,6 +35,9 @@ import javax.annotation.Nonnull;
 
 public abstract class FieldRef implements ConcreteRef {
 
+  /** */
+  private static final long serialVersionUID = 1914104591633719756L;
+
   private final FieldSignature fieldSignature;
 
   FieldRef(FieldSignature fieldSignature) {

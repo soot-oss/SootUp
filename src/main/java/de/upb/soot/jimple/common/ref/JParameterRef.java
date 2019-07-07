@@ -43,6 +43,8 @@ import javax.annotation.Nonnull;
  *  this := @parameter0; </code>
  */
 public final class JParameterRef implements IdentityRef, Copyable {
+  /** */
+  private static final long serialVersionUID = -5198809451267425640L;
 
   private final int num;
   private final Type paramType;

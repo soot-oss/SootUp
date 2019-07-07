@@ -38,6 +38,8 @@ import de.upb.soot.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 public final class JNegExpr extends AbstractUnopExpr implements Copyable {
+  /** */
+  private static final long serialVersionUID = -5215362038683846098L;
 
   public JNegExpr(Value op) {
     super(Jimple.newImmediateBox(op));

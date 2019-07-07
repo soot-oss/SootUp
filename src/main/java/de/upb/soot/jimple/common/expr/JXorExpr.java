@@ -32,6 +32,8 @@ import de.upb.soot.util.Copyable;
 import javax.annotation.Nonnull;
 
 public final class JXorExpr extends AbstractIntLongBinopExpr implements Copyable {
+  /** */
+  private static final long serialVersionUID = 3643447972252206400L;
 
   public JXorExpr(Value op1, Value op2) {
     super(op1, op2);

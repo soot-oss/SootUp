@@ -36,6 +36,8 @@ import de.upb.soot.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
+  /** */
+  private static final long serialVersionUID = 8028538963970159045L;
 
   public JLengthExpr(Value op) {
     super(Jimple.newImmediateBox(op));

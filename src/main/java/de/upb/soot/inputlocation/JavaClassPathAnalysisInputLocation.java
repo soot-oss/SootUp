@@ -169,6 +169,8 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
   }
 
   protected static final class InvalidClassPathException extends IllegalArgumentException {
+    /** */
+    private static final long serialVersionUID = -5130658516046902470L;
 
     public InvalidClassPathException(@Nullable String message) {
       super(message);

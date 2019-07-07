@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
+  /** */
+  private static final long serialVersionUID = 5554270441921308784L;
 
   private final ValueBox baseBox;
 

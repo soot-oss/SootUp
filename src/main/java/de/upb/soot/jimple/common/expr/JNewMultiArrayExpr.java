@@ -41,6 +41,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JNewMultiArrayExpr implements Expr, Copyable {
+  /** */
+  private static final long serialVersionUID = -473132292740722571L;
 
   private final ArrayType baseType;
   private final ValueBox[] sizeBoxes;

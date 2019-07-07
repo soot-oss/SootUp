@@ -12,6 +12,8 @@ import javax.annotation.Nonnull;
 public class MethodType implements Constant, Copyable {
 
   // FIXME: adapt this class
+
+  private static final long serialVersionUID = 3523899677165980823L;
   private final Type returnType;
   private final List<Type> parameterTypes;
 

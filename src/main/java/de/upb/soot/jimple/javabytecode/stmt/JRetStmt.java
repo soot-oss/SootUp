@@ -40,6 +40,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JRetStmt extends AbstractStmt implements Copyable {
+  /** */
+  private static final long serialVersionUID = -5082469551010642932L;
 
   private final ValueBox stmtAddressBox;
   // List useBoxes;

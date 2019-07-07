@@ -40,6 +40,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JInstanceOfExpr implements Expr, Copyable {
+  /** */
+  private static final long serialVersionUID = -3584505247110961970L;
 
   private final ValueBox opBox;
   private final Type checkType;

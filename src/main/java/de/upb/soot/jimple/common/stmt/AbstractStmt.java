@@ -28,6 +28,8 @@ package de.upb.soot.jimple.common.stmt;
 import de.upb.soot.jimple.basic.PositionInfo;
 
 public abstract class AbstractStmt extends Stmt {
+  /** */
+  private static final long serialVersionUID = 8029583017798662173L;
 
   private final PositionInfo positionInfo;
 

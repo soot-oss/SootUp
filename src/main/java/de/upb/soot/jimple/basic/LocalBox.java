@@ -26,6 +26,8 @@
 package de.upb.soot.jimple.basic;
 
 public class LocalBox extends ValueBox {
+  /** */
+  private static final long serialVersionUID = 5628213909207494364L;
 
   public LocalBox(Value value) {
     super(value);

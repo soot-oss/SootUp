@@ -39,6 +39,8 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JCastExpr implements Expr, Copyable {
+  /** */
+  private static final long serialVersionUID = -3186041329205869260L;
 
   private final ValueBox opBox;
   private final Type type;

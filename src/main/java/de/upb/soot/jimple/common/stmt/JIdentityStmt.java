@@ -38,6 +38,8 @@ import de.upb.soot.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 public final class JIdentityStmt extends AbstractDefinitionStmt implements Copyable {
+  /** */
+  private static final long serialVersionUID = -6269380950007213506L;
 
   public JIdentityStmt(Value local, Value identityValue, PositionInfo positionInfo) {
     this(Jimple.newLocalBox(local), Jimple.newIdentityRefBox(identityValue), positionInfo);

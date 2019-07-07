@@ -32,6 +32,8 @@ import de.upb.soot.util.Copyable;
 import javax.annotation.Nonnull;
 
 public final class JRemExpr extends AbstractFloatBinopExpr implements Copyable {
+  /** */
+  private static final long serialVersionUID = -2005729824546754505L;
 
   public JRemExpr(Value op1, Value op2) {
     super(op1, op2);

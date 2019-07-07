@@ -29,6 +29,8 @@ import de.upb.soot.jimple.common.expr.Expr;
 import de.upb.soot.jimple.common.ref.ConcreteRef;
 
 public class RValueBox extends ValueBox {
+  /** */
+  private static final long serialVersionUID = 1137427420610950327L;
 
   public RValueBox(Value value) {
     super(value);

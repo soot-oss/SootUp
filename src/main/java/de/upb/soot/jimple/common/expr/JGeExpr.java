@@ -32,6 +32,8 @@ import de.upb.soot.util.Copyable;
 import javax.annotation.Nonnull;
 
 public final class JGeExpr extends AbstractConditionExpr implements Copyable {
+  /** */
+  private static final long serialVersionUID = -2634172265531262909L;
 
   public JGeExpr(Value op1, Value op2) {
     super(op1, op2);

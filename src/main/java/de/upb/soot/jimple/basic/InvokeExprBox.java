@@ -28,6 +28,8 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 
 public class InvokeExprBox extends ValueBox {
+  /** */
+  private static final long serialVersionUID = 5556549213602125525L;
 
   public InvokeExprBox(Value value) {
     super(value);

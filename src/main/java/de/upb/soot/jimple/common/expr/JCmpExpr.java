@@ -33,6 +33,8 @@ import de.upb.soot.util.Copyable;
 import javax.annotation.Nonnull;
 
 public final class JCmpExpr extends AbstractIntBinopExpr implements Copyable {
+  /** */
+  private static final long serialVersionUID = 1638137058702225918L;
 
   public JCmpExpr(Value op1, Value op2) {
     super(op1, op2);

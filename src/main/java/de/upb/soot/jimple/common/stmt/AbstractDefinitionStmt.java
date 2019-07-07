@@ -33,6 +33,8 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractDefinitionStmt extends AbstractStmt {
+  /** */
+  private static final long serialVersionUID = -1424435720199285210L;
 
   private final ValueBox leftBox;
   private final ValueBox rightBox;

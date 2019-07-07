@@ -43,6 +43,8 @@ import javax.annotation.Nonnull;
 import org.objectweb.asm.Opcodes;
 
 public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copyable {
+  /** */
+  private static final long serialVersionUID = 8212277443400470834L;
 
   private final MethodSignature bootstrapMethodSignature;
   private final ValueBox[] bootstrapMethodSignatureArgBoxes;

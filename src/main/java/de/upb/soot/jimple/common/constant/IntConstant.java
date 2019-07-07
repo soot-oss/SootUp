@@ -32,6 +32,8 @@ import de.upb.soot.types.Type;
 import javax.annotation.Nonnull;
 
 public class IntConstant implements ShiftableConstant<IntConstant> {
+  /** */
+  private static final long serialVersionUID = 1266232311067376706L;
 
   private final int value;
 

@@ -32,6 +32,8 @@ import de.upb.soot.types.Type;
 import de.upb.soot.util.StringTools;
 
 public class StringConstant implements Constant {
+  /** */
+  private static final long serialVersionUID = -1247456329894136483L;
 
   private final String value;
 
