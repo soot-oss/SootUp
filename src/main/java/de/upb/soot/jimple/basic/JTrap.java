@@ -33,9 +33,6 @@ import javax.annotation.Nonnull;
 
 public final class JTrap extends AbstractTrap implements Copyable {
 
-  /** */
-  private static final long serialVersionUID = -1514595956359087470L;
-
   public JTrap(JavaClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
     super(
         exception,

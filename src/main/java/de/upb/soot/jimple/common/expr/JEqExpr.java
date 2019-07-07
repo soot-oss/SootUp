@@ -32,8 +32,6 @@ import de.upb.soot.util.Copyable;
 import javax.annotation.Nonnull;
 
 public final class JEqExpr extends AbstractConditionExpr implements Copyable {
-  /** */
-  private static final long serialVersionUID = 6070774769622462963L;
 
   public JEqExpr(Value op1, Value op2) {
     super(op1, op2);

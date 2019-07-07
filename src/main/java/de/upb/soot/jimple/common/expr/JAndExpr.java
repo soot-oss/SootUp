@@ -32,8 +32,6 @@ import de.upb.soot.util.Copyable;
 import javax.annotation.Nonnull;
 
 public final class JAndExpr extends AbstractIntLongBinopExpr implements Copyable {
-  /** */
-  private static final long serialVersionUID = 1800642426457285951L;
 
   public JAndExpr(Value op1, Value op2) {
     super(op1, op2);

@@ -32,8 +32,6 @@ import de.upb.soot.util.Copyable;
 import javax.annotation.Nonnull;
 
 public final class JDivExpr extends AbstractFloatBinopExpr implements Copyable {
-  /** */
-  private static final long serialVersionUID = -2112336692947157971L;
 
   public JDivExpr(Value op1, Value op2) {
     super(op1, op2);

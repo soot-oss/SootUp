@@ -41,8 +41,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyable {
-  /** */
-  private static final long serialVersionUID = -4716844468557152732L;
 
   private final int lowIndex;
   private final int highIndex;

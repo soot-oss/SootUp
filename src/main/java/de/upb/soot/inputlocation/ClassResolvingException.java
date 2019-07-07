@@ -3,8 +3,6 @@ package de.upb.soot.inputlocation;
 import javax.annotation.Nullable;
 
 public class ClassResolvingException extends Throwable {
-  /** */
-  private static final long serialVersionUID = 5301366501158710956L;
 
   public ClassResolvingException(@Nullable String message) {
     super(message);

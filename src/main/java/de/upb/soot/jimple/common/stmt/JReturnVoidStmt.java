@@ -35,8 +35,6 @@ import de.upb.soot.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 public final class JReturnVoidStmt extends AbstractStmt implements Copyable {
-  /** */
-  private static final long serialVersionUID = 6620261205233720627L;
 
   public JReturnVoidStmt(PositionInfo positionInfo) {
     super(positionInfo);

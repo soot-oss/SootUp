@@ -37,8 +37,6 @@ import de.upb.soot.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 public final class JReturnStmt extends AbstractOpStmt implements Copyable {
-  /** */
-  private static final long serialVersionUID = 4601025616184085996L;
 
   public JReturnStmt(Value returnValue, PositionInfo positionInfo) {
     this(Jimple.newImmediateBox(returnValue), positionInfo);
