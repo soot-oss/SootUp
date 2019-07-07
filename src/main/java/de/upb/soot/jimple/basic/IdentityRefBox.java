@@ -28,8 +28,6 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.jimple.common.ref.IdentityRef;
 
 public class IdentityRefBox extends ValueBox {
-  /** */
-  private static final long serialVersionUID = 4710321707012311318L;
 
   public IdentityRefBox(Value value) {
     super(value);

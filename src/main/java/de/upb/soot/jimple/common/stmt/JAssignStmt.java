@@ -33,14 +33,9 @@ import javax.annotation.Nonnull;
 /** The Class JAssignStmt. */
 public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
 
-  /** */
-  private static final long serialVersionUID = -4560269896679815285L;
-
   /** The Class LinkedVariableBox. */
   private static class LinkedVariableBox extends VariableBox {
 
-    /** */
-    private static final long serialVersionUID = -249895672780916220L;
     /** The other box. */
     ValueBox otherBox = null;
 

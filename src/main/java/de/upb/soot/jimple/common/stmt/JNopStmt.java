@@ -35,8 +35,6 @@ import de.upb.soot.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 public final class JNopStmt extends AbstractStmt implements Copyable {
-  /** */
-  private static final long serialVersionUID = -614576667391055548L;
 
   public JNopStmt(PositionInfo positionInfo) {
     super(positionInfo);

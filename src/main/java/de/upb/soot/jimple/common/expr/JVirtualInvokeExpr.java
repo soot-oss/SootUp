@@ -36,8 +36,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
-  /** */
-  private static final long serialVersionUID = 8767212132509253058L;
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */
   public JVirtualInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {

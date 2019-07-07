@@ -41,8 +41,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JIfStmt extends AbstractStmt implements Copyable {
-  /** */
-  private static final long serialVersionUID = -5625186075843518011L;
 
   private final ValueBox conditionBox;
   private final StmtBox targetBox;

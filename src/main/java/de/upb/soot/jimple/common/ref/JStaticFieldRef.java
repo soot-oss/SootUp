@@ -11,8 +11,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JStaticFieldRef extends FieldRef implements Copyable {
-  /** */
-  private static final long serialVersionUID = -8744248848897714882L;
 
   public JStaticFieldRef(FieldSignature fieldSig) {
     super(fieldSig);

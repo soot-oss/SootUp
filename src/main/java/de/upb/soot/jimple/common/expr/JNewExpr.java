@@ -39,8 +39,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JNewExpr implements Expr, Copyable {
-  /** */
-  private static final long serialVersionUID = 2039425094688972405L;
 
   private final ReferenceType type;
 

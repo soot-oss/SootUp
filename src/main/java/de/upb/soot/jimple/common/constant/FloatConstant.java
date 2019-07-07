@@ -34,9 +34,6 @@ import javax.annotation.Nonnull;
 /** Floating point constant with single precision. */
 public class FloatConstant implements RealConstant<FloatConstant> {
 
-  /** */
-  private static final long serialVersionUID = 1743530246829003090L;
-
   private final float value;
 
   private FloatConstant(float value) {
