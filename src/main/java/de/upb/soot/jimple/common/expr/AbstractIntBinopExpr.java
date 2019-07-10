@@ -32,9 +32,6 @@ import de.upb.soot.types.Type;
 
 public abstract class AbstractIntBinopExpr extends AbstractBinopExpr {
 
-  /** */
-  private static final long serialVersionUID = -927690467615962201L;
-
   AbstractIntBinopExpr(Value op1, Value op2) {
     super(Jimple.newArgBox(op1), Jimple.newArgBox(op2));
   }

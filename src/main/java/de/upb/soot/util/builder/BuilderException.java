@@ -12,8 +12,6 @@ import javax.annotation.Nullable;
 public class BuilderException extends IllegalStateException {
   // region Fields
 
-  private static final long serialVersionUID = 3392235468289192358L;
-
   // endregion /Fields/
 
   // region Constructor

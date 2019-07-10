@@ -82,9 +82,6 @@ public class MethodHandle implements Constant {
     }
   }
 
-  /** */
-  private static final long serialVersionUID = 76297846662243365L;
-
   private final MethodSignature methodRef;
   private final FieldRef fieldRef;
 

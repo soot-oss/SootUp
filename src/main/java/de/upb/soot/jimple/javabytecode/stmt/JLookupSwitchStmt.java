@@ -44,8 +44,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copyable {
-  /** */
-  private static final long serialVersionUID = 7072376393810033195L;
   /**
    * List of lookup values from the corresponding bytecode instruction, represented as IntConstants.
    */

@@ -44,9 +44,6 @@ import javax.annotation.Nonnull;
 public final class Local implements Value, Immediate, Copyable {
   // This class is final since it implements equals and hashCode
 
-  /** */
-  private static final long serialVersionUID = 4469815713329368282L;
-
   @Nonnull private final String name;
   @Nonnull private final Type type;
 

@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractBinopExpr implements Expr {
-  /** */
-  private static final long serialVersionUID = -4967924464687577438L;
 
   private final ValueBox op1Box;
   private final ValueBox op2Box;

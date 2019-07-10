@@ -16,9 +16,6 @@ import javax.annotation.Nonnull;
 
 public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
 
-  /** */
-  private static final long serialVersionUID = -6856798288630958622L;
-
   @Nonnull private final JavaClassType classSignature;
   // FIXME: how to create automatic modules
   private boolean isAutomaticModule;

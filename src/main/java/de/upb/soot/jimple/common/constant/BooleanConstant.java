@@ -19,9 +19,6 @@ public class BooleanConstant
   private static final BooleanConstant FALSE = new BooleanConstant(0);
   private static final BooleanConstant TRUE = new BooleanConstant(1);
 
-  /** */
-  private static final long serialVersionUID = 6986012843042501546L;
-
   private final int value;
 
   private BooleanConstant(int value) {

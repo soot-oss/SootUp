@@ -28,7 +28,6 @@ import de.upb.soot.signatures.AbstractClassMemberSignature;
 import de.upb.soot.signatures.AbstractClassMemberSubSignature;
 import de.upb.soot.util.builder.AbstractBuilder;
 import de.upb.soot.util.builder.BuilderException;
-import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -40,9 +39,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public abstract class SootClassMember<S extends AbstractClassMemberSignature>
-    implements Serializable {
-  private static final long serialVersionUID = -7201796736790814208L;
+public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
 
   @Nonnull private final S _signature;
   @Nonnull private final ImmutableSet<Modifier> _modifiers;
