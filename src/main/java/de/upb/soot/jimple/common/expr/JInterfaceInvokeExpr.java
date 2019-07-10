@@ -36,8 +36,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
-  /** */
-  private static final long serialVersionUID = 7458533916011927970L;
 
   /**
    * Assigns bootstrapArgs to bsmArgBoxes, an array of type ValueBox. And methodArgs to an array

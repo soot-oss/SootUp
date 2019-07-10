@@ -53,8 +53,6 @@ import javax.annotation.Nullable;
  * @author Jan Martin Persch
  */
 public final class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
-  /** */
-  private static final long serialVersionUID = -7438746401781827520L;
 
   @Nonnull private static final String CONSTRUCTOR_NAME = "<init>";
   @Nonnull private static final String STATIC_INITIALIZER_NAME = "<clinit>";

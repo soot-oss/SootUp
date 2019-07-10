@@ -38,8 +38,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 public final class JGotoStmt extends AbstractStmt implements Copyable {
-  /** */
-  private static final long serialVersionUID = -7771670610404109177L;
 
   private final StmtBox targetBox;
   private final List<StmtBox> targetBoxes;

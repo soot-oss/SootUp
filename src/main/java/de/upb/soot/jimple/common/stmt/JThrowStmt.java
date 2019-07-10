@@ -38,9 +38,6 @@ import javax.annotation.Nonnull;
 
 public final class JThrowStmt extends AbstractOpStmt implements Copyable {
 
-  /** */
-  private static final long serialVersionUID = -1145801522928664246L;
-
   public JThrowStmt(Value op, PositionInfo positionInfo) {
     this(Jimple.newImmediateBox(op), positionInfo);
   }
