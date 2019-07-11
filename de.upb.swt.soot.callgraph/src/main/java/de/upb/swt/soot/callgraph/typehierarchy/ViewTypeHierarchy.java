@@ -181,7 +181,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Nullable
   @Override
   public JavaClassType superClassOf(@Nonnull JavaClassType classType) {
-    return sootClassFor(classType).getSuperclass().orElse(null);
+    return sootClassFor(classType).getSuperClass().orElse(null);
   }
 
   /**
@@ -264,7 +264,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
             vertex, implementedInterfaceVertex, new Edge(EdgeType.ClassDirectlyImplements));
       }
       sootClass
-          .getSuperclass()
+          .getSuperClass()
           .ifPresent(
               superClass -> {
                 Vertex superClassVertex =
