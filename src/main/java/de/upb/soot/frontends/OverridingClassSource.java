@@ -5,7 +5,9 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.util.CollectionUtils;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -113,6 +115,13 @@ public class OverridingClassSource extends ClassSource {
   }
 
   @Nonnull
+  public OverridingClassSource withReplacedMethod(SootMethod toReplace, SootMethod replacement) {
+    Set<SootMethod> newMethods = new HashSet<>(resolveMethods());
+    CollectionUtils.replace(newMethods, toReplace, replacement);
+    return withMethods(newMethods);
+  }
+
+  @Nonnull
   public OverridingClassSource withMethods(Collection<SootMethod> overriddenSootMethods) {
     return new OverridingClassSource(
         overriddenSootMethods,
@@ -124,6 +133,13 @@ public class OverridingClassSource extends ClassSource {
         overriddenPosition,
         position,
         delegate);
+  }
+
+  @Nonnull
+  public OverridingClassSource withReplacedField(SootField toReplace, SootField replacement) {
+    Set<SootField> newFields = new HashSet<>(resolveFields());
+    CollectionUtils.replace(newFields, toReplace, replacement);
+    return withFields(newFields);
   }
 
   @Nonnull

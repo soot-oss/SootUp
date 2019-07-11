@@ -55,7 +55,7 @@ public abstract class AbstractClassMemberSignature implements Signature {
 
   /** The signature of the declaring class. */
   @Nonnull
-  public JavaClassType getDeclClassSignature() {
+  public JavaClassType getDeclClassType() {
     return declClassSignature;
   }
 

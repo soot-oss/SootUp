@@ -115,12 +115,9 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
     return (MethodSubSignature) super.getSubSignature();
   }
 
-  /**
-   * Returns true if this method is not phantom, abstract or native, i.e. this method can have a
-   * body.
-   */
+  /** Returns true if this method is not abstract or native, i.e. this method can have a body. */
   public boolean isConcrete() {
-    return !isPhantom() && !isAbstract() && !isNative();
+    return !isAbstract() && !isNative();
   }
 
   public Type getReturnTypeSignature() {
@@ -197,7 +194,7 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
   public boolean isJavaLibraryMethod() {
-    return this.getDeclaringClass().isJavaLibraryClass();
+    return getSignature().getDeclClassType().isJavaLibraryClass();
   }
 
   /**

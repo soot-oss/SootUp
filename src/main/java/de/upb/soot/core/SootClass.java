@@ -21,16 +21,12 @@ package de.upb.soot.core;
  * #L%
  */
 
-import static de.upb.soot.util.ImmutableUtils.ImmutableCollectors.toImmutableSet;
-import static de.upb.soot.util.StreamUtils.iterableToStream;
-
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.OverridingClassSource;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.signatures.AbstractClassMemberSignature;
 import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
@@ -41,7 +37,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
 /*
@@ -84,17 +79,11 @@ public class SootClass extends AbstractClass<ClassSource> {
   @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   @Nonnull
-  private <S extends AbstractClassMemberSignature, M extends SootClassMember<S>>
-      Set<M> initializeClassMembers(@Nonnull Iterable<? extends M> items) {
-    return iterableToStream(items).peek(it -> it.setDeclaringClass(this)).collect(toImmutableSet());
-  }
-
-  @Nonnull
   private Set<SootField> lazyFieldInitializer() {
-    Iterable<SootField> fields;
+    Set<SootField> fields;
 
     try {
-      fields = this.classSource.resolveFields();
+      fields = ImmutableUtils.immutableSetOf(this.classSource.resolveFields());
     } catch (ResolveException e) {
       fields = ImmutableUtils.emptyImmutableSet();
 
@@ -103,15 +92,15 @@ public class SootClass extends AbstractClass<ClassSource> {
       throw new IllegalStateException(e);
     }
 
-    return this.initializeClassMembers(fields);
+    return fields;
   }
 
   @Nonnull
   private Set<SootMethod> lazyMethodInitializer() {
-    Iterable<SootMethod> methods;
+    Set<SootMethod> methods;
 
     try {
-      methods = this.classSource.resolveMethods();
+      methods = ImmutableUtils.immutableSetOf(this.classSource.resolveMethods());
     } catch (ResolveException e) {
       methods = ImmutableUtils.emptyImmutableSet();
 
@@ -120,7 +109,7 @@ public class SootClass extends AbstractClass<ClassSource> {
       throw new IllegalStateException(e);
     }
 
-    return this.initializeClassMembers(methods);
+    return methods;
   }
 
   @Nonnull
@@ -342,21 +331,8 @@ public class SootClass extends AbstractClass<ClassSource> {
     return sourceType.equals(SourceType.Library);
   }
 
-  // FIXME: get rid of these logic
-  private static final class LibraryClassPatternHolder {
-    /**
-     * Sometimes we need to know which class is a JDK class. There is no simple way to distinguish a
-     * user class and a JDK class, here we use the package prefix as the heuristic.
-     */
-    private static final Pattern LIBRARY_CLASS_PATTERN =
-        Pattern.compile(
-            "^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");
-  }
-
   public boolean isJavaLibraryClass() {
-    return LibraryClassPatternHolder.LIBRARY_CLASS_PATTERN
-        .matcher(classSignature.getClassName())
-        .find();
+    return classSignature.isJavaLibraryClass();
   }
 
   /** Returns true if this class is a phantom class. */

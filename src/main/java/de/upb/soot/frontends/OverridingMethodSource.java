@@ -1,7 +1,11 @@
 package de.upb.soot.frontends;
 
 import de.upb.soot.core.Body;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.signatures.MethodSignature;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -50,5 +54,22 @@ public class OverridingMethodSource implements MethodSource {
   @Nonnull
   public OverridingMethodSource withBody(@Nullable Body body) {
     return new OverridingMethodSource(delegate, true, body);
+  }
+
+  /**
+   * Creates a new {@link OverridingMethodSource} that replaces the statements of the method's body.
+   * If the body is resolved as null, this method throws {@link IllegalStateException}.
+   */
+  @Nonnull
+  public OverridingMethodSource withBodyStmts(Consumer<List<Stmt>> stmtModifier) {
+    Body body = resolveBody();
+    if (body == null) {
+      throw new IllegalStateException(
+          "Cannot replace statements in method " + delegate.getSignature() + ", body is null");
+    }
+
+    List<Stmt> newStmts = new ArrayList<>(body.getStmts());
+    stmtModifier.accept(newStmts);
+    return withBody(body.withStmts(newStmts));
   }
 }

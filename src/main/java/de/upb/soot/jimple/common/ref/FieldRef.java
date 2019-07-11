@@ -42,7 +42,7 @@ public abstract class FieldRef implements ConcreteRef {
   }
 
   public @Nonnull Optional<SootField> getField(@Nonnull View view) {
-    return view.getClass(fieldSignature.getDeclClassSignature())
+    return view.getClass(fieldSignature.getDeclClassType())
         .flatMap(it -> it.getField(fieldSignature).map(field -> (SootField) field));
   }
 

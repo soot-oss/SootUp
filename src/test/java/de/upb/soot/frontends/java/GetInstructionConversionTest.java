@@ -90,7 +90,7 @@ public class GetInstructionConversionTest {
                 assertEquals(PrimitiveType.getInt(), fieldSig.getSignature());
                 assertEquals(
                     typeFactory.getClassType("alreadywalaunittests.InnerClassAA"),
-                    fieldSig.getDeclClassSignature());
+                    fieldSig.getDeclClassType());
               });
         });
 

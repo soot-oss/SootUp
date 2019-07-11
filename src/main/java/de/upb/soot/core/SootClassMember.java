@@ -26,12 +26,12 @@ import static de.upb.soot.util.ImmutableUtils.immutableEnumSetOf;
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.signatures.AbstractClassMemberSignature;
 import de.upb.soot.signatures.AbstractClassMemberSubSignature;
+import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.builder.AbstractBuilder;
 import de.upb.soot.util.builder.BuilderException;
 import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Provides methods common to Soot objects belonging to classes, namely SootField and SootMethod.
@@ -44,45 +44,15 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
   @Nonnull private final S _signature;
   @Nonnull private final ImmutableSet<Modifier> _modifiers;
 
-  /** Constructor. */
   SootClassMember(@Nonnull S signature, @Nonnull Iterable<Modifier> modifiers) {
     this._signature = signature;
     this._modifiers = immutableEnumSetOf(modifiers);
   }
 
-  @Nullable private volatile SootClass _declaringClass;
-
   /** Returns the SootClass declaring this one. */
   @Nonnull
-  public SootClass getDeclaringClass() {
-    SootClass owner = this._declaringClass;
-
-    if (owner == null) {
-      throw new IllegalStateException(
-          "The declaring class of this soot class member has not been set yet.");
-    }
-
-    return owner;
-  }
-
-  final synchronized void setDeclaringClass(@Nonnull SootClass value) {
-    if (this._declaringClass != null) {
-      throw new IllegalStateException(
-          "The declaring class of this soot class member has already been set.");
-    }
-
-    if (!value.getType().equals(this.getSignature().getDeclClassSignature())) {
-      throw new IllegalArgumentException(
-          "The signature of the specified declaring class does not match to the declaring class "
-              + "signature of this soot class member");
-    }
-
-    this._declaringClass = value;
-  }
-
-  /** Returns true when this object is from a phantom class. */
-  public boolean isPhantom() {
-    return this.getDeclaringClass().isPhantomClass();
+  public JavaClassType getDeclaringClassType() {
+    return this._signature.getDeclClassType();
   }
 
   /** Convenience methodRef returning true if this class member is protected. */
