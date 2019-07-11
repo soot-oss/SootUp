@@ -116,11 +116,11 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
   }
 
   /**
-   * Returns true if this method is not phantom, abstract or native, i.e. this method can have a
+   * Returns true if this method is not abstract or native, i.e. this method can have a
    * body.
    */
   public boolean isConcrete() {
-    return !isPhantom() && !isAbstract() && !isNative();
+    return !isAbstract() && !isNative();
   }
 
   public Type getReturnTypeSignature() {

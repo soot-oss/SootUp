@@ -43,31 +43,16 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
 
   @Nonnull private final S _signature;
   @Nonnull private final ImmutableSet<Modifier> _modifiers;
-  private final boolean isPhantom;
 
-  // TODO: Currently isPhantom is always false. We need logic to determine when it should be true.
-
-  /** Constructor. */
   SootClassMember(@Nonnull S signature, @Nonnull Iterable<Modifier> modifiers) {
-    this(signature, modifiers, false);
-  }
-
-  /** Constructor. */
-  SootClassMember(@Nonnull S signature, @Nonnull Iterable<Modifier> modifiers, boolean isPhantom) {
     this._signature = signature;
     this._modifiers = immutableEnumSetOf(modifiers);
-    this.isPhantom = isPhantom;
   }
 
   /** Returns the SootClass declaring this one. */
   @Nonnull
   public JavaClassType getDeclaringClassType() {
     return this._signature.getDeclClassType();
-  }
-
-  /** Returns true when this object is from a phantom class. */
-  public boolean isPhantom() {
-    return isPhantom;
   }
 
   /** Convenience methodRef returning true if this class member is protected. */

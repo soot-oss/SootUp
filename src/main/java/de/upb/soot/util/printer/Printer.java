@@ -149,9 +149,6 @@ public class Printer {
         while (fieldIt.hasNext()) {
           SootField f = (SootField) fieldIt.next();
 
-          if (f.isPhantom()) {
-            continue;
-          }
           out.println("    " + f.getDeclaration() + ";");
           if (addJimpleLn()) {
             setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f));
@@ -177,10 +174,6 @@ public class Printer {
 
       while (methodIt.hasNext()) {
         SootMethod method = (SootMethod) methodIt.next();
-
-        if (method.isPhantom()) {
-          continue;
-        }
 
         if (!Modifier.isAbstract(method.getModifiers())
             && !Modifier.isNative(method.getModifiers())) {
