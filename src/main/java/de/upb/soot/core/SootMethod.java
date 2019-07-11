@@ -115,10 +115,7 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
     return (MethodSubSignature) super.getSubSignature();
   }
 
-  /**
-   * Returns true if this method is not abstract or native, i.e. this method can have a
-   * body.
-   */
+  /** Returns true if this method is not abstract or native, i.e. this method can have a body. */
   public boolean isConcrete() {
     return !isAbstract() && !isNative();
   }
