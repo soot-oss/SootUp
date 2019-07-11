@@ -27,7 +27,7 @@ public interface TypeHierarchy {
    * </code> and <code>B extends classType</code>, then this method will return both A and B as
    * extenders of <code>classType</code>.
    */
-  Set<JavaClassType> extendersOf(@Nonnull JavaClassType classType);
+  Set<JavaClassType> subclassesOf(@Nonnull JavaClassType classType);
 
   /**
    * Returns the interfaces implemented by <code>classType</code>. This includes interfaces
