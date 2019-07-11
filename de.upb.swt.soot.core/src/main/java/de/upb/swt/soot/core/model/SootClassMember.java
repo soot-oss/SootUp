@@ -40,18 +40,18 @@ import javax.annotation.Nonnull;
  */
 public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
 
-  @Nonnull private final S _signature;
-  @Nonnull private final ImmutableSet<Modifier> _modifiers;
+  @Nonnull private final S signature;
+  @Nonnull private final ImmutableSet<Modifier> modifiers;
 
   SootClassMember(@Nonnull S signature, @Nonnull Iterable<Modifier> modifiers) {
-    this._signature = signature;
-    this._modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
+    this.signature = signature;
+    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
   }
 
   /** Returns the SootClass declaring this one. */
   @Nonnull
   public JavaClassType getDeclaringClassType() {
-    return this._signature.getDeclClassType();
+    return this.signature.getDeclClassType();
   }
 
   /** Convenience methodRef returning true if this class member is protected. */
@@ -86,37 +86,35 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
    */
   @Nonnull
   public Set<Modifier> getModifiers() {
-    return _modifiers;
+    return modifiers;
   }
 
   /** Returns a hash code for this methodRef consistent with structural equality. */
-  // TODO: check whether modifiers.hashcode() does what its meant for; former: "modifiers"/int bit
-  // flags representing the set
   public int equivHashCode() {
-    return _modifiers.hashCode() * 17 + _signature.hashCode();
+    return modifiers.hashCode() * 17 + signature.hashCode();
   }
 
   /** Returns the signature of this methodRef. */
   @Override
   @Nonnull
   public String toString() {
-    return _signature.toString();
+    return signature.toString();
   }
 
   /** Returns the Soot signature of this methodRef. Used to refer to methods unambiguously. */
   @Nonnull
   public S getSignature() {
-    return _signature;
+    return signature;
   }
 
   @Nonnull
   public AbstractClassMemberSubSignature getSubSignature() {
-    return _signature.getSubSignature();
+    return signature.getSubSignature();
   }
 
   @Nonnull
   public String getName() {
-    return this._signature.getName();
+    return this.signature.getName();
   }
 
   /**
@@ -168,11 +166,6 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
   abstract static class SootClassMemberBuilder<
           S extends AbstractClassMemberSignature, T extends SootClassMember<S>>
       extends AbstractBuilder<T> {
-    // region Fields
-
-    // endregion /Fields/
-
-    // region Constructor
 
     /**
      * Creates a new instance of the {@link SootMethod.SootMethodBuilder} class.
@@ -182,15 +175,5 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
     SootClassMemberBuilder(@Nonnull Class<T> buildableClass) {
       super(buildableClass);
     }
-
-    // endregion /Constructor/
-
-    // region Properties
-
-    // endregion /Properties/
-
-    // region Methods
-
-    // endregion /Methods/
   }
 }
