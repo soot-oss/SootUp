@@ -48,15 +48,6 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
   }
 
   @Nonnull
-  private String getOriginalStyleDeclaration() {
-    if (this.getModifiers().isEmpty()) {
-      return this.getSignature().getSubSignature().toString();
-    } else {
-      return Modifier.toString(this.getModifiers()) + ' ' + this.getSignature().getSubSignature();
-    }
-  }
-
-  @Nonnull
   @Override
   public FieldSubSignature getSubSignature() {
     return (FieldSubSignature) super.getSubSignature();
@@ -64,7 +55,11 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
 
   @Nonnull
   public String getDeclaration() {
-    return getOriginalStyleDeclaration();
+    if (this.getModifiers().isEmpty()) {
+      return this.getSignature().getSubSignature().toString();
+    } else {
+      return Modifier.toString(this.getModifiers()) + ' ' + this.getSignature().getSubSignature();
+    }
   }
 
   @Nonnull
@@ -124,20 +119,11 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
    */
   protected static class SootFieldBuilder extends SootClassMemberBuilder<FieldSignature, SootField>
       implements Builder.SignatureStep, Builder.ModifiersStep, Builder {
-    // region Fields
-
-    // endregion /Fields/
-
-    // region Constructor
 
     /** Creates a new instance of the {@link SootMethod.SootMethodBuilder} class. */
     SootFieldBuilder() {
       super(SootField.class);
     }
-
-    // endregion /Constructor/
-
-    // region Properties
 
     @Nullable private FieldSignature _signature;
 
@@ -187,16 +173,10 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
       return this;
     }
 
-    // endregion /Properties/
-
-    // region Methods
-
     @Override
     @Nonnull
     protected SootField make() {
       return new SootField(this.getSignature(), this.getModifiers());
     }
-
-    // endregion /Methods/
   }
 }
