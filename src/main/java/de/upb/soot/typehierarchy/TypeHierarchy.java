@@ -1,6 +1,7 @@
 package de.upb.soot.typehierarchy;
 
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.views.View;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,11 +16,16 @@ import javax.annotation.Nullable;
  */
 public interface TypeHierarchy {
 
+  static TypeHierarchy fromView(View view) {
+    return new ViewTypeHierarchy(view);
+  }
+
   /**
    * Returns all classes that implement the specified interface. This is transitive: If class <code>
    * A extends B</code> and <code>B implements interface</code>, then this method will return both A
    * and B as implementers of <code>interfaceType</code>.
    */
+  @Nonnull
   Set<JavaClassType> implementersOf(@Nonnull JavaClassType interfaceType);
 
   /**
@@ -27,12 +33,14 @@ public interface TypeHierarchy {
    * </code> and <code>B extends classType</code>, then this method will return both A and B as
    * extenders of <code>classType</code>.
    */
+  @Nonnull
   Set<JavaClassType> subclassesOf(@Nonnull JavaClassType classType);
 
   /**
    * Returns the interfaces implemented by <code>classType</code>. This includes interfaces
    * implemented by superclasses.
    */
+  @Nonnull
   Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType classType);
 
   /**
@@ -46,6 +54,7 @@ public interface TypeHierarchy {
    * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
    * will be the last entry in the list.
    */
+  @Nonnull
   default List<JavaClassType> superClassesOf(@Nonnull JavaClassType classType) {
     List<JavaClassType> superClasses = new ArrayList<>();
     JavaClassType currentSuperClass = superClassOf(classType);
