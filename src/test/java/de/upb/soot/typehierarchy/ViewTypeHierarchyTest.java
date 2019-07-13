@@ -9,6 +9,7 @@ import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.View;
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,7 +26,10 @@ public class ViewTypeHierarchyTest {
   public void setup() {
     String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
     assertTrue(new File(jarFile).exists());
-    String currentClassPath = System.getProperty("java.class.path");
+    String currentClassPath =
+        System.getProperty("java.class.path")
+            + File.pathSeparator
+            + ManagementFactory.getRuntimeMXBean().getBootClassPath();
     System.out.println(currentClassPath);
     String rtJarClassPath =
         Arrays.stream(currentClassPath.split(File.pathSeparator))
