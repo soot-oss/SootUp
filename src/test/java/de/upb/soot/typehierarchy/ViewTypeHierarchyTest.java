@@ -26,13 +26,15 @@ public class ViewTypeHierarchyTest {
     String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
     assertTrue(new File(jarFile).exists());
     String currentClassPath = System.getProperty("java.class.path");
-    String rtJarClassPth =
+    System.out.println(currentClassPath);
+    String rtJarClassPath =
         Arrays.stream(currentClassPath.split(File.pathSeparator))
             .filter(pathEntry -> pathEntry.endsWith(File.separator + "rt.jar"))
             .collect(Collectors.joining(File.pathSeparator));
+    System.out.println(rtJarClassPath);
     Project<JavaClassPathAnalysisInputLocation> p =
         new Project<>(
-            new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPth));
+            new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath));
     view = p.createOnDemandView();
   }
 

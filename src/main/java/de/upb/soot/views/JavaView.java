@@ -100,6 +100,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
           "dynamicinvoke",
           "strictfp");
 
+  // TODO Make entries GC-able?
   @Nonnull
   private final Map<Type, AbstractClass<? extends AbstractClassSource>> map = new HashMap<>();
 
