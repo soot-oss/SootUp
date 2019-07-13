@@ -19,8 +19,12 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GraphViewTypeHierarchy implements TypeHierarchy {
+
+  private static final Logger log = LoggerFactory.getLogger(GraphViewTypeHierarchy.class);
 
   private final Supplier<ScanResult> lazyScanResult = Suppliers.memoize(this::scanView);
 
@@ -84,13 +88,12 @@ public class GraphViewTypeHierarchy implements TypeHierarchy {
   }
 
   private ScanResult scanView() {
+    long startNanos = System.nanoTime();
     Map<JavaClassType, ScanResult.ClassNode> typeToClassNode = new HashMap<>();
     Map<JavaClassType, ScanResult.InterfaceNode> typeToInterfaceNode = new HashMap<>();
 
     Collection<AbstractClass<? extends AbstractClassSource>> classes = view.getClasses();
-    int i = 0;
     for (AbstractClass<? extends AbstractClassSource> aClass : classes) {
-      System.out.println("" + i++ + " / " + classes.size());
       if (!(aClass instanceof SootClass)) {
         continue;
       }
@@ -122,6 +125,8 @@ public class GraphViewTypeHierarchy implements TypeHierarchy {
                 });
       }
     }
+    double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
+    log.info("Type hierarchy scan took " + runtimeMs + " ms");
     return new ScanResult(typeToClassNode, typeToInterfaceNode);
   }
 

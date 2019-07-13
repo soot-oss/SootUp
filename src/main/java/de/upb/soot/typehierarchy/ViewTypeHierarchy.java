@@ -17,8 +17,12 @@ import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class ViewTypeHierarchy implements TypeHierarchy {
+
+  private static final Logger log = LoggerFactory.getLogger(ViewTypeHierarchy.class);
 
   private final Supplier<ScanResult> lazyScanResult = Suppliers.memoize(this::scanView);
   @Nonnull private final View view;
@@ -64,6 +68,7 @@ class ViewTypeHierarchy implements TypeHierarchy {
   }
 
   private ScanResult scanView() {
+    long startNanos = System.nanoTime();
     Map<JavaClassType, Set<JavaClassType>> interfaceToImplementers = new HashMap<>();
     Map<JavaClassType, Set<JavaClassType>> classToSubclasses = new HashMap<>();
 
@@ -101,6 +106,8 @@ class ViewTypeHierarchy implements TypeHierarchy {
       }
     }
 
+    double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
+    log.info("Type hierarchy scan took " + runtimeMs + " ms");
     return new ScanResult(interfaceToImplementers, classToSubclasses);
   }
 
