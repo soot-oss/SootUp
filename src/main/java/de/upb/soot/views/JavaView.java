@@ -29,7 +29,7 @@ import org.apache.commons.collections4.map.LRUMap;
  */
 public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
-  private static final int DEFAULT_CACHE_SIZE = 1000;
+  private static final int DEFAULT_CACHE_SIZE = 128;
 
   // region Fields
   /** Defines Java's reserved names. */
