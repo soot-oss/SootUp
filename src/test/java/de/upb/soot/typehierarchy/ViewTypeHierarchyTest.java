@@ -44,14 +44,10 @@ public class ViewTypeHierarchyTest {
 
   @Test
   public void implementersOf() {
-    TypeHierarchy typeHierarchy = new GraphViewTypeHierarchy(view);
+    TypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
     IdentifierFactory factory = view.getIdentifierFactory();
     JavaClassType iNamespace = factory.getClassType("INamespace", "de.upb.soot.namespaces");
-
-    view.getClasses(); // TODO Remove this, it's just to force resolving
-
     Set<JavaClassType> implementers = typeHierarchy.implementersOf(iNamespace);
-    Set<JavaClassType> implementers2 = new ViewTypeHierarchy(view).implementersOf(iNamespace);
 
     System.out.println(implementers);
   }

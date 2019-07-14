@@ -5,26 +5,28 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ResolveException;
+import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.ClassNode;
+import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.InterfaceNode;
+import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.Node;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.View;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class ViewTypeHierarchy implements TypeHierarchy {
+public class ViewTypeHierarchy implements TypeHierarchy {
 
   private static final Logger log = LoggerFactory.getLogger(ViewTypeHierarchy.class);
 
   private final Supplier<ScanResult> lazyScanResult = Suppliers.memoize(this::scanView);
+
   @Nonnull private final View view;
 
   ViewTypeHierarchy(@Nonnull View view) {
@@ -34,13 +36,23 @@ class ViewTypeHierarchy implements TypeHierarchy {
   @Nonnull
   @Override
   public Set<JavaClassType> implementersOf(@Nonnull JavaClassType interfaceType) {
-    return lazyScanResult.get().interfaceToImplementers.get(interfaceType);
+    ScanResult scanResult = lazyScanResult.get();
+    InterfaceNode interfaceNode = scanResult.typeToInterfaceNode.get(interfaceType);
+
+    Set<JavaClassType> implementers = new HashSet<>();
+    visitSubgraph(interfaceNode, false, subnode -> implementers.add(subnode.type));
+    return implementers;
   }
 
   @Nonnull
   @Override
   public Set<JavaClassType> subclassesOf(@Nonnull JavaClassType classType) {
-    return lazyScanResult.get().classToSubclasses.get(classType);
+    ScanResult scanResult = lazyScanResult.get();
+    ClassNode classNode = scanResult.typeToClassNode.get(classType);
+
+    Set<JavaClassType> subclasses = new HashSet<>();
+    visitSubgraph(classNode, false, subnode -> subclasses.add(subnode.type));
+    return subclasses;
   }
 
   @Nonnull
@@ -55,6 +67,66 @@ class ViewTypeHierarchy implements TypeHierarchy {
     return sootClassFor(classType).getSuperclass().orElse(null);
   }
 
+  private static void visitSubgraph(Node node, boolean includeSelf, Consumer<Node> visitor) {
+    if (includeSelf) {
+      visitor.accept(node);
+    }
+    if (node instanceof InterfaceNode) {
+      ((InterfaceNode) node)
+          .directImplementers.forEach(
+              directImplementer -> visitSubgraph(directImplementer, true, visitor));
+      ((InterfaceNode) node)
+          .extendingInterfaces.forEach(
+              extendingInterface -> visitSubgraph(extendingInterface, true, visitor));
+    } else if (node instanceof ClassNode) {
+      ((ClassNode) node)
+          .directSubclasses.forEach(directSubclass -> visitSubgraph(directSubclass, true, visitor));
+    } else {
+      throw new AssertionError("Unknown node type!");
+    }
+  }
+
+  private ScanResult scanView() {
+    long startNanos = System.nanoTime();
+    Map<JavaClassType, ScanResult.ClassNode> typeToClassNode = new HashMap<>();
+    Map<JavaClassType, ScanResult.InterfaceNode> typeToInterfaceNode = new HashMap<>();
+
+    view.getClasses()
+        .filter(aClass -> aClass instanceof SootClass)
+        .map(aClass -> (SootClass) aClass)
+        .forEach(
+            sootClass -> {
+              if (sootClass.isInterface()) {
+                InterfaceNode node =
+                    typeToInterfaceNode.computeIfAbsent(sootClass.getType(), InterfaceNode::new);
+                for (JavaClassType extendedInterface : sootClass.getInterfaces()) {
+                  InterfaceNode extendedInterfaceNode =
+                      typeToInterfaceNode.computeIfAbsent(extendedInterface, InterfaceNode::new);
+                  extendedInterfaceNode.extendingInterfaces.add(node);
+                }
+              } else {
+                ClassNode node =
+                    typeToClassNode.computeIfAbsent(sootClass.getType(), ClassNode::new);
+                for (JavaClassType implementedInterface : sootClass.getInterfaces()) {
+                  InterfaceNode implementedInterfaceNode =
+                      typeToInterfaceNode.computeIfAbsent(implementedInterface, InterfaceNode::new);
+                  implementedInterfaceNode.directImplementers.add(node);
+                }
+                sootClass
+                    .getSuperclass()
+                    .ifPresent(
+                        superClass -> {
+                          ClassNode superClassNode =
+                              typeToClassNode.computeIfAbsent(superClass, ClassNode::new);
+                          superClassNode.directSubclasses.add(node);
+                        });
+              }
+            });
+    double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
+    log.info("Type hierarchy scan took " + runtimeMs + " ms");
+    return new ScanResult(typeToClassNode, typeToInterfaceNode);
+  }
+
   @Nonnull
   private SootClass sootClassFor(@Nonnull JavaClassType classType) {
     AbstractClass<? extends AbstractClassSource> aClass =
@@ -67,70 +139,54 @@ class ViewTypeHierarchy implements TypeHierarchy {
     return (SootClass) aClass;
   }
 
-  private ScanResult scanView() {
-    long startNanos = System.nanoTime();
-    Map<JavaClassType, Set<JavaClassType>> interfaceToImplementers = new HashMap<>();
-    Map<JavaClassType, Set<JavaClassType>> classToSubclasses = new HashMap<>();
+  static class ScanResult {
+    final Map<JavaClassType, ClassNode> typeToClassNode;
+    final Map<JavaClassType, InterfaceNode> typeToInterfaceNode;
 
-    for (AbstractClass<? extends AbstractClassSource> aClass : view.getClasses()) {
-      if (!(aClass instanceof SootClass)) {
-        continue;
-      }
+    ScanResult(
+        Map<JavaClassType, ClassNode> typeToClassNode,
+        Map<JavaClassType, InterfaceNode> typeToInterfaceNode) {
+      this.typeToClassNode = typeToClassNode;
+      this.typeToInterfaceNode = typeToInterfaceNode;
+    }
 
-      SootClass sootClass = (SootClass) aClass;
+    static class Node {
+      final JavaClassType type;
 
-      for (JavaClassType superClass : selfAndSuperClassesOf(sootClass)) {
-        if (!superClass.equals(sootClass.getType())) {
-          // This is an actual superClass of sootClass, so add sootClass as subclass of superClass
-          classToSubclasses
-              .computeIfAbsent(superClass, key -> new HashSet<>())
-              .add(sootClass.getType());
-        }
-
-        // Iterate over interfaces implemented directly
-        for (JavaClassType implementedInterface : sootClassFor(superClass).getInterfaces()) {
-          // Add sootClass as implementer of this interface
-          interfaceToImplementers
-              .computeIfAbsent(implementedInterface, key -> new HashSet<>())
-              .add(sootClass.getType());
-
-          // Interfaces may extend other interfaces, so we iterate over those as well
-          Set<JavaClassType> extendedInterfacesOfImplementedInterfaces =
-              sootClassFor(implementedInterface).getInterfaces();
-          for (JavaClassType extendedInterface : extendedInterfacesOfImplementedInterfaces) {
-            interfaceToImplementers
-                .computeIfAbsent(extendedInterface, key -> new HashSet<>())
-                .add(sootClass.getType());
-          }
-        }
+      Node(JavaClassType type) {
+        this.type = type;
       }
     }
 
-    double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
-    log.info("Type hierarchy scan took " + runtimeMs + " ms");
-    return new ScanResult(interfaceToImplementers, classToSubclasses);
-  }
+    static class InterfaceNode extends Node {
+      final Set<ClassNode> directImplementers;
+      final Set<InterfaceNode> extendingInterfaces;
 
-  private List<JavaClassType> selfAndSuperClassesOf(SootClass sootClass) {
-    JavaClassType superClass = sootClass.getSuperclass().orElse(null);
-    List<JavaClassType> superClasses = new ArrayList<>();
-    superClasses.add(sootClass.getType());
-    while (superClass != null) {
-      superClasses.add(superClass);
-      superClass = sootClassFor(superClass).getSuperclass().orElse(null);
+      InterfaceNode(
+          JavaClassType type,
+          Set<ClassNode> directImplementers,
+          Set<InterfaceNode> extendingInterfaces) {
+        super(type);
+        this.directImplementers = directImplementers;
+        this.extendingInterfaces = extendingInterfaces;
+      }
+
+      InterfaceNode(JavaClassType type) {
+        this(type, new HashSet<>(), new HashSet<>());
+      }
     }
-    return superClasses;
-  }
 
-  private static class ScanResult {
-    final Map<JavaClassType, Set<JavaClassType>> interfaceToImplementers;
-    final Map<JavaClassType, Set<JavaClassType>> classToSubclasses;
+    static class ClassNode extends Node {
+      final Set<ClassNode> directSubclasses;
 
-    private ScanResult(
-        Map<JavaClassType, Set<JavaClassType>> interfaceToImplementers,
-        Map<JavaClassType, Set<JavaClassType>> classToSubclasses) {
-      this.interfaceToImplementers = Collections.unmodifiableMap(interfaceToImplementers);
-      this.classToSubclasses = Collections.unmodifiableMap(classToSubclasses);
+      ClassNode(JavaClassType type, Set<ClassNode> directSubclasses) {
+        super(type);
+        this.directSubclasses = directSubclasses;
+      }
+
+      ClassNode(JavaClassType type) {
+        this(type, new HashSet<>());
+      }
     }
   }
 }
