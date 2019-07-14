@@ -13,15 +13,13 @@ import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.ImmutableUtils;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.apache.commons.collections4.map.LRUMap;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
@@ -30,6 +28,8 @@ import javax.annotation.Nullable;
  * @author Jan Martin Persch
  */
 public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
+
+  private static final int DEFAULT_CACHE_SIZE = 1000;
 
   // region Fields
   /** Defines Java's reserved names. */
@@ -100,8 +100,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
           "dynamicinvoke",
           "strictfp");
 
-  @Nonnull
-  private final Map<Type, AbstractClass<? extends AbstractClassSource>> map = new HashMap<>();
+  @Nonnull private final Map<Type, AbstractClass<? extends AbstractClassSource>> map;
 
   // endregion /Fields/
 
@@ -109,45 +108,30 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
   /** Creates a new instance of the {@link JavaView} class. */
   public JavaView(@Nonnull Project<S> project) {
+    this(project, DEFAULT_CACHE_SIZE);
+  }
+
+  /**
+   * Creates a new instance of the {@link JavaView} class.
+   *
+   * @param cacheSize Determines how many parsed classes should be retained in a local cache
+   */
+  public JavaView(@Nonnull Project<S> project, int cacheSize) {
     super(project);
+    map = new LRUMap<>(cacheSize);
   }
 
   // endregion /Constructor/
-
-  // region Properties
-
-  private volatile boolean _isFullyResolved;
-
-  /**
-   * Gets a value, indicating whether all classes have been loaded.
-   *
-   * @return The value to get.
-   */
-  boolean isFullyResolved() {
-    return this._isFullyResolved;
-  }
-
-  /** Sets a value, indicating that all classes have been loaded. */
-  private void markAsFullyResolved() {
-    this._isFullyResolved = true;
-  }
-
-  // endregion /Properties/
 
   // region Methods
 
   @Override
   @Nonnull
-  public synchronized Collection<AbstractClass<? extends AbstractClassSource>> getClasses() {
-    this.resolveAll();
-
-    return Collections.unmodifiableCollection(this.map.values());
-  }
-
-  @Override
-  @Nonnull
-  public synchronized Stream<AbstractClass<? extends AbstractClassSource>> classes() {
-    return this.getClasses().stream();
+  public synchronized Stream<AbstractClass<? extends AbstractClassSource>> getClasses() {
+    return getProject().getInputLocation().getClassSources(getIdentifierFactory()).stream()
+        .map(classSource -> getClass(classSource.getClassType()))
+        .filter(Optional::isPresent)
+        .map(Optional::get);
   }
 
   @Override
@@ -157,12 +141,11 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
     AbstractClass<? extends AbstractClassSource> sootClass = this.map.get(type);
 
     if (sootClass != null) return Optional.of(sootClass);
-    else if (this.isFullyResolved()) return Optional.empty();
     else return Optional.ofNullable(this.__resolveSootClass(type));
   }
 
   @Nullable
-  private AbstractClass<? extends AbstractClassSource> __resolveSootClass(
+  private synchronized AbstractClass<? extends AbstractClassSource> __resolveSootClass(
       @Nonnull JavaClassType signature) {
     AbstractClass<? extends AbstractClassSource> theClass =
         this.getProject()
@@ -184,19 +167,6 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
       map.putIfAbsent(theClass.getType(), theClass);
     }
     return theClass;
-  }
-
-  public synchronized void resolveAll() {
-    if (this.isFullyResolved()) {
-      return;
-    }
-
-    this.markAsFullyResolved();
-
-    for (AbstractClassSource cs :
-        this.getProject().getInputLocation().getClassSources(getIdentifierFactory())) {
-      if (!this.map.containsKey(cs.getClassType())) this.__resolveSootClass(cs.getClassType());
-    }
   }
 
   private static final class SplitPatternHolder {
