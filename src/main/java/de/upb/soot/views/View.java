@@ -9,7 +9,6 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.types.JavaClassType;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -24,15 +23,7 @@ public interface View {
 
   /** Return all classes in the view. */
   @Nonnull
-  Collection<AbstractClass<? extends AbstractClassSource>> getClasses();
-
-  /**
-   * Returns a stream of classes in the view.
-   *
-   * @return A stream of classes
-   */
-  @Nonnull
-  Stream<AbstractClass<? extends AbstractClassSource>> classes();
+  Stream<AbstractClass<? extends AbstractClassSource>> getClasses();
 
   /**
    * Return a class with given signature.

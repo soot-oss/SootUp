@@ -1,7 +1,5 @@
 package de.upb.soot.buildactor;
 
-import static de.upb.soot.util.StreamUtils.peek;
-
 import de.upb.soot.Project;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.views.JavaView;
@@ -23,17 +21,14 @@ public class ViewBuilder<S extends AnalysisInputLocation> {
   }
 
   @Nonnull
-  private JavaView<? extends AnalysisInputLocation> buildJavaView() {
-    return new JavaView<>(this.project);
-  }
-
-  @Nonnull
   public View buildComplete() {
-    return peek(this.buildJavaView(), JavaView::resolveAll);
+    JavaView<S> javaView = new JavaView<>(project, Integer.MAX_VALUE);
+    javaView.getClasses().forEach(abstractClass -> { /* Ignore, only force full resolve */ });
+    return javaView;
   }
 
   @Nonnull
   public View buildOnDemand() {
-    return this.buildJavaView();
+    return new JavaView<>(this.project);
   }
 }
