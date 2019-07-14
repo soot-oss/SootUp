@@ -143,7 +143,7 @@ public class ViewTypeHierarchy implements TypeHierarchy {
     final Map<JavaClassType, ClassNode> typeToClassNode;
     final Map<JavaClassType, InterfaceNode> typeToInterfaceNode;
 
-    ScanResult(
+    private ScanResult(
         Map<JavaClassType, ClassNode> typeToClassNode,
         Map<JavaClassType, InterfaceNode> typeToInterfaceNode) {
       this.typeToClassNode = typeToClassNode;
@@ -162,7 +162,7 @@ public class ViewTypeHierarchy implements TypeHierarchy {
       final Set<ClassNode> directImplementers;
       final Set<InterfaceNode> extendingInterfaces;
 
-      InterfaceNode(
+      private InterfaceNode(
           JavaClassType type,
           Set<ClassNode> directImplementers,
           Set<InterfaceNode> extendingInterfaces) {
@@ -171,7 +171,7 @@ public class ViewTypeHierarchy implements TypeHierarchy {
         this.extendingInterfaces = extendingInterfaces;
       }
 
-      InterfaceNode(JavaClassType type) {
+      private InterfaceNode(JavaClassType type) {
         this(type, new HashSet<>(), new HashSet<>());
       }
     }
@@ -179,12 +179,12 @@ public class ViewTypeHierarchy implements TypeHierarchy {
     static class ClassNode extends Node {
       final Set<ClassNode> directSubclasses;
 
-      ClassNode(JavaClassType type, Set<ClassNode> directSubclasses) {
+      private ClassNode(JavaClassType type, Set<ClassNode> directSubclasses) {
         super(type);
         this.directSubclasses = directSubclasses;
       }
 
-      ClassNode(JavaClassType type) {
+      private ClassNode(JavaClassType type) {
         this(type, new HashSet<>());
       }
     }
