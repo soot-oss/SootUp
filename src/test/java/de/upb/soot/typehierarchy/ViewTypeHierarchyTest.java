@@ -34,6 +34,7 @@ public class ViewTypeHierarchyTest {
     String rtJarClassPath =
         Arrays.stream(currentClassPath.split(File.pathSeparator))
             .filter(pathEntry -> pathEntry.endsWith(File.separator + "rt.jar"))
+            .distinct()
             .collect(Collectors.joining(File.pathSeparator));
     System.out.println(rtJarClassPath);
     Project<JavaClassPathAnalysisInputLocation> p =
