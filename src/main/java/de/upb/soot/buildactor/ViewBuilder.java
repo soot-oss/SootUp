@@ -23,7 +23,12 @@ public class ViewBuilder<S extends AnalysisInputLocation> {
   @Nonnull
   public View buildComplete() {
     JavaView<S> javaView = new JavaView<>(project, Integer.MAX_VALUE);
-    javaView.getClasses().forEach(abstractClass -> { /* Ignore, only force full resolve */ });
+    javaView
+        .getClasses()
+        .forEach(
+            abstractClass -> {
+              /* Ignore, only force full resolve */
+            });
     return javaView;
   }
 
