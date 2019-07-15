@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ViewTypeHierarchy implements TypeHierarchy {
+class ViewTypeHierarchy implements TypeHierarchy {
 
   private static final Logger log = LoggerFactory.getLogger(ViewTypeHierarchy.class);
 
