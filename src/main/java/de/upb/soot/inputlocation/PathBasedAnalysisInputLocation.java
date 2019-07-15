@@ -1,5 +1,9 @@
 package de.upb.soot.inputlocation;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalNotification;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
@@ -11,7 +15,10 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
@@ -127,6 +134,31 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
   private static final class ArchiveBasedAnalysisInputLocation
       extends PathBasedAnalysisInputLocation {
 
+    // We cache the FileSystem instances as their creation is expensive.
+    // The Guava Cache is thread-safe (see JavaDoc of LoadingCache) hence this
+    // cache can be safely shared in a static variable.
+    private static final LoadingCache<Path, FileSystem> fileSystemCache =
+        CacheBuilder.newBuilder()
+            .removalListener(
+                (RemovalNotification<Path, FileSystem> removalNotification) -> {
+                  try {
+                    removalNotification.getValue().close();
+                  } catch (IOException e) {
+                    throw new RuntimeException(
+                        "Could not close file system of " + removalNotification.getValue(), e);
+                  }
+                })
+            .expireAfterAccess(1, TimeUnit.SECONDS)
+            .build(
+                CacheLoader.from(
+                    path -> {
+                      try {
+                        return FileSystems.newFileSystem(Objects.requireNonNull(path), null);
+                      } catch (IOException e) {
+                        throw new RuntimeException("Could not open file system of " + path, e);
+                      }
+                    }));
+
     private ArchiveBasedAnalysisInputLocation(@Nonnull Path path) {
       super(path);
     }
@@ -134,11 +166,12 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
     @Override
     public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
         @Nonnull JavaClassType signature) {
-      try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
+      try {
+        FileSystem fs = fileSystemCache.get(path);
         final Path archiveRoot = fs.getPath("/");
         return getClassSourceInternal(signature, archiveRoot);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
+      } catch (ExecutionException e) {
+        throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
       }
     }
 
