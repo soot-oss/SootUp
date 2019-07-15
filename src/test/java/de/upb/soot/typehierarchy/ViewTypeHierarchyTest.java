@@ -1,5 +1,7 @@
 package de.upb.soot.typehierarchy;
 
+import static de.upb.soot.util.ImmutableUtils.immutableSet;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
@@ -30,13 +32,11 @@ public class ViewTypeHierarchyTest {
         System.getProperty("java.class.path")
             + File.pathSeparator
             + ManagementFactory.getRuntimeMXBean().getBootClassPath();
-    System.out.println(currentClassPath);
     String rtJarClassPath =
         Arrays.stream(currentClassPath.split(File.pathSeparator))
             .filter(pathEntry -> pathEntry.endsWith(File.separator + "rt.jar"))
             .distinct()
             .collect(Collectors.joining(File.pathSeparator));
-    System.out.println(rtJarClassPath);
     Project<JavaClassPathAnalysisInputLocation> p =
         new Project<>(
             new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath));
@@ -49,8 +49,15 @@ public class ViewTypeHierarchyTest {
     IdentifierFactory factory = view.getIdentifierFactory();
     JavaClassType iNamespace = factory.getClassType("INamespace", "de.upb.soot.namespaces");
     Set<JavaClassType> implementers = typeHierarchy.implementersOf(iNamespace);
-
-    System.out.println(implementers);
+    assertEquals(
+        immutableSet(
+            factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace$ArchiveBasedNamespace"),
+            factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace"),
+            factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"),
+            factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace"),
+            factory.getClassType(
+                "de.upb.soot.namespaces.PathBasedNamespace$DirectoryBasedNamespace")),
+        implementers);
   }
 
   @Test
