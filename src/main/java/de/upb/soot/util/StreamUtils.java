@@ -77,5 +77,4 @@ public class StreamUtils {
   public static <T> T valueOrElse(@Nullable T value, @Nonnull T other) {
     return value != null ? value : other;
   }
-
 }
