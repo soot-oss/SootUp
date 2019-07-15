@@ -61,8 +61,16 @@ class ViewTypeHierarchy implements TypeHierarchy {
   @Override
   public Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType classType) {
     return Stream.concat(Stream.of(classType), superClassesOf(classType).stream())
-        .flatMap(type -> sootClassFor(type).getInterfaces().stream())
+        .map(type -> sootClassFor(type).getInterfaces().stream())
+        .map(directlyImplemented -> directlyImplemented.map(this::sootClassFor))
+        .flatMap(
+            directlyImplemented -> directlyImplemented.flatMap(this::selfAndImplementedInterfaces))
         .collect(Collectors.toSet());
+  }
+
+  @Nonnull
+  private Stream<JavaClassType> selfAndImplementedInterfaces(SootClass iface) {
+    return Stream.concat(Stream.of(iface.getType()), iface.getInterfaces().stream());
   }
 
   @Nullable

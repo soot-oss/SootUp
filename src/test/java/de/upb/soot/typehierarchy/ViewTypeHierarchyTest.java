@@ -89,6 +89,16 @@ public class ViewTypeHierarchyTest {
     assertEquals(
         immutableSet(factory.getClassType("de.upb.soot.namespaces.INamespace")),
         implementedInterfaces);
+
+    // Test with an interface that extends another one, i.e. List extends Collection
+    JavaClassType arrayList = factory.getClassType("ArrayList", "java.util");
+    JavaClassType collection = factory.getClassType("Collection", "java.util");
+    JavaClassType list = factory.getClassType("List", "java.util");
+    Set<JavaClassType> implementedInterfacesOfArrayList =
+        typeHierarchy.implementedInterfacesOf(arrayList);
+    assertTrue(
+        "ArrayList implements Collection", implementedInterfacesOfArrayList.contains(collection));
+    assertTrue("ArrayList implements List", implementedInterfacesOfArrayList.contains(list));
   }
 
   @Test
