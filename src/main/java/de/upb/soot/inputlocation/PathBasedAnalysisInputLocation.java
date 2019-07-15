@@ -145,7 +145,7 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
                     removalNotification.getValue().close();
                   } catch (IOException e) {
                     throw new RuntimeException(
-                        "Could not close file system of " + removalNotification.getValue(), e);
+                        "Could not close file system of " + removalNotification.getKey(), e);
                   }
                 })
             .expireAfterAccess(1, TimeUnit.SECONDS)
