@@ -133,27 +133,23 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
   @Override
   @Nonnull
-  public Optional<AbstractClass<? extends AbstractClassSource>> getClass(
+  public synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
       @Nonnull JavaClassType type) {
-    synchronized (this) {
-      AbstractClass<? extends AbstractClassSource> sootClass = this.map.get(type);
-      if (sootClass != null) {
-        return Optional.of(sootClass);
-      }
+    AbstractClass<? extends AbstractClassSource> sootClass = this.map.get(type);
+    if (sootClass != null) {
+      return Optional.of(sootClass);
     }
 
     return getProject().getInputLocation().getClassSource(type).flatMap(this::getClass);
   }
 
   @Nonnull
-  private Optional<AbstractClass<? extends AbstractClassSource>> getClass(
+  private synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
       AbstractClassSource classSource) {
-    synchronized (this) {
-      AbstractClass<? extends AbstractClassSource> sootClass =
-          this.map.get(classSource.getClassType());
-      if (sootClass != null) {
-        return Optional.of(sootClass);
-      }
+    AbstractClass<? extends AbstractClassSource> sootClass =
+        this.map.get(classSource.getClassType());
+    if (sootClass != null) {
+      return Optional.of(sootClass);
     }
 
     AbstractClass<? extends AbstractClassSource> theClass;
@@ -166,10 +162,8 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
       throw new ResolveException("AbstractClassSource has unknown type " + classSource);
     }
 
-    synchronized (this) {
-      map.putIfAbsent(theClass.getType(), theClass);
-      return Optional.of(theClass);
-    }
+    map.putIfAbsent(theClass.getType(), theClass);
+    return Optional.of(theClass);
   }
 
   private static final class SplitPatternHolder {
