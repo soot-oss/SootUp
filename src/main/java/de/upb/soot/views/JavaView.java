@@ -124,7 +124,9 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   public synchronized Collection<AbstractClass<? extends AbstractClassSource>> getClasses() {
     if (!isFullyResolved) {
       // Iterating over the stream completely fills the map
-      getClassesStream().forEach(abstractClass -> {});
+      getProject().getInputLocation().getClassSources(getIdentifierFactory()).stream()
+          .map(this::getClass)
+          .forEach(abstractClass -> {});
       isFullyResolved = true;
     }
 
@@ -134,16 +136,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   @Override
   @Nonnull
   public Stream<AbstractClass<? extends AbstractClassSource>> getClassesStream() {
-    synchronized (this) {
-      if (isFullyResolved) {
-        return map.values().stream();
-      }
-    }
-
-    return getProject().getInputLocation().getClassSources(getIdentifierFactory()).stream()
-        .map(this::getClass)
-        .filter(Optional::isPresent)
-        .map(Optional::get);
+    return getClasses().stream();
   }
 
   @Override

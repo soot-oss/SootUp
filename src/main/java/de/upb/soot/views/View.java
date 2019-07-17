@@ -22,13 +22,10 @@ import javax.annotation.Nonnull;
  */
 public interface View {
 
-  /** Return all classes in the view. This will cache all resolved classes in memory. */
+  /** Return all classes in the view. */
   Collection<AbstractClass<? extends AbstractClassSource>> getClasses();
 
-  /**
-   * Return all classes in the view. In contrast to {@link #getClasses()}, this method is not
-   * guaranteed to cache all resolved classes and <i>may</i> perform I/O on each invocation.
-   */
+  /** Return all classes in the view. */
   @Nonnull
   Stream<AbstractClass<? extends AbstractClassSource>> getClassesStream();
 
