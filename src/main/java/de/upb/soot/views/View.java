@@ -9,6 +9,7 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.types.JavaClassType;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -21,9 +22,15 @@ import javax.annotation.Nonnull;
  */
 public interface View {
 
-  /** Return all classes in the view. */
+  /** Return all classes in the view. This will cache all resolved classes in memory. */
+  Collection<AbstractClass<? extends AbstractClassSource>> getClasses();
+
+  /**
+   * Return all classes in the view. In contrast to {@link #getClasses()}, this method is not
+   * guaranteed to cache all resolved classes and <i>may</i> perform I/O on each invocation.
+   */
   @Nonnull
-  Stream<AbstractClass<? extends AbstractClassSource>> getClasses();
+  Stream<AbstractClass<? extends AbstractClassSource>> getClassesStream();
 
   /**
    * Return a class with given signature.

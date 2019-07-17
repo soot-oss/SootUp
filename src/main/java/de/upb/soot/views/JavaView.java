@@ -14,12 +14,14 @@ import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.ImmutableUtils;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import org.apache.commons.collections4.map.LRUMap;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
@@ -100,7 +102,10 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
           "dynamicinvoke",
           "strictfp");
 
-  @Nonnull private final Map<Type, AbstractClass<? extends AbstractClassSource>> map;
+  @Nonnull
+  private final Map<Type, AbstractClass<? extends AbstractClassSource>> map = new HashMap<>();
+
+  private volatile boolean isFullyResolved = false;
 
   // endregion /Fields/
 
@@ -108,17 +113,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
   /** Creates a new instance of the {@link JavaView} class. */
   public JavaView(@Nonnull Project<S> project) {
-    this(project, DEFAULT_CACHE_SIZE);
-  }
-
-  /**
-   * Creates a new instance of the {@link JavaView} class.
-   *
-   * @param cacheSize Determines how many parsed classes should be retained in a local cache
-   */
-  public JavaView(@Nonnull Project<S> project, int cacheSize) {
     super(project);
-    map = new LRUMap<>(cacheSize);
   }
 
   // endregion /Constructor/
@@ -126,8 +121,25 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   // region Methods
 
   @Override
+  public synchronized Collection<AbstractClass<? extends AbstractClassSource>> getClasses() {
+    if (!isFullyResolved) {
+      // Iterating over the stream completely fills the map
+      getClassesStream().forEach(abstractClass -> {});
+      isFullyResolved = true;
+    }
+
+    return Collections.unmodifiableCollection(map.values());
+  }
+
+  @Override
   @Nonnull
-  public synchronized Stream<AbstractClass<? extends AbstractClassSource>> getClasses() {
+  public Stream<AbstractClass<? extends AbstractClassSource>> getClassesStream() {
+    synchronized (this) {
+      if (isFullyResolved) {
+        return map.values().stream();
+      }
+    }
+
     return getProject().getInputLocation().getClassSources(getIdentifierFactory()).stream()
         .map(this::getClass)
         .filter(Optional::isPresent)
@@ -136,11 +148,13 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
   @Override
   @Nonnull
-  public synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
+  public Optional<AbstractClass<? extends AbstractClassSource>> getClass(
       @Nonnull JavaClassType type) {
-    AbstractClass<? extends AbstractClassSource> sootClass = this.map.get(type);
-    if (sootClass != null) {
-      return Optional.of(sootClass);
+    synchronized (this) {
+      AbstractClass<? extends AbstractClassSource> sootClass = this.map.get(type);
+      if (sootClass != null) {
+        return Optional.of(sootClass);
+      }
     }
 
     return getProject().getInputLocation().getClassSource(type).flatMap(this::getClass);
@@ -149,10 +163,12 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   @Nonnull
   private Optional<AbstractClass<? extends AbstractClassSource>> getClass(
       AbstractClassSource classSource) {
-    AbstractClass<? extends AbstractClassSource> sootClass =
-        this.map.get(classSource.getClassType());
-    if (sootClass != null) {
-      return Optional.of(sootClass);
+    synchronized (this) {
+      AbstractClass<? extends AbstractClassSource> sootClass =
+          this.map.get(classSource.getClassType());
+      if (sootClass != null) {
+        return Optional.of(sootClass);
+      }
     }
 
     AbstractClass<? extends AbstractClassSource> theClass;
@@ -164,8 +180,11 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
     } else {
       throw new ResolveException("AbstractClassSource has unknown type " + classSource);
     }
-    map.putIfAbsent(theClass.getType(), theClass);
-    return Optional.of(theClass);
+
+    synchronized (this) {
+      map.putIfAbsent(theClass.getType(), theClass);
+      return Optional.of(theClass);
+    }
   }
 
   private static final class SplitPatternHolder {
