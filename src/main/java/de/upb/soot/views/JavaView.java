@@ -9,6 +9,7 @@ import de.upb.soot.core.SourceType;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ModuleClassSource;
+import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
@@ -18,7 +19,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.apache.commons.collections4.map.LRUMap;
 
 /**
@@ -129,7 +129,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   @Nonnull
   public synchronized Stream<AbstractClass<? extends AbstractClassSource>> getClasses() {
     return getProject().getInputLocation().getClassSources(getIdentifierFactory()).stream()
-        .map(classSource -> getClass(classSource.getClassType()))
+        .map(this::getClass)
         .filter(Optional::isPresent)
         .map(Optional::get);
   }
@@ -139,34 +139,33 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   public synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
       @Nonnull JavaClassType type) {
     AbstractClass<? extends AbstractClassSource> sootClass = this.map.get(type);
+    if (sootClass != null) {
+      return Optional.of(sootClass);
+    }
 
-    if (sootClass != null) return Optional.of(sootClass);
-    else return Optional.ofNullable(this.__resolveSootClass(type));
+    return getProject().getInputLocation().getClassSource(type).flatMap(this::getClass);
   }
 
-  @Nullable
-  private synchronized AbstractClass<? extends AbstractClassSource> __resolveSootClass(
-      @Nonnull JavaClassType signature) {
-    AbstractClass<? extends AbstractClassSource> theClass =
-        this.getProject()
-            .getInputLocation()
-            .getClassSource(signature)
-            .map(
-                it -> {
-                  // TODO Don't use a fixed SourceType here.
-                  if (it instanceof ClassSource) {
-                    return new SootClass((ClassSource) it, SourceType.Application);
-
-                  } else if (it instanceof ModuleClassSource) {
-                    return new SootModuleInfo((ModuleClassSource) it, false);
-                  }
-                  return null;
-                })
-            .orElse(null);
-    if (theClass != null) {
-      map.putIfAbsent(theClass.getType(), theClass);
+  @Nonnull
+  private Optional<AbstractClass<? extends AbstractClassSource>> getClass(
+      AbstractClassSource classSource) {
+    AbstractClass<? extends AbstractClassSource> sootClass =
+        this.map.get(classSource.getClassType());
+    if (sootClass != null) {
+      return Optional.of(sootClass);
     }
-    return theClass;
+
+    AbstractClass<? extends AbstractClassSource> theClass;
+    if (classSource instanceof ClassSource) {
+      // TODO Don't use a fixed SourceType here.
+      theClass = new SootClass((ClassSource) classSource, SourceType.Application);
+    } else if (classSource instanceof ModuleClassSource) {
+      theClass = new SootModuleInfo((ModuleClassSource) classSource, false);
+    } else {
+      throw new ResolveException("AbstractClassSource has unknown type " + classSource);
+    }
+    map.putIfAbsent(theClass.getType(), theClass);
+    return Optional.of(theClass);
   }
 
   private static final class SplitPatternHolder {
