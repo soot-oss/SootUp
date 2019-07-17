@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 public interface View {
 
   /** Return all classes in the view. */
+  @Nonnull
   Collection<AbstractClass<? extends AbstractClassSource>> getClasses();
 
   /** Return all classes in the view. */

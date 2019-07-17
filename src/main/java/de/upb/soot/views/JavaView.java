@@ -118,6 +118,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   // region Methods
 
   @Override
+  @Nonnull
   public synchronized Collection<AbstractClass<? extends AbstractClassSource>> getClasses() {
     if (!isFullyResolved) {
       // Iterating over the stream completely fills the map
