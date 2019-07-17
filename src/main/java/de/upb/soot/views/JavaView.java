@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -131,12 +130,6 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
     }
 
     return Collections.unmodifiableCollection(map.values());
-  }
-
-  @Override
-  @Nonnull
-  public Stream<AbstractClass<? extends AbstractClassSource>> getClassesStream() {
-    return getClasses().stream();
   }
 
   @Override

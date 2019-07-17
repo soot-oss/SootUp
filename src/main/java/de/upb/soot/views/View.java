@@ -27,7 +27,9 @@ public interface View {
 
   /** Return all classes in the view. */
   @Nonnull
-  Stream<AbstractClass<? extends AbstractClassSource>> getClassesStream();
+  default Stream<AbstractClass<? extends AbstractClassSource>> getClassesStream() {
+    return getClasses().stream();
+  }
 
   /**
    * Return a class with given signature.
