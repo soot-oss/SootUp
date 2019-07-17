@@ -14,8 +14,8 @@ import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.ImmutableUtils;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -121,14 +121,16 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   @Nonnull
   public synchronized Collection<AbstractClass<? extends AbstractClassSource>> getClasses() {
     if (!isFullyResolved) {
-      // Iterating over the stream completely fills the map
-      getProject().getInputLocation().getClassSources(getIdentifierFactory()).stream()
-          .map(this::getClass)
-          .forEach(abstractClass -> {});
+      // Calling getClass fills the map
+      getProject()
+          .getInputLocation()
+          .getClassSources(getIdentifierFactory())
+          .forEach(this::getClass);
       isFullyResolved = true;
     }
 
-    return Collections.unmodifiableCollection(map.values());
+    // The map may be in concurrent use, so we must return a copy
+    return new ArrayList<>(map.values());
   }
 
   @Override
