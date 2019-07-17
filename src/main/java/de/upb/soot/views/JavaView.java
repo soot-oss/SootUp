@@ -120,14 +120,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   @Override
   @Nonnull
   public synchronized Collection<AbstractClass<? extends AbstractClassSource>> getClasses() {
-    if (!isFullyResolved) {
-      // Calling getClass fills the map
-      getProject()
-          .getInputLocation()
-          .getClassSources(getIdentifierFactory())
-          .forEach(this::getClass);
-      isFullyResolved = true;
-    }
+    this.resolveAll();
 
     // The map may be in concurrent use, so we must return a copy
     return new ArrayList<>(map.values());
@@ -166,6 +159,17 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
     map.putIfAbsent(theClass.getType(), theClass);
     return Optional.of(theClass);
+  }
+
+  private synchronized void resolveAll() {
+    if (!isFullyResolved) {
+      // Calling getClass fills the map
+      getProject()
+          .getInputLocation()
+          .getClassSources(getIdentifierFactory())
+          .forEach(this::getClass);
+      isFullyResolved = true;
+    }
   }
 
   private static final class SplitPatternHolder {
