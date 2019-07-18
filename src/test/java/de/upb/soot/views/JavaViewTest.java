@@ -90,8 +90,7 @@ public class JavaViewTest {
 
   @Test
   public void testResolveAll() {
-    Collection<AbstractClass<? extends AbstractClassSource>> classes =
-        this.view.getClasses().collect(Collectors.toList());
+    Collection<AbstractClass<? extends AbstractClassSource>> classes = this.view.getClasses();
 
     assertEquals(classes.size(), this.signatures.size());
 

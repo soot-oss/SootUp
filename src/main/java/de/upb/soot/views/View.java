@@ -9,6 +9,7 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.types.JavaClassType;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -23,7 +24,13 @@ public interface View {
 
   /** Return all classes in the view. */
   @Nonnull
-  Stream<AbstractClass<? extends AbstractClassSource>> getClasses();
+  Collection<AbstractClass<? extends AbstractClassSource>> getClasses();
+
+  /** Return all classes in the view. */
+  @Nonnull
+  default Stream<AbstractClass<? extends AbstractClassSource>> getClassesStream() {
+    return getClasses().stream();
+  }
 
   /**
    * Return a class with given signature.
