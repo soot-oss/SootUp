@@ -102,7 +102,7 @@ class ViewTypeHierarchy implements TypeHierarchy {
     Map<JavaClassType, ScanResult.ClassNode> typeToClassNode = new HashMap<>();
     Map<JavaClassType, ScanResult.InterfaceNode> typeToInterfaceNode = new HashMap<>();
 
-    view.getClasses()
+    view.getClassesStream()
         .filter(aClass -> aClass instanceof SootClass)
         .map(aClass -> (SootClass) aClass)
         .forEach(
