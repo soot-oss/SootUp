@@ -251,15 +251,15 @@ public class SootClass extends AbstractClass<ClassSource> {
    * superclass? False implies that this is the java.lang.Object class. Note that interfaces are
    * subclasses of the java.lang.Object class.
    */
-  public boolean hasSuperclass() {
+  public boolean hasSuperClass() {
     return lazySuperclass.get().isPresent();
   }
 
   /**
    * WARNING: interfaces are subclasses of the java.lang.Object class! Returns the superclass of
-   * this class. (see hasSuperclass())
+   * this class. (see hasSuperClass())
    */
-  public Optional<JavaClassType> getSuperclass() {
+  public Optional<JavaClassType> getSuperClass() {
     return lazySuperclass.get();
   }
 

@@ -124,7 +124,7 @@ public class Printer {
 
     // Print extension
     {
-      Optional<JavaClassType> superclassSignature = cl.getSuperclass();
+      Optional<JavaClassType> superclassSignature = cl.getSuperClass();
 
       superclassSignature.ifPresent(
           javaClassSignature -> out.print(" extends " + javaClassSignature));
