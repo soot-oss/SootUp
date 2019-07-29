@@ -9,19 +9,18 @@ import de.upb.soot.core.SourceType;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.ModuleClassSource;
+import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.ImmutableUtils;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
@@ -103,6 +102,8 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   @Nonnull
   private final Map<Type, AbstractClass<? extends AbstractClassSource>> map = new HashMap<>();
 
+  private volatile boolean isFullyResolved = false;
+
   // endregion /Fields/
 
   // region Constructor
@@ -114,26 +115,6 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
   // endregion /Constructor/
 
-  // region Properties
-
-  private volatile boolean _isFullyResolved;
-
-  /**
-   * Gets a value, indicating whether all classes have been loaded.
-   *
-   * @return The value to get.
-   */
-  boolean isFullyResolved() {
-    return this._isFullyResolved;
-  }
-
-  /** Sets a value, indicating that all classes have been loaded. */
-  private void markAsFullyResolved() {
-    this._isFullyResolved = true;
-  }
-
-  // endregion /Properties/
-
   // region Methods
 
   @Override
@@ -141,13 +122,8 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   public synchronized Collection<AbstractClass<? extends AbstractClassSource>> getClasses() {
     this.resolveAll();
 
-    return Collections.unmodifiableCollection(this.map.values());
-  }
-
-  @Override
-  @Nonnull
-  public synchronized Stream<AbstractClass<? extends AbstractClassSource>> classes() {
-    return this.getClasses().stream();
+    // The map may be in concurrent use, so we must return a copy
+    return new ArrayList<>(map.values());
   }
 
   @Override
@@ -155,47 +131,44 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   public synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
       @Nonnull JavaClassType type) {
     AbstractClass<? extends AbstractClassSource> sootClass = this.map.get(type);
-
-    if (sootClass != null) return Optional.of(sootClass);
-    else if (this.isFullyResolved()) return Optional.empty();
-    else return Optional.ofNullable(this.__resolveSootClass(type));
-  }
-
-  @Nullable
-  private AbstractClass<? extends AbstractClassSource> __resolveSootClass(
-      @Nonnull JavaClassType signature) {
-    AbstractClass<? extends AbstractClassSource> theClass =
-        this.getProject()
-            .getInputLocation()
-            .getClassSource(signature)
-            .map(
-                it -> {
-                  // TODO Don't use a fixed SourceType here.
-                  if (it instanceof ClassSource) {
-                    return new SootClass((ClassSource) it, SourceType.Application);
-
-                  } else if (it instanceof ModuleClassSource) {
-                    return new SootModuleInfo((ModuleClassSource) it, false);
-                  }
-                  return null;
-                })
-            .orElse(null);
-    if (theClass != null) {
-      map.putIfAbsent(theClass.getType(), theClass);
-    }
-    return theClass;
-  }
-
-  public synchronized void resolveAll() {
-    if (this.isFullyResolved()) {
-      return;
+    if (sootClass != null) {
+      return Optional.of(sootClass);
     }
 
-    this.markAsFullyResolved();
+    return getProject().getInputLocation().getClassSource(type).flatMap(this::getClass);
+  }
 
-    for (AbstractClassSource cs :
-        this.getProject().getInputLocation().getClassSources(getIdentifierFactory())) {
-      if (!this.map.containsKey(cs.getClassType())) this.__resolveSootClass(cs.getClassType());
+  @Nonnull
+  private synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
+      AbstractClassSource classSource) {
+    AbstractClass<? extends AbstractClassSource> sootClass =
+        this.map.get(classSource.getClassType());
+    if (sootClass != null) {
+      return Optional.of(sootClass);
+    }
+
+    AbstractClass<? extends AbstractClassSource> theClass;
+    if (classSource instanceof ClassSource) {
+      // TODO Don't use a fixed SourceType here.
+      theClass = new SootClass((ClassSource) classSource, SourceType.Application);
+    } else if (classSource instanceof ModuleClassSource) {
+      theClass = new SootModuleInfo((ModuleClassSource) classSource, false);
+    } else {
+      throw new ResolveException("AbstractClassSource has unknown type " + classSource);
+    }
+
+    map.putIfAbsent(theClass.getType(), theClass);
+    return Optional.of(theClass);
+  }
+
+  private synchronized void resolveAll() {
+    if (!isFullyResolved) {
+      // Calling getClass fills the map
+      getProject()
+          .getInputLocation()
+          .getClassSources(getIdentifierFactory())
+          .forEach(this::getClass);
+      isFullyResolved = true;
     }
   }
 

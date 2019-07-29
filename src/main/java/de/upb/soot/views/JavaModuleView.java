@@ -11,7 +11,6 @@ import de.upb.soot.types.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -20,12 +19,6 @@ public abstract class JavaModuleView implements View {
   @Nonnull private final Map<Pair<SootModuleInfo, Type>, SootClass> map = new HashMap<>();
 
   public JavaModuleView(Project<JavaModulePathAnalysisInputLocation> project) {}
-
-  @Override
-  @Nonnull
-  public synchronized Stream<AbstractClass<? extends AbstractClassSource>> classes() {
-    return this.getClasses().stream();
-  }
 
   @Override
   @Nonnull

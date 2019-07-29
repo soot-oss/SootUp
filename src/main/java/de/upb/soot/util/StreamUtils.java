@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
@@ -77,21 +76,5 @@ public class StreamUtils {
   @Nonnull
   public static <T> T valueOrElse(@Nullable T value, @Nonnull T other) {
     return value != null ? value : other;
-  }
-
-  /**
-   * Performs the provided action on the specified element and returns the element.
-   *
-   * @param element The element to peek.
-   * @param action The action to perform.
-   * @param <T> The type of the element.
-   * @return The specified element.
-   * @see Stream#peek(Consumer)
-   */
-  @Nonnull
-  public static <T> T peek(@Nonnull T element, @Nonnull Consumer<? super T> action) {
-    action.accept(element);
-
-    return element;
   }
 }

@@ -26,13 +26,11 @@ public interface View {
   @Nonnull
   Collection<AbstractClass<? extends AbstractClassSource>> getClasses();
 
-  /**
-   * Returns a stream of classes in the view.
-   *
-   * @return A stream of classes
-   */
+  /** Return all classes in the view. */
   @Nonnull
-  Stream<AbstractClass<? extends AbstractClassSource>> classes();
+  default Stream<AbstractClass<? extends AbstractClassSource>> getClassesStream() {
+    return getClasses().stream();
+  }
 
   /**
    * Return a class with given signature.

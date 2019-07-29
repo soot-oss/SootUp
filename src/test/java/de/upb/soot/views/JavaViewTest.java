@@ -58,23 +58,6 @@ public class JavaViewTest {
   }
 
   @Test
-  public void testIsResolvedPropertyBeforeAll() {
-    assertFalse(this.view.isFullyResolved());
-  }
-
-  @Test
-  public void testIsResolvedPropertyAfterOne() {
-    assertTrue(this.view.getClass(this.signatures.get(0)).isPresent());
-    assertFalse(this.view.isFullyResolved());
-  }
-
-  @Test
-  public void testIsResolvedPropertyAfterAll() {
-    this.view.resolveAll();
-    assertTrue(this.view.isFullyResolved());
-  }
-
-  @Test
   public void testResolveIteratively() {
     this.signatures.forEach(
         it -> {
@@ -102,14 +85,11 @@ public class JavaViewTest {
 
   @Test
   public void testResolveUndefinedClassAfterAllResolved() {
-    this.view.resolveAll();
     this.resolveUndefinedClass();
   }
 
   @Test
   public void testResolveAll() {
-    this.view.resolveAll();
-
     Collection<AbstractClass<? extends AbstractClassSource>> classes = this.view.getClasses();
 
     assertEquals(classes.size(), this.signatures.size());
