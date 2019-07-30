@@ -1,6 +1,11 @@
 package de.upb.soot.typehierarchy;
 
+import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.NullType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.ReferenceType;
+import de.upb.soot.types.Type;
 import de.upb.soot.views.View;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +54,70 @@ public interface TypeHierarchy {
    */
   @Nullable
   JavaClassType superClassOf(@Nonnull JavaClassType classType);
+
+  /**
+   * Returns true if <code>potentialSubtype</code> is a subtype of <code>supertype</code>. If they
+   * are identical, this will return false.
+   */
+  default boolean isSubtype(@Nonnull Type supertype, @Nonnull Type potentialSubtype) {
+    if (!(supertype instanceof ReferenceType) || !(potentialSubtype instanceof ReferenceType)) {
+      // Subtyping applies to ReferenceTypes only
+      return false;
+    }
+
+    if (supertype instanceof NullType) {
+      // NullType has no subtypes
+      return false;
+    }
+
+    if (potentialSubtype instanceof NullType) {
+      // Null can be assigned to any type
+      return true;
+    }
+
+    if (supertype instanceof ArrayType) {
+      if (!(potentialSubtype instanceof ArrayType)) {
+        return false;
+      }
+
+      ArrayType superArrayType = (ArrayType) supertype;
+      ArrayType potentialSubArrayType = (ArrayType) potentialSubtype;
+      if (superArrayType.getBaseType() instanceof PrimitiveType) {
+        // Arrays of primitives have no subtypes
+        return false;
+      }
+
+      assert superArrayType.getBaseType() instanceof ReferenceType;
+
+      if (superArrayType.getBaseType().equals(potentialSubArrayType.getBaseType())) {
+        // Object[] x = new Object[0][0];
+        return potentialSubArrayType.getDimension() > superArrayType.getDimension();
+      } else if (isSubtype(superArrayType.getBaseType(), potentialSubArrayType.getBaseType())) {
+        // Arrays are covariant: Object[] x = new String[0];
+        return potentialSubArrayType.getDimension() >= superArrayType.getDimension();
+      } else if (superArrayType.getBaseType() instanceof JavaClassType
+          && ((JavaClassType) superArrayType.getBaseType())
+              .getFullyQualifiedName()
+              .equals("java.lang.Object")) {
+        // Special case: Object[] x = new double[0][0], Object[][] y = new double[0][0][0], ...
+        return potentialSubArrayType.getDimension() > superArrayType.getDimension();
+      } else {
+        return false;
+      }
+    } else if (supertype instanceof JavaClassType) {
+      if (potentialSubtype instanceof JavaClassType) {
+        return superClassesOf((JavaClassType) potentialSubtype).contains(supertype)
+            || implementedInterfacesOf((JavaClassType) potentialSubtype).contains(supertype);
+      } else if (potentialSubtype instanceof ArrayType) {
+        // Arrays are subtypes of java.lang.Object
+        return ((JavaClassType) supertype).getFullyQualifiedName().equals("java.lang.Object");
+      } else {
+        throw new AssertionError("potentialSubtype has unexpected type");
+      }
+    } else {
+      throw new AssertionError("supertype has unexpected type");
+    }
+  }
 
   /**
    * Returns all superclasses of <code>classType</code> up to <code>java.lang.Object</code>, which
