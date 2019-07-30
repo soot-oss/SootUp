@@ -4,6 +4,7 @@ import static de.upb.soot.util.ImmutableUtils.immutableList;
 import static de.upb.soot.util.ImmutableUtils.immutableSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
@@ -90,6 +91,8 @@ public class ViewTypeHierarchyTest {
             factory.getClassType(
                 "de.upb.soot.namespaces.PathBasedNamespace$DirectoryBasedNamespace"));
     assertEquals(expectedSubclasses, subclasses);
+    assertFalse(
+        "A class should not be a subclass of itself", subclasses.contains(abstractNamespace));
     expectedSubclasses.forEach(
         expectedSubclass ->
             assertTrue(typeHierarchy.isSubtype(abstractNamespace, expectedSubclass)));
@@ -126,6 +129,13 @@ public class ViewTypeHierarchyTest {
         factory.getClassType("JavaClassPathNamespace", "de.upb.soot.namespaces");
     JavaClassType superClass = typeHierarchy.superClassOf(javaClassPathNamespace);
     assertEquals(factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"), superClass);
+    assertNull(
+        "java.lang.Object should not have a superclass",
+        typeHierarchy.superClassOf(factory.getClassType("java.lang.Object")));
+    assertEquals(
+        "In Soot, interfaces should have java.lang.Object as the superclass",
+        factory.getClassType("java.lang.Object"),
+        typeHierarchy.superClassOf(factory.getClassType("java.util.Collection")));
   }
 
   @Test
@@ -173,6 +183,9 @@ public class ViewTypeHierarchyTest {
     ArrayType doubleArrayDim1Type = factory.getArrayType(PrimitiveType.getDouble(), 1);
     ArrayType doubleArrayDim2Type = factory.getArrayType(PrimitiveType.getDouble(), 2);
 
+    ArrayType collectionArrayDim1Type =
+        factory.getArrayType(factory.getClassType("java.util.Collection"), 1);
+
     JavaClassType objectType = factory.getClassType("java.lang.Object");
 
     // We don't consider types to be subtypes of itself
@@ -213,5 +226,9 @@ public class ViewTypeHierarchyTest {
     assertFalse(
         stringArrayDim1Type + " should not be a subtype of " + objectArrayDim1Type,
         typeHierarchy.isSubtype(objectArrayDim2Type, stringArrayDim1Type));
+
+    assertTrue(
+        "Collection[] should be a subtype of Object[]",
+        typeHierarchy.isSubtype(objectArrayDim1Type, collectionArrayDim1Type));
   }
 }
