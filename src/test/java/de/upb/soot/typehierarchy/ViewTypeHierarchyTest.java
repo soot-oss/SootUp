@@ -187,6 +187,8 @@ public class ViewTypeHierarchyTest {
         factory.getArrayType(factory.getClassType("java.util.Collection"), 1);
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
+    JavaClassType serializableType = factory.getClassType("java.io.Serializable");
+    JavaClassType cloneableType = factory.getClassType("java.lang.Cloneable");
 
     // We don't consider types to be subtypes of itself
     Stream.of(
@@ -208,6 +210,12 @@ public class ViewTypeHierarchyTest {
             Pair.of(objectType, objectArrayDim1Type),
             Pair.of(objectType, objectArrayDim2Type),
             Pair.of(objectType, doubleArrayDim1Type),
+            Pair.of(serializableType, objectArrayDim1Type),
+            Pair.of(serializableType, objectArrayDim2Type),
+            Pair.of(serializableType, doubleArrayDim1Type),
+            Pair.of(cloneableType, objectArrayDim1Type),
+            Pair.of(cloneableType, objectArrayDim2Type),
+            Pair.of(cloneableType, doubleArrayDim1Type),
             Pair.of(objectArrayDim1Type, doubleArrayDim2Type));
 
     subtypes.forEach(

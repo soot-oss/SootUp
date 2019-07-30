@@ -112,8 +112,11 @@ public interface TypeHierarchy {
         return superClassesOf((JavaClassType) potentialSubtype).contains(supertype)
             || implementedInterfacesOf((JavaClassType) potentialSubtype).contains(supertype);
       } else if (potentialSubtype instanceof ArrayType) {
-        // Arrays are subtypes of java.lang.Object
-        return ((JavaClassType) supertype).getFullyQualifiedName().equals("java.lang.Object");
+        // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
+        String fullyQualifiedName = ((JavaClassType) supertype).getFullyQualifiedName();
+        return fullyQualifiedName.equals("java.lang.Object")
+            || fullyQualifiedName.equals("java.io.Serializable")
+            || fullyQualifiedName.equals("java.lang.Cloneable");
       } else {
         throw new AssertionError("potentialSubtype has unexpected type");
       }
