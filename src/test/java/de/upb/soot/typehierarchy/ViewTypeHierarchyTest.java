@@ -7,6 +7,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -59,15 +61,19 @@ public class ViewTypeHierarchyTest {
     IdentifierFactory factory = view.getIdentifierFactory();
     JavaClassType iNamespace = factory.getClassType("INamespace", "de.upb.soot.namespaces");
     Set<JavaClassType> implementers = typeHierarchy.implementersOf(iNamespace);
-    assertEquals(
+    ImmutableSet<JavaClassType> expectedImplementers =
         immutableSet(
             factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace$ArchiveBasedNamespace"),
             factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace"),
             factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"),
             factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace"),
             factory.getClassType(
-                "de.upb.soot.namespaces.PathBasedNamespace$DirectoryBasedNamespace")),
-        implementers);
+                "de.upb.soot.namespaces.PathBasedNamespace$DirectoryBasedNamespace"));
+    assertEquals(expectedImplementers, implementers);
+
+    expectedImplementers.forEach(
+        expectedImplementer ->
+            assertTrue(typeHierarchy.isSubtype(iNamespace, expectedImplementer)));
   }
 
   @Test
@@ -76,14 +82,17 @@ public class ViewTypeHierarchyTest {
     JavaClassType abstractNamespace =
         factory.getClassType("AbstractNamespace", "de.upb.soot.namespaces");
     Set<JavaClassType> subclasses = typeHierarchy.subclassesOf(abstractNamespace);
-    assertEquals(
+    ImmutableSet<JavaClassType> expectedSubclasses =
         immutableSet(
             factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace$ArchiveBasedNamespace"),
             factory.getClassType("de.upb.soot.namespaces.PathBasedNamespace"),
             factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace"),
             factory.getClassType(
-                "de.upb.soot.namespaces.PathBasedNamespace$DirectoryBasedNamespace")),
-        subclasses);
+                "de.upb.soot.namespaces.PathBasedNamespace$DirectoryBasedNamespace"));
+    assertEquals(expectedSubclasses, subclasses);
+    expectedSubclasses.forEach(
+        expectedSubclass ->
+            assertTrue(typeHierarchy.isSubtype(abstractNamespace, expectedSubclass)));
   }
 
   @Test
@@ -91,11 +100,11 @@ public class ViewTypeHierarchyTest {
     IdentifierFactory factory = view.getIdentifierFactory();
     JavaClassType javaClassPathNamespace =
         factory.getClassType("JavaClassPathNamespace", "de.upb.soot.namespaces");
+    JavaClassType iNamespace = factory.getClassType("de.upb.soot.namespaces.INamespace");
     Set<JavaClassType> implementedInterfaces =
         typeHierarchy.implementedInterfacesOf(javaClassPathNamespace);
-    assertEquals(
-        immutableSet(factory.getClassType("de.upb.soot.namespaces.INamespace")),
-        implementedInterfaces);
+    assertEquals(immutableSet(iNamespace), implementedInterfaces);
+    assertTrue(typeHierarchy.isSubtype(iNamespace, javaClassPathNamespace));
 
     // Test with an interface that extends another one, i.e. List extends Collection
     JavaClassType arrayList = factory.getClassType("ArrayList", "java.util");
@@ -105,7 +114,9 @@ public class ViewTypeHierarchyTest {
         typeHierarchy.implementedInterfacesOf(arrayList);
     assertTrue(
         "ArrayList implements Collection", implementedInterfacesOfArrayList.contains(collection));
+    assertTrue("ArrayList implements Collection", typeHierarchy.isSubtype(collection, arrayList));
     assertTrue("ArrayList implements List", implementedInterfacesOfArrayList.contains(list));
+    assertTrue("ArrayList implements List", typeHierarchy.isSubtype(list, arrayList));
   }
 
   @Test
@@ -123,18 +134,26 @@ public class ViewTypeHierarchyTest {
     JavaClassType javaClassPathNamespace =
         factory.getClassType("JavaClassPathNamespace", "de.upb.soot.namespaces");
     List<JavaClassType> superClasses = typeHierarchy.superClassesOf(javaClassPathNamespace);
-    assertEquals(
+    ImmutableList<JavaClassType> expectedSuperClasses =
         immutableList(
             factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"),
-            factory.getClassType("java.lang.Object")),
-        superClasses);
+            factory.getClassType("java.lang.Object"));
+
+    assertEquals(expectedSuperClasses, superClasses);
+    expectedSuperClasses.forEach(
+        expectedSuperClass ->
+            assertTrue(typeHierarchy.isSubtype(expectedSuperClass, javaClassPathNamespace)));
   }
 
   @Test
-  public void javaClassTypeSubtyping() {}
-
-  @Test
-  public void primitiveTypeSubtyping() {}
+  public void primitiveTypeSubtyping() {
+    assertFalse(
+        "Primitive types should not have subtype relations",
+        typeHierarchy.isSubtype(PrimitiveType.getInt(), PrimitiveType.getInt()));
+    assertFalse(
+        "Primitive types should not have subtype relations",
+        typeHierarchy.isSubtype(PrimitiveType.getDouble(), PrimitiveType.getInt()));
+  }
 
   @Test
   public void arraySubtyping() {
