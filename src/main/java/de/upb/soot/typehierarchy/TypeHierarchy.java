@@ -58,6 +58,9 @@ public interface TypeHierarchy {
   /**
    * Returns true if <code>potentialSubtype</code> is a subtype of <code>supertype</code>. If they
    * are identical, this will return false.
+   *
+   * <p>This method relies on {@link #implementedInterfacesOf(JavaClassType)} and {@link
+   * #superClassOf(JavaClassType)}.
    */
   default boolean isSubtype(@Nonnull Type supertype, @Nonnull Type potentialSubtype) {
     if (!(supertype instanceof ReferenceType) || !(potentialSubtype instanceof ReferenceType)) {
