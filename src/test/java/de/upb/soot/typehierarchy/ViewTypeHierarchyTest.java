@@ -185,10 +185,43 @@ public class ViewTypeHierarchyTest {
 
     ArrayType collectionArrayDim1Type =
         factory.getArrayType(factory.getClassType("java.util.Collection"), 1);
+    ArrayType arrayListDim1Type =
+        factory.getArrayType(factory.getClassType("java.util.ArrayList"), 1);
+    ArrayType arrayListDim2Type =
+        factory.getArrayType(factory.getClassType("java.util.ArrayList"), 2);
+
+    ArrayType serializableDim1Type =
+        factory.getArrayType(factory.getClassType("java.io.Serializable"), 1);
+    ArrayType serializableDim2Type =
+        factory.getArrayType(factory.getClassType("java.io.Serializable"), 2);
+    ArrayType cloneableDim1Type =
+        factory.getArrayType(factory.getClassType("java.lang.Cloneable"), 1);
 
     JavaClassType objectType = factory.getClassType("java.lang.Object");
+    JavaClassType stringType = factory.getClassType("java.lang.String");
     JavaClassType serializableType = factory.getClassType("java.io.Serializable");
     JavaClassType cloneableType = factory.getClassType("java.lang.Cloneable");
+    JavaClassType arrayListType = factory.getClassType("java.util.ArrayList");
+
+    //    Serializable ssd = "";
+    //    Serializable[] x = new String[0];
+    //    Serializable[] y = new String[0][][];
+    //    Serializable[] xs = new Object[0]; // NO
+    //    Serializable[] ys = new Object[0][];
+    //
+    //    Serializable[][] ysss = new Object[0][]; // NO
+    //    Serializable[][] yssdfs = new Object[0][][];
+    //
+    //    Cloneable s = new ArrayList<>();
+    //    Cloneable[] xd = new ArrayList[0];
+    //    Cloneable[] yd = new ArrayList[0][];
+    //    Cloneable[] xsd = new Object[0]; // NO
+    //    Cloneable[] ysd = new Object[0][];
+
+    //    Serializable xsdfsdfds = new Object[0];
+
+    //    Collection[] xsdfdf = new ArrayList[0];
+    //    Collection[] xsdsdffdf = new ArrayList[0][]; // NO
 
     // We don't consider types to be subtypes of itself
     Stream.of(
@@ -203,6 +236,16 @@ public class ViewTypeHierarchyTest {
 
     Set<Pair<Type, Type>> subtypes =
         ImmutableUtils.immutableSet(
+            Pair.of(serializableType, objectArrayDim1Type),
+            Pair.of(serializableType, stringType),
+            Pair.of(serializableDim1Type, stringArrayDim1Type),
+            Pair.of(serializableDim1Type, stringArrayDim3Type),
+            Pair.of(serializableDim1Type, objectArrayDim2Type),
+            Pair.of(serializableDim2Type, objectArrayDim3Type),
+            Pair.of(cloneableType, arrayListType),
+            Pair.of(cloneableDim1Type, arrayListDim1Type),
+            Pair.of(cloneableDim1Type, arrayListDim2Type),
+            Pair.of(cloneableDim1Type, objectArrayDim2Type),
             Pair.of(objectArrayDim1Type, stringArrayDim1Type),
             Pair.of(objectArrayDim1Type, stringArrayDim3Type),
             Pair.of(objectArrayDim2Type, stringArrayDim3Type),
@@ -234,6 +277,19 @@ public class ViewTypeHierarchyTest {
     assertFalse(
         stringArrayDim1Type + " should not be a subtype of " + objectArrayDim1Type,
         typeHierarchy.isSubtype(objectArrayDim2Type, stringArrayDim1Type));
+
+    assertFalse(
+        objectArrayDim1Type + " should not be a subtype of " + serializableDim1Type,
+        typeHierarchy.isSubtype(serializableDim1Type, objectArrayDim1Type));
+    assertFalse(
+        objectArrayDim1Type + " should not be a subtype of " + cloneableDim1Type,
+        typeHierarchy.isSubtype(cloneableDim1Type, objectArrayDim1Type));
+    assertFalse(
+        objectArrayDim2Type + " should not be a subtype of " + serializableDim2Type,
+        typeHierarchy.isSubtype(serializableDim2Type, objectArrayDim2Type));
+    assertFalse(
+        arrayListDim2Type + " should not be a subtype of " + collectionArrayDim1Type,
+        typeHierarchy.isSubtype(collectionArrayDim1Type, arrayListDim2Type));
 
     assertTrue(
         "Collection[] should be a subtype of Object[]",
