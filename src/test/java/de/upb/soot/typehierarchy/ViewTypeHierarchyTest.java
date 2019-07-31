@@ -203,26 +203,6 @@ public class ViewTypeHierarchyTest {
     JavaClassType cloneableType = factory.getClassType("java.lang.Cloneable");
     JavaClassType arrayListType = factory.getClassType("java.util.ArrayList");
 
-    //    Serializable ssd = "";
-    //    Serializable[] x = new String[0];
-    //    Serializable[] y = new String[0][][];
-    //    Serializable[] xs = new Object[0]; // NO
-    //    Serializable[] ys = new Object[0][];
-    //
-    //    Serializable[][] ysss = new Object[0][]; // NO
-    //    Serializable[][] yssdfs = new Object[0][][];
-    //
-    //    Cloneable s = new ArrayList<>();
-    //    Cloneable[] xd = new ArrayList[0];
-    //    Cloneable[] yd = new ArrayList[0][];
-    //    Cloneable[] xsd = new Object[0]; // NO
-    //    Cloneable[] ysd = new Object[0][];
-
-    //    Serializable xsdfsdfds = new Object[0];
-
-    //    Collection[] xsdfdf = new ArrayList[0];
-    //    Collection[] xsdsdffdf = new ArrayList[0][]; // NO
-
     // We don't consider types to be subtypes of itself
     Stream.of(
             stringArrayDim1Type,
