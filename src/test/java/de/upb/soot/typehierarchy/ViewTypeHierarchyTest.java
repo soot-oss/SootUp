@@ -15,6 +15,7 @@ import de.upb.soot.Project;
 import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.NullType;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.ImmutableUtils;
@@ -163,6 +164,28 @@ public class ViewTypeHierarchyTest {
     assertFalse(
         "Primitive types should not have subtype relations",
         typeHierarchy.isSubtype(PrimitiveType.getDouble(), PrimitiveType.getInt()));
+  }
+
+  @Test
+  public void nullTypeSubtyping() {
+    IdentifierFactory factory = view.getIdentifierFactory();
+    assertTrue(
+        "null should be valid value for all reference types",
+        typeHierarchy.isSubtype(factory.getClassType("java.lang.Object"), NullType.getInstance()));
+    assertTrue(
+        "null should be valid value for all reference types",
+        typeHierarchy.isSubtype(factory.getClassType("java.lang.String"), NullType.getInstance()));
+    assertTrue(
+        "null should be valid value for all reference types",
+        typeHierarchy.isSubtype(
+            factory.getClassType("JavaClassPathNamespace", "de.upb.soot.namespaces"),
+            NullType.getInstance()));
+    assertFalse(
+        "null should not be a valid value for primitive types",
+        typeHierarchy.isSubtype(PrimitiveType.getInt(), NullType.getInstance()));
+    assertFalse(
+        "null should not be a valid value for primitive types",
+        typeHierarchy.isSubtype(PrimitiveType.getDouble(), NullType.getInstance()));
   }
 
   @Test
