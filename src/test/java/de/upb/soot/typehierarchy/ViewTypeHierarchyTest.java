@@ -121,6 +121,9 @@ public class ViewTypeHierarchyTest {
     assertTrue("ArrayList implements Collection", typeHierarchy.isSubtype(collection, arrayList));
     assertTrue("ArrayList implements List", implementedInterfacesOfArrayList.contains(list));
     assertTrue("ArrayList implements List", typeHierarchy.isSubtype(list, arrayList));
+    assertTrue(
+        "List is an implementer of Collection",
+        typeHierarchy.implementersOf(collection).contains(list));
   }
 
   @Test
