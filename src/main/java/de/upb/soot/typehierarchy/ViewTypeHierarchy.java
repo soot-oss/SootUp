@@ -10,8 +10,10 @@ import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.InterfaceNode;
 import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.Node;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.View;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -60,30 +62,61 @@ class ViewTypeHierarchy implements TypeHierarchy {
   }
 
   @Nonnull
-  @Override
-  public Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType classType) {
-    // We ascend from classType through its superclasses to java.lang.Object.
-    // For each superclass, we take the interfaces they implement and merge
-    // them together in a Set.
-    return Stream.concat(Stream.of(classType), superClassesOf(classType).stream())
-        .flatMap(type -> sootClassFor(type).getInterfaces().stream())
-        .map(this::sootClassFor)
-        .flatMap(this::selfAndImplementedInterfaces)
-        .collect(Collectors.toSet());
+  private List<ClassNode> superClassesOf(@Nonnull ClassNode classNode, boolean includingSelf) {
+    List<ClassNode> superClasses = new ArrayList<>();
+    if (includingSelf) {
+      superClasses.add(classNode);
+    }
+
+    ClassNode superClass = classNode.superClass;
+    while (superClass != null) {
+      superClasses.add(superClass);
+      superClass = superClass.superClass;
+    }
+
+    return superClasses;
   }
 
   @Nonnull
-  private Stream<JavaClassType> selfAndImplementedInterfaces(SootClass iface) {
-    // TODO Accelerate this using graph structure
-    Set<JavaClassType> parentInterfaces = iface.getInterfaces();
-    if (parentInterfaces.isEmpty()) {
-      return Stream.of(iface.getType());
+  @Override
+  public Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType type) {
+    ScanResult scanResult = lazyScanResult.get();
+    ClassNode classNode = scanResult.typeToClassNode.get(type);
+    if (classNode != null) {
+      // We ascend from classNode through its superclasses to java.lang.Object.
+      // For each superclass, we take the interfaces it implements and merge
+      // them together in a Set.
+      List<ClassNode> superClasses = superClassesOf(classNode, true);
+      return superClasses.stream()
+          .flatMap(superClass -> superClass.implementedInterfaces.stream())
+          .flatMap(this::selfAndImplementedInterfaces)
+          .collect(Collectors.toSet());
+    }
+
+    InterfaceNode interfaceNode = scanResult.typeToInterfaceNode.get(type);
+    if (interfaceNode != null) {
+      return interfaceNode.extendedInterfaces.stream()
+          .flatMap(this::selfAndImplementedInterfaces)
+          .collect(Collectors.toSet());
+    }
+
+    throw new ResolveException("Could not find " + type + " in hierarchy for view " + view);
+  }
+
+  /**
+   * Recursively obtains all interfaces this interface extends, including transitively extended
+   * interfaces.
+   */
+  @Nonnull
+  private Stream<JavaClassType> selfAndImplementedInterfaces(InterfaceNode node) {
+    Set<InterfaceNode> extendedInterfaces = node.extendedInterfaces;
+    if (extendedInterfaces.isEmpty()) {
+      return Stream.of(node.type);
     }
 
     return Stream.concat(
-        Stream.of(iface.getType()),
-        parentInterfaces.stream()
-            .flatMap(classType -> selfAndImplementedInterfaces(sootClassFor(classType))));
+        Stream.of(node.type),
+        extendedInterfaces.stream().flatMap(this::selfAndImplementedInterfaces));
   }
 
   @Nullable
@@ -142,7 +175,9 @@ class ViewTypeHierarchy implements TypeHierarchy {
                 for (JavaClassType extendedInterface : sootClass.getInterfaces()) {
                   InterfaceNode extendedInterfaceNode =
                       typeToInterfaceNode.computeIfAbsent(extendedInterface, InterfaceNode::new);
+                  // Double-link the nodes
                   extendedInterfaceNode.extendingInterfaces.add(node);
+                  node.extendedInterfaces.add(extendedInterfaceNode);
                 }
               } else {
                 ClassNode node =
@@ -150,7 +185,9 @@ class ViewTypeHierarchy implements TypeHierarchy {
                 for (JavaClassType implementedInterface : sootClass.getInterfaces()) {
                   InterfaceNode implementedInterfaceNode =
                       typeToInterfaceNode.computeIfAbsent(implementedInterface, InterfaceNode::new);
+                  // Double-link the nodes
                   implementedInterfaceNode.directImplementers.add(node);
+                  node.implementedInterfaces.add(implementedInterfaceNode);
                 }
                 sootClass
                     .getSuperclass()
@@ -158,7 +195,9 @@ class ViewTypeHierarchy implements TypeHierarchy {
                         superClass -> {
                           ClassNode superClassNode =
                               typeToClassNode.computeIfAbsent(superClass, ClassNode::new);
+                          // Double-link the nodes
                           superClassNode.directSubclasses.add(node);
+                          node.superClass = superClassNode;
                         });
               }
             });
@@ -200,9 +239,9 @@ class ViewTypeHierarchy implements TypeHierarchy {
      * @see #type
      */
     static class Node {
-      final JavaClassType type;
+      @Nonnull final JavaClassType type;
 
-      Node(JavaClassType type) {
+      Node(@Nonnull JavaClassType type) {
         this.type = type;
       }
     }
@@ -213,39 +252,42 @@ class ViewTypeHierarchy implements TypeHierarchy {
      */
     static class InterfaceNode extends Node {
 
+      /** The nodes for the interfaces this interface extends, if applicable. */
+      @Nonnull final Set<InterfaceNode> extendedInterfaces;
+
       /** All classes implementing this interface directly, non-transitively. */
-      final Set<ClassNode> directImplementers;
+      @Nonnull final Set<ClassNode> directImplementers;
 
       /** All interfaces extending this interface directly, non-transitively. */
-      final Set<InterfaceNode> extendingInterfaces;
+      @Nonnull final Set<InterfaceNode> extendingInterfaces;
 
-      private InterfaceNode(
-          JavaClassType type,
-          Set<ClassNode> directImplementers,
-          Set<InterfaceNode> extendingInterfaces) {
+      private InterfaceNode(@Nonnull JavaClassType type) {
         super(type);
-        this.directImplementers = directImplementers;
-        this.extendingInterfaces = extendingInterfaces;
-      }
-
-      private InterfaceNode(JavaClassType type) {
-        this(type, new HashSet<>(), new HashSet<>());
+        // Init. capacity 0 as interface rarely extend others
+        this.extendedInterfaces = new HashSet<>(0);
+        this.directImplementers = new HashSet<>();
+        this.extendingInterfaces = new HashSet<>();
       }
     }
 
     /** @see #directSubclasses */
     static class ClassNode extends Node {
 
+      /** The nodes for the interfaces this interface implements, if applicable. */
+      @Nonnull final Set<InterfaceNode> implementedInterfaces;
+
       /** All classes that directly extend this class, non-transitively. */
-      final Set<ClassNode> directSubclasses;
+      @Nonnull final Set<ClassNode> directSubclasses;
 
-      private ClassNode(JavaClassType type, Set<ClassNode> directSubclasses) {
+      /** The node for the class this class extends, if applicable. */
+      @Nullable ClassNode superClass;
+
+      private ClassNode(@Nonnull JavaClassType type) {
         super(type);
-        this.directSubclasses = directSubclasses;
-      }
-
-      private ClassNode(JavaClassType type) {
-        this(type, new HashSet<>());
+        this.directSubclasses = new HashSet<>();
+        this.superClass = null;
+        // Init. capacity 0 as many classes do not extend others
+        this.implementedInterfaces = new HashSet<>(0);
       }
     }
   }

@@ -45,13 +45,14 @@ public interface TypeHierarchy {
   Set<JavaClassType> subclassesOf(@Nonnull JavaClassType classType);
 
   /**
-   * Returns the interfaces implemented by <code>classType</code>. This includes interfaces
-   * implemented by superclasses and also covers the case where <code>classType</code> directly or
-   * indirectly implements an interface <code>I1</code> that extends another interface <code>I2
+   * Returns the interfaces implemented by <code>type</code> if it is a class or extended by
+   * <code>type</code> if it is an interface. This includes interfaces implemented by superclasses
+   * and also covers the case where <code>classType</code> directly or indirectly implements an
+   * interface <code>I1</code> that extends another interface <code>I2
    * </code>. <code>I2</code> will be considered an implemented interface of <code>classType</code>.
    */
   @Nonnull
-  Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType classType);
+  Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType type);
 
   /**
    * Returns the direct superclass of <code>classType</code>. If <code>classType == java.lang.Object
