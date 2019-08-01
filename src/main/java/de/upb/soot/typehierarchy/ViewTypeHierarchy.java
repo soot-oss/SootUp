@@ -42,6 +42,7 @@ class ViewTypeHierarchy implements TypeHierarchy {
     InterfaceNode interfaceNode = scanResult.typeToInterfaceNode.get(interfaceType);
 
     Set<JavaClassType> implementers = new HashSet<>();
+    // We now traverse the subgraph of interfaceNode to find all its subtypes
     visitSubgraph(interfaceNode, false, subnode -> implementers.add(subnode.type));
     return implementers;
   }
@@ -53,6 +54,7 @@ class ViewTypeHierarchy implements TypeHierarchy {
     ClassNode classNode = scanResult.typeToClassNode.get(classType);
 
     Set<JavaClassType> subclasses = new HashSet<>();
+    // We now traverse the subgraph of classNode to find all its subtypes
     visitSubgraph(classNode, false, subnode -> subclasses.add(subnode.type));
     return subclasses;
   }
@@ -60,6 +62,9 @@ class ViewTypeHierarchy implements TypeHierarchy {
   @Nonnull
   @Override
   public Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType classType) {
+    // We ascend from classType through its superclasses to java.lang.Object.
+    // For each superclass, we take the interfaces they implement and merge
+    // them together in a Set.
     return Stream.concat(Stream.of(classType), superClassesOf(classType).stream())
         .flatMap(type -> sootClassFor(type).getInterfaces().stream())
         .map(this::sootClassFor)
@@ -69,7 +74,16 @@ class ViewTypeHierarchy implements TypeHierarchy {
 
   @Nonnull
   private Stream<JavaClassType> selfAndImplementedInterfaces(SootClass iface) {
-    return Stream.concat(Stream.of(iface.getType()), iface.getInterfaces().stream());
+    // TODO Accelerate this using graph structure
+    Set<JavaClassType> parentInterfaces = iface.getInterfaces();
+    if (parentInterfaces.isEmpty()) {
+      return Stream.of(iface.getType());
+    }
+
+    return Stream.concat(
+        Stream.of(iface.getType()),
+        parentInterfaces.stream()
+            .flatMap(classType -> selfAndImplementedInterfaces(sootClassFor(classType))));
   }
 
   @Nullable
@@ -78,6 +92,11 @@ class ViewTypeHierarchy implements TypeHierarchy {
     return sootClassFor(classType).getSuperclass().orElse(null);
   }
 
+  /**
+   * Visits the subgraph of the specified <code>node</code> and calls the <code>visitor</code> for
+   * each node in the subgraph. If <code>includeSelf</code> is true, the <code>visitor</code> is
+   * also called with the <code>node</code>.
+   */
   private static void visitSubgraph(Node node, boolean includeSelf, Consumer<Node> visitor) {
     if (includeSelf) {
       visitor.accept(node);
@@ -97,6 +116,16 @@ class ViewTypeHierarchy implements TypeHierarchy {
     }
   }
 
+  /**
+   * This method scans the view by iterating over its classes and creating a graph node for each
+   * one. When a class is encountered that extends another one or implements an interface, the graph
+   * node of the extended class or implemented interface is connected to the node of the subtype.
+   *
+   * <p>We distinguish between interface and class nodes, as interfaces may have direct implementers
+   * as well as other interfaces that extend them.
+   *
+   * <p>In the graph structure, a type is only connected to its direct subtypes.
+   */
   private ScanResult scanView() {
     long startNanos = System.nanoTime();
     Map<JavaClassType, ScanResult.ClassNode> typeToClassNode = new HashMap<>();
@@ -150,8 +179,12 @@ class ViewTypeHierarchy implements TypeHierarchy {
     return (SootClass) aClass;
   }
 
+  /** Holds a node for each {@link JavaClassType} encountered during the scan. */
   static class ScanResult {
+
+    /** Holds all nodes corresponding to classes (excluding interfaces). */
     final Map<JavaClassType, ClassNode> typeToClassNode;
+    /** Holds all nodes corresponding to interfaces. */
     final Map<JavaClassType, InterfaceNode> typeToInterfaceNode;
 
     private ScanResult(
@@ -161,6 +194,11 @@ class ViewTypeHierarchy implements TypeHierarchy {
       this.typeToInterfaceNode = typeToInterfaceNode;
     }
 
+    /**
+     * @see ClassNode
+     * @see InterfaceNode
+     * @see #type
+     */
     static class Node {
       final JavaClassType type;
 
@@ -169,8 +207,16 @@ class ViewTypeHierarchy implements TypeHierarchy {
       }
     }
 
+    /**
+     * @see #directImplementers
+     * @see #extendingInterfaces
+     */
     static class InterfaceNode extends Node {
+
+      /** All classes implementing this interface directly, non-transitively. */
       final Set<ClassNode> directImplementers;
+
+      /** All interfaces extending this interface directly, non-transitively. */
       final Set<InterfaceNode> extendingInterfaces;
 
       private InterfaceNode(
@@ -187,7 +233,10 @@ class ViewTypeHierarchy implements TypeHierarchy {
       }
     }
 
+    /** @see #directSubclasses */
     static class ClassNode extends Node {
+
+      /** All classes that directly extend this class, non-transitively. */
       final Set<ClassNode> directSubclasses;
 
       private ClassNode(JavaClassType type, Set<ClassNode> directSubclasses) {

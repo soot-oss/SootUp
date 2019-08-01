@@ -29,6 +29,9 @@ public interface TypeHierarchy {
    * Returns all classes that implement the specified interface. This is transitive: If class <code>
    * A extends B</code> and <code>B implements interface</code>, then this method will return both A
    * and B as implementers of <code>interfaceType</code>.
+   *
+   * <p>This includes interfaces extending <code>interfaceType</code> as they may contain default
+   * implementations of methods.
    */
   @Nonnull
   Set<JavaClassType> implementersOf(@Nonnull JavaClassType interfaceType);
@@ -43,7 +46,9 @@ public interface TypeHierarchy {
 
   /**
    * Returns the interfaces implemented by <code>classType</code>. This includes interfaces
-   * implemented by superclasses.
+   * implemented by superclasses and also covers the case where <code>classType</code> directly or
+   * indirectly implements an interface <code>I1</code> that extends another interface <code>I2
+   * </code>. <code>I2</code> will be considered an implemented interface of <code>classType</code>.
    */
   @Nonnull
   Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType classType);
