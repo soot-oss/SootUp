@@ -130,7 +130,9 @@ public interface TypeHierarchy {
       }
     } else if (supertype instanceof JavaClassType) {
       if (potentialSubtype instanceof JavaClassType) {
-        return superClassesOf((JavaClassType) potentialSubtype).contains(supertype)
+        // First condition is a fast path
+        return supertype.equals(superClassOf((JavaClassType) potentialSubtype))
+            || superClassesOf((JavaClassType) potentialSubtype).contains(supertype)
             || implementedInterfacesOf((JavaClassType) potentialSubtype).contains(supertype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
