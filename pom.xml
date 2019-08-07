@@ -3,10 +3,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.upb</groupId>
-  <artifactId>Soot</artifactId>
+  <artifactId>soot</artifactId>
   <packaging>jar</packaging>
-  <version>4.0.0.3</version>
-  <name>Soot</name>
+  <version>4.0.0-SNAPSHOT</version>
+  <name>soot</name>
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -32,7 +32,7 @@
     <test.outDir>${project.build.directory}/test-classes-java</test.outDir>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
-    <wala.version>1.5.3.2</wala.version>
+    <wala.version>1.5.3.3</wala.version>
   </properties>
   <profiles>
     <profile>
