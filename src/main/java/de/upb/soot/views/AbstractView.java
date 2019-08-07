@@ -1,13 +1,12 @@
 package de.upb.soot.views;
 
+import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Options;
 import de.upb.soot.Project;
 import de.upb.soot.Scope;
-import de.upb.soot.callgraph.ICallGraph;
-import de.upb.soot.callgraph.ICallGraphAlgorithm;
-import de.upb.soot.signatures.SignatureFactory;
-import de.upb.soot.typehierarchy.ITypeHierarchy;
-import de.upb.soot.types.TypeFactory;
+import de.upb.soot.callgraph.CallGraph;
+import de.upb.soot.callgraph.CallGraphAlgorithm;
+import de.upb.soot.typehierarchy.TypeHierarchy;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
@@ -20,7 +19,7 @@ public abstract class AbstractView implements IView {
 
   @Nonnull private final Project project;
 
-  @Nonnull private Options options;
+  @Nonnull private final Options options = new Options();
 
   public AbstractView(@Nonnull Project project) {
     this.project = project;
@@ -28,33 +27,27 @@ public abstract class AbstractView implements IView {
 
   @Override
   @Nonnull
-  public SignatureFactory getSignatureFactory() {
-    return this.getProject().getSignatureFactory();
-  }
-
-  @Nonnull
-  @Override
-  public TypeFactory getTypeFactory() {
-    return this.getProject().getTypeFactory();
+  public IdentifierFactory getIdentifierFactory() {
+    return this.getProject().getIdentifierFactory();
   }
 
   @Override
   @Nonnull
-  public ICallGraph createCallGraph() {
+  public CallGraph createCallGraph() {
     // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
   @Nonnull
-  public ICallGraph createCallGraph(ICallGraphAlgorithm algorithm) {
+  public CallGraph createCallGraph(CallGraphAlgorithm algorithm) {
     // TODO Auto-generated methodRef stub
     return null;
   }
 
   @Override
   @Nonnull
-  public ITypeHierarchy createTypeHierarchy() {
+  public TypeHierarchy createTypeHierarchy() {
     // TODO Auto-generated methodRef stub
     return null;
   }

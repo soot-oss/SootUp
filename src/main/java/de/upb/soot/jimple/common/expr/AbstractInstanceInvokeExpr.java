@@ -27,21 +27,19 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.MethodSignature;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   /** */
   private static final long serialVersionUID = 5554270441921308784L;
 
-  protected final ValueBox baseBox;
+  private final ValueBox baseBox;
 
-  protected AbstractInstanceInvokeExpr(
-      ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
+  AbstractInstanceInvokeExpr(ValueBox baseBox, MethodSignature methodSig, ValueBox[] argBoxes) {
     super(methodSig, argBoxes);
     this.baseBox = baseBox;
   }
@@ -54,15 +52,12 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
     return baseBox;
   }
 
-  public void setBase(Value base) {
-    baseBox.setValue(base);
-  }
-
   @Override
   public List<ValueBox> getUseBoxes() {
     List<ValueBox> list = new ArrayList<>();
+    List<ValueBox> argBoxes = getArgBoxes();
     if (argBoxes != null) {
-      Collections.addAll(list, argBoxes);
+      list.addAll(argBoxes);
       for (ValueBox element : argBoxes) {
         list.addAll(element.getValue().getUseBoxes());
       }
@@ -74,11 +69,8 @@ public abstract class AbstractInstanceInvokeExpr extends AbstractInvokeExpr {
   }
 
   @Override
-  public abstract Object clone();
-
-  @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseInstanceInvokeExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseInstanceInvokeExpr(this);
   }
 
   /** Returns a hash code for this object, consistent with structural equality. */

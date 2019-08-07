@@ -1,11 +1,7 @@
 package de.upb.soot;
 
 import de.upb.soot.buildactor.ViewBuilder;
-import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.signatures.SignatureFactory;
-import de.upb.soot.types.DefaultTypeFactory;
-import de.upb.soot.types.TypeFactory;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.util.NotYetImplementedException;
 import de.upb.soot.views.IView;
 import javax.annotation.Nonnull;
@@ -18,46 +14,36 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public class Project {
-  /** Create a project from an arbitrary list of namespaces */
-  public Project(@Nonnull INamespace namespace) {
-    this(namespace, DefaultSignatureFactory.getInstance(), DefaultTypeFactory.getInstance());
+public class Project<S extends AnalysisInputLocation> {
+  /** Create a project from an arbitrary list of input locations */
+  public Project(@Nonnull S inputLocation) {
+    this(inputLocation, DefaultIdentifierFactory.getInstance());
   }
 
-  /** Create a project from an arbitrary list of namespaces */
-  public Project(
-      @Nonnull INamespace namespaces,
-      @Nonnull SignatureFactory signatureFactory,
-      @Nonnull TypeFactory typeFactory) {
-    this.namespace = namespaces;
-    this.signatureFactory = signatureFactory;
-    this.typeFactory = typeFactory;
+  /** Create a project from an arbitrary list of input locations */
+  public Project(@Nonnull S inputLocations, @Nonnull DefaultIdentifierFactory identifierFactory) {
+    this.inputLocation = inputLocations;
+    this.identifierFactory = identifierFactory;
   }
 
-  @Nonnull private final INamespace namespace;
+  @Nonnull private final S inputLocation;
 
-  /** Gets the namespace. */
+  /** Gets the inputLocation. */
   @Nonnull
-  public INamespace getNamespace() {
-    return this.namespace;
+  public S getInputLocation() {
+    return this.inputLocation;
   }
 
-  @Nonnull private final SignatureFactory signatureFactory;
-
-  @Nonnull private final TypeFactory typeFactory;
+  @Nonnull private final IdentifierFactory identifierFactory;
 
   @Nonnull
-  public SignatureFactory getSignatureFactory() {
-    return this.signatureFactory;
-  }
-
-  public TypeFactory getTypeFactory() {
-    return typeFactory;
+  public IdentifierFactory getIdentifierFactory() {
+    return this.identifierFactory;
   }
 
   /**
-   * Create a complete view from everything in all provided namespaces. This methodRef starts the
-   * reification process.
+   * Create a complete view from everything in all provided input locations. This methodRef starts
+   * the reification process.
    *
    * @return A complete view on the provided code
    */
@@ -76,7 +62,7 @@ public class Project {
   }
 
   /**
-   * Returns a partial view on the code based on the provided scope and all namespaces in the
+   * Returns a partial view on the code based on the provided scope and all input locations in the
    * project. This methodRef starts the reification process.
    *
    * @param s A scope of interest for the view

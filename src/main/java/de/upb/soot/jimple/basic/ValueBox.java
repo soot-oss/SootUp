@@ -25,7 +25,7 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.io.Serializable;
 
 /**
@@ -33,15 +33,59 @@ import java.io.Serializable;
  *
  * @see Value
  */
-public interface ValueBox extends Serializable {
-  /** Sets the value contained in this box as given. Subject to canContainValue() checks. */
-  void setValue(Value value);
-
-  /** Returns the value contained in this box. */
-  Value getValue();
+public abstract class ValueBox implements Serializable {
 
   /** Returns true if the given Value fits in this box. */
-  boolean canContainValue(Value value);
+  public abstract boolean canContainValue(Value value);
 
-  void toString(IStmtPrinter up);
+  private Value value;
+
+  public ValueBox(Value value) {
+    setValue(value);
+  }
+
+  /** Violates immutability. Only use this for legacy code. */
+  @Deprecated
+  private void setValue(Value value) {
+    if (value == null) {
+      throw new IllegalArgumentException("value may not be null");
+    }
+    if (canContainValue(value)) {
+      this.value = value;
+    } else {
+      throw new RuntimeException(
+          "Box " + this + " cannot contain value: " + value + " (" + value.getClass() + ")");
+    }
+  }
+
+  /** Returns the value contained in this box. */
+  public Value getValue() {
+    return value;
+  }
+
+  public void toString(StmtPrinter up) {
+    up.startValueBox(this);
+    value.toString(up);
+    up.endValueBox(this);
+  }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "(" + value + ")";
+  }
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setValue(ValueBox box, Value value) {
+      box.setValue(value);
+    }
+
+    private $Accessor() {}
+  }
 }

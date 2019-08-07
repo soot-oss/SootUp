@@ -28,11 +28,13 @@ package de.upb.soot.jimple.common.stmt;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.jimple.visitor.IStmtVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.visitor.StmtVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JReturnVoidStmt extends AbstractStmt {
+public final class JReturnVoidStmt extends AbstractStmt implements Copyable {
   /** */
   private static final long serialVersionUID = 6620261205233720627L;
 
@@ -41,23 +43,18 @@ public class JReturnVoidStmt extends AbstractStmt {
   }
 
   @Override
-  public JReturnVoidStmt clone() {
-    return new JReturnVoidStmt(getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     return Jimple.RETURN;
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.RETURN);
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseReturnVoidStmt(this);
+  public void accept(Visitor sw) {
+    ((StmtVisitor) sw).caseReturnVoidStmt(this);
   }
 
   @Override
@@ -78,5 +75,10 @@ public class JReturnVoidStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return 42 + 2;
+  }
+
+  @Nonnull
+  public JReturnVoidStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JReturnVoidStmt(positionInfo);
   }
 }

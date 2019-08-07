@@ -25,12 +25,13 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
-public class JLeExpr extends AbstractConditionExpr {
+public final class JLeExpr extends AbstractConditionExpr implements Copyable {
   /** */
   private static final long serialVersionUID = -2754460335430422215L;
 
@@ -44,12 +45,17 @@ public class JLeExpr extends AbstractConditionExpr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseLeExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseLeExpr(this);
   }
 
-  @Override
-  public Object clone() {
-    return new JLeExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
+  @Nonnull
+  public JLeExpr withOp1(Value op1) {
+    return new JLeExpr(op1, getOp2());
+  }
+
+  @Nonnull
+  public JLeExpr withOp2(Value op2) {
+    return new JLeExpr(getOp1(), op2);
   }
 }

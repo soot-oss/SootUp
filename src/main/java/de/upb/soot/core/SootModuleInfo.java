@@ -1,127 +1,38 @@
 package de.upb.soot.core;
 
+import com.google.common.base.Suppliers;
 import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.ModuleClassSource;
+import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.Utils;
-import de.upb.soot.views.IView;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
-public class SootModuleInfo extends AbstractClass {
-
-  // implementation of StepBuilder Pattern to create SootClasses consistent
-  // http://www.svlada.com/step-builder-pattern/
-
-  /**
-   * Creates a SootClass with a fluent interfaces and enforces at compile team a clean order to
-   * ensure a consistent state of the soot class Therefore, a different Interface is returned after
-   * each step.. (therby order is enforced)
-   */
-  public interface DanglingStep extends Build {
-    HierachyStep dangling(IView view, ClassSource source, ClassType classType, String moduleName);
-
-    HierachyStep isAutomaticModule(boolean isAutomatic);
-  }
-
-  public interface HierachyStep extends Build {
-    Build hierachy(
-        Collection<ModuleReference> requires,
-        Collection<PackageReference> exports,
-        Collection<PackageReference> opens,
-        Collection<JavaClassType> services);
-  }
-
-  public interface Build {
-    SootModuleInfo build();
-  }
-
-  public static class SootModuleInfoBuilder implements DanglingStep, HierachyStep, Build {
-    private ResolvingLevel resolvingLevel;
-    private ClassType classType;
-    private EnumSet<Modifier> modifiers;
-    private ClassSource classSource;
-    private IView view;
-    private Collection<ModuleReference> requires;
-    private Collection<PackageReference> exports;
-    private Collection<PackageReference> opens;
-    private Collection<JavaClassType> services;
-    private boolean isAutomaticModule = false;
-    private String moduleName;
-
-    public SootModuleInfoBuilder() {}
-
-    @Override
-    public HierachyStep dangling(IView view, ClassSource source, ClassType classType, String name) {
-      this.view = view;
-      this.classSource = source;
-      this.classType = classType;
-      this.resolvingLevel = ResolvingLevel.DANGLING;
-      this.moduleName = name;
-      return this;
-    }
-
-    @Override
-    public HierachyStep isAutomaticModule(boolean isAutomatic) {
-      this.isAutomaticModule = isAutomatic;
-      return this;
-    }
-
-    @Override
-    public Build hierachy(
-        Collection<ModuleReference> requires,
-        Collection<PackageReference> exports,
-        Collection<PackageReference> opens,
-        Collection<JavaClassType> services) {
-
-      this.requires = requires;
-      this.exports = exports;
-      this.opens = opens;
-      this.services = services;
-      this.resolvingLevel = ResolvingLevel.HIERARCHY;
-      return this;
-    }
-
-    @Override
-    public SootModuleInfo build() {
-      return new SootModuleInfo(this);
-    }
-  }
-
-  public static DanglingStep builder() {
-    return new SootModuleInfoBuilder();
-  }
-
-  // FIXME: check if everything is here...
-  public static SootModuleInfoBuilder fromExisting(SootModuleInfo sootClass) {
-    SootModuleInfoBuilder builder = new SootModuleInfoBuilder();
-    // builder.resolvingLevel = sootClass.resolvingLevel;
-    builder.modifiers = sootClass.modifiers;
-    builder.classSource = sootClass.classSource;
-    builder.requires = sootClass.requiredModules;
-    builder.exports = sootClass.exportedPackages;
-    builder.opens = sootClass.openedPackages;
-    builder.services = sootClass.usedServices;
-    builder.moduleName = sootClass.name;
-    return builder;
-  }
-
-  // FIXME: add missing statementss
-  private SootModuleInfo(SootModuleInfoBuilder builder) {
-    super(builder.classSource);
-    this.resolvingLevel = builder.resolvingLevel;
-    this.moduleSignature = builder.classSource.getClassType();
-    this.modifiers = builder.modifiers;
-    this.isAutomaticModule = builder.isAutomaticModule;
-    this.name = builder.moduleName;
-    builder.view.addClass(this);
-  }
+public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
 
   /** */
   private static final long serialVersionUID = -6856798288630958622L;
+
+  @Nonnull private final JavaClassType classSignature;
+  // FIXME: how to create automatic modules
+  private boolean isAutomaticModule;
+  private EnumSet<Modifier> modifiers;
+
+  // FIXME: or module Signature?
+  private String moduleName;
+
+  public SootModuleInfo(ModuleClassSource classSource, boolean isAutomaticModule) {
+    super(classSource);
+    this.classSignature = classSource.getClassType();
+    this.isAutomaticModule = isAutomaticModule;
+    this.moduleName = getModuleClassSourceContent().getModuleName();
+  }
 
   public static class ModuleReference {
 
@@ -162,48 +73,102 @@ public class SootModuleInfo extends AbstractClass {
     }
   }
 
-  private JavaClassType moduleSignature;
-  private final ResolvingLevel resolvingLevel;
+  @Nonnull
+  private final Supplier<Set<ModuleReference>> _lazyRequiredModules =
+      Suppliers.memoize(this::lazyFieldInitializer);
 
-  private HashSet<ModuleReference> requiredModules = new HashSet<>();
+  private final Supplier<Set<PackageReference>> _lazyExportedPackages =
+      Suppliers.memoize(this::lazyExportsInitializer);
+  private final Supplier<Set<PackageReference>> _lazyOpenedPackages =
+      Suppliers.memoize(this::lazyOpenssInitializer);
 
-  private HashSet<PackageReference> exportedPackages = new HashSet<>();
+  private final Supplier<Set<JavaClassType>> _lazyUsedServices =
+      Suppliers.memoize(this::lazyUsesInitializer);
 
-  private HashSet<PackageReference> openedPackages = new HashSet<>();
+  private final Supplier<Set<JavaClassType>> _lazyProvidedServices =
+      Suppliers.memoize(this::lazyProvidesInitializer);
 
-  private HashSet<JavaClassType> usedServices = new HashSet<>();
-
-  // FIXME: how to create automatic modules
-  private boolean isAutomaticModule;
-  private EnumSet<Modifier> modifiers;
-
-  // FIXME: or module Signature?
-  private String name;
-
-  /**
-   * Create a new SootModuleInfo.
-   *
-   * @param cs the ClassSource that was used to create this module-info
-   * @param moduleSignature the moduleSignature
-   * @param access the module access modifier
-   */
-  public SootModuleInfo(
-      IView view,
-      ClassSource cs,
-      JavaClassType moduleSignature,
-      EnumSet<Modifier> access,
-      String version,
-      ResolvingLevel resolvingLevel) {
-    super(cs);
-    this.moduleSignature = moduleSignature;
-    this.resolvingLevel = resolvingLevel;
-    this.modifiers = null;
-    view.addClass(this);
-    // FIXME: add code
+  private ModuleClassSource getModuleClassSourceContent() throws ResolveException {
+    if (this.classSource == null) {
+      throw new ResolveException("Module classSource is null");
+    }
+    // FIXME: this is ugly
+    return this.classSource;
   }
 
-  public ResolvingLevel resolvingLevel() {
-    return resolvingLevel;
+  @Nonnull
+  private Set<ModuleReference> lazyFieldInitializer() {
+    Set<ModuleReference> requires;
+    try {
+      requires = new HashSet<>(getModuleClassSourceContent().requires());
+    } catch (ResolveException e) {
+      requires = Utils.emptyImmutableSet();
+
+      // TODO: [JMP] Exception handling
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+    return requires;
+  }
+
+  @Nonnull
+  private Set<PackageReference> lazyExportsInitializer() {
+    Set<PackageReference> exports;
+    try {
+      exports = new HashSet(getModuleClassSourceContent().exports());
+    } catch (ResolveException e) {
+      exports = Utils.emptyImmutableSet();
+
+      // TODO: [JMP] Exception handling
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+    return exports;
+  }
+
+  @Nonnull
+  private Set<PackageReference> lazyOpenssInitializer() {
+    Set<PackageReference> opens;
+    try {
+      opens = new HashSet(getModuleClassSourceContent().opens());
+    } catch (ResolveException e) {
+      opens = Utils.emptyImmutableSet();
+
+      // TODO: [JMP] Exception handling
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+    return opens;
+  }
+
+  @Nonnull
+  private Set<JavaClassType> lazyProvidesInitializer() {
+    Set<JavaClassType> provides;
+    try {
+      provides = new HashSet(getModuleClassSourceContent().provides());
+    } catch (ResolveException e) {
+      provides = Utils.emptyImmutableSet();
+
+      // TODO: [JMP] Exception handling
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+    return provides;
+  }
+
+  @Nonnull
+  private Set<JavaClassType> lazyUsesInitializer() {
+    Set<JavaClassType> uses;
+    try {
+      uses = new HashSet(getModuleClassSourceContent().uses());
+    } catch (ResolveException e) {
+      uses = Utils.emptyImmutableSet();
+
+      // TODO: [JMP] Exception handling
+      e.printStackTrace();
+      throw new IllegalStateException(e);
+    }
+    return uses;
   }
 
   public boolean isAutomaticModule() {
@@ -212,23 +177,23 @@ public class SootModuleInfo extends AbstractClass {
 
   @Override
   public String getName() {
-    return moduleSignature.getClassName();
+    return classSignature.getClassName();
   }
 
   @Override
   public Type getType() {
-    return this.moduleSignature;
+    return classSignature;
   }
 
   @Nonnull
   @Override
-  public Set<IMethod> getMethods() {
+  public Set<Method> getMethods() {
     return Utils.emptyImmutableSet();
   }
 
   @Nonnull
   @Override
-  public Set<IField> getFields() {
+  public Set<Field> getFields() {
     return Utils.emptyImmutableSet();
   }
 }

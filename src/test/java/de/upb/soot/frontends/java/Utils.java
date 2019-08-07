@@ -27,6 +27,7 @@ public class Utils {
         writer.flush();
         writer.close();
       } catch (FileNotFoundException e) {
+        // Not rethrowing as this is for debug purposes only
         e.printStackTrace();
       }
     }
@@ -46,7 +47,7 @@ public class Utils {
     if (print) {
       PrintWriter writer = new PrintWriter(System.out);
       Printer printer = new Printer();
-      printer.printTo(method.getActiveBody(), writer);
+      printer.printTo(method.getBody(), writer);
       writer.flush();
       writer.close();
     }

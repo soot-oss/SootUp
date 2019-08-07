@@ -1,12 +1,12 @@
 package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.Utils;
-import de.upb.soot.util.concurrent.Lazy;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
@@ -37,14 +37,14 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
       @Nonnull Type type) {
     super(name, type);
 
-    this._parameterSignatures = ImmutableList.copyOf(parameterSignatures);
+    this.parameterSignatures = ImmutableList.copyOf(parameterSignatures);
   }
 
   // endregion /Constructor/
 
   // region Properties
 
-  @Nonnull private final List<Type> _parameterSignatures;
+  @Nonnull private final List<Type> parameterSignatures;
 
   /**
    * Gets the parameters in an immutable list.
@@ -53,7 +53,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
    */
   @Nonnull
   public List<Type> getParameterSignatures() {
-    return this._parameterSignatures;
+    return this.parameterSignatures;
   }
 
   // endregion /Properties/
@@ -95,8 +95,8 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
     return new MethodSignature(declClassSignature, this);
   }
 
-  private final Lazy<String> _cachedToString =
-      Utils.synchronizedLazy(
+  private final Supplier<String> _cachedToString =
+      Suppliers.memoize(
           () ->
               String.format(
                   "%s %s(%s)",

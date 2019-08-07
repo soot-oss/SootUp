@@ -25,15 +25,15 @@
 
 package de.upb.soot.jimple.common.constant;
 
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.jimple.common.ref.FieldRef;
-import de.upb.soot.jimple.visitor.IConstantVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ConstantVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.Type;
 import org.objectweb.asm.Opcodes;
 
-public class MethodHandle extends Constant {
+public class MethodHandle implements Constant {
 
   public enum Kind {
     REF_GET_FIELD(Opcodes.H_GETFIELD, "REF_GET_FIELD"),
@@ -125,7 +125,7 @@ public class MethodHandle extends Constant {
 
   @Override
   public Type getType() {
-    return DefaultTypeFactory.getInstance().getType("java.lang.invoke.MethodHandle");
+    return DefaultIdentifierFactory.getInstance().getType("java.lang.invoke.MethodHandle");
   }
 
   public MethodSignature getMethodRef() {
@@ -133,8 +133,8 @@ public class MethodHandle extends Constant {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IConstantVisitor) sw).caseMethodHandle(this);
+  public void accept(Visitor sw) {
+    ((ConstantVisitor) sw).caseMethodHandle(this);
   }
 
   @Override

@@ -31,30 +31,27 @@ import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.visitor.IStmtVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.visitor.StmtVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JInvokeStmt extends AbstractStmt {
+public final class JInvokeStmt extends AbstractStmt implements Copyable {
   /** */
   private static final long serialVersionUID = 3929309661335452051L;
 
-  final ValueBox invokeExprBox;
+  private final ValueBox invokeExprBox;
 
-  public JInvokeStmt(Value c, PositionInfo positionInfo) {
-    this(Jimple.newInvokeExprBox(c), positionInfo);
+  public JInvokeStmt(Value invokeExpr, PositionInfo positionInfo) {
+    this(Jimple.newInvokeExprBox(invokeExpr), positionInfo);
   }
 
-  protected JInvokeStmt(ValueBox invokeExprBox, PositionInfo positionInfo) {
+  private JInvokeStmt(ValueBox invokeExprBox, PositionInfo positionInfo) {
     super(positionInfo);
     this.invokeExprBox = invokeExprBox;
-  }
-
-  @Override
-  public JInvokeStmt clone() {
-    return new JInvokeStmt(Jimple.cloneIfNecessary(getInvokeExpr()), getPositionInfo().clone());
   }
 
   @Override
@@ -68,12 +65,8 @@ public class JInvokeStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     invokeExprBox.toString(up);
-  }
-
-  public void setInvokeExpr(Value invokeExpr) {
-    invokeExprBox.setValue(invokeExpr);
   }
 
   @Override
@@ -96,8 +89,8 @@ public class JInvokeStmt extends AbstractStmt {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseInvokeStmt(this);
+  public void accept(Visitor sw) {
+    ((StmtVisitor) sw).caseInvokeStmt(this);
   }
 
   @Override
@@ -118,5 +111,15 @@ public class JInvokeStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return invokeExprBox.getValue().equivHashCode();
+  }
+
+  @Nonnull
+  public JInvokeStmt withInvokeExpr(Value invokeExpr) {
+    return new JInvokeStmt(invokeExprBox, getPositionInfo());
+  }
+
+  @Nonnull
+  public JInvokeStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JInvokeStmt(invokeExprBox, positionInfo);
   }
 }

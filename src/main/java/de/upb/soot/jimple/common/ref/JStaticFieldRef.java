@@ -2,13 +2,15 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JStaticFieldRef extends FieldRef {
+public final class JStaticFieldRef extends FieldRef implements Copyable {
   /** */
   private static final long serialVersionUID = -8744248848897714882L;
 
@@ -17,18 +19,13 @@ public class JStaticFieldRef extends FieldRef {
   }
 
   @Override
-  public Object clone() {
-    return new JStaticFieldRef(fieldSignature);
-  }
-
-  @Override
   public String toString() {
-    return fieldSignature.toString();
+    return getFieldSignature().toString();
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
-    up.fieldSignature(fieldSignature);
+  public void toString(StmtPrinter up) {
+    up.fieldSignature(getFieldSignature());
   }
 
   @Override
@@ -47,7 +44,12 @@ public class JStaticFieldRef extends FieldRef {
   }
 
   @Override
-  public void accept(IVisitor v) {
+  public void accept(Visitor v) {
     // TODO Auto-generated methodRef stub
+  }
+
+  @Nonnull
+  public JStaticFieldRef withFieldSignature(FieldSignature fieldSig) {
+    return new JStaticFieldRef(fieldSig);
   }
 }

@@ -26,36 +26,38 @@
 package de.upb.soot.jimple.common.stmt;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IStmtVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.visitor.StmtVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JIfStmt extends AbstractStmt {
+public final class JIfStmt extends AbstractStmt implements Copyable {
   /** */
   private static final long serialVersionUID = -5625186075843518011L;
 
-  final ValueBox conditionBox;
-  final IStmtBox targetBox;
+  private final ValueBox conditionBox;
+  private final StmtBox targetBox;
 
-  final List<IStmtBox> targetBoxes;
+  private final List<StmtBox> targetBoxes;
 
-  public JIfStmt(Value condition, IStmt target, PositionInfo positionInfo) {
+  public JIfStmt(Value condition, Stmt target, PositionInfo positionInfo) {
     this(condition, Jimple.newStmtBox(target), positionInfo);
   }
 
-  public JIfStmt(Value condition, IStmtBox target, PositionInfo positionInfo) {
+  public JIfStmt(Value condition, StmtBox target, PositionInfo positionInfo) {
     this(Jimple.newConditionExprBox(condition), target, positionInfo);
   }
 
-  protected JIfStmt(ValueBox conditionBox, IStmtBox targetBox, PositionInfo positionInfo) {
+  private JIfStmt(ValueBox conditionBox, StmtBox targetBox, PositionInfo positionInfo) {
     super(positionInfo);
     this.conditionBox = conditionBox;
     this.targetBox = targetBox;
@@ -64,14 +66,8 @@ public class JIfStmt extends AbstractStmt {
   }
 
   @Override
-  public JIfStmt clone() {
-    return new JIfStmt(
-        Jimple.cloneIfNecessary(getCondition()), getTarget(), getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
-    IStmt t = getTarget();
+    Stmt t = getTarget();
     String target = "(branch)";
     if (!t.branches()) {
       target = t.toString();
@@ -80,7 +76,7 @@ public class JIfStmt extends AbstractStmt {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.IF);
     up.literal(" ");
     conditionBox.toString(up);
@@ -94,23 +90,21 @@ public class JIfStmt extends AbstractStmt {
     return conditionBox.getValue();
   }
 
-  public void setCondition(Value condition) {
-    conditionBox.setValue(condition);
-  }
-
   public ValueBox getConditionBox() {
     return conditionBox;
   }
 
-  public IStmt getTarget() {
+  public Stmt getTarget() {
     return targetBox.getStmt();
   }
 
-  public void setTarget(IStmt target) {
-    targetBox.setStmt(target);
+  /** Violates immutability. Only use this for legacy code. */
+  @Deprecated
+  private void setTarget(Stmt target) {
+    StmtBox.$Accessor.setStmt(targetBox, target);
   }
 
-  public IStmtBox getTargetBox() {
+  public StmtBox getTargetBox() {
     return targetBox;
   }
 
@@ -124,13 +118,13 @@ public class JIfStmt extends AbstractStmt {
   }
 
   @Override
-  public final List<IStmtBox> getStmtBoxes() {
+  public final List<StmtBox> getStmtBoxes() {
     return targetBoxes;
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseIfStmt(this);
+  public void accept(Visitor sw) {
+    ((StmtVisitor) sw).caseIfStmt(this);
   }
 
   @Override
@@ -151,5 +145,35 @@ public class JIfStmt extends AbstractStmt {
   @Override
   public int equivHashCode() {
     return conditionBox.getValue().equivHashCode() + 31 * targetBox.getStmt().equivHashCode();
+  }
+
+  @Nonnull
+  public JIfStmt withCondition(Value condition) {
+    return new JIfStmt(condition, getTarget(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JIfStmt withTarget(Stmt target) {
+    return new JIfStmt(getCondition(), target, getPositionInfo());
+  }
+
+  @Nonnull
+  public JIfStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JIfStmt(getCondition(), getTarget(), positionInfo);
+  }
+
+  /** This class is for internal use only. It will be removed in the future. */
+  @Deprecated
+  public static class $Accessor {
+    // This class deliberately starts with a $-sign to discourage usage
+    // of this Soot implementation detail.
+
+    /** Violates immutability. Only use this for legacy code. */
+    @Deprecated
+    public static void setTarget(JIfStmt stmt, Stmt target) {
+      stmt.setTarget(target);
+    }
+
+    private $Accessor() {}
   }
 }

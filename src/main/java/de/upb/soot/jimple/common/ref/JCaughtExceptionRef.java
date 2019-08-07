@@ -25,16 +25,17 @@
 
 package de.upb.soot.jimple.common.ref;
 
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
 
-public class JCaughtExceptionRef implements IdentityRef {
+public final class JCaughtExceptionRef implements IdentityRef, Copyable {
   /** */
   private static final long serialVersionUID = 5249007116510821231L;
 
@@ -52,17 +53,12 @@ public class JCaughtExceptionRef implements IdentityRef {
   }
 
   @Override
-  public Object clone() {
-    return new JCaughtExceptionRef();
-  }
-
-  @Override
   public String toString() {
     return "@caughtexception";
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.identityRef(this);
   }
 
@@ -74,11 +70,11 @@ public class JCaughtExceptionRef implements IdentityRef {
   @Override
   public Type getType() {
     // TODO: [JMP] Get cached instance
-    return DefaultTypeFactory.getInstance().getType("java.lang.Throwable");
+    return DefaultIdentifierFactory.getInstance().getType("java.lang.Throwable");
   }
 
   @Override
-  public void accept(IVisitor sw) {
+  public void accept(Visitor sw) {
     // TODO
   }
 }

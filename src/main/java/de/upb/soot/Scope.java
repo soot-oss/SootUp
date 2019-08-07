@@ -1,8 +1,9 @@
 package de.upb.soot;
 
-import de.upb.soot.namespaces.INamespace;
-import de.upb.soot.signatures.PackageSignature;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.util.NotYetImplementedException;
 
 /**
  * Definition of a scope
@@ -12,13 +13,13 @@ import de.upb.soot.types.JavaClassType;
  */
 public class Scope {
 
-  /** Define a scope consists of multiple namespaces. */
-  public Scope(INamespace... namespaces) {
+  /** Define a scope consists of multiple inputLocations. */
+  public Scope(AnalysisInputLocation... inputLocations) {
     // TODO Auto-generated constructor stub
   }
 
   /** Define a scope consists of multiple packages. */
-  public Scope(PackageSignature... packages) {
+  public Scope(PackageName... packages) {
     // TODO Auto-generated constructor stub
   }
 
@@ -28,7 +29,6 @@ public class Scope {
   }
 
   public Scope withStartingSignature(JavaClassType classSignature) {
-    // TODO Auto-generated constructor stub
-    return null;
+    throw new NotYetImplementedException();
   }
 }

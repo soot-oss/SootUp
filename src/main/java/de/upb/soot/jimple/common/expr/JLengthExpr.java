@@ -28,22 +28,19 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.PrimitiveType;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JLengthExpr extends AbstractUnopExpr {
+public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 8028538963970159045L;
 
   public JLengthExpr(Value op) {
     super(Jimple.newImmediateBox(op));
-  }
-
-  @Override
-  public Object clone() {
-    return new JLengthExpr(Jimple.cloneIfNecessary(getOp()));
   }
 
   @Override
@@ -54,19 +51,19 @@ public class JLengthExpr extends AbstractUnopExpr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return opBox.getValue().equivHashCode();
+    return getOp().equivHashCode();
   }
 
   @Override
   public String toString() {
-    return Jimple.LENGTHOF + " " + opBox.getValue().toString();
+    return Jimple.LENGTHOF + " " + getOp().toString();
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.LENGTHOF);
     up.literal(" ");
-    opBox.toString(up);
+    getOpBox().toString(up);
   }
 
   @Override
@@ -75,7 +72,12 @@ public class JLengthExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseLengthExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseLengthExpr(this);
+  }
+
+  @Nonnull
+  public JLengthExpr withOp(Value op) {
+    return new JLengthExpr(op);
   }
 }

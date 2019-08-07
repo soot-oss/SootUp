@@ -29,35 +29,21 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.util.printer.IStmtPrinter;
-import java.util.ArrayList;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JStaticInvokeExpr extends AbstractInvokeExpr {
+public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copyable {
   /** */
   private static final long serialVersionUID = -8705816067828505717L;
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */
   public JStaticInvokeExpr(MethodSignature method, List<? extends Value> args) {
-    super(method, new ValueBox[args.size()]);
-    this.methodSignature = method;
-    for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
-    }
-  }
-
-  @Override
-  public Object clone() {
-    List<Value> clonedArgs = new ArrayList<>(getArgCount());
-
-    for (int i = 0; i < getArgCount(); i++) {
-      clonedArgs.add(i, getArg(i));
-    }
-    return new JStaticInvokeExpr(methodSignature, clonedArgs);
+    super(method, ValueBoxUtils.toValueBoxes(args));
   }
 
   @Override
@@ -74,7 +60,7 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
-    builder.append(Jimple.STATICINVOKE).append(" ").append(methodSignature).append("(");
+    builder.append(Jimple.STATICINVOKE).append(" ").append(getMethodSignature()).append("(");
     argBoxesToString(builder);
     builder.append(")");
     return builder.toString();
@@ -82,17 +68,27 @@ public class JStaticInvokeExpr extends AbstractInvokeExpr {
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.STATICINVOKE);
     up.literal(" ");
-    up.methodSignature(methodSignature);
+    up.methodSignature(getMethodSignature());
     up.literal("(");
     argBoxesToPrinter(up);
     up.literal(")");
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseStaticInvokeExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseStaticInvokeExpr(this);
+  }
+
+  @Nonnull
+  public JStaticInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+    return new JStaticInvokeExpr(methodSignature, getArgs());
+  }
+
+  @Nonnull
+  public JStaticInvokeExpr withArgs(List<? extends Value> args) {
+    return new JStaticInvokeExpr(getMethodSignature(), args);
   }
 }

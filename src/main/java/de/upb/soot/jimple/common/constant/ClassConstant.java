@@ -25,14 +25,14 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.visitor.IConstantVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.DefaultIdentifierFactory;
+import de.upb.soot.jimple.visitor.ConstantVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.StringTools;
 
 @SuppressWarnings("serial")
-public class ClassConstant extends Constant {
+public class ClassConstant implements Constant {
   private final String value;
 
   private ClassConstant(String s) {
@@ -156,12 +156,12 @@ public class ClassConstant extends Constant {
   @Override
   public Type getType() {
     // TODO: [JMP] Used cached instance
-    return DefaultTypeFactory.getInstance().getType("java.lang.Class");
+    return DefaultIdentifierFactory.getInstance().getType("java.lang.Class");
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IConstantVisitor) sw).caseClassConstant(this);
+  public void accept(Visitor sw) {
+    ((ConstantVisitor) sw).caseClassConstant(this);
   }
 
   @Override

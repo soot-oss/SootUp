@@ -29,28 +29,25 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JCastExpr implements Expr {
+public final class JCastExpr implements Expr, Copyable {
   /** */
   private static final long serialVersionUID = -3186041329205869260L;
 
   private final ValueBox opBox;
-  private Type type;
+  private final Type type;
 
   public JCastExpr(Value op, Type type) {
     this.opBox = Jimple.newImmediateBox(op);
     this.type = type;
-  }
-
-  @Override
-  public Object clone() {
-    return new JCastExpr(Jimple.cloneIfNecessary(getOp()), type);
   }
 
   @Override
@@ -70,7 +67,7 @@ public class JCastExpr implements Expr {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal("(");
     up.typeSignature(type);
     up.literal(") ");
@@ -79,10 +76,6 @@ public class JCastExpr implements Expr {
 
   public Value getOp() {
     return opBox.getValue();
-  }
-
-  public void setOp(Value op) {
-    opBox.setValue(op);
   }
 
   public ValueBox getOpBox() {
@@ -98,22 +91,23 @@ public class JCastExpr implements Expr {
     return list;
   }
 
-  // TODO: dulicate getter? -> getType()
-  public Type getCastType() {
-    return type;
-  }
-
-  public void setCastType(Type castType) {
-    this.type = castType;
-  }
-
   @Override
   public Type getType() {
     return type;
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseCastExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseCastExpr(this);
+  }
+
+  @Nonnull
+  public JCastExpr withOp(Value op) {
+    return new JCastExpr(op, type);
+  }
+
+  @Nonnull
+  public JCastExpr withType(Type type) {
+    return new JCastExpr(getOp(), type);
   }
 }

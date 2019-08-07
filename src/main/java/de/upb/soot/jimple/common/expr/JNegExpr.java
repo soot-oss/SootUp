@@ -28,24 +28,21 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JNegExpr extends AbstractUnopExpr {
+public final class JNegExpr extends AbstractUnopExpr implements Copyable {
   /** */
   private static final long serialVersionUID = -5215362038683846098L;
 
   public JNegExpr(Value op) {
     super(Jimple.newImmediateBox(op));
-  }
-
-  @Override
-  public Object clone() {
-    return new JNegExpr(Jimple.cloneIfNecessary(getOp()));
   }
 
   @Override
@@ -56,24 +53,24 @@ public class JNegExpr extends AbstractUnopExpr {
   /** Returns a hash code for this object, consistent with structural equality. */
   @Override
   public int equivHashCode() {
-    return opBox.getValue().equivHashCode();
+    return getOp().equivHashCode();
   }
 
   @Override
   public String toString() {
-    return Jimple.NEG + " " + opBox.getValue().toString();
+    return Jimple.NEG + " " + getOp().toString();
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.NEG);
     up.literal(" ");
-    opBox.toString(up);
+    getOpBox().toString(up);
   }
 
   @Override
   public Type getType() {
-    Value op = opBox.getValue();
+    Value op = getOp();
 
     if (op.getType().equals(PrimitiveType.getInt())
         || op.getType().equals(PrimitiveType.getByte())
@@ -93,7 +90,12 @@ public class JNegExpr extends AbstractUnopExpr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseNegExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseNegExpr(this);
+  }
+
+  @Nonnull
+  public JNegExpr withOp(Value op) {
+    return new JNegExpr(op);
   }
 }

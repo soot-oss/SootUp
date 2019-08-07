@@ -26,9 +26,9 @@
 
 package de.upb.soot.jimple.common.ref;
 
-import com.google.common.base.Optional;
 import de.upb.soot.core.SootField;
 import de.upb.soot.signatures.FieldSignature;
+import java.util.Optional;
 
 public interface JFieldRef extends ConcreteRef {
 

@@ -30,12 +30,14 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IStmtVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.StmtVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JIdentityStmt extends AbstractDefinitionStmt {
+public final class JIdentityStmt extends AbstractDefinitionStmt implements Copyable {
   /** */
   private static final long serialVersionUID = -6269380950007213506L;
 
@@ -48,36 +50,20 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   }
 
   @Override
-  public JIdentityStmt clone() {
-    return new JIdentityStmt(
-        Jimple.cloneIfNecessary(getLeftOp()),
-        Jimple.cloneIfNecessary(getRightOp()),
-        getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     return getLeftBox().getValue().toString() + " := " + getRightBox().getValue().toString();
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     getLeftBox().toString(up);
     up.literal(" := ");
     getRightBox().toString(up);
   }
 
-  public void setLeftOp(Value local) {
-    getLeftBox().setValue(local);
-  }
-
-  public void setRightOp(Value identityRef) {
-    getRightBox().setValue(identityRef);
-  }
-
   @Override
-  public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseIdentityStmt(this);
+  public void accept(Visitor sw) {
+    ((StmtVisitor) sw).caseIdentityStmt(this);
   }
 
   public Type getType() {
@@ -92,5 +78,20 @@ public class JIdentityStmt extends AbstractDefinitionStmt {
   @Override
   public int equivHashCode() {
     return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
+  }
+
+  @Nonnull
+  public JIdentityStmt withLocal(Value local) {
+    return new JIdentityStmt(local, getRightOp(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JIdentityStmt withIdentityValue(Value identityValue) {
+    return new JIdentityStmt(getLeftOp(), identityValue, getPositionInfo());
+  }
+
+  @Nonnull
+  public JIdentityStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JIdentityStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

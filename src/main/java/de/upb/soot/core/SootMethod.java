@@ -22,35 +22,37 @@ package de.upb.soot.core;
  */
 
 import static de.upb.soot.util.Utils.immutableListOf;
-import static de.upb.soot.util.Utils.initializedLazy;
-import static de.upb.soot.util.Utils.synchronizedLazy;
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-import de.upb.soot.frontends.IMethodSourceContent;
+import de.upb.soot.frontends.MethodSource;
+import de.upb.soot.frontends.OverridingMethodSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.builder.BuilderException;
-import de.upb.soot.util.concurrent.Lazy;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Soot's counterpart of the source language's method concept. Soot representation of a Java method.
  * Can be declared to belong to a SootClass. Does not contain the actual code, which belongs to a
- * Body. The getActiveBody() method points to the currently-active body.
+ * Body. The getBody() method points to the currently-active body.
  *
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootMethod extends SootClassMember implements IMethod {
+public final class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
   /** */
   private static final long serialVersionUID = -7438746401781827520L;
 
@@ -67,14 +69,11 @@ public class SootMethod extends SootClassMember implements IMethod {
   @Nonnull protected final ImmutableList<JavaClassType> exceptions;
 
   /** Tells this methodRef how to find out where its body lives. */
-  @Nonnull private final IMethodSourceContent methodSource;
-
-  /** Active body associated with this method. */
-  @Nullable private Body activeBody;
+  @Nonnull private final MethodSource methodSource;
 
   /** Constructs a SootMethod object with the given attributes. */
   public SootMethod(
-      @Nonnull IMethodSourceContent source,
+      @Nonnull MethodSource source,
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
       @Nonnull Iterable<JavaClassType> thrownExceptions,
@@ -83,31 +82,12 @@ public class SootMethod extends SootClassMember implements IMethod {
               debugInfo // FIXME: remove Wala DebuggingInformation from this Class, IMHO it does not
       // belong to a sootmethod
       ) {
-    this(source, methodSignature, modifiers, thrownExceptions, null, debugInfo);
-  }
-
-  /** Constructs a SootMethod object with the given attributes. */
-  public SootMethod(
-      @Nonnull IMethodSourceContent source,
-      @Nonnull MethodSignature methodSignature,
-      @Nonnull Iterable<Modifier> modifiers,
-      @Nonnull Iterable<JavaClassType> thrownExceptions,
-      @Nullable Body activeBody,
-      @Nullable DebuggingInformation debugInfo) {
     super(methodSignature, modifiers);
 
     this.methodSource = source;
     this.parameterTypes = immutableListOf(methodSignature.getParameterSignatures());
     this.exceptions = immutableListOf(thrownExceptions);
     this.debugInfo = debugInfo;
-
-    if (activeBody != null) {
-      //noinspection ThisEscapedInObjectConstruction
-      activeBody.setMethod(this);
-      this._lazyBody = initializedLazy(activeBody);
-    } else {
-      this._lazyBody = synchronizedLazy(this::lazyBodyInitializer);
-    }
   }
 
   @Nullable
@@ -163,17 +143,17 @@ public class SootMethod extends SootClassMember implements IMethod {
     return parameterTypes;
   }
 
-  private final @Nonnull Lazy<Body> _lazyBody;
+  private final @Nonnull Supplier<Body> _lazyBody = Suppliers.memoize(this::lazyBodyInitializer);
 
   /** Retrieves the active body for this methodRef. */
   @Nullable
-  public Body getActiveBody() {
+  public Body getBody() {
     return this._lazyBody.get(); // TODO: [JMP] Refactor to return `.getAsOptional()`
   }
 
   /** Returns true if this method has an active body. */
-  public boolean hasActiveBody() {
-    return this.getActiveBody() != null;
+  public boolean hasBody() {
+    return this.getBody() != null;
   }
 
   @Nonnull
@@ -244,31 +224,16 @@ public class SootMethod extends SootClassMember implements IMethod {
 
     // return type + name
 
-    builder.append(this.getReturnTypeSignature().toString()).append(" ");
-    builder.append(this.getSignature().toString());
-
-    builder.append("(");
-
-    // parameters
-    Iterator<Type> typeIt = this.getParameterTypes().iterator();
-    // int count = 0;
-    while (typeIt.hasNext()) {
-      Type t = typeIt.next();
-      builder.append(t.toString());
-      if (typeIt.hasNext()) {
-        builder.append(", ");
-      }
-    }
-    builder.append(")");
+    builder.append(this.getSubSignature().toString());
 
     // Print exceptions
     Iterator<JavaClassType> exceptionIt = this.getExceptionSignatures().iterator();
 
     if (exceptionIt.hasNext()) {
-      builder.append(" throws ").append(exceptionIt.next().toQuotedString());
+      builder.append(" throws ").append(exceptionIt.next());
 
       while (exceptionIt.hasNext()) {
-        builder.append(", ").append(exceptionIt.next().toQuotedString());
+        builder.append(", ").append(exceptionIt.next());
       }
     }
 
@@ -282,6 +247,43 @@ public class SootMethod extends SootClassMember implements IMethod {
   @Nullable
   public DebuggingInformation getDebugInfo() {
     return this.debugInfo;
+  }
+
+  /**
+   * Creates a new SootMethod based on a new {@link OverridingMethodSource}. This is useful to
+   * change selected parts of a {@link SootMethod} without recreating a {@link MethodSource}
+   * completely. {@link OverridingMethodSource} allows for replacing the body of a method.
+   */
+  @Nonnull
+  public SootMethod withOverridingMethodSource(
+      Function<OverridingMethodSource, OverridingMethodSource> overrider) {
+    return new SootMethod(
+        overrider.apply(new OverridingMethodSource(methodSource)),
+        getSignature(),
+        getModifiers(),
+        exceptions,
+        debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withSource(MethodSource source) {
+    return new SootMethod(source, getSignature(), getModifiers(), exceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withModifiers(Iterable<Modifier> modifiers) {
+    return new SootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withThrownExceptions(Iterable<JavaClassType> thrownExceptions) {
+    return new SootMethod(
+        methodSource, getSignature(), getModifiers(), thrownExceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withDebugInfo(DebuggingInformation debugInfo) {
+    return new SootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
   }
 
   /**
@@ -300,16 +302,16 @@ public class SootMethod extends SootClassMember implements IMethod {
    * @see #builder()
    * @author Jan Martin Persch
    */
-  public interface Builder extends SootClassMember.Builder<SootMethod> {
+  public interface Builder extends SootClassMember.Builder<MethodSignature, SootMethod> {
     interface MethodSourceStep {
       /**
-       * Sets the {@link IMethodSourceContent}.
+       * Sets the {@link MethodSource}.
        *
        * @param value The value to set.
        * @return This fluent builder.
        */
       @Nonnull
-      MethodSignatureStep withSource(@Nonnull IMethodSourceContent value);
+      MethodSignatureStep withSource(@Nonnull MethodSource value);
     }
 
     interface MethodSignatureStep {
@@ -325,7 +327,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
     interface ModifiersStep extends SootClassMember.Builder.ModifiersStep<ThrownExceptionsStep> {}
 
-    interface ThrownExceptionsStep extends ActiveBodyStep {
+    interface ThrownExceptionsStep extends DebugStep {
       /**
        * Sets the exceptions thrown by the method to build. This step is optional.
        *
@@ -333,18 +335,7 @@ public class SootMethod extends SootClassMember implements IMethod {
        * @return This fluent builder.
        */
       @Nonnull
-      ActiveBodyStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value);
-    }
-
-    interface ActiveBodyStep extends DebugStep {
-      /**
-       * Sets the {@link Body active body}. This step is optional.
-       *
-       * @param value The value to set.
-       * @return This fluent builder.
-       */
-      @Nonnull
-      DebugStep withActiveBody(@Nullable Body value);
+      DebugStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value);
     }
 
     interface DebugStep extends Builder {
@@ -373,7 +364,8 @@ public class SootMethod extends SootClassMember implements IMethod {
    *
    * @author Jan Martin Persch
    */
-  protected static class SootMethodBuilder extends SootClassMemberBuilder<SootMethod>
+  protected static class SootMethodBuilder
+      extends SootClassMemberBuilder<MethodSignature, SootMethod>
       implements Builder.MethodSourceStep,
           Builder.MethodSignatureStep,
           Builder.ModifiersStep,
@@ -387,7 +379,7 @@ public class SootMethod extends SootClassMember implements IMethod {
     // region Constructor
 
     /** Creates a new instance of the {@link SootMethodBuilder} class. */
-    protected SootMethodBuilder() {
+    SootMethodBuilder() {
       super(SootMethod.class);
     }
 
@@ -395,7 +387,7 @@ public class SootMethod extends SootClassMember implements IMethod {
 
     // region Properties
 
-    @Nullable private IMethodSourceContent _source;
+    @Nullable private MethodSource _source;
 
     /**
      * Gets the method source content.
@@ -403,7 +395,7 @@ public class SootMethod extends SootClassMember implements IMethod {
      * @return The value to get.
      */
     @Nonnull
-    protected IMethodSourceContent getSource() {
+    protected MethodSource getSource() {
       return ensureValue(this._source, "source");
     }
 
@@ -413,7 +405,7 @@ public class SootMethod extends SootClassMember implements IMethod {
      * @param value The value to set.
      */
     @Nonnull
-    public MethodSignatureStep withSource(@Nonnull IMethodSourceContent value) {
+    public MethodSignatureStep withSource(@Nonnull MethodSource value) {
       this._source = value;
 
       return this;
@@ -485,32 +477,8 @@ public class SootMethod extends SootClassMember implements IMethod {
      * @param value The value to set.
      */
     @Nonnull
-    public ActiveBodyStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value) {
+    public DebugStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value) {
       this._thrownExceptions = value;
-
-      return this;
-    }
-
-    @Nullable private Body _activeBody;
-
-    /**
-     * Gets the active body.
-     *
-     * @return The value to get.
-     */
-    @Nullable
-    protected Body getActiveBody() {
-      return this._activeBody;
-    }
-
-    /**
-     * Sets the active body.
-     *
-     * @param value The value to set.
-     */
-    @Nonnull
-    public DebugStep withActiveBody(@Nullable Body value) {
-      this._activeBody = value;
 
       return this;
     }
@@ -547,7 +515,6 @@ public class SootMethod extends SootClassMember implements IMethod {
           this.getSignature(),
           this.getModifiers(),
           this.getThrownExceptions(),
-          this.getActiveBody(),
           this.getDebugInfo());
     }
 

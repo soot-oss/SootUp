@@ -31,11 +31,13 @@ import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractOpStmt;
-import de.upb.soot.jimple.visitor.IStmtVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.visitor.StmtVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JEnterMonitorStmt extends AbstractOpStmt {
+public final class JEnterMonitorStmt extends AbstractOpStmt implements Copyable {
   /** */
   private static final long serialVersionUID = -8580317170617446624L;
 
@@ -43,13 +45,8 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
     this(Jimple.newImmediateBox(op), positionInfo);
   }
 
-  protected JEnterMonitorStmt(ValueBox opBox, PositionInfo positionInfo) {
+  private JEnterMonitorStmt(ValueBox opBox, PositionInfo positionInfo) {
     super(opBox, positionInfo);
-  }
-
-  @Override
-  public JEnterMonitorStmt clone() {
-    return new JEnterMonitorStmt(Jimple.cloneIfNecessary(getOp()), getPositionInfo().clone());
   }
 
   @Override
@@ -58,15 +55,15 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.ENTERMONITOR);
     up.literal(" ");
     opBox.toString(up);
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseEnterMonitorStmt(this);
+  public void accept(Visitor sw) {
+    ((StmtVisitor) sw).caseEnterMonitorStmt(this);
   }
 
   @Override
@@ -82,5 +79,15 @@ public class JEnterMonitorStmt extends AbstractOpStmt {
   @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
     return comparator.caseEnterMonitorStmt(this, o);
+  }
+
+  @Nonnull
+  public JEnterMonitorStmt withOp(Value op) {
+    return new JEnterMonitorStmt(op, getPositionInfo());
+  }
+
+  @Nonnull
+  public JEnterMonitorStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JEnterMonitorStmt(getOp(), positionInfo);
   }
 }

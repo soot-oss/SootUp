@@ -22,15 +22,16 @@ package de.upb.soot.core;
  */
 
 import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.util.Copyable;
 import de.upb.soot.util.EscapedWriter;
 import de.upb.soot.util.Utils;
 import de.upb.soot.util.printer.Printer;
@@ -55,6 +56,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -63,18 +65,18 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  */
-public class Body implements Serializable {
+public final class Body implements Serializable, Copyable {
   /** */
   private static final long serialVersionUID = -755840890323977315L;
 
   /** The locals for this Body. */
-  protected final List<Local> locals;
+  private final Set<Local> locals;
 
   /** The traps for this Body. */
-  protected final List<Trap> traps;
+  private final List<Trap> traps;
 
   /** The stmts for this Body. */
-  protected final List<IStmt> stmts;
+  private final List<Stmt> stmts;
 
   @Nullable private final Position position;
 
@@ -98,11 +100,11 @@ public class Body implements Serializable {
    * @param locals please use {@link LocalGenerator} to generate local for a body.
    */
   public Body(
-      @Nonnull List<Local> locals,
+      @Nonnull Set<Local> locals,
       @Nonnull List<Trap> traps,
-      @Nonnull List<IStmt> stmts,
+      @Nonnull List<Stmt> stmts,
       @Nullable Position position) {
-    this.locals = Collections.unmodifiableList(locals);
+    this.locals = Collections.unmodifiableSet(locals);
     this.traps = Collections.unmodifiableList(traps);
     this.stmts = Collections.unmodifiableList(stmts);
     this.position = position;
@@ -149,7 +151,7 @@ public class Body implements Serializable {
     return locals.size();
   }
 
-  protected void runValidation(BodyValidator validator) {
+  private void runValidation(BodyValidator validator) {
     final List<ValidationException> exceptionList = new ArrayList<>();
     validator.validate(this, exceptionList);
     if (!exceptionList.isEmpty()) {
@@ -183,7 +185,7 @@ public class Body implements Serializable {
   }
 
   /** Returns a backed chain of the locals declared in this Body. */
-  public Collection<Local> getLocals() {
+  public Set<Local> getLocals() {
     return locals;
   }
 
@@ -193,8 +195,8 @@ public class Body implements Serializable {
   }
 
   /** Return unit containing the \@this-assignment * */
-  public IStmt getThisStmt() {
-    for (IStmt u : getStmts()) {
+  public Stmt getThisStmt() {
+    for (Stmt u : getStmts()) {
       if (u instanceof JIdentityStmt && ((JIdentityStmt) u).getRightOp() instanceof JThisRef) {
         return u;
       }
@@ -210,7 +212,7 @@ public class Body implements Serializable {
 
   /** Return LHS of the first identity stmt assigning from \@parameter i. * */
   public Local getParameterLocal(int i) {
-    for (IStmt s : getStmts()) {
+    for (Stmt s : getStmts()) {
       if (s instanceof JIdentityStmt && ((JIdentityStmt) s).getRightOp() instanceof JParameterRef) {
         JIdentityStmt is = (JIdentityStmt) s;
         JParameterRef pr = (JParameterRef) is.getRightOp();
@@ -233,7 +235,7 @@ public class Body implements Serializable {
   public Collection<Local> getParameterLocals() {
     final int numParams = getMethod().getParameterCount();
     final List<Local> retVal = new ArrayList<>(numParams);
-    for (IStmt u : stmts) {
+    for (Stmt u : stmts) {
       if (u instanceof JIdentityStmt) {
         JIdentityStmt is = (JIdentityStmt) u;
         if (is.getRightOp() instanceof JParameterRef) {
@@ -253,11 +255,11 @@ public class Body implements Serializable {
    *
    * @return the statements in this Body
    */
-  public List<IStmt> getStmts() {
+  public List<Stmt> getStmts() {
     return Collections.unmodifiableList(stmts);
   }
 
-  public void checkInit() {
+  private void checkInit() {
     runValidation(new CheckInitValidator());
   }
 
@@ -276,14 +278,9 @@ public class Body implements Serializable {
     return streamOut.toString();
   }
 
+  @Nullable
   public Position getPosition() {
     return this.position;
-  }
-
-  /** Clones the current body, making deep copies of the contents. */
-  @Override
-  public Object clone() {
-    return new Body(this.locals, this.traps, this.stmts, this.position);
   }
 
   // FIXME "This code does not work and has to be adapted in future features."
@@ -325,9 +322,9 @@ public class Body implements Serializable {
   }
 
   /** Returns the first non-identity stmt in this body. */
-  public IStmt getFirstNonIdentityStmt() {
-    Iterator<IStmt> it = getStmts().iterator();
-    IStmt o = null;
+  public Stmt getFirstNonIdentityStmt() {
+    Iterator<Stmt> it = getStmts().iterator();
+    Stmt o = null;
     while (it.hasNext()) {
       if (!((o = it.next()) instanceof JIdentityStmt)) {
         break;
@@ -359,9 +356,9 @@ public class Body implements Serializable {
    *
    * @return A collection of all the StmtBoxes held by this body's units.
    */
-  public Collection<IStmtBox> getAllStmtBoxes() {
-    List<IStmtBox> stmtBoxList = new ArrayList<>();
-    for (IStmt item : stmts) {
+  public Collection<StmtBox> getAllStmtBoxes() {
+    List<StmtBox> stmtBoxList = new ArrayList<>();
+    for (Stmt item : stmts) {
       stmtBoxList.addAll(item.getStmtBoxes());
     }
 
@@ -369,5 +366,25 @@ public class Body implements Serializable {
       stmtBoxList.addAll(item.getStmtBoxes());
     }
     return Collections.unmodifiableCollection(stmtBoxList);
+  }
+
+  @Nonnull
+  public Body withLocals(Set<Local> locals) {
+    return new Body(locals, traps, stmts, position);
+  }
+
+  @Nonnull
+  public Body withTraps(List<Trap> traps) {
+    return new Body(locals, traps, stmts, position);
+  }
+
+  @Nonnull
+  public Body withStmt(List<Stmt> stmts) {
+    return new Body(locals, traps, stmts, position);
+  }
+
+  @Nonnull
+  public Body withPosition(Position position) {
+    return new Body(locals, traps, stmts, position);
   }
 }

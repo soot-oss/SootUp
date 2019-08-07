@@ -24,8 +24,10 @@ package de.upb.soot.signatures;
 
 import com.google.common.base.Objects;
 
+// TODO Rename this too?
+
 /** Represents a Java 9 module. */
-public class ModuleSignature implements ISignature {
+public class ModuleSignature implements Signature {
   /**
    * The unnamed module. If a request is made to load a type whose package is not defined in any
    * module then the module system load it from the classpath. To ensure that every type is
@@ -38,11 +40,11 @@ public class ModuleSignature implements ISignature {
 
   /**
    * Construct Module Signature of a Java 9 module. Instances should only be created a {@link
-   * DefaultSignatureFactory}
+   * Remove}
    *
    * @param moduleName module's name
    */
-  protected ModuleSignature(final String moduleName) {
+  public ModuleSignature(final String moduleName) {
     this.moduleName = moduleName;
   }
 

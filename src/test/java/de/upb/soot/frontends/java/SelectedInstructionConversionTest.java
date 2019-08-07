@@ -5,13 +5,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.common.stmt.IStmt;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,26 +27,25 @@ import org.junit.experimental.categories.Category;
 public class SelectedInstructionConversionTest {
 
   private WalaClassLoader loader;
-  private DefaultSignatureFactory sigFactory;
-  private DefaultTypeFactory typeFactory;
+
+  private DefaultIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/wala-tests/";
     loader = new WalaClassLoader(srcDir, null);
-    DefaultFactories factories = DefaultFactories.create();
-    sigFactory = factories.getSignatureFactory();
-    typeFactory = factories.getTypeFactory();
+    identifierFactory = DefaultIdentifierFactory.getInstance();
   }
 
+  @Test
   @Ignore
   public void test1() {
     // TODO FIX IT
-    declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA.AA");
+    declareClassSig = identifierFactory.getClassType("alreadywalaunittests.InnerClassAA.AA");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "makeAB",
                 declareClassSig,
                 "alreadywalaunittests.InnerClassAA.AB",
@@ -61,20 +58,20 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void test2() {
-    declareClassSig = typeFactory.getClassType("AnonymousClass");
+    declareClassSig = identifierFactory.getClassType("AnonymousClass");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "method", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -101,20 +98,20 @@ public class SelectedInstructionConversionTest {
   @Test
   @Ignore
   public void test3() {
-    declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");
+    declareClassSig = identifierFactory.getClassType("alreadywalaunittests.InnerClassAA");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "doAllThis", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -142,20 +139,20 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void test4() {
-    declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");
+    declareClassSig = identifierFactory.getClassType("alreadywalaunittests.InnerClassAA");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -172,20 +169,20 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void test5() {
-    declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");
+    declareClassSig = identifierFactory.getClassType("alreadywalaunittests.InnerClassAA");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "<init>", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -205,10 +202,10 @@ public class SelectedInstructionConversionTest {
     //     wait(long, int) is invoked with an int as its first argument
     //     Multi-dimensional array is not created properly
 
-    declareClassSig = typeFactory.getClassType("foo.bar.hello.world.ArraysAndSuch");
+    declareClassSig = identifierFactory.getClassType("foo.bar.hello.world.ArraysAndSuch");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "main", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -219,19 +216,20 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testThrowInstruction() {
-    declareClassSig = typeFactory.getClassType("FooEx1");
+    declareClassSig = identifierFactory.getClassType("FooEx1");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature("bar", declareClassSig, "void", Collections.emptyList()));
+            identifierFactory.getMethodSignature(
+                "bar", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
     List<String> actualStmts =
         body.getStmts().stream()
-            .map(IStmt::toString)
+            .map(Stmt::toString)
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
@@ -250,10 +248,10 @@ public class SelectedInstructionConversionTest {
   public void testSwitchInstruction() {
     // TODO Conversion from switch is very broken (default-case is not compiled correctly),
     //      And the target of the loop condition is null.
-    declareClassSig = typeFactory.getClassType("bugfixes.DoWhileInCase");
+    declareClassSig = identifierFactory.getClassType("bugfixes.DoWhileInCase");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -264,10 +262,10 @@ public class SelectedInstructionConversionTest {
   @Test
   public void testLoadMetadataInstruction() {
     // TODO Is the cast wrong?
-    declareClassSig = typeFactory.getClassType("javaonepointfive.EnumSwitch$Palo");
+    declareClassSig = identifierFactory.getClassType("javaonepointfive.EnumSwitch$Palo");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "valueOf",
                 declareClassSig,
                 "javaonepointfive.EnumSwitch$Palo",
@@ -280,10 +278,10 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testCheckCastInstruction() {
-    declareClassSig = typeFactory.getClassType("javaonepointfive.EnumSwitch$Palo");
+    declareClassSig = identifierFactory.getClassType("javaonepointfive.EnumSwitch$Palo");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "valueOf",
                 declareClassSig,
                 "javaonepointfive.EnumSwitch$Palo",
@@ -296,10 +294,10 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testEnclosingObjectReference() {
-    declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA$AA");
+    declareClassSig = identifierFactory.getClassType("alreadywalaunittests.InnerClassAA$AA");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "doSomeCrazyStuff", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -309,7 +307,7 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testEnclosingObjectReferenceWithFieldCreation() {
-    declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA$AA");
+    declareClassSig = identifierFactory.getClassType("alreadywalaunittests.InnerClassAA$AA");
     Optional<SootClass> m = loader.getSootClass(declareClassSig);
     assertTrue(m.isPresent());
     // TODO. replace the next line with assertions.
@@ -318,10 +316,10 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testAstLexicalRead() {
-    declareClassSig = typeFactory.getClassType("AnonymousClass$1");
+    declareClassSig = identifierFactory.getClassType("AnonymousClass$1");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "getValueBase", declareClassSig, "int", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -331,10 +329,10 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testAstLexicalReadFromField() {
-    declareClassSig = typeFactory.getClassType("Scoping2");
+    declareClassSig = identifierFactory.getClassType("Scoping2");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -344,7 +342,7 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testAstLexicalReadWithFieldCreation() {
-    declareClassSig = typeFactory.getClassType("AnonymousClass$1");
+    declareClassSig = identifierFactory.getClassType("AnonymousClass$1");
     Optional<SootClass> m = loader.getSootClass(declareClassSig);
     assertTrue(m.isPresent());
     // TODO. replace the next line with assertions.
@@ -353,10 +351,10 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testAstLexicalWrite() {
-    declareClassSig = typeFactory.getClassType("foo.bar.hello.world.InnerClasses");
+    declareClassSig = identifierFactory.getClassType("foo.bar.hello.world.InnerClasses");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "anonymousCoward", declareClassSig, "java.lang.Object", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -366,10 +364,10 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testAstLexicalWriteToField() {
-    declareClassSig = typeFactory.getClassType("foo.bar.hello.world.InnerClasses");
+    declareClassSig = identifierFactory.getClassType("foo.bar.hello.world.InnerClasses");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "supportLocalBusiness",
                 declareClassSig,
                 "java.lang.Object",
@@ -382,7 +380,7 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testAstLexicalWriteWithFieldCreation() {
-    declareClassSig = typeFactory.getClassType("foo.bar.hello.world.InnerClasses");
+    declareClassSig = identifierFactory.getClassType("foo.bar.hello.world.InnerClasses");
     Optional<SootClass> m = loader.getSootClass(declareClassSig);
     assertTrue(m.isPresent());
     // TODO. replace the next line with assertions.
@@ -391,10 +389,10 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testAstAssertInstruction() {
-    declareClassSig = typeFactory.getClassType("MiniaturSliceBug");
+    declareClassSig = identifierFactory.getClassType("MiniaturSliceBug");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "validNonDispatchedCall",
                 declareClassSig,
                 "void",
@@ -407,7 +405,7 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testAstAssertInstructionWithFieldCreation() {
-    declareClassSig = typeFactory.getClassType("MiniaturSliceBug");
+    declareClassSig = identifierFactory.getClassType("MiniaturSliceBug");
     Optional<SootClass> m = loader.getSootClass(declareClassSig);
     assertTrue(m.isPresent());
     // TODO. replace the next line with assertions.
@@ -416,10 +414,10 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testMonitorInstruction() {
-    declareClassSig = typeFactory.getClassType("Monitor");
+    declareClassSig = identifierFactory.getClassType("Monitor");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "incr", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -428,10 +426,10 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testGetCaughtExceptionInstruction() {
-    declareClassSig = typeFactory.getClassType("Exception1");
+    declareClassSig = identifierFactory.getClassType("Exception1");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -441,10 +439,11 @@ public class SelectedInstructionConversionTest {
 
   @Test
   public void testArrayInstructions() {
-    declareClassSig = typeFactory.getClassType("Array1");
+    declareClassSig = identifierFactory.getClassType("Array1");
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature("foo", declareClassSig, "void", Collections.emptyList()));
+            identifierFactory.getMethodSignature(
+                "foo", declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     // TODO. replace the next line with assertions.

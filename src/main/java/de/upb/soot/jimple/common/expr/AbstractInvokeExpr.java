@@ -30,17 +30,20 @@ import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 
 public abstract class AbstractInvokeExpr implements Expr {
   /** */
   private static final long serialVersionUID = 1796920588315752175L;
 
-  protected MethodSignature methodSignature;
-  protected final ValueBox[] argBoxes;
+  private final MethodSignature methodSignature;
+  private final ValueBox[] argBoxes;
 
   protected AbstractInvokeExpr(MethodSignature method, ValueBox[] argBoxes) {
     this.methodSignature = method;
@@ -51,30 +54,24 @@ public abstract class AbstractInvokeExpr implements Expr {
     return this.methodSignature;
   }
 
-  @Override
-  public abstract Object clone();
-
   public Value getArg(int index) {
     return argBoxes[index].getValue();
   }
 
   /** Returns a list of arguments, consisting of values contained in the box. */
   public List<Value> getArgs() {
-    List<Value> l = new ArrayList<>();
-    if (argBoxes != null) {
-      for (ValueBox element : argBoxes) {
-        l.add(element.getValue());
-      }
-    }
-    return l;
+    return argBoxes != null
+        ? Arrays.stream(argBoxes).map(ValueBox::getValue).collect(Collectors.toList())
+        : Collections.emptyList();
+  }
+
+  @Nullable
+  List<ValueBox> getArgBoxes() {
+    return Collections.unmodifiableList(Arrays.asList(argBoxes));
   }
 
   public int getArgCount() {
     return argBoxes == null ? 0 : argBoxes.length;
-  }
-
-  public void setArg(int index, Value arg) {
-    argBoxes[index].setValue(arg);
   }
 
   public ValueBox getArgBox(int index) {
@@ -112,7 +109,7 @@ public abstract class AbstractInvokeExpr implements Expr {
     }
   }
 
-  protected void argBoxesToPrinter(IStmtPrinter up) {
+  protected void argBoxesToPrinter(StmtPrinter up) {
     if (argBoxes != null) {
       final int len = argBoxes.length;
       if (0 < len) {

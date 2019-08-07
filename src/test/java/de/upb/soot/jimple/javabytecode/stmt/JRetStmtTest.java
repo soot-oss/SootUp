@@ -27,10 +27,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.jimple.basic.ImmediateBox;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.constant.IntConstant;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -41,8 +40,8 @@ public class JRetStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    IStmt stmt = new JRetStmt(new ImmediateBox(IntConstant.getInstance(33102)), nop);
-    IStmt stmt2 = new JRetStmt(new ImmediateBox(IntConstant.getInstance(42)), nop);
+    Stmt stmt = new JRetStmt(IntConstant.getInstance(33102), nop);
+    Stmt stmt2 = new JRetStmt(IntConstant.getInstance(42), nop);
 
     // toString
     assertEquals("ret 33102", stmt.toString());

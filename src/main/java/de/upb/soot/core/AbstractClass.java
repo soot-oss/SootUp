@@ -1,7 +1,7 @@
 package de.upb.soot.core;
 
-import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.signatures.ISignature;
+import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.signatures.Signature;
 import de.upb.soot.types.Type;
 import de.upb.soot.views.IView;
 import java.util.Optional;
@@ -14,15 +14,15 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractClass {
+public abstract class AbstractClass<T extends AbstractClassSource> {
 
-  protected final ClassSource classSource;
+  protected final T classSource;
 
-  public AbstractClass(ClassSource cs) {
+  public AbstractClass(T cs) {
     this.classSource = cs;
   }
 
-  public ClassSource getClassSource() {
+  public AbstractClassSource getClassSource() {
     return classSource;
   }
 
@@ -31,18 +31,18 @@ public abstract class AbstractClass {
   public abstract Type getType();
 
   @Nonnull
-  public Optional<? extends IMethod> getMethod(@Nonnull ISignature signature) {
+  public Optional<? extends Method> getMethod(@Nonnull Signature signature) {
     return this.getMethods().stream().filter(m -> m.getSignature().equals(signature)).findAny();
   }
 
   @Nonnull
-  public abstract Set<? extends IMethod> getMethods();
+  public abstract Set<? extends Method> getMethods();
 
   @Nonnull
-  public Optional<? extends IField> getField(@Nonnull ISignature signature) {
+  public Optional<? extends Field> getField(@Nonnull Signature signature) {
     return this.getFields().stream().filter(f -> f.getSignature().equals(signature)).findAny();
   }
 
   @Nonnull
-  public abstract Set<? extends IField> getFields();
+  public abstract Set<? extends Field> getFields();
 }

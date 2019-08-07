@@ -28,7 +28,7 @@ package de.upb.soot.jimple.common.expr;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +36,13 @@ public abstract class AbstractBinopExpr implements Expr {
   /** */
   private static final long serialVersionUID = -4967924464687577438L;
 
-  protected ValueBox op1Box;
-  protected ValueBox op2Box;
+  private final ValueBox op1Box;
+  private final ValueBox op2Box;
+
+  AbstractBinopExpr(ValueBox op1Box, ValueBox op2Box) {
+    this.op1Box = op1Box;
+    this.op2Box = op2Box;
+  }
 
   public Value getOp1() {
     return op1Box.getValue();
@@ -53,14 +58,6 @@ public abstract class AbstractBinopExpr implements Expr {
 
   public ValueBox getOp2Box() {
     return op2Box;
-  }
-
-  public void setOp1(Value op1) {
-    op1Box.setValue(op1);
-  }
-
-  public void setOp2(Value op2) {
-    op2Box.setValue(op2);
   }
 
   @Override
@@ -90,9 +87,6 @@ public abstract class AbstractBinopExpr implements Expr {
   public abstract String getSymbol();
 
   @Override
-  public abstract Object clone();
-
-  @Override
   public String toString() {
     Value op1 = op1Box.getValue();
     Value op2 = op2Box.getValue();
@@ -102,7 +96,7 @@ public abstract class AbstractBinopExpr implements Expr {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     op1Box.toString(up);
     up.literal(getSymbol());
     op2Box.toString(up);

@@ -25,40 +25,36 @@
 
 package de.upb.soot.jimple.common.ref;
 
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
-import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.ArrayType;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.NullType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JArrayRef implements ConcreteRef {
+public final class JArrayRef implements ConcreteRef, Copyable {
   /** */
   private static final long serialVersionUID = 7705080573810511044L;
 
-  protected ValueBox baseBox;
-  protected ValueBox indexBox;
+  private final ValueBox baseBox;
+  private final ValueBox indexBox;
 
   public JArrayRef(Value base, Value index) {
     this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index));
   }
 
-  protected JArrayRef(ValueBox baseBox, ValueBox indexBox) {
+  private JArrayRef(ValueBox baseBox, ValueBox indexBox) {
     this.baseBox = baseBox;
     this.indexBox = indexBox;
-  }
-
-  @Override
-  public Object clone() {
-    return new JArrayRef(Jimple.cloneIfNecessary(getBase()), Jimple.cloneIfNecessary(getIndex()));
   }
 
   @Override
@@ -78,7 +74,7 @@ public class JArrayRef implements ConcreteRef {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     baseBox.toString(up);
     up.literal("[");
     indexBox.toString(up);
@@ -89,20 +85,12 @@ public class JArrayRef implements ConcreteRef {
     return baseBox.getValue();
   }
 
-  public void setBase(Local base) {
-    baseBox.setValue(base);
-  }
-
   public ValueBox getBaseBox() {
     return baseBox;
   }
 
   public Value getIndex() {
     return indexBox.getValue();
-  }
-
-  public void setIndex(Value index) {
-    indexBox.setValue(index);
   }
 
   public ValueBox getIndexBox() {
@@ -139,21 +127,31 @@ public class JArrayRef implements ConcreteRef {
       if (type instanceof ArrayType) {
         arrayType = (ArrayType) type;
       } else {
-        arrayType = DefaultTypeFactory.getInstance().getArrayType(type, 1);
+        arrayType = DefaultIdentifierFactory.getInstance().getArrayType(type, 1);
       }
 
       // FIXME: [JMP] Should unwrapping not be done by the `ArrayType` itself?
       if (arrayType.getDimension() == 1) {
         return arrayType.getBaseType();
       } else {
-        return DefaultTypeFactory.getInstance()
+        return DefaultIdentifierFactory.getInstance()
             .getArrayType(arrayType.getBaseType(), arrayType.getDimension() - 1);
       }
     }
   }
 
   @Override
-  public void accept(IVisitor sw) {
+  public void accept(Visitor sw) {
     // TODO
+  }
+
+  @Nonnull
+  public JArrayRef withBase(Value base) {
+    return new JArrayRef(base, getIndex());
+  }
+
+  @Nonnull
+  public JArrayRef withIndex(Value index) {
+    return new JArrayRef(getBase(), index);
   }
 }

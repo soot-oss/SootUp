@@ -27,37 +27,21 @@
 package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.ImmediateBox;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.util.printer.IStmtPrinter;
-import java.util.ArrayList;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
+public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 9170581307891035087L;
 
-  /** Stores the values of new ImmediateBox to the argBoxes array. */
   public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
-    super(Jimple.newLocalBox(base), method, new ImmediateBox[args.size()]);
-
-    for (int i = 0; i < args.size(); i++) {
-      this.argBoxes[i] = Jimple.newImmediateBox(args.get(i));
-    }
-  }
-
-  @Override
-  public Object clone() {
-    List<Value> clonedArgs = new ArrayList<>(getArgCount());
-
-    for (int i = 0; i < getArgCount(); i++) {
-      clonedArgs.add(i, getArg(i));
-    }
-
-    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, clonedArgs);
+    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
   }
 
   @Override
@@ -71,9 +55,9 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
     builder
         .append(Jimple.SPECIALINVOKE + " ")
-        .append(baseBox.getValue().toString())
+        .append(getBase().toString())
         .append(".")
-        .append(methodSignature)
+        .append(getMethodSignature())
         .append("(");
     argBoxesToString(builder);
     builder.append(")");
@@ -83,15 +67,29 @@ public class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr {
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(IStmtPrinter up) {
-
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.SPECIALINVOKE);
     up.literal(" ");
-    baseBox.toString(up);
+    getBaseBox().toString(up);
     up.literal(".");
-    up.methodSignature(methodSignature);
+    up.methodSignature(getMethodSignature());
     up.literal("(");
     argBoxesToPrinter(up);
     up.literal(")");
+  }
+
+  @Nonnull
+  public JSpecialInvokeExpr withBase(Local base) {
+    return new JSpecialInvokeExpr(base, getMethodSignature(), getArgs());
+  }
+
+  @Nonnull
+  public JSpecialInvokeExpr withMethodSignature(MethodSignature methodSignature) {
+    return new JSpecialInvokeExpr((Local) getBase(), methodSignature, getArgs());
+  }
+
+  @Nonnull
+  public JSpecialInvokeExpr withArgs(List<? extends Value> args) {
+    return new JSpecialInvokeExpr((Local) getBase(), getMethodSignature(), args);
   }
 }

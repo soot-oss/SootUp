@@ -25,13 +25,15 @@
 
 package de.upb.soot.jimple.basic;
 
-import de.upb.soot.jimple.visitor.IJimpleValueVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.JimpleValueVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.Numberable;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 
 /**
  * Local variable in {@link de.upb.soot.core.Body}. Use {@link
@@ -39,17 +41,31 @@ import java.util.List;
  *
  * @author Linghui Luo
  */
-public class Local implements Value, Numberable, Immediate {
+public final class Local implements Value, Immediate, Copyable {
+  // This class is final since it implements equals and hashCode
+
   /** */
   private static final long serialVersionUID = 4469815713329368282L;
 
-  protected String name;
-  Type type;
+  @Nonnull private final String name;
+  @Nonnull private final Type type;
 
   /** Constructs a JimpleLocal of the given name and type. */
-  public Local(String name, Type type) {
-    setName(name);
-    setType(type);
+  public Local(@Nonnull String name, @Nonnull Type type) {
+    this.name = name.intern();
+    this.type = type;
+  }
+
+  // Can be safely suppressed, JimpleComparator performs this check
+  @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+  @Override
+  public boolean equals(Object o) {
+    return equivTo(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return equivHashCode();
   }
 
   @Override
@@ -59,41 +75,20 @@ public class Local implements Value, Numberable, Immediate {
 
   @Override
   public int equivHashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ((type == null) ? 0 : type.hashCode());
-    return result;
-  }
-
-  /** Returns a clone of the current JimpleLocal. */
-  @Override
-  public Object clone() {
-    // do not intern the name again
-    Local local = new Local(null, type);
-    local.name = name;
-    return local;
+    return Objects.hash(name, type);
   }
 
   /** Returns the name of this object. */
+  @Nonnull
   public String getName() {
     return name;
   }
 
-  /** Sets the name of this object as given. */
-  public void setName(String name) {
-    this.name = (name == null) ? null : name.intern();
-  }
-
   /** Returns the type of this local. */
+  @Nonnull
   @Override
   public Type getType() {
     return type;
-  }
-
-  /** Sets the type of this local. */
-  public void setType(Type t) {
-    this.type = t;
   }
 
   @Override
@@ -102,7 +97,7 @@ public class Local implements Value, Numberable, Immediate {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.local(this);
   }
 
@@ -112,19 +107,17 @@ public class Local implements Value, Numberable, Immediate {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IJimpleValueVisitor) sw).caseLocal(this);
+  public void accept(Visitor sw) {
+    ((JimpleValueVisitor) sw).caseLocal(this);
   }
 
-  @Override
-  public final int getNumber() {
-    return number;
+  @Nonnull
+  public Local withName(String name) {
+    return new Local(name, type);
   }
 
-  @Override
-  public final void setNumber(int number) {
-    this.number = number;
+  @Nonnull
+  public Local withType(Type type) {
+    return new Local(name, type);
   }
-
-  private int number = 0;
 }

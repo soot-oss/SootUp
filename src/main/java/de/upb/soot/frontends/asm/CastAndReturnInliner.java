@@ -22,13 +22,13 @@ package de.upb.soot.frontends.asm;
  * #L%
  */
 
-import de.upb.soot.jimple.basic.IStmtBox;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.Trap;
 import de.upb.soot.jimple.common.expr.JCastExpr;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -47,13 +47,13 @@ import javax.annotation.Nonnull;
  */
 class CastAndReturnInliner {
 
-  void transform(@Nonnull List<IStmt> bodyUnits, @Nonnull List<Trap> bodyTraps) {
+  void transform(@Nonnull List<Stmt> bodyUnits, @Nonnull List<Trap> bodyTraps) {
     // original snapshot iterator
-    // Iterator<IStmt> it = body.getUnits().snapshotIterator();
+    // Iterator<Stmt> it = body.getUnits().snapshotIterator();
 
     // FIXME: that is why lists do not work
 
-    for (IStmt u : bodyUnits) {
+    for (Stmt u : bodyUnits) {
       if (u instanceof JGotoStmt) {
         JGotoStmt gtStmt = (JGotoStmt) u;
         if (gtStmt.getTarget() instanceof JAssignStmt) {
@@ -61,26 +61,25 @@ class CastAndReturnInliner {
           if (assign.getRightOp() instanceof JCastExpr) {
             JCastExpr ce = (JCastExpr) assign.getRightOp();
             // We have goto that ends up at a cast statement
-            // IStmt nextStmt = bodyUnits.getSuccOf(assign);
+            // Stmt nextStmt = bodyUnits.getSuccOf(assign);
             // FIXME: this migration is ugly ... urg ... :(
-            IStmt nextStmt = bodyUnits.get(bodyUnits.indexOf(assign) + 1);
+            Stmt nextStmt = bodyUnits.get(bodyUnits.indexOf(assign) + 1);
             if (nextStmt instanceof JReturnStmt) {
               JReturnStmt retStmt = (JReturnStmt) nextStmt;
               if (retStmt.getOp() == assign.getLeftOp()) {
                 // We need to replace the GOTO with the return
-                JReturnStmt newStmt = retStmt.clone();
-                newStmt.setOp(ce.getOp());
+                JReturnStmt newStmt = retStmt.withOp(ce.getOp());
 
                 for (Trap t : bodyTraps) {
-                  for (IStmtBox ubox : t.getStmtBoxes()) {
+                  for (StmtBox ubox : t.getStmtBoxes()) {
                     if (ubox.getStmt() == gtStmt) {
-                      ubox.setStmt(newStmt);
+                      StmtBox.$Accessor.setStmt(ubox, newStmt);
                     }
                   }
                 }
 
                 while (!gtStmt.getBoxesPointingToThis().isEmpty()) {
-                  gtStmt.getBoxesPointingToThis().get(0).setStmt(newStmt);
+                  StmtBox.$Accessor.setStmt(gtStmt.getBoxesPointingToThis().get(0), newStmt);
                 }
                 // original code
                 // body.getUnits().swapWith(gtStmt, newStmt);

@@ -3,10 +3,8 @@ package de.upb.soot.frontends.java;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collections;
 import java.util.Optional;
@@ -18,25 +16,23 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class InstanceofInstructionConverstionTest {
   private WalaClassLoader loader;
-  private DefaultSignatureFactory sigFactory;
-  private DefaultTypeFactory typeFactory;
+
+  private DefaultIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir, null);
-    DefaultFactories factories = DefaultFactories.create();
-    sigFactory = factories.getSignatureFactory();
-    typeFactory = factories.getTypeFactory();
-    declareClassSig = typeFactory.getClassType("InstanceOf");
+    identifierFactory = DefaultIdentifierFactory.getInstance();
+    declareClassSig = identifierFactory.getClassType("InstanceOf");
   }
 
   @Test
   public void test() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "instanceOf",
                 declareClassSig,
                 "boolean",

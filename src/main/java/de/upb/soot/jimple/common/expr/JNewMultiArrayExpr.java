@@ -29,21 +29,23 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JNewMultiArrayExpr implements Expr {
+public final class JNewMultiArrayExpr implements Expr, Copyable {
   /** */
   private static final long serialVersionUID = -473132292740722571L;
 
-  private ArrayType baseType;
-  protected final ValueBox[] sizeBoxes;
+  private final ArrayType baseType;
+  private final ValueBox[] sizeBoxes;
 
   /**
    * Initiates a JNewMultiArrayExpr.
@@ -57,17 +59,6 @@ public class JNewMultiArrayExpr implements Expr {
     for (int i = 0; i < sizes.size(); i++) {
       sizeBoxes[i] = Jimple.newImmediateBox(sizes.get(i));
     }
-  }
-
-  @Override
-  public Object clone() {
-    List<Value> clonedSizes = new ArrayList<>(getSizeCount());
-
-    for (int i = 0; i < getSizeCount(); i++) {
-      clonedSizes.add(i, Jimple.cloneIfNecessary(getSize(i)));
-    }
-
-    return new JNewMultiArrayExpr(baseType, clonedSizes);
   }
 
   @Override
@@ -100,7 +91,7 @@ public class JNewMultiArrayExpr implements Expr {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     Type t = baseType.getBaseType();
 
     up.literal(Jimple.NEWMULTIARRAY);
@@ -121,10 +112,6 @@ public class JNewMultiArrayExpr implements Expr {
 
   public ArrayType getBaseType() {
     return baseType;
-  }
-
-  public void setBaseType(ArrayType baseType) {
-    this.baseType = baseType;
   }
 
   public ValueBox getSizeBox(int index) {
@@ -150,10 +137,6 @@ public class JNewMultiArrayExpr implements Expr {
     return toReturn;
   }
 
-  public void setSize(int index, Value size) {
-    sizeBoxes[index].setValue(size);
-  }
-
   @Override
   public final List<ValueBox> getUseBoxes() {
     List<ValueBox> list = new ArrayList<>();
@@ -172,7 +155,17 @@ public class JNewMultiArrayExpr implements Expr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseNewMultiArrayExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseNewMultiArrayExpr(this);
+  }
+
+  @Nonnull
+  public JNewMultiArrayExpr withBaseType(ArrayType baseType) {
+    return new JNewMultiArrayExpr(baseType, getSizes());
+  }
+
+  @Nonnull
+  public JNewMultiArrayExpr withSizes(List<Value> sizes) {
+    return new JNewMultiArrayExpr(baseType, sizes);
   }
 }

@@ -25,15 +25,16 @@
 
 package de.upb.soot.jimple.common.expr;
 
-import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.Type;
 import de.upb.soot.types.UnknownType;
+import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
-public class JShlExpr extends AbstractIntLongBinopExpr {
+public final class JShlExpr extends AbstractIntLongBinopExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 2632734994439309426L;
 
@@ -47,14 +48,14 @@ public class JShlExpr extends AbstractIntLongBinopExpr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseShlExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseShlExpr(this);
   }
 
   @Override
   public Type getType() {
-    Value op1 = op1Box.getValue();
-    Value op2 = op2Box.getValue();
+    Value op1 = getOp1();
+    Value op2 = getOp2();
 
     if (!isIntLikeType(op2.getType())) {
       return UnknownType.getInstance();
@@ -70,8 +71,13 @@ public class JShlExpr extends AbstractIntLongBinopExpr {
     return UnknownType.getInstance();
   }
 
-  @Override
-  public Object clone() {
-    return new JShlExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
+  @Nonnull
+  public JShlExpr withOp1(Value op1) {
+    return new JShlExpr(op1, getOp2());
+  }
+
+  @Nonnull
+  public JShlExpr withOp2(Value op2) {
+    return new JShlExpr(getOp1(), op2);
   }
 }

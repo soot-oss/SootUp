@@ -27,11 +27,13 @@ package de.upb.soot.jimple.common.ref;
 
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * <code>ParameterRef</code> objects are used by <code>Body</code> objects to refer to the parameter
@@ -40,12 +42,12 @@ import java.util.List;
  * <p>For instance, in an instance methodRef, the first statement will often be <code>
  *  this := @parameter0; </code>
  */
-public class JParameterRef implements IdentityRef {
+public final class JParameterRef implements IdentityRef, Copyable {
   /** */
   private static final long serialVersionUID = -5198809451267425640L;
 
-  private int num;
-  private Type paramType;
+  private final int num;
+  private final Type paramType;
 
   /**
    * Constructs a ParameterRef object of the specified type, representing the specified parameter
@@ -66,12 +68,6 @@ public class JParameterRef implements IdentityRef {
     return num * 101 + paramType.hashCode() * 17;
   }
 
-  /** Create a new ParameterRef object with the same paramType and number. */
-  @Override
-  public Object clone() {
-    return new JParameterRef(paramType, num);
-  }
-
   /** Converts the given ParameterRef into a String i.e. <code>@parameter0: .int</code>. */
   @Override
   public String toString() {
@@ -79,18 +75,13 @@ public class JParameterRef implements IdentityRef {
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.identityRef(this);
   }
 
   /** Returns the index of this ParameterRef. */
   public int getIndex() {
     return num;
-  }
-
-  /** Sets the index of this ParameterRef. */
-  public void setIndex(int index) {
-    num = index;
   }
 
   @Override
@@ -106,7 +97,17 @@ public class JParameterRef implements IdentityRef {
 
   /** Used with RefSwitch. */
   @Override
-  public void accept(IVisitor sw) {
+  public void accept(Visitor sw) {
     // TODO
+  }
+
+  @Nonnull
+  public JParameterRef withParamType(Type paramType) {
+    return new JParameterRef(paramType, num);
+  }
+
+  @Nonnull
+  public JParameterRef withNumber(int number) {
+    return new JParameterRef(paramType, number);
   }
 }

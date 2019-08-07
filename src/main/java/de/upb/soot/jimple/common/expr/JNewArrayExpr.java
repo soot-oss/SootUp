@@ -25,34 +25,31 @@
 
 package de.upb.soot.jimple.common.expr;
 
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.ArrayType;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JNewArrayExpr implements Expr {
+public final class JNewArrayExpr implements Expr, Copyable {
   /** */
   private static final long serialVersionUID = 4481534412297120257L;
 
-  private Type baseType;
+  private final Type baseType;
   private final ValueBox sizeBox;
 
   public JNewArrayExpr(Type type, Value size) {
     this.baseType = type;
     this.sizeBox = Jimple.newImmediateBox(size);
-  }
-
-  @Override
-  public Object clone() {
-    return new JNewArrayExpr(getBaseType(), Jimple.cloneIfNecessary(getSize()));
   }
 
   @Override
@@ -78,7 +75,7 @@ public class JNewArrayExpr implements Expr {
 
   /** Converts a parameter of type StmtPrinter to a string literal. */
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.NEWARRAY);
     up.literal(" ");
     up.literal("(");
@@ -97,20 +94,12 @@ public class JNewArrayExpr implements Expr {
     return baseType;
   }
 
-  public void setBaseType(Type type) {
-    baseType = type;
-  }
-
   public ValueBox getSizeBox() {
     return sizeBox;
   }
 
   public Value getSize() {
     return sizeBox.getValue();
-  }
-
-  public void setSize(Value size) {
-    sizeBox.setValue(size);
   }
 
   /** Returns a list of type ValueBox, contains a list of values of sizeBox. */
@@ -127,16 +116,26 @@ public class JNewArrayExpr implements Expr {
   @Override
   public Type getType() {
     if (baseType instanceof ArrayType) {
-      return DefaultTypeFactory.getInstance()
+      return DefaultIdentifierFactory.getInstance()
           .getArrayType(
               ((ArrayType) baseType).getBaseType(), ((ArrayType) baseType).getDimension() + 1);
     } else {
-      return DefaultTypeFactory.getInstance().getArrayType(baseType, 1);
+      return DefaultIdentifierFactory.getInstance().getArrayType(baseType, 1);
     }
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseNewArrayExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseNewArrayExpr(this);
+  }
+
+  @Nonnull
+  public JNewArrayExpr withBaseType(Type baseType) {
+    return new JNewArrayExpr(baseType, getSize());
+  }
+
+  @Nonnull
+  public JNewArrayExpr withSize(Value size) {
+    return new JNewArrayExpr(baseType, size);
   }
 }

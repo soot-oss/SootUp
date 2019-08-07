@@ -30,11 +30,13 @@ import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IStmtVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.visitor.StmtVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
+import javax.annotation.Nonnull;
 
-public class JReturnStmt extends AbstractOpStmt {
+public final class JReturnStmt extends AbstractOpStmt implements Copyable {
   /** */
   private static final long serialVersionUID = 4601025616184085996L;
 
@@ -47,25 +49,20 @@ public class JReturnStmt extends AbstractOpStmt {
   }
 
   @Override
-  public JReturnStmt clone() {
-    return new JReturnStmt(Jimple.cloneIfNecessary(getOp()), getPositionInfo().clone());
-  }
-
-  @Override
   public String toString() {
     return Jimple.RETURN + " " + opBox.getValue().toString();
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     up.literal(Jimple.RETURN);
     up.literal(" ");
     opBox.toString(up);
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseReturnStmt(this);
+  public void accept(Visitor sw) {
+    ((StmtVisitor) sw).caseReturnStmt(this);
   }
 
   @Override
@@ -86,5 +83,19 @@ public class JReturnStmt extends AbstractOpStmt {
   @Override
   public int equivHashCode() {
     return super.equivHashCode();
+  }
+
+  public JReturnStmt withOp(Value op) {
+    return new JReturnStmt(op, getPositionInfo());
+  }
+
+  @Nonnull
+  public JReturnStmt withReturnValue(Value returnValue) {
+    return new JReturnStmt(returnValue, getPositionInfo());
+  }
+
+  @Nonnull
+  public JReturnStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JReturnStmt(getOp(), positionInfo);
   }
 }

@@ -37,6 +37,7 @@ public class NullType extends ReferenceType {
   private NullType() {}
 
   @Override
+  @Nonnull
   public String toString() {
     return "null";
   }

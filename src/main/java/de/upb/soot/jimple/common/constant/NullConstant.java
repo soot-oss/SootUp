@@ -25,12 +25,12 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.visitor.IConstantVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ConstantVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.NullType;
 import de.upb.soot.types.Type;
 
-public class NullConstant extends Constant {
+public class NullConstant implements Constant {
   /** */
   private static final long serialVersionUID = 8286431855238615958L;
 
@@ -59,8 +59,8 @@ public class NullConstant extends Constant {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IConstantVisitor) sw).caseNullConstant(this);
+  public void accept(Visitor sw) {
+    ((ConstantVisitor) sw).caseNullConstant(this);
   }
 
   @Override

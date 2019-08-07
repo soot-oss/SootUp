@@ -23,18 +23,17 @@ package de.upb.soot.util.printer;
 
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.constant.Constant;
 import de.upb.soot.jimple.common.ref.IdentityRef;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.Type;
 import java.util.HashSet;
 
-/** Partial default IStmtPrinter implementation. */
-public abstract class AbstractStmtPrinter implements IStmtPrinter {
+/** Partial default StmtPrinter implementation. */
+public abstract class AbstractStmtPrinter implements StmtPrinter {
 
   protected boolean startOfLine = true;
   protected String indent = "        ";
@@ -42,20 +41,20 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   protected HashSet<String> quotableLocals;
 
   @Override
-  public void startStmt(IStmt u) {
+  public void startStmt(Stmt u) {
     handleIndent();
   }
 
   @Override
-  public void endStmt(IStmt u) {}
+  public void endStmt(Stmt u) {}
 
   @Override
-  public void startStmtBox(IStmtBox ub) {
+  public void startStmtBox(StmtBox ub) {
     handleIndent();
   }
 
   @Override
-  public void endStmtBox(IStmtBox ub) {}
+  public void endStmtBox(StmtBox ub) {}
 
   @Override
   public void startValueBox(ValueBox vb) {
@@ -108,7 +107,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   public abstract void identityRef(IdentityRef r);
 
   @Override
-  public abstract void stmtRef(IStmt u, boolean branchTarget);
+  public abstract void stmtRef(Stmt u, boolean branchTarget);
 
   @Override
   public void newline() {
@@ -119,14 +118,7 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
   @Override
   public void local(Local l) {
     handleIndent();
-    if (quotableLocals == null) {
-      initializeQuotableLocals();
-    }
-    if (quotableLocals.contains(l.getName())) {
-      output.append("'").append(l.getName()).append("'");
-    } else {
-      output.append(l.getName());
-    }
+    output.append(l.getName());
   }
 
   @Override
@@ -152,10 +144,5 @@ public abstract class AbstractStmtPrinter implements IStmtPrinter {
       output.append(indent);
     }
     startOfLine = false;
-  }
-
-  protected void initializeQuotableLocals() {
-    quotableLocals = new HashSet<>();
-    quotableLocals.addAll(Jimple.jimpleKeywordList());
   }
 }

@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public class SootField extends SootClassMember implements IField {
+public class SootField extends SootClassMember<FieldSignature> implements Field {
 
   private static final long serialVersionUID = -5101396409117866687L;
 
@@ -69,6 +69,16 @@ public class SootField extends SootClassMember implements IField {
     return getOriginalStyleDeclaration();
   }
 
+  @Nonnull
+  public SootField withSignature(FieldSignature signature) {
+    return new SootField(signature, getModifiers());
+  }
+
+  @Nonnull
+  public SootField withModifiers(Iterable<Modifier> modifiers) {
+    return new SootField(getSignature(), modifiers);
+  }
+
   /**
    * Creates a {@link SootField} builder.
    *
@@ -85,7 +95,7 @@ public class SootField extends SootClassMember implements IField {
    * @see #builder()
    * @author Jan Martin Persch
    */
-  public interface Builder extends SootClassMember.Builder<SootField> {
+  public interface Builder extends SootClassMember.Builder<FieldSignature, SootField> {
     interface SignatureStep {
       /**
        * Sets the {@link FieldSignature}.
@@ -114,7 +124,7 @@ public class SootField extends SootClassMember implements IField {
    *
    * @author Jan Martin Persch
    */
-  protected static class SootFieldBuilder extends SootClassMemberBuilder<SootField>
+  protected static class SootFieldBuilder extends SootClassMemberBuilder<FieldSignature, SootField>
       implements Builder.SignatureStep, Builder.ModifiersStep, Builder {
     // region Fields
 
@@ -123,7 +133,7 @@ public class SootField extends SootClassMember implements IField {
     // region Constructor
 
     /** Creates a new instance of the {@link SootMethod.SootMethodBuilder} class. */
-    protected SootFieldBuilder() {
+    SootFieldBuilder() {
       super(SootField.class);
     }
 

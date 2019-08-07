@@ -23,13 +23,12 @@
 package de.upb.soot.jimple.common.stmt;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.jimple.common.ref.JParameterRef;
 import de.upb.soot.jimple.common.ref.JThisRef;
-import de.upb.soot.types.DefaultTypeFactory;
 import de.upb.soot.types.PrimitiveType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -42,20 +41,19 @@ public class JIdentityStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    DefaultFactories defaultFactories = DefaultFactories.create();
-    DefaultTypeFactory typeFactory = defaultFactories.getTypeFactory();
+    DefaultIdentifierFactory typeFactory = DefaultIdentifierFactory.getInstance();
 
     Local thiz = new Local("$r0", typeFactory.getType("somepackage.dummy.MyClass"));
-    IStmt thisIdStmt =
+    Stmt thisIdStmt =
         new JIdentityStmt(
             thiz, new JThisRef(typeFactory.getClassType("somepackage.dummy.MyClass")), nop);
 
     Local param = new Local("$i0", PrimitiveType.getInt());
-    IStmt paramIdStmt =
+    Stmt paramIdStmt =
         new JIdentityStmt(param, new JParameterRef(PrimitiveType.getInt(), 123), nop);
 
     Local exception = new Local("$r1", typeFactory.getType("java.lang.Exception"));
-    IStmt exceptionIdStmt = new JIdentityStmt(exception, new JCaughtExceptionRef(), nop);
+    Stmt exceptionIdStmt = new JIdentityStmt(exception, new JCaughtExceptionRef(), nop);
 
     // toString
     Assert.assertEquals("$r0 := @this: somepackage.dummy.MyClass", thisIdStmt.toString());

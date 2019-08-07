@@ -15,13 +15,15 @@ import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
-public class JInstanceFieldRef extends FieldRef {
+public final class JInstanceFieldRef extends FieldRef implements Copyable {
 
   /** */
   private static final long serialVersionUID = 2900174317359676686L;
@@ -31,7 +33,6 @@ public class JInstanceFieldRef extends FieldRef {
   /**
    * Create a reference to a class' instance field.
    *
-   * @param view the view
    * @param base the base value of the field
    * @param fieldSig the field sig
    */
@@ -41,20 +42,15 @@ public class JInstanceFieldRef extends FieldRef {
   }
 
   @Override
-  public Object clone() {
-    return new JInstanceFieldRef(Jimple.cloneIfNecessary(getBase()), fieldSignature);
-  }
-
-  @Override
   public String toString() {
-    return baseBox.getValue().toString() + "." + fieldSignature.toString();
+    return baseBox.getValue().toString() + "." + getFieldSignature().toString();
   }
 
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     baseBox.toString(up);
     up.literal(".");
-    up.fieldSignature(fieldSignature);
+    up.fieldSignature(getFieldSignature());
   }
 
   public Value getBase() {
@@ -63,10 +59,6 @@ public class JInstanceFieldRef extends FieldRef {
 
   public ValueBox getBaseBox() {
     return baseBox;
-  }
-
-  public void setBase(Value base) {
-    baseBox.setValue(base);
   }
 
   /** Returns a list useBoxes of type ValueBox. */
@@ -80,7 +72,7 @@ public class JInstanceFieldRef extends FieldRef {
   }
 
   @Override
-  public void accept(IVisitor sw) {
+  public void accept(Visitor sw) {
     // TODO
   }
 
@@ -93,5 +85,15 @@ public class JInstanceFieldRef extends FieldRef {
   @Override
   public int equivHashCode() {
     return getFieldSignature().hashCode() * 101 + baseBox.getValue().hashCode() + 17;
+  }
+
+  @Nonnull
+  public JInstanceFieldRef withBase(Value base) {
+    return new JInstanceFieldRef(base, getFieldSignature());
+  }
+
+  @Nonnull
+  public JInstanceFieldRef withFieldSignature(FieldSignature fieldSignature) {
+    return new JInstanceFieldRef(getBase(), fieldSignature);
   }
 }

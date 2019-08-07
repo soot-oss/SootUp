@@ -27,10 +27,12 @@ package de.upb.soot.jimple.common.expr;
 
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.visitor.IExprVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
+import de.upb.soot.jimple.visitor.ExprVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
-public class JCmpExpr extends AbstractIntBinopExpr {
+public final class JCmpExpr extends AbstractIntBinopExpr implements Copyable {
   /** */
   private static final long serialVersionUID = 1638137058702225918L;
 
@@ -44,12 +46,17 @@ public class JCmpExpr extends AbstractIntBinopExpr {
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IExprVisitor) sw).caseCmpExpr(this);
+  public void accept(Visitor sw) {
+    ((ExprVisitor) sw).caseCmpExpr(this);
   }
 
-  @Override
-  public Object clone() {
-    return new JCmpExpr(Jimple.cloneIfNecessary(getOp1()), Jimple.cloneIfNecessary(getOp2()));
+  @Nonnull
+  public JCmpExpr withOp1(Value op1) {
+    return new JCmpExpr(op1, getOp2());
+  }
+
+  @Nonnull
+  public JCmpExpr withOp2(Value op2) {
+    return new JCmpExpr(getOp1(), op2);
   }
 }

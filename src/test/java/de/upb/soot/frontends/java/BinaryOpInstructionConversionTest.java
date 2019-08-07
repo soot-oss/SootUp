@@ -7,11 +7,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultFactories;
+import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
+import de.upb.soot.jimple.common.constant.BooleanConstant;
 import de.upb.soot.jimple.common.constant.IntConstant;
 import de.upb.soot.jimple.common.expr.JAddExpr;
 import de.upb.soot.jimple.common.expr.JAndExpr;
@@ -32,14 +33,12 @@ import de.upb.soot.jimple.common.expr.JShrExpr;
 import de.upb.soot.jimple.common.expr.JSubExpr;
 import de.upb.soot.jimple.common.expr.JUshrExpr;
 import de.upb.soot.jimple.common.expr.JXorExpr;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JGotoStmt;
 import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.stmt.JIfStmt;
 import de.upb.soot.jimple.common.stmt.JReturnStmt;
-import de.upb.soot.signatures.DefaultSignatureFactory;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
 import java.util.Arrays;
@@ -54,33 +53,30 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class BinaryOpInstructionConversionTest {
   private WalaClassLoader loader;
-  private DefaultSignatureFactory sigFactory;
-  private DefaultTypeFactory typeFactory;
+  private DefaultIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "src/test/resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir, null);
-    DefaultFactories factories = DefaultFactories.create();
-    sigFactory = factories.getSignatureFactory();
-    typeFactory = factories.getTypeFactory();
-    declareClassSig = typeFactory.getClassType("BinaryOperations");
+    identifierFactory = DefaultIdentifierFactory.getInstance();
+    declareClassSig = identifierFactory.getClassType("BinaryOperations");
   }
 
   @Test
   public void testAddByte() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "addByte", declareClassSig, "byte", Arrays.asList("byte", "byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -88,9 +84,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -163,15 +161,15 @@ public class BinaryOpInstructionConversionTest {
 
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "addDouble", declareClassSig, "double", Arrays.asList("double", "float")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(6, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -179,9 +177,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -234,15 +234,15 @@ public class BinaryOpInstructionConversionTest {
 
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "mulDouble", declareClassSig, "double", Arrays.asList("double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -250,9 +250,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -295,15 +297,15 @@ public class BinaryOpInstructionConversionTest {
   public void testSubChar() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "subChar", declareClassSig, "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -311,9 +313,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -384,15 +388,15 @@ public class BinaryOpInstructionConversionTest {
   public void testMulShort() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "mulShort", declareClassSig, "short", Arrays.asList("short", "short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -400,9 +404,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -473,15 +479,15 @@ public class BinaryOpInstructionConversionTest {
   public void testDivInt() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "divInt", declareClassSig, "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -489,9 +495,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -532,15 +540,15 @@ public class BinaryOpInstructionConversionTest {
   public void testModChar() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "modChar", declareClassSig, "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -548,9 +556,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -622,15 +632,15 @@ public class BinaryOpInstructionConversionTest {
     // TODO: failed test
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "incShort", declareClassSig, "short", Collections.singletonList("short")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(6, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -638,9 +648,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -688,15 +700,15 @@ public class BinaryOpInstructionConversionTest {
     // TODO: failed test
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "decInt", declareClassSig, "int", Collections.singletonList("int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -704,9 +716,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -747,15 +761,15 @@ public class BinaryOpInstructionConversionTest {
 
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "orLong", declareClassSig, "long", Arrays.asList("long", "long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -763,9 +777,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -806,15 +822,15 @@ public class BinaryOpInstructionConversionTest {
   public void testXorInt() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "xorInt", declareClassSig, "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -822,9 +838,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -865,15 +883,15 @@ public class BinaryOpInstructionConversionTest {
   public void testAndChar() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "andChar", declareClassSig, "char", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -881,9 +899,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -954,15 +974,15 @@ public class BinaryOpInstructionConversionTest {
   public void testLShiftByte() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "lshiftByte", declareClassSig, "byte", Collections.singletonList("byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(6, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -970,9 +990,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1023,15 +1045,15 @@ public class BinaryOpInstructionConversionTest {
   public void testRShiftShort() {
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "rshiftShort", declareClassSig, "short", Arrays.asList("short", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(7, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1039,9 +1061,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1103,15 +1127,15 @@ public class BinaryOpInstructionConversionTest {
     // TODO: failed test
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "negLong", declareClassSig, "long", Collections.singletonList("long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(4, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1119,9 +1143,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1151,15 +1177,15 @@ public class BinaryOpInstructionConversionTest {
     // TODO: failed test
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "zeroFillRshiftInt", declareClassSig, "int", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1167,9 +1193,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1211,15 +1239,15 @@ public class BinaryOpInstructionConversionTest {
     // TODO: failed test
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "logicalAnd", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1227,9 +1255,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1260,7 +1290,7 @@ public class BinaryOpInstructionConversionTest {
               JAssignStmt.class,
               target -> {
                 assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
-                assertEquiv(IntConstant.getInstance(0), target.getRightOp());
+                assertEquiv(BooleanConstant.getFalse(), target.getRightOp());
               });
         });
 
@@ -1287,7 +1317,7 @@ public class BinaryOpInstructionConversionTest {
         JAssignStmt.class,
         target -> {
           assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), target.getLeftOp());
-          assertEquiv(IntConstant.getInstance(0), target.getRightOp());
+          assertEquiv(BooleanConstant.getFalse(), target.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1301,14 +1331,14 @@ public class BinaryOpInstructionConversionTest {
     // TODO: failed test
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "logicalOr", declareClassSig, "boolean", Arrays.asList("boolean", "boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(8, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1316,9 +1346,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1358,7 +1390,7 @@ public class BinaryOpInstructionConversionTest {
         JAssignStmt.class,
         stmt -> {
           assertEquiv(new Local("$z2", PrimitiveType.getBoolean()), stmt.getLeftOp());
-          assertEquiv(IntConstant.getInstance(1), stmt.getRightOp());
+          assertEquiv(BooleanConstant.getTrue(), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1391,15 +1423,15 @@ public class BinaryOpInstructionConversionTest {
 
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "not", declareClassSig, "boolean", Collections.singletonList("boolean")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(4, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1407,9 +1439,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1441,15 +1475,15 @@ public class BinaryOpInstructionConversionTest {
 
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "equal", declareClassSig, "boolean", Arrays.asList("int", "int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1457,9 +1491,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1504,15 +1540,15 @@ public class BinaryOpInstructionConversionTest {
 
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "notEqual", declareClassSig, "boolean", Arrays.asList("float", "float")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1520,9 +1556,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1567,15 +1605,15 @@ public class BinaryOpInstructionConversionTest {
 
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "greater", declareClassSig, "boolean", Arrays.asList("double", "double")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1583,9 +1621,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1630,15 +1670,15 @@ public class BinaryOpInstructionConversionTest {
 
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "smaller", declareClassSig, "boolean", Arrays.asList("long", "long")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(5, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1646,9 +1686,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1693,15 +1735,15 @@ public class BinaryOpInstructionConversionTest {
 
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "greaterEqual", declareClassSig, "boolean", Arrays.asList("char", "char")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(7, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1709,9 +1751,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1776,15 +1820,15 @@ public class BinaryOpInstructionConversionTest {
 
     Optional<SootMethod> m =
         loader.getSootMethod(
-            sigFactory.getMethodSignature(
+            identifierFactory.getMethodSignature(
                 "smallerEqual", declareClassSig, "boolean", Arrays.asList("byte", "byte")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
-    Body body = method.getActiveBody();
+    Body body = method.getBody();
     assertNotNull(body);
 
-    List<IStmt> stmts = body.getStmts();
+    List<Stmt> stmts = body.getStmts();
     assertEquals(7, stmts.size());
 
     assertInstanceOfSatisfying(
@@ -1792,9 +1836,11 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(
-              new Local("r0", typeFactory.getClassType("BinaryOperations")), stmt.getLeftOp());
+              new Local("r0", identifierFactory.getClassType("BinaryOperations")),
+              stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("BinaryOperations")), stmt.getRightOp());
+              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(

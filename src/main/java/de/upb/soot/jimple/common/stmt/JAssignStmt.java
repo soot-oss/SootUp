@@ -11,12 +11,11 @@
 
 package de.upb.soot.jimple.common.stmt;
 
-import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.IStmtBox;
 import de.upb.soot.jimple.basic.Immediate;
 import de.upb.soot.jimple.basic.JimpleComparator;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.RValueBox;
+import de.upb.soot.jimple.basic.StmtBox;
 import de.upb.soot.jimple.basic.StmtBoxOwner;
 import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.basic.ValueBox;
@@ -24,13 +23,15 @@ import de.upb.soot.jimple.basic.VariableBox;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.ref.JArrayRef;
 import de.upb.soot.jimple.common.ref.JFieldRef;
-import de.upb.soot.jimple.visitor.IStmtVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.util.printer.IStmtPrinter;
+import de.upb.soot.jimple.visitor.StmtVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
+import de.upb.soot.util.Copyable;
+import de.upb.soot.util.printer.StmtPrinter;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /** The Class JAssignStmt. */
-public class JAssignStmt extends AbstractDefinitionStmt {
+public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
 
   /** */
   private static final long serialVersionUID = -4560269896679815285L;
@@ -127,15 +128,15 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * Instantiates a new JAssignStmt.
    *
    * @param variable the variable on the left side of the assign statement.
-   * @param rvalue the value on the right side of the assign statement.
+   * @param rValue the value on the right side of the assign statement.
    */
-  public JAssignStmt(Value variable, Value rvalue, PositionInfo positionInfo) {
-    this(new LinkedVariableBox(variable), new LinkedRValueBox(rvalue), positionInfo);
+  public JAssignStmt(Value variable, Value rValue, PositionInfo positionInfo) {
+    this(new LinkedVariableBox(variable), new LinkedRValueBox(rValue), positionInfo);
 
     ((LinkedVariableBox) getLeftBox()).setOtherBox(getRightBox());
     ((LinkedRValueBox) getRightBox()).setOtherBox(getLeftBox());
 
-    if (!getLeftBox().canContainValue(variable) || !getRightBox().canContainValue(rvalue)) {
+    if (!getLeftBox().canContainValue(variable) || !getRightBox().canContainValue(rValue)) {
       throw new RuntimeException(
           "Illegal assignment statement.  Make sure that either left side or right hand side has a local or constant.");
     }
@@ -288,7 +289,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @see de.upb.soot.jimple.common.stmt.AbstractStmt#getUnitBoxes()
    */
   @Override
-  public List<IStmtBox> getStmtBoxes() {
+  public List<StmtBox> getStmtBoxes() {
     // handle possible PhiExpr's
     Value rvalue = getRightBox().getValue();
     if (rvalue instanceof StmtBoxOwner) {
@@ -314,7 +315,7 @@ public class JAssignStmt extends AbstractDefinitionStmt {
    * @see de.upb.soot.jimple.common.stmt.Stmt#toString(de.upb.soot.StmtPrinter)
    */
   @Override
-  public void toString(IStmtPrinter up) {
+  public void toString(StmtPrinter up) {
     getLeftBox().toString(up);
     up.literal(" = ");
     getRightBox().toString(up);
@@ -323,42 +324,11 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   /*
    * (non-Javadoc)
    *
-   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#clone()
+   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#accept(de.upb.soot.jimple.visitor.Visitor)
    */
   @Override
-  public JAssignStmt clone() {
-    return new JAssignStmt(
-        Jimple.cloneIfNecessary(getLeftOp()),
-        Jimple.cloneIfNecessary(getRightOp()),
-        getPositionInfo().clone());
-  }
-
-  /**
-   * Sets the left op.
-   *
-   * @param variable the new left op
-   */
-  public void setLeftOp(Value variable) {
-    getLeftOpBox().setValue(variable);
-  }
-
-  /**
-   * Sets the right op.
-   *
-   * @param rvalue the new right op
-   */
-  public void setRightOp(Value rvalue) {
-    getRightOpBox().setValue(rvalue);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see de.upb.soot.jimple.common.stmt.AbstractStmt#accept(de.upb.soot.jimple.visitor.IVisitor)
-   */
-  @Override
-  public void accept(IVisitor sw) {
-    ((IStmtVisitor) sw).caseAssignStmt(this);
+  public void accept(Visitor sw) {
+    ((StmtVisitor) sw).caseAssignStmt(this);
   }
 
   @Override
@@ -369,5 +339,20 @@ public class JAssignStmt extends AbstractDefinitionStmt {
   @Override
   public int equivHashCode() {
     return getLeftBox().getValue().equivHashCode() + 31 * getRightBox().getValue().equivHashCode();
+  }
+
+  @Nonnull
+  public JAssignStmt withVariable(Value variable) {
+    return new JAssignStmt(variable, getRightOp(), getPositionInfo());
+  }
+
+  @Nonnull
+  public JAssignStmt withRValue(Value rValue) {
+    return new JAssignStmt(getLeftOp(), rValue, getPositionInfo());
+  }
+
+  @Nonnull
+  public JAssignStmt withPositionInfo(PositionInfo positionInfo) {
+    return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

@@ -26,15 +26,17 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.common.stmt.IStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.util.Copyable;
+import javax.annotation.Nonnull;
 
-public class JTrap extends AbstractTrap {
+public final class JTrap extends AbstractTrap implements Copyable {
 
   /** */
   private static final long serialVersionUID = -1514595956359087470L;
 
-  public JTrap(JavaClassType exception, IStmt beginStmt, IStmt endStmt, IStmt handlerStmt) {
+  public JTrap(JavaClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
     super(
         exception,
         Jimple.newStmtBox(beginStmt),
@@ -42,14 +44,8 @@ public class JTrap extends AbstractTrap {
         Jimple.newStmtBox(handlerStmt));
   }
 
-  public JTrap(
-      JavaClassType exception, IStmtBox beginStmt, IStmtBox endStmt, IStmtBox handlerStmt) {
+  public JTrap(JavaClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
     super(exception, beginStmt, endStmt, handlerStmt);
-  }
-
-  @Override
-  public Object clone() {
-    return new JTrap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
   }
 
   @Override
@@ -62,5 +58,25 @@ public class JTrap extends AbstractTrap {
     buf.append("\nhandler: ");
     buf.append(getHandlerStmt());
     return new String(buf);
+  }
+
+  @Nonnull
+  public JTrap withException(JavaClassType exception) {
+    return new JTrap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
+  }
+
+  @Nonnull
+  public JTrap withBeginStmt(Stmt beginStmt) {
+    return new JTrap(getException(), beginStmt, getEndStmt(), getHandlerStmt());
+  }
+
+  @Nonnull
+  public JTrap withHandlerStmt(Stmt handlerStmt) {
+    return new JTrap(getException(), getBeginStmt(), getEndStmt(), handlerStmt);
+  }
+
+  @Nonnull
+  public JTrap withEndStmt(Stmt endStmt) {
+    return new JTrap(getException(), getBeginStmt(), endStmt, getHandlerStmt());
   }
 }

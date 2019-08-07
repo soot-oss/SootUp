@@ -1,6 +1,7 @@
 package de.upb.soot.frontends.java;
 
 import com.ibm.wala.cast.java.ipa.callgraph.JavaSourceAnalysisScope;
+import com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass;
 import com.ibm.wala.cast.java.translator.jdt.ecj.ECJClassLoaderFactory;
 import com.ibm.wala.cast.loader.AstMethod;
 import com.ibm.wala.classLoader.ClassLoaderFactory;
@@ -20,6 +21,7 @@ import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootMethod;
+import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
@@ -34,6 +36,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.jar.JarFile;
+import javax.annotation.Nullable;
 
 /**
  * This class loads java source code using WALA's java source code front-end.
@@ -44,6 +47,7 @@ public class WalaClassLoader {
   private Set<String> sourcePath;
   private IClassHierarchy classHierarchy;
   private List<SootClass> sootClasses;
+  private List<ClassSource> classSources;
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
 
@@ -70,7 +74,7 @@ public class WalaClassLoader {
     this(sourcePath, "");
   }
 
-  public WalaClassLoader(Set<String> sourcePath, String exclusionFilePath) {
+  public WalaClassLoader(Set<String> sourcePath, @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = sourcePath;
     try {
@@ -123,7 +127,10 @@ public class WalaClassLoader {
   }
 
   public WalaClassLoader(
-      Set<String> sourcePath, String apkPath, String androidJar, String exclusionFilePath) {
+      Set<String> sourcePath,
+      String apkPath,
+      String androidJar,
+      @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = sourcePath;
     try {
@@ -147,10 +154,8 @@ public class WalaClassLoader {
         }
       }
       factory = new ECJClassLoaderFactory(scope.getExclusions());
-    } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
+    } catch (IllegalArgumentException | IOException e) {
+      throw new RuntimeException("Failed to construct WalaClassLoader", e);
     }
   }
 
@@ -160,7 +165,7 @@ public class WalaClassLoader {
    * @param sourceDirPath
    * @param exclusionFilePath
    */
-  public WalaClassLoader(String sourceDirPath, String exclusionFilePath) {
+  public WalaClassLoader(String sourceDirPath, @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = Collections.singleton(sourceDirPath);
     try {
@@ -206,24 +211,39 @@ public class WalaClassLoader {
   }
 
   /**
-   * Return soot classes converted from WALA classes.
+   * Return ClassSources converted from WALA classes.
    *
    * @return list of classes
    */
-  public List<SootClass> getSootClasses() {
-    if (classHierarchy == null) {
-      try {
-        buildClassHierachy();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+  public List<ClassSource> getClassSources() {
+    Iterator<IClass> it = iterateWalaClasses();
+    if (classSources == null) {
+      classSources = new ArrayList<>();
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
-    Iterator<IClass> it =
-        classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).iterateAllClasses();
+    while (it.hasNext()) {
+      com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass walaClass =
+          (com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass) it.next();
+      ClassSource sootClass = walaToSoot.convertToClassSource(walaClass);
+      classSources.add(sootClass);
+    }
+    return classSources;
+  }
+
+  /**
+   * Return soot classes converted from WALA classes.
+   *
+   * @return list of classes
+   * @deprecated The WalaClassLoader should not create instances of SootClass. This is the
+   *     responsibility of the View.
+   */
+  @Deprecated
+  public List<SootClass> getSootClasses() {
+    Iterator<IClass> it = iterateWalaClasses();
     if (sootClasses == null) {
       sootClasses = new ArrayList<>();
     }
+    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
     while (it.hasNext()) {
       com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass walaClass =
           (com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass) it.next();
@@ -233,20 +253,48 @@ public class WalaClassLoader {
     return sootClasses;
   }
 
+  private Iterator<IClass> iterateWalaClasses() {
+    if (classHierarchy == null) {
+      try {
+        buildClassHierachy();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+    return classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).iterateAllClasses();
+  }
+
   /**
    * Return a soot class with the given signature converted from a WALA class.
    *
-   * @param signature
-   * @return
+   * @deprecated The WalaClassLoader should not create instances of SootClass. This is the
+   *     responsibility of the View.
    */
+  @Deprecated
   public Optional<SootClass> getSootClass(JavaClassType signature) {
     if (classHierarchy == null) {
       buildClassHierachy();
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
+    JavaClass walaClass = loadWalaClass(signature, walaToSoot);
+    return Optional.ofNullable(walaClass).map(walaToSoot::convertClass);
+  }
+
+  /** Return a ClassSource with the given signature converted from a WALA class. */
+  public Optional<ClassSource> getClassSource(JavaClassType signature) {
+    if (classHierarchy == null) {
+      buildClassHierachy();
+    }
+    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
+    JavaClass walaClass = loadWalaClass(signature, walaToSoot);
+    return Optional.ofNullable(walaClass).map(walaToSoot::convertToClassSource);
+  }
+
+  @Nullable
+  private JavaClass loadWalaClass(JavaClassType signature, WalaIRToJimpleConverter walaToSoot) {
     String className = walaToSoot.convertClassNameFromSoot(signature.getFullyQualifiedName());
-    com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass walaClass =
-        (com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass)
+    JavaClass walaClass =
+        (JavaClass)
             classHierarchy
                 .getLoader(JavaSourceAnalysisScope.SOURCE)
                 .lookupClass(TypeName.findOrCreate(className));
@@ -255,19 +303,14 @@ public class WalaClassLoader {
       Iterator<IClass> it =
           classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).iterateAllClasses();
       while (it.hasNext()) {
-        com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass c =
-            (com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass) it.next();
+        JavaClass c = (JavaClass) it.next();
         String cname = walaToSoot.convertClassNameFromWala(c.getName().toString());
         if (cname.equals(signature.getFullyQualifiedName())) {
           walaClass = c;
         }
       }
     }
-    if (walaClass == null) {
-      return Optional.empty();
-    }
-    SootClass sootClass = walaToSoot.convertClass(walaClass);
-    return Optional.ofNullable(sootClass);
+    return walaClass;
   }
 
   public Optional<SootMethod> getSootMethod(MethodSignature signature) {
@@ -275,28 +318,7 @@ public class WalaClassLoader {
       buildClassHierachy();
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
-    String className =
-        walaToSoot.convertClassNameFromSoot(
-            signature.getDeclClassSignature().getFullyQualifiedName());
-    com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass walaClass =
-        (com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass)
-            classHierarchy
-                .getLoader(JavaSourceAnalysisScope.SOURCE)
-                .lookupClass(TypeName.findOrCreate(className));
-
-    if (className.contains("$") && walaClass == null) {
-      // this is an inner class and was not found
-      Iterator<IClass> it =
-          classHierarchy.getLoader(JavaSourceAnalysisScope.SOURCE).iterateAllClasses();
-      while (it.hasNext()) {
-        com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass c =
-            (com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass) it.next();
-        String cname = walaToSoot.convertClassNameFromWala(c.getName().toString());
-        if (cname.equals(signature.getDeclClassSignature().getFullyQualifiedName())) {
-          walaClass = c;
-        }
-      }
-    }
+    JavaClass walaClass = loadWalaClass(signature.getDeclClassSignature(), walaToSoot);
     if (walaClass == null) {
       return Optional.empty();
     }

@@ -25,13 +25,13 @@
 
 package de.upb.soot.jimple.common.constant;
 
-import de.upb.soot.jimple.visitor.IConstantVisitor;
-import de.upb.soot.jimple.visitor.IVisitor;
-import de.upb.soot.types.DefaultTypeFactory;
+import de.upb.soot.DefaultIdentifierFactory;
+import de.upb.soot.jimple.visitor.ConstantVisitor;
+import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.types.Type;
 import de.upb.soot.util.StringTools;
 
-public class StringConstant extends Constant {
+public class StringConstant implements Constant {
   /** */
   private static final long serialVersionUID = -1247456329894136483L;
 
@@ -60,12 +60,12 @@ public class StringConstant extends Constant {
   @Override
   public Type getType() {
     // TODO: [JMP] Use cached type from somewhere.
-    return DefaultTypeFactory.getInstance().getType("java.lang.String");
+    return DefaultIdentifierFactory.getInstance().getType("java.lang.String");
   }
 
   @Override
-  public void accept(IVisitor sw) {
-    ((IConstantVisitor) sw).caseStringConstant(this);
+  public void accept(Visitor sw) {
+    ((ConstantVisitor) sw).caseStringConstant(this);
   }
 
   @Override

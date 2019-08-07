@@ -34,8 +34,8 @@ import de.upb.soot.jimple.common.constant.MethodHandle;
 import de.upb.soot.jimple.common.constant.NullConstant;
 import de.upb.soot.jimple.common.constant.StringConstant;
 
-public abstract class AbstractConstantVisitor implements IConstantVisitor {
-  Object result;
+public abstract class AbstractConstantVisitor implements ConstantVisitor {
+  Object result; // FIXME: Why is this an Object? What is this for?
 
   @Override
   public void caseDoubleConstant(DoubleConstant v) {

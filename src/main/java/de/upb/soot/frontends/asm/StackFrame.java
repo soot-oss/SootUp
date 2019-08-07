@@ -27,8 +27,8 @@ import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.PositionInfo;
 import de.upb.soot.jimple.basic.ValueBox;
 import de.upb.soot.jimple.common.stmt.AbstractDefinitionStmt;
-import de.upb.soot.jimple.common.stmt.IStmt;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,14 +44,14 @@ final class StackFrame {
   @Nullable private Local[] inStackLocals;
   @Nullable private ValueBox[] boxes;
   @Nullable private ArrayList<Operand[]> in;
-  @Nonnull private final AsmMethodSourceContent src;
+  @Nonnull private final AsmMethodSource src;
 
   /**
    * Constructs a new stack frame.
    *
    * @param src source the frame belongs to.
    */
-  StackFrame(@Nonnull AsmMethodSourceContent src) {
+  StackFrame(@Nonnull AsmMethodSource src) {
     this.src = src;
   }
 
@@ -156,13 +156,13 @@ final class StackFrame {
                 Jimple.newAssignStmt(stack, prevOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(prevOp.insn, as);
           } else {
-            IStmt u = src.getUnit(prevOp.insn);
+            Stmt u = src.getUnit(prevOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == prevOp.stack : "Invalid stack local!";
-            lvb.setValue(stack);
+            ValueBox.$Accessor.setValue(lvb, stack);
             prevOp.stack = stack;
           }
           prevOp.updateBoxes();
@@ -174,19 +174,19 @@ final class StackFrame {
                 Jimple.newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(newOp.insn, as);
           } else {
-            IStmt u = src.getUnit(newOp.insn);
+            Stmt u = src.getUnit(newOp.insn);
             AbstractDefinitionStmt as =
                 (AbstractDefinitionStmt)
                     (u instanceof StmtContainer ? ((StmtContainer) u).getFirstUnit() : u);
             ValueBox lvb = as.getLeftOpBox();
             assert lvb.getValue() == newOp.stack : "Invalid stack local!";
-            lvb.setValue(stack);
+            ValueBox.$Accessor.setValue(lvb, stack);
             newOp.stack = stack;
           }
           newOp.updateBoxes();
         }
         if (box != null) {
-          box.setValue(stack);
+          ValueBox.$Accessor.setValue(box, stack);
         }
         inStackLocals[i] = stack;
       }
