@@ -41,10 +41,13 @@ import de.upb.soot.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.PrimitiveType;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -1927,53 +1930,135 @@ public class BinaryOpInstructionConversionTest {
   @Test
   public void testString1() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
-            sigFactory.getMethodSignature(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
+            identifierFactory.getMethodSignature(
                 "getString1",
                 declareClassSig,
                 "java.lang.String",
                 Arrays.asList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Utils.print(method, false);
+
+    Body body = method.getBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: BinaryOperations",
+                "$r1 := @parameter0: java.lang.String",
+                "$r3 = new java.lang.StringBuilder",
+                "specialinvoke $r3.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"abc\")",
+                "$r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r1)",
+                "$r2 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return $r2")
+            .collect(Collectors.toCollection(ArrayList::new));
+    assertEquals(expectedStmts, actualStmts);
   }
 
   @Test
   public void testString2() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
-            sigFactory.getMethodSignature(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
+            identifierFactory.getMethodSignature(
                 "getString2",
                 declareClassSig,
                 "java.lang.String",
                 Arrays.asList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Utils.print(method, false);
+
+    Body body = method.getBody();
+    assertNotNull(body);
+    Utils.print(method, true);
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: BinaryOperations",
+                "$r1 := @parameter0: java.lang.String",
+                "$r3 = new java.lang.StringBuilder",
+                "specialinvoke $r3.<java.lang.StringBuilder: void <init>(java.lang.String)>($r1)",
+                "$r4 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"xyz\")",
+                "$r2 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return $r2")
+            .collect(Collectors.toCollection(ArrayList::new));
+    assertEquals(expectedStmts, actualStmts);
   }
 
   @Test
   public void testString3() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
-            sigFactory.getMethodSignature(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
+            identifierFactory.getMethodSignature(
                 "getString3",
                 declareClassSig,
                 "java.lang.String",
                 Arrays.asList("java.lang.String", "java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Utils.print(method, false);
+
+    Body body = method.getBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: BinaryOperations",
+                "$r1 := @parameter0: java.lang.String",
+                "$r2 := @parameter1: java.lang.String",
+                "$r4 = new java.lang.StringBuilder",
+                "specialinvoke $r4.<java.lang.StringBuilder: void <init>(java.lang.String)>($r1)",
+                "$r5 = virtualinvoke $r4.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>($r2)",
+                "$r3 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return $r3")
+            .collect(Collectors.toCollection(ArrayList::new));
+    assertEquals(expectedStmts, actualStmts);
   }
 
   @Test
   public void testString4() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
-            sigFactory.getMethodSignature(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
+            identifierFactory.getMethodSignature(
                 "getString4", declareClassSig, "java.lang.String", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
-    Utils.print(method, false);
+    Body body = method.getBody();
+    assertNotNull(body);
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: BinaryOperations",
+                "$r2 = new java.lang.StringBuilder",
+                "specialinvoke $r2.<java.lang.StringBuilder: void <init>(java.lang.String)>(\"abc\")",
+                "$r3 = virtualinvoke $r2.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"xyz\")",
+                "$r1 = virtualinvoke $r3.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "$r5 = new java.lang.StringBuilder",
+                "specialinvoke $r5.<java.lang.StringBuilder: void <init>(java.lang.String)>($r1)",
+                "$r6 = virtualinvoke $r5.<java.lang.StringBuilder: java.lang.StringBuilder append(java.lang.String)>(\"efg\")",
+                "$r4 = virtualinvoke $r6.<java.lang.StringBuilder: java.lang.StringBuilder toString()>()",
+                "return $r4")
+            .collect(Collectors.toCollection(ArrayList::new));
+    assertEquals(expectedStmts, actualStmts);
   }
 }

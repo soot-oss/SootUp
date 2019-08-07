@@ -859,16 +859,17 @@ public class InstructionConverter {
     }
   }
 
-  private List<IStmt> convertStringAddition(
+  private List<Stmt> convertStringAddition(
       Value op1, Value op2, Value result, Type type, int iindex, DebuggingInformation debugInfo) {
-    List<IStmt> ret = new ArrayList<>();
+    List<Stmt> ret = new ArrayList<>();
     Position p1 = debugInfo.getOperandPosition(iindex, 0);
     Position p2 = debugInfo.getOperandPosition(iindex, 1);
     Position stmtPosition = debugInfo.getInstructionPosition(iindex);
 
-    JavaClassType sbType = DefaultTypeFactory.getInstance().getClassType("java.lang.StringBuilder");
+    JavaClassType sbType =
+        DefaultIdentifierFactory.getInstance().getClassType("java.lang.StringBuilder");
     Local strBuilderLocal = localGenerator.generateLocal(sbType);
-    IStmt newStmt =
+    Stmt newStmt =
         Jimple.newAssignStmt(
             strBuilderLocal, Jimple.newNewExpr(sbType), new PositionInfo(stmtPosition, null));
     ret.add(newStmt);
@@ -877,7 +878,7 @@ public class InstructionConverter {
     MethodSignature initMethod =
         converter
             .view
-            .getSignatureFactory()
+            .getIdentifierFactory()
             .getMethodSignature(
                 "<init>",
                 sbType.getFullyQualifiedName(),
@@ -886,7 +887,7 @@ public class InstructionConverter {
     Position[] pos1 = new Position[2];
     pos1[0] = null;
     pos1[1] = p1;
-    IStmt specStmt =
+    Stmt specStmt =
         Jimple.newInvokeStmt(
             Jimple.newSpecialInvokeExpr(strBuilderLocal, initMethod, op1),
             new PositionInfo(stmtPosition, pos1));
@@ -895,7 +896,7 @@ public class InstructionConverter {
     MethodSignature appendMethod =
         converter
             .view
-            .getSignatureFactory()
+            .getIdentifierFactory()
             .getMethodSignature(
                 "append",
                 sbType.getFullyQualifiedName(),
@@ -906,7 +907,7 @@ public class InstructionConverter {
     pos2[0] = null;
     pos2[1] = p2;
 
-    IStmt virStmt =
+    Stmt virStmt =
         Jimple.newAssignStmt(
             strBuilderLocal2,
             Jimple.newVirtualInvokeExpr(strBuilderLocal, appendMethod, op2),
@@ -915,14 +916,14 @@ public class InstructionConverter {
     MethodSignature toStringMethod =
         converter
             .view
-            .getSignatureFactory()
+            .getIdentifierFactory()
             .getMethodSignature(
                 "toString",
                 sbType.getFullyQualifiedName(),
                 sbType.toString(),
                 Collections.emptyList());
     // assign result
-    IStmt toStringStmt =
+    Stmt toStringStmt =
         Jimple.newAssignStmt(
             result,
             Jimple.newVirtualInvokeExpr(strBuilderLocal2, toStringMethod),
@@ -931,9 +932,9 @@ public class InstructionConverter {
     return ret;
   }
 
-  private List<IStmt> convertBinaryOpInstruction(
+  private List<Stmt> convertBinaryOpInstruction(
       DebuggingInformation debugInfo, SSABinaryOpInstruction binOpInst) {
-    List<IStmt> ret = new ArrayList<>();
+    List<Stmt> ret = new ArrayList<>();
     int def = binOpInst.getDef();
     int val1 = binOpInst.getUse(0);
     int val2 = binOpInst.getUse(1);
