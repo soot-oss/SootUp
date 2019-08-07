@@ -1,7 +1,6 @@
 package de.upb.soot.frontends;
 
 import de.upb.soot.core.Body;
-import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.MethodSignature;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,12 +30,9 @@ import javax.annotation.Nullable;
 /** A class which knows how to produce Body's for SootMethods. */
 public interface MethodSource {
 
-  // TODO Maybe we should also remove the SootMethod parameter here.
-  //  See comment in IClassSourceContent for details.
-
   /** Returns a filled-out body for the given SootMethod. */
   @Nullable
-  Body resolveBody(@Nonnull SootMethod m) throws ResolveException;
+  Body resolveBody() throws ResolveException;
 
   // FIXME: [JMP] This method is never used
   @Nonnull

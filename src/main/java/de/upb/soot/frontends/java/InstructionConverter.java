@@ -318,7 +318,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, AstAssertInstruction inst) {
     List<Stmt> stmts = new ArrayList<>();
     // create a static field for checking if assertion is disabled.
-    JavaClassType cSig = methodSignature.getDeclClassSignature();
+    JavaClassType cSig = methodSignature.getDeclClassType();
     FieldSignature fieldSig =
         identifierFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean");
     SootField assertionsDisabled =
@@ -403,7 +403,7 @@ public class InstructionConverter {
       } else {
         right = getLocal(type, access.valueNumber);
       }
-      JavaClassType cSig = methodSignature.getDeclClassSignature();
+      JavaClassType cSig = methodSignature.getDeclClassType();
       // TODO check modifier
       Value left;
       if (!walaMethod.isStatic()) {
@@ -431,7 +431,7 @@ public class InstructionConverter {
       Access access = inst.getAccess(i);
       Type type = converter.convertType(access.type);
       Local left = getLocal(type, access.valueNumber);
-      JavaClassType cSig = methodSignature.getDeclClassSignature();
+      JavaClassType cSig = methodSignature.getDeclClassType();
       // TODO check modifier
       Value rvalue = null;
       if (!walaMethod.isStatic()) {
@@ -457,7 +457,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, EnclosingObjectReference inst) {
     Type enclosingType = converter.convertType(inst.getEnclosingType());
     Value variable = getLocal(enclosingType, inst.getDef());
-    JavaClassType cSig = methodSignature.getDeclClassSignature();
+    JavaClassType cSig = methodSignature.getDeclClassType();
 
     // TODO check modifier
     FieldSignature fieldSig =
@@ -785,7 +785,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSAConditionalBranchInstruction condInst) {
     PositionInfo posInfo =
         new PositionInfo(debugInfo.getInstructionPosition(condInst.iindex), null);
-    List<Stmt> stmts = new ArrayList<Stmt>();
+    List<Stmt> stmts = new ArrayList<>();
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
     Value value1 = extractValueAndAddAssignStmt(posInfo, stmts, val1);
@@ -1081,7 +1081,7 @@ public class InstructionConverter {
     if (locals.containsKey(valueNumber)) {
       return locals.get(valueNumber);
     }
-    if (valueNumber == 1 || type.equals(methodSignature.getDeclClassSignature())) {
+    if (valueNumber == 1 || type.equals(methodSignature.getDeclClassType())) {
       // in wala symbol numbers start at 1 ... the "this" parameter will be symbol number 1 in a
       // non-static method.
       if (!walaMethod.isStatic()) {

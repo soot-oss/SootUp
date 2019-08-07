@@ -6,6 +6,7 @@ import de.upb.soot.Project;
 import de.upb.soot.Scope;
 import de.upb.soot.callgraph.CallGraph;
 import de.upb.soot.callgraph.CallGraphAlgorithm;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.typehierarchy.TypeHierarchy;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -15,13 +16,13 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractView implements IView {
+public abstract class AbstractView<S extends AnalysisInputLocation> implements View {
 
-  @Nonnull private final Project project;
+  @Nonnull private final Project<S> project;
 
   @Nonnull private final Options options = new Options();
 
-  public AbstractView(@Nonnull Project project) {
+  public AbstractView(@Nonnull Project<S> project) {
     this.project = project;
   }
 
@@ -72,7 +73,7 @@ public abstract class AbstractView implements IView {
   }
 
   @Nonnull
-  public Project getProject() {
+  public Project<S> getProject() {
     return project;
   }
 }

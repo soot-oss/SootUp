@@ -6,7 +6,7 @@ import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import de.upb.soot.util.Utils;
+import de.upb.soot.util.ImmutableUtils;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -15,9 +15,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
 public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
-
-  /** */
-  private static final long serialVersionUID = -6856798288630958622L;
 
   @Nonnull private final JavaClassType classSignature;
   // FIXME: how to create automatic modules
@@ -102,7 +99,7 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
     try {
       requires = new HashSet<>(getModuleClassSourceContent().requires());
     } catch (ResolveException e) {
-      requires = Utils.emptyImmutableSet();
+      requires = ImmutableUtils.emptyImmutableSet();
 
       // TODO: [JMP] Exception handling
       e.printStackTrace();
@@ -115,9 +112,9 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   private Set<PackageReference> lazyExportsInitializer() {
     Set<PackageReference> exports;
     try {
-      exports = new HashSet(getModuleClassSourceContent().exports());
+      exports = new HashSet<>(getModuleClassSourceContent().exports());
     } catch (ResolveException e) {
-      exports = Utils.emptyImmutableSet();
+      exports = ImmutableUtils.emptyImmutableSet();
 
       // TODO: [JMP] Exception handling
       e.printStackTrace();
@@ -130,9 +127,9 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   private Set<PackageReference> lazyOpenssInitializer() {
     Set<PackageReference> opens;
     try {
-      opens = new HashSet(getModuleClassSourceContent().opens());
+      opens = new HashSet<>(getModuleClassSourceContent().opens());
     } catch (ResolveException e) {
-      opens = Utils.emptyImmutableSet();
+      opens = ImmutableUtils.emptyImmutableSet();
 
       // TODO: [JMP] Exception handling
       e.printStackTrace();
@@ -145,9 +142,9 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   private Set<JavaClassType> lazyProvidesInitializer() {
     Set<JavaClassType> provides;
     try {
-      provides = new HashSet(getModuleClassSourceContent().provides());
+      provides = new HashSet<>(getModuleClassSourceContent().provides());
     } catch (ResolveException e) {
-      provides = Utils.emptyImmutableSet();
+      provides = ImmutableUtils.emptyImmutableSet();
 
       // TODO: [JMP] Exception handling
       e.printStackTrace();
@@ -160,9 +157,9 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   private Set<JavaClassType> lazyUsesInitializer() {
     Set<JavaClassType> uses;
     try {
-      uses = new HashSet(getModuleClassSourceContent().uses());
+      uses = new HashSet<>(getModuleClassSourceContent().uses());
     } catch (ResolveException e) {
-      uses = Utils.emptyImmutableSet();
+      uses = ImmutableUtils.emptyImmutableSet();
 
       // TODO: [JMP] Exception handling
       e.printStackTrace();
@@ -188,12 +185,12 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   @Nonnull
   @Override
   public Set<Method> getMethods() {
-    return Utils.emptyImmutableSet();
+    return ImmutableUtils.emptyImmutableSet();
   }
 
   @Nonnull
   @Override
   public Set<Field> getFields() {
-    return Utils.emptyImmutableSet();
+    return ImmutableUtils.emptyImmutableSet();
   }
 }

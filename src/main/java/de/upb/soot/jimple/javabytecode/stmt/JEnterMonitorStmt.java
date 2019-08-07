@@ -38,8 +38,6 @@ import de.upb.soot.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 public final class JEnterMonitorStmt extends AbstractOpStmt implements Copyable {
-  /** */
-  private static final long serialVersionUID = -8580317170617446624L;
 
   public JEnterMonitorStmt(Value op, PositionInfo positionInfo) {
     this(Jimple.newImmediateBox(op), positionInfo);

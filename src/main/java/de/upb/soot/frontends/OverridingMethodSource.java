@@ -1,8 +1,11 @@
 package de.upb.soot.frontends;
 
 import de.upb.soot.core.Body;
-import de.upb.soot.core.SootMethod;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.signatures.MethodSignature;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -10,9 +13,9 @@ import javax.annotation.Nullable;
  * Allows for replacing specific parts of a method. By default, it delegates to the {@link
  * MethodSource} delegate provided in the constructor.
  *
- * <p>To alter the results of invocations to e.g. {@link #resolveBody(SootMethod)}, simply call
- * {@link #withBody(Body)} to obtain a new {@link OverridingMethodSource}. The new instance will
- * then use the supplied value instead of calling {@link #resolveBody(SootMethod)} on the delegate.
+ * <p>To alter the results of invocations to e.g. {@link #resolveBody()}, simply call {@link
+ * #withBody(Body)} to obtain a new {@link OverridingMethodSource}. The new instance will then use
+ * the supplied value instead of calling {@link #resolveBody()} on the delegate.
  */
 public class OverridingMethodSource implements MethodSource {
 
@@ -38,8 +41,8 @@ public class OverridingMethodSource implements MethodSource {
 
   @Nullable
   @Override
-  public Body resolveBody(@Nonnull SootMethod m) throws ResolveException {
-    return overriddenBody ? body : delegate.resolveBody(m);
+  public Body resolveBody() throws ResolveException {
+    return overriddenBody ? body : delegate.resolveBody();
   }
 
   @Nonnull
@@ -51,5 +54,22 @@ public class OverridingMethodSource implements MethodSource {
   @Nonnull
   public OverridingMethodSource withBody(@Nullable Body body) {
     return new OverridingMethodSource(delegate, true, body);
+  }
+
+  /**
+   * Creates a new {@link OverridingMethodSource} that replaces the statements of the method's body.
+   * If the body is resolved as null, this method throws {@link IllegalStateException}.
+   */
+  @Nonnull
+  public OverridingMethodSource withBodyStmts(Consumer<List<Stmt>> stmtModifier) {
+    Body body = resolveBody();
+    if (body == null) {
+      throw new IllegalStateException(
+          "Cannot replace statements in method " + delegate.getSignature() + ", body is null");
+    }
+
+    List<Stmt> newStmts = new ArrayList<>(body.getStmts());
+    stmtModifier.accept(newStmts);
+    return withBody(body.withStmts(newStmts));
   }
 }

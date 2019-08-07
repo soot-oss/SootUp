@@ -28,7 +28,7 @@ import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.util.Utils;
+import de.upb.soot.util.StreamUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -83,7 +83,7 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
     try {
       cpEntries =
           explode(classPath)
-              .flatMap(cp -> Utils.optionalToStream(nsForPath(cp)))
+              .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
               .collect(Collectors.toList());
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
@@ -122,7 +122,8 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
     if (entry.endsWith(WILDCARD_CHAR)) {
       Path baseDir = Paths.get(entry.substring(0, entry.indexOf(WILDCARD_CHAR)));
       try {
-        return Utils.iteratorToStream(Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
+        return StreamUtils.iteratorToStream(
+            Files.newDirectoryStream(baseDir, "*.{jar,JAR}").iterator());
       } catch (PatternSyntaxException | NotDirectoryException e) {
         throw new InvalidClassPathException("Malformed wildcard entry", e);
       } catch (IOException e) {
@@ -168,8 +169,6 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
   }
 
   protected static final class InvalidClassPathException extends IllegalArgumentException {
-    /** */
-    private static final long serialVersionUID = -5130658516046902470L;
 
     public InvalidClassPathException(@Nullable String message) {
       super(message);

@@ -9,7 +9,7 @@ import de.upb.soot.inputlocation.FileType;
 import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.util.Utils;
+import de.upb.soot.util.ImmutableUtils;
 import java.nio.file.Paths;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -24,7 +24,8 @@ public class WalaJavaClassProviderTest {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     JavaSourcePathAnalysisInputLocation inputLocation =
-        new JavaSourcePathAnalysisInputLocation(Utils.immutableSet(srcDir), exclusionFilePath);
+        new JavaSourcePathAnalysisInputLocation(
+            ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     WalaJavaClassProvider provider = new WalaJavaClassProvider(exclusionFilePath);

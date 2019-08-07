@@ -46,7 +46,8 @@ public class GetInstructionConversionTest {
   @Test
   public void test() {
     Optional<SootMethod> m =
-        loader.getSootMethod(
+        WalaClassLoaderTestUtils.getSootMethod(
+            loader,
             typeFactory.getMethodSignature(
                 "getA_X", declareClassSig, "int", Collections.emptyList()));
     assertTrue(m.isPresent());
@@ -89,7 +90,7 @@ public class GetInstructionConversionTest {
                 assertEquals(PrimitiveType.getInt(), fieldSig.getSignature());
                 assertEquals(
                     typeFactory.getClassType("alreadywalaunittests.InnerClassAA"),
-                    fieldSig.getDeclClassSignature());
+                    fieldSig.getDeclClassType());
               });
         });
 

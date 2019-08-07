@@ -25,9 +25,6 @@ import javax.annotation.Nonnull;
 
 public final class JInstanceFieldRef extends FieldRef implements Copyable {
 
-  /** */
-  private static final long serialVersionUID = 2900174317359676686L;
-
   private final ValueBox baseBox;
 
   /**
@@ -65,7 +62,7 @@ public final class JInstanceFieldRef extends FieldRef implements Copyable {
   @Override
   public final List<ValueBox> getUseBoxes() {
 
-    List<ValueBox> useBoxes = new ArrayList<ValueBox>(baseBox.getValue().getUseBoxes());
+    List<ValueBox> useBoxes = new ArrayList<>(baseBox.getValue().getUseBoxes());
     useBoxes.add(baseBox);
 
     return useBoxes;

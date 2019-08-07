@@ -3,9 +3,7 @@ package de.upb.soot.jimple.basic;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.types.JavaClassType;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +35,7 @@ import java.util.List;
 
 /** Partial implementation of trap (exception catcher), used within Body classes. */
 @SuppressWarnings("serial")
-public class AbstractTrap implements Trap, Serializable {
+public class AbstractTrap implements Trap {
   /** The exception being caught. */
   private transient JavaClassType exception;
 
@@ -52,13 +50,6 @@ public class AbstractTrap implements Trap, Serializable {
 
   /** The list of unitBoxes referred to in this Trap (begin, end and handler. */
   private final List<StmtBox> unitBoxes;
-
-  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-    in.defaultReadObject();
-    // TODO: Use of FQDNs in implementations should be discouraged. They need to be parsed through a
-    // IdentifierFactory object.
-    exception = null; // this.getView().getSootClass((String) in.readObject());
-  }
 
   private void writeObject(ObjectOutputStream out) throws IOException {
     out.defaultWriteObject();

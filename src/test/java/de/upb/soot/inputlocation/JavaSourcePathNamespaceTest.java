@@ -10,7 +10,7 @@ import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.java.WalaJavaClassProvider;
 import de.upb.soot.signatures.PackageName;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.util.Utils;
+import de.upb.soot.util.ImmutableUtils;
 import java.util.Collection;
 import java.util.Optional;
 import org.junit.Test;
@@ -24,7 +24,8 @@ public class JavaSourcePathNamespaceTest {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     AnalysisInputLocation inputLocation =
-        new JavaSourcePathAnalysisInputLocation(Utils.immutableSet(srcDir), exclusionFilePath);
+        new JavaSourcePathAnalysisInputLocation(
+            ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     Optional<? extends AbstractClassSource> classSourceOptional =
@@ -46,7 +47,8 @@ public class JavaSourcePathNamespaceTest {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     AnalysisInputLocation inputLocation =
-        new JavaSourcePathAnalysisInputLocation(Utils.immutableSet(srcDir), exclusionFilePath);
+        new JavaSourcePathAnalysisInputLocation(
+            ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
 
     ClassProvider classProvider = inputLocation.getClassProvider();
     assertTrue(classProvider instanceof WalaJavaClassProvider);
@@ -57,7 +59,8 @@ public class JavaSourcePathNamespaceTest {
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     AnalysisInputLocation inputLocation =
-        new JavaSourcePathAnalysisInputLocation(Utils.immutableSet(srcDir), exclusionFilePath);
+        new JavaSourcePathAnalysisInputLocation(
+            ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
 
     DefaultIdentifierFactory defaultFactories = DefaultIdentifierFactory.getInstance();
     Collection<? extends AbstractClassSource> classSources =

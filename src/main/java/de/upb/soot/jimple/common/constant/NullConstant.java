@@ -31,8 +31,6 @@ import de.upb.soot.types.NullType;
 import de.upb.soot.types.Type;
 
 public class NullConstant implements Constant {
-  /** */
-  private static final long serialVersionUID = 8286431855238615958L;
 
   private static final NullConstant INSTANCE = new NullConstant();
 

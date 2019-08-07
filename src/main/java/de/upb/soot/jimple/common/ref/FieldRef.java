@@ -29,14 +29,11 @@ package de.upb.soot.jimple.common.ref;
 import de.upb.soot.core.SootField;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.types.Type;
-import de.upb.soot.views.IView;
+import de.upb.soot.views.View;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
 public abstract class FieldRef implements ConcreteRef {
-
-  /** */
-  private static final long serialVersionUID = 1914104591633719756L;
 
   private final FieldSignature fieldSignature;
 
@@ -44,8 +41,8 @@ public abstract class FieldRef implements ConcreteRef {
     this.fieldSignature = fieldSignature;
   }
 
-  public @Nonnull Optional<SootField> getField(@Nonnull IView view) {
-    return view.getClass(fieldSignature.getDeclClassSignature())
+  public @Nonnull Optional<SootField> getField(@Nonnull View view) {
+    return view.getClass(fieldSignature.getDeclClassType())
         .flatMap(it -> it.getField(fieldSignature).map(field -> (SootField) field));
   }
 

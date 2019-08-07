@@ -19,13 +19,14 @@ import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.util.Utils;
-import de.upb.soot.views.IView;
+import de.upb.soot.util.ImmutableUtils;
+import de.upb.soot.views.View;
 import java.io.File;
 import java.util.Collections;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -48,10 +49,11 @@ public class ModuleCompositionTest {
     assertTrue(new File(jarFile).exists());
 
     // Create a project
-    Project p = new Project(new JavaClassPathAnalysisInputLocation(jarFile));
+    Project<JavaClassPathAnalysisInputLocation> p =
+        new Project<>(new JavaClassPathAnalysisInputLocation(jarFile));
 
     // Get the view
-    IView view = p.createOnDemandView();
+    View view = p.createOnDemandView();
 
     // Create java class signature
     JavaClassType utilsClassSignature = p.getIdentifierFactory().getClassType("de.upb.soot.Utils");
@@ -80,6 +82,7 @@ public class ModuleCompositionTest {
         utilsClass
             .getMethod(optionalToStreamMethodSubSignature)
             .orElseThrow(IllegalStateException::new);
+    Assert.assertNotNull(foundMethod.getBody());
 
     // Print method
     // System.out.println("Found method:   " + foundMethod);
@@ -111,18 +114,18 @@ public class ModuleCompositionTest {
                 null,
                 null,
                 null,
-                Utils.immutableSet(
+                ImmutableUtils.immutableSet(
                     SootField.builder()
                         .withSignature(nameFieldSubSignature.toFullSignature(classSignature))
                         .withModifiers(Modifier.PUBLIC)
                         .build()),
-                Utils.immutableSet(
+                ImmutableUtils.immutableSet(
                     SootMethod.builder()
                         .withSource(
                             new MethodSource() {
                               @Override
                               @Nullable
-                              public Body resolveBody(@Nonnull SootMethod m) {
+                              public Body resolveBody() {
                                 return null;
                               }
 

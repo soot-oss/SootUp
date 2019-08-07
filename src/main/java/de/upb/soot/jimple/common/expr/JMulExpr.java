@@ -32,8 +32,6 @@ import de.upb.soot.util.Copyable;
 import javax.annotation.Nonnull;
 
 public final class JMulExpr extends AbstractFloatBinopExpr implements Copyable {
-  /** */
-  private static final long serialVersionUID = 4239500276632139025L;
 
   public JMulExpr(Value op1, Value op2) {
     super(op1, op2);

@@ -37,8 +37,6 @@ import javax.annotation.Nullable;
  */
 public class SootField extends SootClassMember<FieldSignature> implements Field {
 
-  private static final long serialVersionUID = -5101396409117866687L;
-
   /** Constructs a Soot field with the given name, type and modifiers. */
   public SootField(@Nonnull FieldSignature signature, @Nonnull Iterable<Modifier> modifiers) {
     super(signature, modifiers);

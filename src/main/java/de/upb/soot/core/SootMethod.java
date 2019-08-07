@@ -21,7 +21,7 @@ package de.upb.soot.core;
  * #L%
  */
 
-import static de.upb.soot.util.Utils.immutableListOf;
+import static de.upb.soot.util.ImmutableUtils.immutableListOf;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
@@ -53,8 +53,6 @@ import javax.annotation.Nullable;
  * @author Jan Martin Persch
  */
 public final class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
-  /** */
-  private static final long serialVersionUID = -7438746401781827520L;
 
   @Nonnull private static final String CONSTRUCTOR_NAME = "<init>";
   @Nonnull private static final String STATIC_INITIALIZER_NAME = "<clinit>";
@@ -92,10 +90,11 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
 
   @Nullable
   private Body lazyBodyInitializer() {
-    Body body;
+    if (!isConcrete()) return null;
 
+    Body body;
     try {
-      body = this.methodSource.resolveBody(this);
+      body = this.methodSource.resolveBody();
 
       if (body != null) {
         body.setMethod(this);
@@ -116,12 +115,9 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
     return (MethodSubSignature) super.getSubSignature();
   }
 
-  /**
-   * Returns true if this method is not phantom, abstract or native, i.e. this method can have a
-   * body.
-   */
+  /** Returns true if this method is not abstract or native, i.e. this method can have a body. */
   public boolean isConcrete() {
-    return !isPhantom() && !isAbstract() && !isNative();
+    return !isAbstract() && !isNative();
   }
 
   public Type getReturnTypeSignature() {
@@ -198,7 +194,7 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
   public boolean isJavaLibraryMethod() {
-    return this.getDeclaringClass().isJavaLibraryClass();
+    return getSignature().getDeclClassType().isJavaLibraryClass();
   }
 
   /**

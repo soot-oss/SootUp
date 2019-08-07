@@ -20,7 +20,12 @@ import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
-import de.upb.soot.core.*;
+import de.upb.soot.core.Body;
+import de.upb.soot.core.Modifier;
+import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SootField;
+import de.upb.soot.core.SootMethod;
+import de.upb.soot.core.SourceType;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -33,12 +38,22 @@ import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.*;
+import de.upb.soot.types.JavaClassType;
+import de.upb.soot.types.NullType;
+import de.upb.soot.types.PrimitiveType;
+import de.upb.soot.types.Type;
+import de.upb.soot.types.VoidType;
 import de.upb.soot.views.JavaView;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nullable;
 
 /**
@@ -48,7 +63,7 @@ import javax.annotation.Nullable;
  */
 public class WalaIRToJimpleConverter {
 
-  protected JavaView view;
+  protected JavaView<AnalysisInputLocation> view;
   private AnalysisInputLocation srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
   private HashMap<String, String> walaToSootNameTable;
@@ -56,9 +71,10 @@ public class WalaIRToJimpleConverter {
 
   public WalaIRToJimpleConverter(Set<String> sourceDirPath) {
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
-    Project project = new Project(srcNamespace, DefaultIdentifierFactory.getInstance());
+    Project<AnalysisInputLocation> project =
+        new Project<>(srcNamespace, DefaultIdentifierFactory.getInstance());
 
-    view = new JavaView(project);
+    view = new JavaView<>(project);
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
   }
@@ -400,7 +416,7 @@ public class WalaIRToJimpleConverter {
         /* Look AsmMethodSourceContent.getBody, see AsmMethodSourceContent.emitLocals(); */
 
         if (!Modifier.isStatic(modifiers)) {
-          JavaClassType thisType = methodSignature.getDeclClassSignature();
+          JavaClassType thisType = methodSignature.getDeclClassType();
           Local thisLocal = localGenerator.generateThisLocal(thisType);
           Stmt stmt =
               Jimple.newIdentityStmt(

@@ -229,7 +229,7 @@ public class IdentifierFactoryTest {
 
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
-    assertEquals(declClass, methodSignature.getDeclClassSignature());
+    assertEquals(declClass, methodSignature.getDeclClassType());
     assertEquals(returnType, methodSignature.getSignature());
     assertEquals(parameter, methodSignature.getParameterSignatures().get(0));
   }
@@ -280,7 +280,7 @@ public class IdentifierFactoryTest {
     MethodSignature methodSignature =
         identifierFactory.getMethodSignature("foo", classSignature, "void", parameters);
     assertEquals("<java.lang.System: void foo()>", methodSignature.toString());
-    assertSame(methodSignature.getDeclClassSignature(), classSignature);
+    assertSame(methodSignature.getDeclClassType(), classSignature);
   }
 
   @Test

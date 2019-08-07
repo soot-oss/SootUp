@@ -36,8 +36,6 @@ import de.upb.soot.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
 public final class JBreakpointStmt extends AbstractStmt implements Copyable {
-  /** */
-  private static final long serialVersionUID = 7082976523552855249L;
 
   public JBreakpointStmt(PositionInfo positionInfo) {
     super(positionInfo);

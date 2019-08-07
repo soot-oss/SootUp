@@ -22,7 +22,7 @@ package de.upb.soot.types;
  * #L%
  */
 
-import static de.upb.soot.util.Utils.Functional.tryCastTo;
+import static de.upb.soot.util.FunctionalUtils.tryCastTo;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
@@ -31,7 +31,7 @@ import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.inputlocation.FileType;
 import de.upb.soot.signatures.PackageName;
-import de.upb.soot.views.IView;
+import de.upb.soot.views.View;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -41,6 +41,14 @@ import javax.annotation.Nonnull;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
 public class JavaClassType extends ReferenceType {
+
+  /**
+   * Sometimes we need to know which class is a JDK class. There is no simple way to distinguish a
+   * user class and a JDK class, here we use the package prefix as the heuristic.
+   */
+  private static final Pattern LIBRARY_CLASS_PATTERN =
+      Pattern.compile(
+          "^(?:java\\.|sun\\.|javax\\.|com\\.sun\\.|org\\.omg\\.|org\\.xml\\.|org\\.w3c\\.dom)");
 
   private final String className;
 
@@ -150,6 +158,10 @@ public class JavaClassType extends ReferenceType {
     return isInnerClass;
   }
 
+  public boolean isJavaLibraryClass() {
+    return LIBRARY_CLASS_PATTERN.matcher(getClassName()).find();
+  }
+
   private static final class SplitPatternHolder {
     private static final char SPLIT_CHAR = '.';
 
@@ -161,12 +173,12 @@ public class JavaClassType extends ReferenceType {
   /**
    * Tries to resolve this {@link JavaClassType} to the corresponding {@link SootClass}.
    *
-   * @param view The {@link IView} to resolve with.
+   * @param view The {@link View} to resolve with.
    * @return An {@link Optional} containing the {@link SootClass}, if the resolution was successful;
    *     otherwise, an {@link Optional#empty() empty Optional}.
    */
   @Nonnull
-  public Optional<SootClass> resolve(@Nonnull IView view) {
+  public Optional<SootClass> resolve(@Nonnull View view) {
     // TODO: [JMP] Clarify: What if cast fails? Return empty or throw cast exception?
     return view.getClass(this).flatMap(tryCastTo(SootClass.class));
   }

@@ -26,14 +26,13 @@
 package de.upb.soot.jimple.basic;
 
 import de.upb.soot.util.printer.StmtPrinter;
-import java.io.Serializable;
 
 /**
  * A box which can contain values.
  *
  * @see Value
  */
-public abstract class ValueBox implements Serializable {
+public abstract class ValueBox {
 
   /** Returns true if the given Value fits in this box. */
   public abstract boolean canContainValue(Value value);

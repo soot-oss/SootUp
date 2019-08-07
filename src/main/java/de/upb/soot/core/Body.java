@@ -33,7 +33,7 @@ import de.upb.soot.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.util.Copyable;
 import de.upb.soot.util.EscapedWriter;
-import de.upb.soot.util.Utils;
+import de.upb.soot.util.ImmutableUtils;
 import de.upb.soot.util.printer.Printer;
 import de.upb.soot.validation.BodyValidator;
 import de.upb.soot.validation.CheckEscapingValidator;
@@ -50,7 +50,6 @@ import de.upb.soot.validation.ValueBoxesValidator;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,10 +64,7 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  */
-public final class Body implements Serializable, Copyable {
-  /** */
-  private static final long serialVersionUID = -755840890323977315L;
-
+public final class Body implements Copyable {
   /** The locals for this Body. */
   private final Set<Local> locals;
 
@@ -83,7 +79,7 @@ public final class Body implements Serializable, Copyable {
   /** An array containing some validators in order to validate the JimpleBody */
   @Nonnull
   private static final List<BodyValidator> validators =
-      Utils.immutableList(
+      ImmutableUtils.immutableList(
           new LocalsValidator(),
           new TrapsValidator(),
           new StmtBoxesValidator(),
@@ -379,7 +375,7 @@ public final class Body implements Serializable, Copyable {
   }
 
   @Nonnull
-  public Body withStmt(List<Stmt> stmts) {
+  public Body withStmts(List<Stmt> stmts) {
     return new Body(locals, traps, stmts, position);
   }
 
