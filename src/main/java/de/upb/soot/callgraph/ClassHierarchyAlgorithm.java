@@ -7,20 +7,28 @@ import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.jimple.common.stmt.JAssignStmt;
 import de.upb.soot.jimple.common.stmt.JInvokeStmt;
 import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.typehierarchy.TypeHierarchy;
+import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.View;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * This class implements CHA (Class Hierarchy Algorithm)
+ *
+ * @author Markus Schmidt
+ * @author Christian Brüggemann
+ */
 public class ClassHierarchyAlgorithm implements CallGraphAlgorithm {
 
-  Hierarchy hierarchy;
+  TypeHierarchy hierarchy;
   CallGraph callGraph;
   View v;
 
   @Override
-  public CallGraph build(List<SootMethod> entryPoints, Hierarchy hierarchy) {
+  public CallGraph build(List<SootMethod> entryPoints, TypeHierarchy hierarchy) {
 
     this.hierarchy = hierarchy;
     CallGraph cg = new AdjacencyList();
@@ -52,7 +60,8 @@ public class ClassHierarchyAlgorithm implements CallGraphAlgorithm {
 
   private void handleInvokeExpression(SootMethod method, AbstractInvokeExpr invokeExpr) {
 
-    SootClass calledMethodClass = (SootClass) v.getClass(invokeExpr.getMethodSignature().getDeclClassType()).get();
+    SootClass calledMethodClass =
+        (SootClass) v.getClass(invokeExpr.getMethodSignature().getDeclClassType()).get();
     SootMethod calledMethod = calledMethodClass.getMethod(invokeExpr.getMethodSignature()).get();
 
     if (calledMethod.isStatic()) {
@@ -65,11 +74,13 @@ public class ClassHierarchyAlgorithm implements CallGraphAlgorithm {
         analyzeMethod(method);
       }
     } else {
-      Stream<SootClass> subclasses =
-          calledMethodClass.isInterface()
-              ? hierarchy.implementersOf(calledMethodClass).stream()
-              : hierarchy.subclassesOf(calledMethodClass).stream();
 
+      Stream<JavaClassType> subclasses =
+          calledMethodClass.isInterface()
+              ? hierarchy.implementersOf(calledMethodClass.getType()).stream()
+              : hierarchy.subclassesOf(calledMethodClass.getType()).stream();
+
+      // TODO: update when method / additional class for handling is added
       List<SootMethod> targets =
           new ArrayList<>(
               hierarchy.resolveAbstractDispatch(
