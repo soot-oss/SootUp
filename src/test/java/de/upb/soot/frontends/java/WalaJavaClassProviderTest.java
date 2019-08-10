@@ -19,8 +19,6 @@ public class WalaJavaClassProviderTest {
 
   @Test
   public void testCreateClassSource() {
-    // TODO It's not ideal that we need to pass exclusionFilePath twice
-
     String srcDir = "src/test/resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     JavaSourcePathAnalysisInputLocation inputLocation =
@@ -28,7 +26,7 @@ public class WalaJavaClassProviderTest {
             ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
-    WalaJavaClassProvider provider = new WalaJavaClassProvider(exclusionFilePath);
+    WalaJavaClassProvider provider = new WalaJavaClassProvider();
     ClassSource classSource = provider.createClassSource(inputLocation, Paths.get(srcDir), type);
 
     assertEquals(type, classSource.getClassType());

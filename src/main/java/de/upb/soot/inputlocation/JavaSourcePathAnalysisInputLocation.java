@@ -46,7 +46,7 @@ public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLo
    */
   public JavaSourcePathAnalysisInputLocation(
       @Nonnull Set<String> sourcePaths, @Nullable String exclusionFilePath) {
-    super(new WalaJavaClassProvider(exclusionFilePath));
+    super(new WalaJavaClassProvider());
 
     this.sourcePaths = sourcePaths;
     this.exclusionFilePath = exclusionFilePath;
@@ -70,5 +70,9 @@ public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLo
       }
     }
     return Optional.empty();
+  }
+
+  public String getExclusionFilePath() {
+    return exclusionFilePath;
   }
 }
