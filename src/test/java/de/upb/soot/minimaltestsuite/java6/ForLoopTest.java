@@ -17,24 +17,26 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class ForLoopTest{
+public class ForLoopTest {
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
   private String className = "ForLoop";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
-
   @Before
   public void loadClasses() {
-    loadClassesWithWala.classLoader(srcDir,className);
+    loadClassesWithWala.classLoader(srcDir, className);
   }
 
   @Test
   public void forLoopTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
-                loadClassesWithWala.loader,
-                loadClassesWithWala.identifierFactory.getMethodSignature(
-                "forLoop", loadClassesWithWala.declareClassSig, "int", Collections.singletonList("int")));
+            loadClassesWithWala.loader,
+            loadClassesWithWala.identifierFactory.getMethodSignature(
+                "forLoop",
+                loadClassesWithWala.declareClassSig,
+                "int",
+                Collections.singletonList("int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);

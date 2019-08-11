@@ -9,7 +9,6 @@ import de.upb.soot.frontends.java.Utils;
 import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.minimaltestsuite.LoadClassesWithWala;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,20 +26,19 @@ public class IfElseStatementTest {
   private String className = "IfElseStatement";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
-
   @Before
   public void loadClasses() {
-    loadClassesWithWala.classLoader(srcDir,className);
+    loadClassesWithWala.classLoader(srcDir, className);
   }
 
   @Test
   public void ifElseStatementTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
-                loadClassesWithWala.loader,
-                loadClassesWithWala.identifierFactory.getMethodSignature(
+            loadClassesWithWala.loader,
+            loadClassesWithWala.identifierFactory.getMethodSignature(
                 "ifElseStatement",
-                        loadClassesWithWala.declareClassSig,
+                loadClassesWithWala.declareClassSig,
                 "java.lang.String",
                 Arrays.asList("int", "int", "int")));
     assertTrue(m.isPresent());
