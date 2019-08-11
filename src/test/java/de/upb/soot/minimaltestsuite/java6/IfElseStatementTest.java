@@ -3,14 +3,13 @@ package de.upb.soot.minimaltestsuite.java6;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.java.Utils;
-import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
 import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.types.JavaClassType;
+import de.upb.soot.minimaltestsuite.LoadClassesWithWala;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,26 +23,24 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class IfElseStatementTest {
 
-  private WalaClassLoader loader;
-  private DefaultIdentifierFactory identifierFactory;
-  private JavaClassType declareClassSig;
+  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
+  private String className = "IfElseStatement";
+  private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
+
 
   @Before
-  public void loadClassesWithWala() {
-    String srcDir = "src/test/resources/minimaltestsuite/java6";
-    loader = new WalaClassLoader(srcDir, null);
-    identifierFactory = DefaultIdentifierFactory.getInstance();
-    declareClassSig = identifierFactory.getClassType("IfElseStatement");
+  public void loadClasses() {
+    loadClassesWithWala.classLoader(srcDir,className);
   }
 
   @Test
-  public void test() {
+  public void ifElseStatementTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
-            loader,
-            identifierFactory.getMethodSignature(
+                loadClassesWithWala.loader,
+                loadClassesWithWala.identifierFactory.getMethodSignature(
                 "ifElseStatement",
-                declareClassSig,
+                        loadClassesWithWala.declareClassSig,
                 "java.lang.String",
                 Arrays.asList("int", "int", "int")));
     assertTrue(m.isPresent());

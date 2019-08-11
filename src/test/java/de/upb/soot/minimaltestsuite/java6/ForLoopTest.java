@@ -3,14 +3,12 @@ package de.upb.soot.minimaltestsuite.java6;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.java.Utils;
-import de.upb.soot.frontends.java.WalaClassLoader;
 import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
 import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.types.JavaClassType;
+import de.upb.soot.minimaltestsuite.LoadClassesWithWala;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,27 +17,24 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class ForLoopTest {
+public class ForLoopTest{
+  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
+  private String className = "ForLoop";
+  private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
-  private WalaClassLoader loader;
-  private DefaultIdentifierFactory identifierFactory;
-  private JavaClassType declareClassSig;
 
   @Before
-  public void loadClassesWithWala() {
-    String srcDir = "src/test/resources/minimaltestsuite/java6/";
-    loader = new WalaClassLoader(srcDir, null);
-    identifierFactory = DefaultIdentifierFactory.getInstance();
-    declareClassSig = identifierFactory.getClassType("ForLoop");
+  public void loadClasses() {
+    loadClassesWithWala.classLoader(srcDir,className);
   }
 
   @Test
-  public void test() {
+  public void forLoopTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
-            loader,
-            identifierFactory.getMethodSignature(
-                "forLoop", declareClassSig, "int", Collections.singletonList("int")));
+                loadClassesWithWala.loader,
+                loadClassesWithWala.identifierFactory.getMethodSignature(
+                "forLoop", loadClassesWithWala.declareClassSig, "int", Collections.singletonList("int")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);

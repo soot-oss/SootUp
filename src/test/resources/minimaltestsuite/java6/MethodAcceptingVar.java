@@ -1,5 +1,3 @@
-package de.upb.soot.java6;
-
 public class MethodAcceptingVar {
     public void shortVariable(short a) {
         System.out.println(a);
