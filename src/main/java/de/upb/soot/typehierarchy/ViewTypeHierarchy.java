@@ -83,11 +83,11 @@ class ViewTypeHierarchy implements TypeHierarchy {
     }
 
     Iterator<? extends Node> superclassIterator =
-        graph.getSuccNodes(classNode, EdgeType.ClassSuperclass);
+        graph.getSuccNodes(classNode, EdgeType.ClassDirectlyExtends);
     while (superclassIterator.hasNext()) {
       Node superclass = superclassIterator.next();
       superClasses.add((ClassNode) superclass);
-      superclassIterator = graph.getSuccNodes(superclass, EdgeType.ClassSuperclass);
+      superclassIterator = graph.getSuccNodes(superclass, EdgeType.ClassDirectlyExtends);
     }
 
     return superClasses;
@@ -172,15 +172,15 @@ class ViewTypeHierarchy implements TypeHierarchy {
     }
     if (node instanceof InterfaceNode) {
       graph
-          .getSuccNodes(node, EdgeType.InterfaceDirectlyImplementedBy)
+          .getPredNodes(node, EdgeType.ClassDirectlyImplements)
           .forEachRemaining(
               directImplementer -> visitSubgraph(graph, directImplementer, true, visitor));
       graph
-          .getSuccNodes(node, EdgeType.InterfaceDirectlyExtendedBy)
+          .getPredNodes(node, EdgeType.InterfaceDirectlyExtends)
           .forEachRemaining(directExtender -> visitSubgraph(graph, directExtender, true, visitor));
     } else if (node instanceof ClassNode) {
       graph
-          .getSuccNodes(node, EdgeType.ClassDirectlySubclassedBy)
+          .getPredNodes(node, EdgeType.ClassDirectlyExtends)
           .forEachRemaining(directSubclass -> visitSubgraph(graph, directSubclass, true, visitor));
     } else {
       throw new AssertionError("Unknown node type!");
@@ -227,9 +227,7 @@ class ViewTypeHierarchy implements TypeHierarchy {
                             graph.addNode(interfaceNode);
                             return interfaceNode;
                           });
-                  // Double-link the nodes
                   graph.addEdge(node, extendedInterfaceNode, EdgeType.InterfaceDirectlyExtends);
-                  graph.addEdge(extendedInterfaceNode, node, EdgeType.InterfaceDirectlyExtendedBy);
                 }
               } else {
                 ClassNode node =
@@ -250,10 +248,7 @@ class ViewTypeHierarchy implements TypeHierarchy {
                             graph.addNode(interfaceNode);
                             return interfaceNode;
                           });
-                  // Double-link the nodes
                   graph.addEdge(node, implementedInterfaceNode, EdgeType.ClassDirectlyImplements);
-                  graph.addEdge(
-                      implementedInterfaceNode, node, EdgeType.InterfaceDirectlyImplementedBy);
                 }
                 sootClass
                     .getSuperclass()
@@ -267,9 +262,7 @@ class ViewTypeHierarchy implements TypeHierarchy {
                                     graph.addNode(classNode);
                                     return classNode;
                                   });
-                          // Double-link the nodes
-                          graph.addEdge(node, superClassNode, EdgeType.ClassSuperclass);
-                          graph.addEdge(superClassNode, node, EdgeType.ClassDirectlySubclassedBy);
+                          graph.addEdge(node, superClassNode, EdgeType.ClassDirectlyExtends);
                         });
               }
             });
@@ -297,16 +290,10 @@ class ViewTypeHierarchy implements TypeHierarchy {
     enum EdgeType {
       /** Edge to an interface node this interface extends directly, non-transitively. */
       InterfaceDirectlyExtends,
-      /** Edge to a class implementing this interface directly, non-transitively. */
-      InterfaceDirectlyImplementedBy,
       /** Edge to an interface extending this interface directly, non-transitively. */
-      InterfaceDirectlyExtendedBy,
-      /** Edge to an interface this class directly implements, non-transitively. */
       ClassDirectlyImplements,
       /** Edge to a class this class is directly subclassed by, non-transitively. */
-      ClassDirectlySubclassedBy,
-      /** Edge to the superclass of this class. */
-      ClassSuperclass,
+      ClassDirectlyExtends,
       /** Used as the default edge label. */
       NoMeaning
     }
