@@ -1,5 +1,3 @@
-package de.upb.soot.java6;
-
 public class BreakInWhileLoop {
 
     public int breakInWhileLoop(int num) {
