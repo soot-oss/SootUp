@@ -212,42 +212,21 @@ class ViewTypeHierarchy implements TypeHierarchy {
               if (sootClass.isInterface()) {
                 InterfaceNode node =
                     typeToInterfaceNode.computeIfAbsent(
-                        sootClass.getType(),
-                        type -> {
-                          InterfaceNode interfaceNode = new InterfaceNode(type);
-                          graph.addNode(interfaceNode);
-                          return interfaceNode;
-                        });
+                        sootClass.getType(), type -> createAndAddInterfaceNode(graph, type));
                 for (JavaClassType extendedInterface : sootClass.getInterfaces()) {
                   InterfaceNode extendedInterfaceNode =
                       typeToInterfaceNode.computeIfAbsent(
-                          extendedInterface,
-                          type -> {
-                            InterfaceNode interfaceNode = new InterfaceNode(type);
-                            graph.addNode(interfaceNode);
-                            return interfaceNode;
-                          });
+                          extendedInterface, type -> createAndAddInterfaceNode(graph, type));
                   graph.addEdge(node, extendedInterfaceNode, EdgeType.InterfaceDirectlyExtends);
                 }
               } else {
                 ClassNode node =
                     typeToClassNode.computeIfAbsent(
-                        sootClass.getType(),
-                        type -> {
-                          ClassNode classNode = new ClassNode(type);
-                          graph.addNode(classNode);
-                          return classNode;
-                        });
+                        sootClass.getType(), type -> createAndAddClassNode(graph, type));
                 for (JavaClassType implementedInterface : sootClass.getInterfaces()) {
-                  // TODO This looks messy
                   InterfaceNode implementedInterfaceNode =
                       typeToInterfaceNode.computeIfAbsent(
-                          implementedInterface,
-                          type -> {
-                            InterfaceNode interfaceNode = new InterfaceNode(type);
-                            graph.addNode(interfaceNode);
-                            return interfaceNode;
-                          });
+                          implementedInterface, type -> createAndAddInterfaceNode(graph, type));
                   graph.addEdge(node, implementedInterfaceNode, EdgeType.ClassDirectlyImplements);
                 }
                 sootClass
@@ -256,12 +235,7 @@ class ViewTypeHierarchy implements TypeHierarchy {
                         superClass -> {
                           ClassNode superClassNode =
                               typeToClassNode.computeIfAbsent(
-                                  superClass,
-                                  type -> {
-                                    ClassNode classNode = new ClassNode(type);
-                                    graph.addNode(classNode);
-                                    return classNode;
-                                  });
+                                  superClass, type -> createAndAddClassNode(graph, type));
                           graph.addEdge(node, superClassNode, EdgeType.ClassDirectlyExtends);
                         });
               }
@@ -269,6 +243,22 @@ class ViewTypeHierarchy implements TypeHierarchy {
     double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
     log.info("Type hierarchy scan took " + runtimeMs + " ms");
     return new ScanResult(typeToClassNode, typeToInterfaceNode, graph);
+  }
+
+  @Nonnull
+  private static ClassNode createAndAddClassNode(
+      SlowSparseNumberedLabeledGraph<Node, EdgeType> graph, JavaClassType type) {
+    ClassNode classNode = new ClassNode(type);
+    graph.addNode(classNode);
+    return classNode;
+  }
+
+  @Nonnull
+  private static InterfaceNode createAndAddInterfaceNode(
+      SlowSparseNumberedLabeledGraph<Node, EdgeType> graph, JavaClassType type) {
+    InterfaceNode interfaceNode = new InterfaceNode(type);
+    graph.addNode(interfaceNode);
+    return interfaceNode;
   }
 
   @Nonnull
@@ -286,7 +276,6 @@ class ViewTypeHierarchy implements TypeHierarchy {
   /** Holds a node for each {@link JavaClassType} encountered during the scan. */
   static class ScanResult {
 
-    // TODO Probably don't need two types each here?
     enum EdgeType {
       /** Edge to an interface node this interface extends directly, non-transitively. */
       InterfaceDirectlyExtends,
