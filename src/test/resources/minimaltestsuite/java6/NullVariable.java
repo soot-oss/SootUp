@@ -1,5 +1,3 @@
-package de.upb.soot.java6;
-
 public class NullVariable {
 
     public String nullVariable(){
