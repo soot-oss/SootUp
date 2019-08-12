@@ -1,18 +1,22 @@
 package de.upb.soot.typehierarchy;
 
 import com.google.common.base.Suppliers;
+import com.ibm.wala.util.graph.labeled.SlowSparseNumberedLabeledGraph;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.ClassNode;
+import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.EdgeType;
 import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.InterfaceNode;
 import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.Node;
 import de.upb.soot.types.JavaClassType;
+import de.upb.soot.util.StreamUtils;
 import de.upb.soot.views.View;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +28,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+// TODO Update wiki
 
 /**
  * Full documentation is in the <a
@@ -49,7 +55,8 @@ class ViewTypeHierarchy implements TypeHierarchy {
 
     Set<JavaClassType> implementers = new HashSet<>();
     // We now traverse the subgraph of interfaceNode to find all its subtypes
-    visitSubgraph(interfaceNode, false, subnode -> implementers.add(subnode.type));
+    visitSubgraph(
+        scanResult.graph, interfaceNode, false, subnode -> implementers.add(subnode.type));
     return implementers;
   }
 
@@ -61,24 +68,43 @@ class ViewTypeHierarchy implements TypeHierarchy {
 
     Set<JavaClassType> subclasses = new HashSet<>();
     // We now traverse the subgraph of classNode to find all its subtypes
-    visitSubgraph(classNode, false, subnode -> subclasses.add(subnode.type));
+    visitSubgraph(scanResult.graph, classNode, false, subnode -> subclasses.add(subnode.type));
     return subclasses;
   }
 
   @Nonnull
   private List<ClassNode> superClassesOf(@Nonnull ClassNode classNode, boolean includingSelf) {
+    ScanResult scanResult = lazyScanResult.get();
+    SlowSparseNumberedLabeledGraph<Node, EdgeType> graph = scanResult.graph;
+
     List<ClassNode> superClasses = new ArrayList<>();
     if (includingSelf) {
       superClasses.add(classNode);
     }
 
-    ClassNode superClass = classNode.superClass;
-    while (superClass != null) {
-      superClasses.add(superClass);
-      superClass = superClass.superClass;
+    Iterator<? extends Node> superclassIterator =
+        graph.getSuccNodes(classNode, EdgeType.ClassSuperclass);
+    while (superclassIterator.hasNext()) {
+      Node superclass = superclassIterator.next();
+      superClasses.add((ClassNode) superclass);
+      superclassIterator = graph.getSuccNodes(superclass, EdgeType.ClassSuperclass);
     }
 
     return superClasses;
+  }
+
+  private Stream<InterfaceNode> directlyImplementedInterfacesOf(ClassNode classNode) {
+    SlowSparseNumberedLabeledGraph<Node, EdgeType> graph = lazyScanResult.get().graph;
+    return StreamUtils.iteratorToStream(
+            graph.getSuccNodes(classNode, EdgeType.ClassDirectlyImplements))
+        .map(node -> (InterfaceNode) node);
+  }
+
+  private Stream<InterfaceNode> directlyExtendedInterfacesOf(InterfaceNode interfaceNode) {
+    SlowSparseNumberedLabeledGraph<Node, EdgeType> graph = lazyScanResult.get().graph;
+    return StreamUtils.iteratorToStream(
+            graph.getSuccNodes(interfaceNode, EdgeType.InterfaceDirectlyExtends))
+        .map(node -> (InterfaceNode) node);
   }
 
   @Nonnull
@@ -92,14 +118,14 @@ class ViewTypeHierarchy implements TypeHierarchy {
       // them together in a Set.
       List<ClassNode> superClasses = superClassesOf(classNode, true);
       return superClasses.stream()
-          .flatMap(superClass -> superClass.implementedInterfaces.stream())
+          .flatMap(this::directlyImplementedInterfacesOf)
           .flatMap(this::selfAndImplementedInterfaces)
           .collect(Collectors.toSet());
     }
 
     InterfaceNode interfaceNode = scanResult.typeToInterfaceNode.get(type);
     if (interfaceNode != null) {
-      return interfaceNode.extendedInterfaces.stream()
+      return directlyExtendedInterfacesOf(interfaceNode)
           .flatMap(this::selfAndImplementedInterfaces)
           .collect(Collectors.toSet());
     }
@@ -113,14 +139,16 @@ class ViewTypeHierarchy implements TypeHierarchy {
    */
   @Nonnull
   private Stream<JavaClassType> selfAndImplementedInterfaces(InterfaceNode node) {
-    Set<InterfaceNode> extendedInterfaces = node.extendedInterfaces;
-    if (extendedInterfaces.isEmpty()) {
-      return Stream.of(node.type);
-    }
+    ScanResult scanResult = lazyScanResult.get();
+    SlowSparseNumberedLabeledGraph<Node, EdgeType> graph = scanResult.graph;
+
+    Stream<? extends Node> extendedInterfaces =
+        StreamUtils.iteratorToStream(graph.getSuccNodes(node, EdgeType.InterfaceDirectlyExtends));
 
     return Stream.concat(
         Stream.of(node.type),
-        extendedInterfaces.stream().flatMap(this::selfAndImplementedInterfaces));
+        extendedInterfaces.flatMap(
+            extendedInterface -> selfAndImplementedInterfaces((InterfaceNode) extendedInterface)));
   }
 
   @Nullable
@@ -134,20 +162,26 @@ class ViewTypeHierarchy implements TypeHierarchy {
    * each node in the subgraph. If <code>includeSelf</code> is true, the <code>visitor</code> is
    * also called with the <code>node</code>.
    */
-  private static void visitSubgraph(Node node, boolean includeSelf, Consumer<Node> visitor) {
+  private static void visitSubgraph(
+      SlowSparseNumberedLabeledGraph<Node, EdgeType> graph,
+      Node node,
+      boolean includeSelf,
+      Consumer<Node> visitor) {
     if (includeSelf) {
       visitor.accept(node);
     }
     if (node instanceof InterfaceNode) {
-      ((InterfaceNode) node)
-          .directImplementers.forEach(
-              directImplementer -> visitSubgraph(directImplementer, true, visitor));
-      ((InterfaceNode) node)
-          .extendingInterfaces.forEach(
-              extendingInterface -> visitSubgraph(extendingInterface, true, visitor));
+      graph
+          .getSuccNodes(node, EdgeType.InterfaceDirectlyImplementedBy)
+          .forEachRemaining(
+              directImplementer -> visitSubgraph(graph, directImplementer, true, visitor));
+      graph
+          .getSuccNodes(node, EdgeType.InterfaceDirectlyExtendedBy)
+          .forEachRemaining(directExtender -> visitSubgraph(graph, directExtender, true, visitor));
     } else if (node instanceof ClassNode) {
-      ((ClassNode) node)
-          .directSubclasses.forEach(directSubclass -> visitSubgraph(directSubclass, true, visitor));
+      graph
+          .getSuccNodes(node, EdgeType.ClassDirectlySubclassedBy)
+          .forEachRemaining(directSubclass -> visitSubgraph(graph, directSubclass, true, visitor));
     } else {
       throw new AssertionError("Unknown node type!");
     }
@@ -167,6 +201,8 @@ class ViewTypeHierarchy implements TypeHierarchy {
     long startNanos = System.nanoTime();
     Map<JavaClassType, ScanResult.ClassNode> typeToClassNode = new HashMap<>();
     Map<JavaClassType, ScanResult.InterfaceNode> typeToInterfaceNode = new HashMap<>();
+    SlowSparseNumberedLabeledGraph<Node, EdgeType> graph =
+        new SlowSparseNumberedLabeledGraph<>(EdgeType.NoMeaning);
 
     view.getClassesStream()
         .filter(aClass -> aClass instanceof SootClass)
@@ -175,39 +211,71 @@ class ViewTypeHierarchy implements TypeHierarchy {
             sootClass -> {
               if (sootClass.isInterface()) {
                 InterfaceNode node =
-                    typeToInterfaceNode.computeIfAbsent(sootClass.getType(), InterfaceNode::new);
+                    typeToInterfaceNode.computeIfAbsent(
+                        sootClass.getType(),
+                        type -> {
+                          InterfaceNode interfaceNode = new InterfaceNode(type);
+                          graph.addNode(interfaceNode);
+                          return interfaceNode;
+                        });
                 for (JavaClassType extendedInterface : sootClass.getInterfaces()) {
                   InterfaceNode extendedInterfaceNode =
-                      typeToInterfaceNode.computeIfAbsent(extendedInterface, InterfaceNode::new);
+                      typeToInterfaceNode.computeIfAbsent(
+                          extendedInterface,
+                          type -> {
+                            InterfaceNode interfaceNode = new InterfaceNode(type);
+                            graph.addNode(interfaceNode);
+                            return interfaceNode;
+                          });
                   // Double-link the nodes
-                  extendedInterfaceNode.extendingInterfaces.add(node);
-                  node.extendedInterfaces.add(extendedInterfaceNode);
+                  graph.addEdge(node, extendedInterfaceNode, EdgeType.InterfaceDirectlyExtends);
+                  graph.addEdge(extendedInterfaceNode, node, EdgeType.InterfaceDirectlyExtendedBy);
                 }
               } else {
                 ClassNode node =
-                    typeToClassNode.computeIfAbsent(sootClass.getType(), ClassNode::new);
+                    typeToClassNode.computeIfAbsent(
+                        sootClass.getType(),
+                        type -> {
+                          ClassNode classNode = new ClassNode(type);
+                          graph.addNode(classNode);
+                          return classNode;
+                        });
                 for (JavaClassType implementedInterface : sootClass.getInterfaces()) {
+                  // TODO This looks messy
                   InterfaceNode implementedInterfaceNode =
-                      typeToInterfaceNode.computeIfAbsent(implementedInterface, InterfaceNode::new);
+                      typeToInterfaceNode.computeIfAbsent(
+                          implementedInterface,
+                          type -> {
+                            InterfaceNode interfaceNode = new InterfaceNode(type);
+                            graph.addNode(interfaceNode);
+                            return interfaceNode;
+                          });
                   // Double-link the nodes
-                  implementedInterfaceNode.directImplementers.add(node);
-                  node.implementedInterfaces.add(implementedInterfaceNode);
+                  graph.addEdge(node, implementedInterfaceNode, EdgeType.ClassDirectlyImplements);
+                  graph.addEdge(
+                      implementedInterfaceNode, node, EdgeType.InterfaceDirectlyImplementedBy);
                 }
                 sootClass
                     .getSuperclass()
                     .ifPresent(
                         superClass -> {
                           ClassNode superClassNode =
-                              typeToClassNode.computeIfAbsent(superClass, ClassNode::new);
+                              typeToClassNode.computeIfAbsent(
+                                  superClass,
+                                  type -> {
+                                    ClassNode classNode = new ClassNode(type);
+                                    graph.addNode(classNode);
+                                    return classNode;
+                                  });
                           // Double-link the nodes
-                          superClassNode.directSubclasses.add(node);
-                          node.superClass = superClassNode;
+                          graph.addEdge(node, superClassNode, EdgeType.ClassSuperclass);
+                          graph.addEdge(superClassNode, node, EdgeType.ClassDirectlySubclassedBy);
                         });
               }
             });
     double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
     log.info("Type hierarchy scan took " + runtimeMs + " ms");
-    return new ScanResult(typeToClassNode, typeToInterfaceNode);
+    return new ScanResult(typeToClassNode, typeToInterfaceNode, graph);
   }
 
   @Nonnull
@@ -225,16 +293,38 @@ class ViewTypeHierarchy implements TypeHierarchy {
   /** Holds a node for each {@link JavaClassType} encountered during the scan. */
   static class ScanResult {
 
+    // TODO Probably don't need two types each here?
+    enum EdgeType {
+      /** Edge to an interface node this interface extends directly, non-transitively. */
+      InterfaceDirectlyExtends,
+      /** Edge to a class implementing this interface directly, non-transitively. */
+      InterfaceDirectlyImplementedBy,
+      /** Edge to an interface extending this interface directly, non-transitively. */
+      InterfaceDirectlyExtendedBy,
+      /** Edge to an interface this class directly implements, non-transitively. */
+      ClassDirectlyImplements,
+      /** Edge to a class this class is directly subclassed by, non-transitively. */
+      ClassDirectlySubclassedBy,
+      /** Edge to the superclass of this class. */
+      ClassSuperclass,
+      /** Used as the default edge label. */
+      NoMeaning
+    }
+
     /** Holds all nodes corresponding to classes (excluding interfaces). */
-    final Map<JavaClassType, ClassNode> typeToClassNode;
+    @Nonnull final Map<JavaClassType, ClassNode> typeToClassNode;
     /** Holds all nodes corresponding to interfaces. */
-    final Map<JavaClassType, InterfaceNode> typeToInterfaceNode;
+    @Nonnull final Map<JavaClassType, InterfaceNode> typeToInterfaceNode;
+
+    @Nonnull final SlowSparseNumberedLabeledGraph<Node, EdgeType> graph;
 
     private ScanResult(
-        Map<JavaClassType, ClassNode> typeToClassNode,
-        Map<JavaClassType, InterfaceNode> typeToInterfaceNode) {
+        @Nonnull Map<JavaClassType, ClassNode> typeToClassNode,
+        @Nonnull Map<JavaClassType, InterfaceNode> typeToInterfaceNode,
+        @Nonnull SlowSparseNumberedLabeledGraph<Node, EdgeType> graph) {
       this.typeToClassNode = typeToClassNode;
       this.typeToInterfaceNode = typeToInterfaceNode;
+      this.graph = graph;
     }
 
     /**
@@ -250,48 +340,17 @@ class ViewTypeHierarchy implements TypeHierarchy {
       }
     }
 
-    /**
-     * @see #directImplementers
-     * @see #extendingInterfaces
-     */
     static class InterfaceNode extends Node {
-
-      /** The nodes for the interfaces this interface extends, if applicable. */
-      @Nonnull final Set<InterfaceNode> extendedInterfaces;
-
-      /** All classes implementing this interface directly, non-transitively. */
-      @Nonnull final Set<ClassNode> directImplementers;
-
-      /** All interfaces extending this interface directly, non-transitively. */
-      @Nonnull final Set<InterfaceNode> extendingInterfaces;
 
       private InterfaceNode(@Nonnull JavaClassType type) {
         super(type);
-        // Init. capacity 0 as interface rarely extend others
-        this.extendedInterfaces = new HashSet<>(0);
-        this.directImplementers = new HashSet<>();
-        this.extendingInterfaces = new HashSet<>();
       }
     }
 
-    /** @see #directSubclasses */
     static class ClassNode extends Node {
-
-      /** The nodes for the interfaces this interface implements, if applicable. */
-      @Nonnull final Set<InterfaceNode> implementedInterfaces;
-
-      /** All classes that directly extend this class, non-transitively. */
-      @Nonnull final Set<ClassNode> directSubclasses;
-
-      /** The node for the class this class extends, if applicable. */
-      @Nullable ClassNode superClass;
 
       private ClassNode(@Nonnull JavaClassType type) {
         super(type);
-        this.directSubclasses = new HashSet<>();
-        this.superClass = null;
-        // Init. capacity 0 as many classes do not extend others
-        this.implementedInterfaces = new HashSet<>(0);
       }
     }
   }
