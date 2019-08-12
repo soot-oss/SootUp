@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  * @author Ben Hermann
+ * @author Christian Brüggemann
  */
 public interface TypeHierarchy {
 

@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Full documentation is in the <a
  * href="https://github.com/secure-software-engineering/soot-reloaded/wiki/Type-Hierarchy-Algorithm">wiki</a>.
+ *
+ * @author Christian Brüggemann
  */
 class ViewTypeHierarchy implements TypeHierarchy {
 
