@@ -32,7 +32,7 @@ public class DoWhileLoopTest {
   }
 
   @Test
-  public void shortVariableTest() {
+  public void doWhileLoopTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
