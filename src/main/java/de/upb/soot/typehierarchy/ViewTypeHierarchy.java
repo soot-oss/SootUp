@@ -284,11 +284,6 @@ class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   @Override
-  public void addType(JavaClassType type) {
-    addType(sootClassFor(type));
-  }
-
-  @Override
   public void addType(SootClass sootClass) {
     ScanResult scanResult = lazyScanResult.get();
     addSootClassToGraph(sootClass, scanResult.typeToVertex, scanResult.graph);

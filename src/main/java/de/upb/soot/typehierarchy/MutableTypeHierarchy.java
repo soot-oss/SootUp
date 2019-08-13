@@ -1,10 +1,15 @@
 package de.upb.soot.typehierarchy;
 
 import de.upb.soot.core.SootClass;
-import de.upb.soot.types.JavaClassType;
 
+/** For internal use only. */
 public interface MutableTypeHierarchy extends TypeHierarchy {
-  void addType(JavaClassType type);
 
+  /**
+   * Adds the type to the hierarchy, updating all structures to reflect its presence as if it had
+   * been a member of the hierarchy from the beginning.
+   *
+   * <p>For internal use only.
+   */
   void addType(SootClass sootClass);
 }
