@@ -6,15 +6,11 @@ import de.upb.soot.types.NullType;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
-import de.upb.soot.views.View;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-// IMPORTANT: Internally, all TypeHierarchy implementations must
-// also implement MutableTypeHierarchy.
 
 /**
  * Represents a type hierarchy
@@ -24,10 +20,6 @@ import javax.annotation.Nullable;
  * @author Christian Brüggemann
  */
 public interface TypeHierarchy {
-
-  static TypeHierarchy fromView(View view) {
-    return new ViewTypeHierarchy(view);
-  }
 
   /**
    * Returns all classes that implement the specified interface. This is transitive: If class <code>
