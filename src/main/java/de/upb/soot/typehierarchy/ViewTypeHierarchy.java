@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christian Brüggemann
  */
-public class ViewTypeHierarchy implements MutableTypeHierarchy {
+class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   private static final Logger log = LoggerFactory.getLogger(ViewTypeHierarchy.class);
 

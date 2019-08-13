@@ -9,8 +9,8 @@ import de.upb.soot.callgraph.CallGraph;
 import de.upb.soot.callgraph.CallGraphAlgorithm;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.typehierarchy.$ViewTypeHierarchyAccessor;
+import de.upb.soot.typehierarchy.MutableTypeHierarchy;
 import de.upb.soot.typehierarchy.TypeHierarchy;
-import de.upb.soot.typehierarchy.ViewTypeHierarchy;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -26,7 +26,7 @@ public abstract class AbstractView<S extends AnalysisInputLocation> implements V
 
   @Nonnull private final Options options = new Options();
 
-  private final Supplier<ViewTypeHierarchy> lazyTypeHierarchy =
+  private final Supplier<MutableTypeHierarchy> lazyTypeHierarchy =
       Suppliers.memoize(() -> $ViewTypeHierarchyAccessor.createViewTypeHierarchy(this));
 
   public AbstractView(@Nonnull Project<S> project) {
