@@ -13,6 +13,9 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+// IMPORTANT: Internally, all TypeHierarchy implementations must
+// also implement MutableTypeHierarchy.
+
 /**
  * Represents a type hierarchy
  *
