@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christian Brüggemann
  */
-class ViewTypeHierarchy implements TypeHierarchy {
+class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   private static final Logger log = LoggerFactory.getLogger(ViewTypeHierarchy.class);
 
@@ -218,47 +218,45 @@ class ViewTypeHierarchy implements TypeHierarchy {
     view.getClassesStream()
         .filter(aClass -> aClass instanceof SootClass)
         .map(aClass -> (SootClass) aClass)
-        .forEach(
-            sootClass -> {
-              if (sootClass.isInterface()) {
-                Vertex vertex =
-                    typeToVertex.computeIfAbsent(
-                        sootClass.getType(), type -> createAndAddInterfaceVertex(graph, type));
-                for (JavaClassType extendedInterface : sootClass.getInterfaces()) {
-                  Vertex extendedInterfaceVertex =
-                      typeToVertex.computeIfAbsent(
-                          extendedInterface, type -> createAndAddInterfaceVertex(graph, type));
-                  graph.addEdge(
-                      vertex, extendedInterfaceVertex, new Edge(EdgeType.InterfaceDirectlyExtends));
-                }
-              } else {
-                Vertex vertex =
-                    typeToVertex.computeIfAbsent(
-                        sootClass.getType(), type -> createAndAddClassVertex(graph, type));
-                for (JavaClassType implementedInterface : sootClass.getInterfaces()) {
-                  Vertex implementedInterfaceVertex =
-                      typeToVertex.computeIfAbsent(
-                          implementedInterface, type -> createAndAddInterfaceVertex(graph, type));
-                  graph.addEdge(
-                      vertex,
-                      implementedInterfaceVertex,
-                      new Edge(EdgeType.ClassDirectlyImplements));
-                }
-                sootClass
-                    .getSuperclass()
-                    .ifPresent(
-                        superClass -> {
-                          Vertex superClassVertex =
-                              typeToVertex.computeIfAbsent(
-                                  superClass, type -> createAndAddClassVertex(graph, type));
-                          graph.addEdge(
-                              vertex, superClassVertex, new Edge(EdgeType.ClassDirectlyExtends));
-                        });
-              }
-            });
+        .forEach(sootClass -> addSootClassToGraph(sootClass, typeToVertex, graph));
     double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
     log.info("Type hierarchy scan took " + runtimeMs + " ms");
     return new ScanResult(typeToVertex, graph);
+  }
+
+  private static void addSootClassToGraph(
+      SootClass sootClass, Map<JavaClassType, Vertex> typeToVertex, Graph<Vertex, Edge> graph) {
+    if (sootClass.isInterface()) {
+      Vertex vertex =
+          typeToVertex.computeIfAbsent(
+              sootClass.getType(), type -> createAndAddInterfaceVertex(graph, type));
+      for (JavaClassType extendedInterface : sootClass.getInterfaces()) {
+        Vertex extendedInterfaceVertex =
+            typeToVertex.computeIfAbsent(
+                extendedInterface, type -> createAndAddInterfaceVertex(graph, type));
+        graph.addEdge(vertex, extendedInterfaceVertex, new Edge(EdgeType.InterfaceDirectlyExtends));
+      }
+    } else {
+      Vertex vertex =
+          typeToVertex.computeIfAbsent(
+              sootClass.getType(), type -> createAndAddClassVertex(graph, type));
+      for (JavaClassType implementedInterface : sootClass.getInterfaces()) {
+        Vertex implementedInterfaceVertex =
+            typeToVertex.computeIfAbsent(
+                implementedInterface, type -> createAndAddInterfaceVertex(graph, type));
+        graph.addEdge(
+            vertex, implementedInterfaceVertex, new Edge(EdgeType.ClassDirectlyImplements));
+      }
+      sootClass
+          .getSuperclass()
+          .ifPresent(
+              superClass -> {
+                Vertex superClassVertex =
+                    typeToVertex.computeIfAbsent(
+                        superClass, type -> createAndAddClassVertex(graph, type));
+                graph.addEdge(vertex, superClassVertex, new Edge(EdgeType.ClassDirectlyExtends));
+              });
+    }
   }
 
   @Nonnull
@@ -285,6 +283,17 @@ class ViewTypeHierarchy implements TypeHierarchy {
       throw new ResolveException("" + classType + " is not a regular Java class");
     }
     return (SootClass) aClass;
+  }
+
+  @Override
+  public void addType(JavaClassType type) {
+    addType(sootClassFor(type));
+  }
+
+  @Override
+  public void addType(SootClass sootClass) {
+    ScanResult scanResult = lazyScanResult.get();
+    addSootClassToGraph(sootClass, scanResult.typeToVertex, scanResult.graph);
   }
 
   /** Holds a vertex for each {@link JavaClassType} encountered during the scan. */
