@@ -1,6 +1,8 @@
 package de.upb.soot.core;
 
 import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.signatures.Signature;
 import de.upb.soot.types.Type;
 import de.upb.soot.views.View;
@@ -31,8 +33,15 @@ public abstract class AbstractClass<T extends AbstractClassSource> {
   public abstract Type getType();
 
   @Nonnull
-  public Optional<? extends Method> getMethod(@Nonnull Signature signature) {
+  public Optional<? extends Method> getMethod(@Nonnull MethodSignature signature) {
     return this.getMethods().stream().filter(m -> m.getSignature().equals(signature)).findAny();
+  }
+
+  @Nonnull
+  public Optional<? extends Method> getMethod(@Nonnull MethodSubSignature subSignature) {
+    return getMethods().stream()
+        .filter(m -> m.getSignature().getSubSignature().equals(subSignature))
+        .findAny();
   }
 
   @Nonnull
