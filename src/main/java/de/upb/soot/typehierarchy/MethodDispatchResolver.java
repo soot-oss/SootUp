@@ -35,7 +35,9 @@ public final class MethodDispatchResolver {
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
         .map(subtype -> subtype.getMethod(m.getSubSignature()))
         .filter(Optional::isPresent)
-        .map(method -> method.get().getSignature())
+        .map(Optional::get)
+        .filter(method -> method instanceof SootMethod && !((SootMethod) method).isAbstract())
+        .map(Method::getSignature)
         .collect(Collectors.toSet());
   }
 
