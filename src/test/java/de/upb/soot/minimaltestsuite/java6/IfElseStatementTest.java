@@ -9,10 +9,7 @@ import de.upb.soot.frontends.java.Utils;
 import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.minimaltestsuite.LoadClassesWithWala;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Before;
@@ -39,8 +36,8 @@ public class IfElseStatementTest {
             loadClassesWithWala.identifierFactory.getMethodSignature(
                 "ifElseStatement",
                 loadClassesWithWala.declareClassSig,
-                "java.lang.String",
-                Arrays.asList("int", "int", "int")));
+                "void",
+                Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -55,20 +52,20 @@ public class IfElseStatementTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: IfElseStatement",
-                "$i0 := @parameter0: int",
-                "$i1 := @parameter1: int",
-                "$i2 := @parameter2: int",
-                "$r1 = null",
+                "$i0 = 10",
+                "$i1 = 20",
+                "$i2 = 30",
+                "$i3 = 0",
                 "$z0 = $i0 < $i1",
                 "if $z0 == 0 goto $z1 = $i1 < $i2",
-                "$r1 = \"if statement\"",
-                "goto [?= return $r1]",
+                "$i3 = 1",
+                "goto [?= return]",
                 "$z1 = $i1 < $i2",
-                "if $z1 == 0 goto $r1 = \"else statement\"",
-                "$r1 = \"else if statement\"",
-                "goto [?= return $r1]",
-                "$r1 = \"else statement\"",
-                "return $r1")
+                "if $z1 == 0 goto $i3 = 3",
+                "$i3 = 2",
+                "goto [?= return]",
+                "$i3 = 3",
+                "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);

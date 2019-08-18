@@ -1,16 +1,17 @@
 
 public class IfElseStatement {
 
-    public String ifElseStatement(int a, int b, int c){
-        String str;
-
+    public void ifElseStatement(){
+        int a = 10;
+        int b = 20;
+        int c = 30;
+        int val = 0;
         if(a < b){
-            str = "if statement";
+            val = 1;
         }else if( b < c){
-            str = "else if statement";
+            val = 2;
         }else{
-            str="else statement";
+            val = 3;
         }
-        return str;
     }
 }
