@@ -55,16 +55,17 @@ public class BreakInWhileLoopTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: BreakInWhileLoop",
-                "$i0 = 10", // num
-                "$i1 = 1", // true
-                "if $i1 == 0 goto return",
+                "$i0 = 10",
+                "$i1 = 5",
+                "$z0 = $i0 > 0",
+                "if $z0 == 0 goto return",
                 "$i2 = $i0",
                 "$i3 = $i0 - 1",
                 "$i0 = $i3",
-                "$z0 = $i0 == 0",
-                "if $z0 == 0 goto (branch)",
+                "$z1 = $i0 == $i1",
+                "if $z1 == 0 goto (branch)",
                 "goto [?= return]",
-                "goto [?= (branch)]",
+                "goto [?= $z0 = $i0 > 0]",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 

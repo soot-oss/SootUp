@@ -2,9 +2,10 @@ public class BreakInWhileLoop {
 
     public void breakInWhileLoop() {
         int num = 10;
-        while (true) {
+        int i = 5;
+        while (num > 0) {
             num--;
-            if (num == 0) {
+            if (num == i) {
                 break;
             }
         }
