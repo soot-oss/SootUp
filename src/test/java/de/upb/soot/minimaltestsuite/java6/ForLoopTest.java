@@ -33,10 +33,7 @@ public class ForLoopTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
             loadClassesWithWala.identifierFactory.getMethodSignature(
-                "forLoop",
-                loadClassesWithWala.declareClassSig,
-                "int",
-                Collections.singletonList("int")));
+                "forLoop", loadClassesWithWala.declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -51,11 +48,11 @@ public class ForLoopTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: ForLoop",
-                "$i0 := @parameter0: int",
-                "$i1 = 0",
-                "$i2 = 0",
+                "$i0 = 10", // j
+                "$i1 = 0", // num
+                "$i2 = 0", // i
                 "$z0 = $i2 < $i0",
-                "if $z0 == 0 goto return $i1",
+                "if $z0 == 0 goto return",
                 "$i3 = $i1",
                 "$i4 = $i1 + 1",
                 "$i1 = $i4",
@@ -63,7 +60,7 @@ public class ForLoopTest {
                 "$i6 = $i2 + 1",
                 "$i2 = $i6",
                 "goto [?= $z0 = $i2 < $i0]",
-                "return $i1")
+                "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
