@@ -64,7 +64,7 @@ public class BreakInWhileLoopTest {
                 "$z0 = $i0 == 0",
                 "if $z0 == 0 goto (branch)",
                 "goto [?= return]",
-                "goto [?= (branch)]",
+                "goto [?= $i1 = 1]",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
