@@ -39,8 +39,8 @@ public class BreakInWhileLoopTest {
             loadClassesWithWala.identifierFactory.getMethodSignature(
                 "breakInWhileLoop",
                 loadClassesWithWala.declareClassSig,
-                "int",
-                Collections.singletonList("int")));
+                "void",
+                Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -55,20 +55,17 @@ public class BreakInWhileLoopTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: BreakInWhileLoop",
-                "$i0 := @parameter0: int",
-                "$i1 = 1",
-                "if $i1 == 0 goto return $i0",
-                "$r1 = <java.lang.System: java.io.PrintStream out>",
-                "$r2 = \"Current value in While Loop is \" + $i0",
-                "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>($r2)",
+                "$i0 = 10", // num
+                "$i1 = 1", // true
+                "if $i1 == 0 goto return",
                 "$i2 = $i0",
                 "$i3 = $i0 - 1",
                 "$i0 = $i3",
                 "$z0 = $i0 == 0",
                 "if $z0 == 0 goto (branch)",
-                "goto [?= return $i0]",
+                "goto [?= return]",
                 "goto [?= (branch)]",
-                "return $i0")
+                "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);

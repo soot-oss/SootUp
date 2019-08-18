@@ -1,13 +1,12 @@
 public class BreakInWhileLoop {
 
-    public int breakInWhileLoop(int num) {
+    public void breakInWhileLoop() {
+        int num = 10;
         while (true) {
-            System.out.println("Current value in While Loop is " + num);
             num--;
             if (num == 0) {
                 break;
             }
         }
-        return num;
     }
 }
