@@ -39,8 +39,8 @@ public class DoWhileLoopTest {
             loadClassesWithWala.identifierFactory.getMethodSignature(
                 "doWhileLoop",
                 loadClassesWithWala.declareClassSig,
-                "int",
-                Collections.singletonList("int")));
+                "void",
+                Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -55,14 +55,14 @@ public class DoWhileLoopTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: DoWhileLoop",
-                "$i0 := @parameter0: int",
+                "$i0 = 10",
                 "$i1 = 0",
                 "$i2 = $i1",
                 "$i3 = $i1 + 1",
                 "$i1 = $i3",
                 "$z0 = $i0 > $i1",
                 "if $z0 != 0 goto $i2 = $i1",
-                "return $i1")
+                "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
