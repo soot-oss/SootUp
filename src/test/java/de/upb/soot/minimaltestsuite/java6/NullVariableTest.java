@@ -33,13 +33,13 @@ public class NullVariableTest {
   @Test
   public void nullVariableTest() {
     Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "nullVariable",
-                loadClassesWithWala.declareClassSig,
-                "java.lang.String",
-                Collections.emptyList()));
+            WalaClassLoaderTestUtils.getSootMethod(
+                    loadClassesWithWala.loader,
+                    loadClassesWithWala.identifierFactory.getMethodSignature(
+                            "nullVariable",
+                            loadClassesWithWala.declareClassSig,
+                            "void",
+                            Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -47,13 +47,13 @@ public class NullVariableTest {
     assertNotNull(body);
 
     List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+            body.getStmts().stream()
+                    .map(Stmt::toString)
+                    .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("r0 := @this: NullVariable", "$r1 = null", "return $r1")
-            .collect(Collectors.toCollection(ArrayList::new));
+            Stream.of("r0 := @this: NullVariable", "$r1 = null", "return")
+                    .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
   }

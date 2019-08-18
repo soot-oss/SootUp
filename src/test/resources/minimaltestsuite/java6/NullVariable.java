@@ -1,7 +1,6 @@
 public class NullVariable {
 
-    public String nullVariable(){
+    public void nullVariable(){
         String str = null;
-        return str;
     }
 }
