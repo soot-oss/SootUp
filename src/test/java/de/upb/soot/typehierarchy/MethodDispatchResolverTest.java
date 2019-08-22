@@ -1,6 +1,7 @@
 package de.upb.soot.typehierarchy;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import de.upb.soot.IdentifierFactory;
@@ -53,6 +54,12 @@ public class MethodDispatchResolverTest {
         factory.parseMethodSignature("java.util.AbstractList#size(): int");
     MethodSignature setSize = factory.parseMethodSignature("java.util.HashSet#size(): int");
     MethodSignature listSize = factory.parseMethodSignature("java.util.ArrayList#size(): int");
+    MethodSignature enumSetClone =
+        factory.parseMethodSignature("java.util.EnumSet#clone(): java.util.EnumSet");
+    MethodSignature objectClone =
+        factory.parseMethodSignature("java.lang.Object#clone(): java.lang.Object");
+    MethodSignature arrayDequeueClone =
+        factory.parseMethodSignature("java.util.ArrayDeque#clone(): java.util.ArrayDequeue");
 
     Set<MethodSignature> candidates =
         MethodDispatchResolver.resolveAbstractDispatch(view, collectionSize);
@@ -62,6 +69,14 @@ public class MethodDispatchResolverTest {
     assertTrue(
         abstractListSize + " can resolve to " + listSize,
         MethodDispatchResolver.resolveAbstractDispatch(view, abstractListSize).contains(listSize));
+
+    assertTrue(
+        objectClone + " can resolve to " + enumSetClone,
+        MethodDispatchResolver.resolveAbstractDispatch(view, objectClone).contains(enumSetClone));
+    assertFalse(
+        arrayDequeueClone + " cannot resolve to " + enumSetClone,
+        MethodDispatchResolver.resolveAbstractDispatch(view, arrayDequeueClone)
+            .contains(enumSetClone));
   }
 
   @Test(expected = ResolveException.class)

@@ -44,7 +44,7 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
 
   @Nonnull
   public Type getType() {
-    return this.getSignature().getSignature();
+    return this.getSignature().getType();
   }
 
   @Nonnull

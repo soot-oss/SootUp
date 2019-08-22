@@ -9,7 +9,6 @@ import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.View;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -33,12 +32,29 @@ public final class MethodDispatchResolver {
                         () ->
                             new ResolveException(
                                 "Could not resolve " + subtype + ", but found it in hierarchy.")))
-        .map(subtype -> subtype.getMethod(m.getSubSignature()))
-        .filter(Optional::isPresent)
-        .map(Optional::get)
+        .flatMap(abstractClass -> abstractClass.getMethods().stream())
+        .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
         .filter(method -> method instanceof SootMethod && !((SootMethod) method).isAbstract())
         .map(Method::getSignature)
         .collect(Collectors.toSet());
+  }
+
+  /**
+   * <b>Warning!</b> Assumes that for an abstract dispatch, <code>potentialTarget</code> is declared
+   * in the same or a subtype of the declaring class of <code>called</code>.
+   *
+   * <p>For a concrete dispatch, assumes that <code>potentialTarget</code> is declared in the same
+   * or a supertype of the declaring class of <code>called</code>.
+   *
+   * @return Whether name and parameters are equal and the return type of <code>potentialTarget
+   *     </code> is compatible with the return type of <code>called</code>.
+   */
+  private static boolean canDispatch(
+      MethodSignature called, MethodSignature potentialTarget, TypeHierarchy hierarchy) {
+    return called.getName().equals(potentialTarget.getName())
+        && called.getParameterSignatures().equals(potentialTarget.getParameterSignatures())
+        && (called.getType().equals(potentialTarget.getType())
+            || hierarchy.isSubtype(called.getType(), potentialTarget.getType()));
   }
 
   /**
@@ -59,7 +75,11 @@ public final class MethodDispatchResolver {
                       new ResolveException(
                           "Did not find class " + finalSuperClassType + " in View"));
 
-      Method concreteMethod = superClass.getMethod(m.getSubSignature()).orElse(null);
+      Method concreteMethod =
+          superClass.getMethods().stream()
+              .filter(potentialTarget -> canDispatch(m, potentialTarget.getSignature(), hierarchy))
+              .findAny()
+              .orElse(null);
       if (concreteMethod instanceof SootMethod && !((SootMethod) concreteMethod).isAbstract()) {
         return concreteMethod.getSignature();
       }
