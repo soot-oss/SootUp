@@ -67,7 +67,7 @@ public class BreakInWhileLoopTest {
                 "goto [?= return]",
                 "goto [?= $z0 = $i0 > 0]",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList());
 
     assertEquals(expectedStmts, actualStmts);
   }

@@ -1,4 +1,4 @@
-public class VariableDecleration {
+public class VariableDeclaration {
 
     public void shortVariable() {
         short a = 10;
