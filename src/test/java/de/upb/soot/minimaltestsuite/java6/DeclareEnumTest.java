@@ -20,10 +20,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class BreakInWhileLoopTest {
-
+public class DeclareEnumTest {
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
-  private String className = "BreakInWhileLoop";
+  private String className = "DeclareEnum";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
   @Before
@@ -32,12 +31,12 @@ public class BreakInWhileLoopTest {
   }
 
   @Test
-  public void breakInWhileLoopTest() {
+  public void declareEnumTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
             loadClassesWithWala.identifierFactory.getMethodSignature(
-                "breakInWhileLoop",
+                "declareEnum",
                 loadClassesWithWala.declareClassSig,
                 "void",
                 Collections.emptyList()));
@@ -54,20 +53,21 @@ public class BreakInWhileLoopTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: BreakInWhileLoop",
-                "$i0 = 10",
-                "$i1 = 5",
-                "$z0 = $i0 > 0",
+                "r0 := @this: DeclareEnum",
+                "$r1 = staticinvoke <DeclareEnum$Type: DeclareEnum$Type[] values()>()",
+                "$i0 = 0",
+                "$i1 = lengthof $r1",
+                "$z0 = $i0 < $i1",
                 "if $z0 == 0 goto return",
+                "$r2 = $r1[$i0]",
+                "$r3 = <java.lang.System: java.io.PrintStream out>",
+                "virtualinvoke $r3.<java.io.PrintStream: void println(java.lang.Object)>($r2)",
                 "$i2 = $i0",
-                "$i3 = $i0 - 1",
+                "$i3 = $i0 + 1",
                 "$i0 = $i3",
-                "$z1 = $i0 == $i1",
-                "if $z1 == 0 goto (branch)",
-                "goto [?= return]",
-                "goto [?= $z0 = $i0 > 0]",
+                "goto [?= $i1 = lengthof $r1]",
                 "return")
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
   }

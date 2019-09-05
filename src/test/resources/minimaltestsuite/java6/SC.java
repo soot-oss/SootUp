@@ -1,8 +1,9 @@
-public class SwitchCaseStatement {
+package de.upb.soot.java6;
 
-    public void switchCaseStatement() {
-        String color = "red";
-        String str = "";
+public class SC {
+
+    public String switchCaseStatement(String color) {
+        String str;
         switch (color){
             case "red":
                 str = "color red detected";
@@ -12,6 +13,9 @@ public class SwitchCaseStatement {
                 break;
             default:
                 str = "invalid color";
+                break;
         }
+        return str;
+
     }
 }

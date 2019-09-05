@@ -20,10 +20,10 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class VariableDeclerationTest {
+public class VariableDeclarationTest {
 
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
-  private String className = "VariableDecleration";
+  private String className = "VariableDeclaration";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
   @Before
@@ -53,7 +53,7 @@ public class VariableDeclerationTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDecleration", "$i0 = 10", "return")
+        Stream.of("r0 := @this: VariableDeclaration", "$i0 = 10", "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -81,7 +81,7 @@ public class VariableDeclerationTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDecleration", "$i0 = 0", "return")
+        Stream.of("r0 := @this: VariableDeclaration", "$i0 = 0", "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -109,7 +109,7 @@ public class VariableDeclerationTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDecleration", "$i0 = 97", "return")
+        Stream.of("r0 := @this: VariableDeclaration", "$i0 = 97", "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -137,7 +137,7 @@ public class VariableDeclerationTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDecleration", "$i0 = 512", "return")
+        Stream.of("r0 := @this: VariableDeclaration", "$i0 = 512", "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -165,7 +165,7 @@ public class VariableDeclerationTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDecleration", "$i0 = 123456789", "return")
+        Stream.of("r0 := @this: VariableDeclaration", "$i0 = 123456789", "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -193,7 +193,7 @@ public class VariableDeclerationTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDecleration", "$f0 = 3.14F", "return")
+        Stream.of("r0 := @this: VariableDeclaration", "$f0 = 3.14F", "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -221,7 +221,7 @@ public class VariableDeclerationTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("r0 := @this: VariableDecleration", "$d0 = 1.96969654", "return")
+        Stream.of("r0 := @this: VariableDeclaration", "$d0 = 1.96969654", "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);

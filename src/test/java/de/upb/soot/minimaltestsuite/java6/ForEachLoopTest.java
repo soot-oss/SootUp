@@ -54,7 +54,16 @@ public class ForEachLoopTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: ForEachLoop",
-                "$r1 = null", // numArray
+                "$r1 = newarray (int[])[9]", // numArray
+                "$r1[0] = 10",
+                "$r1[1] = 20",
+                "$r1[2] = 30",
+                "$r1[3] = 40",
+                "$r1[4] = 50",
+                "$r1[5] = 60",
+                "$r1[6] = 71",
+                "$r1[7] = 80",
+                "$r1[8] = 90",
                 "$i0 = 0", // count
                 "$r2 = $r1",
                 "$i1 = 0",
