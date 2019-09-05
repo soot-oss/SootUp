@@ -63,7 +63,7 @@ public interface View {
    * @return A type hierarchy valid in the view
    */
   @Nonnull
-  TypeHierarchy createTypeHierarchy();
+  TypeHierarchy typeHierarchy();
 
   /**
    * Returns the scope if the view is scoped.

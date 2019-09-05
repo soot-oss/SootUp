@@ -33,7 +33,7 @@ public class SimpleSootClient {
     View fullView = p.createFullView();
 
     CallGraph cg = fullView.createCallGraph();
-    TypeHierarchy t = fullView.createTypeHierarchy();
+    TypeHierarchy t = fullView.typeHierarchy();
 
     // here goes my own analysis
 
@@ -42,7 +42,7 @@ public class SimpleSootClient {
     View limitedView = p.createView(s);
 
     cg = limitedView.createCallGraph();
-    t = limitedView.createTypeHierarchy();
+    t = limitedView.typeHierarchy();
 
     // here goes my own analysis
   }
