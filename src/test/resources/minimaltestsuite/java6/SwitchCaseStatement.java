@@ -1,6 +1,4 @@
-package de.upb.soot.java6;
-
-public class SC {
+public class SwitchCaseStatement {
 
     public String switchCaseStatement(String color) {
         String str;
