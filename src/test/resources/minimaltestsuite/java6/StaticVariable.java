@@ -1,6 +1,6 @@
 public class StaticVariable {
 
     public void staticVariable() {
-        static int num = 5;
+        static int num = 6;
     }
 }
