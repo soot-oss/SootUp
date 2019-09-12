@@ -25,4 +25,7 @@ public interface CallGraph {
   boolean hasNode(@Nonnull MethodSignature method);
 
   boolean hasEdge(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
+
+  @Nonnull
+  MutableCallGraph copy();
 }

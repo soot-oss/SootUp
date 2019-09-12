@@ -7,10 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
-public class GraphBasedCallGraph implements MutableCallGraph {
+public final class GraphBasedCallGraph implements MutableCallGraph {
 
   private static class Vertex {
     @Nonnull final MethodSignature methodSignature;
@@ -22,8 +21,20 @@ public class GraphBasedCallGraph implements MutableCallGraph {
 
   private static class Edge {}
 
-  @Nonnull private final Graph<Vertex, Edge> graph = new DefaultDirectedGraph<>(null, null, false);
-  @Nonnull private final Map<MethodSignature, Vertex> signatureToVertex = new HashMap<>();
+  @Nonnull private final DefaultDirectedGraph<Vertex, Edge> graph;
+  @Nonnull private final Map<MethodSignature, Vertex> signatureToVertex;
+
+  public GraphBasedCallGraph() {
+    graph = new DefaultDirectedGraph<>(null, null, false);
+    signatureToVertex = new HashMap<>();
+  }
+
+  private GraphBasedCallGraph(
+      @Nonnull DefaultDirectedGraph<Vertex, Edge> graph,
+      @Nonnull Map<MethodSignature, Vertex> signatureToVertex) {
+    this.graph = graph;
+    this.signatureToVertex = signatureToVertex;
+  }
 
   @Override
   public void addNode(@Nonnull MethodSignature calledMethod) {
@@ -70,6 +81,14 @@ public class GraphBasedCallGraph implements MutableCallGraph {
   public boolean hasEdge(
       @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
     return graph.containsEdge(vertexOf(sourceMethod), vertexOf(targetMethod));
+  }
+
+  @Nonnull
+  @Override
+  public MutableCallGraph copy() {
+    //noinspection unchecked (graph.clone() preserves generic properties)
+    return new GraphBasedCallGraph(
+        (DefaultDirectedGraph<Vertex, Edge>) graph.clone(), new HashMap<>(signatureToVertex));
   }
 
   @Nonnull
