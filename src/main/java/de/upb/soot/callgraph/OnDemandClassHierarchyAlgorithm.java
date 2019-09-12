@@ -1,17 +1,15 @@
 package de.upb.soot.callgraph;
 
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.typehierarchy.TypeHierarchy;
+import de.upb.soot.views.View;
 
 import java.util.List;
-import java.util.stream.Stream;
 
-public class OnDemandClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
+public class OnDemandClassHierarchyAlgorithm extends ClassHierarchyAlgorithm {
 
-    @Override
-    protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
-        return null;
+    public OnDemandClassHierarchyAlgorithm(View view, TypeHierarchy hierarchy) {
+        super(view, hierarchy);
     }
 
     @Override
