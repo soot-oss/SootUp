@@ -5,9 +5,10 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.ClassNode;
-import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.InterfaceNode;
-import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.Node;
+import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.Edge;
+import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.EdgeType;
+import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.Vertex;
+import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.VertexType;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.View;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -22,14 +24,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.SimpleDirectedGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Full documentation is in the <a
  * href="https://github.com/secure-software-engineering/soot-reloaded/wiki/Type-Hierarchy-Algorithm">wiki</a>.
+ *
+ * @author Christian Brüggemann
  */
-class ViewTypeHierarchy implements TypeHierarchy {
+class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   private static final Logger log = LoggerFactory.getLogger(ViewTypeHierarchy.class);
 
@@ -44,67 +50,113 @@ class ViewTypeHierarchy implements TypeHierarchy {
   @Nonnull
   @Override
   public Set<JavaClassType> implementersOf(@Nonnull JavaClassType interfaceType) {
-    ScanResult scanResult = lazyScanResult.get();
-    InterfaceNode interfaceNode = scanResult.typeToInterfaceNode.get(interfaceType);
-
-    Set<JavaClassType> implementers = new HashSet<>();
-    // We now traverse the subgraph of interfaceNode to find all its subtypes
-    visitSubgraph(interfaceNode, false, subnode -> implementers.add(subnode.type));
-    return implementers;
+    Vertex vertex = lazyScanResult.get().typeToVertex.get(interfaceType);
+    if (vertex == null) {
+      throw new ResolveException("Could not find " + interfaceType + " in hierarchy.");
+    }
+    if (vertex.type != VertexType.Interface) {
+      throw new IllegalArgumentException(interfaceType + " is not an interface");
+    }
+    return subtypesOf(interfaceType);
   }
 
   @Nonnull
   @Override
   public Set<JavaClassType> subclassesOf(@Nonnull JavaClassType classType) {
+    Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
+    if (vertex == null) {
+      throw new ResolveException("Could not find " + classType + " in hierarchy.");
+    }
+    if (vertex.type != VertexType.Class) {
+      throw new IllegalArgumentException(classType + " is not a class");
+    }
+    return subtypesOf(classType);
+  }
+
+  @Nonnull
+  @Override
+  public Set<JavaClassType> subtypesOf(@Nonnull JavaClassType type) {
     ScanResult scanResult = lazyScanResult.get();
-    ClassNode classNode = scanResult.typeToClassNode.get(classType);
+    Vertex vertex = scanResult.typeToVertex.get(type);
+    if (vertex == null) {
+      throw new ResolveException("Could not find " + type + " in hierarchy.");
+    }
 
     Set<JavaClassType> subclasses = new HashSet<>();
-    // We now traverse the subgraph of classNode to find all its subtypes
-    visitSubgraph(classNode, false, subnode -> subclasses.add(subnode.type));
+    // We now traverse the subgraph of the vertex to find all its subtypes
+    visitSubgraph(
+        scanResult.graph, vertex, false, subvertex -> subclasses.add(subvertex.javaClassType));
     return subclasses;
   }
 
   @Nonnull
-  private List<ClassNode> superClassesOf(@Nonnull ClassNode classNode, boolean includingSelf) {
-    List<ClassNode> superClasses = new ArrayList<>();
+  private List<Vertex> superClassesOf(@Nonnull Vertex classVertex, boolean includingSelf) {
+    ScanResult scanResult = lazyScanResult.get();
+    Graph<Vertex, Edge> graph = scanResult.graph;
+
+    List<Vertex> superClasses = new ArrayList<>();
     if (includingSelf) {
-      superClasses.add(classNode);
+      superClasses.add(classVertex);
     }
 
-    ClassNode superClass = classNode.superClass;
-    while (superClass != null) {
-      superClasses.add(superClass);
-      superClass = superClass.superClass;
+    Optional<Vertex> superClass =
+        graph.outgoingEdgesOf(classVertex).stream()
+            .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
+            .map(graph::getEdgeTarget)
+            .findAny();
+    while (superClass.isPresent()) {
+      superClasses.add(superClass.get());
+      superClass =
+          graph.outgoingEdgesOf(superClass.get()).stream()
+              .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
+              .map(graph::getEdgeTarget)
+              .findAny();
     }
 
     return superClasses;
+  }
+
+  private Stream<Vertex> directlyImplementedInterfacesOf(Vertex classVertex) {
+    Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
+    return graph.outgoingEdgesOf(classVertex).stream()
+        .filter(edge -> edge.type == EdgeType.ClassDirectlyImplements)
+        .map(graph::getEdgeTarget);
+  }
+
+  private Stream<Vertex> directlyExtendedInterfacesOf(Vertex interfaceVertex) {
+    Graph<Vertex, Edge> graph = lazyScanResult.get().graph;
+    return graph.outgoingEdgesOf(interfaceVertex).stream()
+        .filter(edge -> edge.type == EdgeType.InterfaceDirectlyExtends)
+        .map(graph::getEdgeTarget);
   }
 
   @Nonnull
   @Override
   public Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType type) {
     ScanResult scanResult = lazyScanResult.get();
-    ClassNode classNode = scanResult.typeToClassNode.get(type);
-    if (classNode != null) {
-      // We ascend from classNode through its superclasses to java.lang.Object.
-      // For each superclass, we take the interfaces it implements and merge
-      // them together in a Set.
-      List<ClassNode> superClasses = superClassesOf(classNode, true);
-      return superClasses.stream()
-          .flatMap(superClass -> superClass.implementedInterfaces.stream())
-          .flatMap(this::selfAndImplementedInterfaces)
-          .collect(Collectors.toSet());
+    Vertex vertex = scanResult.typeToVertex.get(type);
+
+    if (vertex == null) {
+      throw new ResolveException("Could not find " + type + " in hierarchy for view " + view);
     }
 
-    InterfaceNode interfaceNode = scanResult.typeToInterfaceNode.get(type);
-    if (interfaceNode != null) {
-      return interfaceNode.extendedInterfaces.stream()
-          .flatMap(this::selfAndImplementedInterfaces)
-          .collect(Collectors.toSet());
+    switch (vertex.type) {
+      case Class:
+        // We ascend from vertex through its superclasses to java.lang.Object.
+        // For each superclass, we take the interfaces it implements and merge
+        // them together in a Set.
+        List<Vertex> superClasses = superClassesOf(vertex, true);
+        return superClasses.stream()
+            .flatMap(this::directlyImplementedInterfacesOf)
+            .flatMap(this::selfAndImplementedInterfaces)
+            .collect(Collectors.toSet());
+      case Interface:
+        return directlyExtendedInterfacesOf(vertex)
+            .flatMap(this::selfAndImplementedInterfaces)
+            .collect(Collectors.toSet());
+      default:
+        throw new AssertionError("Unexpected vertex type!");
     }
-
-    throw new ResolveException("Could not find " + type + " in hierarchy for view " + view);
   }
 
   /**
@@ -112,15 +164,18 @@ class ViewTypeHierarchy implements TypeHierarchy {
    * interfaces.
    */
   @Nonnull
-  private Stream<JavaClassType> selfAndImplementedInterfaces(InterfaceNode node) {
-    Set<InterfaceNode> extendedInterfaces = node.extendedInterfaces;
-    if (extendedInterfaces.isEmpty()) {
-      return Stream.of(node.type);
-    }
+  private Stream<JavaClassType> selfAndImplementedInterfaces(Vertex vertex) {
+    ScanResult scanResult = lazyScanResult.get();
+    Graph<Vertex, Edge> graph = scanResult.graph;
+
+    Stream<Vertex> extendedInterfaces =
+        graph.outgoingEdgesOf(vertex).stream()
+            .filter(edge -> edge.type == EdgeType.InterfaceDirectlyExtends)
+            .map(graph::getEdgeTarget);
 
     return Stream.concat(
-        Stream.of(node.type),
-        extendedInterfaces.stream().flatMap(this::selfAndImplementedInterfaces));
+        Stream.of(vertex.javaClassType),
+        extendedInterfaces.flatMap(this::selfAndImplementedInterfaces));
   }
 
   @Nullable
@@ -130,84 +185,108 @@ class ViewTypeHierarchy implements TypeHierarchy {
   }
 
   /**
-   * Visits the subgraph of the specified <code>node</code> and calls the <code>visitor</code> for
-   * each node in the subgraph. If <code>includeSelf</code> is true, the <code>visitor</code> is
-   * also called with the <code>node</code>.
+   * Visits the subgraph of the specified <code>vertex</code> and calls the <code>visitor</code> for
+   * each vertex in the subgraph. If <code>includeSelf</code> is true, the <code>visitor</code> is
+   * also called with the <code>vertex</code>.
    */
-  private static void visitSubgraph(Node node, boolean includeSelf, Consumer<Node> visitor) {
+  private static void visitSubgraph(
+      Graph<Vertex, Edge> graph, Vertex vertex, boolean includeSelf, Consumer<Vertex> visitor) {
     if (includeSelf) {
-      visitor.accept(node);
+      visitor.accept(vertex);
     }
-    if (node instanceof InterfaceNode) {
-      ((InterfaceNode) node)
-          .directImplementers.forEach(
-              directImplementer -> visitSubgraph(directImplementer, true, visitor));
-      ((InterfaceNode) node)
-          .extendingInterfaces.forEach(
-              extendingInterface -> visitSubgraph(extendingInterface, true, visitor));
-    } else if (node instanceof ClassNode) {
-      ((ClassNode) node)
-          .directSubclasses.forEach(directSubclass -> visitSubgraph(directSubclass, true, visitor));
-    } else {
-      throw new AssertionError("Unknown node type!");
+    switch (vertex.type) {
+      case Interface:
+        graph.incomingEdgesOf(vertex).stream()
+            .filter(
+                edge ->
+                    edge.type == EdgeType.ClassDirectlyImplements
+                        || edge.type == EdgeType.InterfaceDirectlyExtends)
+            .map(graph::getEdgeSource)
+            .forEach(directSubtype -> visitSubgraph(graph, directSubtype, true, visitor));
+        break;
+      case Class:
+        graph.incomingEdgesOf(vertex).stream()
+            .filter(edge -> edge.type == EdgeType.ClassDirectlyExtends)
+            .map(graph::getEdgeSource)
+            .forEach(directSubclass -> visitSubgraph(graph, directSubclass, true, visitor));
+        break;
+      default:
+        throw new AssertionError("Unknown vertex type!");
     }
   }
 
   /**
-   * This method scans the view by iterating over its classes and creating a graph node for each
+   * This method scans the view by iterating over its classes and creating a graph vertex for each
    * one. When a class is encountered that extends another one or implements an interface, the graph
-   * node of the extended class or implemented interface is connected to the node of the subtype.
+   * vertex of the extended class or implemented interface is connected to the vertex of the
+   * subtype.
    *
-   * <p>We distinguish between interface and class nodes, as interfaces may have direct implementers
-   * as well as other interfaces that extend them.
+   * <p>We distinguish between interface and class vertices, as interfaces may have direct
+   * implementers as well as other interfaces that extend them.
    *
    * <p>In the graph structure, a type is only connected to its direct subtypes.
    */
   private ScanResult scanView() {
     long startNanos = System.nanoTime();
-    Map<JavaClassType, ScanResult.ClassNode> typeToClassNode = new HashMap<>();
-    Map<JavaClassType, ScanResult.InterfaceNode> typeToInterfaceNode = new HashMap<>();
+    Map<JavaClassType, Vertex> typeToVertex = new HashMap<>();
+    Graph<Vertex, Edge> graph = new SimpleDirectedGraph<>(null, null, false);
 
     view.getClassesStream()
         .filter(aClass -> aClass instanceof SootClass)
         .map(aClass -> (SootClass) aClass)
-        .forEach(
-            sootClass -> {
-              if (sootClass.isInterface()) {
-                InterfaceNode node =
-                    typeToInterfaceNode.computeIfAbsent(sootClass.getType(), InterfaceNode::new);
-                for (JavaClassType extendedInterface : sootClass.getInterfaces()) {
-                  InterfaceNode extendedInterfaceNode =
-                      typeToInterfaceNode.computeIfAbsent(extendedInterface, InterfaceNode::new);
-                  // Double-link the nodes
-                  extendedInterfaceNode.extendingInterfaces.add(node);
-                  node.extendedInterfaces.add(extendedInterfaceNode);
-                }
-              } else {
-                ClassNode node =
-                    typeToClassNode.computeIfAbsent(sootClass.getType(), ClassNode::new);
-                for (JavaClassType implementedInterface : sootClass.getInterfaces()) {
-                  InterfaceNode implementedInterfaceNode =
-                      typeToInterfaceNode.computeIfAbsent(implementedInterface, InterfaceNode::new);
-                  // Double-link the nodes
-                  implementedInterfaceNode.directImplementers.add(node);
-                  node.implementedInterfaces.add(implementedInterfaceNode);
-                }
-                sootClass
-                    .getSuperclass()
-                    .ifPresent(
-                        superClass -> {
-                          ClassNode superClassNode =
-                              typeToClassNode.computeIfAbsent(superClass, ClassNode::new);
-                          // Double-link the nodes
-                          superClassNode.directSubclasses.add(node);
-                          node.superClass = superClassNode;
-                        });
-              }
-            });
+        .forEach(sootClass -> addSootClassToGraph(sootClass, typeToVertex, graph));
     double runtimeMs = (System.nanoTime() - startNanos) / 1e6;
     log.info("Type hierarchy scan took " + runtimeMs + " ms");
-    return new ScanResult(typeToClassNode, typeToInterfaceNode);
+    return new ScanResult(typeToVertex, graph);
+  }
+
+  private static void addSootClassToGraph(
+      SootClass sootClass, Map<JavaClassType, Vertex> typeToVertex, Graph<Vertex, Edge> graph) {
+    if (sootClass.isInterface()) {
+      Vertex vertex =
+          typeToVertex.computeIfAbsent(
+              sootClass.getType(), type -> createAndAddInterfaceVertex(graph, type));
+      for (JavaClassType extendedInterface : sootClass.getInterfaces()) {
+        Vertex extendedInterfaceVertex =
+            typeToVertex.computeIfAbsent(
+                extendedInterface, type -> createAndAddInterfaceVertex(graph, type));
+        graph.addEdge(vertex, extendedInterfaceVertex, new Edge(EdgeType.InterfaceDirectlyExtends));
+      }
+    } else {
+      Vertex vertex =
+          typeToVertex.computeIfAbsent(
+              sootClass.getType(), type -> createAndAddClassVertex(graph, type));
+      for (JavaClassType implementedInterface : sootClass.getInterfaces()) {
+        Vertex implementedInterfaceVertex =
+            typeToVertex.computeIfAbsent(
+                implementedInterface, type -> createAndAddInterfaceVertex(graph, type));
+        graph.addEdge(
+            vertex, implementedInterfaceVertex, new Edge(EdgeType.ClassDirectlyImplements));
+      }
+      sootClass
+          .getSuperclass()
+          .ifPresent(
+              superClass -> {
+                Vertex superClassVertex =
+                    typeToVertex.computeIfAbsent(
+                        superClass, type -> createAndAddClassVertex(graph, type));
+                graph.addEdge(vertex, superClassVertex, new Edge(EdgeType.ClassDirectlyExtends));
+              });
+    }
+  }
+
+  @Nonnull
+  private static Vertex createAndAddClassVertex(Graph<Vertex, Edge> graph, JavaClassType type) {
+    Vertex classVertex = new Vertex(type, VertexType.Class);
+    graph.addVertex(classVertex);
+    return classVertex;
+  }
+
+  @Nonnull
+  private static Vertex createAndAddInterfaceVertex(Graph<Vertex, Edge> graph, JavaClassType type) {
+    Vertex interfaceVertex = new Vertex(type, VertexType.Interface);
+    graph.addVertex(interfaceVertex);
+    return interfaceVertex;
   }
 
   @Nonnull
@@ -222,77 +301,61 @@ class ViewTypeHierarchy implements TypeHierarchy {
     return (SootClass) aClass;
   }
 
-  /** Holds a node for each {@link JavaClassType} encountered during the scan. */
+  @Override
+  public void addType(SootClass sootClass) {
+    ScanResult scanResult = lazyScanResult.get();
+    addSootClassToGraph(sootClass, scanResult.typeToVertex, scanResult.graph);
+  }
+
+  /** Holds a vertex for each {@link JavaClassType} encountered during the scan. */
   static class ScanResult {
 
-    /** Holds all nodes corresponding to classes (excluding interfaces). */
-    final Map<JavaClassType, ClassNode> typeToClassNode;
-    /** Holds all nodes corresponding to interfaces. */
-    final Map<JavaClassType, InterfaceNode> typeToInterfaceNode;
-
-    private ScanResult(
-        Map<JavaClassType, ClassNode> typeToClassNode,
-        Map<JavaClassType, InterfaceNode> typeToInterfaceNode) {
-      this.typeToClassNode = typeToClassNode;
-      this.typeToInterfaceNode = typeToInterfaceNode;
+    enum VertexType {
+      Class,
+      Interface
     }
 
     /**
-     * @see ClassNode
-     * @see InterfaceNode
+     * @see #javaClassType
      * @see #type
      */
-    static class Node {
-      @Nonnull final JavaClassType type;
+    static class Vertex {
+      @Nonnull final JavaClassType javaClassType;
+      @Nonnull final VertexType type;
 
-      Node(@Nonnull JavaClassType type) {
+      Vertex(@Nonnull JavaClassType javaClassType, @Nonnull VertexType type) {
+        this.javaClassType = javaClassType;
         this.type = type;
       }
     }
 
-    /**
-     * @see #directImplementers
-     * @see #extendingInterfaces
-     */
-    static class InterfaceNode extends Node {
+    enum EdgeType {
+      /** Edge to an interface vertex this interface extends directly, non-transitively. */
+      InterfaceDirectlyExtends,
+      /** Edge to an interface extending this interface directly, non-transitively. */
+      ClassDirectlyImplements,
+      /** Edge to a class this class is directly subclassed by, non-transitively. */
+      ClassDirectlyExtends
+    }
 
-      /** The nodes for the interfaces this interface extends, if applicable. */
-      @Nonnull final Set<InterfaceNode> extendedInterfaces;
+    /** @see #type */
+    static class Edge {
+      @Nonnull final EdgeType type;
 
-      /** All classes implementing this interface directly, non-transitively. */
-      @Nonnull final Set<ClassNode> directImplementers;
-
-      /** All interfaces extending this interface directly, non-transitively. */
-      @Nonnull final Set<InterfaceNode> extendingInterfaces;
-
-      private InterfaceNode(@Nonnull JavaClassType type) {
-        super(type);
-        // Init. capacity 0 as interface rarely extend others
-        this.extendedInterfaces = new HashSet<>(0);
-        this.directImplementers = new HashSet<>();
-        this.extendingInterfaces = new HashSet<>();
+      Edge(@Nonnull EdgeType type) {
+        this.type = type;
       }
     }
 
-    /** @see #directSubclasses */
-    static class ClassNode extends Node {
+    /** Holds the vertex for each type. */
+    @Nonnull final Map<JavaClassType, Vertex> typeToVertex;
 
-      /** The nodes for the interfaces this interface implements, if applicable. */
-      @Nonnull final Set<InterfaceNode> implementedInterfaces;
+    @Nonnull final Graph<Vertex, Edge> graph;
 
-      /** All classes that directly extend this class, non-transitively. */
-      @Nonnull final Set<ClassNode> directSubclasses;
-
-      /** The node for the class this class extends, if applicable. */
-      @Nullable ClassNode superClass;
-
-      private ClassNode(@Nonnull JavaClassType type) {
-        super(type);
-        this.directSubclasses = new HashSet<>();
-        this.superClass = null;
-        // Init. capacity 0 as many classes do not extend others
-        this.implementedInterfaces = new HashSet<>(0);
-      }
+    private ScanResult(
+        @Nonnull Map<JavaClassType, Vertex> typeToVertex, @Nonnull Graph<Vertex, Edge> graph) {
+      this.typeToVertex = typeToVertex;
+      this.graph = graph;
     }
   }
 }

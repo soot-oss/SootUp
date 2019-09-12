@@ -12,6 +12,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Project;
+import de.upb.soot.core.Modifier;
+import de.upb.soot.core.SootClass;
+import de.upb.soot.core.SourceType;
+import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
@@ -23,23 +27,26 @@ import de.upb.soot.views.View;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class ViewTypeHierarchyTest {
 
-  private static View view;
-  private static ViewTypeHierarchy typeHierarchy;
+  private View view;
+  private ViewTypeHierarchy typeHierarchy;
+  private JavaClassPathAnalysisInputLocation analysisInputLocation;
 
-  @BeforeClass
-  public static void setup() {
+  @Before
+  public void setup() {
     String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
     assertTrue(new File(jarFile).exists());
     String currentClassPath =
@@ -51,9 +58,9 @@ public class ViewTypeHierarchyTest {
             .filter(pathEntry -> pathEntry.endsWith(File.separator + "rt.jar"))
             .distinct()
             .collect(Collectors.joining(File.pathSeparator));
-    Project<JavaClassPathAnalysisInputLocation> p =
-        new Project<>(
-            new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath));
+    analysisInputLocation =
+        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
+    Project<JavaClassPathAnalysisInputLocation> p = new Project<>(analysisInputLocation);
     view = p.createOnDemandView();
     typeHierarchy = new ViewTypeHierarchy(view);
   }
@@ -189,6 +196,32 @@ public class ViewTypeHierarchyTest {
     assertFalse(
         "null should not be a valid value for primitive types",
         typeHierarchy.isSubtype(PrimitiveType.getDouble(), NullType.getInstance()));
+  }
+
+  @Test
+  public void addType() {
+    IdentifierFactory factory = view.getIdentifierFactory();
+    EagerJavaClassSource classSource =
+        new EagerJavaClassSource(
+            analysisInputLocation,
+            null,
+            factory.getClassType("adummytype.Type"),
+            factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace"),
+            Collections.emptySet(),
+            null,
+            Collections.emptySet(),
+            Collections.emptySet(),
+            null,
+            EnumSet.of(Modifier.FINAL));
+    SootClass sootClass = new SootClass(classSource, SourceType.Application);
+
+    typeHierarchy.addType(sootClass);
+
+    assertTrue(
+        "Newly added type must be detected as a subtype",
+        typeHierarchy
+            .subclassesOf(factory.getClassType("de.upb.soot.namespaces.AbstractNamespace"))
+            .contains(sootClass.getType()));
   }
 
   @Test

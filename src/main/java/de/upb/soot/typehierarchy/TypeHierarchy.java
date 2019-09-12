@@ -6,7 +6,6 @@ import de.upb.soot.types.NullType;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
-import de.upb.soot.views.View;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -18,12 +17,9 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  * @author Ben Hermann
+ * @author Christian Brüggemann
  */
 public interface TypeHierarchy {
-
-  static TypeHierarchy fromView(View view) {
-    return new ViewTypeHierarchy(view);
-  }
 
   /**
    * Returns all classes that implement the specified interface. This is transitive: If class <code>
@@ -53,6 +49,13 @@ public interface TypeHierarchy {
    */
   @Nonnull
   Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType type);
+
+  /**
+   * For an interface type, this does the same as {@link #implementersOf(JavaClassType)}. For a
+   * class type, this does the same as {@link #subclassesOf(JavaClassType)}.
+   */
+  @Nonnull
+  Set<JavaClassType> subtypesOf(@Nonnull JavaClassType type);
 
   /**
    * Returns the direct superclass of <code>classType</code>. If <code>classType == java.lang.Object

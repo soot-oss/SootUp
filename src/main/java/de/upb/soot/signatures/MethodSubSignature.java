@@ -100,7 +100,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
           () ->
               String.format(
                   "%s %s(%s)",
-                  getSignature(),
+                  getType(),
                   getName(),
                   getParameterSignatures().stream()
                       .map(Object::toString)
