@@ -16,7 +16,6 @@ public interface CallGraphAlgorithm {
   @Nonnull
   CallGraph initialize(@Nonnull List<MethodSignature> entryPoints);
 
-  // TODO Method for updating existing class
   @Nonnull
-  CallGraph addClassToCallGraph(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType);
+  CallGraph addOrUpdateWithClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType);
 }

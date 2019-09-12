@@ -43,14 +43,23 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
 
   @Nonnull
   @Override
-  public CallGraph addClassToCallGraph(
+  public CallGraph addOrUpdateWithClass(
       @Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType) {
     MutableCallGraph updated = oldCallGraph.copy();
 
-    Deque<MethodSignature> workList =
+    Set<? extends Method> methods =
         view.getClass(classType)
             .orElseThrow(() -> new ResolveException("Could not find " + classType + " in view"))
-            .getMethods().stream()
+            .getMethods();
+
+    for (Method method : methods) {
+      if (updated.hasNode(method.getSignature())) {
+        updated.removeCallsFrom(method.getSignature());
+      }
+    }
+
+    Deque<MethodSignature> workList =
+        methods.stream()
             .map(Method::getSignature)
             .collect(Collectors.toCollection(ArrayDeque::new));
     Set<MethodSignature> processed = new HashSet<>(oldCallGraph.getMethodSignatures());

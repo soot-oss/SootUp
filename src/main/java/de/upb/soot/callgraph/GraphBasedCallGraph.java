@@ -48,6 +48,11 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
     graph.addEdge(vertexOf(method), vertexOf(calledMethod), new Edge());
   }
 
+  @Override
+  public void removeCallsFrom(MethodSignature method) {
+    graph.removeAllEdges(graph.outgoingEdgesOf(vertexOf(method)));
+  }
+
   @Nonnull
   @Override
   public Set<MethodSignature> getMethodSignatures() {
