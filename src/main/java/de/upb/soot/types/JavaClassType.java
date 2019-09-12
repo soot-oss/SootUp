@@ -62,7 +62,7 @@ public class JavaClassType extends ReferenceType {
    * {@link IdentifierFactory}
    *
    * @param className the simple name of the class, e.g., ClassA NOT my.package.ClassA
-   * @param packageSignature the corresponding package
+   * @param packageName the corresponding package
    */
   public JavaClassType(final String className, final PackageName packageName) {
     String realClassName = className;

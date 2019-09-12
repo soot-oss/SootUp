@@ -1,18 +1,15 @@
 package de.upb.soot.callgraph;
 
-import de.upb.soot.core.SootClass;
+import de.upb.soot.core.Method;
+import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.basic.Value;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.stmt.JAssignStmt;
-import de.upb.soot.jimple.common.stmt.JInvokeStmt;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.typehierarchy.MethodDispatchResolver;
 import de.upb.soot.typehierarchy.TypeHierarchy;
-import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.View;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -20,83 +17,66 @@ import java.util.stream.Stream;
  *
  * @author Markus Schmidt
  * @author Christian Brüggemann
+ * @author Ben Hermann
  */
 public class ClassHierarchyAlgorithm implements CallGraphAlgorithm {
 
   TypeHierarchy hierarchy;
   CallGraph callGraph;
-  View v;
+  private final View view;
+
+  public ClassHierarchyAlgorithm(View view) {
+    this.view = view;
+  }
 
   @Override
-  public CallGraph build(List<SootMethod> entryPoints, TypeHierarchy hierarchy) {
+  public CallGraph initialize(List<MethodSignature> entryPoints, TypeHierarchy hierarchy) {
 
     this.hierarchy = hierarchy;
     CallGraph cg = new AdjacencyList();
 
-    for (SootMethod method : entryPoints) {
-      cg.addNode(method);
-      analyzeMethod(method);
+    Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
+    Set<MethodSignature> processed = new HashSet<>();
+
+    while(!workList.isEmpty()) {
+      MethodSignature currentMethodSignature = workList.pop();
+      Optional<? extends Method> currentMethodCandidate =
+              view.getClass(currentMethodSignature.getDeclClassType())
+              .map(c -> c.getMethod(currentMethodSignature))
+              .orElse(null);
+      if (!currentMethodCandidate.isPresent() || !(currentMethodCandidate.get() instanceof SootMethod)) continue;
+      SootMethod currentMethod = (SootMethod)currentMethodCandidate.get();
+
+      if (processed.contains(currentMethodSignature)) continue;
+
+      if (currentMethod.hasBody()) {
+        Stream<MethodSignature> invocationTargets =
+                currentMethod.getBody().getStmts().stream()
+                .filter(s -> s.containsInvokeExpr())
+                .flatMap(s -> resolveCall(currentMethod, s.getInvokeExpr()));
+        invocationTargets.forEach(t -> {
+          if (!cg.hasNode(currentMethodSignature)) cg.addNode(currentMethodSignature);
+          if (!cg.hasEdge(currentMethodSignature, t)) {
+            if (!cg.hasNode(t)) cg.addNode(t);
+            cg.addEdge(currentMethodSignature, t);
+            workList.push(t);
+          }
+        });
+        processed.add(currentMethod.getSignature());
+      }
+
     }
     return cg;
   }
 
-  private void analyzeMethod(SootMethod method) {
-    if (!method.hasBody()) {
-      return;
-    }
+  private Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
+    MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
 
-    for (Stmt stmt : method.getBody().getStmts()) {
-      if (stmt instanceof JAssignStmt) {
-        Value assignedValue = ((JAssignStmt) stmt).getRightOp();
-        if (assignedValue instanceof AbstractInvokeExpr) {
-          handleInvokeExpression(method, (AbstractInvokeExpr) assignedValue);
-        }
-      } else if (stmt instanceof JInvokeStmt) {
-        AbstractInvokeExpr invokeExpr = stmt.getInvokeExpr();
-        handleInvokeExpression(method, invokeExpr);
-      }
-    }
-  }
-
-  private void handleInvokeExpression(SootMethod method, AbstractInvokeExpr invokeExpr) {
-
-    SootClass calledMethodClass =
-        (SootClass) v.getClass(invokeExpr.getMethodSignature().getDeclClassType()).get();
-    SootMethod calledMethod = calledMethodClass.getMethod(invokeExpr.getMethodSignature()).get();
-
-    if (calledMethod.isStatic()) {
-      if (!callGraph.hasNode(calledMethod)) {
-        callGraph.addNode(calledMethod);
-      }
-
-      if (!callGraph.hasEdge(method, calledMethod)) {
-        callGraph.addEdge(method, calledMethod);
-        analyzeMethod(method);
-      }
+    if (Modifier.isStatic(targetMethodSignature.getModifiers())) {
+      return Stream.of(targetMethodSignature);
     } else {
-
-      Stream<JavaClassType> subclasses =
-          calledMethodClass.isInterface()
-              ? hierarchy.implementersOf(calledMethodClass.getType()).stream()
-              : hierarchy.subclassesOf(calledMethodClass.getType()).stream();
-
-      // TODO: update when method / additional class for handling is added
-      List<SootMethod> targets =
-          new ArrayList<>(
-              hierarchy.resolveAbstractDispatch(
-                  subclasses.collect(Collectors.toList()), calledMethod));
-      targets.add(calledMethod);
-
-      for (SootMethod target : targets) {
-        if (!callGraph.hasNode(target)) {
-          callGraph.addNode(target);
-        }
-
-        if (!callGraph.hasEdge(method, target)) {
-          callGraph.addEdge(method, target);
-          analyzeMethod(target);
-        }
-      }
+      return MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature).stream();
     }
   }
+
 }
