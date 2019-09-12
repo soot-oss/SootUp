@@ -22,11 +22,12 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
   @Nonnull private final View view;
   @Nonnull private final TypeHierarchy hierarchy;
 
-  public ClassHierarchyAlgorithm(View view, TypeHierarchy hierarchy) {
+  public ClassHierarchyAlgorithm(@Nonnull View view, @Nonnull TypeHierarchy hierarchy) {
     this.view = view;
     this.hierarchy = hierarchy;
   }
 
+  @Nonnull
   @Override
   public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
     return constructCompleteCallGraph(view, entryPoints);
