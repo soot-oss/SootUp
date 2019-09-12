@@ -9,6 +9,7 @@ import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.views.View;
 import java.util.List;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
 /**
  * This class implements CHA (Class Hierarchy Algorithm)
@@ -18,8 +19,8 @@ import java.util.stream.Stream;
  * @author Ben Hermann
  */
 public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
-  private final View view;
-  private final TypeHierarchy hierarchy;
+  @Nonnull private final View view;
+  @Nonnull private final TypeHierarchy hierarchy;
 
   public ClassHierarchyAlgorithm(View view, TypeHierarchy hierarchy) {
     this.view = view;
@@ -27,11 +28,12 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
   }
 
   @Override
-  public CallGraph initialize(List<MethodSignature> entryPoints) {
+  public CallGraph initialize(@Nonnull List<MethodSignature> entryPoints) {
     return constructCompleteCallGraph(view, entryPoints);
   }
 
   @Override
+  @Nonnull
   protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
 

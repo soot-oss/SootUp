@@ -1,8 +1,8 @@
 package de.upb.soot.callgraph;
 
 import de.upb.soot.signatures.MethodSignature;
-
 import java.util.List;
+import javax.annotation.Nonnull;
 
 /**
  * Represents a call graph algorithm
@@ -12,5 +12,6 @@ import java.util.List;
  * @author Markus Schmidt
  */
 public interface CallGraphAlgorithm {
-  CallGraph initialize(List<MethodSignature> entryPoints);
+  @Nonnull
+  CallGraph initialize(@Nonnull List<MethodSignature> entryPoints);
 }

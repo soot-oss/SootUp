@@ -3,18 +3,20 @@ package de.upb.soot.callgraph;
 import de.upb.soot.core.Method;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.views.View;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
+  @Nonnull
   protected CallGraph constructCompleteCallGraph(View view, List<MethodSignature> entryPoints) {
     CallGraph cg = new GraphBasedCallGraph();
 
@@ -42,26 +44,27 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
     return cg;
   }
 
+  @Nonnull
   protected Stream<MethodSignature> resolveAllCallsFromSourceMethod(
       View view, MethodSignature sourceMethod) {
-    Optional<? extends Method> currentMethodCandidate =
+    Method currentMethodCandidate =
         view.getClass(sourceMethod.getDeclClassType())
-            .map(c -> c.getMethod(sourceMethod))
+            .flatMap(c -> c.getMethod(sourceMethod))
             .orElse(null);
-    if (!currentMethodCandidate.isPresent()
-        || !(currentMethodCandidate.get() instanceof SootMethod)) return Stream.empty();
+    if (!(currentMethodCandidate instanceof SootMethod)) return Stream.empty();
 
-    SootMethod currentMethod = (SootMethod) currentMethodCandidate.get();
+    SootMethod currentMethod = (SootMethod) currentMethodCandidate;
 
     if (currentMethod.hasBody()) {
       return currentMethod.getBody().getStmts().stream()
-          .filter(s -> s.containsInvokeExpr())
+          .filter(Stmt::containsInvokeExpr)
           .flatMap(s -> resolveCall(currentMethod, s.getInvokeExpr()));
     } else {
       return Stream.empty();
     }
   }
 
+  @Nonnull
   protected abstract Stream<MethodSignature> resolveCall(
       SootMethod method, AbstractInvokeExpr invokeExpr);
 }
