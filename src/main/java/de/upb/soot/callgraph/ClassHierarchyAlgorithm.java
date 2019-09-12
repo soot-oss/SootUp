@@ -1,6 +1,5 @@
 package de.upb.soot.callgraph;
 
-import de.upb.soot.core.Method;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
@@ -8,8 +7,7 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.typehierarchy.MethodDispatchResolver;
 import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.views.View;
-
-import java.util.*;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -43,5 +41,4 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
       return MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature).stream();
     }
   }
-
 }
