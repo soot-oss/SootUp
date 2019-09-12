@@ -34,13 +34,7 @@ public class GraphBasedCallGraph implements CallGraph {
 
   @Override
   public void addEdge(@Nonnull MethodSignature method, @Nonnull MethodSignature calledMethod) {
-    Vertex methodVertex = signatureToVertex.get(method);
-    Preconditions.checkNotNull(methodVertex, "Node for " + method + " has not been added yet");
-    Vertex calledMethodVertex = signatureToVertex.get(calledMethod);
-    Preconditions.checkNotNull(
-        calledMethodVertex, "Node for " + calledMethod + " has not been added yet");
-
-    graph.addEdge(methodVertex, calledMethodVertex, new Edge());
+    graph.addEdge(vertexOf(method), vertexOf(calledMethod), new Edge());
   }
 
   @Nonnull
@@ -52,11 +46,7 @@ public class GraphBasedCallGraph implements CallGraph {
   @Nonnull
   @Override
   public Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod) {
-    Vertex sourceMethodVertex = signatureToVertex.get(sourceMethod);
-    Preconditions.checkNotNull(
-        sourceMethodVertex, "Node for " + sourceMethod + " has not been added yet");
-
-    return graph.outgoingEdgesOf(sourceMethodVertex).stream()
+    return graph.outgoingEdgesOf(vertexOf(sourceMethod)).stream()
         .map(graph::getEdgeTarget)
         .map(targetVertex -> targetVertex.methodSignature)
         .collect(Collectors.toSet());
@@ -65,11 +55,7 @@ public class GraphBasedCallGraph implements CallGraph {
   @Nonnull
   @Override
   public Set<MethodSignature> callsTo(@Nonnull MethodSignature targetMethod) {
-    Vertex targetMethodVertex = signatureToVertex.get(targetMethod);
-    Preconditions.checkNotNull(
-        targetMethodVertex, "Node for " + targetMethod + " has not been added yet");
-
-    return graph.incomingEdgesOf(targetMethodVertex).stream()
+    return graph.incomingEdgesOf(vertexOf(targetMethod)).stream()
         .map(graph::getEdgeSource)
         .map(targetVertex -> targetVertex.methodSignature)
         .collect(Collectors.toSet());
@@ -83,13 +69,13 @@ public class GraphBasedCallGraph implements CallGraph {
   @Override
   public boolean hasEdge(
       @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
-    Vertex sourceMethodVertex = signatureToVertex.get(sourceMethod);
-    Preconditions.checkNotNull(
-        sourceMethodVertex, "Node for " + sourceMethod + " has not been added yet");
-    Vertex targetMethodVertex = signatureToVertex.get(targetMethod);
-    Preconditions.checkNotNull(
-        targetMethodVertex, "Node for " + targetMethod + " has not been added yet");
+    return graph.containsEdge(vertexOf(sourceMethod), vertexOf(targetMethod));
+  }
 
-    return graph.containsEdge(sourceMethodVertex, targetMethodVertex);
+  @Nonnull
+  private Vertex vertexOf(@Nonnull MethodSignature method) {
+    Vertex methodVertex = signatureToVertex.get(method);
+    Preconditions.checkNotNull(methodVertex, "Node for " + method + " has not been added yet");
+    return methodVertex;
   }
 }
