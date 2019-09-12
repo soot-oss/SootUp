@@ -2,6 +2,7 @@ package de.upb.soot.callgraph;
 
 import de.upb.soot.core.SootMethod;
 import java.util.*;
+import javax.annotation.Nonnull;
 
 public class AdjacencyList implements CallGraph {
 
@@ -22,8 +23,9 @@ public class AdjacencyList implements CallGraph {
     transitions.add(calledMethod);
   }
 
+  @Nonnull
   @Override
-  public Set<SootMethod> getNodes() {
+  public Set<SootMethod> getMethodSignatures() {
     return graph.keySet();
   }
 

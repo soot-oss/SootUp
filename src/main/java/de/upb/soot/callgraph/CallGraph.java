@@ -1,10 +1,8 @@
 package de.upb.soot.callgraph;
 
-import de.upb.soot.core.Method;
-import de.upb.soot.core.SootMethod;
 import de.upb.soot.signatures.MethodSignature;
-
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 /**
  * Represents a call graph
@@ -15,15 +13,20 @@ import java.util.Set;
  */
 public interface CallGraph {
 
-  void addNode(MethodSignature calledMethod);
+  void addNode(@Nonnull MethodSignature calledMethod);
 
-  void addEdge(MethodSignature method, MethodSignature calledMethod);
+  void addEdge(@Nonnull MethodSignature method, @Nonnull MethodSignature calledMethod);
 
-  Set<MethodSignature> getNodes();
+  @Nonnull
+  Set<MethodSignature> getMethodSignatures();
 
-  Set<MethodSignature> getTransitions(MethodSignature method);
+  @Nonnull
+  Set<MethodSignature> callsFrom(@Nonnull MethodSignature sourceMethod);
 
-  boolean hasNode(MethodSignature method);
+  @Nonnull
+  Set<MethodSignature> callsTo(@Nonnull MethodSignature targetMethod);
 
-  boolean hasEdge(MethodSignature sourceMethod, MethodSignature targetMethod);
+  boolean hasNode(@Nonnull MethodSignature method);
+
+  boolean hasEdge(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
 }
