@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  * @author Markus Schmidt
+ * @author Christian Brüggemann
  */
 public interface CallGraph {
 
@@ -22,9 +23,9 @@ public interface CallGraph {
   @Nonnull
   Set<MethodSignature> callsTo(@Nonnull MethodSignature targetMethod);
 
-  boolean hasNode(@Nonnull MethodSignature method);
+  boolean containsMethod(@Nonnull MethodSignature method);
 
-  boolean hasEdge(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
+  boolean containsCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
 
   @Nonnull
   MutableCallGraph copy();

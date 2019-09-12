@@ -3,12 +3,18 @@ package de.upb.soot.callgraph;
 import de.upb.soot.signatures.MethodSignature;
 import javax.annotation.Nonnull;
 
+/**
+ * Represents a mutable call graph
+ *
+ * @author Linghui Luo
+ * @author Ben Hermann
+ * @author Markus Schmidt
+ * @author Christian Brüggemann
+ */
 public interface MutableCallGraph extends CallGraph {
-  // TODO Rename all methods called node/edges here and parent interface
+  void addMethod(@Nonnull MethodSignature calledMethod);
 
-  void addNode(@Nonnull MethodSignature calledMethod);
-
-  void addEdge(@Nonnull MethodSignature method, @Nonnull MethodSignature calledMethod);
+  void addCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature calledMethod);
 
   void removeCallsFrom(MethodSignature method);
 }

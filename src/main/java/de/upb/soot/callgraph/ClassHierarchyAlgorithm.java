@@ -53,7 +53,7 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
             .getMethods();
 
     for (Method method : methods) {
-      if (updated.hasNode(method.getSignature())) {
+      if (updated.containsMethod(method.getSignature())) {
         updated.removeCallsFrom(method.getSignature());
       }
     }

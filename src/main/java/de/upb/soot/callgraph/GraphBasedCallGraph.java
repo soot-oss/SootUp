@@ -37,15 +37,15 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   }
 
   @Override
-  public void addNode(@Nonnull MethodSignature calledMethod) {
+  public void addMethod(@Nonnull MethodSignature calledMethod) {
     Vertex v = new Vertex(calledMethod);
     graph.addVertex(v);
     signatureToVertex.put(calledMethod, v);
   }
 
   @Override
-  public void addEdge(@Nonnull MethodSignature method, @Nonnull MethodSignature calledMethod) {
-    graph.addEdge(vertexOf(method), vertexOf(calledMethod), new Edge());
+  public void addCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature calledMethod) {
+    graph.addEdge(vertexOf(sourceMethod), vertexOf(calledMethod), new Edge());
   }
 
   @Override
@@ -78,12 +78,12 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   }
 
   @Override
-  public boolean hasNode(@Nonnull MethodSignature method) {
+  public boolean containsMethod(@Nonnull MethodSignature method) {
     return signatureToVertex.containsKey(method);
   }
 
   @Override
-  public boolean hasEdge(
+  public boolean containsCall(
       @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
     return graph.containsEdge(vertexOf(sourceMethod), vertexOf(targetMethod));
   }
