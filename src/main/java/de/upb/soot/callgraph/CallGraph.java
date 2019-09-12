@@ -13,10 +13,6 @@ import javax.annotation.Nonnull;
  */
 public interface CallGraph {
 
-  void addNode(@Nonnull MethodSignature calledMethod);
-
-  void addEdge(@Nonnull MethodSignature method, @Nonnull MethodSignature calledMethod);
-
   @Nonnull
   Set<MethodSignature> getMethodSignatures();
 

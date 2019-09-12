@@ -18,7 +18,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   @Nonnull
   protected CallGraph constructCompleteCallGraph(View view, List<MethodSignature> entryPoints) {
-    CallGraph cg = new GraphBasedCallGraph();
+    MutableCallGraph cg = new GraphBasedCallGraph();
 
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
     Set<MethodSignature> processed = new HashSet<>();

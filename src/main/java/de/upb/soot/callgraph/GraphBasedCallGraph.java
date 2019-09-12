@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
-public class GraphBasedCallGraph implements CallGraph {
+public class GraphBasedCallGraph implements MutableCallGraph {
 
   private static class Vertex {
     @Nonnull final MethodSignature methodSignature;
