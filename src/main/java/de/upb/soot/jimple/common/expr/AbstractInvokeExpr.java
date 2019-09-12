@@ -78,7 +78,7 @@ public abstract class AbstractInvokeExpr implements Expr {
 
   @Override
   public Type getType() {
-    return methodSignature.getSignature();
+    return methodSignature.getType();
   }
 
   @Override

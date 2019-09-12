@@ -121,7 +121,7 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
   }
 
   public Type getReturnTypeSignature() {
-    return this.getSignature().getSignature();
+    return this.getSignature().getType();
   }
 
   /** Returns the number of parameters taken by this method. */

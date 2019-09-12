@@ -59,8 +59,8 @@ public abstract class AbstractClassMemberSignature implements Signature {
     return declClassSignature;
   }
 
-  public Type getSignature() {
-    return subSignature.getSignature();
+  public Type getType() {
+    return subSignature.getType();
   }
 
   public String getName() {

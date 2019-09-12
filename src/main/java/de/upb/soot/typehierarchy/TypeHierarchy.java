@@ -51,6 +51,13 @@ public interface TypeHierarchy {
   Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType type);
 
   /**
+   * For an interface type, this does the same as {@link #implementersOf(JavaClassType)}. For a
+   * class type, this does the same as {@link #subclassesOf(JavaClassType)}.
+   */
+  @Nonnull
+  Set<JavaClassType> subtypesOf(@Nonnull JavaClassType type);
+
+  /**
    * Returns the direct superclass of <code>classType</code>. If <code>classType == java.lang.Object
    * </code>, this method returns null.
    */

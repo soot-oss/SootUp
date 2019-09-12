@@ -52,7 +52,7 @@ public abstract class AbstractClassMemberSubSignature {
    * @return The value to get.
    */
   @Nonnull
-  public Type getSignature() {
+  public Type getType() {
     return this._type;
   }
 
@@ -71,13 +71,12 @@ public abstract class AbstractClassMemberSubSignature {
 
     AbstractClassMemberSubSignature that = (AbstractClassMemberSubSignature) o;
 
-    return Objects.equal(getName(), that.getName())
-        && Objects.equal(getSignature(), that.getSignature());
+    return Objects.equal(getName(), that.getName()) && Objects.equal(getType(), that.getType());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(getName(), getSignature());
+    return Objects.hashCode(getName(), getType());
   }
 
   protected int compareTo(@Nonnull AbstractClassMemberSubSignature o) {
@@ -85,7 +84,7 @@ public abstract class AbstractClassMemberSubSignature {
 
     if (r != 0) return r;
 
-    return this.getSignature().toString().compareTo(o.getSignature().toString());
+    return this.getType().toString().compareTo(o.getType().toString());
   }
 
   @Nonnull
@@ -93,7 +92,7 @@ public abstract class AbstractClassMemberSubSignature {
       @Nonnull JavaClassType declClassSignature);
 
   private final Supplier<String> _cachedToString =
-      Suppliers.memoize(() -> String.format("%s %s", getSignature(), getName()));
+      Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));
 
   @Override
   @Nonnull

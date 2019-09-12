@@ -50,19 +50,37 @@ class ViewTypeHierarchy implements MutableTypeHierarchy {
   @Nonnull
   @Override
   public Set<JavaClassType> implementersOf(@Nonnull JavaClassType interfaceType) {
+    Vertex vertex = lazyScanResult.get().typeToVertex.get(interfaceType);
+    if (vertex == null) {
+      throw new ResolveException("Could not find " + interfaceType + " in hierarchy.");
+    }
+    if (vertex.type != VertexType.Interface) {
+      throw new IllegalArgumentException(interfaceType + " is not an interface");
+    }
     return subtypesOf(interfaceType);
   }
 
   @Nonnull
   @Override
   public Set<JavaClassType> subclassesOf(@Nonnull JavaClassType classType) {
+    Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
+    if (vertex == null) {
+      throw new ResolveException("Could not find " + classType + " in hierarchy.");
+    }
+    if (vertex.type != VertexType.Class) {
+      throw new IllegalArgumentException(classType + " is not a class");
+    }
     return subtypesOf(classType);
   }
 
   @Nonnull
-  private Set<JavaClassType> subtypesOf(@Nonnull JavaClassType classType) {
+  @Override
+  public Set<JavaClassType> subtypesOf(@Nonnull JavaClassType type) {
     ScanResult scanResult = lazyScanResult.get();
-    Vertex vertex = scanResult.typeToVertex.get(classType);
+    Vertex vertex = scanResult.typeToVertex.get(type);
+    if (vertex == null) {
+      throw new ResolveException("Could not find " + type + " in hierarchy.");
+    }
 
     Set<JavaClassType> subclasses = new HashSet<>();
     // We now traverse the subgraph of the vertex to find all its subtypes

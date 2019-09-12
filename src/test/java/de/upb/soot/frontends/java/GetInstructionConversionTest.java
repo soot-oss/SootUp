@@ -87,7 +87,7 @@ public class GetInstructionConversionTest {
                 FieldSignature fieldSig = fieldRef.getFieldSignature();
                 assertNotNull(fieldSig);
                 assertEquals("a_x", fieldSig.getName());
-                assertEquals(PrimitiveType.getInt(), fieldSig.getSignature());
+                assertEquals(PrimitiveType.getInt(), fieldSig.getType());
                 assertEquals(
                     typeFactory.getClassType("alreadywalaunittests.InnerClassAA"),
                     fieldSig.getDeclClassType());
