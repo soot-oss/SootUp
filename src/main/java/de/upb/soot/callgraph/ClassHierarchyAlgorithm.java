@@ -19,57 +19,22 @@ import java.util.stream.Stream;
  * @author Christian Brüggemann
  * @author Ben Hermann
  */
-public class ClassHierarchyAlgorithm implements CallGraphAlgorithm {
-
-  TypeHierarchy hierarchy;
-  CallGraph callGraph;
+public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
   private final View view;
+  private final TypeHierarchy hierarchy;
 
-  public ClassHierarchyAlgorithm(View view) {
+  public ClassHierarchyAlgorithm(View view, TypeHierarchy hierarchy) {
     this.view = view;
+    this.hierarchy = hierarchy;
   }
 
   @Override
-  public CallGraph initialize(List<MethodSignature> entryPoints, TypeHierarchy hierarchy) {
-
-    this.hierarchy = hierarchy;
-    CallGraph cg = new AdjacencyList();
-
-    Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
-    Set<MethodSignature> processed = new HashSet<>();
-
-    while(!workList.isEmpty()) {
-      MethodSignature currentMethodSignature = workList.pop();
-      Optional<? extends Method> currentMethodCandidate =
-              view.getClass(currentMethodSignature.getDeclClassType())
-              .map(c -> c.getMethod(currentMethodSignature))
-              .orElse(null);
-      if (!currentMethodCandidate.isPresent() || !(currentMethodCandidate.get() instanceof SootMethod)) continue;
-      SootMethod currentMethod = (SootMethod)currentMethodCandidate.get();
-
-      if (processed.contains(currentMethodSignature)) continue;
-
-      if (currentMethod.hasBody()) {
-        Stream<MethodSignature> invocationTargets =
-                currentMethod.getBody().getStmts().stream()
-                .filter(s -> s.containsInvokeExpr())
-                .flatMap(s -> resolveCall(currentMethod, s.getInvokeExpr()));
-        invocationTargets.forEach(t -> {
-          if (!cg.hasNode(currentMethodSignature)) cg.addNode(currentMethodSignature);
-          if (!cg.hasEdge(currentMethodSignature, t)) {
-            if (!cg.hasNode(t)) cg.addNode(t);
-            cg.addEdge(currentMethodSignature, t);
-            workList.push(t);
-          }
-        });
-        processed.add(currentMethod.getSignature());
-      }
-
-    }
-    return cg;
+  public CallGraph initialize(List<MethodSignature> entryPoints) {
+    return constructCompleteCallGraph(view, entryPoints);
   }
 
-  private Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
+  @Override
+  protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
 
     if (Modifier.isStatic(targetMethodSignature.getModifiers())) {

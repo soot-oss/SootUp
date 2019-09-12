@@ -1,7 +1,6 @@
 package de.upb.soot.callgraph;
 
 import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.typehierarchy.TypeHierarchy;
 
 import java.util.List;
 
@@ -13,5 +12,5 @@ import java.util.List;
  * @author Markus Schmidt
  */
 public interface CallGraphAlgorithm {
-  CallGraph initialize(List<MethodSignature> entryPoints, TypeHierarchy hierarchy);
+  CallGraph initialize(List<MethodSignature> entryPoints);
 }
