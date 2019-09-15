@@ -5,18 +5,30 @@ private class PrivateClass {
     int d = 40;
 
     public void publicMethod() {
-        int e = 50;
+        a = 20;
+        b = 30;
+        c = 40;
+        d = 50;
     }
 
     private void privateMethod() {
-        int f = 60;
+        a = 20;
+        b = 30;
+        c = 40;
+        d = 50;
     }
 
     protected void protectedMethod() {
-        int g = 70;
+        a = 20;
+        b = 30;
+        c = 40;
+        d = 50;
     }
 
     void noModifierMethod() {
-        int h = 80;
+        a = 20;
+        b = 30;
+        c = 40;
+        d = 50;
     }
 }

@@ -22,7 +22,7 @@ import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class PrivateClassTest {
-  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
+  private String srcDir = "src/test/resources/minimaltestsuite/java6/VisibilityModifiers/";
   private String className = "PrivateClass";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
@@ -55,10 +55,10 @@ public class PrivateClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: PrivateClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<PrivateClass: int a> = 20",
+                "r0.<PrivateClass: int b> = 30",
+                "r0.<PrivateClass: int c> = 40",
+                "r0.<PrivateClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -89,10 +89,10 @@ public class PrivateClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: PrivateClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<PrivateClass: int a> = 20",
+                "r0.<PrivateClass: int b> = 30",
+                "r0.<PrivateClass: int c> = 40",
+                "r0.<PrivateClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -123,10 +123,10 @@ public class PrivateClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: PrivateClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<PrivateClass: int a> = 20",
+                "r0.<PrivateClass: int b> = 30",
+                "r0.<PrivateClass: int c> = 40",
+                "r0.<PrivateClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -157,10 +157,10 @@ public class PrivateClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: PrivateClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<PrivateClass: int a> = 20",
+                "r0.<PrivateClass: int b> = 30",
+                "r0.<PrivateClass: int c> = 40",
+                "r0.<PrivateClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
