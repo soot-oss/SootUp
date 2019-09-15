@@ -38,8 +38,8 @@ public class SwitchCaseStatementTest {
             loadClassesWithWala.identifierFactory.getMethodSignature(
                 "switchCaseStatement",
                 loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
+                "java.lang.String",
+                Collections.singletonList("java.lang.String")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -54,17 +54,18 @@ public class SwitchCaseStatementTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: SwitchCaseStatement",
-                "$r1 = \"red\"",
-                "$r2 = \"\"",
+                "$r1 := @parameter0: java.lang.String",
+                "$r2 = null",
                 "if $r1 == $i0 goto $r2 = \"color red detected\"",
                 "if $r1 == $i1 goto $r2 = \"color green detected\"",
                 "goto [?= $r2 = \"invalid color\"]",
                 "$r2 = \"color red detected\"",
-                "goto [?= return]",
+                "goto [?= return $r2]",
                 "$r2 = \"color green detected\"",
-                "goto [?= return]",
+                "goto [?= return $r2]",
                 "$r2 = \"invalid color\"",
-                "return")
+                "goto [?= return $r2]",
+                "return $r2")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
