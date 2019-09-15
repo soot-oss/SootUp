@@ -19,7 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ProtectedClassTest {
-  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
+  private String srcDir = "src/test/resources/minimaltestsuite/java6/VisibilityModifiers/";
   private String className = "ProtectedClass";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
@@ -52,10 +52,10 @@ public class ProtectedClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: ProtectedClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<ProtectedClass: int a> = 20",
+                "r0.<ProtectedClass: int b> = 30",
+                "r0.<ProtectedClass: int c> = 40",
+                "r0.<ProtectedClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -86,10 +86,10 @@ public class ProtectedClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: ProtectedClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<ProtectedClass: int a> = 20",
+                "r0.<ProtectedClass: int b> = 30",
+                "r0.<ProtectedClass: int c> = 40",
+                "r0.<ProtectedClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -120,10 +120,10 @@ public class ProtectedClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: ProtectedClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<ProtectedClass: int a> = 20",
+                "r0.<ProtectedClass: int b> = 30",
+                "r0.<ProtectedClass: int c> = 40",
+                "r0.<ProtectedClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -154,10 +154,10 @@ public class ProtectedClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: ProtectedClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<ProtectedClass: int a> = 20",
+                "r0.<ProtectedClass: int b> = 30",
+                "r0.<ProtectedClass: int c> = 40",
+                "r0.<ProtectedClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
