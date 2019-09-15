@@ -31,7 +31,7 @@ public class EvalOrderWithParenthesesTest {
   }
 
   @Test
-  public void declareEnumTest() {
+  public void evaluationOrderWithParenthesesTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
