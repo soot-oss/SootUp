@@ -29,7 +29,7 @@ public class LabelledLoopBreakTest {
   }
 
   @Test
-  public void forLoopTest() {
+  public void labelStatementTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
