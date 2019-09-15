@@ -21,7 +21,7 @@ import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class PublicClassTest {
-  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
+  private String srcDir = "src/test/resources/minimaltestsuite/java6/VisibilityModifiers/";
   private String className = "PublicClass";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
@@ -54,10 +54,10 @@ public class PublicClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: PublicClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<PublicClass: int a> = 20",
+                "r0.<PublicClass: int b> = 30",
+                "r0.<PublicClass: int c> = 40",
+                "r0.<PublicClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -88,10 +88,10 @@ public class PublicClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: PublicClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<PublicClass: int a> = 20",
+                "r0.<PublicClass: int b> = 30",
+                "r0.<PublicClass: int c> = 40",
+                "r0.<PublicClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -122,10 +122,10 @@ public class PublicClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: PublicClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<PublicClass: int a> = 20",
+                "r0.<PublicClass: int b> = 30",
+                "r0.<PublicClass: int c> = 40",
+                "r0.<PublicClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -156,10 +156,10 @@ public class PublicClassTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: PublicClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0.<PublicClass: int a> = 20",
+                "r0.<PublicClass: int b> = 30",
+                "r0.<PublicClass: int c> = 40",
+                "r0.<PublicClass: int d> = 50",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
