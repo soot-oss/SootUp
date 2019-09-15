@@ -2,27 +2,36 @@ class NoModifierClass {
     public int a = 10;
     private int b = 20;
     protected int c = 30;
+    int d = 40;
 
     public void publicMethod() {
-        int d = 10;
+        a = 20;
+        b = 30;
+        c = 40;
+        d = 50;
     }
 
     private void privateMethod() {
-        int d = 20;
+        a = 20;
+        b = 30;
+        c = 40;
+        d = 50;
     }
 
     protected void protectedMethod() {
-        public int a = 10;
-        private int b = 20;
-        protected int c = 30;
-        int d = 40;
+        a = 20;
+        b = 30;
+        c = 40;
+        d = 50;
     }
 
     void noModifierMethod() {
-        public int a = 10;
-        private int b = 20;
-        protected int c = 30;
-        int d = 40;
+        a = 20;
+        b = 30;
+        c = 40;
+        d = 50;
     }
+
+
 }
 

@@ -1,29 +1,22 @@
 protected class ProtectedClass {
+    public int a = 10;
+    private int b = 20;
+    protected int c = 30;
+    int d = 40;
+
     public void publicMethod() {
-        public int a = 10;
-        private int b = 20;
-        protected int c = 30;
-        int d = 40;
+        int e = 50;
     }
 
     private void privateMethod() {
-        public int a = 10;
-        private int b = 20;
-        protected int c = 30;
-        int d = 40;
+        int f = 60;
     }
 
     protected void protectedMethod() {
-        public int a = 10;
-        private int b = 20;
-        protected int c = 30;
-        int d = 40;
+        int g = 70;
     }
 
     void noModifierMethod() {
-        public int a = 10;
-        private int b = 20;
-        protected int c = 30;
-        int d = 40;
+        int h = 80;
     }
 }
