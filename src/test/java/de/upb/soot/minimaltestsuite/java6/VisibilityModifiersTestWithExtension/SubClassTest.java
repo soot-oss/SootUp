@@ -1,4 +1,4 @@
-package de.upb.soot.minimaltestsuite.java6.VisibilityModifierTest;
+package de.upb.soot.minimaltestsuite.java6.VisibilityModifiersTestWithExtension;
 
 import static org.junit.Assert.*;
 
@@ -20,9 +20,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class PublicClassTest {
+public class SubClassTest {
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
-  private String className = "PublicClass";
+  private String className = "SubClass";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
   @Before
@@ -31,12 +31,12 @@ public class PublicClassTest {
   }
 
   @Test
-  public void publicMethodTest() {
+  public void subclassMethodTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
             loadClassesWithWala.identifierFactory.getMethodSignature(
-                "publicMethod",
+                "subclassMethod",
                 loadClassesWithWala.declareClassSig,
                 "void",
                 Collections.emptyList()));
@@ -53,7 +53,7 @@ public class PublicClassTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: PublicClass",
+                "r0 := @this: SubClass",
                 "$i0 = 10",
                 "$i1 = 20",
                 "$i2 = 30",
@@ -65,12 +65,12 @@ public class PublicClassTest {
   }
 
   @Test
-  public void privateMethodTest() {
+  public void superclassMethodTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
             loadClassesWithWala.identifierFactory.getMethodSignature(
-                "privateMethod",
+                "subclassMethod",
                 loadClassesWithWala.declareClassSig,
                 "void",
                 Collections.emptyList()));
@@ -87,79 +87,11 @@ public class PublicClassTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: PublicClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
-                "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void protectedMethodTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "protectedMethod",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of(
-                "r0 := @this: PublicClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
-                "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void noModifierMethodTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "noModifierMethod",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of(
-                "r0 := @this: PublicClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
+                "r0 := @this: SubClass",
+                "$i0 = 100",
+                "$i1 = 200",
+                "$i2 = 300",
+                "$i3 = 400",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
