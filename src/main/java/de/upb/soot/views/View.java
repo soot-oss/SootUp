@@ -7,6 +7,7 @@ import de.upb.soot.callgraph.CallGraph;
 import de.upb.soot.callgraph.CallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collection;
@@ -33,12 +34,19 @@ public interface View {
   }
 
   /**
-   * Return a class with given signature.
+   * Return a class with given classType.
    *
-   * @return A class with given signature.
+   * @return A class with given classType.
    */
   @Nonnull
-  Optional<AbstractClass<? extends AbstractClassSource>> getClass(@Nonnull JavaClassType signature);
+  Optional<AbstractClass<? extends AbstractClassSource>> getClass(@Nonnull JavaClassType classType);
+
+  @Nonnull
+  default AbstractClass<? extends AbstractClassSource> getClassOrThrow(
+      @Nonnull JavaClassType classType) {
+    return getClass(classType)
+        .orElseThrow(() -> new ResolveException("Could not find " + classType + " in view"));
+  }
 
   /**
    * Provides the call graph using the default algorithm.

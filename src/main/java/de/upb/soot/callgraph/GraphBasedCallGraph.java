@@ -2,6 +2,7 @@ package de.upb.soot.callgraph;
 
 import com.google.common.base.Preconditions;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.types.JavaClassType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,17 +24,21 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
 
   @Nonnull private final DefaultDirectedGraph<Vertex, Edge> graph;
   @Nonnull private final Map<MethodSignature, Vertex> signatureToVertex;
+  @Nonnull private final Map<JavaClassType, Set<Vertex>> typeToVertices;
 
   public GraphBasedCallGraph() {
     graph = new DefaultDirectedGraph<>(null, null, false);
     signatureToVertex = new HashMap<>();
+    typeToVertices = new HashMap<>();
   }
 
   private GraphBasedCallGraph(
       @Nonnull DefaultDirectedGraph<Vertex, Edge> graph,
-      @Nonnull Map<MethodSignature, Vertex> signatureToVertex) {
+      @Nonnull Map<MethodSignature, Vertex> signatureToVertex,
+      @Nonnull Map<JavaClassType, Set<Vertex>> typeToVertices) {
     this.graph = graph;
     this.signatureToVertex = signatureToVertex;
+    this.typeToVertices = typeToVertices;
   }
 
   @Override
@@ -44,13 +49,9 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   }
 
   @Override
-  public void addCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature calledMethod) {
-    graph.addEdge(vertexOf(sourceMethod), vertexOf(calledMethod), new Edge());
-  }
-
-  @Override
-  public void removeCallsFrom(MethodSignature method) {
-    graph.removeAllEdges(graph.outgoingEdgesOf(vertexOf(method)));
+  public void addCall(
+      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod) {
+    graph.addEdge(vertexOf(sourceMethod), vertexOf(targetMethod), new Edge());
   }
 
   @Nonnull
@@ -93,7 +94,9 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   public MutableCallGraph copy() {
     //noinspection unchecked (graph.clone() preserves generic properties)
     return new GraphBasedCallGraph(
-        (DefaultDirectedGraph<Vertex, Edge>) graph.clone(), new HashMap<>(signatureToVertex));
+        (DefaultDirectedGraph<Vertex, Edge>) graph.clone(),
+        new HashMap<>(signatureToVertex),
+        new HashMap<>(typeToVertices));
   }
 
   @Nonnull

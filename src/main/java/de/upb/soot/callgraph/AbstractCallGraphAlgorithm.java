@@ -17,8 +17,7 @@ import javax.annotation.Nonnull;
 public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   @Nonnull
-  protected final CallGraph constructCompleteCallGraph(
-      View view, List<MethodSignature> entryPoints) {
+  final CallGraph constructCompleteCallGraph(View view, List<MethodSignature> entryPoints) {
     MutableCallGraph cg = new GraphBasedCallGraph();
 
     Deque<MethodSignature> workList = new ArrayDeque<>(entryPoints);
@@ -30,10 +29,10 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
 
   /**
    * Processes all entries in the <code>workList</code>, skipping those present in <code>processed
-   * </code>. Newly discovered methods are added to the <code>workList</code> and processed as well.
-   * <code>cg</code> is updated accordingly.
+   * </code>, adding call edges to the graph. Newly discovered methods are added to the <code>
+   * workList</code> and processed as well. <code>cg</code> is updated accordingly.
    */
-  protected final void processWorkList(
+  final void processWorkList(
       View view,
       Deque<MethodSignature> workList,
       Set<MethodSignature> processed,
@@ -59,8 +58,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   @Nonnull
-  protected Stream<MethodSignature> resolveAllCallsFromSourceMethod(
-      View view, MethodSignature sourceMethod) {
+  Stream<MethodSignature> resolveAllCallsFromSourceMethod(View view, MethodSignature sourceMethod) {
     Method currentMethodCandidate =
         view.getClass(sourceMethod.getDeclClassType())
             .flatMap(c -> c.getMethod(sourceMethod))
@@ -79,6 +77,5 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
   }
 
   @Nonnull
-  protected abstract Stream<MethodSignature> resolveCall(
-      SootMethod method, AbstractInvokeExpr invokeExpr);
+  abstract Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr);
 }

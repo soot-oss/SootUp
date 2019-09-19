@@ -17,5 +17,5 @@ public interface CallGraphAlgorithm {
   CallGraph initialize(@Nonnull List<MethodSignature> entryPoints);
 
   @Nonnull
-  CallGraph addOrUpdateWithClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType);
+  CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType);
 }

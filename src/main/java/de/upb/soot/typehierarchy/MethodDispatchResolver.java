@@ -49,7 +49,7 @@ public final class MethodDispatchResolver {
    * @return Whether name and parameters are equal and the return type of <code>potentialTarget
    *     </code> is compatible with the return type of <code>called</code>.
    */
-  private static boolean canDispatch(
+  public static boolean canDispatch(
       MethodSignature called, MethodSignature potentialTarget, TypeHierarchy hierarchy) {
     return called.getName().equals(potentialTarget.getName())
         && called.getParameterSignatures().equals(potentialTarget.getParameterSignatures())

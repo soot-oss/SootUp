@@ -129,13 +129,13 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   @Override
   @Nonnull
   public synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
-      @Nonnull JavaClassType type) {
-    AbstractClass<? extends AbstractClassSource> sootClass = this.map.get(type);
+      @Nonnull JavaClassType classType) {
+    AbstractClass<? extends AbstractClassSource> sootClass = this.map.get(classType);
     if (sootClass != null) {
       return Optional.of(sootClass);
     }
 
-    return getProject().getInputLocation().getClassSource(type).flatMap(this::getClass);
+    return getProject().getInputLocation().getClassSource(classType).flatMap(this::getClass);
   }
 
   @Nonnull

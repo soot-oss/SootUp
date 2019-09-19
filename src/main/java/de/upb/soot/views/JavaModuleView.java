@@ -23,7 +23,7 @@ public abstract class JavaModuleView implements View {
   @Override
   @Nonnull
   public synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
-      @Nonnull JavaClassType type) {
+      @Nonnull JavaClassType classType) {
     // FIXME: get the first class you find, in the annouymous module...
     return null;
   }

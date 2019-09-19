@@ -1,11 +1,13 @@
 package de.upb.soot.callgraph;
 
+import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.Method;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.ResolveException;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.signatures.MethodSubSignature;
 import de.upb.soot.typehierarchy.MethodDispatchResolver;
 import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.types.JavaClassType;
@@ -43,27 +45,49 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
 
   @Nonnull
   @Override
-  public CallGraph addOrUpdateWithClass(
-      @Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType) {
+  public CallGraph addClass(@Nonnull CallGraph oldCallGraph, @Nonnull JavaClassType classType) {
     MutableCallGraph updated = oldCallGraph.copy();
 
-    Set<? extends Method> methods =
-        view.getClass(classType)
-            .orElseThrow(() -> new ResolveException("Could not find " + classType + " in view"))
-            .getMethods();
+    AbstractClass<? extends AbstractClassSource> clazz = view.getClassOrThrow(classType);
+    Set<MethodSignature> newMethodSignatures =
+        clazz.getMethods().stream().map(Method::getSignature).collect(Collectors.toSet());
 
-    for (Method method : methods) {
-      if (updated.containsMethod(method.getSignature())) {
-        updated.removeCallsFrom(method.getSignature());
-      }
+    if (newMethodSignatures.stream().anyMatch(oldCallGraph::containsMethod)) {
+      throw new IllegalArgumentException("CallGraph already contains methods from " + classType);
     }
 
-    Deque<MethodSignature> workList =
-        methods.stream()
-            .map(Method::getSignature)
-            .collect(Collectors.toCollection(ArrayDeque::new));
+    // Step 1: Add edges from the new methods to other methods
+    Deque<MethodSignature> workList = new ArrayDeque<>(newMethodSignatures);
     Set<MethodSignature> processed = new HashSet<>(oldCallGraph.getMethodSignatures());
     processWorkList(view, workList, processed, updated);
+
+    // Step 2: Add edges from old methods to methods overridden in the new class
+    List<JavaClassType> superClasses = hierarchy.superClassesOf(classType);
+    Set<JavaClassType> implementedInterfaces = hierarchy.implementedInterfacesOf(classType);
+    Stream<JavaClassType> superTypes =
+        Stream.concat(superClasses.stream(), implementedInterfaces.stream());
+
+    Set<MethodSubSignature> newMethodSubSigs =
+        newMethodSignatures.stream()
+            .map(MethodSignature::getSubSignature)
+            .collect(Collectors.toSet());
+
+    superTypes
+        .map(view::getClassOrThrow)
+        .flatMap(superType -> superType.getMethods().stream())
+        .map(Method::getSignature)
+        .filter(
+            superTypeMethodSig -> newMethodSubSigs.contains(superTypeMethodSig.getSubSignature()))
+        .forEach(
+            overriddenMethodSig -> {
+              //noinspection OptionalGetWithoutIsPresent (We know this exists)
+              MethodSignature overridingMethodSig =
+                  clazz.getMethod(overriddenMethodSig.getSubSignature()).get().getSignature();
+
+              for (MethodSignature callingMethodSig : oldCallGraph.callsTo(overriddenMethodSig)) {
+                updated.addCall(callingMethodSig, overridingMethodSig);
+              }
+            });
 
     return updated;
   }
