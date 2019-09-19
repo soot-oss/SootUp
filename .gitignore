@@ -152,4 +152,3 @@ fabric.properties
 \.project
 
 \.classpath
-src/test/resources/minimaltestsuite/java6/ExtendClass.java
