@@ -1,6 +1,6 @@
 public class StaticMethod {
 
     static void staticMethod(){
-        System.out.println("Static Method");
+        System.out.println("static method");
     }
 }
