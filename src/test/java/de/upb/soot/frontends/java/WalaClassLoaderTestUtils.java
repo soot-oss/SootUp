@@ -6,9 +6,9 @@ import de.upb.soot.core.SourceType;
 import de.upb.soot.signatures.MethodSignature;
 import java.util.Optional;
 
-class WalaClassLoaderTestUtils {
+public class WalaClassLoaderTestUtils {
 
-  static Optional<SootMethod> getSootMethod(
+  public static Optional<SootMethod> getSootMethod(
       WalaClassLoader walaClassLoader, MethodSignature signature) {
     // We let getClassSource do the hard work for us. This also
     // initializes the SootMethod correctly to know about its declaring

@@ -5,8 +5,8 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClassMember;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
+import javax.annotation.Nonnull;
 
 /**
  * Abstract class for the signature of a {@link SootClassMember}
@@ -70,5 +70,7 @@ public abstract class AbstractClassMemberSignature implements Signature {
   }
 
   // TODO: Implement me in a sane way. Not this crazy dummy implementation.
-  public EnumSet<Modifier> getModifiers() { return EnumSet.of(Modifier.PUBLIC, Modifier.STATIC); }
+  public EnumSet<Modifier> getModifiers() {
+    return EnumSet.of(Modifier.PUBLIC, Modifier.STATIC);
+  }
 }

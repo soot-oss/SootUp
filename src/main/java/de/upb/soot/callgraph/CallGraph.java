@@ -25,7 +25,8 @@ public interface CallGraph {
 
   boolean containsMethod(@Nonnull MethodSignature method);
 
-  boolean containsCall(@Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
+  boolean containsCall(
+      @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
 
   @Nonnull
   MutableCallGraph copy();

@@ -19,6 +19,8 @@ import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import java.io.File;
 import java.io.FileInputStream;
@@ -306,5 +308,10 @@ public class WalaClassLoader {
       }
     }
     return walaClass;
+  }
+
+  public AnalysisInputLocation getAnalysisInputLocation() {
+    // TODO: improve 2nd parameter
+    return new JavaSourcePathAnalysisInputLocation(sourcePath, null);
   }
 }
