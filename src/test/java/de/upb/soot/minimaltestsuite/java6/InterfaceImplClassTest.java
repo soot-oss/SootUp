@@ -1,4 +1,4 @@
-package de.upb.soot.minimaltestsuite.java6.VisibilityModifiersTestWithExtension;
+package de.upb.soot.minimaltestsuite.java6;
 
 import static org.junit.Assert.*;
 
@@ -52,13 +52,7 @@ public class InterfaceImplClassTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of(
-                "r0 := @this: SubClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
-                "return")
+        Stream.of("r0 := @this: SubClass", "$i0 = 10", "$i1 = 20", "$i2 = 30", "$i3 = 40", "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
