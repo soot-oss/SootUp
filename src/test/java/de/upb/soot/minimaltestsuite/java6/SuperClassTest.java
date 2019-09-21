@@ -1,4 +1,4 @@
-package de.upb.soot.minimaltestsuite.java6.VisibilityModifiersTestWithExtension;
+package de.upb.soot.minimaltestsuite.java6;
 
 import static org.junit.Assert.*;
 
@@ -20,9 +20,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class SubClassTest {
+public class SuperClassTest {
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
-  private String className = "SubClass";
+  private String className = "SuperClass";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
   @Before
@@ -31,46 +31,12 @@ public class SubClassTest {
   }
 
   @Test
-  public void subclassMethodTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "subclassMethod",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of(
-                "r0 := @this: SubClass",
-                "$i0 = 10",
-                "$i1 = 20",
-                "$i2 = 30",
-                "$i3 = 40",
-                "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
   public void superclassMethodTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
             loadClassesWithWala.identifierFactory.getMethodSignature(
-                "subclassMethod",
+                "superclassMethod",
                 loadClassesWithWala.declareClassSig,
                 "void",
                 Collections.emptyList()));
@@ -87,12 +53,7 @@ public class SubClassTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: SubClass",
-                "$i0 = 100",
-                "$i1 = 200",
-                "$i2 = 300",
-                "$i3 = 400",
-                "return")
+                "r0 := @this: SuperClass", "$i0 = 10", "$i1 = 20", "$i2 = 30", "$i3 = 40", "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);

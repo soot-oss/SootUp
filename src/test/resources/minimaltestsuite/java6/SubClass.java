@@ -12,6 +12,7 @@ class SubClass {
     }
 
     public superclassMethod(){
+        super.superclassMethod();
         a=100;
         b=200;
         c=300;

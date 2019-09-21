@@ -1,4 +1,4 @@
-package de.upb.soot.minimaltestsuite.java6.VisibilityModifiersTestWithExtension;
+package de.upb.soot.minimaltestsuite.java6;
 
 import static org.junit.Assert.*;
 
@@ -20,14 +20,42 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class SuperClassTest {
+public class SubClassTest {
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
-  private String className = "SuperClass";
+  private String className = "SubClass";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
   @Before
   public void loadClasses() {
     loadClassesWithWala.classLoader(srcDir, className);
+  }
+
+  @Test
+  public void subclassMethodTest() {
+    Optional<SootMethod> m =
+        WalaClassLoaderTestUtils.getSootMethod(
+            loadClassesWithWala.loader,
+            loadClassesWithWala.identifierFactory.getMethodSignature(
+                "subclassMethod",
+                loadClassesWithWala.declareClassSig,
+                "void",
+                Collections.emptyList()));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+    Body body = method.getBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of("r0 := @this: SubClass", "$i0 = 10", "$i1 = 20", "$i2 = 30", "$i3 = 40", "return")
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    assertEquals(expectedStmts, actualStmts);
   }
 
   @Test
@@ -53,15 +81,18 @@ public class SuperClassTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: SuperClass",
+                "r0 := @this: SubClass",
                 "$i0 = 10",
                 "$i1 = 20",
                 "$i2 = 30",
                 "$i3 = 40",
+                "$i4 = 100",
+                "$i5 = 200",
+                "$i6 = 300",
+                "$i7 = 400",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
   }
-
-} 
+}
