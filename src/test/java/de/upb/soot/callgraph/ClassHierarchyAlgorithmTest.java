@@ -19,13 +19,15 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Markus Schmidt */
+/**
+ * Input source examples taken from https://bitbucket.org/delors/jcg/src/master/
+ *
+ * @author: Markus Schmidt
+ */
 @Category(Java8Test.class)
 public class ClassHierarchyAlgorithmTest {
 
-  // TODO: check if algo works in recursion
-  // TODO: StaticInitializers?
-  // TODO: Lambdas (recheck: Wala cant handle it currently?)
+  // TODO: StaticInitializers, Lambdas ?
 
   private View view;
   DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
@@ -52,10 +54,24 @@ public class ClassHierarchyAlgorithmTest {
     CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, view.typeHierarchy());
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
 
+    // TODO: remove debuginfo
     assertNotNull(cg);
     System.out.println(cg.callsFrom(mainMethodSignature));
 
     return cg;
+  }
+
+  @Test
+  public void testRecursiveCall() {
+    CallGraph cg = loadCallGraph("Misc", "recur.Class");
+
+    assertTrue(cg.containsCall(mainMethodSignature, mainMethodSignature));
+
+    MethodSignature method =
+        identifierFactory.getMethodSignature(
+            "method", declareClassSig, "void", Collections.emptyList());
+
+    assertTrue(cg.containsCall(mainMethodSignature, method));
   }
 
   @Test
