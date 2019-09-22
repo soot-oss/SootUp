@@ -47,8 +47,8 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
       invocationTargets.forEach(
           t -> {
             if (!cg.containsMethod(currentMethodSignature)) cg.addMethod(currentMethodSignature);
+            if (!cg.containsMethod(t)) cg.addMethod(t);
             if (!cg.containsCall(currentMethodSignature, t)) {
-              if (!cg.containsMethod(t)) cg.addMethod(t);
               cg.addCall(currentMethodSignature, t);
               workList.push(t);
             }
