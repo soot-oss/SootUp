@@ -1,5 +1,5 @@
 // j8dim/SuperClass.java
-// package j8dim;
+package j8dim4;
 
 // import lib.annotations.callgraph.DirectCall;
 
