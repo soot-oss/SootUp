@@ -199,24 +199,12 @@ public class ClassHierarchyAlgorithmTest {
   public void testVirtualCall4() {
     CallGraph cg = loadCallGraph("VirtualCall", "vc4.Class");
 
-    // check static called constructors
-    // TODO: check who calls them
-    MethodSignature constructorMethod1 =
-        identifierFactory.getMethodSignature(
-            "ClassImpl", declareClassSig, "vc4.ClassImpl", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, constructorMethod1));
-
-    MethodSignature constructorMethod2 =
-        identifierFactory.getMethodSignature(
-            "Class", declareClassSig, "vc4.Class", Collections.emptyList());
-    assertTrue(cg.containsCall(mainMethodSignature, constructorMethod2));
-
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "callOnInterface",
+            "method",
             declareClassSig,
             "void",
-            Collections.singletonList("vc4.Class.Interface"));
+            Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
   }
 
