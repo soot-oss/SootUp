@@ -1,7 +1,6 @@
 package de.upb.soot.callgraph;
 
-import static junit.framework.TestCase.assertNotNull;
-import static junit.framework.TestCase.assertTrue;
+import static junit.framework.TestCase.*;
 
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
@@ -56,21 +55,72 @@ public class ClassHierarchyAlgorithmTest {
 
     // TODO: remove debuginfo
     assertNotNull(cg);
-    System.out.println(cg.callsFrom(mainMethodSignature));
+    System.out.println(
+        "calls from " + mainMethodSignature + ":\n" + cg.callsFrom(mainMethodSignature));
+    System.out.println("signatures:\n" + cg.getMethodSignatures());
 
     return cg;
   }
 
   @Test
+  public void testMiscExample() {
+    CallGraph cg = loadCallGraph("Misc", "example.Example");
+
+    MethodSignature constructorA =
+        identifierFactory.getMethodSignature(
+            "A", identifierFactory.getClassType("example.A"), "example.A", Collections.emptyList());
+
+    MethodSignature constructorB =
+        identifierFactory.getMethodSignature(
+            "B", identifierFactory.getClassType("example.B"), "example.B", Collections.emptyList());
+
+    MethodSignature methodA =
+        identifierFactory.getMethodSignature(
+            "print",
+            identifierFactory.getClassType("example.A"),
+            "void",
+            Collections.singletonList("example.A"));
+
+    MethodSignature methodB =
+        identifierFactory.getMethodSignature(
+            "print",
+            identifierFactory.getClassType("example.B"),
+            "void",
+            Collections.singletonList("example.A"));
+
+    MethodSignature methodC =
+        identifierFactory.getMethodSignature(
+            "print",
+            identifierFactory.getClassType("example.C"),
+            "void",
+            Collections.singletonList("example.A"));
+
+    MethodSignature methodD =
+        identifierFactory.getMethodSignature(
+            "print",
+            identifierFactory.getClassType("example.D"),
+            "void",
+            Collections.singletonList("example.A"));
+
+    assertTrue(cg.containsCall(mainMethodSignature, constructorA));
+    assertTrue(cg.containsCall(mainMethodSignature, constructorB));
+
+    assertTrue(cg.containsCall(mainMethodSignature, methodA));
+    assertTrue(cg.containsCall(mainMethodSignature, methodB));
+    assertTrue(cg.containsCall(mainMethodSignature, methodC));
+    assertTrue(cg.containsCall(mainMethodSignature, methodD));
+
+    assertEquals(6, cg.callsFrom(mainMethodSignature).size());
+  }
+
+  @Test
   public void testRecursiveCall() {
     CallGraph cg = loadCallGraph("Misc", "recur.Class");
-
     assertTrue(cg.containsCall(mainMethodSignature, mainMethodSignature));
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
             "method", declareClassSig, "void", Collections.emptyList());
-
     assertTrue(cg.containsCall(mainMethodSignature, method));
   }
 
@@ -199,10 +249,11 @@ public class ClassHierarchyAlgorithmTest {
   public void testVirtualCall4() {
     CallGraph cg = loadCallGraph("VirtualCall", "vc4.Class");
 
+    // more precise its: declareClassSig
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
             "method",
-            declareClassSig,
+            identifierFactory.getClassType("vc4.Interface"),
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
