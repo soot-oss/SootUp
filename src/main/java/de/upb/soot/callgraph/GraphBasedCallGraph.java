@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
+/**
+ * @author Christian Brüggemann
+ */
 public final class GraphBasedCallGraph implements MutableCallGraph {
 
   private static class Vertex {

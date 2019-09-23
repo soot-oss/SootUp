@@ -52,6 +52,7 @@ public class ClassHierarchyAlgorithmTest {
 
     CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, view.typeHierarchy());
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
+    assertTrue(cg.containsMethod(mainMethodSignature));
 
     // TODO: remove debuginfo
     assertNotNull(cg);
@@ -174,12 +175,24 @@ public class ClassHierarchyAlgorithmTest {
   @Test
   public void testRecursiveCall() {
     CallGraph cg = loadCallGraph("Misc", "recur.Class");
-    assertTrue(cg.containsCall(mainMethodSignature, mainMethodSignature));
 
     MethodSignature method =
-        identifierFactory.getMethodSignature(
-            "method", declareClassSig, "void", Collections.emptyList());
+            identifierFactory.getMethodSignature(
+                    "method", declareClassSig, "void", Collections.emptyList());
+
+    MethodSignature uncalledMethod =
+            identifierFactory.getMethodSignature(
+                    "method", declareClassSig, "void", Collections.singletonList("int"));
+
+    assertTrue(cg.containsMethod(mainMethodSignature));
+    assertTrue(cg.containsMethod(method));
+    assertFalse(cg.containsMethod(uncalledMethod));
+    assertEquals(2, cg.getMethodSignatures().size());
+
+    assertTrue(cg.containsCall(mainMethodSignature, mainMethodSignature));
     assertTrue(cg.containsCall(mainMethodSignature, method));
+    assertEquals(2, cg.callsFrom(mainMethodSignature).size());
+
   }
 
   @Test
