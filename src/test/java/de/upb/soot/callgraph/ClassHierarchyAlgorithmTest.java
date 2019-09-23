@@ -63,44 +63,50 @@ public class ClassHierarchyAlgorithmTest {
   }
 
   @Test
-  public void testMiscExample() {
-    CallGraph cg = loadCallGraph("Misc", "example.Example");
+  public void testMiscExample1() {
+    CallGraph cg = loadCallGraph("Misc", "example1.Example");
 
     MethodSignature constructorA =
         identifierFactory.getMethodSignature(
-            "A", identifierFactory.getClassType("example.A"), "example.A", Collections.emptyList());
+            "A",
+            identifierFactory.getClassType("example1.A"),
+            "example1.A",
+            Collections.emptyList());
 
     MethodSignature constructorB =
         identifierFactory.getMethodSignature(
-            "B", identifierFactory.getClassType("example.B"), "example.B", Collections.emptyList());
+            "B",
+            identifierFactory.getClassType("example1.B"),
+            "example1.B",
+            Collections.emptyList());
 
     MethodSignature methodA =
         identifierFactory.getMethodSignature(
             "print",
-            identifierFactory.getClassType("example.A"),
+            identifierFactory.getClassType("example1.A"),
             "void",
-            Collections.singletonList("example.A"));
+            Collections.singletonList("example1.A"));
 
     MethodSignature methodB =
         identifierFactory.getMethodSignature(
             "print",
-            identifierFactory.getClassType("example.B"),
+            identifierFactory.getClassType("example1.B"),
             "void",
-            Collections.singletonList("example.A"));
+            Collections.singletonList("example1.A"));
 
     MethodSignature methodC =
         identifierFactory.getMethodSignature(
             "print",
-            identifierFactory.getClassType("example.C"),
+            identifierFactory.getClassType("example1.C"),
             "void",
-            Collections.singletonList("example.A"));
+            Collections.singletonList("example1.A"));
 
     MethodSignature methodD =
         identifierFactory.getMethodSignature(
             "print",
-            identifierFactory.getClassType("example.D"),
+            identifierFactory.getClassType("example1.D"),
             "void",
-            Collections.singletonList("example.A"));
+            Collections.singletonList("example1.A"));
 
     assertTrue(cg.containsCall(mainMethodSignature, constructorA));
     assertTrue(cg.containsCall(mainMethodSignature, constructorB));
@@ -111,6 +117,58 @@ public class ClassHierarchyAlgorithmTest {
     assertTrue(cg.containsCall(mainMethodSignature, methodD));
 
     assertEquals(6, cg.callsFrom(mainMethodSignature).size());
+
+    assertEquals(1, cg.callsTo(constructorA).size());
+    assertEquals(1, cg.callsTo(constructorB).size());
+    assertEquals(1, cg.callsTo(methodA).size());
+    assertEquals(1, cg.callsTo(methodB).size());
+    assertEquals(1, cg.callsTo(methodC).size());
+    assertEquals(1, cg.callsTo(methodD).size());
+
+    assertEquals(0, cg.callsFrom(methodA).size());
+    assertEquals(0, cg.callsFrom(methodB).size());
+    assertEquals(0, cg.callsFrom(methodC).size());
+    assertEquals(0, cg.callsFrom(methodD).size());
+  }
+
+  @Test
+  public void testAddClass() {
+
+    WalaClassLoader loader =
+        new WalaClassLoader("src/test/resources/java-target/callgraph/Misc", null);
+
+    AnalysisInputLocation inputLocation = loader.getAnalysisInputLocation();
+    Project project = new Project(inputLocation);
+    view = new JavaView<>(project);
+
+    mainMethodSignature =
+        identifierFactory.getMethodSignature(
+            "main",
+            identifierFactory.getClassType("update.operation.cg.Class"),
+            "void",
+            Collections.singletonList("java.lang.String[]"));
+    Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, mainMethodSignature);
+    assertTrue(m.isPresent());
+
+    MethodSignature methodSignature =
+        identifierFactory.getMethodSignature(
+            "method",
+            identifierFactory.getClassType("update.operation.cg.Class"),
+            "void",
+            Collections.emptyList());
+
+    CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, view.typeHierarchy());
+    CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
+
+    JavaClassType newClass =
+        new JavaClassType("AdderA", identifierFactory.getPackageName("update.operation.cg"));
+    CallGraph newCallGraph = cha.addClass(cg, newClass);
+
+    assertEquals(0, cg.callsTo(mainMethodSignature));
+    assertEquals(1, newCallGraph.callsTo(mainMethodSignature));
+
+    assertEquals(1, cg.callsTo(methodSignature));
+    assertEquals(3, newCallGraph.callsTo(methodSignature));
   }
 
   @Test

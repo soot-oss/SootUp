@@ -3,7 +3,7 @@ package nvc2;
 
 // import lib.annotations.callgraph.DirectCall;
 
-public class Class {
+class Class {
 
   public Class(){
 

@@ -1,6 +1,6 @@
-package example;
+package example1;
 
-public class Example {
+class Example {
 
   public static void main(String[] args) {
     A objB = new B();
