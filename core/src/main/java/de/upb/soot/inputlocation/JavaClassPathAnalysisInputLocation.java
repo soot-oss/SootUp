@@ -67,10 +67,8 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
    * path.
    *
    * @param classPath The class path to search in
+   * @param provider who knows how to retrieve the classes
    */
-  public JavaClassPathAnalysisInputLocation(@Nonnull String classPath) {
-    this(classPath, getDefaultClassProvider());
-  }
 
   public JavaClassPathAnalysisInputLocation(
       @Nonnull String classPath, @Nonnull ClassProvider provider) {
@@ -83,7 +81,7 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
     try {
       cpEntries =
           explode(classPath)
-              .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
+              .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp, provider)))
               .collect(Collectors.toList());
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
@@ -158,10 +156,10 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
     return Optional.empty();
   }
 
-  private @Nonnull Optional<AbstractAnalysisInputLocation> nsForPath(@Nonnull Path path) {
+  private @Nonnull Optional<AbstractAnalysisInputLocation> nsForPath(@Nonnull Path path, ClassProvider provider) {
     if (Files.exists(path)
         && (java.nio.file.Files.isDirectory(path) || PathUtils.isArchive(path))) {
-      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
+      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path, provider));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();
