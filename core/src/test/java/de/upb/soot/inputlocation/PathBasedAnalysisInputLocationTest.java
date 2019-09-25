@@ -23,6 +23,7 @@ package de.upb.soot.inputlocation;
  */
 
 import categories.Java8Test;
+import de.upb.soot.TestSettings;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
@@ -73,7 +74,7 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
   @Test
   public void testJar() {
     // TODO adapt to new testing folder structure
-    Path jar = Paths.get("target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
+    Path jar = Paths.get(TestSettings.jarFile);
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
     final JavaClassType sig =

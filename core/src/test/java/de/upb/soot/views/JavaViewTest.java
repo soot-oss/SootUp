@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
+import de.upb.soot.TestSettings;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
@@ -38,7 +39,7 @@ public class JavaViewTest {
 
   @Before
   public void initialize() {
-    String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
+    String jarFile = TestSettings.jarFile;
 
     assertTrue(new File(jarFile).exists());
 

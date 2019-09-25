@@ -1,0 +1,77 @@
+package de.upb.soot.javasourcecodefrontend.frontend;
+
+import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+import de.upb.soot.core.Modifier;
+import de.upb.soot.core.SootMethod;
+import de.upb.soot.frontends.MethodSource;
+import de.upb.soot.frontends.OverridingMethodSource;
+import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.types.JavaClassType;
+import java.util.function.Function;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+public class WalaSootMethod extends SootMethod {
+
+  @Nullable private final DebuggingInformation debugInfo;
+
+  /**
+   * Constructs a SootMethod object with the given attributes.
+   *
+   * @param source
+   * @param methodSignature
+   * @param modifiers
+   * @param thrownExceptions
+   */
+  public WalaSootMethod(
+      @Nonnull MethodSource source,
+      @Nonnull MethodSignature methodSignature,
+      @Nonnull Iterable<Modifier> modifiers,
+      @Nonnull Iterable<JavaClassType> thrownExceptions,
+      DebuggingInformation debugInfo) {
+    super(source, methodSignature, modifiers, thrownExceptions);
+    this.debugInfo = debugInfo;
+  }
+
+  public int getJavaSourceStartLineNumber() {
+    return debugInfo.getCodeBodyPosition().getFirstLine();
+  }
+
+  @Nullable
+  public DebuggingInformation getDebugInfo() {
+    return this.debugInfo;
+  }
+
+  @Nonnull
+  public SootMethod withOverridingMethodSource(
+      Function<OverridingMethodSource, OverridingMethodSource> overrider) {
+    return new WalaSootMethod(
+        overrider.apply(new OverridingMethodSource(methodSource)),
+        getSignature(),
+        getModifiers(),
+        exceptions,
+        debugInfo);
+  }
+
+  // TODO: check if withers are used by javasourcecodefrontend
+  @Nonnull
+  public SootMethod withSource(MethodSource source) {
+    return new WalaSootMethod(source, getSignature(), getModifiers(), exceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withModifiers(Iterable<Modifier> modifiers) {
+    return new WalaSootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withThrownExceptions(Iterable<JavaClassType> thrownExceptions) {
+    return new WalaSootMethod(
+        methodSource, getSignature(), getModifiers(), thrownExceptions, debugInfo);
+  }
+
+  @Nonnull
+  public SootMethod withDebugInfo(DebuggingInformation debugInfo) {
+    return new WalaSootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
+  }
+}

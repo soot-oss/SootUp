@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Project;
+import de.upb.soot.TestSettings;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.jimple.basic.Local;
@@ -28,7 +29,7 @@ public class MethodDispatchResolverTest {
 
   @Before
   public void setUp() {
-    String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
+    String jarFile = TestSettings.jarFile;
     assertTrue(new File(jarFile).exists());
     String currentClassPath =
         System.getProperty("java.class.path")

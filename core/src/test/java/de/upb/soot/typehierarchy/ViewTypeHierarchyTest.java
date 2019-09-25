@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Project;
+import de.upb.soot.TestSettings;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SourceType;
@@ -47,7 +48,7 @@ public class ViewTypeHierarchyTest {
 
   @Before
   public void setup() {
-    String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
+    String jarFile = TestSettings.jarFile;
     assertTrue(new File(jarFile).exists());
     String currentClassPath =
         System.getProperty("java.class.path")

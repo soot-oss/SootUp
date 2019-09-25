@@ -51,7 +51,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  * @author Jan Martin Persch
  */
-public final class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
+public class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
 
   @Nonnull protected static final String CONSTRUCTOR_NAME = "<init>";
   @Nonnull protected static final String STATIC_INITIALIZER_NAME = "<clinit>";
