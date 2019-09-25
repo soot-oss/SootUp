@@ -39,7 +39,7 @@ public class ThrowExceptionMethodTest {
                 "divide",
                 loadClassesWithWala.declareClassSig,
                 "void",
-                Collections.emptyList())); //How to check for exceptions in method signature
+                Collections.emptyList())); // How to check for exceptions in method signature
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -52,10 +52,7 @@ public class ThrowExceptionMethodTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of(
-                "r0 := @this: ThrowExceptionMethod",
-                "$s0 := 8/0",
-                "return")
+        Stream.of("r0 := @this: ThrowExceptionMethod", "$s0 := 8/0", "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
@@ -70,7 +67,7 @@ public class ThrowExceptionMethodTest {
                 "divideByZero",
                 loadClassesWithWala.declareClassSig,
                 "void",
-                Collections.emptyList())); //How to check for exceptions in method signature
+                Collections.emptyList())); // How to check for exceptions in method signature
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -83,10 +80,7 @@ public class ThrowExceptionMethodTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of(
-            "r0 := @this: ThrowExceptionMethod",
-            "$s0 := 8/0",
-            "return")
+        Stream.of("r0 := @this: ThrowExceptionMethod", "$s0 := 8/0", "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
