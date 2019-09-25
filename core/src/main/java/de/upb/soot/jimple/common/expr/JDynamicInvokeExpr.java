@@ -40,7 +40,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import org.objectweb.asm.Opcodes;
 
 public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copyable {
 
@@ -86,7 +85,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
         bootstrapMethodSignature,
         bootstrapArgs,
         methodSignature,
-        Opcodes.H_INVOKESTATIC,
+        6,  // its Opcodes.H_INVOKESTATIC
         methodArgs);
   }
 
