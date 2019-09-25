@@ -34,8 +34,7 @@ public class JavaViewTest {
   private List<JavaClassType> signatures;
   private JavaView<AnalysisInputLocation> view;
 
-  public static final String jarFile =
-      "target/Soot-4.0.0-SNAPSHOT-shaded.pom"; // "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
+  public static final String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
 
   @Before
   public void initialize() {
