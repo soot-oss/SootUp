@@ -1,4 +1,4 @@
-package de.upb.soot.bytecodefrontend.frontend;
+package de.upb.soot.javabytecodefrontend.frontend;
 
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.IdentifierFactory;

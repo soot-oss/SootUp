@@ -1,4 +1,4 @@
-package de.upb.soot.bytecodefrontend.frontend;
+package de.upb.soot.javabytecodefrontend.frontend;
 
 import static org.objectweb.asm.tree.AbstractInsnNode.FIELD_INSN;
 import static org.objectweb.asm.tree.AbstractInsnNode.FRAME;

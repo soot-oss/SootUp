@@ -1,4 +1,4 @@
-package de.upb.soot.bytecodefrontend.frontend;
+package de.upb.soot.javabytecodefrontend.frontend;
 
 import static org.junit.Assert.assertTrue;
 
@@ -109,7 +109,7 @@ public class ModuleCompositionTest {
         new SootClass(
             new EagerJavaClassSource(
                 new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
-                    Paths.get("irrelevant-test-path/")),
+                    Paths.get("irrelevant-test-path/"), new AsmJavaClassProvider()),
                 null,
                 classSignature,
                 null,

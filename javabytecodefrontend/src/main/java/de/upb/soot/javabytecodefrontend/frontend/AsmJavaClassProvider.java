@@ -1,10 +1,10 @@
-package de.upb.soot.bytecodefrontend.frontend;
+package de.upb.soot.javabytecodefrontend.frontend;
 
-import de.upb.soot.bytecodefrontend.frontend.modules.AsmModuleClassSource;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.inputlocation.FileType;
+import de.upb.soot.javabytecodefrontend.frontend.modules.AsmModuleClassSource;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;

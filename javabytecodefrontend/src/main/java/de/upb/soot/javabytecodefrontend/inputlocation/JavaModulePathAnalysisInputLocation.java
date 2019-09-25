@@ -1,4 +1,4 @@
-package de.upb.soot.inputlocation;
+package de.upb.soot.javabytecodefrontend.inputlocation;
 
 import com.google.common.base.Preconditions;
 import de.upb.soot.IdentifierFactory;
@@ -7,6 +7,10 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.inputlocation.ClassResolvingException;
+import de.upb.soot.inputlocation.JrtFileSystemAnalysisInputLocation;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
@@ -42,10 +46,6 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
       LoggerFactory.getLogger(JavaModulePathAnalysisInputLocation.class);
 
   private final ModuleFinder moduleFinder;
-
-  public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
-    this(modulePath, getDefaultClassProvider());
-  }
 
   /**
    * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module

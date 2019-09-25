@@ -2,7 +2,6 @@ package de.upb.soot.inputlocation;
 
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
-import de.upb.soot.frontends.asm.AsmJavaClassProvider;
 import de.upb.soot.types.JavaClassType;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -69,17 +68,6 @@ public abstract class AbstractAnalysisInputLocation implements AnalysisInputLoca
    *
    * return getClassSource(classSignature).map(cs -> classProvider.getSootClass(cs)); }
    */
-
-  /**
-   * Constructs a default class provider for use with input locations. Currently, this provides an
-   * instance of {@link AsmJavaClassProvider} to read Java Bytecode. This might be more brilliant in
-   * the future.
-   *
-   * @return An instance of {@link ClassProvider} to be used.
-   */
-  protected static @Nonnull ClassProvider getDefaultClassProvider() {
-    return new AsmJavaClassProvider();
-  }
 
   @Override
   public abstract @Nonnull Optional<? extends AbstractClassSource> getClassSource(

@@ -31,7 +31,7 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
 
   private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
-  protected JrtFileSystemAnalysisInputLocation(ClassProvider classProvider) {
+  public JrtFileSystemAnalysisInputLocation(ClassProvider classProvider) {
     super(classProvider);
   }
 

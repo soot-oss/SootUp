@@ -52,10 +52,6 @@ import javax.annotation.Nonnull;
 public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInputLocation {
   protected final Path path;
 
-  private PathBasedAnalysisInputLocation(@Nonnull Path path) {
-    this(path, getDefaultClassProvider());
-  }
-
   private PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull ClassProvider classProvider) {
     super(classProvider);
     this.path = path;
@@ -70,11 +66,11 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
    *     Path}'s {@link FileSystem}
    */
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
-      @Nonnull Path path) {
+      @Nonnull Path path, ClassProvider classProvider) {
     if (Files.isDirectory(path)) {
-      return new DirectoryBasedAnalysisInputLocation(path);
+      return new DirectoryBasedAnalysisInputLocation(path, classProvider);
     } else if (PathUtils.isArchive(path)) {
-      return new ArchiveBasedAnalysisInputLocation(path);
+      return new ArchiveBasedAnalysisInputLocation(path, classProvider);
     } else {
       throw new IllegalArgumentException(
           "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, etc.");
@@ -114,8 +110,9 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
   public static final class DirectoryBasedAnalysisInputLocation
       extends PathBasedAnalysisInputLocation {
 
-    public DirectoryBasedAnalysisInputLocation(@Nonnull Path path) {
-      super(path);
+    public DirectoryBasedAnalysisInputLocation(
+        @Nonnull Path path, @Nonnull ClassProvider classProvider) {
+      super(path, classProvider);
     }
 
     @Override
@@ -159,8 +156,9 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
                       }
                     }));
 
-    private ArchiveBasedAnalysisInputLocation(@Nonnull Path path) {
-      super(path);
+    private ArchiveBasedAnalysisInputLocation(
+        @Nonnull Path path, @Nonnull ClassProvider classProvider) {
+      super(path, classProvider);
     }
 
     @Override
