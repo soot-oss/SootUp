@@ -1,10 +1,10 @@
-package de.upb.soot.frontends.asm.modules;
+package de.upb.soot.bytecodefrontend.frontend.modules;
 
+import de.upb.soot.bytecodefrontend.frontend.AsmUtil;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.Position;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.frontends.ModuleClassSource;
-import de.upb.soot.frontends.asm.AsmUtil;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;

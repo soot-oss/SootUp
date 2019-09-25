@@ -1,11 +1,10 @@
-package de.upb.soot.frontends.asm;
+package de.upb.soot.bytecodefrontend.frontend;
 
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
-import de.upb.soot.TestSettings;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
@@ -45,7 +44,7 @@ public class ModuleCompositionTest {
     // System.out.println("--- EXAMPLE 1: On-Demand Loading ---");
     // System.out.println();
 
-    String jarFile = TestSettings.jarFile;
+    String jarFile = "target/Soot-4.0.0-SNAPSHOT-shaded.pom";
 
     assertTrue(new File(jarFile).exists());
 

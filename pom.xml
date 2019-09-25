@@ -12,8 +12,8 @@
     <modules>
         <module>core</module>
         <module>javasourcecodefrontend</module>
-        <!--
         <module>javabytecodefrontend</module>
+        <!--
         <module>callgraph</module>
         -->
     </modules>
@@ -283,18 +283,6 @@
             <artifactId>powermock-api-mockito</artifactId>
             <version>${powermock-api-mockito.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <!-- asm bytecode frontend -->
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-util</artifactId>
-            <version>7.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-commons</artifactId>
-            <version>7.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor -->

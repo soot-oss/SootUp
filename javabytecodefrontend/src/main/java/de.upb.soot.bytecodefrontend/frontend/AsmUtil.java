@@ -1,4 +1,4 @@
-package de.upb.soot.frontends.asm;
+package de.upb.soot.bytecodefrontend.frontend;
 
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Modifier;
