@@ -3,6 +3,7 @@ class InterfaceImplClass implements InterfaceImpl{
 
     void interfaceMethod(){
         System.out.print("Method from InterfaceImpl is implemented");
+        System.out.print("Variable from InterfaceImpl = "+a);
     };
 
 }

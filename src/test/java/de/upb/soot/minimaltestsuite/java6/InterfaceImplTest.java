@@ -20,9 +20,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class InterfaceImplClassTest {
+public class InterfaceImplTest {
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
-  private String className = "InterfaceImplClass";
+  private String className = "InterfaceImpl";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
   @Before
@@ -53,11 +53,10 @@ public class InterfaceImplClassTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InterfaceImplClass",
+                "r0 := @this: InterfaceClass",
                 "$r1 = <java.lang.System: java.io.PrintStream out>",
-                "$i0 = 10",
                 "virtualinvoke $r1.,java.io.PrintStream : void println (java.lang.String)>(\"Method from InterfaceImpl is implemented\")",
-                "virtualinvoke $r1.,java.io.PrintStream : void println (java.lang.String)>(\"Variable from InterfaceImpl = \"+$i0)",
+                "$i0 = 10",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
