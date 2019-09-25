@@ -111,10 +111,10 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
     return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
   }
 
-  private static final class DirectoryBasedAnalysisInputLocation
+  public static final class DirectoryBasedAnalysisInputLocation
       extends PathBasedAnalysisInputLocation {
 
-    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path) {
+    public DirectoryBasedAnalysisInputLocation(@Nonnull Path path) {
       super(path);
     }
 

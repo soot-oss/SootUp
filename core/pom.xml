@@ -14,4 +14,15 @@
     <version>4.0.0-SNAPSHOT</version>
   </parent>
 
+  <dependencies>
+    <!-- cyclic dependency! TODO: think about restructuring tests..
+      <dependency>
+      <groupId>de.upb</groupId>
+      <artifactId>JavaSourcecodeFrontend</artifactId>
+      <version>4.0.0-SNAPSHOT </version>
+      <scope>test</scope>
+    </dependency>
+    -->
+  </dependencies>
+
 </project>

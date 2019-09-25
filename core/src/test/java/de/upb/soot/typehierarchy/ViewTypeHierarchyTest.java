@@ -15,7 +15,7 @@ import de.upb.soot.Project;
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SourceType;
-import de.upb.soot.frontends.java.EagerJavaClassSource;
+import de.upb.soot.frontends.EagerJavaClassSource;
 import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;

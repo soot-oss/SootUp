@@ -25,7 +25,6 @@ import static de.upb.soot.util.ImmutableUtils.immutableListOf;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
-import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import de.upb.soot.frontends.MethodSource;
 import de.upb.soot.frontends.OverridingMethodSource;
 import de.upb.soot.frontends.ResolveException;
@@ -54,38 +53,31 @@ import javax.annotation.Nullable;
  */
 public final class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
 
-  @Nonnull private static final String CONSTRUCTOR_NAME = "<init>";
-  @Nonnull private static final String STATIC_INITIALIZER_NAME = "<clinit>";
+  @Nonnull protected static final String CONSTRUCTOR_NAME = "<init>";
+  @Nonnull protected static final String STATIC_INITIALIZER_NAME = "<clinit>";
 
-  @Nullable private final DebuggingInformation debugInfo;
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
    */
-  @Nonnull private final ImmutableList<Type> parameterTypes;
+  @Nonnull protected final ImmutableList<Type> parameterTypes;
 
   /** Declared exceptions thrown by this methodRef. Created upon demand. */
   @Nonnull protected final ImmutableList<JavaClassType> exceptions;
 
   /** Tells this methodRef how to find out where its body lives. */
-  @Nonnull private final MethodSource methodSource;
+  @Nonnull protected final MethodSource methodSource;
 
   /** Constructs a SootMethod object with the given attributes. */
   public SootMethod(
       @Nonnull MethodSource source,
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
-      @Nonnull Iterable<JavaClassType> thrownExceptions,
-      @Nullable
-          DebuggingInformation
-              debugInfo // FIXME: remove Wala DebuggingInformation from this Class, IMHO it does not
-      // belong to a sootmethod
-      ) {
+      @Nonnull Iterable<JavaClassType> thrownExceptions) {
     super(methodSignature, modifiers);
 
     this.methodSource = source;
     this.parameterTypes = immutableListOf(methodSignature.getParameterSignatures());
     this.exceptions = immutableListOf(thrownExceptions);
-    this.debugInfo = debugInfo;
   }
 
   @Nullable
@@ -236,15 +228,6 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
     return builder.toString().intern();
   }
 
-  public int getJavaSourceStartLineNumber() {
-    return debugInfo.getCodeBodyPosition().getFirstLine();
-  }
-
-  @Nullable
-  public DebuggingInformation getDebugInfo() {
-    return this.debugInfo;
-  }
-
   /**
    * Creates a new SootMethod based on a new {@link OverridingMethodSource}. This is useful to
    * change selected parts of a {@link SootMethod} without recreating a {@link MethodSource}
@@ -257,29 +240,22 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
         overrider.apply(new OverridingMethodSource(methodSource)),
         getSignature(),
         getModifiers(),
-        exceptions,
-        debugInfo);
+        exceptions);
   }
 
   @Nonnull
   public SootMethod withSource(MethodSource source) {
-    return new SootMethod(source, getSignature(), getModifiers(), exceptions, debugInfo);
+    return new SootMethod(source, getSignature(), getModifiers(), exceptions);
   }
 
   @Nonnull
   public SootMethod withModifiers(Iterable<Modifier> modifiers) {
-    return new SootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
+    return new SootMethod(methodSource, getSignature(), getModifiers(), exceptions);
   }
 
   @Nonnull
   public SootMethod withThrownExceptions(Iterable<JavaClassType> thrownExceptions) {
-    return new SootMethod(
-        methodSource, getSignature(), getModifiers(), thrownExceptions, debugInfo);
-  }
-
-  @Nonnull
-  public SootMethod withDebugInfo(DebuggingInformation debugInfo) {
-    return new SootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
+    return new SootMethod(methodSource, getSignature(), getModifiers(), thrownExceptions);
   }
 
   /**
@@ -323,7 +299,7 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
 
     interface ModifiersStep extends SootClassMember.Builder.ModifiersStep<ThrownExceptionsStep> {}
 
-    interface ThrownExceptionsStep extends DebugStep {
+    interface ThrownExceptionsStep extends Builder {
       /**
        * Sets the exceptions thrown by the method to build. This step is optional.
        *
@@ -331,18 +307,7 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
        * @return This fluent builder.
        */
       @Nonnull
-      DebugStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value);
-    }
-
-    interface DebugStep extends Builder {
-      /**
-       * Sets debugging information. This step is optional.
-       *
-       * @param value The value to set.
-       * @return This fluent builder.
-       */
-      @Nonnull
-      Builder withDebugInfo(@Nullable DebuggingInformation value);
+      Builder withThrownExceptions(@Nonnull Iterable<JavaClassType> value);
     }
 
     /**
@@ -366,22 +331,12 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
           Builder.MethodSignatureStep,
           Builder.ModifiersStep,
           Builder.ThrownExceptionsStep,
-          Builder.DebugStep,
           Builder {
-    // region Fields
-
-    // endregion /Fields/
-
-    // region Constructor
 
     /** Creates a new instance of the {@link SootMethodBuilder} class. */
     SootMethodBuilder() {
       super(SootMethod.class);
     }
-
-    // endregion /Constructor/
-
-    // region Properties
 
     @Nullable private MethodSource _source;
 
@@ -473,47 +428,17 @@ public final class SootMethod extends SootClassMember<MethodSignature> implement
      * @param value The value to set.
      */
     @Nonnull
-    public DebugStep withThrownExceptions(@Nonnull Iterable<JavaClassType> value) {
+    public Builder withThrownExceptions(@Nonnull Iterable<JavaClassType> value) {
       this._thrownExceptions = value;
 
       return this;
     }
 
-    @Nullable private DebuggingInformation _debugInfo;
-
-    /**
-     * Gets the debugging information.
-     *
-     * @return The value to get.
-     */
-    @Nullable
-    protected DebuggingInformation getDebugInfo() {
-      return this._debugInfo;
-    }
-
-    /** Sets the debugging information. */
-    @Nonnull
-    public Builder withDebugInfo(@Nullable DebuggingInformation value) {
-      this._debugInfo = value;
-
-      return this;
-    }
-
-    // endregion /Properties/
-
-    // region Methods
-
     @Override
     @Nonnull
     protected SootMethod make() {
       return new SootMethod(
-          this.getSource(),
-          this.getSignature(),
-          this.getModifiers(),
-          this.getThrownExceptions(),
-          this.getDebugInfo());
+          this.getSource(), this.getSignature(), this.getModifiers(), this.getThrownExceptions());
     }
-
-    // endregion /Methods/
   }
 }

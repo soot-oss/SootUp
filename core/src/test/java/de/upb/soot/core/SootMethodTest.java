@@ -6,9 +6,9 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.Project;
-import de.upb.soot.frontends.java.EagerJavaClassSource;
-import de.upb.soot.frontends.java.WalaIRMethodSource;
-import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
+import de.upb.soot.frontends.EagerJavaClassSource;
+import de.upb.soot.frontends.EagerMethodSource;
+import de.upb.soot.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.PositionInfo;
@@ -17,6 +17,7 @@ import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.JavaView;
 import de.upb.soot.views.View;
+import java.nio.file.Paths;
 import java.util.*;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -53,16 +54,16 @@ public class SootMethodTest {
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     SootMethod dummyMainMethod =
         new SootMethod(
-            new WalaIRMethodSource(methodSignature, body),
+            new EagerMethodSource(methodSignature, body),
             methodSignature,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
-            Collections.emptyList(),
-            null);
+            Collections.emptyList());
 
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new JavaSourcePathAnalysisInputLocation(Collections.emptySet()),
+                new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
+                    Paths.get("irrelevant-test-path/")),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),
                 null,

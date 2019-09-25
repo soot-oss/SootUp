@@ -21,7 +21,6 @@ package de.upb.soot.core;
  * #L%
  */
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
 import de.upb.soot.jimple.basic.StmtBox;

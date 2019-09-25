@@ -1,7 +1,7 @@
 package de.upb.soot.frontends;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.core.Modifier;
+import de.upb.soot.core.Position;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.types.JavaClassType;

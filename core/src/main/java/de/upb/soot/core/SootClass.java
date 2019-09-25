@@ -23,7 +23,6 @@ package de.upb.soot.core;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.frontends.OverridingClassSource;
 import de.upb.soot.frontends.ResolveException;

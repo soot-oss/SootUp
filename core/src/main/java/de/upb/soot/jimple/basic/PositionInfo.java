@@ -1,7 +1,6 @@
 package de.upb.soot.jimple.basic;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
-import com.ibm.wala.cast.tree.impl.LineNumberPosition;
+import de.upb.soot.core.Position;
 import de.upb.soot.util.Copyable;
 import javax.annotation.Nonnull;
 
@@ -29,7 +28,7 @@ public final class PositionInfo implements Copyable {
    * @param lineNumber the line number of the statement.
    */
   public PositionInfo(int lineNumber) {
-    this.stmtPosition = new LineNumberPosition(null, null, lineNumber);
+    this.stmtPosition = new Position(lineNumber, -1, lineNumber, -1);
     this.operandPositions = null;
   }
 

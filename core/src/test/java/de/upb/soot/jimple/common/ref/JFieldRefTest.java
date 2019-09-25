@@ -10,14 +10,15 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SourceType;
-import de.upb.soot.frontends.java.EagerJavaClassSource;
-import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
+import de.upb.soot.frontends.EagerJavaClassSource;
+import de.upb.soot.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.JavaView;
 import de.upb.soot.views.View;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.EnumSet;
 import org.junit.Test;
@@ -40,7 +41,8 @@ public class JFieldRefTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new JavaSourcePathAnalysisInputLocation(Collections.emptySet()),
+                new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
+                    Paths.get("irrelevant-test-path/")),
                 null,
                 declaringClassSignature,
                 null,
@@ -73,7 +75,8 @@ public class JFieldRefTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new JavaSourcePathAnalysisInputLocation(Collections.emptySet()),
+                new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
+                    Paths.get("irrelevant-test-path/")),
                 null,
                 declaringClassSignature,
                 null,

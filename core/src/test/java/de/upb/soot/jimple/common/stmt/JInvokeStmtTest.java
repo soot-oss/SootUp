@@ -25,7 +25,7 @@ package de.upb.soot.jimple.common.stmt;
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.*;
-import de.upb.soot.frontends.java.EagerJavaClassSource;
+import de.upb.soot.frontends.EagerJavaClassSource;
 import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.NoPositionInformation;

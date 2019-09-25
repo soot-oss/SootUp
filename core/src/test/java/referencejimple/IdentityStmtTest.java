@@ -1,6 +1,5 @@
 package referencejimple;
 
-import com.ibm.wala.cast.loader.AstMethod;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.Modifier;
@@ -8,8 +7,9 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SourceType;
+import de.upb.soot.frontends.EagerJavaClassSource;
+import de.upb.soot.frontends.EagerMethodSource;
 import de.upb.soot.frontends.MethodSource;
-import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
@@ -32,27 +32,6 @@ import java.util.*;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */
-class DummyMethodSource implements MethodSource {
-  private Body body;
-  private MethodSignature methodSignature;
-
-  public DummyMethodSource(MethodSignature methodSignature, Body body) {
-    this.body = body;
-    this.methodSignature = methodSignature;
-  }
-
-  @Override
-  public Body resolveBody() {
-    return body;
-  }
-
-  @Nonnull
-  @Override
-  public MethodSignature getSignature() {
-    return methodSignature;
-  }
-}
-
 public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
   JavaClassType classSignature;
@@ -114,7 +93,6 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     MethodSignature methodSignature =
         dif.getMethodSignature(
             "<init>", classSignature, VoidType.getInstance().toString(), Arrays.asList(""));
-    AstMethod.DebuggingInformation debugInfo = null;
 
     HashSet<Local> locals = new HashSet<>();
     List<Trap> traps = new LinkedList<>();
@@ -136,14 +114,10 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     stmts.add(Jimple.newReturnVoidStmt(nop));
 
     Body body = new Body(locals, traps, stmts, new NoPositionInformation());
-    MethodSource methodSource = new DummyMethodSource(methodSignature, body);
+    MethodSource methodSource = new EagerMethodSource(methodSignature, body);
 
     return new SootMethod(
-        methodSource,
-        methodSignature,
-        EnumSet.of(Modifier.PUBLIC),
-        Collections.emptyList(),
-        debugInfo);
+        methodSource, methodSignature, EnumSet.of(Modifier.PUBLIC), Collections.emptyList());
   }
 
   /*

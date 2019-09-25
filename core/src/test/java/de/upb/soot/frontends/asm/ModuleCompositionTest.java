@@ -11,10 +11,10 @@ import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SourceType;
+import de.upb.soot.frontends.EagerJavaClassSource;
 import de.upb.soot.frontends.MethodSource;
-import de.upb.soot.frontends.java.EagerJavaClassSource;
 import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
-import de.upb.soot.inputlocation.JavaSourcePathAnalysisInputLocation;
+import de.upb.soot.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
@@ -22,7 +22,7 @@ import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.ImmutableUtils;
 import de.upb.soot.views.View;
 import java.io.File;
-import java.util.Collections;
+import java.nio.file.Paths;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -108,7 +108,8 @@ public class ModuleCompositionTest {
     SootClass c =
         new SootClass(
             new EagerJavaClassSource(
-                new JavaSourcePathAnalysisInputLocation(Collections.emptySet()),
+                new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
+                    Paths.get("irrelevant-test-path/")),
                 null,
                 classSignature,
                 null,

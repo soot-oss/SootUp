@@ -2,8 +2,8 @@ package de.upb.soot.frontends;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import de.upb.soot.core.Modifier;
+import de.upb.soot.core.Position;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
@@ -62,5 +62,5 @@ public abstract class ClassSource extends AbstractClassSource {
   @Nonnull
   public abstract Optional<JavaClassType> resolveOuterClass();
 
-  public abstract CAstSourcePositionMap.Position resolvePosition();
+  public abstract Position resolvePosition();
 }

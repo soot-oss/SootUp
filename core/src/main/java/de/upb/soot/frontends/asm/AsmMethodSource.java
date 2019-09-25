@@ -22,10 +22,10 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
-import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.core.Body;
 import de.upb.soot.core.Modifier;
+import de.upb.soot.core.Position;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.MethodSource;
 import de.upb.soot.jimple.Jimple;
@@ -199,7 +199,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
     List<Stmt> bodyStmts = new ArrayList<>();
     // FIXME: add real line number
     // why do we use wala here?
-    CAstSourcePositionMap.Position bodyPos = null;
+    Position bodyPos = null;
 
     /* initialize */
     int nrInsn = instructions.size();

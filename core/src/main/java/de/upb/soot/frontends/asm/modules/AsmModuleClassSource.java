@@ -1,7 +1,7 @@
 package de.upb.soot.frontends.asm.modules;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import de.upb.soot.core.Modifier;
+import de.upb.soot.core.Position;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.frontends.ModuleClassSource;
 import de.upb.soot.frontends.asm.AsmUtil;
@@ -134,7 +134,7 @@ public class AsmModuleClassSource extends ModuleClassSource {
   }
 
   @Override
-  public CAstSourcePositionMap.Position resolvePosition() {
+  public Position resolvePosition() {
     return null;
   }
 }

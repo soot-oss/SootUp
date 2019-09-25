@@ -1,9 +1,9 @@
 package de.upb.soot.frontends.asm;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.core.Modifier;
+import de.upb.soot.core.Position;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
 import de.upb.soot.frontends.ClassSource;
@@ -130,7 +130,7 @@ class AsmClassSource extends ClassSource {
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
   }
 
-  public CAstSourcePositionMap.Position resolvePosition() {
+  public Position resolvePosition() {
     // FIXME: what is this??? the source code line number of the complete file?
     return null;
   }

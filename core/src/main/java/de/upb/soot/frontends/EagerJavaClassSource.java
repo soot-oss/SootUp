@@ -1,11 +1,9 @@
-package de.upb.soot.frontends.java;
+package de.upb.soot.frontends;
 
-import com.ibm.wala.cast.tree.CAstSourcePositionMap.Position;
 import de.upb.soot.core.Modifier;
+import de.upb.soot.core.Position;
 import de.upb.soot.core.SootField;
 import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
@@ -17,7 +15,8 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * A class source for resolving from .java files using wala java source front-end.
+ * A class source for resolving classes that are batchparsed like .java files using wala java source
+ * frontend or in tests.
  *
  * @author Linghui Luo
  */
@@ -128,7 +127,7 @@ public class EagerJavaClassSource extends ClassSource {
 
   @Override
   public String toString() {
-    return "EagerJavaClassSource{"
+    return "frontend.EagerJavaClassSource{"
         + "superClass="
         + superClass
         + ", interfaces="
