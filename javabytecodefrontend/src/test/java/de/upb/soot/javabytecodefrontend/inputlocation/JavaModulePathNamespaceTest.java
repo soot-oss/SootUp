@@ -1,4 +1,4 @@
-package de.upb.soot.inputlocation;
+package de.upb.soot.javabytecodefrontend.inputlocation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

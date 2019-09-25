@@ -1,4 +1,4 @@
-package de.upb.soot.typehierarchy;
+package de.upb.soot.callgraph.typehierarchy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Project;
-import de.upb.soot.TestSettings;
 import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.jimple.basic.Local;
@@ -26,10 +25,11 @@ import org.junit.Test;
 public class MethodDispatchResolverTest {
 
   private View view;
+  public static final String jarFile =
+      "target/Soot-4.0.0-SNAPSHOT-shaded.pom"; // "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
 
   @Before
   public void setUp() {
-    String jarFile = TestSettings.jarFile;
     assertTrue(new File(jarFile).exists());
     String currentClassPath =
         System.getProperty("java.class.path")

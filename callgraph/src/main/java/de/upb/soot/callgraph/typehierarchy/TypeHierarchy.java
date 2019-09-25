@@ -1,4 +1,4 @@
-package de.upb.soot.typehierarchy;
+package de.upb.soot.callgraph.typehierarchy;
 
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;

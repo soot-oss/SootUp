@@ -1,6 +1,5 @@
 package de.upb.soot.views;
 
-import com.google.common.base.Suppliers;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Options;
 import de.upb.soot.Project;
@@ -8,11 +7,7 @@ import de.upb.soot.Scope;
 import de.upb.soot.callgraph.CallGraph;
 import de.upb.soot.callgraph.CallGraphAlgorithm;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
-import de.upb.soot.typehierarchy.$ViewTypeHierarchyAccessor;
-import de.upb.soot.typehierarchy.MutableTypeHierarchy;
-import de.upb.soot.typehierarchy.TypeHierarchy;
 import java.util.Optional;
-import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
 /**
@@ -26,9 +21,11 @@ public abstract class AbstractView<S extends AnalysisInputLocation> implements V
 
   @Nonnull private final Options options = new Options();
 
-  private final Supplier<MutableTypeHierarchy> lazyTypeHierarchy =
-      Suppliers.memoize(() -> $ViewTypeHierarchyAccessor.createViewTypeHierarchy(this));
-
+  // TODO: uncomment!
+  /*
+    private final Supplier<MutableTypeHierarchy> lazyTypeHierarchy =
+        Suppliers.memoize(() -> $ViewTypeHierarchyAccessor.createViewTypeHierarchy(this));
+  */
   public AbstractView(@Nonnull Project<S> project) {
     this.project = project;
   }
@@ -53,12 +50,14 @@ public abstract class AbstractView<S extends AnalysisInputLocation> implements V
     return null;
   }
 
-  @Override
-  @Nonnull
-  public TypeHierarchy typeHierarchy() {
-    return lazyTypeHierarchy.get();
-  }
-
+  // TODO: uncomment!
+  /*
+    @Override
+    @Nonnull
+    public TypeHierarchy typeHierarchy() {
+      return lazyTypeHierarchy.get();
+    }
+  */
   @Override
   @Nonnull
   public Optional<Scope> getScope() {

@@ -31,12 +31,11 @@ import de.upb.soot.jimple.visitor.ConstantVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.Type;
-import jdk.internal.org.objectweb.asm.Opcodes;
 
 public class MethodHandle implements Constant {
 
   public enum Kind {
-    REF_GET_FIELD( 1, "REF_GET_FIELD"),
+    REF_GET_FIELD(1, "REF_GET_FIELD"),
     REF_GET_FIELD_STATIC(2, "REF_GET_FIELD_STATIC"),
     REF_PUT_FIELD(3, "REF_PUT_FIELD"),
     REF_PUT_FIELD_STATIC(4, "REF_PUT_FIELD_STATIC"),

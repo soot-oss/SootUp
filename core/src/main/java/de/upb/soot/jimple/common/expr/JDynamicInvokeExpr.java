@@ -85,7 +85,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
         bootstrapMethodSignature,
         bootstrapArgs,
         methodSignature,
-        6,  // its Opcodes.H_INVOKESTATIC
+        6, // its Opcodes.H_INVOKESTATIC
         methodArgs);
   }
 

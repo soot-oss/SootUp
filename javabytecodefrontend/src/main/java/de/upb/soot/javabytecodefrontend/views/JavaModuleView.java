@@ -8,12 +8,11 @@ import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.javabytecodefrontend.inputlocation.JavaModulePathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
+import de.upb.soot.views.View;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-
-import de.upb.soot.views.View;
 import org.apache.commons.lang3.tuple.Pair;
 
 public abstract class JavaModuleView implements View {

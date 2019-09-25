@@ -13,9 +13,7 @@
         <module>core</module>
         <module>javasourcecodefrontend</module>
         <module>javabytecodefrontend</module>
-        <!--
         <module>callgraph</module>
-        -->
     </modules>
 
     <version>4.0.0-SNAPSHOT</version>

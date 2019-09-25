@@ -1,11 +1,12 @@
-package de.upb.soot.inputlocation;
+package de.upb.soot.javabytecodefrontend.inputlocation;
 
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
-import de.upb.soot.frontends.asm.AsmJavaClassProvider;
+import de.upb.soot.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
@@ -40,6 +41,9 @@ import org.mockito.internal.matchers.LessOrEqual;
 /** @author Manuel Benz created on 07.06.18 */
 @Category(Java8Test.class)
 public abstract class AbstractAnalysisInputLocationTest {
+
+  public static final String jarFile =
+      "target/Soot-4.0.0-SNAPSHOT-shaded.pom"; // "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
 
   protected static final int CLASSES_IN_JAR = 25;
   private IdentifierFactory identifierFactory;

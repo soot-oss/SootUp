@@ -1,5 +1,6 @@
 package de.upb.soot.views;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -7,17 +8,13 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
-import de.upb.soot.Project;
-import de.upb.soot.TestSettings;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
-import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.Type;
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,12 +34,17 @@ public class JavaViewTest {
   private List<JavaClassType> signatures;
   private JavaView<AnalysisInputLocation> view;
 
+  public static final String jarFile =
+      "target/Soot-4.0.0-SNAPSHOT-shaded.pom"; // "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
+
   @Before
   public void initialize() {
-    String jarFile = TestSettings.jarFile;
 
     assertTrue(new File(jarFile).exists());
 
+    fail(" fails due to dependency to asm - rewrite test to allow multimodule maven");
+    // TODO: uncomment!
+    /*
     JavaClassPathAnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile);
 
@@ -56,6 +58,8 @@ public class JavaViewTest {
     Project<AnalysisInputLocation> project = new Project<>(inputLocation);
 
     this.view = new JavaView<>(project);
+
+     */
   }
 
   @Test

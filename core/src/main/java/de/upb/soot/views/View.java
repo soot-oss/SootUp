@@ -7,7 +7,6 @@ import de.upb.soot.callgraph.CallGraph;
 import de.upb.soot.callgraph.CallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.typehierarchy.TypeHierarchy;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
@@ -58,13 +57,10 @@ public interface View {
   CallGraph createCallGraph(CallGraphAlgorithm algorithm);
 
   /**
-   * Provides a type hierarchy.
+   * TODO: uncomment or restructure! Provides a type hierarchy.
    *
-   * @return A type hierarchy valid in the view
+   * @return A type hierarchy valid in the view @Nonnull TypeHierarchy typeHierarchy();
    */
-  @Nonnull
-  TypeHierarchy typeHierarchy();
-
   /**
    * Returns the scope if the view is scoped.
    *

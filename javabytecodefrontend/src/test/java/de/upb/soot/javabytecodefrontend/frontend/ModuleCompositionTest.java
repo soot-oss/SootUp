@@ -109,7 +109,7 @@ public class ModuleCompositionTest {
         new SootClass(
             new EagerJavaClassSource(
                 new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
-                    Paths.get("irrelevant-test-path/"), new AsmJavaClassProvider()),
+                    Paths.get("irrelevant-test-path/")),
                 null,
                 classSignature,
                 null,

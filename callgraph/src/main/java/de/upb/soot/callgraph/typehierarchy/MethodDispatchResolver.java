@@ -1,4 +1,4 @@
-package de.upb.soot.typehierarchy;
+package de.upb.soot.callgraph.typehierarchy;
 
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.Method;
@@ -22,7 +22,9 @@ public final class MethodDispatchResolver {
    */
   @Nonnull
   public static Set<MethodSignature> resolveAbstractDispatch(View view, MethodSignature m) {
-    TypeHierarchy hierarchy = view.typeHierarchy();
+
+    // TODO: restructure .typeHierarchy() from view to decouple it from core
+    TypeHierarchy hierarchy = null; // TODO: = view.typeHierarchy();
 
     return hierarchy.subtypesOf(m.getDeclClassType()).stream()
         .map(
@@ -64,7 +66,10 @@ public final class MethodDispatchResolver {
    */
   @Nonnull
   public static MethodSignature resolveConcreteDispatch(View view, MethodSignature m) {
-    TypeHierarchy hierarchy = view.typeHierarchy();
+
+    // TODO: restructure .typeHierarchy() from view to decouple it from core
+    TypeHierarchy hierarchy = null; // TODO: = view.typeHierarchy();
+
     JavaClassType superClassType = m.getDeclClassType();
     do {
       JavaClassType finalSuperClassType = superClassType;

@@ -1,4 +1,4 @@
-package de.upb.soot.inputlocation;
+package de.upb.soot.javabytecodefrontend.inputlocation;
 
 /*-
  * #%L
@@ -27,6 +27,9 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
+import de.upb.soot.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.inputlocation.PathUtils;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.StreamUtils;
 import java.io.File;
@@ -69,7 +72,6 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
    * @param classPath The class path to search in
    * @param provider who knows how to retrieve the classes
    */
-
   public JavaClassPathAnalysisInputLocation(
       @Nonnull String classPath, @Nonnull ClassProvider provider) {
     super(provider);
@@ -156,7 +158,8 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
     return Optional.empty();
   }
 
-  private @Nonnull Optional<AbstractAnalysisInputLocation> nsForPath(@Nonnull Path path, ClassProvider provider) {
+  private @Nonnull Optional<AbstractAnalysisInputLocation> nsForPath(
+      @Nonnull Path path, ClassProvider provider) {
     if (Files.exists(path)
         && (java.nio.file.Files.isDirectory(path) || PathUtils.isArchive(path))) {
       return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path, provider));

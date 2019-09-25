@@ -1,14 +1,14 @@
-package de.upb.soot.typehierarchy;
+package de.upb.soot.callgraph.typehierarchy;
 
 import com.google.common.base.Suppliers;
+import de.upb.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.Edge;
+import de.upb.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.EdgeType;
+import de.upb.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.Vertex;
+import de.upb.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.VertexType;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.Edge;
-import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.EdgeType;
-import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.Vertex;
-import de.upb.soot.typehierarchy.ViewTypeHierarchy.ScanResult.VertexType;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.View;
 import java.util.ArrayList;

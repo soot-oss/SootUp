@@ -1,4 +1,4 @@
-package de.upb.soot.inputlocation;
+package de.upb.soot.javabytecodefrontend.inputlocation;
 
 /*-
  * #%L
@@ -23,8 +23,8 @@ package de.upb.soot.inputlocation;
  */
 
 import categories.Java8Test;
-import de.upb.soot.TestSettings;
 import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -74,7 +74,7 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
   @Test
   public void testJar() {
     // TODO adapt to new testing folder structure
-    Path jar = Paths.get(TestSettings.jarFile);
+    Path jar = Paths.get(jarFile);
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
     final JavaClassType sig =

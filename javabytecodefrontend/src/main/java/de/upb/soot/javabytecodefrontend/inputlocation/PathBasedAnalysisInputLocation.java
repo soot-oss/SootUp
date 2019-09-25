@@ -1,4 +1,4 @@
-package de.upb.soot.inputlocation;
+package de.upb.soot.javabytecodefrontend.inputlocation;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -7,6 +7,10 @@ import com.google.common.cache.RemovalNotification;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
+import de.upb.soot.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.inputlocation.FileType;
+import de.upb.soot.inputlocation.PathUtils;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.StreamUtils;
 import java.io.IOException;

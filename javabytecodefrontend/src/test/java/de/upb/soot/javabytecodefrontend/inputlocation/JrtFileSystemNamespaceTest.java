@@ -1,4 +1,4 @@
-package de.upb.soot.inputlocation;
+package de.upb.soot.javabytecodefrontend.inputlocation;
 
 import categories.Java9Test;
 import de.upb.soot.ModuleIdentifierFactory;
