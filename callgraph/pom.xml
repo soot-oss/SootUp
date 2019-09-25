@@ -32,25 +32,13 @@
       <version>4.0.0-SNAPSHOT</version>
     </dependency>
 
+      <!-- Foundation for graph-based algorithms -->
+      <dependency>
+          <groupId>org.jgrapht</groupId>
+          <artifactId>jgrapht-core</artifactId>
+          <version>1.3.0</version>
+      </dependency>
+
   </dependencies>
-
-  <repositories>
-  <!-- include wala repo -->
-  <repository>
-    <id>wala</id>
-    <name>wala snapshots</name>
-    <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
-  </repository>
-  </repositories>
-
-  <distributionManagement>
-    <repository>
-      <uniqueVersion>true</uniqueVersion>
-      <id>wala</id>
-      <name>wala repository</name>
-      <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
-      <layout>default</layout>
-    </repository>
-  </distributionManagement>
 
 </project>
