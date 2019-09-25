@@ -31,7 +31,7 @@ import de.upb.soot.jimple.visitor.ConstantVisitor;
 import de.upb.soot.jimple.visitor.Visitor;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.types.Type;
-import org.objectweb.asm.Opcodes;
+import jdk.internal.org.objectweb.asm.Opcodes;
 
 public class MethodHandle implements Constant {
 
