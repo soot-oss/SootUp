@@ -13,8 +13,8 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SourceType;
 import de.upb.soot.frontends.EagerJavaClassSource;
 import de.upb.soot.frontends.MethodSource;
-import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
-import de.upb.soot.inputlocation.PathBasedAnalysisInputLocation;
+import de.upb.soot.javabytecodefrontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.soot.javabytecodefrontend.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
@@ -50,7 +50,7 @@ public class ModuleCompositionTest {
 
     // Create a project
     Project<JavaClassPathAnalysisInputLocation> p =
-        new Project<>(new JavaClassPathAnalysisInputLocation(jarFile));
+        new Project<>(new JavaClassPathAnalysisInputLocation(jarFile, new AsmJavaClassProvider()));
 
     // Get the view
     View view = p.createOnDemandView();
@@ -109,7 +109,7 @@ public class ModuleCompositionTest {
         new SootClass(
             new EagerJavaClassSource(
                 new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
-                    Paths.get("irrelevant-test-path/")),
+                    Paths.get("irrelevant-test-path/"), new AsmJavaClassProvider()),
                 null,
                 classSignature,
                 null,

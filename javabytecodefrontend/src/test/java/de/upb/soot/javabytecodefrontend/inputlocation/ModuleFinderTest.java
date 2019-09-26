@@ -4,8 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
 import de.upb.soot.inputlocation.AbstractAnalysisInputLocation;
-import de.upb.soot.inputlocation.JrtFileSystemAnalysisInputLocation;
-import de.upb.soot.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
