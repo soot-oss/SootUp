@@ -11,4 +11,8 @@ class ThrowExceptionMethod{
     void divideByZero() throws ArithmaticException{
         int i=8/0;
     }
+
+    void divideThrows() {
+        throw new ArithmeticException();
+    }
 }
