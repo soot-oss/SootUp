@@ -53,7 +53,12 @@ public class SuperClassTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: SuperClass", "r0.<SuperClass: int a> = 10", "r0.<SuperClass: int b> = 20", "r0.<SuperClass: int c> = 30", "r0.<SuperClass: int d> = 40", "return")
+                "r0 := @this: SuperClass",
+                "r0.<SuperClass: int a> = 10",
+                "r0.<SuperClass: int b> = 20",
+                "r0.<SuperClass: int c> = 30",
+                "r0.<SuperClass: int d> = 40",
+                "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
