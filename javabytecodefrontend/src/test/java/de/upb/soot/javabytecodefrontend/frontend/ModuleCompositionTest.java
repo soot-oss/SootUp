@@ -46,7 +46,7 @@ public class ModuleCompositionTest {
 
     String jarFile = "target/Soot-4.0.0-SNAPSHOT-shaded.pom";
 
-    assertTrue(new File(jarFile).exists());
+    assertTrue("File "+jarFile+" not found.", new File(jarFile).exists());
 
     // Create a project
     Project<JavaClassPathAnalysisInputLocation> p =

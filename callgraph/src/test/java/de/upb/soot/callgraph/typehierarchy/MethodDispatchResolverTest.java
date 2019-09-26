@@ -31,7 +31,7 @@ public class MethodDispatchResolverTest {
 
   @Before
   public void setUp() {
-    assertTrue(new File(jarFile).exists());
+    assertTrue("File "+jarFile+" not found.", new File(jarFile).exists());
     String currentClassPath =
         System.getProperty("java.class.path")
             + File.pathSeparator
