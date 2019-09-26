@@ -1,6 +1,6 @@
 package de.upb.soot.callgraph.typehierarchy;
 
-import de.upb.soot.sootmodule.ModuleDataKey;
+import de.upb.soot.views.View.ModuleDataKey;
 import java.util.function.Supplier;
 
 class TypeHierarchyKey implements ModuleDataKey<Supplier<MutableTypeHierarchy>> {

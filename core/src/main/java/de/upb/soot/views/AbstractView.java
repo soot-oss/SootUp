@@ -7,7 +7,6 @@ import de.upb.soot.Scope;
 import de.upb.soot.callgraph.CallGraph;
 import de.upb.soot.callgraph.CallGraphAlgorithm;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
-import de.upb.soot.sootmodule.ModuleDataKey;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

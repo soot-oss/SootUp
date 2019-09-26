@@ -7,7 +7,6 @@ import de.upb.soot.callgraph.CallGraph;
 import de.upb.soot.callgraph.CallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.sootmodule.ModuleDataKey;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
@@ -126,4 +125,7 @@ public interface View {
   //    }
   //    return Optional.empty();
   //  }
+
+  @SuppressWarnings("unused") // Used in modules
+  interface ModuleDataKey<T> {}
 }
