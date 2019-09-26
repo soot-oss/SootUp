@@ -52,7 +52,12 @@ public class VolatileVariableTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("r0 := @this: VolatileVariable", "$i0 = r0.<VolatileVariable: int counter>", "$i1 = $i0 + 1", "r0.<VolatileVariable: int counter> = $i1", "return $i0")
+        Stream.of(
+                "r0 := @this: VolatileVariable",
+                "$i0 = r0.<VolatileVariable: int counter>",
+                "$i1 = $i0 + 1",
+                "r0.<VolatileVariable: int counter> = $i1",
+                "return $i0")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);

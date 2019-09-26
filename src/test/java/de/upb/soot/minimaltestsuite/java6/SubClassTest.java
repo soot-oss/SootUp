@@ -52,7 +52,13 @@ public class SubClassTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("r0 := @this: SubClass", "r0.<SubClass: int aa> = 10", "r0.<SubClass: int bb> = 20", "r0.<SubClass: int cc> = 30", "r0.<SubClass: int dd> = 40", "return")
+        Stream.of(
+                "r0 := @this: SubClass",
+                "r0.<SubClass: int aa> = 10",
+                "r0.<SubClass: int bb> = 20",
+                "r0.<SubClass: int cc> = 30",
+                "r0.<SubClass: int dd> = 40",
+                "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);

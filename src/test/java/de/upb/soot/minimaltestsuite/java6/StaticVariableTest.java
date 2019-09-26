@@ -36,10 +36,7 @@ public class StaticVariableTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
             loadClassesWithWala.identifierFactory.getMethodSignature(
-                "numMethod",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
+                "numMethod", loadClassesWithWala.declareClassSig, "void", Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -52,7 +49,11 @@ public class StaticVariableTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("$r0 = <java.lang.System: java.io.PrintStream out>", "$i0 = <StaticVariable: int num>", "virtualinvoke $r0.<java.io.PrintStream: void println(int)>($i0)", "return")
+        Stream.of(
+                "$r0 = <java.lang.System: java.io.PrintStream out>",
+                "$i0 = <StaticVariable: int num>",
+                "virtualinvoke $r0.<java.io.PrintStream: void println(int)>($i0)",
+                "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);

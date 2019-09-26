@@ -63,7 +63,6 @@ public class MethodOverloadingTest {
 
     assertEquals(expectedStmts, actualStmts);
   }
-  
 
   @Test
   public void calculateAreaTest2() {
@@ -88,10 +87,12 @@ public class MethodOverloadingTest {
 
     List<String> expectedStmts =
         Stream.of(
-          "r0 := @this: MethodOverloading", "$i0 := @parameter0: int","$i1 = $i0 + $i0", "return $i1")
-          .collect(Collectors.toCollection(ArrayList::new));
+                "r0 := @this: MethodOverloading",
+                "$i0 := @parameter0: int",
+                "$i1 = $i0 + $i0",
+                "return $i1")
+            .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
   }
 }
-
