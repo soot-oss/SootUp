@@ -16,7 +16,8 @@ import de.upb.soot.core.Modifier;
 import de.upb.soot.core.SootClass;
 import de.upb.soot.core.SourceType;
 import de.upb.soot.frontends.EagerJavaClassSource;
-import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
+import de.upb.soot.javabytecodefrontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.NullType;
@@ -60,7 +61,8 @@ public class ViewTypeHierarchyTest {
             .distinct()
             .collect(Collectors.joining(File.pathSeparator));
     analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
+        new JavaClassPathAnalysisInputLocation(
+            jarFile + File.pathSeparator + rtJarClassPath, new AsmJavaClassProvider());
     Project<JavaClassPathAnalysisInputLocation> p = new Project<>(analysisInputLocation);
     view = p.createOnDemandView();
     typeHierarchy = new ViewTypeHierarchy(view);

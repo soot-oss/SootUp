@@ -44,7 +44,6 @@
         <test.outDir>${project.build.directory}/test-classes-java</test.outDir>
         <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
-
     </properties>
 
     <profiles>
@@ -131,7 +130,7 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>check</goal>
+                            <goal>format</goal>
                         </goals>
                     </execution>
                 </executions>

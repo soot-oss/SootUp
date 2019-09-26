@@ -1,8 +1,16 @@
 package de.upb.soot;
 
+import static org.junit.Assert.fail;
+
+import org.junit.Ignore;
+
 public class WitherTest {
 
-  // TODO: please rewrite without the need of javasourcecodefrontend as source here :(
+  @Ignore
+  public void dummyTest() {
+    // TODO: please rewrite without the need of javasourcecodefrontend as source here :(
+    fail(" rewrite test or put it in integration test module");
+  }
 
   /*
    private WalaClassLoader loader;

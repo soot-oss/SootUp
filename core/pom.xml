@@ -6,7 +6,7 @@
   <artifactId>Soot.Core</artifactId>
   <packaging>jar</packaging>
   <version>4.0.0-SNAPSHOT</version>
-    <name>Soot Core</name>
+  <name>Soot Core</name>
 
   <parent>
     <groupId>de.upb</groupId>

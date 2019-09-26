@@ -7,7 +7,8 @@ import static org.junit.Assert.assertTrue;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.Project;
 import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
+import de.upb.soot.javabytecodefrontend.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.common.constant.StringConstant;
 import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
@@ -41,7 +42,8 @@ public class MethodDispatchResolverTest {
             .distinct()
             .collect(Collectors.joining(File.pathSeparator));
     JavaClassPathAnalysisInputLocation analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
+        new JavaClassPathAnalysisInputLocation(
+            jarFile + File.pathSeparator + rtJarClassPath, new AsmJavaClassProvider());
     Project<JavaClassPathAnalysisInputLocation> p = new Project<>(analysisInputLocation);
     view = p.createOnDemandView();
   }
