@@ -171,7 +171,7 @@ public class SootClass extends AbstractClass<ClassSource> {
    * matching methodRef can be found, null is returned.
    */
   @Nonnull
-  public Optional<SootMethod> getMethod(MethodSignature signature) {
+  public Optional<SootMethod> getMethod(@Nonnull MethodSignature signature) {
     return this.getMethods().stream()
         .filter(method -> method.getSignature().equals(signature))
         .findAny();
