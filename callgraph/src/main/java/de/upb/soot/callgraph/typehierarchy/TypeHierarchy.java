@@ -26,7 +26,7 @@ public interface TypeHierarchy {
   static TypeHierarchy fromView(View view) {
     return view.getOrComputeModuleData(
             TypeHierarchyKey.getInstance(),
-            () -> Suppliers.memoize(() -> $ViewTypeHierarchyAccessor.createViewTypeHierarchy(view)))
+            () -> Suppliers.memoize(() -> new ViewTypeHierarchy(view)))
         .get();
   }
 
