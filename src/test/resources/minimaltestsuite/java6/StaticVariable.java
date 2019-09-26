@@ -1,6 +1,10 @@
 public class StaticVariable {
 
-    public void staticVariable() {
-        static int num = 6;
+    static int num = 6;
+
+    public static void numMethod(){
+        System.out.println(num);
     }
+
+    
 }

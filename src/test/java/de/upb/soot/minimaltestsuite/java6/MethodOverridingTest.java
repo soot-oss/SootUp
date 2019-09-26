@@ -55,7 +55,7 @@ public class MethodOverridingTest {
         Stream.of(
                 "r0 := @this: MethodOverridingSubclass",
                 "$r1 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r1.,java.io.PrintStream : void println (java.lang.String)>(\"Inside MethodOverridingSubclass-calculateArea()\")",
+                "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"Inside MethodOverridingSubclass-calculateArea()\")",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 

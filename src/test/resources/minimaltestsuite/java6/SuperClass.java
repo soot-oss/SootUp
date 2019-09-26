@@ -4,7 +4,7 @@ class SuperClass {
     int c = 3;
     private int d = 4;
 
-    public superclassMethod() { 
+    public void superclassMethod() { 
         a=10;
         b=20;
         c=30;

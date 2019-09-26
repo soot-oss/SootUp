@@ -10,6 +10,7 @@ import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
 import de.upb.soot.jimple.common.stmt.Stmt;
 import de.upb.soot.minimaltestsuite.LoadClassesWithWala;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +32,41 @@ public class MethodOverloadingTest {
   }
 
   @Test
-  public void calculateAreaTest() {
+  public void calculateAreaTest1() {
+    Optional<SootMethod> m =
+        WalaClassLoaderTestUtils.getSootMethod(
+            loadClassesWithWala.loader,
+            loadClassesWithWala.identifierFactory.getMethodSignature(
+                "calculate",
+                loadClassesWithWala.declareClassSig,
+                "int",
+                Arrays.asList("int", "int")));
+    assertTrue(m.isPresent());
+    SootMethod method = m.get();
+    Utils.print(method, false);
+    Body body = method.getBody();
+    assertNotNull(body);
+
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: MethodOverloading",
+                "$i0 := @parameter0: int",
+                "$i1 := @parameter1: int",
+                "$i2 = $i0 + $i1",
+                "return $i2")
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    assertEquals(expectedStmts, actualStmts);
+  }
+  
+
+  @Test
+  public void calculateAreaTest2() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
@@ -53,14 +88,8 @@ public class MethodOverloadingTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: MethodOverloading",
-                "$s0 := @parameter0: int",
-                "$s1 = $s0",
-                "$s2 := @parameter1: int",
-                "$s3 = $s2",
-                "$s4 = $s1 + $s3",
-                "return $s4")
-            .collect(Collectors.toCollection(ArrayList::new));
+          "r0 := @this: MethodOverloading", "$i0 := @parameter0: int","$i1 = $i0 + $i0", "return $i1")
+          .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
   }

@@ -55,9 +55,10 @@ public class InterfaceImplClassTest {
         Stream.of(
                 "r0 := @this: InterfaceImplClass",
                 "$r1 = <java.lang.System: java.io.PrintStream out>",
-                "$i0 = 10",
-                "virtualinvoke $r1.,java.io.PrintStream : void println (java.lang.String)>(\"Method from InterfaceImpl is implemented\")",
-                "virtualinvoke $r1.,java.io.PrintStream : void println (java.lang.String)>(\"Variable from InterfaceImpl = \"+$i0)",
+                "virtualinvoke $r1.<java.io.PrintStream: void print(java.lang.String)>(\"Method from InterfaceImpl is implemented\")",
+                "$r2 = <java.lang.System: java.io.PrintStream out>",
+                "$r3 = \"Variable from InterfaceImpl is \" + 10",
+                "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r3)",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 

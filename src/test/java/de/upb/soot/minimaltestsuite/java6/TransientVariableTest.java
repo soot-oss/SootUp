@@ -31,7 +31,7 @@ public class TransientVariableTest {
   }
 
   @Test
-  public void staticMethodTest() {
+  public void transientVariableTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
@@ -55,8 +55,8 @@ public class TransientVariableTest {
         Stream.of(
                 "r0 := @this: TransientVariable",
                 "$r1 = <java.lang.System: java.io.PrintStream out>",
-                "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"Transient Variable =\")",
-                "$i0 = 1",
+                "$i0 = r0.<TransientVariable: int transientVar>",
+                "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0)",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 

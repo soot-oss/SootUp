@@ -5,8 +5,8 @@ public class DeclareInt {
     int oct = 0157; 
 
     void declareIntMethod(){
-        System.out.println("Integer in Decimal "+dec);
-        System.out.println("Integer in Hexadecimal "+hex);
-        System.out.println("Integer in Octal "+oct);
+        System.out.println(dec);
+        System.out.println(hex);
+        System.out.println(oct);
     }
 }

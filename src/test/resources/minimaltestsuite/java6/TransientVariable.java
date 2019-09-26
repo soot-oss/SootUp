@@ -5,6 +5,6 @@ class TransientVariable {
     transient int transientVar= 1;
 
     public void transientVariable(){
-        System.out.println("Transient Variable ="+transientVar);
+        System.out.println(transientVar);
     }
 }

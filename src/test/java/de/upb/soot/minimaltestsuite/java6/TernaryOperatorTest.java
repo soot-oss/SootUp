@@ -31,7 +31,7 @@ public class TernaryOperatorTest {
   }
 
   @Test
-  public void staticMethodTest() {
+  public void ternaryOperatorTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
@@ -54,13 +54,13 @@ public class TernaryOperatorTest {
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: TernaryOperator",
-                "$i0 = 2",
-                "$i1 = 0 ",
-                "$z0 = $i0 < $i1",
-                "$z1 = $i0 > $i1",
-                "if $z0 == 0 $b0 = false",
-                "if $z1 == 0 $b0 = true",
-                "return $b0")
+                "$i0 = r0.<TernaryOperator: int num>",
+                "$z0 = $i0 < 0",
+                "if $z0 == 0 goto $z1 = 1",
+                "$z1 = 0",
+                "goto [?= return $z1]",
+                "$z1 = 1",
+                "return $z1")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);

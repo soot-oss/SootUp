@@ -1,6 +1,6 @@
-import java.io;
+import java.io.*;
 
-class MethodOverriding{
+class MethodOverloading{
 
     int calculate(int a, int b){
         return a+b;

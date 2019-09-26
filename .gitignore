@@ -152,3 +152,4 @@ fabric.properties
 \.project
 
 \.classpath
+.vscode/

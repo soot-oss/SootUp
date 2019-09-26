@@ -55,12 +55,14 @@ public class DeclareIntTest {
         Stream.of(
                 "r0 := @this: DeclareInt",
                 "$r1 = <java.lang.System: java.io.PrintStream out>",
-                "$i0 = 111",
-                "$i1 = 0X1F",
-                "$i2 = 0157",
-                "virtualinvoke $r1.,java.io.PrintStream : void println (java.lang.String)>(\"Integer in Decimal \"+$i0)",
-                "virtualinvoke $r1.,java.io.PrintStream : void println (java.lang.String)>(\"Integer in Hexadecimal \"+$i1)",
-                "virtualinvoke $r1.,java.io.PrintStream : void println (java.lang.String)>(\"Integer in Octal \"+$i2)",
+                "$i0 = r0.<DeclareInt: int dec>",
+                "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0)",
+                "$r2 = <java.lang.System: java.io.PrintStream out>",
+                "$i1 = r0.<DeclareInt: int hex>",
+                "virtualinvoke $r2.<java.io.PrintStream: void println(int)>($i1)",
+                "$r3 = <java.lang.System: java.io.PrintStream out>",
+                "$i2 = r0.<DeclareInt: int oct>",
+                "virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i2)",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 

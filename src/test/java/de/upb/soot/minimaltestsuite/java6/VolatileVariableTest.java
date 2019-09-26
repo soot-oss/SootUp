@@ -31,14 +31,14 @@ public class VolatileVariableTest {
   }
 
   @Test
-  public void staticVariableTest() {
+  public void volatileVariableTest() {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(
             loadClassesWithWala.loader,
             loadClassesWithWala.identifierFactory.getMethodSignature(
                 "increaseCounter",
                 loadClassesWithWala.declareClassSig,
-                "void",
+                "int",
                 Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
@@ -52,7 +52,7 @@ public class VolatileVariableTest {
             .collect(Collectors.toCollection(ArrayList::new));
 
     List<String> expectedStmts =
-        Stream.of("r0 := @this: VolatileVariable", "$i1 = $i0+1 ", "return $i1")
+        Stream.of("r0 := @this: VolatileVariable", "$i0 = r0.<VolatileVariable: int counter>", "$i1 = $i0 + 1", "r0.<VolatileVariable: int counter> = $i1", "return $i0")
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
