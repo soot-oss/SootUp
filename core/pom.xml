@@ -6,14 +6,6 @@
   <artifactId>Soot.Core</artifactId>
   <packaging>jar</packaging>
   <version>4.0.0-SNAPSHOT</version>
-    <dependencies>
-        <dependency>
-            <groupId>de.upb</groupId>
-            <artifactId>soot-core</artifactId>
-            <version>4.0.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
     <name>Soot Core</name>
 
   <parent>

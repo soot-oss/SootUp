@@ -10,7 +10,7 @@ import de.upb.soot.core.SourceType;
 import de.upb.soot.frontends.EagerJavaClassSource;
 import de.upb.soot.frontends.EagerMethodSource;
 import de.upb.soot.frontends.MethodSource;
-import de.upb.soot.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.soot.inputlocation.EagerInputLocation;
 import de.upb.soot.jimple.Jimple;
 import de.upb.soot.jimple.basic.Local;
 import de.upb.soot.jimple.basic.LocalGenerator;
@@ -71,7 +71,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     EagerJavaClassSource javaClassSource =
         new EagerJavaClassSource(
-            new JavaClassPathAnalysisInputLocation("src/main/java/de/upb/soot"),
+            new EagerInputLocation("src/main/java/de/upb/soot"),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
             superClassSignature,

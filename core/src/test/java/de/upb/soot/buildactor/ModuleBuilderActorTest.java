@@ -9,7 +9,7 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
-import de.upb.soot.inputlocation.JavaModulePathAnalysisInputLocation;
+import de.upb.soot.inputlocation.EagerInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.View;
 import java.util.Optional;
@@ -21,8 +21,8 @@ public class ModuleBuilderActorTest {
 
   private View createNewScene() {
 
-    final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
-        new JavaModulePathAnalysisInputLocation(
+    final AnalysisInputLocation javaClassPathNamespace =
+        new EagerInputLocation(
             "target/test-classes/de/upb/soot/namespaces/modules");
 
     Project<AnalysisInputLocation> project =
