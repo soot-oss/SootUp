@@ -10,7 +10,6 @@ import de.upb.soot.frontends.ClassSource;
 import de.upb.soot.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.inputlocation.ClassResolvingException;
-import de.upb.soot.inputlocation.JrtFileSystemAnalysisInputLocation;
 import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;

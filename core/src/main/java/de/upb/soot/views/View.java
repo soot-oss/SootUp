@@ -7,11 +7,14 @@ import de.upb.soot.callgraph.CallGraph;
 import de.upb.soot.callgraph.CallGraphAlgorithm;
 import de.upb.soot.core.AbstractClass;
 import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.sootmodule.ModuleDataKey;
 import de.upb.soot.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A view on code.
@@ -57,11 +60,6 @@ public interface View {
   CallGraph createCallGraph(CallGraphAlgorithm algorithm);
 
   /**
-   * TODO: uncomment or restructure! Provides a type hierarchy.
-   *
-   * @return A type hierarchy valid in the view @Nonnull TypeHierarchy typeHierarchy();
-   */
-  /**
    * Returns the scope if the view is scoped.
    *
    * @return The scope that led to the view
@@ -89,6 +87,22 @@ public interface View {
 
   @Nonnull
   String quotedNameOf(@Nonnull String name);
+
+  <T> void putModuleData(@Nonnull ModuleDataKey<T> key, @Nonnull T value);
+
+  @Nullable
+  <T> T getModuleData(@Nonnull ModuleDataKey<T> key);
+
+  default <T> T getOrComputeModuleData(@Nonnull ModuleDataKey<T> key, Supplier<T> dataSupplier) {
+    T moduleData = getModuleData(key);
+    if (moduleData != null) {
+      return moduleData;
+    }
+
+    T computedModuleData = dataSupplier.get();
+    putModuleData(key, computedModuleData);
+    return computedModuleData;
+  }
 
   //  // TODO: [JMP] Move type resolving into view.
   //  /**

@@ -7,8 +7,12 @@ import de.upb.soot.Scope;
 import de.upb.soot.callgraph.CallGraph;
 import de.upb.soot.callgraph.CallGraphAlgorithm;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.sootmodule.ModuleDataKey;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Abstract class for view.
@@ -21,11 +25,8 @@ public abstract class AbstractView<S extends AnalysisInputLocation> implements V
 
   @Nonnull private final Options options = new Options();
 
-  // TODO: uncomment!
-  /*
-    private final Supplier<MutableTypeHierarchy> lazyTypeHierarchy =
-        Suppliers.memoize(() -> $ViewTypeHierarchyAccessor.createViewTypeHierarchy(this));
-  */
+  @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
+
   public AbstractView(@Nonnull Project<S> project) {
     this.project = project;
   }
@@ -50,14 +51,6 @@ public abstract class AbstractView<S extends AnalysisInputLocation> implements V
     return null;
   }
 
-  // TODO: uncomment!
-  /*
-    @Override
-    @Nonnull
-    public TypeHierarchy typeHierarchy() {
-      return lazyTypeHierarchy.get();
-    }
-  */
   @Override
   @Nonnull
   public Optional<Scope> getScope() {
@@ -80,5 +73,17 @@ public abstract class AbstractView<S extends AnalysisInputLocation> implements V
   @Nonnull
   public Project<S> getProject() {
     return project;
+  }
+
+  @SuppressWarnings("unchecked") // Safe because we only put T in putModuleData
+  @Override
+  @Nullable
+  public <T> T getModuleData(@Nonnull ModuleDataKey<T> key) {
+    return (T) moduleData.get(key);
+  }
+
+  @Override
+  public <T> void putModuleData(@Nonnull ModuleDataKey<T> key, @Nonnull T value) {
+    moduleData.put(key, value);
   }
 }

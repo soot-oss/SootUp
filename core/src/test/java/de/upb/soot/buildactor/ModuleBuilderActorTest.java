@@ -22,8 +22,7 @@ public class ModuleBuilderActorTest {
   private View createNewScene() {
 
     final AnalysisInputLocation javaClassPathNamespace =
-        new EagerInputLocation(
-            "target/test-classes/de/upb/soot/namespaces/modules");
+        new EagerInputLocation("target/test-classes/de/upb/soot/namespaces/modules");
 
     Project<AnalysisInputLocation> project =
         new Project<>(javaClassPathNamespace, ModuleIdentifierFactory.getInstance());

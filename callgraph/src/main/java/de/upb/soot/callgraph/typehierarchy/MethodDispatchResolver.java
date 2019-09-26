@@ -22,9 +22,7 @@ public final class MethodDispatchResolver {
    */
   @Nonnull
   public static Set<MethodSignature> resolveAbstractDispatch(View view, MethodSignature m) {
-
-    // TODO: restructure .typeHierarchy() from view to decouple it from core
-    TypeHierarchy hierarchy = null; // TODO: = view.typeHierarchy();
+    TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
     return hierarchy.subtypesOf(m.getDeclClassType()).stream()
         .map(
@@ -66,9 +64,7 @@ public final class MethodDispatchResolver {
    */
   @Nonnull
   public static MethodSignature resolveConcreteDispatch(View view, MethodSignature m) {
-
-    // TODO: restructure .typeHierarchy() from view to decouple it from core
-    TypeHierarchy hierarchy = null; // TODO: = view.typeHierarchy();
+    TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
     JavaClassType superClassType = m.getDeclClassType();
     do {
@@ -115,7 +111,7 @@ public final class MethodDispatchResolver {
       return specialMethodSig;
     }
 
-    if (view.typeHierarchy()
+    if (TypeHierarchy.fromView(view)
         .isSubtype(container.getDeclClassType(), specialMethodSig.getDeclClassType())) {
       return resolveConcreteDispatch(view, specialMethodSig);
     }

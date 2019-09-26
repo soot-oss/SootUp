@@ -1,11 +1,13 @@
 package de.upb.soot.callgraph.typehierarchy;
 
+import com.google.common.base.Suppliers;
 import de.upb.soot.types.ArrayType;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.types.NullType;
 import de.upb.soot.types.PrimitiveType;
 import de.upb.soot.types.ReferenceType;
 import de.upb.soot.types.Type;
+import de.upb.soot.views.View;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +22,13 @@ import javax.annotation.Nullable;
  * @author Christian Brüggemann
  */
 public interface TypeHierarchy {
+
+  static TypeHierarchy fromView(View view) {
+    return view.getOrComputeModuleData(
+            TypeHierarchyKey.getInstance(),
+            () -> Suppliers.memoize(() -> $ViewTypeHierarchyAccessor.createViewTypeHierarchy(view)))
+        .get();
+  }
 
   /**
    * Returns all classes that implement the specified interface. This is transitive: If class <code>

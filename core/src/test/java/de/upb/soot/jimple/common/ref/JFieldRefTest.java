@@ -18,7 +18,6 @@ import de.upb.soot.signatures.FieldSignature;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.JavaView;
 import de.upb.soot.views.View;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.EnumSet;
 import org.junit.Test;
