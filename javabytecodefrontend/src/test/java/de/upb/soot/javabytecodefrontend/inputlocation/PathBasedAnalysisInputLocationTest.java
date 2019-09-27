@@ -60,6 +60,7 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
   public void testFolder() {
     // TODO adapt to new testing folder structure
     Path baseDir = Paths.get("target/classes/");
+
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(baseDir);
     final JavaClassType sig =
@@ -67,7 +68,13 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
             .getClassType(
                 PathBasedAnalysisInputLocation.class.getSimpleName(),
                 PathBasedAnalysisInputLocation.class.getPackage().getName());
-    testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);
+
+    // System.out.println(baseDir.toAbsolutePath() + "/"+ new String(sig.toString()).replace('.',
+    // '/') );
+    // System.out.println( pathBasedNamespace.getClassSources(getIdentifierFactory() ) );
+
+    // INFO: this test is based on the number of actual classes in this module!
+    testClassReceival(pathBasedNamespace, sig, 10);
   }
 
   @Test

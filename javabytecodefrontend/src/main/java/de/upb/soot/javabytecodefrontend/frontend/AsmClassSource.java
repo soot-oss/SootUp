@@ -134,4 +134,9 @@ class AsmClassSource extends ClassSource {
     // FIXME: what is this??? the source code line number of the complete file?
     return null;
   }
+
+  @Override
+  public String toString() {
+    return getSourcePath().toString();
+  }
 }
