@@ -570,15 +570,21 @@ public class WalaIRToJimpleConverter {
   public static PositionInfo convertPositionInfo(
       Position instructionPosition, Position[] operandPosition) {
 
+    if (operandPosition == null) {
+      return new PositionInfo(convertPosition(instructionPosition), null);
+    }
     de.upb.soot.core.Position[] operandPos =
         Arrays.stream(operandPosition)
             .map(
-                instrPos ->
-                    new de.upb.soot.core.Position(
-                        instrPos.getFirstLine(),
-                        instrPos.getFirstCol(),
-                        instrPos.getLastLine(),
-                        instrPos.getLastCol()))
+                instrPos -> {
+                  return instrPos == null
+                      ? null
+                      : new de.upb.soot.core.Position(
+                          instrPos.getFirstLine(),
+                          instrPos.getFirstCol(),
+                          instrPos.getLastLine(),
+                          instrPos.getLastCol());
+                })
             .toArray(de.upb.soot.core.Position[]::new);
 
     return new PositionInfo(convertPosition(instructionPosition), operandPos);
