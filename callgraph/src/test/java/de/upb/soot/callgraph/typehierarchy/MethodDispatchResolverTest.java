@@ -27,7 +27,7 @@ public class MethodDispatchResolverTest {
 
   private View view;
   public static final String jarFile =
-      "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
+      "../javabytecodefrontend/target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
 
   @Before
   public void setUp() {

@@ -23,21 +23,15 @@
     </dependency>
     <dependency>
       <groupId>de.upb</groupId>
-      <artifactId>Soot.JavaSourcecodeFrontend</artifactId>
-      <version>4.0.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>de.upb</groupId>
       <artifactId>Soot.JavaBytecodeFrontend</artifactId>
       <version>4.0.0-SNAPSHOT</version>
+      <scope>test</scope>
     </dependency>
-
-      <!-- Foundation for graph-based algorithms -->
-      <dependency>
-          <groupId>org.jgrapht</groupId>
-          <artifactId>jgrapht-core</artifactId>
-          <version>1.3.0</version>
-      </dependency>
+    <dependency>
+      <groupId>org.jgrapht</groupId>
+      <artifactId>jgrapht-core</artifactId>
+      <version>1.3.0</version>
+    </dependency>
 
   </dependencies>
 
