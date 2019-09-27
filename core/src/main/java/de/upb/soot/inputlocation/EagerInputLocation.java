@@ -22,7 +22,7 @@ public class EagerInputLocation implements AnalysisInputLocation {
 
   @Override
   public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
-    throw new ResolveException("getClassSourve is not implemented - No class Source found.");
+    return Optional.empty();
   }
 
   @Override
