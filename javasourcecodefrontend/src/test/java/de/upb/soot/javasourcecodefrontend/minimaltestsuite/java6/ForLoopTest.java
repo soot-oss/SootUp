@@ -21,8 +21,7 @@ import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class ForLoopTest {
-  private String srcDir =
-      "src/test/resources/java.de.upb.soot.javasourcecodefrontend.minimaltestsuite/java6/";
+  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
   private String className = "ForLoop";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 

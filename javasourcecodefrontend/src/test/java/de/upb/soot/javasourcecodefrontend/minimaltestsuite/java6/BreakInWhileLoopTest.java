@@ -22,8 +22,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class BreakInWhileLoopTest {
 
-  private String srcDir =
-      "src/test/resources/java.de.upb.soot.javasourcecodefrontend.minimaltestsuite/java6/";
+  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
   private String className = "BreakInWhileLoop";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
