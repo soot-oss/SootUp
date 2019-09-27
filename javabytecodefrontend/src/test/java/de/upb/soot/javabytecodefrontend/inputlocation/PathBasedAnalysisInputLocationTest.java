@@ -24,7 +24,6 @@ package de.upb.soot.javabytecodefrontend.inputlocation;
 
 import categories.Java8Test;
 import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,8 +40,7 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
   public void failsOnFile() {
     // TODO adapt to new testing folder structure
     PathBasedAnalysisInputLocation.createForClassContainer(
-        Paths.get("target/test-classes/de/upb/soot/namespaces/PathBasedNamespace.class"),
-        new AsmJavaClassProvider());
+        Paths.get("target/test-classes/de/upb/soot/namespaces/PathBasedNamespace.class"));
   }
 
   @Test
@@ -50,7 +48,7 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
     // TODO adapt to new testing folder structure
     Path baseDir = Paths.get("target/test-classes/");
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(baseDir, new AsmJavaClassProvider());
+        PathBasedAnalysisInputLocation.createForClassContainer(baseDir);
     final JavaClassType sig =
         getIdentifierFactory().getClassType("NotExisting", "de.upb.soot.namespaces");
     final Optional<? extends AbstractClassSource> classSource =
@@ -63,7 +61,7 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
     // TODO adapt to new testing folder structure
     Path baseDir = Paths.get("target/classes/");
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(baseDir, new AsmJavaClassProvider());
+        PathBasedAnalysisInputLocation.createForClassContainer(baseDir);
     final JavaClassType sig =
         getIdentifierFactory()
             .getClassType(
@@ -75,9 +73,9 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
   @Test
   public void testJar() {
     // TODO adapt to new testing folder structure
-    Path jar = Paths.get(jarFile);
+    Path jar = Paths.get("target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
     PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(jar, new AsmJavaClassProvider());
+        PathBasedAnalysisInputLocation.createForClassContainer(jar);
     final JavaClassType sig =
         getIdentifierFactory().getClassType("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);

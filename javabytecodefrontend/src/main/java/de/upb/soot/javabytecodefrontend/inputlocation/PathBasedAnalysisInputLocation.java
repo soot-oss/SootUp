@@ -8,9 +8,9 @@ import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.inputlocation.AbstractAnalysisInputLocation;
-import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.inputlocation.FileType;
 import de.upb.soot.inputlocation.PathUtils;
+import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.StreamUtils;
 import java.io.IOException;
@@ -49,12 +49,17 @@ import javax.annotation.Nonnull;
  */
 
 /**
- * Base class for {@link AnalysisInputLocation}s that can be located by a {@link Path} object.
+ * Base class for {@link PathBasedAnalysisInputLocation}s that can be located by a {@link Path}
+ * object.
  *
  * @author Manuel Benz created on 22.05.18
  */
 public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInputLocation {
   protected final Path path;
+
+  private PathBasedAnalysisInputLocation(@Nonnull Path path) {
+    this(path, new AsmJavaClassProvider());
+  }
 
   private PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull ClassProvider classProvider) {
     super(classProvider);
@@ -70,11 +75,11 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
    *     Path}'s {@link FileSystem}
    */
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
-      @Nonnull Path path, ClassProvider classProvider) {
+      @Nonnull Path path) {
     if (Files.isDirectory(path)) {
-      return new DirectoryBasedAnalysisInputLocation(path, classProvider);
+      return new DirectoryBasedAnalysisInputLocation(path);
     } else if (PathUtils.isArchive(path)) {
-      return new ArchiveBasedAnalysisInputLocation(path, classProvider);
+      return new ArchiveBasedAnalysisInputLocation(path);
     } else {
       throw new IllegalArgumentException(
           "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, etc.");
@@ -111,12 +116,11 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
     return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
   }
 
-  public static final class DirectoryBasedAnalysisInputLocation
+  private static final class DirectoryBasedAnalysisInputLocation
       extends PathBasedAnalysisInputLocation {
 
-    public DirectoryBasedAnalysisInputLocation(
-        @Nonnull Path path, @Nonnull ClassProvider classProvider) {
-      super(path, classProvider);
+    private DirectoryBasedAnalysisInputLocation(@Nonnull Path path) {
+      super(path);
     }
 
     @Override
@@ -160,9 +164,8 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
                       }
                     }));
 
-    private ArchiveBasedAnalysisInputLocation(
-        @Nonnull Path path, @Nonnull ClassProvider classProvider) {
-      super(path, classProvider);
+    private ArchiveBasedAnalysisInputLocation(@Nonnull Path path) {
+      super(path);
     }
 
     @Override

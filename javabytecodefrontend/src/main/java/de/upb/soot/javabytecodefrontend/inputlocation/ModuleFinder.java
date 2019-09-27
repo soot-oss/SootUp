@@ -4,7 +4,6 @@ import de.upb.soot.ModuleIdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
 import de.upb.soot.inputlocation.*;
-import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
 import de.upb.soot.javabytecodefrontend.frontend.modules.AsmModuleClassSource;
 import de.upb.soot.signatures.ModuleSignature;
 import de.upb.soot.types.JavaClassType;
@@ -163,7 +162,7 @@ public class ModuleFinder {
   private void buildModuleForExplodedModule(@Nonnull Path dir) throws ClassResolvingException {
     // create the input location for this module dir
     PathBasedAnalysisInputLocation inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(dir, new AsmJavaClassProvider());
+        PathBasedAnalysisInputLocation.createForClassContainer(dir);
 
     Path moduleInfoFile =
         dir.resolve(
@@ -189,7 +188,7 @@ public class ModuleFinder {
    */
   private void buildModuleForJar(@Nonnull Path jar) {
     PathBasedAnalysisInputLocation inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(jar, new AsmJavaClassProvider());
+        PathBasedAnalysisInputLocation.createForClassContainer(jar);
     Optional<? extends AbstractClassSource> moduleInfoFile = Optional.empty();
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");

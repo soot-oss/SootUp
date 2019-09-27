@@ -13,8 +13,8 @@ import de.upb.soot.core.SootMethod;
 import de.upb.soot.core.SourceType;
 import de.upb.soot.frontends.EagerJavaClassSource;
 import de.upb.soot.frontends.MethodSource;
+import de.upb.soot.inputlocation.EagerInputLocation;
 import de.upb.soot.javabytecodefrontend.inputlocation.JavaClassPathAnalysisInputLocation;
-import de.upb.soot.javabytecodefrontend.inputlocation.PathBasedAnalysisInputLocation;
 import de.upb.soot.signatures.FieldSubSignature;
 import de.upb.soot.signatures.MethodSignature;
 import de.upb.soot.signatures.MethodSubSignature;
@@ -22,7 +22,6 @@ import de.upb.soot.types.JavaClassType;
 import de.upb.soot.util.ImmutableUtils;
 import de.upb.soot.views.View;
 import java.io.File;
-import java.nio.file.Paths;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,9 +43,9 @@ public class ModuleCompositionTest {
     // System.out.println("--- EXAMPLE 1: On-Demand Loading ---");
     // System.out.println();
 
-    String jarFile = "target/Soot-4.0.0-SNAPSHOT-shaded.pom";
+    String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
 
-    assertTrue("File "+jarFile+" not found.", new File(jarFile).exists());
+    assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
 
     // Create a project
     Project<JavaClassPathAnalysisInputLocation> p =
@@ -108,8 +107,7 @@ public class ModuleCompositionTest {
     SootClass c =
         new SootClass(
             new EagerJavaClassSource(
-                new PathBasedAnalysisInputLocation.DirectoryBasedAnalysisInputLocation(
-                    Paths.get("irrelevant-test-path/"), new AsmJavaClassProvider()),
+                new EagerInputLocation("irrelevant-test-path/"),
                 null,
                 classSignature,
                 null,
