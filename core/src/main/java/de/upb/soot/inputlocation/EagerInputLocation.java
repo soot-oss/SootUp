@@ -3,15 +3,16 @@ package de.upb.soot.inputlocation;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.frontends.ClassProvider;
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.frontends.ResolveException;
 import de.upb.soot.types.JavaClassType;
-import de.upb.soot.util.NotYetImplementedException;
 import java.util.*;
 import javax.annotation.Nonnull;
 
 /*
  * @author Markus Schmidt
  */
+
+// TODO: implement sth useful - more than this dummy
 public class EagerInputLocation implements AnalysisInputLocation {
   final String srcNamespace;
   /** Creates a new instance of the {@link EagerInputLocation} class. */
@@ -19,27 +20,20 @@ public class EagerInputLocation implements AnalysisInputLocation {
     this.srcNamespace = srcNamespace;
   }
 
-  /**
-   * @param signature The class to be searched.
-   * @return The {@link ClassSource} instance found or created... Or an empty Optional.
-   */
   @Override
   public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
-    // TODO
-    throw new NotYetImplementedException("Not implemented - No class Source found.");
+    throw new ResolveException("getClassSourve is not implemented - No class Source found.");
   }
 
-  /** @return An instance of {@link ClassProvider} to be used. */
   @Override
   public @Nonnull ClassProvider getClassProvider() {
-    // TODO
-    throw new NotYetImplementedException("Not implemented - No class Provider found.");
+    throw new ResolveException("Not implemented - No class Provider found.");
   }
 
+  @Nonnull
   @Override
-  public @Nonnull Collection<AbstractClassSource> getClassSources(
+  public Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
-    // TODO Auto-generated methodRef stub
-    throw new NotYetImplementedException("Getting class sources is not implemented, yet.");
+    throw new ResolveException("getClassSources not implemented - No class Sources found.");
   }
 }

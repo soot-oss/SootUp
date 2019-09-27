@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 
 /**
  * A class source for resolving classes that are batchparsed like .java files using wala java source
- * frontend or in tests.
+ * frontend or in tests where all information is already existing.
  *
  * @author Linghui Luo
  */

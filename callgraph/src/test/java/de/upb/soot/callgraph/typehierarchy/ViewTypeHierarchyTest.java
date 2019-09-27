@@ -50,7 +50,7 @@ public class ViewTypeHierarchyTest {
   public void setup() {
 
     String jarFile = MethodDispatchResolverTest.jarFile;
-    assertTrue("File "+jarFile+" not found.", new File(jarFile).exists());
+    assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
     String currentClassPath =
         System.getProperty("java.class.path")
             + File.pathSeparator

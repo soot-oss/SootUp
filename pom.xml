@@ -40,8 +40,8 @@
         <junit.version>4.12</junit.version>
         <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
         <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
-        <test.sourceDir>${project.basedir}/src/test/java</test.sourceDir>
-        <test.outDir>${project.build.directory}/test-classes-java</test.outDir>
+<!-- not used?!        <test.sourceDir>${project.basedir}/src/test/java</test.sourceDir>
+        <test.outDir>${project.build.directory}/test-classes-java</test.outDir>-->
         <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
         <licence-check.failOnMissingHeader>true</licence-check.failOnMissingHeader>
     </properties>
