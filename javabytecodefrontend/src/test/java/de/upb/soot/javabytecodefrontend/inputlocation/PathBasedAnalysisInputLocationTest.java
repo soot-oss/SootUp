@@ -42,7 +42,7 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
   @Test(expected = IllegalArgumentException.class)
   public void failsOnFile() {
     PathBasedAnalysisInputLocation.createForClassContainer(
-        Paths.get(baseDir+"de/upb/soot/namespaces/PathBasedNamespace.class"));
+        Paths.get(baseDir + "de/upb/soot/namespaces/PathBasedNamespace.class"));
   }
 
   @Test
