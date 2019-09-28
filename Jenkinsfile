@@ -70,7 +70,7 @@ pipeline {
 
             post {
               always {
-                junit 'target/surefire-reports/**/*.xml'
+                junit '*/target/surefire-reports/**/*.xml'
                 stash includes: '**/target/coverage-reports/*', name: 'reports1'
 
               }
@@ -91,7 +91,7 @@ pipeline {
             }
             post {
               always {
-                junit 'target/surefire-reports/**/*.xml'
+                junit '*/target/surefire-reports/**/*.xml'
                 stash includes: '**/target/coverage-reports/*', name: 'reports2'
               }
             }
@@ -111,18 +111,18 @@ pipeline {
                     }
           steps {
                       unstash 'reports1'
-                      sh 'mv */target/coverage-reports/jacoco-ut.exec */target/coverage-reports/jacoco-ut-jdk8.exec'
-                      sh 'rm -f */target/coverage-reports/aggregate.exec'
+                      sh 'mv target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-jdk8.exec'
+                      sh 'rm -f target/coverage-reports/aggregate.exec'
                       unstash 'reports2'
-                      sh 'mv ${submodule}/target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-jdk9.exec'
-                      sh 'rm -f */target/coverage-reports/aggregate.exec'
+                      sh 'mv target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-jdk9.exec'
+                      sh 'rm -f target/coverage-reports/aggregate.exec'
 
                       sh 'mvn validate' // Invokes the jacoco merge goal
 
-                      jacoco(execPattern: '**/target/coverage-reports/aggregate.exec',
-                             classPattern: '**/classes',
-                             sourcePattern: 'src/main/java',
-                             exclusionPattern: 'src/test*',
+                      jacoco(execPattern: '*/target/coverage-reports/aggregate.exec',
+                             classPattern: '*/classes',
+                             sourcePattern: '*/src/main/java',
+                             exclusionPattern: '*/src/test*',
                              changeBuildStatus: false,
                              minimumMethodCoverage: "50",
                              maximumMethodCoverage: "70",
