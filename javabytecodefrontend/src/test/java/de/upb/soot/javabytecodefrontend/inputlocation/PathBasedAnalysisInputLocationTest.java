@@ -36,17 +36,17 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLocationTest {
 
+  Path baseDir = Paths.get("target/classes/");
+  Path jar = Paths.get("target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
+
   @Test(expected = IllegalArgumentException.class)
   public void failsOnFile() {
-    // TODO adapt to new testing folder structure
     PathBasedAnalysisInputLocation.createForClassContainer(
-        Paths.get("target/test-classes/de/upb/soot/namespaces/PathBasedNamespace.class"));
+        Paths.get(baseDir+"de/upb/soot/namespaces/PathBasedNamespace.class"));
   }
 
   @Test
   public void classNotFound() {
-    // TODO adapt to new testing folder structure
-    Path baseDir = Paths.get("target/test-classes/");
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(baseDir);
     final JavaClassType sig =
@@ -58,9 +58,6 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
 
   @Test
   public void testFolder() {
-    // TODO adapt to new testing folder structure
-    Path baseDir = Paths.get("target/classes/");
-
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(baseDir);
     final JavaClassType sig =
@@ -79,8 +76,6 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
 
   @Test
   public void testJar() {
-    // TODO adapt to new testing folder structure
-    Path jar = Paths.get("target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
     final JavaClassType sig =
