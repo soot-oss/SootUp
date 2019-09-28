@@ -20,9 +20,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class DeclareArraysWithIndexTest {
+public class InitializeArraysWithIndexTest {
   private String srcDir = "src/test/resources/minimaltestsuite/java6/Arrays/";
-  private String className = "DeclareArraysWithIndex";
+  private String className = "InitializeArraysWithIndex";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
   @Before
@@ -50,7 +50,7 @@ public class DeclareArraysWithIndexTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: DeclareArraysWithIndex",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (int[])[3]",
                 "$r1[0] = 1",
                 "$r1[1] = 2",
@@ -84,7 +84,7 @@ public class DeclareArraysWithIndexTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: DeclareArraysWithIndex",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (byte[])[3]",
                 "$r1[0] = 4",
                 "$r1[1] = 5",
@@ -118,7 +118,7 @@ public class DeclareArraysWithIndexTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: DeclareArraysWithIndex",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (short[])[3]",
                 "$r1[0] = 10",
                 "$r1[1] = 20",
@@ -152,7 +152,7 @@ public class DeclareArraysWithIndexTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: DeclareArraysWithIndex",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (long[])[3]",
                 "$r1[0] = 547087L",
                 "$r1[1] = 564645L",
@@ -186,7 +186,7 @@ public class DeclareArraysWithIndexTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: DeclareArraysWithIndex",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (float[])[4]",
                 "$r1[0] = 3.14F",
                 "$r1[1] = 5.46F",
@@ -221,7 +221,7 @@ public class DeclareArraysWithIndexTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: DeclareArraysWithIndex",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (double[])[2]",
                 "$r1[0] = 6.765414",
                 "$r1[1] = 9.676565646",
@@ -254,7 +254,7 @@ public class DeclareArraysWithIndexTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: DeclareArraysWithIndex",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (boolean[])[2]",
                 "$r1[0] = 1",
                 "$r1[1] = 0",
@@ -287,7 +287,7 @@ public class DeclareArraysWithIndexTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: DeclareArraysWithIndex",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (char[])[3]",
                 "$r1[0] = 65",
                 "$r1[1] = 98",
@@ -321,7 +321,7 @@ public class DeclareArraysWithIndexTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: DeclareArraysWithIndex",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (java.lang.String[])[2]",
                 "$r1[0] = \"Hello World\"",
                 "$r1[1] = \"Greetings\"",

@@ -1,4 +1,4 @@
-public class DeclareArraysWithIndex {
+public class InitializeArraysWithIndex {
 
     public void intArrays(){
         int[] anArrayOfInts = new int[3];
