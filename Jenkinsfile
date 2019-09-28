@@ -115,11 +115,11 @@ pipeline {
                           sootmodules.each{ module ->
                             {
                               unstash 'reports1'
-                              sh 'mv ${module}/target/coverage-reports/jacoco-ut.exec /target/coverage-reports/jacoco-ut-${module}-jdk8.exec'
-                              // sh 'rm -f ${module}/target/coverage-reports/aggregate.exec'
+                              sh "mv ${module}/target/coverage-reports/jacoco-ut.exec /target/coverage-reports/jacoco-ut-${module}-jdk8.exec"
+                              // sh "rm -f ${module}/target/coverage-reports/aggregate.exec"
                               unstash 'reports2'
-                              sh 'mv ${module}/target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-${module}-jdk9.exec'
-                              // sh 'rm -f ${module}/target/coverage-reports/aggregate.exec'
+                              sh "mv ${module}/target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-${module}-jdk9.exec"
+                              // sh "rm -f ${module}/target/coverage-reports/aggregate.exec"
                               }
                           }
                       }
