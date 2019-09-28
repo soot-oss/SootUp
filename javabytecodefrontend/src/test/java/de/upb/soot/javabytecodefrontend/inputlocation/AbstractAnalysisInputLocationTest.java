@@ -1,6 +1,5 @@
 package de.upb.soot.javabytecodefrontend.inputlocation;
 
-import categories.Java8Test;
 import de.upb.soot.DefaultIdentifierFactory;
 import de.upb.soot.IdentifierFactory;
 import de.upb.soot.frontends.AbstractClassSource;
@@ -12,7 +11,6 @@ import java.util.Collection;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.experimental.categories.Category;
 import org.mockito.internal.matchers.GreaterOrEqual;
 import org.mockito.internal.matchers.LessOrEqual;
 
@@ -39,7 +37,6 @@ import org.mockito.internal.matchers.LessOrEqual;
  */
 
 /** @author Manuel Benz created on 07.06.18 */
-@Category(Java8Test.class)
 public abstract class AbstractAnalysisInputLocationTest {
 
   public static final String jarFile =
