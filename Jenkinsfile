@@ -113,18 +113,20 @@ pipeline {
                       script {
                           sootmodules = ['core','callgraph','javasourcecodefrontend','javabytecodefrontend'];
                           sootmodules.each{ module ->
+                            {
                               unstash 'reports1'
                               sh 'mv ${module}/target/coverage-reports/jacoco-ut.exec /target/coverage-reports/jacoco-ut-${module}-jdk8.exec'
-                              sh 'rm -f ${module}/target/coverage-reports/aggregate.exec'
+                              // sh 'rm -f ${module}/target/coverage-reports/aggregate.exec'
                               unstash 'reports2'
                               sh 'mv ${module}/target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-${module}-jdk9.exec'
-                              sh 'rm -f ${module}/target/coverage-reports/aggregate.exec'
+                              // sh 'rm -f ${module}/target/coverage-reports/aggregate.exec'
+                              }
                           }
-                  }
+                      }
 
                       sh 'mvn validate' // Invokes the jacoco merge goal
 
-                      jacoco(execPattern: '*/target/coverage-reports/aggregate.exec',
+                      jacoco(execPattern: 'target/coverage-reports/aggregate.exec',
                              classPattern: '*/classes',
                              sourcePattern: '*/src/main/java',
                              exclusionPattern: '*/src/test*',
