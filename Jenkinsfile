@@ -110,24 +110,28 @@ pipeline {
                       }
                     }
           steps {
-                      unstash 'reports1'
-                      sh "mv de.upb.soot.tests/target/coverage-reports/jacoco-ut.exec de.upb.soot.tests/target/coverage-reports/jacoco-ut-jdk8.exec"
-                      sh "rm -f de.upb.soot.tests/target/coverage-reports/aggregate.exec"
+                      script{
+                           sootmodules = ['core','javabytecodefrontend','javasourcecodefrontend','callgraph'];
+                            sootmodules.each{ item ->
+                                unstash 'reports1'
+                                sh "mv de.upb.soot.${item}/target/coverage-reports/jacoco-ut.exec de.upb.soot.tests/target/coverage-reports/jacoco-ut-${item}-jdk8.exec"
+                                sh "rm -f de.upb.soot.${item}/target/coverage-reports/aggregate.exec"
 
-                      unstash 'reports2'
-                      sh "mv de.upb.soot.tests/target/coverage-reports/jacoco-ut.exec de.upb.soot.tests/target/coverage-reports/jacoco-ut-jdk9.exec"
-                      sh "rm -f de.upb.soot.tests/target/coverage-reports/aggregate.exec"
-
+                                unstash 'reports2'
+                                sh "mv de.upb.soot.${item}/target/coverage-reports/jacoco-ut.exec de.upb.soot.tests/target/coverage-reports/jacoco-ut-${item}-jdk9.exec"
+                                sh "rm -f de.upb.soot.${item}/target/coverage-reports/aggregate.exec"
+                            }
+                      }
                       sh 'mvn validate' // Invokes the jacoco merge goal
 
-                      jacoco(execPattern: '**/de.upb.soot.tests/target/coverage-reports/aggregate.exec',
-                             classPattern: '**/classes',
-                             sourcePattern: '**/src/main/java',
-                             exclusionPattern: '**/src/test*',
-                             changeBuildStatus: false,
-                             minimumMethodCoverage: "50",
-                             maximumMethodCoverage: "70",
-                             deltaMethodCoverage: "10")
+                        jacoco(execPattern: '**/target/coverage-reports/aggregate.exec',
+                               classPattern: '**/classes',
+                               sourcePattern: 'src/main/java',
+                               exclusionPattern: 'src/test*',
+                               changeBuildStatus: false,
+                               minimumMethodCoverage: "50",
+                               maximumMethodCoverage: "70",
+                               deltaMethodCoverage: "10")
         	        }
         		}
 
