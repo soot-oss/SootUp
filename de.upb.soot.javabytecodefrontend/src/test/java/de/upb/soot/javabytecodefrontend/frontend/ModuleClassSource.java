@@ -1,8 +1,9 @@
-package de.upb.soot.frontends;
+package de.upb.soot.javabytecodefrontend.frontend;
 
 import de.upb.soot.core.Modifier;
 import de.upb.soot.core.Position;
 import de.upb.soot.core.SootModuleInfo;
+import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import java.nio.file.Path;
