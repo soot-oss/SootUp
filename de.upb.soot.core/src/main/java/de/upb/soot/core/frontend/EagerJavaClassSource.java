@@ -41,7 +41,7 @@ public class EagerJavaClassSource extends ClassSource {
       Set<SootMethod> sootMethods,
       Position position,
       EnumSet<Modifier> modifiers) {
-    super(srcNamespace, sourcePath, classType);
+    super(srcNamespace, classType, sourcePath);
 
     this.superClass = superClass;
     this.interfaces = interfaces;
