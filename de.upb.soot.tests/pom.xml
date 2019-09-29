@@ -46,7 +46,7 @@
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>${surefireArgLine}</argLine>
-                    <groups>${testcase.groups}</groups>
+                    <!--<groups>${testcase.groups}</groups>-->
                 </configuration>
             </plugin>
             <plugin>

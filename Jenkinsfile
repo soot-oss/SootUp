@@ -120,10 +120,10 @@ pipeline {
 
                       sh 'mvn validate' // Invokes the jacoco merge goal
 
-                      jacoco(execPattern: 'de.upb.soot.tests/target/coverage-reports/aggregate.exec',
-                             classPattern: '*/classes',
-                             sourcePattern: '*/src/main/java',
-                             exclusionPattern: '*/src/test*',
+                      jacoco(execPattern: '**/de.upb.soot.tests/target/coverage-reports/aggregate.exec',
+                             classPattern: '**/classes',
+                             sourcePattern: '**/src/main/java',
+                             exclusionPattern: '**/src/test*',
                              changeBuildStatus: false,
                              minimumMethodCoverage: "50",
                              maximumMethodCoverage: "70",
