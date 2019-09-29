@@ -30,8 +30,8 @@
         <!-- <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
           <checkstyle.version>8.9</checkstyle.version> <checkstyle.dir.path>${basedir}/codingstyle</checkstyle.dir.path>
           <checkstyle.file.path>${checkstyle.dir.path}/google_checkstyle.xml</checkstyle.file.path> -->
-        <maven-surefire-plugin.version>2.22.1</maven-surefire-plugin.version>
-        <jacoco-maven-plugin.version>0.8.3</jacoco-maven-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <jacoco-maven-plugin.version>0.8.4</jacoco-maven-plugin.version>
         <jacoco-badge-maven-plugin.version>0.1.3</jacoco-badge-maven-plugin.version>
         <jacoco-badge-phase>verify</jacoco-badge-phase>
         <slf4j.version>1.7.25</slf4j.version>
@@ -158,7 +158,7 @@
 
                     </execution>
                     <!-- Ensures that the code coverage report for unit tests is
-                    created after unit tests have been run. - - >
+                    created after unit tests have been run. -->
                     <execution>
                         <id>post-unit-test</id>
                         <phase>test</phase>
@@ -166,12 +166,13 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <!- - Sets the path to the file which contains the execution data. - ->
+                            <!-- Sets the path to the file which contains the execution data. -->
                             <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-                            <!- - Sets the output directory for the code coverage report. - ->
+                            <!-- Sets the output directory for the code coverage report. -->
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
                         </configuration>
                     </execution>
+
                     <execution>
                         <id>merge-results</id>
                         <phase>validate</phase>
@@ -189,7 +190,7 @@
                             </fileSets>
                             <destFile>${project.build.directory}/coverage-reports/aggregate.exec</destFile>
                         </configuration>
-                    </execution>-->
+                    </execution>
                 </executions>
             </plugin>
             <plugin>

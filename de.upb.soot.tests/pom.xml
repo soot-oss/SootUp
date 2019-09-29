@@ -46,7 +46,7 @@
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
                     <argLine>${surefireArgLine}</argLine>
-                    <!--<groups>${testcase.groups}</groups>-->
+                    <groups>${testcase.groups}</groups>
                 </configuration>
             </plugin>
             <plugin>
@@ -59,6 +59,11 @@
                         <goals>
                             <goal>report-aggregate</goal>
                         </goals>
+                            <configuration>
+                            <dataFileIncludes>
+                                <dataFileInclude>**/coverage-reports/*.exec</dataFileInclude>
+                            </dataFileIncludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
