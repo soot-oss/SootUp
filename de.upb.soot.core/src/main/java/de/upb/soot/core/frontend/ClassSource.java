@@ -40,7 +40,7 @@ public abstract class ClassSource extends AbstractClassSource {
    *     {@link ClassSource}, backed up by the given file
    */
   public ClassSource(
-      AnalysisInputLocation srcNamespace, Path sourcePath, JavaClassType classSignature) {
+      AnalysisInputLocation srcNamespace, JavaClassType classSignature, Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);
     checkNotNull(srcNamespace);
   }

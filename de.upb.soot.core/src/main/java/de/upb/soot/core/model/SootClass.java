@@ -134,9 +134,6 @@ public class SootClass extends AbstractClass<ClassSource> {
 
   /** Returns the number of fields in this class. */
   public int getFieldCount() {
-    // FIXME "This has to be refactored later. I'm unsure whether we still need the resolving
-    // levels."
-    // https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r267007069
     return getFields().size();
   }
 
@@ -406,7 +403,6 @@ public class SootClass extends AbstractClass<ClassSource> {
   // }
   // }
 
-  // FIXME: get rid of the wala class position
   private final Supplier<Position> lazyPosition = Suppliers.memoize(classSource::resolvePosition);
 
   @Nonnull

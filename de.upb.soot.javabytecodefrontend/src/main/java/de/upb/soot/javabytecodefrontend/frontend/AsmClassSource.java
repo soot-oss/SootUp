@@ -37,7 +37,7 @@ class AsmClassSource extends ClassSource {
       Path sourcePath,
       JavaClassType javaClassType,
       @Nonnull ClassNode classNode) {
-    super(inputLocation, sourcePath, javaClassType);
+    super(inputLocation, javaClassType, sourcePath);
     this.classNode = classNode;
   }
 
