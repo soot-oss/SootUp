@@ -101,8 +101,6 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
   private volatile boolean isFullyResolved = false;
 
-  public
-
   /** Creates a new instance of the {@link JavaView} class. */
   private JavaView(@Nonnull Project<S> project) {
     super(project);
@@ -138,6 +136,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
       return Optional.of(sootClass);
     }
 
+    /*
     // TODO: [ms] should this code live here? what about sourcecodefrontend resolving? -> own
     // javaviews? split view? decorator+calling frontends method for resolving?
     AbstractClass<? extends AbstractClassSource> theClass;
@@ -153,6 +152,8 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
     map.putIfAbsent(theClass.getType(), theClass);
     return Optional.of(theClass);
+    */
+    return Optional.empty();
   }
 
   private synchronized void resolveAll() {
