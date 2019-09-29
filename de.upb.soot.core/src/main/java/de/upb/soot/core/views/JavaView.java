@@ -126,9 +126,10 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   @Nonnull
   private synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
       AbstractClassSource classSource) {
-    AbstractClass<? extends AbstractClassSource> theClass = this.map.get(classSource.getClassType());
+    AbstractClass<? extends AbstractClassSource> theClass =
+        this.map.get(classSource.getClassType());
     if (theClass == null) {
-      theClass = classSource.reifyClass(classSource);
+      theClass = classSource.reifyClass();
       map.putIfAbsent(theClass.getType(), theClass);
     }
     return Optional.of(theClass);
