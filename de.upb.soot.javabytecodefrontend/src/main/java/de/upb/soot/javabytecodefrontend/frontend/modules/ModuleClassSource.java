@@ -2,6 +2,7 @@ package de.upb.soot.javabytecodefrontend.frontend.modules;
 
 import de.upb.soot.core.frontend.AbstractClassSource;
 import de.upb.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.model.AbstractClass;
 import de.upb.soot.core.model.Modifier;
 import de.upb.soot.core.model.Position;
 import de.upb.soot.core.types.JavaClassType;
@@ -36,4 +37,9 @@ public abstract class ModuleClassSource extends AbstractClassSource {
   public abstract Set<Modifier> resolveModifiers();
 
   public abstract Position resolvePosition();
+
+  @Override
+  public AbstractClass reifyClass() {
+    return new SootModuleInfo(this, false);
+  }
 }

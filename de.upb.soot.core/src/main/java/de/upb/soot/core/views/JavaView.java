@@ -126,30 +126,12 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   @Nonnull
   private synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
       AbstractClassSource classSource) {
-    AbstractClass<? extends AbstractClassSource> sootClass =
-        this.map.get(classSource.getClassType());
-    if (sootClass != null) {
-      return Optional.of(sootClass);
+    AbstractClass<? extends AbstractClassSource> theClass = this.map.get(classSource.getClassType());
+    if (theClass == null) {
+      theClass = classSource.reifyClass(classSource);
+      map.putIfAbsent(theClass.getType(), theClass);
     }
-
-    /*
-    // TODO: [ms] should this code live here? what about sourcecodefrontend resolving? -> own
-    // javaviews? split view? decorator+calling frontends method for resolving?
-    AbstractClass<? extends AbstractClassSource> theClass;
-    if (classSource instanceof ClassSource) {
-      // TODO: [cb] Don't use a fixed SourceType here. [ms]: lift determination of SourceType up to
-      // classSource->AnalysisInputLocation?
-      theClass = new SootClass((ClassSource) classSource, SourceType.Application);
-    } else if (classSource instanceof ModuleClassSource) {
-      theClass = new SootModuleInfo((ModuleClassSource) classSource, false);
-    } else {
-      throw new ResolveException("AbstractClassSource has unknown type " + classSource);
-    }
-
-    map.putIfAbsent(theClass.getType(), theClass);
     return Optional.of(theClass);
-    */
-    return Optional.empty();
   }
 
   private synchronized void resolveAll() {

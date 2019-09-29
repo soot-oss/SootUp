@@ -2,11 +2,12 @@ package de.upb.soot.core.frontend;
 
 import com.google.common.base.Objects;
 import de.upb.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.model.AbstractClass;
 import de.upb.soot.core.types.JavaClassType;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 
-public class AbstractClassSource {
+public abstract class AbstractClassSource {
   protected final AnalysisInputLocation srcNamespace;
   protected final Path sourcePath;
   // TODO: AD unfortunately I need to change it in the ModuleFinder, since I only know a module's
@@ -24,6 +25,8 @@ public class AbstractClassSource {
   public JavaClassType getClassType() {
     return classSignature;
   }
+
+  public abstract AbstractClass reifyClass();
 
   public Path getSourcePath() {
     return sourcePath;

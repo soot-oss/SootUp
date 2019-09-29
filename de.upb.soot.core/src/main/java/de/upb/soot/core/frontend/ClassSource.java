@@ -3,11 +3,7 @@ package de.upb.soot.core.frontend;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import de.upb.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.soot.core.model.Modifier;
-import de.upb.soot.core.model.Position;
-import de.upb.soot.core.model.SootClass;
-import de.upb.soot.core.model.SootField;
-import de.upb.soot.core.model.SootMethod;
+import de.upb.soot.core.model.*;
 import de.upb.soot.core.types.JavaClassType;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -24,6 +20,13 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  */
 public abstract class ClassSource extends AbstractClassSource {
+
+  @Override
+  public AbstractClass reifyClass() {
+    // TODO: [cb] Don't use a fixed SourceType here. [ms]: lift determination of SourceType up to
+    // classSource->AnalysisInputLocation?
+    return new SootClass(this, SourceType.Application);
+  }
 
   /**
    * Creates and a {@link ClassSource} for a specific source file. The file should be passed as
