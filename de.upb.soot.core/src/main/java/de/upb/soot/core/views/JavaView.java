@@ -3,12 +3,8 @@ package de.upb.soot.core.views;
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.core.Project;
 import de.upb.soot.core.frontend.AbstractClassSource;
-import de.upb.soot.core.frontend.ClassSource;
-import de.upb.soot.core.frontend.ResolveException;
 import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.core.model.AbstractClass;
-import de.upb.soot.core.model.SootClass;
-import de.upb.soot.core.model.SourceType;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.ImmutableUtils;
@@ -102,7 +98,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   private volatile boolean isFullyResolved = false;
 
   /** Creates a new instance of the {@link JavaView} class. */
-  private JavaView(@Nonnull Project<S> project) {
+  public JavaView(@Nonnull Project<S> project) {
     super(project);
   }
 
