@@ -32,7 +32,6 @@ import de.upb.soot.core.jimple.visitor.Visitor;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.Copyable;
 import de.upb.soot.core.util.printer.StmtPrinter;
-
 import java.util.Collections;
 import java.util.List;
 

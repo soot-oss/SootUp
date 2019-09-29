@@ -3,7 +3,6 @@ package de.upb.soot.core.frontend;
 import com.google.common.base.Objects;
 import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.core.types.JavaClassType;
-
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 

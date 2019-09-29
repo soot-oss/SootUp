@@ -4,7 +4,6 @@ import de.upb.soot.core.buildactor.ViewBuilder;
 import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.core.util.NotYetImplementedException;
 import de.upb.soot.core.views.View;
-
 import javax.annotation.Nonnull;
 
 /**

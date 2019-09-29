@@ -31,15 +31,13 @@ import de.upb.soot.core.model.Body;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.Copyable;
 import de.upb.soot.core.util.printer.StmtPrinter;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /**
- * Local variable in {@link Body}. Use {@link
- * LocalGenerator} to generate locals.
+ * Local variable in {@link Body}. Use {@link LocalGenerator} to generate locals.
  *
  * @author Linghui Luo
  */

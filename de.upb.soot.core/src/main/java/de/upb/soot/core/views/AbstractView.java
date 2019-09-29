@@ -2,12 +2,9 @@ package de.upb.soot.core.views;
 
 import de.upb.soot.core.IdentifierFactory;
 import de.upb.soot.core.Options;
+import de.upb.soot.core.Project;
 import de.upb.soot.core.Scope;
 import de.upb.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.soot.core.Project;
-import de.upb.soot.callgraph.CallGraph;
-import de.upb.soot.callgraph.CallGraphAlgorithm;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -35,20 +32,6 @@ public abstract class AbstractView<S extends AnalysisInputLocation> implements V
   @Nonnull
   public IdentifierFactory getIdentifierFactory() {
     return this.getProject().getIdentifierFactory();
-  }
-
-  @Override
-  @Nonnull
-  public CallGraph createCallGraph() {
-    // TODO Auto-generated methodRef stub
-    return null;
-  }
-
-  @Override
-  @Nonnull
-  public CallGraph createCallGraph(CallGraphAlgorithm algorithm) {
-    // TODO Auto-generated methodRef stub
-    return null;
   }
 
   @Override

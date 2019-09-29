@@ -2,7 +2,6 @@ package de.upb.soot.core.graph;
 
 import de.upb.soot.core.jimple.common.stmt.Stmt;
 import de.upb.soot.core.model.Body;
-
 import java.util.HashMap;
 
 /*-

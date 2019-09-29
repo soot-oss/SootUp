@@ -2,13 +2,13 @@ package de.upb.soot.javabytecodefrontend.frontend;
 
 import de.upb.soot.core.DefaultIdentifierFactory;
 import de.upb.soot.core.IdentifierFactory;
+import de.upb.soot.core.frontend.ClassSource;
+import de.upb.soot.core.frontend.ResolveException;
+import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.core.model.Modifier;
 import de.upb.soot.core.model.Position;
 import de.upb.soot.core.model.SootField;
 import de.upb.soot.core.model.SootMethod;
-import de.upb.soot.core.frontend.ClassSource;
-import de.upb.soot.core.frontend.ResolveException;
-import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.core.signatures.FieldSignature;
 import de.upb.soot.core.signatures.MethodSignature;
 import de.upb.soot.core.types.JavaClassType;

@@ -1,10 +1,10 @@
 package de.upb.soot.javasourcecodefrontend.frontend;
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
-import de.upb.soot.core.model.Modifier;
-import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.core.frontend.MethodSource;
 import de.upb.soot.core.frontend.OverridingMethodSource;
+import de.upb.soot.core.model.Modifier;
+import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.core.signatures.MethodSignature;
 import de.upb.soot.core.types.JavaClassType;
 import java.util.function.Function;

@@ -1,12 +1,6 @@
 package referencejimple;
 
 import de.upb.soot.core.DefaultIdentifierFactory;
-import de.upb.soot.core.model.Body;
-import de.upb.soot.core.model.Modifier;
-import de.upb.soot.core.model.SootClass;
-import de.upb.soot.core.model.SootField;
-import de.upb.soot.core.model.SootMethod;
-import de.upb.soot.core.model.SourceType;
 import de.upb.soot.core.frontend.EagerJavaClassSource;
 import de.upb.soot.core.frontend.EagerMethodSource;
 import de.upb.soot.core.frontend.MethodSource;
@@ -20,6 +14,12 @@ import de.upb.soot.core.jimple.basic.Trap;
 import de.upb.soot.core.jimple.basic.Value;
 import de.upb.soot.core.jimple.common.constant.IntConstant;
 import de.upb.soot.core.jimple.common.stmt.Stmt;
+import de.upb.soot.core.model.Body;
+import de.upb.soot.core.model.Modifier;
+import de.upb.soot.core.model.SootClass;
+import de.upb.soot.core.model.SootField;
+import de.upb.soot.core.model.SootMethod;
+import de.upb.soot.core.model.SourceType;
 import de.upb.soot.core.signatures.FieldSignature;
 import de.upb.soot.core.signatures.MethodSignature;
 import de.upb.soot.core.types.JavaClassType;

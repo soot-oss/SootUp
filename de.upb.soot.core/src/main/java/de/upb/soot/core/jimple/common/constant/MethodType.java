@@ -4,7 +4,6 @@ import de.upb.soot.core.DefaultIdentifierFactory;
 import de.upb.soot.core.jimple.visitor.Visitor;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.Copyable;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;

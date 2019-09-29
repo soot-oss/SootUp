@@ -23,8 +23,8 @@
 package referencejimple;
 
 import de.upb.soot.core.Project;
-import de.upb.soot.core.model.SootClass;
 import de.upb.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.model.SootClass;
 import de.upb.soot.core.util.printer.Printer;
 import de.upb.soot.core.views.JavaView;
 import java.io.File;

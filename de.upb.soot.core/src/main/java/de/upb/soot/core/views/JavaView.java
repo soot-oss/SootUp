@@ -1,16 +1,10 @@
 package de.upb.soot.core.views;
 
 import com.google.common.collect.ImmutableSet;
-import de.upb.soot.core.frontend.AbstractClassSource;
-import de.upb.soot.core.frontend.ClassSource;
-import de.upb.soot.core.frontend.ResolveException;
-import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.core.Project;
+import de.upb.soot.core.frontend.AbstractClassSource;
+import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.core.model.AbstractClass;
-import de.upb.soot.core.model.SootClass;
-import de.upb.soot.core.model.SootModuleInfo;
-import de.upb.soot.core.model.SourceType;
-import de.upb.soot.frontend.ModuleClassSource;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.ImmutableUtils;
@@ -145,8 +139,12 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
         this.map.get(classSource.getClassType());
     if (sootClass != null) {
       return Optional.of(sootClass);
+    } else {
+      return Optional.empty();
     }
 
+    // TODO: [ms] should this code live here?
+    /*
     AbstractClass<? extends AbstractClassSource> theClass;
     if (classSource instanceof ClassSource) {
       // TODO Don't use a fixed SourceType here.
@@ -159,6 +157,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
     map.putIfAbsent(theClass.getType(), theClass);
     return Optional.of(theClass);
+    */
   }
 
   private synchronized void resolveAll() {

@@ -23,11 +23,10 @@ package de.upb.soot.core.inputlocation;
  */
 
 import de.upb.soot.core.IdentifierFactory;
-import de.upb.soot.core.model.SootClass;
 import de.upb.soot.core.frontend.AbstractClassSource;
 import de.upb.soot.core.frontend.ClassProvider;
+import de.upb.soot.core.model.SootClass;
 import de.upb.soot.core.types.JavaClassType;
-
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;

@@ -26,7 +26,6 @@ import de.upb.soot.core.jimple.basic.Local;
 import de.upb.soot.core.jimple.basic.Value;
 import de.upb.soot.core.jimple.basic.ValueBox;
 import de.upb.soot.core.model.Body;
-
 import java.util.List;
 
 public class LocalsValidator implements BodyValidator {

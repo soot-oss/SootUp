@@ -7,8 +7,6 @@
     <name>Soots (integration) testing and coverage module </name>
     <groupId>de.upb</groupId>
     <artifactId>soot.tests</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
 
     <parent>
         <groupId>de.upb</groupId>

@@ -6,7 +6,6 @@ import de.upb.soot.core.model.Position;
 import de.upb.soot.core.model.SootField;
 import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.core.types.JavaClassType;
-
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.EnumSet;

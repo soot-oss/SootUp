@@ -6,11 +6,10 @@ import de.upb.soot.core.frontend.ClassProvider;
 import de.upb.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.soot.core.inputlocation.ClassResolvingException;
 import de.upb.soot.core.inputlocation.PathUtils;
-import de.upb.soot.inputlocation.*;
-import de.upb.soot.javabytecodefrontend.frontend.modules.AsmModuleClassSource;
 import de.upb.soot.core.signatures.ModuleSignature;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.ModuleDecoratorClassType;
+import de.upb.soot.javabytecodefrontend.frontend.modules.AsmModuleClassSource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -78,8 +77,7 @@ public class ModuleFinder {
    * @param moduleName the module name
    * @return the input location that resolves classes contained in the module
    */
-  public @Nullable
-  AbstractAnalysisInputLocation discoverModule(@Nonnull String moduleName) {
+  public @Nullable AbstractAnalysisInputLocation discoverModule(@Nonnull String moduleName) {
     AbstractAnalysisInputLocation inputLocationForModule = moduleInputLocation.get(moduleName);
     if (inputLocationForModule != null) {
       return inputLocationForModule;

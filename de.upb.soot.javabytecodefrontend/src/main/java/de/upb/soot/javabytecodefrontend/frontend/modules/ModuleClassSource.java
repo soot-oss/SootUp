@@ -1,10 +1,9 @@
 package de.upb.soot.javabytecodefrontend.frontend.modules;
 
-import de.upb.soot.core.model.Modifier;
-import de.upb.soot.core.model.Position;
-import de.upb.soot.core.model.SootModuleInfo;
 import de.upb.soot.core.frontend.AbstractClassSource;
 import de.upb.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.model.Modifier;
+import de.upb.soot.core.model.Position;
 import de.upb.soot.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.Collection;

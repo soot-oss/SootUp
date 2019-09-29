@@ -1,10 +1,9 @@
 package de.upb.soot.core.buildactor;
 
-import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.core.Project;
+import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.core.views.JavaView;
 import de.upb.soot.core.views.View;
-
 import javax.annotation.Nonnull;
 
 /**

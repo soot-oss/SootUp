@@ -2,12 +2,12 @@ package de.upb.soot.core.buildactor;
 
 import akka.actor.AbstractLoggingActor;
 import akka.actor.Props;
-import de.upb.soot.core.model.SootClass;
-import de.upb.soot.core.model.AbstractClass;
-import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.core.frontend.AbstractClassSource;
 import de.upb.soot.core.frontend.ClassSource;
 import de.upb.soot.core.frontend.ResolveException;
+import de.upb.soot.core.model.AbstractClass;
+import de.upb.soot.core.model.SootClass;
+import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.core.views.View;
 
 /* INFO: test can be found in de.upb.soot.tests package */

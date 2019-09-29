@@ -1,8 +1,7 @@
 package de.upb.soot.core.frontend;
 
-import de.upb.soot.core.signatures.MethodSignature;
 import de.upb.soot.core.model.Body;
-
+import de.upb.soot.core.signatures.MethodSignature;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

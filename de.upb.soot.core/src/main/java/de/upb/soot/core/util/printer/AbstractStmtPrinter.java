@@ -30,7 +30,6 @@ import de.upb.soot.core.jimple.common.stmt.Stmt;
 import de.upb.soot.core.model.SootField;
 import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.core.types.Type;
-
 import java.util.HashSet;
 
 /** Partial default StmtPrinter implementation. */

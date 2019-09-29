@@ -2,7 +2,6 @@ package de.upb.soot.core.jimple.basic;
 
 import de.upb.soot.core.jimple.common.stmt.Stmt;
 import de.upb.soot.core.types.JavaClassType;
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;

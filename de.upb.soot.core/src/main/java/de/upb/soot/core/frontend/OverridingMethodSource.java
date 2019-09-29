@@ -1,9 +1,8 @@
 package de.upb.soot.core.frontend;
 
 import de.upb.soot.core.jimple.common.stmt.Stmt;
-import de.upb.soot.core.signatures.MethodSignature;
 import de.upb.soot.core.model.Body;
-
+import de.upb.soot.core.signatures.MethodSignature;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;

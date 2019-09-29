@@ -7,7 +7,6 @@ import de.upb.soot.core.model.Body;
 import de.upb.soot.core.model.SootField;
 import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.core.types.Type;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;

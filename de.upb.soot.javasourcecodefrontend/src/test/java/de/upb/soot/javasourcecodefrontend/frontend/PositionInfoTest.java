@@ -5,10 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.soot.core.DefaultIdentifierFactory;
-import de.upb.soot.core.model.Position;
-import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.core.jimple.basic.PositionInfo;
 import de.upb.soot.core.jimple.common.stmt.Stmt;
+import de.upb.soot.core.model.Position;
+import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.core.types.JavaClassType;
 import java.util.ArrayList;
 import java.util.Arrays;

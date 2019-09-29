@@ -1,5 +1,6 @@
 package de.upb.soot.core.util.printer;
 
+import de.upb.soot.core.jimple.Jimple;
 import de.upb.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.soot.core.jimple.common.ref.JParameterRef;
@@ -8,7 +9,6 @@ import de.upb.soot.core.jimple.common.stmt.Stmt;
 import de.upb.soot.core.model.Body;
 import de.upb.soot.core.model.SootField;
 import de.upb.soot.core.model.SootMethod;
-import de.upb.soot.core.jimple.Jimple;
 import de.upb.soot.core.signatures.FieldSignature;
 import de.upb.soot.core.signatures.MethodSignature;
 import de.upb.soot.core.types.Type;

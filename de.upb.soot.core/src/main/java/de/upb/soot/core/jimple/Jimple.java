@@ -24,9 +24,6 @@
 
 package de.upb.soot.core.jimple;
 
-import de.upb.soot.core.jimple.common.constant.IntConstant;
-import de.upb.soot.core.signatures.FieldSignature;
-import de.upb.soot.core.signatures.MethodSignature;
 import de.upb.soot.core.jimple.basic.ConditionExprBox;
 import de.upb.soot.core.jimple.basic.IdentityRefBox;
 import de.upb.soot.core.jimple.basic.ImmediateBox;
@@ -39,6 +36,7 @@ import de.upb.soot.core.jimple.basic.PositionInfo;
 import de.upb.soot.core.jimple.basic.StmtBox;
 import de.upb.soot.core.jimple.basic.Value;
 import de.upb.soot.core.jimple.basic.ValueBox;
+import de.upb.soot.core.jimple.common.constant.IntConstant;
 import de.upb.soot.core.jimple.common.expr.JAddExpr;
 import de.upb.soot.core.jimple.common.expr.JAndExpr;
 import de.upb.soot.core.jimple.common.expr.JCastExpr;
@@ -93,6 +91,8 @@ import de.upb.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.core.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.soot.core.signatures.FieldSignature;
+import de.upb.soot.core.signatures.MethodSignature;
 import de.upb.soot.core.types.ArrayType;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.NullType;
@@ -100,7 +100,6 @@ import de.upb.soot.core.types.PrimitiveType;
 import de.upb.soot.core.types.ReferenceType;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.types.VoidType;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -391,7 +390,7 @@ public class Jimple {
 
   /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */
   public static JStaticInvokeExpr newStaticInvokeExpr(
-          MethodSignature method, List<? extends Value> args) {
+      MethodSignature method, List<? extends Value> args) {
     return new JStaticInvokeExpr(method, args);
   }
 
@@ -412,7 +411,7 @@ public class Jimple {
    * chunk.
    */
   public static JSpecialInvokeExpr newSpecialInvokeExpr(
-          Local base, MethodSignature method, List<? extends Value> args) {
+      Local base, MethodSignature method, List<? extends Value> args) {
     return new JSpecialInvokeExpr(base, method, args);
   }
 

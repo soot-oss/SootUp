@@ -1,13 +1,15 @@
-package de.upb.soot.core.model;
+package de.upb.soot.javabytecodefrontend.frontend.modules;
 
 import com.google.common.base.Suppliers;
 import de.upb.soot.core.frontend.ClassSource;
 import de.upb.soot.core.frontend.ResolveException;
+import de.upb.soot.core.model.AbstractClass;
+import de.upb.soot.core.model.Field;
+import de.upb.soot.core.model.Method;
+import de.upb.soot.core.model.Modifier;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.ImmutableUtils;
-import de.upb.soot.frontend.ModuleClassSource;
-
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;

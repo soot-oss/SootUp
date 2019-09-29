@@ -25,11 +25,10 @@
 
 package de.upb.soot.core.jimple.basic;
 
-import de.upb.soot.core.jimple.common.stmt.Stmt;
 import de.upb.soot.core.jimple.Jimple;
+import de.upb.soot.core.jimple.common.stmt.Stmt;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.util.Copyable;
-
 import javax.annotation.Nonnull;
 
 public final class JTrap extends AbstractTrap implements Copyable {

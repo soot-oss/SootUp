@@ -26,13 +26,13 @@
 
 package de.upb.soot.core.jimple.common.expr;
 
-import de.upb.soot.core.model.SootClass;
 import de.upb.soot.core.jimple.Jimple;
 import de.upb.soot.core.jimple.basic.JimpleComparator;
 import de.upb.soot.core.jimple.basic.Value;
 import de.upb.soot.core.jimple.basic.ValueBox;
 import de.upb.soot.core.jimple.visitor.ExprVisitor;
 import de.upb.soot.core.jimple.visitor.Visitor;
+import de.upb.soot.core.model.SootClass;
 import de.upb.soot.core.signatures.MethodSignature;
 import de.upb.soot.core.util.Copyable;
 import de.upb.soot.core.util.printer.StmtPrinter;

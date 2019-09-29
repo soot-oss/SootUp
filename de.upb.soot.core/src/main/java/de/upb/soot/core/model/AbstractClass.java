@@ -6,7 +6,6 @@ import de.upb.soot.core.signatures.MethodSubSignature;
 import de.upb.soot.core.signatures.Signature;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.views.View;
-
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;

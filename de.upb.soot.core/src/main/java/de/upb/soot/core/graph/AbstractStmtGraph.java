@@ -4,7 +4,6 @@ import de.upb.soot.core.jimple.basic.StmtBox;
 import de.upb.soot.core.jimple.common.stmt.Stmt;
 import de.upb.soot.core.model.Body;
 import de.upb.soot.core.model.SootMethod;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

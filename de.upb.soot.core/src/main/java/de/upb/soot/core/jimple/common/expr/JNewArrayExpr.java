@@ -36,7 +36,6 @@ import de.upb.soot.core.types.ArrayType;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.Copyable;
 import de.upb.soot.core.util.printer.StmtPrinter;
-
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;

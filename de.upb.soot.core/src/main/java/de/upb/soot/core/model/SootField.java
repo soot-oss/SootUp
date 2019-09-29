@@ -25,7 +25,6 @@ import de.upb.soot.core.signatures.FieldSignature;
 import de.upb.soot.core.signatures.FieldSubSignature;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.builder.BuilderException;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

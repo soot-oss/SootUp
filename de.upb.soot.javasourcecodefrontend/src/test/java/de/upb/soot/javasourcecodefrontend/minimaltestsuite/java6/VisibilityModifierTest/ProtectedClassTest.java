@@ -2,12 +2,12 @@ package de.upb.soot.javasourcecodefrontend.minimaltestsuite.java6.VisibilityModi
 
 import static org.junit.Assert.*;
 
+import de.upb.soot.core.jimple.common.stmt.Stmt;
 import de.upb.soot.core.model.Body;
 import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.javasourcecodefrontend.frontend.Utils;
 import de.upb.soot.javasourcecodefrontend.frontend.WalaClassLoaderTestUtils;
 import de.upb.soot.javasourcecodefrontend.minimaltestsuite.LoadClassesWithWala;
-import de.upb.soot.core.jimple.common.stmt.Stmt;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

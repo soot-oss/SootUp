@@ -25,7 +25,6 @@ package de.upb.soot.core.signatures;
 import de.upb.soot.core.IdentifierFactory;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.Type;
-
 import java.util.List;
 import javax.annotation.Nonnull;
 

@@ -21,6 +21,8 @@
  */
 package de.upb.soot.core.util.printer;
 
+import de.upb.soot.core.graph.AbstractStmtGraph;
+import de.upb.soot.core.graph.BriefStmtGraph;
 import de.upb.soot.core.jimple.basic.Local;
 import de.upb.soot.core.jimple.basic.Trap;
 import de.upb.soot.core.jimple.common.stmt.Stmt;
@@ -31,11 +33,8 @@ import de.upb.soot.core.model.Modifier;
 import de.upb.soot.core.model.SootClass;
 import de.upb.soot.core.model.SootField;
 import de.upb.soot.core.model.SootMethod;
-import de.upb.soot.core.graph.AbstractStmtGraph;
-import de.upb.soot.core.graph.BriefStmtGraph;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.Type;
-
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;

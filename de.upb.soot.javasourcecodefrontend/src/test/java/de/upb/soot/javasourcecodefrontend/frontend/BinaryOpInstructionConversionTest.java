@@ -8,8 +8,6 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.soot.core.DefaultIdentifierFactory;
-import de.upb.soot.core.model.Body;
-import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.core.jimple.Jimple;
 import de.upb.soot.core.jimple.basic.Local;
 import de.upb.soot.core.jimple.common.constant.BooleanConstant;
@@ -39,6 +37,8 @@ import de.upb.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.core.jimple.common.stmt.Stmt;
+import de.upb.soot.core.model.Body;
+import de.upb.soot.core.model.SootMethod;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.PrimitiveType;
 import java.util.Arrays;

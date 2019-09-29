@@ -28,7 +28,6 @@ package de.upb.soot.core.jimple.basic;
 import de.upb.soot.core.jimple.visitor.Acceptor;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.printer.StmtPrinter;
-
 import java.util.List;
 
 /**

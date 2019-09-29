@@ -30,7 +30,6 @@ package de.upb.soot.core.jimple.basic;
 
 import de.upb.soot.core.jimple.common.stmt.Stmt;
 import de.upb.soot.core.util.printer.StmtPrinter;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

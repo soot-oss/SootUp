@@ -5,7 +5,6 @@ import de.upb.soot.core.frontend.AbstractClassSource;
 import de.upb.soot.core.frontend.ClassProvider;
 import de.upb.soot.core.frontend.ResolveException;
 import de.upb.soot.core.types.JavaClassType;
-
 import java.util.*;
 import javax.annotation.Nonnull;
 

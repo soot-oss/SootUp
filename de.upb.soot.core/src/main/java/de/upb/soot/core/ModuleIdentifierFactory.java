@@ -5,7 +5,6 @@ import de.upb.soot.core.signatures.ModulePackageName;
 import de.upb.soot.core.signatures.ModuleSignature;
 import de.upb.soot.core.signatures.PackageName;
 import de.upb.soot.core.types.JavaClassType;
-
 import java.util.HashMap;
 import java.util.Map;
 

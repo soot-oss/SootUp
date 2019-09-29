@@ -6,7 +6,6 @@ import de.upb.soot.core.frontend.ClassProvider;
 import de.upb.soot.core.frontend.ClassSource;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.util.NotYetImplementedException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

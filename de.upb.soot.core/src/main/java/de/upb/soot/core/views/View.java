@@ -4,11 +4,8 @@ import de.upb.soot.core.IdentifierFactory;
 import de.upb.soot.core.Options;
 import de.upb.soot.core.Scope;
 import de.upb.soot.core.frontend.AbstractClassSource;
-import de.upb.soot.callgraph.CallGraph;
-import de.upb.soot.callgraph.CallGraphAlgorithm;
 import de.upb.soot.core.model.AbstractClass;
 import de.upb.soot.core.types.JavaClassType;
-
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -41,23 +38,6 @@ public interface View {
    */
   @Nonnull
   Optional<AbstractClass<? extends AbstractClassSource>> getClass(@Nonnull JavaClassType signature);
-
-  /**
-   * Provides the call graph using the default algorithm.
-   *
-   * @return A call graph valid in the view
-   */
-  @Nonnull
-  CallGraph createCallGraph();
-
-  /**
-   * Provides the call graph using a provided algorithm.
-   *
-   * @param algorithm A call graph algorithm
-   * @return A call graph valid in the view
-   */
-  @Nonnull
-  CallGraph createCallGraph(CallGraphAlgorithm algorithm);
 
   /**
    * Returns the scope if the view is scoped.

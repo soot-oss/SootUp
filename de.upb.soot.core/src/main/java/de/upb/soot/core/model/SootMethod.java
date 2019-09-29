@@ -21,8 +21,6 @@ package de.upb.soot.core.model;
  * #L%
  */
 
-import static de.upb.soot.core.util.ImmutableUtils.immutableListOf;
-
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import de.upb.soot.core.frontend.MethodSource;
@@ -35,7 +33,6 @@ import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.Copyable;
 import de.upb.soot.core.util.ImmutableUtils;
 import de.upb.soot.core.util.builder.BuilderException;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;

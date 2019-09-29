@@ -7,18 +7,17 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.soot.core.DefaultIdentifierFactory;
-import de.upb.soot.core.model.AbstractClass;
 import de.upb.soot.core.frontend.AbstractClassSource;
 import de.upb.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.model.AbstractClass;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.Type;
+import de.upb.soot.core.views.JavaView;
 import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import de.upb.soot.core.views.JavaView;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;

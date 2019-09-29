@@ -61,7 +61,6 @@ import de.upb.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.soot.core.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
-
 import java.util.Iterator;
 
 /**

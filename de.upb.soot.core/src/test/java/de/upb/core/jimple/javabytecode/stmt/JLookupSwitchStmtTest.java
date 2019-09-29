@@ -33,9 +33,8 @@ import de.upb.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.soot.core.jimple.common.stmt.Stmt;
-import java.util.ArrayList;
-
 import de.upb.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
+import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 

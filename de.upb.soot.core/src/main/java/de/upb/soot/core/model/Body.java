@@ -21,6 +21,11 @@ package de.upb.soot.core.model;
  * #L%
  */
 
+import de.upb.soot.core.jimple.basic.Local;
+import de.upb.soot.core.jimple.basic.LocalGenerator;
+import de.upb.soot.core.jimple.basic.StmtBox;
+import de.upb.soot.core.jimple.basic.Trap;
+import de.upb.soot.core.jimple.basic.ValueBox;
 import de.upb.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.soot.core.jimple.common.ref.JThisRef;
 import de.upb.soot.core.jimple.common.stmt.JIdentityStmt;
@@ -29,11 +34,6 @@ import de.upb.soot.core.util.Copyable;
 import de.upb.soot.core.util.EscapedWriter;
 import de.upb.soot.core.util.ImmutableUtils;
 import de.upb.soot.core.util.printer.Printer;
-import de.upb.soot.core.jimple.basic.Local;
-import de.upb.soot.core.jimple.basic.LocalGenerator;
-import de.upb.soot.core.jimple.basic.StmtBox;
-import de.upb.soot.core.jimple.basic.Trap;
-import de.upb.soot.core.jimple.basic.ValueBox;
 import de.upb.soot.core.validation.BodyValidator;
 import de.upb.soot.core.validation.CheckEscapingValidator;
 import de.upb.soot.core.validation.CheckInitValidator;
@@ -46,7 +46,6 @@ import de.upb.soot.core.validation.TrapsValidator;
 import de.upb.soot.core.validation.UsesValidator;
 import de.upb.soot.core.validation.ValidationException;
 import de.upb.soot.core.validation.ValueBoxesValidator;
-
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;

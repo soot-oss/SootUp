@@ -27,12 +27,11 @@ import static de.upb.soot.core.util.FunctionalUtils.tryCastTo;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import de.upb.soot.core.IdentifierFactory;
+import de.upb.soot.core.ModuleIdentifierFactory;
 import de.upb.soot.core.inputlocation.FileType;
+import de.upb.soot.core.model.SootClass;
 import de.upb.soot.core.signatures.PackageName;
 import de.upb.soot.core.views.View;
-import de.upb.soot.core.ModuleIdentifierFactory;
-import de.upb.soot.core.model.SootClass;
-
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;

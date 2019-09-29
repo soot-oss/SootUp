@@ -28,7 +28,6 @@ import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.util.ImmutableUtils;
 import de.upb.soot.core.util.builder.AbstractBuilder;
 import de.upb.soot.core.util.builder.BuilderException;
-
 import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nonnull;

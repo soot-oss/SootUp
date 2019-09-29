@@ -32,7 +32,6 @@ import de.upb.soot.core.signatures.MethodSubSignature;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.ImmutableUtils;
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;

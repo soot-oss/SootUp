@@ -30,7 +30,6 @@
 package de.upb.soot.core.jimple.basic;
 
 import de.upb.soot.core.jimple.common.stmt.Stmt;
-
 import javax.annotation.Nullable;
 
 public class JStmtBox extends StmtBox {

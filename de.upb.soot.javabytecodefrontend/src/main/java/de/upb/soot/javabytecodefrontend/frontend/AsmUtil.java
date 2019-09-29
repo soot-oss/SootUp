@@ -6,7 +6,6 @@ import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.PrimitiveType;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.types.VoidType;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
