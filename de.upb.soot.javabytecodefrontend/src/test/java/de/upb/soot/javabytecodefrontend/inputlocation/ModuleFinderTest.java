@@ -3,7 +3,7 @@ package de.upb.soot.javabytecodefrontend.inputlocation;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
-import de.upb.soot.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
 import java.lang.reflect.Field;
 import java.nio.file.Path;

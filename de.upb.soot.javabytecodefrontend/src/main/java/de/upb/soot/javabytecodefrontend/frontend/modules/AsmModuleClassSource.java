@@ -1,12 +1,11 @@
 package de.upb.soot.javabytecodefrontend.frontend.modules;
 
-import de.upb.soot.core.Modifier;
-import de.upb.soot.core.Position;
-import de.upb.soot.core.SootModuleInfo;
-import de.upb.soot.frontends.ModuleClassSource;
-import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.model.Modifier;
+import de.upb.soot.core.model.Position;
+import de.upb.soot.core.model.SootModuleInfo;
+import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.javabytecodefrontend.frontend.AsmUtil;
-import de.upb.soot.types.JavaClassType;
+import de.upb.soot.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,12 +1,12 @@
 package de.upb.soot.javasourcecodefrontend.inputlocation;
 
-import de.upb.soot.IdentifierFactory;
-import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.soot.core.IdentifierFactory;
+import de.upb.soot.core.frontend.AbstractClassSource;
+import de.upb.soot.core.frontend.ResolveException;
+import de.upb.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.soot.javasourcecodefrontend.frontend.WalaClassLoader;
 import de.upb.soot.javasourcecodefrontend.frontend.WalaJavaClassProvider;
-import de.upb.soot.types.JavaClassType;
+import de.upb.soot.core.types.JavaClassType;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Optional;

@@ -1,12 +1,12 @@
 package de.upb.soot.javabytecodefrontend.inputlocation;
 
-import de.upb.soot.DefaultIdentifierFactory;
-import de.upb.soot.IdentifierFactory;
-import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ClassProvider;
-import de.upb.soot.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.soot.core.DefaultIdentifierFactory;
+import de.upb.soot.core.IdentifierFactory;
+import de.upb.soot.core.frontend.AbstractClassSource;
+import de.upb.soot.core.frontend.ClassProvider;
+import de.upb.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
-import de.upb.soot.types.JavaClassType;
+import de.upb.soot.core.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
 import org.junit.Assert;

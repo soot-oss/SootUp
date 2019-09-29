@@ -1,11 +1,11 @@
 package de.upb.soot.javasourcecodefrontend.frontend;
 
-import de.upb.soot.frontends.ClassProvider;
-import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.inputlocation.AnalysisInputLocation;
-import de.upb.soot.inputlocation.FileType;
-import de.upb.soot.types.JavaClassType;
+import de.upb.soot.core.frontend.ClassProvider;
+import de.upb.soot.core.frontend.ClassSource;
+import de.upb.soot.core.frontend.ResolveException;
+import de.upb.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.inputlocation.FileType;
+import de.upb.soot.core.types.JavaClassType;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 

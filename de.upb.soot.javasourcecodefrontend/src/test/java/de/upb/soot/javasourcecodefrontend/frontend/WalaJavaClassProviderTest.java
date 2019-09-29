@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import categories.Java8Test;
-import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.inputlocation.FileType;
+import de.upb.soot.core.frontend.ClassSource;
+import de.upb.soot.core.inputlocation.FileType;
 import de.upb.soot.javasourcecodefrontend.inputlocation.JavaSourcePathAnalysisInputLocation;
-import de.upb.soot.signatures.PackageName;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.util.ImmutableUtils;
+import de.upb.soot.core.signatures.PackageName;
+import de.upb.soot.core.types.JavaClassType;
+import de.upb.soot.core.util.ImmutableUtils;
 import java.nio.file.Paths;
 import org.junit.Assert;
 import org.junit.Test;

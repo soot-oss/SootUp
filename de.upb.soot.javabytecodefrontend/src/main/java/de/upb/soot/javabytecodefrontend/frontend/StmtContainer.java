@@ -1,15 +1,15 @@
 package de.upb.soot.javabytecodefrontend.frontend;
 
-import de.upb.soot.jimple.basic.JimpleComparator;
-import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.jimple.basic.StmtBox;
-import de.upb.soot.jimple.basic.ValueBox;
-import de.upb.soot.jimple.common.expr.AbstractInvokeExpr;
-import de.upb.soot.jimple.common.ref.JArrayRef;
-import de.upb.soot.jimple.common.ref.JFieldRef;
-import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.jimple.visitor.Visitor;
-import de.upb.soot.util.printer.StmtPrinter;
+import de.upb.soot.core.jimple.basic.JimpleComparator;
+import de.upb.soot.core.jimple.basic.PositionInfo;
+import de.upb.soot.core.jimple.basic.StmtBox;
+import de.upb.soot.core.jimple.basic.ValueBox;
+import de.upb.soot.core.jimple.common.expr.AbstractInvokeExpr;
+import de.upb.soot.core.jimple.common.ref.JArrayRef;
+import de.upb.soot.core.jimple.common.ref.JFieldRef;
+import de.upb.soot.core.jimple.common.stmt.Stmt;
+import de.upb.soot.core.jimple.visitor.Visitor;
+import de.upb.soot.core.util.printer.StmtPrinter;
 import java.util.List;
 import javax.annotation.Nonnull;
 

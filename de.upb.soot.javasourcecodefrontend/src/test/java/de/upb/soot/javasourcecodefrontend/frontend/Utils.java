@@ -1,9 +1,9 @@
 package de.upb.soot.javasourcecodefrontend.frontend;
 
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.jimple.basic.EquivTo;
-import de.upb.soot.util.printer.Printer;
+import de.upb.soot.core.model.SootClass;
+import de.upb.soot.core.model.SootMethod;
+import de.upb.soot.core.jimple.basic.EquivTo;
+import de.upb.soot.core.util.printer.Printer;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;

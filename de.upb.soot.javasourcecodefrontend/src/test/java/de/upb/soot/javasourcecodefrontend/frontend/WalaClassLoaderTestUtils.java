@@ -1,9 +1,9 @@
 package de.upb.soot.javasourcecodefrontend.frontend;
 
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.core.SourceType;
-import de.upb.soot.signatures.MethodSignature;
+import de.upb.soot.core.model.SootClass;
+import de.upb.soot.core.model.SootMethod;
+import de.upb.soot.core.model.SourceType;
+import de.upb.soot.core.signatures.MethodSignature;
 import java.util.Optional;
 
 public class WalaClassLoaderTestUtils {

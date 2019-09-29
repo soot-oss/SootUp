@@ -3,9 +3,9 @@ package de.upb.soot.javasourcecodefrontend.frontend;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultIdentifierFactory;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.types.JavaClassType;
+import de.upb.soot.core.DefaultIdentifierFactory;
+import de.upb.soot.core.model.SootMethod;
+import de.upb.soot.core.types.JavaClassType;
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.Before;

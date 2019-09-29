@@ -23,8 +23,8 @@ package de.upb.soot.javabytecodefrontend.inputlocation;
  */
 
 import categories.Java8Test;
-import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.types.JavaClassType;
+import de.upb.soot.core.frontend.AbstractClassSource;
+import de.upb.soot.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;

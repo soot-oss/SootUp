@@ -22,11 +22,11 @@
 
 package referencejimple;
 
-import de.upb.soot.Project;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.inputlocation.AnalysisInputLocation;
-import de.upb.soot.util.printer.Printer;
-import de.upb.soot.views.JavaView;
+import de.upb.soot.core.Project;
+import de.upb.soot.core.model.SootClass;
+import de.upb.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.util.printer.Printer;
+import de.upb.soot.core.views.JavaView;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;

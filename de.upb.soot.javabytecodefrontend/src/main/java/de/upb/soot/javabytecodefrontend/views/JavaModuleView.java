@@ -1,14 +1,14 @@
 package de.upb.soot.javabytecodefrontend.views;
 
-import de.upb.soot.Project;
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootModuleInfo;
-import de.upb.soot.frontends.AbstractClassSource;
+import de.upb.soot.core.Project;
+import de.upb.soot.core.model.AbstractClass;
+import de.upb.soot.core.model.SootClass;
+import de.upb.soot.core.model.SootModuleInfo;
+import de.upb.soot.core.frontend.AbstractClassSource;
 import de.upb.soot.javabytecodefrontend.inputlocation.JavaModulePathAnalysisInputLocation;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.Type;
-import de.upb.soot.views.View;
+import de.upb.soot.core.types.JavaClassType;
+import de.upb.soot.core.types.Type;
+import de.upb.soot.core.views.View;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

@@ -24,14 +24,14 @@ package de.upb.soot.javabytecodefrontend.inputlocation;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
-import de.upb.soot.IdentifierFactory;
-import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ClassProvider;
-import de.upb.soot.inputlocation.AbstractAnalysisInputLocation;
-import de.upb.soot.inputlocation.AnalysisInputLocation;
-import de.upb.soot.inputlocation.PathUtils;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.util.StreamUtils;
+import de.upb.soot.core.IdentifierFactory;
+import de.upb.soot.core.frontend.AbstractClassSource;
+import de.upb.soot.core.frontend.ClassProvider;
+import de.upb.soot.core.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.inputlocation.PathUtils;
+import de.upb.soot.core.types.JavaClassType;
+import de.upb.soot.core.util.StreamUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

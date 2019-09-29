@@ -1,6 +1,6 @@
 package de.upb.soot.javabytecodefrontend.frontend;
 
-import de.upb.soot.frontends.ResolveException;
+import de.upb.soot.core.frontend.ResolveException;
 import javax.annotation.Nullable;
 
 /** Exception thrown in the front-End */

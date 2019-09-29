@@ -1,13 +1,13 @@
 package de.upb.soot.callgraph.typehierarchy;
 
 import com.google.common.base.Suppliers;
-import de.upb.soot.types.ArrayType;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.NullType;
-import de.upb.soot.types.PrimitiveType;
-import de.upb.soot.types.ReferenceType;
-import de.upb.soot.types.Type;
-import de.upb.soot.views.View;
+import de.upb.soot.core.types.ArrayType;
+import de.upb.soot.core.types.JavaClassType;
+import de.upb.soot.core.types.NullType;
+import de.upb.soot.core.types.PrimitiveType;
+import de.upb.soot.core.types.ReferenceType;
+import de.upb.soot.core.types.Type;
+import de.upb.soot.core.views.View;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

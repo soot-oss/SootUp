@@ -22,13 +22,13 @@ package de.upb.soot.javabytecodefrontend.frontend;
  * #L%
  */
 
-import de.upb.soot.jimple.basic.StmtBox;
-import de.upb.soot.jimple.basic.Trap;
-import de.upb.soot.jimple.common.expr.JCastExpr;
-import de.upb.soot.jimple.common.stmt.JAssignStmt;
-import de.upb.soot.jimple.common.stmt.JGotoStmt;
-import de.upb.soot.jimple.common.stmt.JReturnStmt;
-import de.upb.soot.jimple.common.stmt.Stmt;
+import de.upb.soot.core.jimple.basic.StmtBox;
+import de.upb.soot.core.jimple.basic.Trap;
+import de.upb.soot.core.jimple.common.expr.JCastExpr;
+import de.upb.soot.core.jimple.common.stmt.JAssignStmt;
+import de.upb.soot.core.jimple.common.stmt.JGotoStmt;
+import de.upb.soot.core.jimple.common.stmt.JReturnStmt;
+import de.upb.soot.core.jimple.common.stmt.Stmt;
 import java.util.List;
 import javax.annotation.Nonnull;
 

@@ -1,8 +1,8 @@
 package de.upb.soot.javabytecodefrontend.inputlocation;
 
 import categories.Java9Test;
-import de.upb.soot.ModuleIdentifierFactory;
-import de.upb.soot.types.JavaClassType;
+import de.upb.soot.core.ModuleIdentifierFactory;
+import de.upb.soot.core.types.JavaClassType;
 import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;

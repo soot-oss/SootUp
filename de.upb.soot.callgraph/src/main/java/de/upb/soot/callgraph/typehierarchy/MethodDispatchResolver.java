@@ -1,14 +1,14 @@
 package de.upb.soot.callgraph.typehierarchy;
 
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.Method;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.frontends.ResolveException;
-import de.upb.soot.jimple.common.expr.JSpecialInvokeExpr;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.views.View;
+import de.upb.soot.core.model.AbstractClass;
+import de.upb.soot.core.model.Method;
+import de.upb.soot.core.model.SootMethod;
+import de.upb.soot.core.frontend.AbstractClassSource;
+import de.upb.soot.core.frontend.ResolveException;
+import de.upb.soot.core.jimple.common.expr.JSpecialInvokeExpr;
+import de.upb.soot.core.signatures.MethodSignature;
+import de.upb.soot.core.types.JavaClassType;
+import de.upb.soot.core.views.View;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;

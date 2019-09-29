@@ -1,6 +1,6 @@
 package de.upb.soot.callgraph.typehierarchy;
 
-import de.upb.soot.core.SootClass;
+import de.upb.soot.core.model.SootClass;
 
 /** For internal use only. */
 public interface MutableTypeHierarchy extends TypeHierarchy {

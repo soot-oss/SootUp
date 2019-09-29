@@ -22,9 +22,9 @@ package de.upb.soot.javabytecodefrontend.frontend;
  * #L%
  */
 
-import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.basic.Value;
-import de.upb.soot.jimple.basic.ValueBox;
+import de.upb.soot.core.jimple.basic.Local;
+import de.upb.soot.core.jimple.basic.Value;
+import de.upb.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;

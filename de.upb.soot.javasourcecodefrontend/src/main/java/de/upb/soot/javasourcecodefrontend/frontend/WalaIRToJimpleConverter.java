@@ -17,34 +17,34 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
-import de.upb.soot.DefaultIdentifierFactory;
-import de.upb.soot.Project;
-import de.upb.soot.core.Body;
-import de.upb.soot.core.Modifier;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootField;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.core.SourceType;
-import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.EagerJavaClassSource;
-import de.upb.soot.frontends.EagerMethodSource;
-import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.DefaultIdentifierFactory;
+import de.upb.soot.core.Project;
+import de.upb.soot.core.model.Body;
+import de.upb.soot.core.model.Modifier;
+import de.upb.soot.core.model.SootClass;
+import de.upb.soot.core.model.SootField;
+import de.upb.soot.core.model.SootMethod;
+import de.upb.soot.core.model.SourceType;
+import de.upb.soot.core.frontend.ClassSource;
+import de.upb.soot.core.frontend.EagerJavaClassSource;
+import de.upb.soot.core.frontend.EagerMethodSource;
+import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.javasourcecodefrontend.inputlocation.JavaSourcePathAnalysisInputLocation;
-import de.upb.soot.jimple.Jimple;
-import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.basic.LocalGenerator;
-import de.upb.soot.jimple.basic.PositionInfo;
-import de.upb.soot.jimple.basic.Trap;
-import de.upb.soot.jimple.common.stmt.JReturnVoidStmt;
-import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.signatures.FieldSignature;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.types.NullType;
-import de.upb.soot.types.PrimitiveType;
-import de.upb.soot.types.Type;
-import de.upb.soot.types.VoidType;
-import de.upb.soot.views.JavaView;
+import de.upb.soot.core.jimple.Jimple;
+import de.upb.soot.core.jimple.basic.Local;
+import de.upb.soot.core.jimple.basic.LocalGenerator;
+import de.upb.soot.core.jimple.basic.PositionInfo;
+import de.upb.soot.core.jimple.basic.Trap;
+import de.upb.soot.core.jimple.common.stmt.JReturnVoidStmt;
+import de.upb.soot.core.jimple.common.stmt.Stmt;
+import de.upb.soot.core.signatures.FieldSignature;
+import de.upb.soot.core.signatures.MethodSignature;
+import de.upb.soot.core.types.JavaClassType;
+import de.upb.soot.core.types.NullType;
+import de.upb.soot.core.types.PrimitiveType;
+import de.upb.soot.core.types.Type;
+import de.upb.soot.core.types.VoidType;
+import de.upb.soot.core.views.JavaView;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -559,8 +559,8 @@ public class WalaIRToJimpleConverter {
   /*
    *   converts Wala Position to Soots Position
    * */
-  public static de.upb.soot.core.Position convertPosition(Position instructionPosition) {
-    return new de.upb.soot.core.Position(
+  public static de.upb.soot.core.model.Position convertPosition(Position instructionPosition) {
+    return new de.upb.soot.core.model.Position(
         instructionPosition.getFirstLine(),
         instructionPosition.getFirstCol(),
         instructionPosition.getLastLine(),
@@ -573,19 +573,19 @@ public class WalaIRToJimpleConverter {
     if (operandPosition == null) {
       return new PositionInfo(convertPosition(instructionPosition), null);
     }
-    de.upb.soot.core.Position[] operandPos =
+    de.upb.soot.core.model.Position[] operandPos =
         Arrays.stream(operandPosition)
             .map(
                 instrPos -> {
                   return instrPos == null
                       ? null
-                      : new de.upb.soot.core.Position(
+                      : new de.upb.soot.core.model.Position(
                           instrPos.getFirstLine(),
                           instrPos.getFirstCol(),
                           instrPos.getLastLine(),
                           instrPos.getLastCol());
                 })
-            .toArray(de.upb.soot.core.Position[]::new);
+            .toArray(de.upb.soot.core.model.Position[]::new);
 
     return new PositionInfo(convertPosition(instructionPosition), operandPos);
   }
