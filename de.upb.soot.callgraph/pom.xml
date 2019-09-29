@@ -2,11 +2,12 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <name>Soot Callgraph</name>
   <groupId>de.upb</groupId>
-  <artifactId>Soot.CallGraph</artifactId>
+  <artifactId>soot.callgraph</artifactId>
   <packaging>jar</packaging>
   <version>4.0.0-SNAPSHOT</version>
-  <name>Soot Callgraph</name>
 
   <parent>
     <groupId>de.upb</groupId>
@@ -18,12 +19,12 @@
 
     <dependency>
       <groupId>de.upb</groupId>
-      <artifactId>Soot.Core</artifactId>
+      <artifactId>soot.core</artifactId>
       <version>4.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>de.upb</groupId>
-      <artifactId>Soot.JavaBytecodeFrontend</artifactId>
+      <artifactId>soot.javabytecodefrontend</artifactId>
       <version>4.0.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>

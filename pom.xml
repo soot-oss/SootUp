@@ -9,14 +9,14 @@
     <name>Soot</name>
     <groupId>de.upb</groupId>
     <artifactId>Soot</artifactId>
-    <modules>
-        <module>core</module>
-        <module>javasourcecodefrontend</module>
-        <module>javabytecodefrontend</module>
-        <module>callgraph</module>
-    </modules>
-
     <version>4.0.0-SNAPSHOT</version>
+
+    <modules>
+        <module>de.upb.soot.core</module>
+        <module>de.upb.soot.javasourcecodefrontend</module>
+        <module>de.upb.soot.javabytecodefrontend</module>
+        <module>de.upb.soot.callgraph</module>
+    </modules>
 
     <!-- Shared Configuration -->
     <properties>

@@ -2,11 +2,12 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <name>Soot Java Sourcecode Frontend</name>
   <groupId>de.upb</groupId>
-  <artifactId>Soot.JavaSourcecodeFrontend</artifactId>
+  <artifactId>soot.javasourcecodefrontend</artifactId>
   <packaging>jar</packaging>
   <version>4.0.0-SNAPSHOT</version>
-  <name>Soot Java Sourcecode Frontend</name>
 
   <parent>
     <groupId>de.upb</groupId>
@@ -22,7 +23,7 @@
 
     <dependency>
       <groupId>de.upb</groupId>
-      <artifactId>Soot.Core</artifactId>
+      <artifactId>soot.core</artifactId>
       <version>4.0.0-SNAPSHOT</version>
     </dependency>
 
