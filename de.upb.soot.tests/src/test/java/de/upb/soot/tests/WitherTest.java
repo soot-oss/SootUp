@@ -1,6 +1,5 @@
 package de.upb.soot.tests;
 
-
 // TODO: rewrite
 /*
 import static org.junit.Assert.*;

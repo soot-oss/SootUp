@@ -3,8 +3,12 @@ package de.upb.soot.core.views;
 import com.google.common.collect.ImmutableSet;
 import de.upb.soot.core.Project;
 import de.upb.soot.core.frontend.AbstractClassSource;
+import de.upb.soot.core.frontend.ClassSource;
+import de.upb.soot.core.frontend.ResolveException;
 import de.upb.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.soot.core.model.AbstractClass;
+import de.upb.soot.core.model.SootClass;
+import de.upb.soot.core.model.SourceType;
 import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.core.types.Type;
 import de.upb.soot.core.util.ImmutableUtils;
@@ -24,7 +28,6 @@ import javax.annotation.Nonnull;
  */
 public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
-  // region Fields
   /** Defines Java's reserved names. */
   @Nonnull
   public static final ImmutableSet<String> RESERVED_NAMES =
@@ -98,18 +101,12 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
   private volatile boolean isFullyResolved = false;
 
-  // endregion /Fields/
-
-  // region Constructor
+  public
 
   /** Creates a new instance of the {@link JavaView} class. */
-  public JavaView(@Nonnull Project<S> project) {
+  private JavaView(@Nonnull Project<S> project) {
     super(project);
   }
-
-  // endregion /Constructor/
-
-  // region Methods
 
   @Override
   @Nonnull
@@ -139,15 +136,14 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
         this.map.get(classSource.getClassType());
     if (sootClass != null) {
       return Optional.of(sootClass);
-    } else {
-      return Optional.empty();
     }
 
-    // TODO: [ms] should this code live here?
-    /*
+    // TODO: [ms] should this code live here? what about sourcecodefrontend resolving? -> own
+    // javaviews? split view? decorator+calling frontends method for resolving?
     AbstractClass<? extends AbstractClassSource> theClass;
     if (classSource instanceof ClassSource) {
-      // TODO Don't use a fixed SourceType here.
+      // TODO: [cb] Don't use a fixed SourceType here. [ms]: lift determination of SourceType up to
+      // classSource->AnalysisInputLocation?
       theClass = new SootClass((ClassSource) classSource, SourceType.Application);
     } else if (classSource instanceof ModuleClassSource) {
       theClass = new SootModuleInfo((ModuleClassSource) classSource, false);
@@ -157,7 +153,6 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
     map.putIfAbsent(theClass.getType(), theClass);
     return Optional.of(theClass);
-    */
   }
 
   private synchronized void resolveAll() {
@@ -171,6 +166,11 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
     }
   }
 
+  @Override
+  public boolean doneResolving() {
+    return isFullyResolved;
+  }
+
   private static final class SplitPatternHolder {
     private static final char SPLIT_CHAR = '.';
 
@@ -179,6 +179,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
         Pattern.compile(Character.toString(SPLIT_CHAR), Pattern.LITERAL);
   }
 
+  // TODO: [ms] usecase?
   @Override
   @Nonnull
   public String quotedNameOf(@Nonnull String s) {
@@ -200,6 +201,4 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
     return res.toString();
   }
-
-  // endregion /Methods/
 }

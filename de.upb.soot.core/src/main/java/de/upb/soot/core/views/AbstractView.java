@@ -42,12 +42,6 @@ public abstract class AbstractView<S extends AnalysisInputLocation> implements V
   }
 
   @Override
-  public boolean doneResolving() {
-    // TODO Auto-generated methodRef stub
-    return false;
-  }
-
-  @Override
   @Nonnull
   public Options getOptions() {
     return this.options;
