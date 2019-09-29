@@ -1,6 +1,6 @@
-package de.upb.soot.buildactor;
+package de.upb.soot.tests;
 
-// TODO: adapt if still relevant
+// TODO: rewrite
 /*
 import static org.junit.Assert.assertTrue;
 
@@ -11,7 +11,8 @@ import de.upb.soot.core.AbstractClass;
 import de.upb.soot.core.SootModuleInfo;
 import de.upb.soot.frontends.AbstractClassSource;
 import de.upb.soot.inputlocation.AnalysisInputLocation;
-import de.upb.soot.inputlocation.EagerInputLocation;
+import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
+import de.upb.soot.javabytecodefrontend.inputlocation.JavaModulePathAnalysisInputLocation;
 import de.upb.soot.types.JavaClassType;
 import de.upb.soot.views.View;
 import java.util.Optional;
@@ -25,7 +26,9 @@ public class ModuleBuilderActorTest {
   private View createNewScene() {
 
     final AnalysisInputLocation javaClassPathNamespace =
-        new new JavaModulePathAnalysisInputLocation(("target/test-classes/de/upb/soot/namespaces/modules");
+        new JavaModulePathAnalysisInputLocation(
+            "target/test-classes/de/upb/soot/namespaces/modules",
+            new AsmJavaClassProvider());
 
     Project<AnalysisInputLocation> project =
         new Project<>(javaClassPathNamespace, ModuleIdentifierFactory.getInstance());

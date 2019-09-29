@@ -16,6 +16,8 @@
         <module>de.upb.soot.javasourcecodefrontend</module>
         <module>de.upb.soot.javabytecodefrontend</module>
         <module>de.upb.soot.callgraph</module>
+
+        <module>de.upb.soot.tests</module>
     </modules>
 
     <!-- Shared Configuration -->
