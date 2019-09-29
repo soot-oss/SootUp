@@ -111,11 +111,11 @@ pipeline {
                     }
           steps {
                       unstash 'reports1'
-                      sh "mv de.upb.soot.tests/target/coverage-reports/jacoco-ut.exec de.upb.soot.tests/target/coverage-reports/jacoco-ut-${module}-jdk8.exec"
+                      sh "mv de.upb.soot.tests/target/coverage-reports/jacoco-ut.exec de.upb.soot.tests/target/coverage-reports/jacoco-ut-jdk8.exec"
                       sh "rm -f de.upb.soot.tests/target/coverage-reports/aggregate.exec"
 
                       unstash 'reports2'
-                      sh "mv de.upb.soot.tests/target/coverage-reports/jacoco-ut.exec de.upb.soot.tests/target/coverage-reports/jacoco-ut-${module}-jdk9.exec"
+                      sh "mv de.upb.soot.tests/target/coverage-reports/jacoco-ut.exec de.upb.soot.tests/target/coverage-reports/jacoco-ut-jdk9.exec"
                       sh "rm -f de.upb.soot.tests/target/coverage-reports/aggregate.exec"
 
                       sh 'mvn validate' // Invokes the jacoco merge goal
