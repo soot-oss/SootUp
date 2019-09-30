@@ -1,24 +1,21 @@
 package de.upb.soot.tests;
 
-// TODO: rewrite
-/*
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
-import de.upb.soot.ModuleIdentifierFactory;
-import de.upb.soot.Project;
-import de.upb.soot.core.AbstractClass;
-import de.upb.soot.core.SootModuleInfo;
-import de.upb.soot.frontends.AbstractClassSource;
-import de.upb.soot.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.ModuleIdentifierFactory;
+import de.upb.soot.core.Project;
+import de.upb.soot.core.frontend.AbstractClassSource;
+import de.upb.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.model.AbstractClass;
+import de.upb.soot.core.types.JavaClassType;
+import de.upb.soot.core.views.View;
 import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
+import de.upb.soot.javabytecodefrontend.frontend.modules.SootModuleInfo;
 import de.upb.soot.javabytecodefrontend.inputlocation.JavaModulePathAnalysisInputLocation;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.views.View;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
 
 @Category(Java9Test.class)
 public class ModuleBuilderActorTest {
@@ -27,8 +24,7 @@ public class ModuleBuilderActorTest {
 
     final AnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
-            "target/test-classes/de/upb/soot/namespaces/modules",
-            new AsmJavaClassProvider());
+            "target/test-classes/de/upb/soot/namespaces/modules", new AsmJavaClassProvider());
 
     Project<AnalysisInputLocation> project =
         new Project<>(javaClassPathNamespace, ModuleIdentifierFactory.getInstance());
@@ -74,4 +70,3 @@ public class ModuleBuilderActorTest {
     assertTrue(result.get() instanceof SootModuleInfo);
   }
 }
-*/
