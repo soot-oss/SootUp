@@ -20,7 +20,7 @@ public class Java7EnhancementsTest {
 
   @Before
   public void loadClassesWithWala() {
-    String srcDir = "src/test/resources/java-target/java7";
+    String srcDir = "../shared-test-resources/java-target/java7";
     loader = new WalaClassLoader(srcDir, null);
     typeFactory = DefaultIdentifierFactory.getInstance();
   }

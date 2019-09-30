@@ -22,7 +22,7 @@ public class JavaSourcePathNamespaceTest {
 
   @Test
   public void testGetClassSource() {
-    String srcDir = "src/test/resources/wala-tests/";
+    String srcDir = "../shared-test-resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(
@@ -45,7 +45,7 @@ public class JavaSourcePathNamespaceTest {
 
   @Test
   public void testGetClassProvider() {
-    String srcDir = "src/test/resources/wala-tests/";
+    String srcDir = "../shared-test-resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(
@@ -57,7 +57,7 @@ public class JavaSourcePathNamespaceTest {
 
   @Test
   public void testGetClassSources() {
-    String srcDir = "src/test/resources/wala-tests/";
+    String srcDir = "../shared-test-resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(

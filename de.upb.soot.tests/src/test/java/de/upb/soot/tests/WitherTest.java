@@ -1,21 +1,22 @@
 package de.upb.soot.tests;
 
-// TODO: rewrite
-/*
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultIdentifierFactory;
-import de.upb.soot.core.Body;
-import de.upb.soot.core.SootClass;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.core.SourceType;
-import de.upb.soot.frontends.ClassSource;
+import de.upb.soot.core.DefaultIdentifierFactory;
+import de.upb.soot.core.frontend.ClassSource;
+import de.upb.soot.core.jimple.basic.Local;
+import de.upb.soot.core.jimple.common.stmt.JIdentityStmt;
+import de.upb.soot.core.jimple.common.stmt.Stmt;
+import de.upb.soot.core.model.Body;
+import de.upb.soot.core.model.SootClass;
+import de.upb.soot.core.model.SootMethod;
+import de.upb.soot.core.model.SourceType;
+import de.upb.soot.core.types.JavaClassType;
 import de.upb.soot.javasourcecodefrontend.frontend.WalaClassLoader;
-import de.upb.soot.jimple.basic.Local;
-import de.upb.soot.jimple.common.stmt.JIdentityStmt;
-import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.types.JavaClassType;
 import java.util.Arrays;
 import java.util.Optional;
 import org.junit.Before;
@@ -25,14 +26,13 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class WitherTest {
 
-
   private WalaClassLoader loader;
   private DefaultIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
-    String srcDir = "de.upb.soot.javasourcecodefrontend/src/test/resources/selected-java-target/";
+    String srcDir = "../shared-test-resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir, null);
     identifierFactory = DefaultIdentifierFactory.getInstance();
     declareClassSig = identifierFactory.getClassType("BinaryOperations");
@@ -82,4 +82,3 @@ public class WitherTest {
         "newName", ((Local) ((JIdentityStmt) body.getStmts().get(0)).getLeftOp()).getName());
   }
 }
-*/

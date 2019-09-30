@@ -33,7 +33,7 @@ public class SelectedInstructionConversionTest {
 
   @Before
   public void loadClassesWithWala() {
-    String srcDir = "src/test/resources/wala-tests/";
+    String srcDir = "../shared-test-resources/wala-tests/";
     loader = new WalaClassLoader(srcDir, null);
     identifierFactory = DefaultIdentifierFactory.getInstance();
   }

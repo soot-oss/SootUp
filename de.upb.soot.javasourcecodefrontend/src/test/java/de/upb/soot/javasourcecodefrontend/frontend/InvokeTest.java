@@ -31,7 +31,7 @@ public class InvokeTest {
 
   @Before
   public void loadClassesWithWala() {
-    String srcDir = "src/test/resources/selected-java-target/";
+    String srcDir = "../shared-test-resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir, null);
     identifierFactory = DefaultIdentifierFactory.getInstance();
   }

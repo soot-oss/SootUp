@@ -22,7 +22,7 @@ public class WalaJavaClassProviderTest {
   public void testCreateClassSource() {
     // TODO It's not ideal that we need to pass exclusionFilePath twice
 
-    String srcDir = "src/test/resources/wala-tests/";
+    String srcDir = "../shared-test-resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     JavaSourcePathAnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(

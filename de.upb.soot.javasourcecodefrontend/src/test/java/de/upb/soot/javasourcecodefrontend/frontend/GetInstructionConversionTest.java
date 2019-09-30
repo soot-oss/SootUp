@@ -38,7 +38,7 @@ public class GetInstructionConversionTest {
 
   @Before
   public void loadClassesWithWala() {
-    String srcDir = "src/test/resources/wala-tests/";
+    String srcDir = "../shared-test-resources/wala-tests/";
     loader = new WalaClassLoader(srcDir, null);
     typeFactory = DefaultIdentifierFactory.getInstance();
     declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");

@@ -11,7 +11,7 @@ public class ExampleTest {
 
   @Test
   public void test1() {
-    String srcDir = "src/test/resources/wala-tests/";
+    String srcDir = "../shared-test-resources/wala-tests/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     String[] args = {srcDir, exclusionFilePath};
     // FIXME need to check later why WALA crashed
@@ -20,7 +20,7 @@ public class ExampleTest {
 
   @Ignore
   public void test2() {
-    String srcDir = "src/test/resources/java-target/";
+    String srcDir = "../shared-test-resources/java-target/";
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     String[] args = {srcDir, exclusionFilePath};
     // FIXME need to check later why WALA crashed
