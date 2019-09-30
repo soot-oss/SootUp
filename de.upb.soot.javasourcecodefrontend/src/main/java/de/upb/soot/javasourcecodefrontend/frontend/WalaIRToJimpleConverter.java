@@ -1,7 +1,4 @@
-package de.upb.soot.javasourcecodefrontend.frontend; /*
-                                                      * @author Linghui Luo
-                                                      * @version 1.0
-                                                      */
+package de.upb.soot.javasourcecodefrontend.frontend;
 
 import com.ibm.wala.cast.loader.AstClass;
 import com.ibm.wala.cast.loader.AstField;
@@ -445,9 +442,8 @@ public class WalaIRToJimpleConverter {
         // TODO 2. convert traps
         // get exceptions which are not caught
         FixedSizeBitVector blocks = cfg.getExceptionalToExit();
-        de.upb.soot.javasourcecodefrontend.frontend.InstructionConverter instConverter =
-            new de.upb.soot.javasourcecodefrontend.frontend.InstructionConverter(
-                this, methodSignature, walaMethod, localGenerator);
+        InstructionConverter instConverter =
+            new InstructionConverter(this, methodSignature, walaMethod, localGenerator);
         Map<Stmt, Integer> stmt2IIndex = new HashMap<>();
         for (SSAInstruction inst : insts) {
           List<Stmt> retStmts = instConverter.convertInstruction(debugInfo, inst);

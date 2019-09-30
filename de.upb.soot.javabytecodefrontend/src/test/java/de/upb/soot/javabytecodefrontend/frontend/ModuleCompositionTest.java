@@ -107,7 +107,7 @@ public class ModuleCompositionTest {
     SootClass c =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation("irrelevant-test-path/"),
+                new EagerInputLocation(),
                 null,
                 classSignature,
                 null,

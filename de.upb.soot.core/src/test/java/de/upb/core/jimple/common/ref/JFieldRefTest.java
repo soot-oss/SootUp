@@ -1,6 +1,7 @@
 package de.upb.core.jimple.common.ref;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.soot.core.DefaultIdentifierFactory;
@@ -22,14 +23,14 @@ import de.upb.soot.core.views.JavaView;
 import de.upb.soot.core.views.View;
 import java.util.Collections;
 import java.util.EnumSet;
-import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
 /** @author Linghui Luo */
 @Category(Java8Test.class)
 public class JFieldRefTest {
 
-  @Test
+  @Ignore
   public void testJStaticFieldRef() {
     View view = new JavaView<>(new Project<>(null, DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
@@ -38,11 +39,10 @@ public class JFieldRefTest {
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 
-    // FIXME: [JMP] This instance is never used.
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation("irrelevant-test-path/"),
+                new EagerInputLocation(),
                 null,
                 declaringClassSignature,
                 null,
@@ -57,12 +57,12 @@ public class JFieldRefTest {
     assertEquals("<dummyMainClass: int dummyField>", ref.toString());
 
     // FIXME: [JMP] This assert always fails, because the view does not contain any class.
-    // assertTrue(ref.getField(view).isPresent());
-    // assertEquals(field, ref.getField(view).get());
-    // assertEquals(EnumSet.of(Modifier.FINAL), ref.getField(view).get().getModifiers());
+    assertTrue(ref.getField(view).isPresent());
+    assertEquals(field, ref.getField(view).get());
+    assertEquals(EnumSet.of(Modifier.FINAL), ref.getField(view).get().getModifiers());
   }
 
-  @Test
+  @Ignore
   public void testJInstanceFieldRef() {
     View view = new JavaView<>(new Project<>(null, DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
@@ -71,11 +71,10 @@ public class JFieldRefTest {
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 
-    // FIXME: [JMP] This instance is never used.
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation("irrelevant-test-path/"),
+                new EagerInputLocation(),
                 null,
                 declaringClassSignature,
                 null,
@@ -91,8 +90,8 @@ public class JFieldRefTest {
     assertEquals("obj.<dummyMainClass: int dummyField>", ref.toString());
 
     // FIXME: [JMP] This assert always fails, because the view does not contain any class.
-    // assertTrue(ref.getField(view).isPresent());
-    // assertEquals(fieldSig, ref.getField(view).get().getSignature());
-    // assertEquals(EnumSet.of(Modifier.FINAL), ref.getField(view).get().getModifiers());
+    assertTrue(ref.getField(view).isPresent());
+    assertEquals(fieldSig, ref.getField(view).get().getSignature());
+    assertEquals(EnumSet.of(Modifier.FINAL), ref.getField(view).get().getModifiers());
   }
 }

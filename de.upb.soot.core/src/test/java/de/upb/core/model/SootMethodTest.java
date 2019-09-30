@@ -62,7 +62,7 @@ public class SootMethodTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation("irrelevant-test-path/"),
+                new EagerInputLocation(),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),
                 null,

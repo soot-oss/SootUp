@@ -14,11 +14,6 @@ import javax.annotation.Nonnull;
 
 // TODO: implement sth useful - more than this dummy
 public class EagerInputLocation implements AnalysisInputLocation {
-  final String srcNamespace;
-  /** Creates a new instance of the {@link EagerInputLocation} class. */
-  public EagerInputLocation(String srcNamespace) {
-    this.srcNamespace = srcNamespace;
-  }
 
   @Override
   public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
