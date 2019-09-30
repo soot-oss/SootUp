@@ -33,13 +33,13 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
   @Nonnull private static final DefaultIdentifierFactory INSTANCE = new DefaultIdentifierFactory();
 
   /** Caches the created PackageNames for packages. */
-  protected final Map<String, PackageName> packages = new HashMap<>();
+  final Map<String, PackageName> packages = new HashMap<>();
 
   public static DefaultIdentifierFactory getInstance() {
     return INSTANCE;
   }
 
-  public DefaultIdentifierFactory() {
+  DefaultIdentifierFactory() {
     /* Represents the default package. */
     packages.put(PackageName.DEFAULT_PACKAGE.getPackageName(), PackageName.DEFAULT_PACKAGE);
   }

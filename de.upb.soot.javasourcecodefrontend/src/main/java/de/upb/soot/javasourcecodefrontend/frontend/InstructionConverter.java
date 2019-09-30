@@ -107,15 +107,15 @@ public class InstructionConverter {
   private final SymbolTable symbolTable;
   private final LocalGenerator localGenerator;
   // <ifStmt, iindex>
-  protected final Map<JIfStmt, Integer> targetsOfIfStmts;
-  protected final Map<JGotoStmt, Integer> targetsOfGotoStmts;
-  protected final Map<JLookupSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
-  protected final Map<JLookupSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
+  private final Map<JIfStmt, Integer> targetsOfIfStmts;
+  private final Map<JGotoStmt, Integer> targetsOfGotoStmts;
+  private final Map<JLookupSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
+  private final Map<JLookupSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
   protected Map<JLookupSwitchStmt, List<Stmt>> targetStmtsOfLookUpSwitchStmts;
   private final Map<Integer, Local> locals;
   private final IdentifierFactory identifierFactory;
 
-  public InstructionConverter(
+  InstructionConverter(
       WalaIRToJimpleConverter converter,
       MethodSignature methodSignature,
       AstMethod walaMethod,
@@ -1097,6 +1097,7 @@ public class InstructionConverter {
    * @param stmt the converted jimple stmt.
    * @param iindex the instruction index of the corresponding instruction in Wala.
    */
+  @SuppressWarnings("deprecation")
   protected void setTarget(Stmt stmt, int iindex) {
     if (this.targetsOfIfStmts.containsValue(iindex)) {
       for (JIfStmt ifStmt : this.targetsOfIfStmts.keySet()) {
