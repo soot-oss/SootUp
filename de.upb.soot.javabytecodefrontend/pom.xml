@@ -11,7 +11,7 @@
 
   <parent>
     <groupId>de.upb</groupId>
-    <artifactId>Soot</artifactId>
+    <artifactId>soot</artifactId>
     <version>4.0.0-SNAPSHOT</version>
   </parent>
 

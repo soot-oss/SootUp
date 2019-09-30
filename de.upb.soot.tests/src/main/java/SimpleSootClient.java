@@ -1,4 +1,14 @@
-package de.upb.soot.javasourcecodefrontend.example;
+import com.ibm.wala.ipa.callgraph.CallGraph;
+import de.upb.soot.callgraph.typehierarchy.TypeHierarchy;
+import de.upb.soot.core.Project;
+import de.upb.soot.core.Scope;
+import de.upb.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.soot.core.views.View;
+import de.upb.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
+import de.upb.soot.javabytecodefrontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.soot.javasourcecodefrontend.inputlocation.JavaSourcePathAnalysisInputLocation;
+
+import java.util.Collections;
 
 /**
  * A sample application to illustrate a potential client's path through the API
@@ -8,14 +18,12 @@ package de.upb.soot.javasourcecodefrontend.example;
  */
 public class SimpleSootClient {
 
-  // TODO: refactor to integration tests
 
-  /*
   public static void main(String[] args) {
     String javaClassPath = "de/upb/soot/example/classes/";
     String javaSourcePath = "de/upb/soot/example/src";
 
-    AnalysisInputLocation cpBased = new JavaClassPathAnalysisInputLocation(javaClassPath);
+    AnalysisInputLocation cpBased = new JavaClassPathAnalysisInputLocation(javaClassPath, new AsmJavaClassProvider());
 
     AnalysisInputLocation walaSource =
         new JavaSourcePathAnalysisInputLocation(Collections.singleton(javaSourcePath));
@@ -25,19 +33,26 @@ public class SimpleSootClient {
     // 1. simple case
     View fullView = p.createFullView();
 
+    /*
     CallGraph cg = fullView.createCallGraph();
     TypeHierarchy t = fullView.typeHierarchy();
+    mySootAnalysis( cg );
 
-    // here goes my own analysis
 
-    // 2. advanced case
+    // 2. advanced case with scope
     Scope s = new Scope(cpBased);
     View limitedView = p.createView(s);
-
     cg = limitedView.createCallGraph();
     t = limitedView.typeHierarchy();
+    mySootAnalysis( cg );
+*/
 
+  }
+
+  /** dummy method */
+  static void mySootAnalysis(CallGraph cg){
     // here goes my own analysis
   }
-   */
+
+
 }

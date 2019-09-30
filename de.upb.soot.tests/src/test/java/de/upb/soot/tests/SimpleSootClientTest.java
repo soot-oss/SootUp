@@ -1,4 +1,4 @@
-package de.upb.soot.javasourcecodefrontend.example;
+package de.upb.soot.tests;
 
 import categories.Java8Test;
 import org.junit.Ignore;
@@ -7,7 +7,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Linghui Luo */
 @Category(Java8Test.class)
-public class ExampleTest {
+public class SimpleSootClientTest {
 
   @Test
   public void test1() {
@@ -15,7 +15,7 @@ public class ExampleTest {
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     String[] args = {srcDir, exclusionFilePath};
     // FIXME need to check later why WALA crashed
-    // Example.main(args);
+    // SimpleSootClient.main(args);
   }
 
   @Ignore
@@ -24,6 +24,6 @@ public class ExampleTest {
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     String[] args = {srcDir, exclusionFilePath};
     // FIXME need to check later why WALA crashed
-    // Example.main(args);
+    //  SimpleSootClient.main(args);
   }
 }
