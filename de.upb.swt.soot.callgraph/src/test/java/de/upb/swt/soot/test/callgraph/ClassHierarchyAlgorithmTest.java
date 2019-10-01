@@ -37,16 +37,14 @@ public class ClassHierarchyAlgorithmTest {
 
   // TODO: StaticInitializers, Lambdas ?
   DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
-  JavaClassType declareClassSig;
+  JavaClassType mainClassSignature;
   MethodSignature mainMethodSignature;
 
-  public CallGraph loadCallGraph(String testDirectory, String className) {
+
+  CallGraph loadCallGraph(String testDirectory, String className) {
     String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
     WalaClassLoader loader = new WalaClassLoader(walaClassPath, null);
 
-    //    AnalysisInputLocation inputLocation = new
-    // JavaSourcePathAnalysisInputLocation(walaClassPath, null);
-    System.out.println(System.getProperty("java.home"));
     List<AnalysisInputLocation> locs =
         Arrays.asList(
             new JavaClassPathAnalysisInputLocation(
@@ -58,10 +56,10 @@ public class ClassHierarchyAlgorithmTest {
     Project project = new Project(inputLocation);
     View view = project.createOnDemandView();
 
-    declareClassSig = identifierFactory.getClassType(className);
+    mainClassSignature = identifierFactory.getClassType(className);
     mainMethodSignature =
         identifierFactory.getMethodSignature(
-            "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]"));
+            "main", mainClassSignature, "void", Collections.singletonList("java.lang.String[]"));
 
     Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, mainMethodSignature);
     assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
@@ -70,17 +68,12 @@ public class ClassHierarchyAlgorithmTest {
     CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, typeHierarchy);
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
 
+    // TODO: remove debuginfo
     System.out.println(cg);
 
     assertTrue(
-        mainMethodSignature + " not found in callGraph", cg.containsMethod(mainMethodSignature));
-
-    // TODO: remove debuginfo
+        mainMethodSignature + " is not found in CallGraph", cg.containsMethod(mainMethodSignature));
     assertNotNull(cg);
-    System.out.println(
-        "calls from " + mainMethodSignature + ":\n" + cg.callsFrom(mainMethodSignature));
-    System.out.println("signatures:\n" + cg.getMethodSignatures());
-
     return cg;
   }
 
@@ -201,11 +194,11 @@ public class ClassHierarchyAlgorithmTest {
 
     MethodSignature method =
         identifierFactory.getMethodSignature(
-            "method", declareClassSig, "void", Collections.emptyList());
+            "method", mainClassSignature, "void", Collections.emptyList());
 
     MethodSignature uncalledMethod =
         identifierFactory.getMethodSignature(
-            "method", declareClassSig, "void", Collections.singletonList("int"));
+            "method", mainClassSignature, "void", Collections.singletonList("int"));
 
     assertTrue(cg.containsMethod(mainMethodSignature));
     assertTrue(cg.containsMethod(method));
@@ -222,7 +215,7 @@ public class ClassHierarchyAlgorithmTest {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc1.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method", declareClassSig, "void", Collections.emptyList());
+            "method", mainClassSignature, "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
   }
 
@@ -231,7 +224,7 @@ public class ClassHierarchyAlgorithmTest {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc2.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "Class", declareClassSig, "Class", Collections.emptyList());
+            "Class", mainClassSignature, "Class", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
   }
 
@@ -240,7 +233,7 @@ public class ClassHierarchyAlgorithmTest {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc3.Class");
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method", declareClassSig, "void", Collections.emptyList());
+            "method", mainClassSignature, "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
   }
 
@@ -249,7 +242,7 @@ public class ClassHierarchyAlgorithmTest {
     CallGraph cg = loadCallGraph("NonVirtualCall", "nvc4.Class");
     MethodSignature firstMethod =
         identifierFactory.getMethodSignature(
-            "method", declareClassSig, "void", Collections.emptyList());
+            "method", mainClassSignature, "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, firstMethod));
 
     MethodSignature targetMethod =
@@ -285,7 +278,7 @@ public class ClassHierarchyAlgorithmTest {
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "target", declareClassSig, "void", Collections.emptyList());
+            "target", mainClassSignature, "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, targetMethod));
   }
 
@@ -293,20 +286,21 @@ public class ClassHierarchyAlgorithmTest {
   public void testVirtualCall2() {
     CallGraph cg = loadCallGraph("VirtualCall", "vc2.Class");
 
+    JavaClassType subClassSig = identifierFactory.getClassType("vc2.SubClass");
     MethodSignature constructorMethod =
         identifierFactory.getMethodSignature(
-            "SubClass", declareClassSig, "SubClass", Collections.emptyList());
+            "<init>", subClassSig, "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, constructorMethod));
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "callMethod", declareClassSig, "void", Collections.singletonList("Class"));
+            "callMethod", mainClassSignature, "void", Collections.singletonList("vc2.Class"));
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             "method",
-            identifierFactory.getClassType("vc2.SubClass"),
+            identifierFactory.getClassType("vc2.Class"),
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(callMethod, targetMethod));
@@ -316,26 +310,28 @@ public class ClassHierarchyAlgorithmTest {
   public void testVirtualCall3() {
     CallGraph cg = loadCallGraph("VirtualCall", "vc3.Class");
 
+    // TODO: ASK: isnt this more precise than CHA is? --> shouldnt it be vc3.Interface?
+    JavaClassType subClassSig = identifierFactory.getClassType("vc3.ClassImpl");
     MethodSignature constructorMethod =
         identifierFactory.getMethodSignature(
-            "ClassImpl", declareClassSig, "vc3.ClassImpl", Collections.emptyList());
+            "<init>", subClassSig, "void", Collections.emptyList() );
     assertTrue(cg.containsCall(mainMethodSignature, constructorMethod));
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
             "callOnInterface",
-            declareClassSig,
+                mainClassSignature,
             "void",
-            Collections.singletonList("vc3.ClassImpl.Interface"));
+            Collections.singletonList("vc3.Interface"));
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method",
-            identifierFactory.getClassType("vc3.ClassImpl"),
-            "void",
+            "method", subClassSig, "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(callMethod, targetMethod));
+    // TODO: this callgraph looks strange!
+
   }
 
   @Test
@@ -355,10 +351,10 @@ public class ClassHierarchyAlgorithmTest {
   @Test
   public void testDynamicInterfaceMethod1() {
     CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim1.Class");
-
+    // TODO: callgraph seems strange
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "method", declareClassSig, "void", Collections.emptyList());
+            "method", mainClassSignature, "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
   }
 
@@ -368,7 +364,7 @@ public class ClassHierarchyAlgorithmTest {
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "method", declareClassSig, "void", Collections.emptyList());
+            "method", mainClassSignature, "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
   }
 
@@ -378,7 +374,7 @@ public class ClassHierarchyAlgorithmTest {
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "method", declareClassSig, "void", Collections.emptyList());
+            "method", mainClassSignature, "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
   }
 
@@ -409,7 +405,7 @@ public class ClassHierarchyAlgorithmTest {
 
     MethodSignature compute =
         identifierFactory.getMethodSignature(
-            "compute", declareClassSig, "void", Collections.emptyList());
+            "compute", mainClassSignature, "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, compute));
   }
 
