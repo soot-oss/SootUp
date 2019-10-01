@@ -39,8 +39,7 @@ import org.mockito.internal.matchers.LessOrEqual;
 /** @author Manuel Benz created on 07.06.18 */
 public abstract class AbstractAnalysisInputLocationTest {
 
-  public static final String jarFile =
-      "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
+  public static final String jarFile = "../shared-test-resources/Soot-4.0-SNAPSHOT.jar";
 
   protected static final int CLASSES_IN_JAR = 25;
   private IdentifierFactory identifierFactory;
