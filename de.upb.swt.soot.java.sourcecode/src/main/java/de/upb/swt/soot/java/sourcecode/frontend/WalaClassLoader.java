@@ -22,7 +22,9 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,8 +47,25 @@ public class WalaClassLoader {
   private List<ClassSource> classSources;
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
+  private File walaPropertiesFile = new File("target/classes/wala.properties");
+
+  /** Create wala.properties to class path */
+  private void createWalaproperties() {
+    if (!walaPropertiesFile.exists()) {
+      PrintWriter pw;
+      try {
+        pw = new PrintWriter(walaPropertiesFile);
+        String jdkPath = System.getProperty("java.home");
+        pw.println("java_runtime_dir = " + new File(jdkPath).toString().replace("\\", "/"));
+        pw.close();
+      } catch (FileNotFoundException e) {
+        throw new RuntimeException(e);
+      }
+    }
+  }
 
   private void addScopesForJava() {
+    createWalaproperties();
     // disable System.err messages generated from eclipse jdt
     System.setProperty("wala.jdt.quiet", "true");
     scope = new JavaSourceAnalysisScope();
@@ -54,6 +73,7 @@ public class WalaClassLoader {
       // add standard libraries to scope
       String[] stdlibs = WalaProperties.getJ2SEJarFiles();
       for (String stdlib : stdlibs) {
+
         scope.addToScope(ClassLoaderReference.Primordial, new JarFile(stdlib));
       }
     } catch (IOException e) {
