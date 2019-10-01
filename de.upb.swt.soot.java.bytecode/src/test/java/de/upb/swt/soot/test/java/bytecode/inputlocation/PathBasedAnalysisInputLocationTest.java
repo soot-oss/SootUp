@@ -25,6 +25,8 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -78,6 +80,7 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(jar);
+    System.err.println(jar.toFile().getAbsolutePath());
     final JavaClassType sig =
         getIdentifierFactory().getClassType("PathBasedNamespace", "de.upb.soot.namespaces");
     testClassReceival(pathBasedNamespace, sig, CLASSES_IN_JAR);

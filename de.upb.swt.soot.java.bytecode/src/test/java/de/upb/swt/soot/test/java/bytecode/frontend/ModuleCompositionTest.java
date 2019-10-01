@@ -45,7 +45,7 @@ public class ModuleCompositionTest {
     // System.out.println();
 
     String jarFile = "target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
-
+    System.err.println(new File(jarFile).getAbsolutePath());
     assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
 
     // Create a project
