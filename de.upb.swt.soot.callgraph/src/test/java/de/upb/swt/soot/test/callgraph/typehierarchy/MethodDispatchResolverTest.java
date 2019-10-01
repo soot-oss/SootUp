@@ -28,8 +28,7 @@ public class MethodDispatchResolverTest {
 
   private View view;
   // TODO: hacky.. check for better way to access the test jar from other module
-  public static final String jarFile =
-      "../shared-test-resources/java9-target/Soot-4.0-SNAPSHOT.jar";
+  public static final String jarFile = "../shared-test-resources/Soot-4.0-SNAPSHOT.jar";
 
   @Before
   public void setUp() {
