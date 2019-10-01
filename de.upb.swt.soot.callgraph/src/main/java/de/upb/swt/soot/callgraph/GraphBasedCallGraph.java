@@ -120,12 +120,12 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
         callsFrom(method)
             .forEach(
                 (m) -> {
-                  sb.append("<").append(m).append("\n");
+                  sb.append("from ").append(m).append("\n");
                 });
         callsTo(method)
             .forEach(
                 (m) -> {
-                  sb.append(">").append(m).append("\n");
+                  sb.append("to   ").append(m).append("\n");
                 });
         sb.append("\n");
       }

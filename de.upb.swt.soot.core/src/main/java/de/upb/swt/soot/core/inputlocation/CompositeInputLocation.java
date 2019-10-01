@@ -37,7 +37,7 @@ public class CompositeInputLocation implements AnalysisInputLocation {
         Collections.unmodifiableList(new ArrayList<>(inputLocations));
 
     if (unmodifiableInputLocations.isEmpty()) {
-      throw new IllegalArgumentException("The inputLocations collection must not be empty.");
+      throw new IllegalArgumentException("The collection of inputLocations must not be empty.");
     }
 
     this.inputLocations = unmodifiableInputLocations;
