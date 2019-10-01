@@ -11,15 +11,19 @@ import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.CompositeInputLocation;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.views.JavaView;
 import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.sourcecode.WalaClassLoaderTestUtils;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import java.util.*;
+
+import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -41,10 +45,15 @@ public class ClassHierarchyAlgorithmTest {
     String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
     WalaClassLoader loader = new WalaClassLoader(walaClassPath, null);
 
-    System.out.println(loader.getClassSources());
+//    AnalysisInputLocation inputLocation = new JavaSourcePathAnalysisInputLocation(walaClassPath, null);
+    System.out.println(System.getProperty("java.home"));
+    List<AnalysisInputLocation> locs = Arrays.asList (
+            new JavaClassPathAnalysisInputLocation(System.getProperty("java.home")+"/lib/rt.jar", new AsmJavaClassProvider()),
+            new JavaSourcePathAnalysisInputLocation(Collections.singleton(walaClassPath), null)
+    );
 
-    AnalysisInputLocation inputLocation =
-        new JavaClassPathAnalysisInputLocation(walaClassPath, null);
+     AnalysisInputLocation inputLocation =  new CompositeInputLocation( locs );
+
     Project project = new Project(inputLocation);
     View view = project.createOnDemandView();
 
