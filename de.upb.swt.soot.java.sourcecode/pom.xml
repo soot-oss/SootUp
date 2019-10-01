@@ -16,7 +16,7 @@
   </parent>
 
   <properties>
-    <wala.version>1.5.3.3</wala.version>
+    <wala.version>1.5.4.1</wala.version>
   </properties>
 
   <dependencies>

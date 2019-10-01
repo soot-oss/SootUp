@@ -236,7 +236,7 @@ public class InstructionConverter {
         arrayRef,
         rvalue,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), operandPos));
+            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
   private Stmt convertArrayLoadInstruction(
@@ -262,7 +262,7 @@ public class InstructionConverter {
         left,
         arrayRef,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), operandPos));
+            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
   private Stmt convertArrayLengthInstruction(
@@ -274,14 +274,14 @@ public class InstructionConverter {
     Value right = Jimple.newLengthExpr(arrayLocal);
 
     Position[] operandPos = new Position[1];
-    Position p1 = debugInfo.getOperandPosition(inst.iindex, 0);
+    Position p1 = debugInfo.getOperandPosition(inst.iIndex(), 0);
     operandPos[0] = p1;
     // FIXME: [ms] stmt position ends at variablename of the array
     return Jimple.newAssignStmt(
         left,
         right,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), operandPos));
+            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
   private Stmt convertGetCaughtExceptionInstruction(
@@ -301,7 +301,7 @@ public class InstructionConverter {
         local,
         caught,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), operandPos));
+            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
   private Stmt convertMonitorInstruction(
@@ -316,12 +316,12 @@ public class InstructionConverter {
       return Jimple.newEnterMonitorStmt(
           op,
           WalaIRToJimpleConverter.convertPositionInfo(
-              debugInfo.getInstructionPosition(inst.iindex), operandPos));
+              debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     } else {
       return Jimple.newExitMonitorStmt(
           op,
           WalaIRToJimpleConverter.convertPositionInfo(
-              debugInfo.getInstructionPosition(inst.iindex), operandPos));
+              debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     }
   }
 
@@ -339,13 +339,13 @@ public class InstructionConverter {
     Local testLocal = localGenerator.generateLocal(PrimitiveType.getBoolean());
     JStaticFieldRef assertFieldRef = Jimple.newStaticFieldRef(fieldSig);
     Position[] operandPos = new Position[1];
-    operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
+    operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
     JAssignStmt assignStmt =
         Jimple.newAssignStmt(
             testLocal,
             assertFieldRef,
             WalaIRToJimpleConverter.convertPositionInfo(
-                debugInfo.getInstructionPosition(inst.iindex), operandPos));
+                debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(assignStmt);
 
     // add ifStmt for testing assertion is disabled.
@@ -353,14 +353,14 @@ public class InstructionConverter {
     JNopStmt nopStmt =
         Jimple.newNopStmt(
             WalaIRToJimpleConverter.convertPositionInfo(
-                debugInfo.getInstructionPosition(inst.iindex), operandPos));
+                debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
 
     JIfStmt ifStmt =
         Jimple.newIfStmt(
             condition,
             nopStmt,
             WalaIRToJimpleConverter.convertPositionInfo(
-                debugInfo.getInstructionPosition(inst.iindex), operandPos));
+                debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(ifStmt);
 
     // create ifStmt for the actual assertion.
@@ -372,7 +372,7 @@ public class InstructionConverter {
             assertionExpr,
             nopStmt,
             WalaIRToJimpleConverter.convertPositionInfo(
-                debugInfo.getInstructionPosition(inst.iindex), operandPos));
+                debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(assertIfStmt);
     // create failed assertion code.
 
@@ -386,7 +386,7 @@ public class InstructionConverter {
             failureLocal,
             newExpr,
             WalaIRToJimpleConverter.convertPositionInfo(
-                debugInfo.getInstructionPosition(inst.iindex), operandPos));
+                debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(newAssignStmt);
     MethodSignature methodSig =
         identifierFactory.getMethodSignature(
@@ -396,14 +396,14 @@ public class InstructionConverter {
         Jimple.newInvokeStmt(
             invoke,
             WalaIRToJimpleConverter.convertPositionInfo(
-                debugInfo.getInstructionPosition(inst.iindex), operandPos));
+                debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(invokeStmt);
 
     JThrowStmt throwStmt =
         Jimple.newThrowStmt(
             failureLocal,
             WalaIRToJimpleConverter.convertPositionInfo(
-                debugInfo.getInstructionPosition(inst.iindex), operandPos));
+                debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     stmts.add(throwStmt);
 
     // add nop in the end
@@ -442,7 +442,7 @@ public class InstructionConverter {
               left,
               right,
               WalaIRToJimpleConverter.convertPositionInfo(
-                  debugInfo.getInstructionPosition(inst.iindex), null)));
+                  debugInfo.getInstructionPosition(inst.iIndex()), null)));
     }
     return stmts;
   }
@@ -473,7 +473,7 @@ public class InstructionConverter {
               left,
               rvalue,
               WalaIRToJimpleConverter.convertPositionInfo(
-                  debugInfo.getInstructionPosition(inst.iindex), null)));
+                  debugInfo.getInstructionPosition(inst.iIndex()), null)));
     }
     return stmts;
   }
@@ -495,7 +495,7 @@ public class InstructionConverter {
         variable,
         rvalue,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), null));
+            debugInfo.getInstructionPosition(inst.iIndex()), null));
   }
 
   private Stmt convertCheckCastInstruction(
@@ -517,7 +517,7 @@ public class InstructionConverter {
         result,
         castExpr,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), null));
+            debugInfo.getInstructionPosition(inst.iIndex()), null));
   }
 
   private Stmt convertLoadMetadataInstruction(
@@ -531,7 +531,7 @@ public class InstructionConverter {
         lval,
         c,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), null));
+            debugInfo.getInstructionPosition(inst.iIndex()), null));
   }
 
   private Stmt convertSwitchInstruction(DebuggingInformation debugInfo, SSASwitchInstruction inst) {
@@ -557,10 +557,10 @@ public class InstructionConverter {
     Position[] operandPos = new Position[2];
     // TODO: [ms] how to organize the operands
     // FIXME: has no operand positions yet for
-    // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, ); // key
-    // operandPos[1] = debugInfo.getOperandPosition(inst.iindex, ); // default
-    // operandPos[i] = debugInfo.getOperandPosition(inst.iindex, ); // lookups
-    // operandPos[i] = debugInfo.getOperandPosition(inst.iindex, ); // targets
+    // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), ); // key
+    // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), ); // default
+    // operandPos[i] = debugInfo.getOperandPosition(inst.iIndex(), ); // lookups
+    // operandPos[i] = debugInfo.getOperandPosition(inst.iIndex(), ); // targets
 
     JLookupSwitchStmt stmt =
         Jimple.newLookupSwitchStmt(
@@ -569,7 +569,7 @@ public class InstructionConverter {
             targets,
             defaultTarget,
             WalaIRToJimpleConverter.convertPositionInfo(
-                debugInfo.getInstructionPosition(inst.iindex), operandPos));
+                debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     this.targetsOfLookUpSwitchStmts.put(stmt, targetsList);
     this.defaultOfLookUpSwitchStmts.put(stmt, defaultCase);
     return stmt;
@@ -581,12 +581,12 @@ public class InstructionConverter {
 
     Position[] operandPos = new Position[1];
     // FIXME: has no operand position yet for throwable
-    operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
+    operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
 
     return Jimple.newThrowStmt(
         local,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), operandPos));
+            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
   private Stmt convertUnaryOpInstruction(
@@ -605,15 +605,15 @@ public class InstructionConverter {
 
     Position[] operandPos = new Position[2];
     // FIXME: has no operand positions yet for right side or assigned variable
-    // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
-    // operandPos[1] = debugInfo.getOperandPosition(inst.iindex, 1);
+    // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
+    // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), 1);
 
     if (inst instanceof AssignInstruction) {
       return Jimple.newAssignStmt(
           left,
           op,
           WalaIRToJimpleConverter.convertPositionInfo(
-              debugInfo.getInstructionPosition(inst.iindex), operandPos));
+              debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     } else {
       JNegExpr expr = Jimple.newNegExpr(op);
 
@@ -621,7 +621,7 @@ public class InstructionConverter {
           left,
           expr,
           WalaIRToJimpleConverter.convertPositionInfo(
-              debugInfo.getInstructionPosition(inst.iindex), operandPos));
+              debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     }
   }
 
@@ -652,13 +652,13 @@ public class InstructionConverter {
 
     Position[] operandPos = new Position[2];
     // FIXME: has no operand positions yet for value, rvalue
-    // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
-    // operandPos[1] = debugInfo.getOperandPosition(inst.iindex, 1);
+    // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
+    // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), 1);
     return Jimple.newAssignStmt(
         fieldValue,
         value,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), operandPos));
+            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
   private Stmt convertNewInstruction(DebuggingInformation debugInfo, SSANewInstruction inst) {
@@ -682,14 +682,14 @@ public class InstructionConverter {
 
     Position[] operandPos = new Position[2];
     // FIXME: has no operand positions yet for type, size
-    // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
-    // operandPos[1] = debugInfo.getOperandPosition(inst.iindex, 1);
+    // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
+    // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), 1);
 
     return Jimple.newAssignStmt(
         var,
         rvalue,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), operandPos));
+            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
   private Stmt convertComparisonInstruction(
@@ -697,7 +697,7 @@ public class InstructionConverter {
     // TODO imlement
     return Jimple.newNopStmt(
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), null));
+            debugInfo.getInstructionPosition(inst.iIndex()), null));
   }
 
   private Stmt convertInstanceofInstruction(
@@ -712,14 +712,14 @@ public class InstructionConverter {
 
     Position[] operandPos = new Position[2];
     // FIXME: has no operand positions yet for checked and expected side
-    // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
-    // operandPos[1] = debugInfo.getOperandPosition(inst.iindex, 1);
+    // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
+    // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), 1);
 
     return Jimple.newAssignStmt(
         left,
         expr,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), operandPos));
+            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
   private Stmt convertConversionInstruction(
@@ -739,14 +739,14 @@ public class InstructionConverter {
 
     Position[] operandPos = new Position[2];
     // FIXME: has no positions for lvalue, rvalue yet
-    // operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
-    // operandPos[1] = debugInfo.getOperandPosition(inst.iindex, 1);
+    // operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
+    // operandPos[1] = debugInfo.getOperandPosition(inst.iIndex(), 1);
 
     return Jimple.newAssignStmt(
         lvalue,
         cast,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), operandPos));
+            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
   private Stmt convertInvokeInstruction(
@@ -773,7 +773,7 @@ public class InstructionConverter {
     }
     Position[] operandPos = new Position[invokeInst.getNumberOfUses()];
     for (int j = 0; j < invokeInst.getNumberOfUses(); j++) {
-      operandPos[j] = debugInfo.getOperandPosition(invokeInst.iindex, j);
+      operandPos[j] = debugInfo.getOperandPosition(invokeInst.iIndex(), j);
     }
     int i = 0;
     if (!callee.isStatic()) {
@@ -829,12 +829,12 @@ public class InstructionConverter {
           v,
           invoke,
           WalaIRToJimpleConverter.convertPositionInfo(
-              debugInfo.getInstructionPosition(invokeInst.iindex), operandPos));
+              debugInfo.getInstructionPosition(invokeInst.iIndex()), operandPos));
     } else {
       return Jimple.newInvokeStmt(
           invoke,
           WalaIRToJimpleConverter.convertPositionInfo(
-              debugInfo.getInstructionPosition(invokeInst.iindex), operandPos));
+              debugInfo.getInstructionPosition(invokeInst.iIndex()), operandPos));
     }
   }
 
@@ -842,7 +842,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSAConditionalBranchInstruction condInst) {
     PositionInfo posInfo =
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(condInst.iindex), null);
+            debugInfo.getInstructionPosition(condInst.iIndex()), null);
     List<Stmt> stmts = new ArrayList<>();
     int val1 = condInst.getUse(0);
     int val2 = condInst.getUse(1);
@@ -902,7 +902,7 @@ public class InstructionConverter {
       // this is return void stmt
       return Jimple.newReturnVoidStmt(
           WalaIRToJimpleConverter.convertPositionInfo(
-              debugInfo.getInstructionPosition(inst.iindex), null));
+              debugInfo.getInstructionPosition(inst.iIndex()), null));
     } else {
       Value ret;
       if (symbolTable.isConstant(result)) {
@@ -912,11 +912,11 @@ public class InstructionConverter {
       }
 
       Position[] operandPos = new Position[1];
-      operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
+      operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
       return Jimple.newReturnStmt(
           ret,
           WalaIRToJimpleConverter.convertPositionInfo(
-              debugInfo.getInstructionPosition(inst.iindex), operandPos));
+              debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
     }
   }
 
@@ -986,16 +986,16 @@ public class InstructionConverter {
       throw new RuntimeException("Unsupported binary operator: " + operator.getClass());
     }
     Position[] operandPos = new Position[2];
-    Position p1 = debugInfo.getOperandPosition(binOpInst.iindex, 0);
+    Position p1 = debugInfo.getOperandPosition(binOpInst.iIndex(), 0);
     operandPos[0] = p1;
-    Position p2 = debugInfo.getOperandPosition(binOpInst.iindex, 1);
+    Position p2 = debugInfo.getOperandPosition(binOpInst.iIndex(), 1);
     operandPos[1] = p2;
     Value result = getLocal(type, def);
     return Jimple.newAssignStmt(
         result,
         binExpr,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(binOpInst.iindex), operandPos));
+            debugInfo.getInstructionPosition(binOpInst.iIndex()), operandPos));
   }
 
   private Stmt convertGoToInstruction(DebuggingInformation debugInfo, SSAGotoInstruction gotoInst) {
@@ -1004,7 +1004,7 @@ public class InstructionConverter {
         Jimple.newGotoStmt(
             target,
             WalaIRToJimpleConverter.convertPositionInfo(
-                debugInfo.getInstructionPosition(gotoInst.iindex), null));
+                debugInfo.getInstructionPosition(gotoInst.iIndex()), null));
     this.targetsOfGotoStmts.put(gotoStmt, gotoInst.getTarget());
     return gotoStmt;
   }
@@ -1029,14 +1029,14 @@ public class InstructionConverter {
     }
 
     Position[] operandPos = new Position[1];
-    operandPos[0] = debugInfo.getOperandPosition(inst.iindex, 0);
+    operandPos[0] = debugInfo.getOperandPosition(inst.iIndex(), 0);
 
     Value var = getLocal(fieldType, def);
     return Jimple.newAssignStmt(
         var,
         rvalue,
         WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iindex), operandPos));
+            debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
   private Constant getConstant(int valueNumber) {

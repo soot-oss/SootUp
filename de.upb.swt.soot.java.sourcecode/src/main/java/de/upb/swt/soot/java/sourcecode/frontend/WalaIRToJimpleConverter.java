@@ -457,7 +457,7 @@ public class WalaIRToJimpleConverter {
           if (!retStmts.isEmpty()) {
             for (Stmt stmt : retStmts) {
               stmts.add(stmt);
-              stmt2IIndex.put(stmt, inst.iindex);
+              stmt2IIndex.put(stmt, inst.iIndex());
             }
           }
         }
