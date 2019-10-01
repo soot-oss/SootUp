@@ -308,11 +308,20 @@ public class WalaClassLoader {
   @Nullable
   private JavaClass loadWalaClass(JavaClassType signature, WalaIRToJimpleConverter walaToSoot) {
     String className = walaToSoot.convertClassNameFromSoot(signature.getFullyQualifiedName());
-    JavaClass walaClass =
-        (JavaClass)
-            classHierarchy
-                .getLoader(JavaSourceAnalysisScope.SOURCE)
-                .lookupClass(TypeName.findOrCreate(className));
+    JavaClass walaClass;
+    try {
+      walaClass =
+          (JavaClass)
+              classHierarchy
+                  .getLoader(JavaSourceAnalysisScope.SOURCE)
+                  .lookupClass(TypeName.findOrCreate(className));
+    } catch (ClassCastException e) {
+      // occurs with java runtime classes
+      // e.g. java.lang.Object -> java.lang.ClassCastException: com.ibm.wala.classLoader.ShrikeClass
+      // cannot be cast to com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl$JavaClass
+      return null;
+    }
+
     if (className.contains("$") && walaClass == null) {
       // this is an inner class and was not found
       Iterator<IClass> it =
