@@ -29,7 +29,7 @@ public class MethodDispatchResolverTest {
   private View view;
   // TODO: hacky.. check for better way to access the test jar from other module
   public static final String jarFile =
-      "../de.upb.soot.javabytecodefrontend/target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
+      "../de.upb.swt.soot.java.bytecode/target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";
 
   @Before
   public void setUp() {
