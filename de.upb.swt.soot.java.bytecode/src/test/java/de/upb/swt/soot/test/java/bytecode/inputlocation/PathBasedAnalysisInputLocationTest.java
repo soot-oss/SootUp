@@ -22,13 +22,10 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
  * #L%
  */
 import categories.Java8Test;
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -36,43 +33,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLocationTest {
 
-  Path baseDir = Paths.get("target/classes/");
-  Path jar = Paths.get("target/test-classes/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar");
-
-  @Test(expected = IllegalArgumentException.class)
-  public void failsOnFile() {
-    PathBasedAnalysisInputLocation.createForClassContainer(
-        Paths.get(baseDir + "de/upb/soot/namespaces/PathBasedNamespace.class"));
-  }
-
-  @Test
-  public void classNotFound() {
-    PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(baseDir);
-    final JavaClassType sig =
-        getIdentifierFactory().getClassType("NotExisting", "de.upb.soot.namespaces");
-    final Optional<? extends AbstractClassSource> classSource =
-        pathBasedNamespace.getClassSource(sig);
-    Assert.assertFalse(classSource.isPresent());
-  }
-
-  @Test
-  public void testFolder() {
-    PathBasedAnalysisInputLocation pathBasedNamespace =
-        PathBasedAnalysisInputLocation.createForClassContainer(baseDir);
-    final JavaClassType sig =
-        getIdentifierFactory()
-            .getClassType(
-                PathBasedAnalysisInputLocation.class.getSimpleName(),
-                PathBasedAnalysisInputLocation.class.getPackage().getName());
-
-    // System.out.println(baseDir.toAbsolutePath() + "/"+ new String(sig.toString()).replace('.',
-    // '/') );
-    // System.out.println( pathBasedNamespace.getClassSources(getIdentifierFactory() ) );
-
-    // INFO: this test is based on the number of actual classes in this module!
-    testClassReceival(pathBasedNamespace, sig, 10);
-  }
+  Path jar = Paths.get("../shared-test-resources/Soot-4.0-SNAPSHOT.jar");
 
   @Test
   public void testJar() {
