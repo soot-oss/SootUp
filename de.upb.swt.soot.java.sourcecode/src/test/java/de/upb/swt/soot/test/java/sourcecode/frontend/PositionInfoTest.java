@@ -693,7 +693,7 @@ public class PositionInfoTest {
       Position stmtPos = info.getStmtPosition();
       assertEquals(133, stmtPos.getFirstLine());
       assertEquals(133, stmtPos.getLastLine());
-      assertEquals(16, stmtPos.getFirstCol());
+      assertEquals(8, stmtPos.getFirstCol());
       // FIXME: currently condition is not included only the referenced/checked object;
       // assertEquals(32, stmtPos.getLastCol());
 
@@ -735,7 +735,7 @@ public class PositionInfoTest {
     }
 
     { // exitmonitor
-      Stmt stmt = stmts.get(5);
+      Stmt stmt = stmts.get(4);
       PositionInfo info = stmt.getPositionInfo();
 
       Position stmtPos = info.getStmtPosition();
@@ -774,7 +774,7 @@ public class PositionInfoTest {
     loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
-    Stmt stmt = stmts.get(6);
+    Stmt stmt = stmts.get(7);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
 
@@ -796,7 +796,7 @@ public class PositionInfoTest {
     loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
-    Stmt stmt = stmts.get(10);
+    Stmt stmt = stmts.get(11);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
 
@@ -819,7 +819,7 @@ public class PositionInfoTest {
     loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
-    Stmt stmt = stmts.get(7);
+    Stmt stmt = stmts.get(8);
     PositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
 
