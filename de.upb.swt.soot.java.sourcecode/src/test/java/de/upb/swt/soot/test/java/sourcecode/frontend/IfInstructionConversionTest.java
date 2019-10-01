@@ -10,6 +10,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.java.sourcecode.WalaClassLoaderTestUtils;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;

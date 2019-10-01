@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.java.sourcecode.frontend;
+package de.upb.swt.soot.java.sourcecode;
 
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;

@@ -1,18 +1,24 @@
-package de.upb.soot.callgraph;
+package de.upb.swt.soot.test.callgraph;
 
 import static junit.framework.TestCase.*;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultIdentifierFactory;
-import de.upb.soot.Project;
-import de.upb.soot.core.*;
-import de.upb.soot.frontends.java.WalaClassLoader;
-import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
-import de.upb.soot.inputlocation.AnalysisInputLocation;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.JavaClassType;
-import de.upb.soot.views.JavaView;
-import de.upb.soot.views.View;
+import de.upb.swt.soot.callgraph.CallGraph;
+import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
+import de.upb.swt.soot.callgraph.ClassHierarchyAlgorithm;
+import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
+import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchyKey;
+import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.Project;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.views.JavaView;
+import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.swt.soot.java.sourcecode.WalaClassLoaderTestUtils;
+import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import java.util.*;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,11 +40,11 @@ public class ClassHierarchyAlgorithmTest {
   JavaClassType declareClassSig;
 
   public CallGraph loadCallGraph(String testDirectory, String className) {
+    String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
+    WalaClassLoader loader = new WalaClassLoader(walaClassPath, null);
 
-    WalaClassLoader loader =
-        new WalaClassLoader("src/test/resources/java-target/callgraph/" + testDirectory, null);
-
-    AnalysisInputLocation inputLocation = loader.getAnalysisInputLocation();
+    AnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(walaClassPath, null);
     Project project = new Project(inputLocation);
     view = new JavaView<>(project);
 
@@ -50,7 +56,9 @@ public class ClassHierarchyAlgorithmTest {
     Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, mainMethodSignature);
     assertTrue(m.isPresent());
 
-    CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, view.typeHierarchy());
+    CallGraphAlgorithm cha =
+        new ClassHierarchyAlgorithm(
+            view, (TypeHierarchy) view.getModuleData(TypeHierarchyKey.getInstance()));
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
     assertTrue(cg.containsMethod(mainMethodSignature));
 
@@ -135,10 +143,11 @@ public class ClassHierarchyAlgorithmTest {
   @Test
   public void testAddClass() {
 
-    WalaClassLoader loader =
-        new WalaClassLoader("src/test/resources/java-target/callgraph/Misc", null);
+    String walaClassPath = "src/test/resources/callgraph/Misc";
+    WalaClassLoader loader = new WalaClassLoader(walaClassPath, null);
+    AnalysisInputLocation inputLocation =
+        new JavaClassPathAnalysisInputLocation(walaClassPath, null);
 
-    AnalysisInputLocation inputLocation = loader.getAnalysisInputLocation();
     Project project = new Project(inputLocation);
     view = new JavaView<>(project);
 
@@ -158,7 +167,9 @@ public class ClassHierarchyAlgorithmTest {
             "void",
             Collections.emptyList());
 
-    CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, view.typeHierarchy());
+    CallGraphAlgorithm cha =
+        new ClassHierarchyAlgorithm(
+            view, (TypeHierarchy) view.getModuleData(TypeHierarchyKey.getInstance()));
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
 
     JavaClassType newClass =
