@@ -38,7 +38,8 @@ public class JavaModulePathNamespaceTest extends AbstractAnalysisInputLocationTe
   public void singleDir() {
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
-            "target/test-classes/de/upb/soot/namespaces/modules", getClassProvider());
+            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules",
+            getClassProvider());
     final JavaClassType sig = getIdentifierFactory().getClassType("module-info", "", "fancyMod");
     Optional<? extends AbstractClassSource> classSource =
         javaClassPathNamespace.getClassSource(sig);
@@ -50,7 +51,8 @@ public class JavaModulePathNamespaceTest extends AbstractAnalysisInputLocationTe
   public void singleDir2() {
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
-            "target/test-classes/de/upb/soot/namespaces/modules", getClassProvider());
+            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules",
+            getClassProvider());
     final JavaClassType sig = getIdentifierFactory().getClassType("module-info", "", "fancyMod");
     // TODO: check for a better minClassFoundNumber
     // also all JDK classes are loaded
@@ -61,7 +63,7 @@ public class JavaModulePathNamespaceTest extends AbstractAnalysisInputLocationTe
   public void singleJar() {
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
-            "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",
+            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/de.upb.mod.jar",
             getClassProvider());
     final JavaClassType sig = getIdentifierFactory().getClassType("module-info", "", "de.upb.mod");
     Optional<? extends AbstractClassSource> classSource =
@@ -73,7 +75,7 @@ public class JavaModulePathNamespaceTest extends AbstractAnalysisInputLocationTe
   public void testTypeWrapper() throws Exception {
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
-            "target/test-classes/de/upb/soot/namespaces/modules/de.upb.mod.jar",
+            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/de.upb.mod.jar",
             getClassProvider());
     Class<?> signatureClass =
         Whitebox.getInnerClassType(
