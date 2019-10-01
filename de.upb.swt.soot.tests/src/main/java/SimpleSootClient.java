@@ -6,8 +6,8 @@ import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
-import de.upb.swt.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
-import de.upb.swt.soot.javabytecodefrontend.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 
 import java.util.Collections;
 

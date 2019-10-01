@@ -10,9 +10,9 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.javabytecodefrontend.frontend.AsmJavaClassProvider;
-import de.upb.swt.soot.javabytecodefrontend.frontend.modules.SootModuleInfo;
-import de.upb.swt.soot.javabytecodefrontend.inputlocation.JavaModulePathAnalysisInputLocation;
+import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.bytecode.frontend.modules.SootModuleInfo;
+import de.upb.swt.soot.java.bytecode.inputlocation.JavaModulePathAnalysisInputLocation;
 
 import java.util.Optional;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class ModuleBuilderActorTest {
 
     final AnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
-            "de.upb.soot.tests/target/test-classes/de/upb/soot/namespaces/modules",
+            "de.upb.swt.soot.tests/target/test-classes/de/upb/soot/namespaces/modules",
             new AsmJavaClassProvider());
 
     Project<AnalysisInputLocation> project =
