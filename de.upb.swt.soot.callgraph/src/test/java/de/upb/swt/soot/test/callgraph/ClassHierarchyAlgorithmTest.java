@@ -21,9 +21,8 @@ import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.sourcecode.WalaClassLoaderTestUtils;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
-import java.util.*;
-
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
+import java.util.*;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -45,14 +44,16 @@ public class ClassHierarchyAlgorithmTest {
     String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
     WalaClassLoader loader = new WalaClassLoader(walaClassPath, null);
 
-//    AnalysisInputLocation inputLocation = new JavaSourcePathAnalysisInputLocation(walaClassPath, null);
+    //    AnalysisInputLocation inputLocation = new
+    // JavaSourcePathAnalysisInputLocation(walaClassPath, null);
     System.out.println(System.getProperty("java.home"));
-    List<AnalysisInputLocation> locs = Arrays.asList (
-            new JavaClassPathAnalysisInputLocation(System.getProperty("java.home")+"/lib/rt.jar", new AsmJavaClassProvider()),
-            new JavaSourcePathAnalysisInputLocation(Collections.singleton(walaClassPath), null)
-    );
+    List<AnalysisInputLocation> locs =
+        Arrays.asList(
+            new JavaClassPathAnalysisInputLocation(
+                System.getProperty("java.home") + "/lib/rt.jar", new AsmJavaClassProvider()),
+            new JavaSourcePathAnalysisInputLocation(Collections.singleton(walaClassPath), null));
 
-     AnalysisInputLocation inputLocation =  new CompositeInputLocation( locs );
+    AnalysisInputLocation inputLocation = new CompositeInputLocation(locs);
 
     Project project = new Project(inputLocation);
     View view = project.createOnDemandView();
