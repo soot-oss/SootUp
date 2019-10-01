@@ -18,10 +18,8 @@ import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 import de.upb.swt.soot.core.frontend.ClassSource;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -328,10 +326,5 @@ public class WalaClassLoader {
       }
     }
     return walaClass;
-  }
-
-  public AnalysisInputLocation getAnalysisInputLocation() {
-    // TODO: improve 2nd parameter
-    return new JavaSourcePathAnalysisInputLocation(sourcePath, null);
   }
 }

@@ -7,7 +7,7 @@ import de.upb.swt.soot.callgraph.CallGraph;
 import de.upb.swt.soot.callgraph.CallGraphAlgorithm;
 import de.upb.swt.soot.callgraph.ClassHierarchyAlgorithm;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchyKey;
+import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
@@ -33,20 +33,20 @@ import org.junit.experimental.categories.Category;
 public class ClassHierarchyAlgorithmTest {
 
   // TODO: StaticInitializers, Lambdas ?
-
-  private View view;
   DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
-  MethodSignature mainMethodSignature;
   JavaClassType declareClassSig;
+  MethodSignature mainMethodSignature;
 
   public CallGraph loadCallGraph(String testDirectory, String className) {
     String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
     WalaClassLoader loader = new WalaClassLoader(walaClassPath, null);
 
+    System.out.println(loader.getClassSources());
+
     AnalysisInputLocation inputLocation =
         new JavaClassPathAnalysisInputLocation(walaClassPath, null);
     Project project = new Project(inputLocation);
-    view = new JavaView<>(project);
+    View view = project.createOnDemandView();
 
     declareClassSig = identifierFactory.getClassType(className);
     mainMethodSignature =
@@ -54,13 +54,16 @@ public class ClassHierarchyAlgorithmTest {
             "main", declareClassSig, "void", Collections.singletonList("java.lang.String[]"));
 
     Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, mainMethodSignature);
-    assertTrue(m.isPresent());
+    assertTrue(mainMethodSignature + " not found in classloader", m.isPresent());
 
-    CallGraphAlgorithm cha =
-        new ClassHierarchyAlgorithm(
-            view, (TypeHierarchy) view.getModuleData(TypeHierarchyKey.getInstance()));
+    final ViewTypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+    CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, typeHierarchy);
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
-    assertTrue(cg.containsMethod(mainMethodSignature));
+
+    System.out.println(cg);
+
+    assertTrue(
+        mainMethodSignature + " not found in callGraph", cg.containsMethod(mainMethodSignature));
 
     // TODO: remove debuginfo
     assertNotNull(cg);
@@ -149,7 +152,7 @@ public class ClassHierarchyAlgorithmTest {
         new JavaClassPathAnalysisInputLocation(walaClassPath, null);
 
     Project project = new Project(inputLocation);
-    view = new JavaView<>(project);
+    View view = new JavaView<>(project);
 
     mainMethodSignature =
         identifierFactory.getMethodSignature(
@@ -167,9 +170,8 @@ public class ClassHierarchyAlgorithmTest {
             "void",
             Collections.emptyList());
 
-    CallGraphAlgorithm cha =
-        new ClassHierarchyAlgorithm(
-            view, (TypeHierarchy) view.getModuleData(TypeHierarchyKey.getInstance()));
+    final TypeHierarchy typeHierarchy = new ViewTypeHierarchy(view);
+    CallGraphAlgorithm cha = new ClassHierarchyAlgorithm(view, typeHierarchy);
     CallGraph cg = cha.initialize(Collections.singletonList(mainMethodSignature));
 
     JavaClassType newClass =

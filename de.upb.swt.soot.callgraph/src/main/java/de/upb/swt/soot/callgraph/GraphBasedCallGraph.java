@@ -25,6 +25,7 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
 
   @Nonnull private final DefaultDirectedGraph<Vertex, Edge> graph;
   @Nonnull private final Map<MethodSignature, Vertex> signatureToVertex;
+  // TODO: [ms] typeToVertices is not used in a useful way, yet?
   @Nonnull private final Map<JavaClassType, Set<Vertex>> typeToVertices;
 
   GraphBasedCallGraph() {
@@ -105,5 +106,30 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
     Vertex methodVertex = signatureToVertex.get(method);
     Preconditions.checkNotNull(methodVertex, "Node for " + method + " has not been added yet");
     return methodVertex;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder("GraphBasedCallGraph");
+    if (signatureToVertex.keySet().size() == 0) {
+      sb.append(" is empty");
+    } else {
+      sb.append(":\n");
+      for (MethodSignature method : signatureToVertex.keySet()) {
+        sb.append(method.toString()).append(":\n");
+        callsFrom(method)
+            .forEach(
+                (m) -> {
+                  sb.append("<").append(m).append("\n");
+                });
+        callsTo(method)
+            .forEach(
+                (m) -> {
+                  sb.append(">").append(m).append("\n");
+                });
+        sb.append("\n");
+      }
+    }
+    return sb.toString();
   }
 }
