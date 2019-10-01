@@ -21,7 +21,7 @@
     </dependency>
     <dependency>
       <groupId>de.upb.swt</groupId>
-      <artifactId>soot.javabytecodefrontend</artifactId>
+      <artifactId>soot.java.bytecode</artifactId>
       <version>4.0.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
