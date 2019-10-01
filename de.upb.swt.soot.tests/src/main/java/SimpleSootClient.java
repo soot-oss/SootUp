@@ -1,14 +1,10 @@
 import com.ibm.wala.ipa.callgraph.CallGraph;
-
-import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-
+import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collections;
 
 /**
@@ -19,12 +15,12 @@ import java.util.Collections;
  */
 public class SimpleSootClient {
 
-
   public static void main(String[] args) {
     String javaClassPath = "de/upb/soot/example/classes/";
     String javaSourcePath = "de/upb/soot/example/src";
 
-    AnalysisInputLocation cpBased = new JavaClassPathAnalysisInputLocation(javaClassPath, new AsmJavaClassProvider());
+    AnalysisInputLocation cpBased =
+        new JavaClassPathAnalysisInputLocation(javaClassPath, new AsmJavaClassProvider());
 
     AnalysisInputLocation walaSource =
         new JavaSourcePathAnalysisInputLocation(Collections.singleton(javaSourcePath));
@@ -35,25 +31,23 @@ public class SimpleSootClient {
     View fullView = p.createFullView();
 
     /*
-    CallGraph cg = fullView.createCallGraph();
-    TypeHierarchy t = fullView.typeHierarchy();
-    mySootAnalysis( cg );
+        CallGraph cg = fullView.createCallGraph();
+        TypeHierarchy t = fullView.typeHierarchy();
+        mySootAnalysis( cg );
 
 
-    // 2. advanced case with scope
-    Scope s = new Scope(cpBased);
-    View limitedView = p.createView(s);
-    cg = limitedView.createCallGraph();
-    t = limitedView.typeHierarchy();
-    mySootAnalysis( cg );
-*/
+        // 2. advanced case with scope
+        Scope s = new Scope(cpBased);
+        View limitedView = p.createView(s);
+        cg = limitedView.createCallGraph();
+        t = limitedView.typeHierarchy();
+        mySootAnalysis( cg );
+    */
 
   }
 
   /** dummy method */
-  static void mySootAnalysis(CallGraph cg){
+  static void mySootAnalysis(CallGraph cg) {
     // here goes my own analysis
   }
-
-
 }

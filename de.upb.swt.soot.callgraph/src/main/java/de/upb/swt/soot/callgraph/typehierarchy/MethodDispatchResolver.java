@@ -9,7 +9,6 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.views.View;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;

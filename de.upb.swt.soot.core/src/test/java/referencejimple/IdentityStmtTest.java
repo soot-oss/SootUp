@@ -28,7 +28,14 @@ import de.upb.swt.soot.core.types.VoidType;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /** @author Markus Schmidt */

@@ -1,7 +1,6 @@
 package de.upb.swt.soot.callgraph.typehierarchy;
 
 import com.google.common.base.Suppliers;
-
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.NullType;
@@ -9,7 +8,6 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

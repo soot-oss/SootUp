@@ -11,7 +11,11 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.ModuleExportNode;
+import org.objectweb.asm.tree.ModuleNode;
+import org.objectweb.asm.tree.ModuleOpenNode;
+import org.objectweb.asm.tree.ModuleProvideNode;
+import org.objectweb.asm.tree.ModuleRequireNode;
 
 public class AsmModuleClassSource extends ModuleClassSource {
 

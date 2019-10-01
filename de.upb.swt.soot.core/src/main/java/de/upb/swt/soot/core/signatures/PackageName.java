@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.signatures;
  */
 
 import com.google.common.base.Objects;
+import scala.collection.script.Remove;
 
 /**
  * Represents a Java Package.

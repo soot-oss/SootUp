@@ -1,7 +1,6 @@
 package de.upb.swt.soot.callgraph.typehierarchy;
 
 import com.google.common.base.Suppliers;
-
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.Edge;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.EdgeType;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy.ScanResult.Vertex;
@@ -12,7 +11,6 @@ import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.views.View;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
