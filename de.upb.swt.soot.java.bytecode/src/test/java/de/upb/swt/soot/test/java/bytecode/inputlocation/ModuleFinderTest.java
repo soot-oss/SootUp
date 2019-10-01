@@ -65,7 +65,8 @@ public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
   public void modularJar() {
     ModuleFinder moduleFinder =
         new ModuleFinder(
-            new AsmJavaClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules/");
+            new AsmJavaClassProvider(),
+            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
     Collection<String> discoveredModules = moduleFinder.discoverAllModules();
     assertTrue(discoveredModules.contains("de.upb.mod"));
   }
@@ -76,8 +77,10 @@ public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
 
     ModuleFinder moduleFinder =
         new ModuleFinder(
-            new AsmJavaClassProvider(), "target/test-classes/de/upb/soot/namespaces/modules");
-    Path p = Paths.get("target/test-classes/de/upb/soot/namespaces/modules/testMod");
+            new AsmJavaClassProvider(),
+            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules");
+    Path p =
+        Paths.get("../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/testMod");
     Whitebox.invokeMethod(moduleFinder, "buildModuleForExplodedModule", p);
     Field field = Whitebox.getField(moduleFinder.getClass(), "moduleInputLocation");
     Map<String, AbstractAnalysisInputLocation> values =
