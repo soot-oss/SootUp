@@ -20,17 +20,17 @@ public class PublicClassTest {
   private String className = "PublicClass";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
-
   @Before
   public void loadClasses() {
     loadClassesWithWala.classLoader(srcDir, className);
   }
 
   @Test
-  public void publicClassTest(){
-    Optional<ClassSource> sc= loadClassesWithWala.loader.getClassSource(loadClassesWithWala.declareClassSig);
+  public void publicClassTest() {
+    Optional<ClassSource> sc =
+        loadClassesWithWala.loader.getClassSource(loadClassesWithWala.declareClassSig);
     ClassSource classSource = sc.get();
-    assertEquals(classSource.resolveModifiers().toString(),"[PUBLIC]");
+    assertEquals(classSource.resolveModifiers().toString(), "[PUBLIC]");
   }
 
   @Test
@@ -94,6 +94,6 @@ public class PublicClassTest {
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
-    assertEquals(method.getModifiers().toString(),"[]");
+    assertEquals(method.getModifiers().toString(), "[]");
   }
 }

@@ -20,29 +20,29 @@ public class NoModifierClassTest {
   private String className = "NoModifierClass";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
-
   @Before
   public void loadClasses() {
     loadClassesWithWala.classLoader(srcDir, className);
   }
 
   @Test
-  public void noModifierClassTest(){
-    Optional<ClassSource> sc= loadClassesWithWala.loader.getClassSource(loadClassesWithWala.declareClassSig);
+  public void noModifierClassTest() {
+    Optional<ClassSource> sc =
+        loadClassesWithWala.loader.getClassSource(loadClassesWithWala.declareClassSig);
     ClassSource classSource = sc.get();
-    assertEquals(classSource.resolveModifiers().toString(),"[]");
+    assertEquals(classSource.resolveModifiers().toString(), "[]");
   }
 
   @Test
   public void publicMethodTest() {
     Optional<SootMethod> m =
-            WalaClassLoaderTestUtils.getSootMethod(
-                    loadClassesWithWala.loader,
-                    loadClassesWithWala.identifierFactory.getMethodSignature(
-                            "publicMethod",
-                            loadClassesWithWala.declareClassSig,
-                            "void",
-                            Collections.emptyList()));
+        WalaClassLoaderTestUtils.getSootMethod(
+            loadClassesWithWala.loader,
+            loadClassesWithWala.identifierFactory.getMethodSignature(
+                "publicMethod",
+                loadClassesWithWala.declareClassSig,
+                "void",
+                Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -52,13 +52,13 @@ public class NoModifierClassTest {
   @Test
   public void privateMethodTest() {
     Optional<SootMethod> m =
-            WalaClassLoaderTestUtils.getSootMethod(
-                    loadClassesWithWala.loader,
-                    loadClassesWithWala.identifierFactory.getMethodSignature(
-                            "privateMethod",
-                            loadClassesWithWala.declareClassSig,
-                            "void",
-                            Collections.emptyList()));
+        WalaClassLoaderTestUtils.getSootMethod(
+            loadClassesWithWala.loader,
+            loadClassesWithWala.identifierFactory.getMethodSignature(
+                "privateMethod",
+                loadClassesWithWala.declareClassSig,
+                "void",
+                Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -68,13 +68,13 @@ public class NoModifierClassTest {
   @Test
   public void protectedMethodTest() {
     Optional<SootMethod> m =
-            WalaClassLoaderTestUtils.getSootMethod(
-                    loadClassesWithWala.loader,
-                    loadClassesWithWala.identifierFactory.getMethodSignature(
-                            "protectedMethod",
-                            loadClassesWithWala.declareClassSig,
-                            "void",
-                            Collections.emptyList()));
+        WalaClassLoaderTestUtils.getSootMethod(
+            loadClassesWithWala.loader,
+            loadClassesWithWala.identifierFactory.getMethodSignature(
+                "protectedMethod",
+                loadClassesWithWala.declareClassSig,
+                "void",
+                Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
@@ -84,16 +84,16 @@ public class NoModifierClassTest {
   @Test
   public void noModifierMethodTest() {
     Optional<SootMethod> m =
-            WalaClassLoaderTestUtils.getSootMethod(
-                    loadClassesWithWala.loader,
-                    loadClassesWithWala.identifierFactory.getMethodSignature(
-                            "noModifierMethod",
-                            loadClassesWithWala.declareClassSig,
-                            "void",
-                            Collections.emptyList()));
+        WalaClassLoaderTestUtils.getSootMethod(
+            loadClassesWithWala.loader,
+            loadClassesWithWala.identifierFactory.getMethodSignature(
+                "noModifierMethod",
+                loadClassesWithWala.declareClassSig,
+                "void",
+                Collections.emptyList()));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
     Utils.print(method, false);
-    assertEquals(method.getModifiers().toString(),"[]");
+    assertEquals(method.getModifiers().toString(), "[]");
   }
 }
