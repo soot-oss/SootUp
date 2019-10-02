@@ -4,8 +4,8 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ClassSource;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.util.NotYetImplementedException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -59,11 +59,8 @@ public class CompositeInputLocation implements AnalysisInputLocation {
             .collect(Collectors.toList());
 
     if (result.size() > 1) {
-      // FIXME: [JMP] Is an empty result better than the first item in the list?
-      // TODO: Warn here b/c of multiple results
-      return Optional.empty();
+      throw new ResolveException("Class " + signature + " found in multiple inputLocations.");
     }
-
     return result.stream().findFirst();
   }
 
@@ -77,13 +74,15 @@ public class CompositeInputLocation implements AnalysisInputLocation {
     return inputLocations.stream()
         .findFirst()
         .map(AnalysisInputLocation::getClassProvider)
-        .orElseThrow(() -> new RuntimeException("FATAL ERROR: No class provider found."));
+        .orElseThrow(() -> new ResolveException("FATAL ERROR: No class provider found."));
   }
 
   @Override
   public @Nonnull Collection<AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
-    // TODO Auto-generated methodRef stub
-    throw new NotYetImplementedException("Getting class sources is not implemented, yet.");
+    return inputLocations.stream()
+        .map(n -> n.getClassSources(identifierFactory))
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
   }
 }
