@@ -88,6 +88,16 @@ public class Printer {
   }
 
   public void printTo(SootClass cl, PrintWriter out) {
+    LabeledStmtPrinter printer;
+    if (useAbbreviations()) {
+      printer = new BriefStmtPrinter();
+    } else {
+      printer = new NormalStmtPrinter();
+    }
+    printTo(cl, out, printer);
+  }
+
+  public void printTo(SootClass cl, PrintWriter out, LabeledStmtPrinter printer) {
     // add jimple line number tags
     setJimpleLnNum(1);
 
@@ -158,13 +168,13 @@ public class Printer {
     }
 
     // Print methods
-    printMethod(cl, out);
+    printMethod(cl, out, printer);
 
     out.println("}");
     incJimpleLnNum();
   }
 
-  private void printMethod(SootClass cl, PrintWriter out) {
+  private void printMethod(SootClass cl, PrintWriter out, LabeledStmtPrinter printer) {
     Iterator<? extends Method> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       if (cl.getMethods().size() != 0) {
@@ -178,10 +188,12 @@ public class Printer {
         if (!Modifier.isAbstract(method.getModifiers())
             && !Modifier.isNative(method.getModifiers())) {
           if (!method.hasBody()) {
-            // methodRef.retrieveActiveBody(); // force loading the body
-            throw new RuntimeException("methodRef " + method.getName() + " has no body!");
+            throw new RuntimeException("method " + method.getName() + " has no body!");
           }
-          printTo(method.getBody(), out);
+
+          Body body = method.getBody();
+          printer.createLabelMaps(body);
+          printTo(body, out, printer);
 
           if (methodIt.hasNext()) {
             out.println();
@@ -208,32 +220,37 @@ public class Printer {
    * @param out a PrintWriter instance to print to.
    */
   public void printTo(Body b, PrintWriter out) {
+    LabeledStmtPrinter printer;
+    if (useAbbreviations()) {
+      printer = new BriefStmtPrinter(b);
+    } else {
+      printer = new NormalStmtPrinter(b);
+    }
+    printTo(b, out, printer);
+  }
 
-    boolean isPrecise = !useAbbreviations();
+  /**
+   * Prints out the methodRef corresponding to b Body, (declaration and body), in the textual format
+   * corresponding to the IR used to encode b body.
+   *
+   * @param out a PrintWriter instance to print to.
+   * @param printer the StmtPrinter that determines how to print the statements
+   */
+  public void printTo(Body b, PrintWriter out, LabeledStmtPrinter printer) {
 
     String decl = b.getMethod().getDeclaration();
 
     out.println("    " + decl);
-
     if (addJimpleLn()) {
       setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethod()));
     }
-
     out.println("    {");
     incJimpleLnNum();
 
     AbstractStmtGraph unitGraph = new BriefStmtGraph(b);
 
-    LabeledStmtPrinter up;
-    if (isPrecise) {
-      up = new NormalStmtPrinter(b);
-    } else {
-      up = new BriefStmtPrinter(b);
-    }
-
-    printLocalsInBody(b, up);
-
-    printStatementsInBody(b, out, up, unitGraph);
+    printLocalsInBody(b, printer);
+    printStatementsInBody(b, out, printer, unitGraph);
 
     out.println("    }");
     incJimpleLnNum();

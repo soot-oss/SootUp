@@ -9,6 +9,7 @@ import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
@@ -76,12 +77,18 @@ public interface View {
   @Nonnull
   String quotedNameOf(@Nonnull String name);
 
+  /** @see ModuleDataKey */
   <T> void putModuleData(@Nonnull ModuleDataKey<T> key, @Nonnull T value);
 
+  /** @see ModuleDataKey */
   @Nullable
   <T> T getModuleData(@Nonnull ModuleDataKey<T> key);
 
-  default <T> T getOrComputeModuleData(@Nonnull ModuleDataKey<T> key, Supplier<T> dataSupplier) {
+  /**
+   * @see java.util.Map#computeIfAbsent(Object, Function)
+   * @see ModuleDataKey
+   */
+  default <T> T computeModuleDataIfAbsent(@Nonnull ModuleDataKey<T> key, Supplier<T> dataSupplier) {
     T moduleData = getModuleData(key);
     if (moduleData != null) {
       return moduleData;
@@ -115,6 +122,34 @@ public interface View {
   //    return Optional.empty();
   //  }
 
+  /**
+   * A key for use with {@link #getModuleData(ModuleDataKey)}, {@link #putModuleData(ModuleDataKey,
+   * Object)} and {@link #computeModuleDataIfAbsent(ModuleDataKey, Supplier)}. This allows
+   * additional data to be stored or cached inside a {@link View} and to be retrieved in a type-safe
+   * manner. A {@link ModuleDataKey} of type <code>T</code> can only be used to store and retrieve
+   * data of type <code>T</code>.
+   *
+   * <p>Additionally, since it is an abstract class and not an interface, it can be assured that a
+   * given class can only be a key for a single type, which avoids clashes.
+   *
+   * <p>Example: <br>
+   * <br>
+   *
+   * <pre>
+   *   class StringDataKey extends ModuleDataKey&lt;String&gt; {
+   *     public static final StringDataKey instance = new StringDataKey();
+   *     private StringDataKey() {}
+   *   }
+   *
+   *   void storeInView(String str, View view) {
+   *     view.putModuleData(StringDataKey.instance, str);
+   *     String retrieved = view.getModuleData(StringDataKey.instance);
+   *   }
+   * </pre>
+   *
+   * @param <T> The type of the stored and retrieved data that is associated with the key
+   * @author Christian Brüggemann
+   */
   @SuppressWarnings("unused") // Used in modules
-  interface ModuleDataKey<T> {}
+  abstract class ModuleDataKey<T> {}
 }
