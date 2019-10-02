@@ -28,6 +28,8 @@ public interface CallGraph {
   boolean containsCall(
       @Nonnull MethodSignature sourceMethod, @Nonnull MethodSignature targetMethod);
 
+  int callCount();
+
   @Nonnull
   MutableCallGraph copy();
 }

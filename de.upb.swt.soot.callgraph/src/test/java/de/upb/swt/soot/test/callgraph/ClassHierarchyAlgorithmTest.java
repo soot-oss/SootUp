@@ -40,7 +40,6 @@ public class ClassHierarchyAlgorithmTest {
   JavaClassType mainClassSignature;
   MethodSignature mainMethodSignature;
 
-
   CallGraph loadCallGraph(String testDirectory, String className) {
     String walaClassPath = "src/test/resources/callgraph/" + testDirectory;
     WalaClassLoader loader = new WalaClassLoader(walaClassPath, null);
@@ -299,10 +298,7 @@ public class ClassHierarchyAlgorithmTest {
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method",
-            identifierFactory.getClassType("vc2.Class"),
-            "void",
-            Collections.emptyList());
+            "method", identifierFactory.getClassType("vc2.Class"), "void", Collections.emptyList());
     assertTrue(cg.containsCall(callMethod, targetMethod));
   }
 
@@ -314,21 +310,20 @@ public class ClassHierarchyAlgorithmTest {
     JavaClassType subClassSig = identifierFactory.getClassType("vc3.ClassImpl");
     MethodSignature constructorMethod =
         identifierFactory.getMethodSignature(
-            "<init>", subClassSig, "void", Collections.emptyList() );
+            "<init>", subClassSig, "void", Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, constructorMethod));
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
             "callOnInterface",
-                mainClassSignature,
+            mainClassSignature,
             "void",
             Collections.singletonList("vc3.Interface"));
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
 
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
-            "method", subClassSig, "void",
-            Collections.emptyList());
+            "method", subClassSig, "void", Collections.emptyList());
     assertTrue(cg.containsCall(callMethod, targetMethod));
     // TODO: this callgraph looks strange!
 

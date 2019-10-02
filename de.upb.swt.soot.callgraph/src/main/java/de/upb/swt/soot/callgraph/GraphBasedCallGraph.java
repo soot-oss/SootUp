@@ -91,6 +91,11 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
     return graph.containsEdge(vertexOf(sourceMethod), vertexOf(targetMethod));
   }
 
+  @Override
+  public int callCount() {
+    return graph.edgeSet().size();
+  }
+
   @SuppressWarnings("unchecked") // (graph.clone() preserves generic properties)
   @Nonnull
   @Override
@@ -110,8 +115,8 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("GraphBasedCallGraph");
-    if (signatureToVertex.keySet().size() == 0) {
+    StringBuilder sb = new StringBuilder("GraphBasedCallGraph(" + callCount() + ")");
+    if (signatureToVertex.keySet().isEmpty()) {
       sb.append(" is empty");
     } else {
       sb.append(":\n");
@@ -120,12 +125,12 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
         callsFrom(method)
             .forEach(
                 (m) -> {
-                  sb.append("from ").append(m).append("\n");
+                  sb.append("\tfrom ").append(m).append("\n");
                 });
         callsTo(method)
             .forEach(
                 (m) -> {
-                  sb.append("to   ").append(m).append("\n");
+                  sb.append("\tto   ").append(m).append("\n");
                 });
         sb.append("\n");
       }
