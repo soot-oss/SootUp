@@ -71,7 +71,9 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     for (String module : availableModules) {
       AbstractAnalysisInputLocation ns = moduleFinder.discoverModule(module);
       IdentifierFactory identifierFactoryWrapper = identifierFactory;
-
+      if (ns == null) {
+        continue;
+      }
       if (!(ns instanceof JrtFileSystemAnalysisInputLocation)) {
         /*
          * we need a wrapper to create correct types for the found classes, all other ignore modules by default, or have
@@ -79,8 +81,6 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
          */
         identifierFactoryWrapper = new IdentifierFactoryWrapper(identifierFactoryWrapper, module);
       }
-
-      // FIXME: [JMP] `ns` may be `null`
       found.addAll(ns.getClassSources(identifierFactoryWrapper));
     }
 
@@ -101,12 +101,9 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
         throw new ClassResolvingException("No Namespace for class " + signature);
       } catch (ClassResolvingException e) {
         e.printStackTrace();
-        // FIXME: [JMP] Throwing exception and catching it immediately? This causes `ns` to remain
-        // `null`.
+        return Optional.empty();
       }
     }
-
-    // FIXME: [JMP] `ns` may be `null`
     return ns.getClassSource(signature);
   }
 
