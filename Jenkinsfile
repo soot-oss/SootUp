@@ -113,13 +113,15 @@ pipeline {
                       script{
                            sootmodules = ['core','java.bytecode','java.sourcecode','callgraph'];
                             sootmodules.each{ item ->
+				sh "mkdir -p target/coverage-reports"
+				    
                                 unstash 'reports1'
-                                sh "cp --parent de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-${item}-jdk8.exec"
-                                sh "rm -f de.upb.swt.soot.${item}/target/coverage-reports/aggregate.exec de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec"
+                                sh "mv de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-${item}-jdk8.exec"
+                                sh "rm -f de.upb.swt.soot.${item}/target/coverage-reports/aggregate.exec"
 
                                 unstash 'reports2'
-                                sh "cp --parent de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-${item}-jdk9.exec"
-                                sh "rm -f de.upb.swt.soot.${item}/target/coverage-reports/aggregate.exec de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exe"
+                                sh "mv de.upb.swt.soot.${item}/target/coverage-reports/jacoco-ut.exec target/coverage-reports/jacoco-ut-${item}-jdk9.exec"
+                                sh "rm -f de.upb.swt.soot.${item}/target/coverage-reports/aggregate.exec"
                             }
                       }
                       sh 'mvn validate' // Invokes the jacoco merge goal
