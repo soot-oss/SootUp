@@ -26,7 +26,7 @@ public abstract class AbstractClassSource {
     return classSignature;
   }
 
-  public abstract AbstractClass reifyClass();
+  public abstract AbstractClass buildClass();
 
   public Path getSourcePath() {
     return sourcePath;

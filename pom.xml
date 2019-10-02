@@ -70,11 +70,12 @@
       </activation>
     </profile>
     <profile>
+      <!-- Profile for skipping tests while generating the jacoco-badge -->
       <id>skipTestProfile</id>
       <activation>
         <property>
           <name>skipTests</name>
-          <value>!false</value>
+          <value>true</value>
         </property>
       </activation>
       <properties>

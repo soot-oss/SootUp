@@ -319,6 +319,7 @@ public class WalaClassLoader {
       // occurs with java runtime classes (presumably with other non source files, too)
       // e.g. java.lang.Object -> java.lang.ClassCastException: com.ibm.wala.classLoader.ShrikeClass
       // cannot be cast to com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl$JavaClass
+      // e.printStackTrace();
       return null;
     }
 

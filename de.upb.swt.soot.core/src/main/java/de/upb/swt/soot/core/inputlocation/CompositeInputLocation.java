@@ -81,8 +81,7 @@ public class CompositeInputLocation implements AnalysisInputLocation {
   public @Nonnull Collection<AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
     return inputLocations.stream()
-        .map(n -> n.getClassSources(identifierFactory))
-        .flatMap(Collection::stream)
+        .flatMap(n -> n.getClassSources(identifierFactory).stream())
         .collect(Collectors.toList());
   }
 }

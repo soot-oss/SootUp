@@ -39,7 +39,7 @@ public abstract class ModuleClassSource extends AbstractClassSource {
   public abstract Position resolvePosition();
 
   @Override
-  public AbstractClass reifyClass() {
+  public AbstractClass buildClass() {
     return new SootModuleInfo(this, false);
   }
 }

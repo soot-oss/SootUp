@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 public abstract class ClassSource extends AbstractClassSource {
 
   @Override
-  public AbstractClass reifyClass() {
+  public AbstractClass buildClass() {
     // TODO: [cb] Don't use a fixed SourceType here. [ms]: lift determination of SourceType up to
     // classSource->AnalysisInputLocation?
     return new SootClass(this, SourceType.Application);
