@@ -1,95 +1,52 @@
-package de.upb.swt.soot.test.core.minimaltestsuite.java6;
+package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.*;
-
-import categories.Java8Test;
-
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-@Category(Java8Test.class)
-public class SubClassTest {
-  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
-  private String className = "SubClass";
-  private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
+/** @author Kaustubh Kelkar */
+public class SubClassTest extends MinimalTestSuiteBase {
+  public MethodSignature getMethodSignature() {
+    return identifierFactory.getMethodSignature(
+        "subclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
 
-  @Before
-  public void loadClasses() {
-    loadClassesWithWala.classLoader(srcDir, className);
+  /** @returns the method signature needed for second method in testCase */
+  public MethodSignature getMethodSignature1() {
+    return identifierFactory.getMethodSignature(
+        "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test
-  public void subclassMethodTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "subclassMethod",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of(
-                "r0 := @this: SubClass",
-                "r0.<SubClass: int aa> = 10",
-                "r0.<SubClass: int bb> = 20",
-                "r0.<SubClass: int cc> = 30",
-                "r0.<SubClass: int dd> = 40",
-                "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
+  public void testDemo() {
+    test(getJimpleLines1(), getMethodSignature1());
   }
 
-  @Test
-  public void superclassMethodTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "superclassMethod",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
+  @Override
+  public List<String> getJimpleLines() {
+    return Stream.of(
+            "r0 := @this: SubClass",
+            "r0.<SubClass: int aa> = 10",
+            "r0.<SubClass: int bb> = 20",
+            "r0.<SubClass: int cc> = 30",
+            "r0.<SubClass: int dd> = 40",
+            "return")
+        .collect(Collectors.toCollection(ArrayList::new));
+  }
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of(
-                "r0 := @this: SubClass",
-                "specialinvoke r0.<SuperClass: void superclassMethod()>()",
-                "r0.<SuperClass: int a> = 100",
-                "r0.<SuperClass: int b> = 200",
-                "r0.<SuperClass: int c> = 300",
-                "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
+  public List<String> getJimpleLines1() {
+    return Stream.of(
+            "r0 := @this: SubClass",
+            "specialinvoke r0.<SuperClass: void superclassMethod()>()",
+            "r0.<SuperClass: int a> = 100",
+            "r0.<SuperClass: int b> = 200",
+            "r0.<SuperClass: int c> = 300",
+            "return")
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 }

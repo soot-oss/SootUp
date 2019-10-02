@@ -1,66 +1,29 @@
-package de.upb.soot.minimaltestsuite.java6;
+package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.*;
-
-import categories.Java8Test;
-import de.upb.soot.core.Body;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.java.Utils;
-import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
-import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.minimaltestsuite.LoadClassesWithWala;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
 
-@Category(Java8Test.class)
-public class SuperClassTest {
-  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
-  private String className = "SuperClass";
-  private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
-
-  @Before
-  public void loadClasses() {
-    loadClassesWithWala.classLoader(srcDir, className);
+/** @author Kaustubh Kelkar */
+public class SuperClassTest extends MinimalTestSuiteBase {
+  public MethodSignature getMethodSignature() {
+    return identifierFactory.getMethodSignature(
+        "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Test
-  public void superclassMethodTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "superclassMethod",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
-        Stream.of(
-                "r0 := @this: SuperClass",
-                "r0.<SuperClass: int a> = 10",
-                "r0.<SuperClass: int b> = 20",
-                "r0.<SuperClass: int c> = 30",
-                "r0.<SuperClass: int d> = 40",
-                "return")
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    assertEquals(expectedStmts, actualStmts);
+  @Override
+  public List<String> getJimpleLines() {
+    return Stream.of(
+            "r0 := @this: SuperClass",
+            "r0.<SuperClass: int a> = 10",
+            "r0.<SuperClass: int b> = 20",
+            "r0.<SuperClass: int c> = 30",
+            "r0.<SuperClass: int d> = 40",
+            "return")
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 }
