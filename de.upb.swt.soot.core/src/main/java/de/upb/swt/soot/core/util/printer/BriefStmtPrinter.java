@@ -15,6 +15,9 @@ import de.upb.swt.soot.core.types.Type;
 
 /** StmtPrinter implementation for normal Jimple */
 public class BriefStmtPrinter extends LabeledStmtPrinter {
+
+  public BriefStmtPrinter() {}
+
   public BriefStmtPrinter(Body body) {
     super(body);
   }
