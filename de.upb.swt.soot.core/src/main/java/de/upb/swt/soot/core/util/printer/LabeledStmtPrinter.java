@@ -21,6 +21,8 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
   protected String labelIndent = "\u0020\u0020\u0020\u0020\u0020";
 
+  public LabeledStmtPrinter() {}
+
   public LabeledStmtPrinter(Body b) {
     createLabelMaps(b);
   }
@@ -79,7 +81,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     }
   }
 
-  private void createLabelMaps(Body body) {
+  public void createLabelMaps(Body body) {
     Collection<Stmt> stmts = body.getStmts();
 
     labels = new HashMap<>(stmts.size() * 2 + 1, 0.7f);
