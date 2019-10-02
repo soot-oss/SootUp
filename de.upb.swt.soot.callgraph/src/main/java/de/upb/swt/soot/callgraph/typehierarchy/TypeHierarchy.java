@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Represents a type hierarchy
+ * Represents a type hierarchy. It can be created from a {@link View} using {@link #fromView(View)}.
  *
  * @author Linghui Luo
  * @author Ben Hermann
@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 public interface TypeHierarchy {
 
   static TypeHierarchy fromView(View view) {
-    return view.getOrComputeModuleData(
+    return view.computeModuleDataIfAbsent(
             TypeHierarchyKey.getInstance(),
             () -> Suppliers.memoize(() -> new ViewTypeHierarchy(view)))
         .get();
