@@ -1,3 +1,7 @@
+
+/** @author: Hasitha Rajapakse */
+
+
 public class AbstractClass extends A{
 
     void a(){

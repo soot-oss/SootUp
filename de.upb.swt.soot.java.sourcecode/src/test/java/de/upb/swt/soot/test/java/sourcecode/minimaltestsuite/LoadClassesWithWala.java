@@ -1,3 +1,4 @@
+/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite;
 
 import de.upb.swt.soot.core.DefaultIdentifierFactory;

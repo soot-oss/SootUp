@@ -1,3 +1,7 @@
+
+/** @author: Hasitha Rajapakse */
+
+
 public class LabelStatement{
     public void labelStatement(){
         int num = 20;

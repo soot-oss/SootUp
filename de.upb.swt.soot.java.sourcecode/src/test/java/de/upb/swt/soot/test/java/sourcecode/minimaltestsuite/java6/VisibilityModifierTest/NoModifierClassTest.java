@@ -1,3 +1,4 @@
+/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6.VisibilityModifierTest;
 
 import static org.junit.Assert.assertEquals;

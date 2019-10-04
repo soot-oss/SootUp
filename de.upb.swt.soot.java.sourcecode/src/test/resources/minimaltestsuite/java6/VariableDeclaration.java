@@ -1,3 +1,7 @@
+
+/** @author: Hasitha Rajapakse */
+
+
 public class VariableDeclaration {
 
     public void shortVariable() {
@@ -18,7 +22,6 @@ public class VariableDeclaration {
 
     public void longVariable() {
         long e = 123456789;
-
     }
 
     public void floatVariable() {

@@ -1,3 +1,7 @@
+
+/** @author: Hasitha Rajapakse */
+
+
 public class SwitchCaseStatement {
 
     public String switchCaseStatement(String color) {

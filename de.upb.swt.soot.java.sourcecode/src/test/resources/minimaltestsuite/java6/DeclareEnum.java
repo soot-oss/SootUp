@@ -1,3 +1,7 @@
+
+/** @author: Hasitha Rajapakse */
+
+
 public class DeclareEnum {
     public enum Type{
         TYPE1,
