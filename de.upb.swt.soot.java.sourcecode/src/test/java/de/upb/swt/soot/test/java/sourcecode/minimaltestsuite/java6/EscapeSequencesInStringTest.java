@@ -1,14 +1,8 @@
-<<<<<<< HEAD:de.upb.swt.soot.core/src/test/java/de/upb/swt/soot/test/core/minimaltestsuite/java6/EscapeSequencesInStringTest.java
-package de.upb.soot.minimaltestsuite.java6;
-
-import static org.junit.Assert.*;
-=======
-package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6.VisibilityModifierTest;
+package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
->>>>>>> origin/develop:de.upb.swt.soot.java.sourcecode/src/test/java/de/upb/swt/soot/test/java/sourcecode/minimaltestsuite/java6/VisibilityModifierTest/PrivateClassTest.java
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;

@@ -1,25 +1,14 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6.VisibilityModifierTest;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-<<<<<<< HEAD:src/test/java/de/upb/soot/minimaltestsuite/java6/VisibilityModifierTest/PublicClassTest.java
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.ClassSource;
-import de.upb.soot.frontends.java.Utils;
-import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
-import de.upb.soot.minimaltestsuite.LoadClassesWithWala;
-=======
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
 import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.LoadClassesWithWala;
-import java.util.ArrayList;
->>>>>>> origin/develop:de.upb.swt.soot.java.sourcecode/src/test/java/de/upb/swt/soot/test/java/sourcecode/minimaltestsuite/java6/VisibilityModifierTest/PublicClassTest.java
 import java.util.Collections;
 import java.util.Optional;
 import org.junit.Before;

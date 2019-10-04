@@ -1,17 +1,19 @@
-package de.upb.soot.minimaltestsuite;
+package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.DefaultIdentifierFactory;
-import de.upb.soot.core.Body;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.java.Utils;
-import de.upb.soot.frontends.java.WalaClassLoader;
-import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
-import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.signatures.MethodSignature;
-import de.upb.soot.types.JavaClassType;
+import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
+import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

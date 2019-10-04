@@ -1,14 +1,16 @@
-package de.upb.soot.minimaltestsuite.java6;
+package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.soot.core.Body;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.java.Utils;
-import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
-import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.minimaltestsuite.LoadClassesWithWala;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
+import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.LoadClassesWithWala;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +23,7 @@ import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class ContinueInWhileLoopTest {
+
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
   private String className = "ContinueInWhileLoop";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
@@ -68,7 +71,7 @@ public class ContinueInWhileLoopTest {
                 "$i0 = $i4",
                 "goto [?= $z0 = $i0 < 10]",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList());
 
     assertEquals(expectedStmts, actualStmts);
   }
