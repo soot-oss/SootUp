@@ -23,9 +23,9 @@
 // import org.junit.experimental.categories.Category;
 //
 // @Category(Java8Test.class)
-// public class ForEachLoopTest {
+// public class EvalOrderWithParenthesesTest {
 //  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
-//  private String className = "ForEachLoop";
+//  private String className = "EvaluationOrderWithParentheses";
 //  private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 //
 //  @Before
@@ -34,12 +34,12 @@
 //  }
 //
 //  @Test
-//  public void forEachLoopTest() {
+//  public void evaluationOrderWithParenthesesTest() {
 //    Optional<SootMethod> m =
 //        WalaClassLoaderTestUtils.getSootMethod(
 //            loadClassesWithWala.loader,
 //            loadClassesWithWala.identifierFactory.getMethodSignature(
-//                "forEachLoop",
+//                "evaluationOrderWithParentheses",
 //                loadClassesWithWala.declareClassSig,
 //                "void",
 //                Collections.emptyList()));
@@ -56,31 +56,9 @@
 //
 //    List<String> expectedStmts =
 //        Stream.of(
-//                "r0 := @this: ForEachLoop",
-//                "$r1 = newarray (int[])[9]", // numArray
-//                "$r1[0] = 10",
-//                "$r1[1] = 20",
-//                "$r1[2] = 30",
-//                "$r1[3] = 40",
-//                "$r1[4] = 50",
-//                "$r1[5] = 60",
-//                "$r1[6] = 71",
-//                "$r1[7] = 80",
-//                "$r1[8] = 90",
-//                "$i0 = 0", // count
-//                "$r2 = $r1",
-//                "$i1 = 0",
-//                "$i2 = lengthof $r2",
-//                "$z0 = $i1 < $i2",
-//                "if $z0 == 0 goto return",
-//                "$r3 = $r2[$i1]",
-//                "$i3 = $i0",
-//                "$i4 = $i0 + 1",
-//                "$i0 = $i4",
-//                "$i5 = $i1",
-//                "$i6 = $i1 + 1",
-//                "$i1 = $i6",
-//                "goto [?= $i2 = lengthof $r2]",
+//                "r0 := @this: EvaluationOrderWithParentheses",
+//                "$i0 = 1 + 2",
+//                "$i1 = $i0 * 3",
 //                "return")
 //            .collect(Collectors.toCollection(ArrayList::new));
 //
@@ -101,42 +79,20 @@ import java.util.stream.Stream;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class ForEachLoopTest extends MinimalTestSuiteBase {
+public class EvaluationOrderWithParenthesesTest extends MinimalTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "forEachLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "evaluationOrderWithParentheses",
+        getDeclaredClassSignature(),
+        "void",
+        Collections.emptyList());
   }
 
   @Override
   public List<String> getJimpleLines() {
     return Stream.of(
-            "r0 := @this: ForEachLoop",
-            "$r1 = newarray (int[])[9]", // numArray
-            "$r1[0] = 10",
-            "$r1[1] = 20",
-            "$r1[2] = 30",
-            "$r1[3] = 40",
-            "$r1[4] = 50",
-            "$r1[5] = 60",
-            "$r1[6] = 71",
-            "$r1[7] = 80",
-            "$r1[8] = 90",
-            "$i0 = 0", // count
-            "$r2 = $r1",
-            "$i1 = 0",
-            "$i2 = lengthof $r2",
-            "$z0 = $i1 < $i2",
-            "if $z0 == 0 goto return",
-            "$r3 = $r2[$i1]",
-            "$i3 = $i0",
-            "$i4 = $i0 + 1",
-            "$i0 = $i4",
-            "$i5 = $i1",
-            "$i6 = $i1 + 1",
-            "$i1 = $i6",
-            "goto [?= $i2 = lengthof $r2]",
-            "return")
+            "r0 := @this: EvaluationOrderWithParentheses", "$i0 = 1 + 2", "$i1 = $i0 * 3", "return")
         .collect(Collectors.toList());
   }
 }
