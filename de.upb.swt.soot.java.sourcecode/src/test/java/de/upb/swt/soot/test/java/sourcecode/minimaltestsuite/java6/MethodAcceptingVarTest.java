@@ -1,60 +1,57 @@
 /** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
-import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.LoadClassesWithWala;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class MethodAcceptingVarTest {
-  private String srcDir = "src/test/resources/minimaltestsuite/java6/";
-  private String className = "MethodAcceptingVar";
-  private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
-
-  @Before
-  public void loadClasses() {
-    loadClassesWithWala.classLoader(srcDir, className);
-  }
+public class MethodAcceptingVarTest extends MinimalTestSuiteBase {
+  private String methodName;
+  private String methodSignature;
+  private List<String> jimpleLines;
+  private List<String> methodParameters;
 
   @Test
-  public void shortVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "shortVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.singletonList("short")));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
+  public void defaultTest() {
+    HashMap<String, HashMap<String, Object>> methodList = setValues();
+    Set<String> methodListKeys = methodList.keySet();
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    for (String methodListKey : methodListKeys) {
+      methodName = methodListKey;
+      HashMap<String, Object> mv = methodList.get(methodListKey);
+      methodSignature = (String) mv.get("methodSignature");
+      methodParameters = (List<String>) mv.get("methodParameters");
+      jimpleLines = (List<String>) mv.get("jimpleLines");
 
-    List<String> expectedStmts =
+      test(getJimpleLines(), getMethodSignature());
+    }
+  }
+
+  @Override
+  public MethodSignature getMethodSignature() {
+    return identifierFactory.getMethodSignature(
+        methodName, getDeclaredClassSignature(), methodSignature, methodParameters);
+  }
+
+  @Override
+  public List<String> getJimpleLines() {
+    return jimpleLines;
+  }
+
+  private HashMap<String, HashMap<String, Object>> setValues() {
+    HashMap<String, HashMap<String, Object>> methodList = new HashMap<>();
+    HashMap<String, Object> methodValues = new HashMap<>();
+
+    methodValues.put("methodSignature", "void");
+    methodValues.put("methodParameters", Collections.singletonList("short"));
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: MethodAcceptingVar",
                 "$s0 := @parameter0: short",
@@ -62,33 +59,14 @@ public class MethodAcceptingVarTest {
                 "$s2 = $s0 + 1",
                 "$s0 = $s2",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("shortVariable", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void byteVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "byteVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.singletonList("byte")));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put("methodParameters", Collections.singletonList("byte"));
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: MethodAcceptingVar",
                 "$b0 := @parameter0: byte",
@@ -96,62 +74,24 @@ public class MethodAcceptingVarTest {
                 "$b2 = $b0 + 1",
                 "$b0 = $b2",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("byteVariable", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void charVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "charVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.singletonList("char")));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put("methodParameters", Collections.singletonList("char"));
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: MethodAcceptingVar", "$c0 := @parameter0: char", "$c0 = 97", "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("charVariable", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void intVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "intVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.singletonList("int")));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put("methodParameters", Collections.singletonList("int"));
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: MethodAcceptingVar",
                 "$i0 := @parameter0: int",
@@ -159,104 +99,48 @@ public class MethodAcceptingVarTest {
                 "$i2 = $i0 + 1",
                 "$i0 = $i2",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("intVariable", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void longVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "longVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.singletonList("long")));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put("methodParameters", Collections.singletonList("long"));
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: MethodAcceptingVar",
                 "$l0 := @parameter0: long",
                 "$l0 = 123456777",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("longVariable", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void floatVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "floatVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.singletonList("float")));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put("methodParameters", Collections.singletonList("float"));
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: MethodAcceptingVar",
                 "$f0 := @parameter0: float",
                 "$f0 = 7.77F",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("floatVariable", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void doubleVariableTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "doubleVariable",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.singletonList("double")));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put("methodParameters", Collections.singletonList("double"));
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: MethodAcceptingVar",
                 "$d0 := @parameter0: double",
                 "$d0 = 1.787777777",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toCollection(ArrayList::new)));
+    methodList.put("doubleVariable", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
+    return methodList;
   }
 }
