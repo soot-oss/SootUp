@@ -86,4 +86,15 @@ public abstract class MinimalTestSuiteBase {
 
     assertEquals(expectedStmts, actualStmts);
   }
+
+  public void isFinalMethod(MethodSignature methodSignature) {
+    WalaClassLoader loader =
+        new WalaClassLoader(
+            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+    Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
+
+    assertTrue("No matching method signature found", m.isPresent());
+    SootMethod method = m.get();
+    assertTrue(method.isFinal());
+  }
 }
