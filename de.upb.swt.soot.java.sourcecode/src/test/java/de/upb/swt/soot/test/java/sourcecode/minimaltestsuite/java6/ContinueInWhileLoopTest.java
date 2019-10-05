@@ -13,6 +13,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class ContinueInWhileLoopTest extends MinimalTestSuiteBase {
 
+  @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "continueInWhileLoop", getDeclaredClassSignature(), "void", Collections.emptyList());
