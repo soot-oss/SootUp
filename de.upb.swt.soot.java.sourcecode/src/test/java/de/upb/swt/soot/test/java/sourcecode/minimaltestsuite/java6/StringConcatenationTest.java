@@ -13,6 +13,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class StringConcatenationTest extends MinimalTestSuiteBase {
 
+  @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "stringConcatenation", getDeclaredClassSignature(), "void", Collections.emptyList());
