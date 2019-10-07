@@ -1,28 +1,29 @@
-package de.upb.soot.minimaltestsuite.java6.ArraysTest;
+package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.soot.core.Body;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.java.Utils;
-import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
-import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.minimaltestsuite.LoadClassesWithWala;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
+import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.LoadClassesWithWala;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class InitializeArraysWhileDeclarationTest {
+public class InitializeArraysWithIndexTest {
   private String srcDir = "src/test/resources/minimaltestsuite/java6/Arrays/";
-  private String className = "InitializeArraysWhileDeclaration";
+  private String className = "InitializeArraysWithIndex";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
 
   @Before
@@ -50,7 +51,7 @@ public class InitializeArraysWhileDeclarationTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InitializeArraysWhileDeclaration",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (int[])[3]",
                 "$r1[0] = 1",
                 "$r1[1] = 2",
@@ -84,7 +85,7 @@ public class InitializeArraysWhileDeclarationTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InitializeArraysWhileDeclaration",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (byte[])[3]",
                 "$r1[0] = 4",
                 "$r1[1] = 5",
@@ -118,7 +119,7 @@ public class InitializeArraysWhileDeclarationTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InitializeArraysWhileDeclaration",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (short[])[3]",
                 "$r1[0] = 10",
                 "$r1[1] = 20",
@@ -152,7 +153,7 @@ public class InitializeArraysWhileDeclarationTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InitializeArraysWhileDeclaration",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (long[])[3]",
                 "$r1[0] = 547087L",
                 "$r1[1] = 564645L",
@@ -186,7 +187,7 @@ public class InitializeArraysWhileDeclarationTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InitializeArraysWhileDeclaration",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (float[])[4]",
                 "$r1[0] = 3.14F",
                 "$r1[1] = 5.46F",
@@ -221,7 +222,7 @@ public class InitializeArraysWhileDeclarationTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InitializeArraysWhileDeclaration",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (double[])[2]",
                 "$r1[0] = 6.765414",
                 "$r1[1] = 9.676565646",
@@ -254,7 +255,7 @@ public class InitializeArraysWhileDeclarationTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InitializeArraysWhileDeclaration",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (boolean[])[2]",
                 "$r1[0] = 1",
                 "$r1[1] = 0",
@@ -287,7 +288,7 @@ public class InitializeArraysWhileDeclarationTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InitializeArraysWhileDeclaration",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (char[])[3]",
                 "$r1[0] = 65",
                 "$r1[1] = 98",
@@ -321,7 +322,7 @@ public class InitializeArraysWhileDeclarationTest {
 
     List<String> expectedStmts =
         Stream.of(
-                "r0 := @this: InitializeArraysWhileDeclaration",
+                "r0 := @this: InitializeArraysWithIndex",
                 "$r1 = newarray (java.lang.String[])[2]",
                 "$r1[0] = \"Hello World\"",
                 "$r1[1] = \"Greetings\"",

@@ -1,20 +1,21 @@
-package de.upb.soot.minimaltestsuite.java6.ArraysTest;
+package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.soot.core.Body;
-import de.upb.soot.core.SootMethod;
-import de.upb.soot.frontends.java.Utils;
-import de.upb.soot.frontends.java.WalaClassLoaderTestUtils;
-import de.upb.soot.jimple.common.stmt.Stmt;
-import de.upb.soot.minimaltestsuite.LoadClassesWithWala;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
+import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.LoadClassesWithWala;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
