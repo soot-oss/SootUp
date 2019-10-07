@@ -8,10 +8,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class AbstractClassTest extends MinimalTestSuiteBase {
+
+  @Test
+  public void defaultTest() {
+    test(getJimpleLines(), getMethodSignature());
+    isAbstractClass();
+  }
 
   @Override
   public MethodSignature getMethodSignature() {
