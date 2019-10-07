@@ -25,7 +25,10 @@ import javafx.application.Application;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Markus Schmidt */
+/** @author:
+ * Markus Schmidt
+ * Hasitha Rajapakse
+ * */
 @Category(Java8Test.class)
 public abstract class MinimalTestSuiteBase {
 
@@ -115,6 +118,25 @@ public abstract class MinimalTestSuiteBase {
       default:
         throw new IllegalStateException("Unexpected value: " + modifier);
     }
+  }
+
+  public void isAbstractClass() {
+    WalaClassLoader loader = new WalaClassLoader(baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+    Optional<ClassSource> cs =
+            loader.getClassSource(getDeclaredClassSignature());
+    assertTrue("no matching class signature found", cs.isPresent());
+    ClassSource classSource = cs.get();
+    SootClass sootClass = new SootClass(classSource, SourceType.Application);
+    /**
+     * get abstract class details assuming abstract class is extended by the tested class
+     */
+    Optional<JavaClassType> parentClass = sootClass.getSuperclass();
+    Optional<ClassSource> cs2 =
+            loader.getClassSource(parentClass.get());
+    assertTrue("no matching class signature found", cs.isPresent());
+    ClassSource classSource2 = cs2.get();
+    SootClass sootClass2 = new SootClass(classSource2, SourceType.Application);
+    assertTrue(sootClass2.isAbstract());
   }
 
 
