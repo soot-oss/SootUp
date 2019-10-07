@@ -1,20 +1,15 @@
 /** @author: Hasitha Rajapakse */
-
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
-
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class NoModifierClassTest extends MinimalTestSuiteBase{
+public class NoModifierClassTest extends MinimalTestSuiteBase {
 
   private String methodName;
   private String methodSignature;
@@ -39,7 +34,7 @@ public class NoModifierClassTest extends MinimalTestSuiteBase{
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-            methodName, getDeclaredClassSignature(), methodSignature, Collections.emptyList());
+        methodName, getDeclaredClassSignature(), methodSignature, Collections.emptyList());
   }
 
   @Override
@@ -73,4 +68,3 @@ public class NoModifierClassTest extends MinimalTestSuiteBase{
     return methodList;
   }
 }
-
