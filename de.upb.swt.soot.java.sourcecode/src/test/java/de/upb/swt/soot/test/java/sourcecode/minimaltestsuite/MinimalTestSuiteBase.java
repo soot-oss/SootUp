@@ -20,15 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javafx.application.Application;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author:
- * Markus Schmidt
- * Hasitha Rajapakse
- * */
+/** @author: Markus Schmidt Hasitha Rajapakse */
 @Category(Java8Test.class)
 public abstract class MinimalTestSuiteBase {
 
@@ -96,13 +91,14 @@ public abstract class MinimalTestSuiteBase {
   }
 
   public void checkClassModifier(String modifier) {
-    WalaClassLoader loader = new WalaClassLoader(baseDir + File.separator + getTestDirectoryName() + File.separator, null);
-    Optional<ClassSource> cs =
-            loader.getClassSource(getDeclaredClassSignature());
+    WalaClassLoader loader =
+        new WalaClassLoader(
+            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+    Optional<ClassSource> cs = loader.getClassSource(getDeclaredClassSignature());
     assertTrue("no matching class signature found", cs.isPresent());
     ClassSource classSource = cs.get();
     SootClass sootClass = new SootClass(classSource, SourceType.Application);
-    switch (modifier){
+    switch (modifier) {
       case "PUBLIC":
         assertTrue(sootClass.isPublic());
         break;
@@ -113,7 +109,7 @@ public abstract class MinimalTestSuiteBase {
         assertTrue(sootClass.isProtected());
         break;
       case "":
-        assertEquals(classSource.resolveModifiers().toString(),"[]");
+        assertEquals(classSource.resolveModifiers().toString(), "[]");
         break;
       default:
         throw new IllegalStateException("Unexpected value: " + modifier);
@@ -121,33 +117,30 @@ public abstract class MinimalTestSuiteBase {
   }
 
   public void isAbstractClass() {
-    WalaClassLoader loader = new WalaClassLoader(baseDir + File.separator + getTestDirectoryName() + File.separator, null);
-    Optional<ClassSource> cs =
-            loader.getClassSource(getDeclaredClassSignature());
+    WalaClassLoader loader =
+        new WalaClassLoader(
+            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+    Optional<ClassSource> cs = loader.getClassSource(getDeclaredClassSignature());
     assertTrue("no matching class signature found", cs.isPresent());
     ClassSource classSource = cs.get();
     SootClass sootClass = new SootClass(classSource, SourceType.Application);
-    /**
-     * get abstract class details assuming abstract class is extended by the tested class
-     */
+    /** get abstract class details assuming abstract class is extended by the tested class */
     Optional<JavaClassType> parentClass = sootClass.getSuperclass();
-    Optional<ClassSource> cs2 =
-            loader.getClassSource(parentClass.get());
+    Optional<ClassSource> cs2 = loader.getClassSource(parentClass.get());
     assertTrue("no matching class signature found", cs.isPresent());
     ClassSource classSource2 = cs2.get();
     SootClass sootClass2 = new SootClass(classSource2, SourceType.Application);
     assertTrue(sootClass2.isAbstract());
   }
 
-
   public void checkMethodModifier(String modifier, MethodSignature methodSignature) {
     WalaClassLoader loader =
-            new WalaClassLoader(
-                    baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+        new WalaClassLoader(
+            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
     Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
     assertTrue("No matching method signature found", m.isPresent());
     SootMethod method = m.get();
-    switch (modifier){
+    switch (modifier) {
       case "PUBLIC":
         assertTrue(method.isPublic());
         break;
@@ -158,7 +151,7 @@ public abstract class MinimalTestSuiteBase {
         assertTrue(method.isProtected());
         break;
       case "":
-        assertEquals(method.getModifiers().toString(),"[]");
+        assertEquals(method.getModifiers().toString(), "[]");
         break;
       default:
         throw new IllegalStateException("Unexpected value: " + modifier);
@@ -174,5 +167,4 @@ public abstract class MinimalTestSuiteBase {
     SootMethod method = m.get();
     assertTrue(method.isFinal());
   }
-
 }
