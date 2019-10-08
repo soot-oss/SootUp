@@ -1,5 +1,9 @@
 // https://bitbucket.org/delors/jcg/src/master/jcg_testcases/src/main/resources/Classloading.md
 
+// This test case is basically the same as CL1. In contrast to this the generic
+// type of the class is already specified before calling
+// Class<Comparator<Integer>>.newInstance.
+
 import lib.annotations.callgraph.IndirectCall;
 
 import java.net.MalformedURLException;
