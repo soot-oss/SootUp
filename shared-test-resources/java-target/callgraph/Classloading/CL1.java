@@ -1,5 +1,11 @@
 // https://bitbucket.org/delors/jcg/src/master/jcg_testcases/src/main/resources/Classloading.md
 
+// This test case uses an URLClassLoader in order to load classes from an
+// external .jar file. That class will be instantiated using
+// Class<?>.newInstance. Afterwards, it calls the compare on the Comparator
+// interface, which will resolve to the IntComparator from the given .jar at
+// runtime.
+
 import lib.annotations.callgraph.IndirectCall;
 
 import java.net.MalformedURLException;
