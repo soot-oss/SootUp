@@ -8,7 +8,7 @@
 import lib.annotations.callgraph.IndirectCall;
 import java.util.Comparator;
 
-public class Demo {
+public class CL4 {
 
     @IndirectCall(name = "callback", line = 14, resolvedTargets = "Lcl4/Demo;")
     public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException {

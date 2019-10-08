@@ -13,7 +13,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Comparator;
 
-public class Demo {
+public class CL1 {
 
     private static final String DIR = System.getProperty("user.dir") + "/resources/";
     private static URL CLv1;
