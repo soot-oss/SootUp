@@ -75,6 +75,7 @@ import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.transform.BodyTransformer;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -82,6 +83,7 @@ import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -144,6 +146,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
   private Multimap<LabelNode, StmtBox> trapHandlers;
   private int lastLineNumber = -1;
   @Nullable private JavaClassType declaringClass;
+  @Nonnull private final List<BodyTransformer> bodyTransformers;
 
   /*
    * Hint: in InstructionConverter convertInvokeInstruction() ling creates string for methodRef and types and stores/replaces
@@ -156,8 +159,6 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
 
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
-
-  @Nonnull private final CastAndReturnInliner castAndReturnInliner = new CastAndReturnInliner();
 
   private final Supplier<MethodSignature> lazyMethodSignature =
       Suppliers.memoize(
@@ -179,6 +180,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
       @Nonnull String signature,
       @Nonnull String[] exceptions) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
+    bodyTransformers = ImmutableUtils.immutableList(new CastAndReturnInliner());
   }
 
   @Override
@@ -233,6 +235,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
     stack = null;
     frames = null;
 
+    // TODO CastAndReturnInliner:
     // Make sure to inline patterns of the form to enable proper variable
     // splitting and type assignment:
     // a = new A();
@@ -240,16 +243,18 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
     // l0:
     // b = (B) a;
     // return b;
-    castAndReturnInliner.transform(bodyStmts, bodyTraps);
 
-    try {
-      // TODO: Implement body transformer
-      // PackManager.v().getPack("jb").apply(jb);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to apply jb to " + lazyMethodSignature.get(), e);
+    Body body = new Body(bodyLocals, bodyTraps, bodyStmts, bodyPos);
+    for (BodyTransformer bodyTransformer : bodyTransformers) {
+      try {
+        body = bodyTransformer.transformBody(body);
+      } catch (Exception e) {
+        throw new RuntimeException(
+            "Failed to apply " + bodyTransformer + " to " + lazyMethodSignature.get(), e);
+      }
     }
 
-    return new Body(bodyLocals, bodyTraps, bodyStmts, bodyPos);
+    return body;
   }
 
   private StackFrame getFrame(AbstractInsnNode insn) {
