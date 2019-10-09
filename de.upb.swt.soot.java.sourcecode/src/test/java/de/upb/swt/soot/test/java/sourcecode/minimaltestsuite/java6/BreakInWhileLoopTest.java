@@ -20,7 +20,7 @@ public class BreakInWhileLoopTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: BreakInWhileLoop",
             "$i0 = 10",

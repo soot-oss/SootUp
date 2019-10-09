@@ -20,7 +20,7 @@ public class IfElseStatementTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: IfElseStatement",
             "$i0 = 10",

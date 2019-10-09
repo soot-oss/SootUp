@@ -20,7 +20,7 @@ public class CreateNewInstanceTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: CreateNewInstance",
             "$r1 = new Person",

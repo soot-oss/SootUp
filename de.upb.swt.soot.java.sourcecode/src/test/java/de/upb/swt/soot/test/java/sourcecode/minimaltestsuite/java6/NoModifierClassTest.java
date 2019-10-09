@@ -38,7 +38,7 @@ public class NoModifierClassTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return jimpleLines;
   }
 

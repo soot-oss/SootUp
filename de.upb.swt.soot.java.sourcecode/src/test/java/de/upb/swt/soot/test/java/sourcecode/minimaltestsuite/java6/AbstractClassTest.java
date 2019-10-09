@@ -16,7 +16,7 @@ public class AbstractClassTest extends MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    test(getJimpleLines(), getMethodSignature());
+    test(expectedBodyStmts(), getMethodSignature());
     isAbstractClass();
   }
 
@@ -27,7 +27,7 @@ public class AbstractClassTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: AbstractClass",
             "r0 = new AbstractClass",

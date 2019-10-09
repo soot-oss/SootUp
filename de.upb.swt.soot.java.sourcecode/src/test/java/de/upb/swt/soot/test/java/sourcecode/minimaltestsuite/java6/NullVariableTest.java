@@ -20,7 +20,7 @@ public class NullVariableTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: NullVariable", "$r1 = null", "return")
         .collect(Collectors.toList());
   }

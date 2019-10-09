@@ -28,7 +28,7 @@ public class VariableDeclarationTest extends MinimalTestSuiteBase {
       methodSignature = (String) mv.get("methodSignature");
       jimpleLines = (List<String>) mv.get("jimpleLines");
 
-      test(getJimpleLines(), getMethodSignature());
+      test(expectedBodyStmts(), getMethodSignature());
     }
   }
 
@@ -39,7 +39,7 @@ public class VariableDeclarationTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return jimpleLines;
   }
 

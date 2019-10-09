@@ -20,7 +20,7 @@ public class ReferenceVarDeclarationTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: ReferenceVarDeclaration", "$r1 = \"Hello World\"", "return")
         .collect(Collectors.toList());
   }

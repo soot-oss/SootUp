@@ -33,7 +33,7 @@ public abstract class MinimalTestSuiteBase {
 
   public abstract MethodSignature getMethodSignature();
 
-  public abstract List<String> getJimpleLines();
+  public abstract List<String> expectedBodyStmts();
 
   /**
    * @returns the name of the parent directory - assuming the directory structure is only one level
@@ -67,7 +67,7 @@ public abstract class MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    test(getJimpleLines(), getMethodSignature());
+    test(expectedBodyStmts(), getMethodSignature());
   }
 
   public void test(List<String> expectedStmts, MethodSignature methodSignature) {

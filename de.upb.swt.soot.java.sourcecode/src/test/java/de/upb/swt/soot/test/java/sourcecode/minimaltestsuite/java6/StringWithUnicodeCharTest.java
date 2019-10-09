@@ -20,7 +20,7 @@ public class StringWithUnicodeCharTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: StringWithUnicodeChar", "$r1 = \"$\" + \"123\"", "return")
         .collect(Collectors.toList());
   }

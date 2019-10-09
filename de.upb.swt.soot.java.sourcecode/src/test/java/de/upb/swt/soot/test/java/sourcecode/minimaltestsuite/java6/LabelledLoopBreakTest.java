@@ -20,7 +20,7 @@ public class LabelledLoopBreakTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: LabelledLoopBreak",
             "$i0 = 0",

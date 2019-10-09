@@ -18,7 +18,7 @@ public class AssertStatementTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: AssertStatement",
             "$z0 = \"\" != null",

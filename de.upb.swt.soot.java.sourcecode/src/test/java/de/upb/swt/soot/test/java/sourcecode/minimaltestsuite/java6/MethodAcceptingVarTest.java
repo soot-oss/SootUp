@@ -29,7 +29,7 @@ public class MethodAcceptingVarTest extends MinimalTestSuiteBase {
       methodParameters = (List<String>) mv.get("methodParameters");
       jimpleLines = (List<String>) mv.get("jimpleLines");
 
-      test(getJimpleLines(), getMethodSignature());
+      test(expectedBodyStmts(), getMethodSignature());
     }
   }
 
@@ -40,7 +40,7 @@ public class MethodAcceptingVarTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return jimpleLines;
   }
 
