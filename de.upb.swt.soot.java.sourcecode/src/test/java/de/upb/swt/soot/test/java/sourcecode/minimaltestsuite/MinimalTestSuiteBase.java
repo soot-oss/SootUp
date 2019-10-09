@@ -23,7 +23,10 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Markus Schmidt Hasitha Rajapakse */
+/**
+ * @author: Markus Schmidt,
+ * @author: Hasitha Rajapakse
+ */
 @Category(Java8Test.class)
 public abstract class MinimalTestSuiteBase {
 

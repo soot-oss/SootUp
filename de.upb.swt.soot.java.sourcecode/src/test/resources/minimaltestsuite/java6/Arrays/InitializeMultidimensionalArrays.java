@@ -1,3 +1,5 @@
+/** @author: Hasitha Rajapakse */
+
 public class InitializeMultidimensionalArrays {
 
     public void intArrays(){
