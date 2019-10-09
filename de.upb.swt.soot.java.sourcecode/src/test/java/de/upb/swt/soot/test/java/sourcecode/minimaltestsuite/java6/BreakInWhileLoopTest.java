@@ -21,6 +21,7 @@ public class BreakInWhileLoopTest extends MinimalTestSuiteBase {
 
   @Override
   public List<String> getJimpleLines() {
+    // TODO: Info: [ms] error in generated jimple: the label *branch* is not printed
     return Stream.of(
             "r0 := @this: BreakInWhileLoop",
             "$i0 = 10",
