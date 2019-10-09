@@ -70,10 +70,10 @@ public abstract class MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    test(expectedBodyStmts(), getMethodSignature());
+    checkMethod(expectedBodyStmts(), getMethodSignature());
   }
 
-  public void test(List<String> expectedStmts, MethodSignature methodSignature) {
+  public void checkMethod(List<String> expectedStmts, MethodSignature methodSignature) {
 
     WalaClassLoader loader =
         new WalaClassLoader(
