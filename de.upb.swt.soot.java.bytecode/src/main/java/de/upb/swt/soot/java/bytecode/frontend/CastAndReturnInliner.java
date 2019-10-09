@@ -67,12 +67,16 @@ class CastAndReturnInliner implements BodyTransformer {
       }
       JCastExpr ce = (JCastExpr) assign.getRightOp();
 
-      Stmt nextStmt = bodyStmts.get(bodyStmts.indexOf(assign) + 1);
+      int nextStmtIndex = bodyStmts.indexOf(assign) + 1;
+      Stmt nextStmt = bodyStmts.get(nextStmtIndex);
       if (nextStmt instanceof JReturnStmt) {
         JReturnStmt retStmt = (JReturnStmt) nextStmt;
         if (retStmt.getOp() == assign.getLeftOp()) {
           // We need to replace the GOTO with the return
           JReturnStmt newStmt = retStmt.withOp(ce.getOp());
+
+          // TODO(cbruegg) I think this is also necessary?
+          bodyStmts.set(nextStmtIndex, newStmt);
 
           for (int j = 0; j < bodyTraps.size(); j++) {
             Trap originalTrap = bodyTraps.get(j);
