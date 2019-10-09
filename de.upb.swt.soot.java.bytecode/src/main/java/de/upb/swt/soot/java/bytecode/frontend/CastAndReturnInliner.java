@@ -77,6 +77,7 @@ class CastAndReturnInliner implements BodyTransformer {
 
           // TODO(cbruegg) I think this is also necessary?
           bodyStmts.set(nextStmtIndex, newStmt);
+          // TODO(cbruegg) The cast statement also should be removed?
 
           for (int j = 0; j < bodyTraps.size(); j++) {
             Trap originalTrap = bodyTraps.get(j);
