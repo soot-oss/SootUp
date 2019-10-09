@@ -24,8 +24,6 @@ public class SwitchCaseStatementTest extends MinimalTestSuiteBase {
 
   @Override
   public List<String> getJimpleLines() {
-    // TODO: [ms] the generated jimple contains errors: labels are missing or named strangely.
-    // and the locals $i0, $i1 are not listed or undefined
     return Stream.of(
             "r0 := @this: SwitchCaseStatement",
             "$r1 := @parameter0: java.lang.String",
