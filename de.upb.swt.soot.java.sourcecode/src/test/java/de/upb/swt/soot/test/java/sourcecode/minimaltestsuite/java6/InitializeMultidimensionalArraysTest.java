@@ -1,55 +1,55 @@
+/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.*;
-
 import categories.Java8Test;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
-import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
-import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.LoadClassesWithWala;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
-public class InitializeMultidimensionalArraysTest {
-  private String srcDir = "src/test/resources/minimaltestsuite/java6/Arrays/";
-  private String className = "InitializeMultidimensionalArrays";
-  private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
+public class InitializeMultidimensionalArraysTest extends MinimalTestSuiteBase {
 
-  @Before
-  public void loadClasses() {
-    loadClassesWithWala.classLoader(srcDir, className);
-  }
+  private String methodName;
+  private String methodSignature;
+  private List<String> jimpleLines;
 
   @Test
-  public void intArraysTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "intArrays", loadClassesWithWala.declareClassSig, "void", Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
+  public void defaultTest() {
+    HashMap<String, HashMap<String, Object>> methodList = setValues();
+    Set<String> methodListKeys = methodList.keySet();
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    for (String methodListKey : methodListKeys) {
+      methodName = methodListKey;
+      HashMap<String, Object> mv = methodList.get(methodListKey);
+      methodSignature = (String) mv.get("methodSignature");
+      jimpleLines = (List<String>) mv.get("jimpleLines");
 
-    List<String> expectedStmts =
+      test(getJimpleLines(), getMethodSignature());
+    }
+  }
+
+  @Override
+  public MethodSignature getMethodSignature() {
+    return identifierFactory.getMethodSignature(
+        methodName, getDeclaredClassSignature(), methodSignature, Collections.emptyList());
+  }
+
+  @Override
+  public List<String> getJimpleLines() {
+    return jimpleLines;
+  }
+
+  public HashMap<String, HashMap<String, Object>> setValues() {
+    HashMap<String, HashMap<String, Object>> methodList = new HashMap<>();
+    HashMap<String, Object> methodValues = new HashMap<>();
+
+    methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: InitializeMultidimensionalArrays",
                 "$r1 = newarray (int[][])[3]",
@@ -68,33 +68,13 @@ public class InitializeMultidimensionalArraysTest {
                 "$r4[2] = 9",
                 "$r1[2] = $r4",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("intArrays", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void byteArraysTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "byteArrays",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: InitializeMultidimensionalArrays",
                 "$r1 = newarray (byte[][])[2]",
@@ -106,33 +86,13 @@ public class InitializeMultidimensionalArraysTest {
                 "$r3[0] = 2",
                 "$r1[1] = $r3",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("byteArrays", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void shortArraysTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "shortArrays",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: InitializeMultidimensionalArrays",
                 "$r1 = newarray (short[][])[2]",
@@ -145,33 +105,13 @@ public class InitializeMultidimensionalArraysTest {
                 "$r3[0] = 40",
                 "$r1[1] = $r3",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("shortArrays", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void longArraysTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "longArrays",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: InitializeMultidimensionalArrays",
                 "$r1 = newarray (long[][])[3]",
@@ -189,33 +129,13 @@ public class InitializeMultidimensionalArraysTest {
                 "$r4[1] = 234L",
                 "$r1[2] = $r4",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("longArrays", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void floatArraysTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "floatArrays",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: InitializeMultidimensionalArrays",
                 "$r1 = newarray (float[][])[2]",
@@ -228,33 +148,13 @@ public class InitializeMultidimensionalArraysTest {
                 "$r3[1] = 4.87F",
                 "$r1[1] = $r3",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("floatArrays", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void doubleArraysTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "doubleArrays",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: InitializeMultidimensionalArrays",
                 "$r1 = newarray (double[][])[3]",
@@ -270,33 +170,13 @@ public class InitializeMultidimensionalArraysTest {
                 "$r4[1] = 68.234234",
                 "$r1[2] = $r4",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("doubleArrays", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void booleanArraysTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "booleanArrays",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: InitializeMultidimensionalArrays",
                 "$r1 = newarray (boolean[][])[2]",
@@ -308,33 +188,13 @@ public class InitializeMultidimensionalArraysTest {
                 "$r3[0] = 1",
                 "$r1[1] = $r3",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toList()));
+    methodList.put("booleanArrays", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void charArraysTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "charArrays",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: InitializeMultidimensionalArrays",
                 "$r1 = newarray (char[][])[3]",
@@ -352,33 +212,13 @@ public class InitializeMultidimensionalArraysTest {
                 "$r4[1] = 71",
                 "$r1[2] = $r4",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toCollection(ArrayList::new)));
+    methodList.put("charArrays", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
-  }
-
-  @Test
-  public void stringArraysTest() {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(
-            loadClassesWithWala.loader,
-            loadClassesWithWala.identifierFactory.getMethodSignature(
-                "stringArrays",
-                loadClassesWithWala.declareClassSig,
-                "void",
-                Collections.emptyList()));
-    assertTrue(m.isPresent());
-    SootMethod method = m.get();
-    Utils.print(method, false);
-    Body body = method.getBody();
-    assertNotNull(body);
-
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    List<String> expectedStmts =
+    methodValues = new HashMap<>();
+    methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
         Stream.of(
                 "r0 := @this: InitializeMultidimensionalArrays",
                 "$r1 = newarray (java.lang.String[][])[2]",
@@ -390,8 +230,9 @@ public class InitializeMultidimensionalArraysTest {
                 "$r3[1] = \"Welcome\"",
                 "$r1[1] = $r3",
                 "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toCollection(ArrayList::new)));
+    methodList.put("stringArrays", methodValues);
 
-    assertEquals(expectedStmts, actualStmts);
+    return methodList;
   }
 }
