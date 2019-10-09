@@ -1,3 +1,5 @@
+/** @author: Hasitha Rajapakse */
+
 public class ReferenceVarDeclaration {
 
     public void stringVariable() {
