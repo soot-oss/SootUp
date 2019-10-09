@@ -132,7 +132,7 @@ public final class Body implements Copyable {
    *
    * @param value the methodRef that owns this body.
    */
-  protected synchronized void setMethod(@Nullable SootMethod value) {
+  synchronized void setMethod(@Nullable SootMethod value) {
     if (this._method != null) {
       throw new IllegalStateException(
           "The declaring class of this soot class member has already been set.");
