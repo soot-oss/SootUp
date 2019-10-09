@@ -1,6 +1,8 @@
 /** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
 import categories.Java8Test;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
@@ -16,8 +18,8 @@ public class FinalMethodTest extends MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    test(getJimpleLines(), getMethodSignature());
-    isFinalMethod(getMethodSignature());
+    super.defaultTest();
+    assertTrue(method.isFinal());
   }
 
   @Override

@@ -29,6 +29,7 @@ public abstract class MinimalTestSuiteBase {
 
   static final String baseDir = "src/test/resources/minimaltestsuite/";
   protected DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+  protected SootMethod method;
 
   public abstract MethodSignature getMethodSignature();
 
@@ -77,7 +78,7 @@ public abstract class MinimalTestSuiteBase {
     Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
 
     assertTrue("No matching method signature found", m.isPresent());
-    SootMethod method = m.get();
+    method = m.get();
     Utils.print(method, false);
     Body body = method.getBody();
     assertNotNull(body);
@@ -156,15 +157,5 @@ public abstract class MinimalTestSuiteBase {
       default:
         throw new IllegalStateException("Unexpected value: " + modifier);
     }
-  }
-
-  public void isFinalMethod(MethodSignature methodSignature) {
-    WalaClassLoader loader =
-        new WalaClassLoader(
-            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
-    Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
-    assertTrue("No matching method signature found", m.isPresent());
-    SootMethod method = m.get();
-    assertTrue(method.isFinal());
   }
 }
