@@ -1,7 +1,6 @@
 
 /** @author: Hasitha Rajapakse */
 
-
 public class StaticInnerClass{
     static int num = 20;
     static class InnerClass{
