@@ -16,7 +16,7 @@ public class TernaryOperatorTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: TernaryOperator",
             "$i0 = r0.<TernaryOperator: int num>",

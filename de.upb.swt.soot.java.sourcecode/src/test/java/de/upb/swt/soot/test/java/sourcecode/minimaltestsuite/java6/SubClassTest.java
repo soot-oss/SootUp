@@ -24,11 +24,11 @@ public class SubClassTest extends MinimalTestSuiteBase {
 
   @Test
   public void testDemo() {
-    test(getJimpleLines1(), getMethodSignature1());
+    loadMethod(expectedBodyStmts1(), getMethodSignature1());
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: SubClass",
             "r0.<SubClass: int aa> = 10",
@@ -39,7 +39,7 @@ public class SubClassTest extends MinimalTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  public List<String> getJimpleLines1() {
+  public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: SubClass",
             "specialinvoke r0.<SuperClass: void superclassMethod()>()",

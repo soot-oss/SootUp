@@ -22,7 +22,7 @@ public class InterfaceImplClassTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: InterfaceImplClass",
             "$r1 = <java.lang.System: java.io.PrintStream out>",

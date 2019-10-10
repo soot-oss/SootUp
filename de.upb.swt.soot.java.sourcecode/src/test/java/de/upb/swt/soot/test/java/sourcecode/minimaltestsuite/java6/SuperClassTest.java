@@ -16,7 +16,7 @@ public class SuperClassTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: SuperClass",
             "r0.<SuperClass: int a> = 10",
