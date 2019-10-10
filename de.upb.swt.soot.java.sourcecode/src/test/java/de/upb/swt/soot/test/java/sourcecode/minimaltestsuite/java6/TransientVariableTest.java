@@ -1,5 +1,8 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
+import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.ArrayList;
@@ -17,12 +20,20 @@ public class TransientVariableTest extends MinimalTestSuiteBase {
   }
 
   @Test
-  public void testDemo() {
-    defaultTest();
+  @Override
+  public void defaultTest() {
+    super.defaultTest();
+    assertTrue(
+        getFields().stream()
+            .anyMatch(
+                sootField -> {
+                  return sootField.getName().equals("transientVar")
+                      && sootField.getModifiers().contains(Modifier.TRANSIENT);
+                }));
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: TransientVariable",
             "$r1 = <java.lang.System: java.io.PrintStream out>",
