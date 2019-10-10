@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
- * Defines a method sub-signature, containing the method name, the parameter type signatures, and
- * the return type signature.
+ * Defines a method sub-signature i.e. the method name, the parameter type signatures and the return
+ * type signature.
  *
  * @author Jan Martin Persch
  */

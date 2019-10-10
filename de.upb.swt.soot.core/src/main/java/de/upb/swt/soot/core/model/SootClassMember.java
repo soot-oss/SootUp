@@ -21,11 +21,9 @@ package de.upb.swt.soot.core.model;
  * #L%
  */
 
-import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.signatures.AbstractClassMemberSignature;
 import de.upb.swt.soot.core.signatures.AbstractClassMemberSubSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.builder.AbstractBuilder;
 import de.upb.swt.soot.core.util.builder.BuilderException;
 import java.util.EnumSet;
@@ -33,7 +31,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * Provides methods common to Soot objects belonging to classes, namely SootField and SootMethod.
+ * Provides methods common to Soot objects belonging to classes i.e. SootField and SootMethod.
  *
  * @author Linghui Luo
  * @author Jan Martin Persch
@@ -41,11 +39,9 @@ import javax.annotation.Nonnull;
 public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
 
   @Nonnull private final S signature;
-  @Nonnull private final ImmutableSet<Modifier> modifiers;
 
   SootClassMember(@Nonnull S signature, @Nonnull Iterable<Modifier> modifiers) {
     this.signature = signature;
-    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
   }
 
   /** Returns the SootClass declaring this one. */
@@ -56,27 +52,27 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
 
   /** Convenience methodRef returning true if this class member is protected. */
   public boolean isProtected() {
-    return Modifier.isProtected(this.getModifiers());
+    return Modifier.isProtected(getModifiers());
   }
 
   /** Convenience methodRef returning true if this class member is private. */
   public boolean isPrivate() {
-    return Modifier.isPrivate(this.getModifiers());
+    return Modifier.isPrivate(getModifiers());
   }
 
   /** Convenience methodRef returning true if this class member is public. */
   public boolean isPublic() {
-    return Modifier.isPublic(this.getModifiers());
+    return Modifier.isPublic(getModifiers());
   }
 
   /** Convenience methodRef returning true if this class member is static. */
   public boolean isStatic() {
-    return Modifier.isStatic(this.getModifiers());
+    return Modifier.isStatic(getModifiers());
   }
 
   /** Convenience methodRef returning true if this field is final. */
   public boolean isFinal() {
-    return Modifier.isFinal(this.getModifiers());
+    return Modifier.isFinal(getModifiers());
   }
 
   /**
@@ -86,19 +82,12 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
    */
   @Nonnull
   public Set<Modifier> getModifiers() {
-    return modifiers;
+    return signature.getModifiers();
   }
 
   /** Returns a hash code for this methodRef consistent with structural equality. */
   public int equivHashCode() {
-    return modifiers.hashCode() * 17 + signature.hashCode();
-  }
-
-  /** Returns the signature of this methodRef. */
-  @Override
-  @Nonnull
-  public String toString() {
-    return signature.toString();
+    return getModifiers().hashCode() * 17 + signature.hashCode();
   }
 
   /** Returns the Soot signature of this methodRef. Used to refer to methods unambiguously. */
@@ -115,6 +104,13 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
   @Nonnull
   public String getName() {
     return this.signature.getName();
+  }
+
+  /** Returns the signature of this methodRef. */
+  @Override
+  @Nonnull
+  public String toString() {
+    return signature.toString();
   }
 
   /**
