@@ -109,6 +109,20 @@ public final class GraphBasedCallGraph implements MutableCallGraph {
   @Nonnull
   private Vertex vertexOf(@Nonnull MethodSignature method) {
     Vertex methodVertex = signatureToVertex.get(method);
+
+    if (methodVertex == null) {
+      System.out.println(method + " : " + method.toString().hashCode() + " : " + method.hashCode());
+      signatureToVertex
+          .keySet()
+          .forEach(
+              e -> {
+                if (true || method.toString().equals(e.toString())) {
+                  System.out.println(
+                      e.toString() + " => " + e.toString().hashCode() + " => " + e.hashCode());
+                }
+              });
+    }
+
     Preconditions.checkNotNull(methodVertex, "Node for " + method + " has not been added yet");
     return methodVertex;
   }
