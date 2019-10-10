@@ -16,13 +16,7 @@ import javax.annotation.Nonnull;
  *
  * @author Jan Martin Persch
  */
-public class MethodSubSignature extends AbstractClassMemberSubSignature
-    implements Comparable<MethodSubSignature> {
-  // region Fields
-
-  // endregion /Fields/
-
-  // region Constructor
+public class MethodSubSignature extends AbstractClassMemberSubSignature {
 
   /**
    * Creates a new instance of the {@link FieldSubSignature} class.
@@ -40,10 +34,6 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
     this.parameterSignatures = ImmutableList.copyOf(parameterSignatures);
   }
 
-  // endregion /Constructor/
-
-  // region Properties
-
   @Nonnull private final List<Type> parameterSignatures;
 
   /**
@@ -55,10 +45,6 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
   public List<Type> getParameterSignatures() {
     return this.parameterSignatures;
   }
-
-  // endregion /Properties/
-
-  // region Methods
 
   @Override
   public boolean equals(Object o) {
@@ -75,7 +61,6 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
     }
 
     MethodSubSignature that = (MethodSubSignature) o;
-
     return Objects.equal(getParameterSignatures(), that.getParameterSignatures());
   }
 
@@ -85,17 +70,12 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
   }
 
   @Override
-  public int compareTo(@Nonnull MethodSubSignature o) {
-    return super.compareTo(o);
-  }
-
-  @Override
   @Nonnull
   public MethodSignature toFullSignature(@Nonnull JavaClassType declClassSignature) {
     return new MethodSignature(declClassSignature, this);
   }
 
-  private final Supplier<String> _cachedToString =
+  private final Supplier<String> cachedToString =
       Suppliers.memoize(
           () ->
               String.format(
@@ -109,8 +89,6 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
   @Override
   @Nonnull
   public String toString() {
-    return _cachedToString.get();
+    return cachedToString.get();
   }
-
-  // endregion /Methods/
 }

@@ -15,7 +15,8 @@ import javax.annotation.Nullable;
  * @see MethodSubSignature
  * @author Jan Martin Persch
  */
-public abstract class AbstractClassMemberSubSignature {
+public abstract class AbstractClassMemberSubSignature
+    implements Comparable<AbstractClassMemberSubSignature> {
 
   /** Creates a new instance of the {@link AbstractClassMemberSubSignature} class. */
   protected AbstractClassMemberSubSignature(@Nonnull String name, @Nonnull Type type) {
@@ -65,7 +66,7 @@ public abstract class AbstractClassMemberSubSignature {
     return Objects.hashCode(getName(), getType());
   }
 
-  protected int compareTo(@Nonnull AbstractClassMemberSubSignature o) {
+  public int compareTo(@Nonnull AbstractClassMemberSubSignature o) {
     int r = this.getName().compareTo(o.getName());
 
     if (r != 0) return r;
