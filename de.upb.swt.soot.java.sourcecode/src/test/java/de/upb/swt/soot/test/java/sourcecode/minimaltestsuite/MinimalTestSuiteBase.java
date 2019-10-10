@@ -6,10 +6,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
@@ -19,6 +16,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -26,6 +24,7 @@ import org.junit.experimental.categories.Category;
 /**
  * @author: Markus Schmidt,
  * @author: Hasitha Rajapakse
+ * @author: Kaustubh Kelkar
  */
 @Category(Java8Test.class)
 public abstract class MinimalTestSuiteBase {
@@ -33,6 +32,7 @@ public abstract class MinimalTestSuiteBase {
   static final String baseDir = "src/test/resources/minimaltestsuite/";
   protected DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
   protected SootMethod method;
+  protected SootClass sootClass;
 
   public abstract MethodSignature getMethodSignature();
 
@@ -45,8 +45,8 @@ public abstract class MinimalTestSuiteBase {
   public String getTestDirectoryName() {
     String canonicalName = this.getClass().getCanonicalName();
     canonicalName =
-            canonicalName.substring(
-                    0, canonicalName.length() - this.getClass().getSimpleName().length() - 1);
+        canonicalName.substring(
+            0, canonicalName.length() - this.getClass().getSimpleName().length() - 1);
     canonicalName = canonicalName.substring(canonicalName.lastIndexOf('.') + 1);
 
     return canonicalName;
@@ -59,7 +59,7 @@ public abstract class MinimalTestSuiteBase {
   public String getClassName() {
     // remove "test" from the end of the testName
     String substring =
-            this.getClass().getSimpleName().substring(0, this.getClass().getSimpleName().length() - 4);
+        this.getClass().getSimpleName().substring(0, this.getClass().getSimpleName().length() - 4);
 
     return substring;
   }
@@ -70,14 +70,14 @@ public abstract class MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    checkMethod(expectedBodyStmts(), getMethodSignature());
+    loadMethod(expectedBodyStmts(), getMethodSignature());
   }
 
-  public void checkMethod(List<String> expectedStmts, MethodSignature methodSignature) {
+  public SootMethod loadMethod(List<String> expectedStmts, MethodSignature methodSignature) {
 
     WalaClassLoader loader =
-            new WalaClassLoader(
-                    baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+        new WalaClassLoader(
+            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
     Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
 
     assertTrue("No matching method signature found", m.isPresent());
@@ -87,17 +87,29 @@ public abstract class MinimalTestSuiteBase {
     assertNotNull(body);
 
     List<String> actualStmts =
-            body.getStmts().stream()
-                    .map(Stmt::toString)
-                    .collect(Collectors.toCollection(ArrayList::new));
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
+    return method;
+  }
+
+  public Set<SootField> getFields() {
+    WalaClassLoader loader =
+        new WalaClassLoader(
+            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+    sootClass =
+        new SootClass(
+            loader.getClassSource(getDeclaredClassSignature()).get(), SourceType.Application);
+
+    return sootClass.getFields();
   }
 
   public void checkClassModifier(String modifier) {
     WalaClassLoader loader =
-            new WalaClassLoader(
-                    baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+        new WalaClassLoader(
+            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
     Optional<ClassSource> cs = loader.getClassSource(getDeclaredClassSignature());
     assertTrue("no matching class signature found", cs.isPresent());
     ClassSource classSource = cs.get();
@@ -122,8 +134,8 @@ public abstract class MinimalTestSuiteBase {
 
   public void isAbstractClass() {
     WalaClassLoader loader =
-            new WalaClassLoader(
-                    baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+        new WalaClassLoader(
+            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
     Optional<ClassSource> cs = loader.getClassSource(getDeclaredClassSignature());
     assertTrue("no matching class signature found", cs.isPresent());
     ClassSource classSource = cs.get();
@@ -139,8 +151,8 @@ public abstract class MinimalTestSuiteBase {
 
   public void checkMethodModifier(String modifier, MethodSignature methodSignature) {
     WalaClassLoader loader =
-            new WalaClassLoader(
-                    baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+        new WalaClassLoader(
+            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
     Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
     assertTrue("No matching method signature found", m.isPresent());
     SootMethod method = m.get();
