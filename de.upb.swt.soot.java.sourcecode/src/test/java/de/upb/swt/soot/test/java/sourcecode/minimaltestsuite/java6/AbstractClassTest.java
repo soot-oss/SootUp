@@ -16,7 +16,7 @@ public class AbstractClassTest extends MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    checkMethod(expectedBodyStmts(), getMethodSignature());
+    loadMethod(expectedBodyStmts(), getMethodSignature());
     isAbstractClass();
   }
 

@@ -27,7 +27,7 @@ public class MethodReturningVarTest extends MinimalTestSuiteBase {
       methodSignature = (String) mv.get("methodSignature");
       jimpleLines = (List<String>) mv.get("jimpleLines");
 
-      checkMethod(expectedBodyStmts(), getMethodSignature());
+      loadMethod(expectedBodyStmts(), getMethodSignature());
     }
   }
 

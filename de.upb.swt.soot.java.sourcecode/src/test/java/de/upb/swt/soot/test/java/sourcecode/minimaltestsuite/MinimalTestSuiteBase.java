@@ -32,7 +32,6 @@ public abstract class MinimalTestSuiteBase {
 
   static final String baseDir = "src/test/resources/minimaltestsuite/";
   protected DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
-  protected SootMethod method;
 
   public abstract MethodSignature getMethodSignature();
 
@@ -70,10 +69,10 @@ public abstract class MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    checkMethod(expectedBodyStmts(), getMethodSignature());
+    loadMethod(expectedBodyStmts(), getMethodSignature());
   }
 
-  public void checkMethod(List<String> expectedStmts, MethodSignature methodSignature) {
+  public SootMethod loadMethod(List<String> expectedStmts, MethodSignature methodSignature) {
 
     WalaClassLoader loader =
         new WalaClassLoader(
@@ -81,7 +80,7 @@ public abstract class MinimalTestSuiteBase {
     Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
 
     assertTrue("No matching method signature found", m.isPresent());
-    method = m.get();
+    SootMethod method = m.get();
     Utils.print(method, false);
     Body body = method.getBody();
     assertNotNull(body);
@@ -92,6 +91,7 @@ public abstract class MinimalTestSuiteBase {
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
+    return method;
   }
 
   public void checkClassModifier(String modifier) {
