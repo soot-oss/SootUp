@@ -26,11 +26,6 @@ public abstract class AbstractClassMemberSignature implements Signature {
   @Nonnull private final ImmutableSet<Modifier> modifiers;
 
   public AbstractClassMemberSignature(
-      @Nonnull JavaClassType klass, @Nonnull AbstractClassMemberSubSignature subSignature) {
-    this(klass, subSignature, EnumSet.noneOf(Modifier.class));
-  }
-
-  public AbstractClassMemberSignature(
       @Nonnull JavaClassType klass,
       @Nonnull AbstractClassMemberSubSignature subSignature,
       EnumSet<Modifier> modifiers) {
@@ -78,12 +73,13 @@ public abstract class AbstractClassMemberSignature implements Signature {
     }
     AbstractClassMemberSignature that = (AbstractClassMemberSignature) o;
     return Objects.equal(declClassSignature, that.declClassSignature)
-        && Objects.equal(subSignature, that.subSignature);
+        && Objects.equal(subSignature, that.subSignature)
+            && Objects.equal(getModifiers(), that.modifiers);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(declClassSignature, subSignature);
+    return Objects.hashCode(declClassSignature, subSignature, modifiers);
   }
 
   @Override

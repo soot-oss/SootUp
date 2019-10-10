@@ -1,8 +1,10 @@
 package de.upb.swt.soot.core.signatures;
 
 import de.upb.swt.soot.core.IdentifierFactory;
+import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.Type;
+import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -26,7 +28,14 @@ public class MethodSignature extends AbstractClassMemberSignature {
    */
   public MethodSignature(
       final @Nonnull JavaClassType declaringClass, final @Nonnull MethodSubSignature subSignature) {
-    super(declaringClass, subSignature);
+    this(declaringClass, subSignature, EnumSet.noneOf(Modifier.class));
+  }
+
+  public MethodSignature(
+      final @Nonnull JavaClassType declaringClass,
+      final @Nonnull MethodSubSignature subSignature,
+      EnumSet<Modifier> modifiers) {
+    super(declaringClass, subSignature, modifiers);
   }
 
   @Override
