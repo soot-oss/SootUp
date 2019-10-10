@@ -2,16 +2,15 @@
 
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
-import org.junit.Test;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
 public class StaticMethodTest extends MinimalTestSuiteBase {

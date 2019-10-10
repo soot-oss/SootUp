@@ -1,5 +1,8 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.ArrayList;
@@ -23,12 +26,17 @@ public class MethodOverloadingTest extends MinimalTestSuiteBase {
   }
 
   @Test
-  public void testDemo() {
-    test(getJimpleLines1(), getMethodSignature1());
+  @Override
+  public void defaultTest() {
+    super.defaultTest();
+    loadMethod(expectedBodyStmts1(), getMethodSignature1());
+    assertTrue(sootClass.getMethods().contains(getMethodSignature()));
+    assertTrue(sootClass.getMethods().contains(getMethodSignature1()));
+    assertEquals(2, sootClass.getMethods().size());
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: MethodOverloading",
             "$i0 := @parameter0: int",
@@ -38,7 +46,7 @@ public class MethodOverloadingTest extends MinimalTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
-  public List<String> getJimpleLines1() {
+  public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: MethodOverloading",
             "$i0 := @parameter0: int",
