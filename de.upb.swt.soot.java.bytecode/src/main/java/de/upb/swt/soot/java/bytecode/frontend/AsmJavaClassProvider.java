@@ -4,16 +4,27 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
 import java.nio.file.Path;
+import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.ClassNode;
 
 public class AsmJavaClassProvider implements ClassProvider {
 
-  public AsmJavaClassProvider() {}
+  @Nullable private final List<BodyInterceptor> customBodyInterceptors;
+
+  public AsmJavaClassProvider() {
+    this(null);
+  }
+
+  public AsmJavaClassProvider(@Nullable List<BodyInterceptor> customBodyInterceptors) {
+    this.customBodyInterceptors = customBodyInterceptors;
+  }
 
   @Override
   public AbstractClassSource createClassSource(
@@ -36,9 +47,9 @@ public class AsmJavaClassProvider implements ClassProvider {
     return FileType.CLASS;
   }
 
-  static class SootClassNode extends ClassNode {
+  class SootClassNode extends ClassNode {
 
-    public SootClassNode() {
+    SootClassNode() {
       super(AsmUtil.SUPPORTED_ASM_OPCODE);
     }
 
@@ -51,7 +62,8 @@ public class AsmJavaClassProvider implements ClassProvider {
         @Nonnull String signature,
         @Nonnull String[] exceptions) {
 
-      AsmMethodSource mn = new AsmMethodSource(access, name, desc, signature, exceptions);
+      AsmMethodSource mn;
+      mn = new AsmMethodSource(access, name, desc, signature, exceptions, customBodyInterceptors);
       methods.add(mn);
       return mn;
     }

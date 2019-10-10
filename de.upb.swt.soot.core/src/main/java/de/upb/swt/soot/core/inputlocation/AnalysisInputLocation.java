@@ -2,7 +2,6 @@ package de.upb.swt.soot.core.inputlocation;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.util.Collection;
@@ -10,7 +9,7 @@ import java.util.Optional;
 import javax.annotation.Nonnull;
 
 /**
- * Public interface to an input location. {@AnalysisInputLocation}s are sources for {@link
+ * Public interface to an input location. <code>AnalysisInputLocation</code>s are sources for {@link
  * SootClass}es, e.g. Java Classpath, Android APK, JAR file, etc. The strategy to traverse
  * something.
  *
@@ -20,6 +19,8 @@ import javax.annotation.Nonnull;
  */
 public interface AnalysisInputLocation {
 
+  // TODO Overloads with options
+
   /**
    * Create or find a class source for a given signature.
    *
@@ -28,14 +29,6 @@ public interface AnalysisInputLocation {
    */
   @Nonnull
   Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType signature);
-
-  /**
-   * The class provider attached to this input location.
-   *
-   * @return An instance of {@link ClassProvider} to be used.
-   */
-  @Nonnull
-  ClassProvider getClassProvider();
 
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(

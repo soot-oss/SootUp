@@ -62,7 +62,7 @@ import javax.annotation.Nullable;
  */
 public class WalaIRToJimpleConverter {
 
-  protected JavaView<AnalysisInputLocation> view;
+  JavaView<AnalysisInputLocation> view;
   private AnalysisInputLocation srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
   private HashMap<String, String> walaToSootNameTable;

@@ -6,7 +6,6 @@ import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ClassSource;
-import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
 import de.upb.swt.soot.core.model.SootClass;
@@ -20,6 +19,7 @@ import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -40,11 +40,11 @@ import org.slf4j.LoggerFactory;
  * @see <a
  *     href=http://docs.oracle.com/javase/9/docs/api/java/lang/module/ModuleFinder.html#of-java.nio.file.Path...->ModuleFinder</a>
  */
-public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLocation {
+public class JavaModulePathAnalysisInputLocation implements AnalysisInputLocation {
   private static final @Nonnull Logger logger =
       LoggerFactory.getLogger(JavaModulePathAnalysisInputLocation.class);
 
-  private final ModuleFinder moduleFinder;
+  @Nonnull private final String modulePath;
 
   /**
    * Creates a {@link JavaModulePathAnalysisInputLocation} which locates classes in the given module
@@ -53,10 +53,8 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
    * @param modulePath The class path to search in The {@link ClassProvider} for generating {@link
    *     ClassSource}es for the files found on the class path
    */
-  public JavaModulePathAnalysisInputLocation(
-      @Nonnull String modulePath, @Nonnull ClassProvider classProvider) {
-    super(classProvider);
-    this.moduleFinder = new ModuleFinder(classProvider, modulePath);
+  public JavaModulePathAnalysisInputLocation(@Nonnull String modulePath) {
+    this.modulePath = modulePath;
   }
 
   @Override
@@ -66,10 +64,11 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
         identifierFactory instanceof ModuleIdentifierFactory,
         "Factory must be a ModuleSignatureFactory");
 
+    ModuleFinder moduleFinder = new ModuleFinder(new AsmJavaClassProvider(), modulePath);
     Set<AbstractClassSource> found = new HashSet<>();
     Collection<String> availableModules = moduleFinder.discoverAllModules();
     for (String module : availableModules) {
-      AbstractAnalysisInputLocation ns = moduleFinder.discoverModule(module);
+      AnalysisInputLocation ns = moduleFinder.discoverModule(module);
       IdentifierFactory identifierFactoryWrapper = identifierFactory;
 
       if (!(ns instanceof JrtFileSystemAnalysisInputLocation)) {
@@ -94,7 +93,8 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     String modulename =
         ((ModulePackageName) signature.getPackageName()).getModuleSignature().getModuleName();
     // lookup the ns for the class provider from the cache and use him...
-    AbstractAnalysisInputLocation ns = moduleFinder.discoverModule(modulename);
+    AnalysisInputLocation ns =
+        new ModuleFinder(new AsmJavaClassProvider(), modulePath).discoverModule(modulename);
 
     if (ns == null) {
       try {

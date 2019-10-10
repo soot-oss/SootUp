@@ -5,13 +5,13 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
 import de.upb.swt.soot.core.signatures.ModulePackageName;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
+import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.DirectoryStream;
@@ -31,25 +31,21 @@ import javax.annotation.Nonnull;
  *
  * @author Andreas Dann created on 06.06.18
  */
-public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLocation {
+public class JrtFileSystemAnalysisInputLocation implements AnalysisInputLocation {
 
   private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
-
-  public JrtFileSystemAnalysisInputLocation(ClassProvider classProvider) {
-    super(classProvider);
-  }
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
       @Nonnull JavaClassType signature) {
     if (signature.getPackageName() instanceof ModulePackageName) {
-      return this.getClassSourceInternalForModule(signature);
+      return this.getClassSourceInternalForModule(signature, new AsmJavaClassProvider());
     }
-    return this.getClassSourceInternalForClassPath(signature);
+    return this.getClassSourceInternalForClassPath(signature, new AsmJavaClassProvider());
   }
 
   private @Nonnull Optional<AbstractClassSource> getClassSourceInternalForClassPath(
-      @Nonnull JavaClassType classSignature) {
+      @Nonnull JavaClassType classSignature, @Nonnull ClassProvider classProvider) {
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path moduleRoot = theFileSystem.getPath("modules");
@@ -71,7 +67,7 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
   }
 
   private @Nonnull Optional<? extends AbstractClassSource> getClassSourceInternalForModule(
-      @Nonnull JavaClassType classSignature) {
+      @Nonnull JavaClassType classSignature, @Nonnull ClassProvider classProvider) {
     Preconditions.checkArgument(classSignature.getPackageName() instanceof ModulePackageName);
 
     ModulePackageName modulePackageSignature = (ModulePackageName) classSignature.getPackageName();
@@ -96,11 +92,13 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
       @Nonnull IdentifierFactory identifierFactory) {
 
     final Path archiveRoot = theFileSystem.getPath("modules");
-    return walkDirectory(archiveRoot, identifierFactory);
+    return walkDirectory(archiveRoot, identifierFactory, new AsmJavaClassProvider());
   }
 
   protected @Nonnull Collection<? extends AbstractClassSource> walkDirectory(
-      @Nonnull Path dirPath, @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull Path dirPath,
+      @Nonnull IdentifierFactory identifierFactory,
+      ClassProvider classProvider) {
 
     final FileType handledFileType = classProvider.getHandledFileType();
     try {

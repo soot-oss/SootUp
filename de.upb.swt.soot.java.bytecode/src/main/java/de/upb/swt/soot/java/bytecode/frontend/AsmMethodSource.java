@@ -100,6 +100,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.Handle;
+import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.IincInsnNode;
@@ -120,9 +121,11 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 /** @author Andreas Dann */
-class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implements MethodSource {
+class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
+  private static final List<BodyInterceptor> DEFAULT_BODY_INTERCEPTORS =
+      ImmutableUtils.immutableList(new CastAndReturnInliner());
 
   // private static final String METAFACTORY_SIGNATURE =
   // "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
@@ -179,8 +182,19 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
       @Nonnull String desc,
       @Nonnull String signature,
       @Nonnull String[] exceptions) {
+    this(access, name, desc, signature, exceptions, null);
+  }
+
+  public AsmMethodSource(
+      int access,
+      @Nonnull String name,
+      @Nonnull String desc,
+      @Nonnull String signature,
+      @Nonnull String[] exceptions,
+      @Nullable List<BodyInterceptor> customBodyInterceptors) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
-    bodyInterceptors = ImmutableUtils.immutableList(new CastAndReturnInliner());
+    this.bodyInterceptors =
+        customBodyInterceptors == null ? DEFAULT_BODY_INTERCEPTORS : customBodyInterceptors;
   }
 
   @Override

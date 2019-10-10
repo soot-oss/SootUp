@@ -31,7 +31,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author Manuel Benz created on 06.06.18 */
 @Category(Java8Test.class)
-public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLocationTest {
+public class PathBasedAnalysisInputLocationTest extends AnalysisInputLocationTest {
 
   Path jar = Paths.get("../shared-test-resources/Soot-4.0-SNAPSHOT.jar");
 

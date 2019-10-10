@@ -7,13 +7,11 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collection;
 import java.util.Optional;
@@ -44,18 +42,6 @@ public class JavaSourcePathNamespaceTest {
     assertTrue(content instanceof ClassSource);
     assertEquals(3, ((ClassSource) content).resolveMethods().size());
     assertEquals(0, ((ClassSource) content).resolveFields().size());
-  }
-
-  @Test
-  public void testGetClassProvider() {
-    String srcDir = "../shared-test-resources/wala-tests/";
-    String exclusionFilePath = srcDir + "WalaExclusions.txt";
-    AnalysisInputLocation inputLocation =
-        new JavaSourcePathAnalysisInputLocation(
-            ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
-
-    ClassProvider classProvider = inputLocation.getClassProvider();
-    assertTrue(classProvider instanceof WalaJavaClassProvider);
   }
 
   @Test

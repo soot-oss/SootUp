@@ -2,7 +2,6 @@ package de.upb.swt.soot.core.inputlocation;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.NotYetImplementedException;
@@ -65,19 +64,6 @@ public class CompositeInputLocation implements AnalysisInputLocation {
     }
 
     return result.stream().findFirst();
-  }
-
-  /**
-   * Provides the class provider of the first namespace in the composition.
-   *
-   * @return An instance of {@link ClassProvider} to be used.
-   */
-  @Override
-  public @Nonnull ClassProvider getClassProvider() {
-    return inputLocations.stream()
-        .findFirst()
-        .map(AnalysisInputLocation::getClassProvider)
-        .orElseThrow(() -> new RuntimeException("FATAL ERROR: No class provider found."));
   }
 
   @Override

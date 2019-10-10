@@ -20,7 +20,6 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import java.io.File;
 import java.util.EnumSet;
@@ -50,7 +49,7 @@ public class ModuleCompositionTest {
 
     // Create a project
     Project<JavaClassPathAnalysisInputLocation> p =
-        new Project<>(new JavaClassPathAnalysisInputLocation(jarFile, new AsmJavaClassProvider()));
+        new Project<>(new JavaClassPathAnalysisInputLocation(jarFile));
 
     // Get the view
     View view = p.createOnDemandView();

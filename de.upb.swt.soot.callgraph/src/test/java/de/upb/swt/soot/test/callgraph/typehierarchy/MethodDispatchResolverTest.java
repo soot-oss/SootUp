@@ -14,7 +14,6 @@ import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -43,8 +42,7 @@ public class MethodDispatchResolverTest {
             .distinct()
             .collect(Collectors.joining(File.pathSeparator));
     JavaClassPathAnalysisInputLocation analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(
-            jarFile + File.pathSeparator + rtJarClassPath, new AsmJavaClassProvider());
+        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
     Project<JavaClassPathAnalysisInputLocation> p = new Project<>(analysisInputLocation);
     view = p.createOnDemandView();
   }
