@@ -75,7 +75,7 @@ import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.transform.BodyTransformer;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -146,7 +146,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
   private Multimap<LabelNode, StmtBox> trapHandlers;
   private int lastLineNumber = -1;
   @Nullable private JavaClassType declaringClass;
-  @Nonnull private final List<BodyTransformer> bodyTransformers;
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   /*
    * Hint: in InstructionConverter convertInvokeInstruction() ling creates string for methodRef and types and stores/replaces
@@ -180,7 +180,7 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
       @Nonnull String signature,
       @Nonnull String[] exceptions) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
-    bodyTransformers = ImmutableUtils.immutableList(new CastAndReturnInliner());
+    bodyInterceptors = ImmutableUtils.immutableList(new CastAndReturnInliner());
   }
 
   @Override
@@ -245,12 +245,12 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
     // return b;
 
     Body body = new Body(bodyLocals, bodyTraps, bodyStmts, bodyPos);
-    for (BodyTransformer bodyTransformer : bodyTransformers) {
+    for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
       try {
-        body = bodyTransformer.transformBody(body);
+        body = bodyInterceptor.interceptBody(body);
       } catch (Exception e) {
         throw new RuntimeException(
-            "Failed to apply " + bodyTransformer + " to " + lazyMethodSignature.get(), e);
+            "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);
       }
     }
 

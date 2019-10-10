@@ -12,7 +12,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.transform.BodyTransformer;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -40,11 +40,11 @@ import javax.annotation.Nonnull;
  *
  * @author Steven Arzt
  */
-class CastAndReturnInliner implements BodyTransformer {
+class CastAndReturnInliner implements BodyInterceptor {
 
   @Nonnull
   @Override
-  public Body transformBody(@Nonnull Body originalBody) {
+  public Body interceptBody(@Nonnull Body originalBody) {
     // In case of performance issues, these copies could be avoided
     // in cases where the content is not changed by adding logic for this.
     List<Stmt> bodyStmts = new ArrayList<>(originalBody.getStmts());
