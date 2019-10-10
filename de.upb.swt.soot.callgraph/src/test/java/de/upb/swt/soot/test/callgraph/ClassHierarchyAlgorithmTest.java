@@ -348,7 +348,10 @@ public class ClassHierarchyAlgorithmTest {
     CallGraph cg = loadCallGraph("InterfaceMethod", "j8dim1.Class");
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "method", identifierFactory.getClassType("j8dim1.Interface"), "void", Collections.emptyList());
+            "method",
+            identifierFactory.getClassType("j8dim1.Interface"),
+            "void",
+            Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
   }
 
@@ -358,7 +361,10 @@ public class ClassHierarchyAlgorithmTest {
 
     MethodSignature callMethod =
         identifierFactory.getMethodSignature(
-            "method", identifierFactory.getClassType("j8dim2.Interface"), "void", Collections.emptyList());
+            "method",
+            identifierFactory.getClassType("j8dim2.Interface"),
+            "void",
+            Collections.emptyList());
     assertTrue(cg.containsCall(mainMethodSignature, callMethod));
   }
 

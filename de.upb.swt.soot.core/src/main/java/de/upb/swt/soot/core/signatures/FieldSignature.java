@@ -19,15 +19,11 @@ public class FieldSignature extends AbstractClassMemberSignature {
   public FieldSignature(
       @Nonnull JavaClassType declaringClass, @Nonnull FieldSubSignature subSignature) {
     super(declaringClass, subSignature);
-
-    this._subSignature = subSignature;
   }
-
-  @Nonnull private final FieldSubSignature _subSignature;
 
   @Override
   @Nonnull
   public FieldSubSignature getSubSignature() {
-    return _subSignature;
+    return (FieldSubSignature) super.getSubSignature();
   }
 }

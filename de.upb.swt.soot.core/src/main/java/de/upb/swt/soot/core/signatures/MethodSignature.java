@@ -27,22 +27,18 @@ public class MethodSignature extends AbstractClassMemberSignature {
   public MethodSignature(
       final @Nonnull JavaClassType declaringClass, final @Nonnull MethodSubSignature subSignature) {
     super(declaringClass, subSignature);
-
-    this._subSignature = subSignature;
   }
-
-  private final @Nonnull MethodSubSignature _subSignature;
 
   @Override
   @Nonnull
   public MethodSubSignature getSubSignature() {
-    return _subSignature;
+    return (MethodSubSignature) super.getSubSignature();
   }
 
-  /** The methodRef's parameters' signatures. */
+  /** The method's parameters' signatures. */
   @Nonnull
   public List<Type> getParameterSignatures() {
-    return this.getSubSignature().getParameterSignatures();
+    return getSubSignature().getParameterSignatures();
   }
 
   // FIXME: [JMP] Implement quotation
