@@ -66,7 +66,7 @@ public class EagerJavaClassSource extends ClassSource {
 
   @Nonnull
   @Override
-  public Set<Modifier> resolveModifiers() {
+  public EnumSet<Modifier> resolveModifiers() {
     return modifiers;
   }
 

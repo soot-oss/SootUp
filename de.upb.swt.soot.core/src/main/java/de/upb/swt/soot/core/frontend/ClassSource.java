@@ -14,6 +14,7 @@ import de.upb.swt.soot.core.types.JavaClassType;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -61,7 +62,7 @@ public abstract class ClassSource extends AbstractClassSource {
   public abstract Collection<SootField> resolveFields() throws ResolveException;
 
   @Nonnull
-  public abstract Set<Modifier> resolveModifiers();
+  public abstract EnumSet<Modifier> resolveModifiers();
 
   @Nonnull
   public abstract Set<JavaClassType> resolveInterfaces();

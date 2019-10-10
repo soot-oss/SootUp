@@ -32,6 +32,7 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -203,12 +204,12 @@ public class SootClass extends AbstractClass<ClassSource> {
         .findAny();
   }
 
-  private final Supplier<Set<Modifier>> lazyModifiers =
+  private final Supplier<EnumSet<Modifier>> lazyModifiers =
       Suppliers.memoize(classSource::resolveModifiers);
 
   /** Returns the modifiers of this class in an immutable set. */
   @Nonnull
-  public Set<Modifier> getModifiers() {
+  public EnumSet<Modifier> getModifiers() {
     return lazyModifiers.get();
   }
 
