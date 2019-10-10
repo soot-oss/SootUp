@@ -247,7 +247,7 @@ public class ClassHierarchyAlgorithmTest {
     MethodSignature targetMethod =
         identifierFactory.getMethodSignature(
             "method",
-            identifierFactory.getClassType("nvc4.RootClass"),
+            identifierFactory.getClassType("nvc4.Rootclass"),
             "void",
             Collections.emptyList());
     assertTrue(cg.containsCall(firstMethod, targetMethod));

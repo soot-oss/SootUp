@@ -18,14 +18,14 @@ import javax.annotation.Nullable;
 public abstract class AbstractClassMemberSubSignature
     implements Comparable<AbstractClassMemberSubSignature> {
 
+  @Nonnull private final String name;
+  @Nonnull private final Type type;
+
   /** Creates a new instance of the {@link AbstractClassMemberSubSignature} class. */
   protected AbstractClassMemberSubSignature(@Nonnull String name, @Nonnull Type type) {
     this.name = name;
     this.type = type;
   }
-
-  @Nonnull private final String name;
-  @Nonnull private final Type type;
 
   /**
    * Gets the name.
