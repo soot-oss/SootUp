@@ -16,23 +16,15 @@ import javax.annotation.Nullable;
  * @author Jan Martin Persch
  */
 public abstract class AbstractClassMemberSubSignature {
-  // region Fields
-
-  // endregion /Fields/
-
-  // region Constructor
 
   /** Creates a new instance of the {@link AbstractClassMemberSubSignature} class. */
   protected AbstractClassMemberSubSignature(@Nonnull String name, @Nonnull Type type) {
-    this._name = name;
-    this._type = type;
+    this.name = name;
+    this.type = type;
   }
 
-  // endregion /Constructor/
-
-  // region Properties
-
-  @Nonnull private final String _name;
+  @Nonnull private final String name;
+  @Nonnull private final Type type;
 
   /**
    * Gets the name.
@@ -41,10 +33,8 @@ public abstract class AbstractClassMemberSubSignature {
    */
   @Nonnull
   public String getName() {
-    return this._name;
+    return this.name;
   }
-
-  @Nonnull private final Type _type;
 
   /**
    * Gets the type.
@@ -53,12 +43,8 @@ public abstract class AbstractClassMemberSubSignature {
    */
   @Nonnull
   public Type getType() {
-    return this._type;
+    return this.type;
   }
-
-  // endregion /Properties/
-
-  // region Methods
 
   @Override
   public boolean equals(@Nullable Object o) {
@@ -91,14 +77,12 @@ public abstract class AbstractClassMemberSubSignature {
   public abstract AbstractClassMemberSignature toFullSignature(
       @Nonnull JavaClassType declClassSignature);
 
-  private final Supplier<String> _cachedToString =
+  private final Supplier<String> cachedToString =
       Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));
 
   @Override
   @Nonnull
   public String toString() {
-    return _cachedToString.get();
+    return cachedToString.get();
   }
-
-  // endregion /Methods/
 }

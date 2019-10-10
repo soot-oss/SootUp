@@ -6,7 +6,7 @@ import de.upb.swt.soot.core.types.Type;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-/** Represents the fully qualified signature of a methodRef. */
+/** Represents the fully qualified signature of a method. */
 public class MethodSignature extends AbstractClassMemberSignature {
 
   public MethodSignature(
