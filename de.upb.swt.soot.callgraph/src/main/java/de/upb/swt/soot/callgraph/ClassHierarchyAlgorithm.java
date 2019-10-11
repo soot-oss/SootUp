@@ -3,6 +3,7 @@ package de.upb.swt.soot.callgraph;
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Method;
@@ -97,7 +98,16 @@ public class ClassHierarchyAlgorithm extends AbstractCallGraphAlgorithm {
   protected Stream<MethodSignature> resolveCall(SootMethod method, AbstractInvokeExpr invokeExpr) {
     MethodSignature targetMethodSignature = invokeExpr.getMethodSignature();
 
-    if (Modifier.isStatic(targetMethodSignature.getModifiers())) {
+    SootMethod targetMethod =
+        (SootMethod)
+            view.getClass(targetMethodSignature.getDeclClassType())
+                .flatMap(clazz -> clazz.getMethod(targetMethodSignature))
+                .orElseThrow(
+                    () ->
+                        new ResolveException(
+                            "Could not find " + targetMethodSignature + " in view"));
+
+    if (Modifier.isStatic(targetMethod.getModifiers())) {
       return Stream.of(targetMethodSignature);
     } else {
       return MethodDispatchResolver.resolveAbstractDispatch(view, targetMethodSignature).stream();

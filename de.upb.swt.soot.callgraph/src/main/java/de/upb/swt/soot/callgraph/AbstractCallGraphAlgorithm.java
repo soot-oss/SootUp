@@ -63,7 +63,7 @@ public abstract class AbstractCallGraphAlgorithm implements CallGraphAlgorithm {
         view.getClass(sourceMethod.getDeclClassType())
             .flatMap(c -> c.getMethod(sourceMethod))
             .orElse(null);
-    if (!(currentMethodCandidate instanceof SootMethod)) return Stream.empty();
+    if (currentMethodCandidate == null) return Stream.empty();
 
     SootMethod currentMethod = (SootMethod) currentMethodCandidate;
 

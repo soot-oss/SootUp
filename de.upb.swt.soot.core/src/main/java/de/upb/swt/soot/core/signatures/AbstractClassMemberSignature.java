@@ -1,11 +1,9 @@
 package de.upb.swt.soot.core.signatures;
 
 import com.google.common.base.Objects;
-import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClassMember;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.Type;
-import java.util.EnumSet;
 import javax.annotation.Nonnull;
 
 /**
@@ -67,10 +65,5 @@ public abstract class AbstractClassMemberSignature implements Signature {
 
   public String getName() {
     return subSignature.getName();
-  }
-
-  // TODO: Implement me in a sane way. Not this crazy dummy implementation.
-  public EnumSet<Modifier> getModifiers() {
-    return EnumSet.of(Modifier.PUBLIC, Modifier.STATIC);
   }
 }
