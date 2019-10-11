@@ -1,9 +1,7 @@
 package de.upb.swt.soot.core.signatures;
 
-import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.Type;
-import java.util.EnumSet;
 import javax.annotation.Nonnull;
 
 /**
@@ -20,14 +18,7 @@ public class FieldSignature extends AbstractClassMemberSignature {
 
   public FieldSignature(
       @Nonnull JavaClassType declaringClass, @Nonnull FieldSubSignature subSignature) {
-    super(declaringClass, subSignature, EnumSet.noneOf(Modifier.class));
-  }
-
-  public FieldSignature(
-      @Nonnull JavaClassType declaringClass,
-      @Nonnull FieldSubSignature subSignature,
-      @Nonnull EnumSet<Modifier> modifiers) {
-    super(declaringClass, subSignature, modifiers);
+    super(declaringClass, subSignature);
   }
 
   @Override
