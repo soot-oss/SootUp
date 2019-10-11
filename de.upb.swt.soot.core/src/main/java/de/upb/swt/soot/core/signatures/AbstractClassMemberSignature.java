@@ -1,14 +1,11 @@
 package de.upb.swt.soot.core.signatures;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClassMember;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.util.ImmutableUtils;
 import java.util.EnumSet;
-import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -23,49 +20,16 @@ public abstract class AbstractClassMemberSignature implements Signature {
   @Nonnull private final JavaClassType declClassSignature;
 
   @Nonnull private final AbstractClassMemberSubSignature subSignature;
-  @Nonnull private final ImmutableSet<Modifier> modifiers;
 
   public AbstractClassMemberSignature(
       @Nonnull JavaClassType klass, @Nonnull AbstractClassMemberSubSignature subSignature) {
-    this(klass, subSignature, EnumSet.noneOf(Modifier.class));
-  }
-
-  public AbstractClassMemberSignature(
-      @Nonnull JavaClassType klass,
-      @Nonnull AbstractClassMemberSubSignature subSignature,
-      EnumSet<Modifier> modifiers) {
     this.declClassSignature = klass;
     this.subSignature = subSignature;
-    this.modifiers = ImmutableUtils.immutableEnumSetOf(modifiers);
   }
 
   @Nonnull
   public AbstractClassMemberSubSignature getSubSignature() {
     return subSignature;
-  }
-
-  /** The signature of the declaring class. */
-  @Nonnull
-  public JavaClassType getDeclClassType() {
-    return declClassSignature;
-  }
-
-  public Type getType() {
-    return subSignature.getType();
-  }
-
-  public String getName() {
-    return subSignature.getName();
-  }
-
-  /**
-   * Gets the modifiers of this class member in an immutable set.
-   *
-   * @see Modifier
-   */
-  @Nonnull
-  public Set<Modifier> getModifiers() {
-    return modifiers;
   }
 
   @Override
@@ -89,5 +53,24 @@ public abstract class AbstractClassMemberSignature implements Signature {
   @Override
   public String toString() {
     return "<" + declClassSignature.toString() + ": " + getSubSignature() + '>';
+  }
+
+  /** The signature of the declaring class. */
+  @Nonnull
+  public JavaClassType getDeclClassType() {
+    return declClassSignature;
+  }
+
+  public Type getType() {
+    return subSignature.getType();
+  }
+
+  public String getName() {
+    return subSignature.getName();
+  }
+
+  // TODO: Implement me in a sane way. Not this crazy dummy implementation.
+  public EnumSet<Modifier> getModifiers() {
+    return EnumSet.of(Modifier.PUBLIC, Modifier.STATIC);
   }
 }
