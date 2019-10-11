@@ -74,9 +74,9 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
       @Nonnull Iterable<JavaClassType> thrownExceptions) {
     super(methodSignature, modifiers);
 
-    this.methodSource = source;
-    this.parameterTypes = ImmutableUtils.immutableListOf(methodSignature.getParameterSignatures());
-    this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
+    methodSource = source;
+    parameterTypes = ImmutableUtils.immutableListOf(methodSignature.getParameterSignatures());
+    exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
   }
 
   @Nullable
@@ -85,7 +85,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
     Body body;
     try {
-      body = this.methodSource.resolveBody();
+      body = methodSource.resolveBody();
 
       if (body != null) {
         body.setMethod(this);
@@ -112,7 +112,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   }
 
   public Type getReturnTypeSignature() {
-    return this.getSignature().getType();
+    return getSignature().getType();
   }
 
   /** Returns the number of parameters taken by this method. */
@@ -130,17 +130,17 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     return parameterTypes;
   }
 
-  private final @Nonnull Supplier<Body> _lazyBody = Suppliers.memoize(this::lazyBodyInitializer);
+  private final @Nonnull Supplier<Body> lazyBody = Suppliers.memoize(this::lazyBodyInitializer);
 
   /** Retrieves the active body for this methodRef. */
   @Nullable
   public Body getBody() {
-    return this._lazyBody.get(); // TODO: [JMP] Refactor to return `.getAsOptional()`
+    return lazyBody.get(); // TODO: [JMP] Refactor to return `.getAsOptional()`
   }
 
   /** Returns true if this method has an active body. */
   public boolean hasBody() {
-    return this.getBody() != null;
+    return getBody() != null;
   }
 
   @Nonnull
@@ -150,24 +150,24 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
   /** Convenience method returning true if this method is abstract. */
   public boolean isAbstract() {
-    return Modifier.isAbstract(this.getModifiers());
+    return Modifier.isAbstract(getModifiers());
   }
 
   /** Convenience method returning true if this method is native. */
   public boolean isNative() {
-    return Modifier.isNative(this.getModifiers());
+    return Modifier.isNative(getModifiers());
   }
 
   /** Convenience method returning true if this method is synchronized. */
   public boolean isSynchronized() {
-    return Modifier.isSynchronized(this.getModifiers());
+    return Modifier.isSynchronized(getModifiers());
   }
 
   /** @return yes if this is the main method */
   public boolean isMain() {
     return isPublic()
         && isStatic()
-        && this.getSubSignature().toString().equals("void main(java.lang.String[])");
+        && getSubSignature().toString().equals("void main(java.lang.String[])");
   }
 
   /**
@@ -175,12 +175,12 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    *     treated as constructors in this methodRef.
    */
   public boolean isConstructor() {
-    return this.getSignature().getName().equals(CONSTRUCTOR_NAME);
+    return getSignature().getName().equals(CONSTRUCTOR_NAME);
   }
 
   /** @return yes, if this function is a static initializer. */
   public boolean isStaticInitializer() {
-    return this.getSignature().getName().equals(STATIC_INITIALIZER_NAME);
+    return getSignature().getName().equals(STATIC_INITIALIZER_NAME);
   }
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
@@ -196,7 +196,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     StringBuilder builder = new StringBuilder();
 
     // modifiers
-    StringTokenizer st = new StringTokenizer(Modifier.toString(this.getModifiers()));
+    StringTokenizer st = new StringTokenizer(Modifier.toString(getModifiers()));
     if (st.hasMoreTokens()) {
       builder.append(st.nextToken());
     }
@@ -211,10 +211,10 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
     // return type + name
 
-    builder.append(this.getSubSignature().toString());
+    builder.append(getSubSignature().toString());
 
     // Print exceptions
-    Iterator<JavaClassType> exceptionIt = this.getExceptionSignatures().iterator();
+    Iterator<JavaClassType> exceptionIt = getExceptionSignatures().iterator();
 
     if (exceptionIt.hasNext()) {
       builder.append(" throws ").append(exceptionIt.next());
@@ -346,7 +346,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
      */
     @Nonnull
     protected MethodSource getSource() {
-      return ensureValue(this._source, "source");
+      return ensureValue(_source, "source");
     }
 
     /**
@@ -356,7 +356,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
      */
     @Nonnull
     public MethodSignatureStep withSource(@Nonnull MethodSource value) {
-      this._source = value;
+      _source = value;
 
       return this;
     }
@@ -370,7 +370,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
      */
     @Nonnull
     protected MethodSignature getSignature() {
-      return ensureValue(this._methodSignature, "signature");
+      return ensureValue(_methodSignature, "signature");
     }
 
     /**
@@ -380,7 +380,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
      */
     @Nonnull
     public ModifiersStep withSignature(@Nonnull MethodSignature value) {
-      this._methodSignature = value;
+      _methodSignature = value;
 
       return this;
     }
@@ -394,7 +394,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
      */
     @Nonnull
     protected Iterable<Modifier> getModifiers() {
-      return ensureValue(this._modifiers, "modifiers");
+      return ensureValue(_modifiers, "modifiers");
     }
 
     /**
@@ -404,7 +404,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
      */
     @Nonnull
     public ThrownExceptionsStep withModifiers(@Nonnull Iterable<Modifier> value) {
-      this._modifiers = value;
+      _modifiers = value;
 
       return this;
     }
@@ -418,7 +418,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
      */
     @Nonnull
     protected Iterable<JavaClassType> getThrownExceptions() {
-      return ensureValue(this._thrownExceptions, "thrownExceptions");
+      return ensureValue(_thrownExceptions, "thrownExceptions");
     }
 
     /**
@@ -428,7 +428,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
      */
     @Nonnull
     public Builder withThrownExceptions(@Nonnull Iterable<JavaClassType> value) {
-      this._thrownExceptions = value;
+      _thrownExceptions = value;
 
       return this;
     }
@@ -436,8 +436,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     @Override
     @Nonnull
     protected SootMethod make() {
-      return new SootMethod(
-          this.getSource(), this.getSignature(), this.getModifiers(), this.getThrownExceptions());
+      return new SootMethod(getSource(), getSignature(), getModifiers(), getThrownExceptions());
     }
   }
 }
