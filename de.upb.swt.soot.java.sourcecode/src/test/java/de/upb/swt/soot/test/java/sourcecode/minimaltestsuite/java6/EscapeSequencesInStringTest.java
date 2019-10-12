@@ -27,7 +27,7 @@ public class EscapeSequencesInStringTest extends MinimalTestSuiteBase {
       methodSignature = (String) mv.get("methodSignature");
       jimpleLines = (List<String>) mv.get("jimpleLines");
 
-      loadMethod(expectedBodyStmts(), getMethodSignature());
+      super.defaultTest();
     }
   }
 
