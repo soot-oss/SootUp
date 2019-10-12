@@ -30,6 +30,7 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
 import java.io.File;
@@ -73,8 +74,8 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
    * @param provider who knows how to retrieve the classes
    */
   public JavaClassPathAnalysisInputLocation(
-      @Nonnull String classPath, @Nonnull ClassProvider provider) {
-    super(provider);
+      @Nonnull String classPath, @Nonnull SourceType sourceType, @Nonnull ClassProvider provider) {
+    super(provider, sourceType);
 
     if (isNullOrEmpty(classPath)) {
       throw new InvalidClassPathException("Empty class path given");
@@ -83,7 +84,7 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
     try {
       cpEntries =
           explode(classPath)
-              .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp, provider)))
+              .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp, provider, sourceType)))
               .collect(Collectors.toList());
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
@@ -159,10 +160,10 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
   }
 
   private @Nonnull Optional<AbstractAnalysisInputLocation> nsForPath(
-      @Nonnull Path path, ClassProvider provider) {
+      @Nonnull Path path, @Nonnull ClassProvider provider, @Nonnull SourceType sourceType) {
     if (Files.exists(path)
         && (java.nio.file.Files.isDirectory(path) || PathUtils.isArchive(path))) {
-      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
+      return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path, sourceType));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
       return Optional.empty();

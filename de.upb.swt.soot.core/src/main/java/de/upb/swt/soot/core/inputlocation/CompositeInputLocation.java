@@ -4,6 +4,7 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ClassSource;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.NotYetImplementedException;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Jan Martin Persch
  */
-public class CompositeInputLocation implements AnalysisInputLocation {
+public class CompositeInputLocation extends AnalysisInputLocation {
   private @Nonnull List<AnalysisInputLocation> inputLocations;
 
   /**
@@ -33,6 +34,8 @@ public class CompositeInputLocation implements AnalysisInputLocation {
    */
   public CompositeInputLocation(
       @Nonnull Collection<? extends AnalysisInputLocation> inputLocations) {
+    super(SourceType.Phantom); // value is irrelevant - will be delegated to the respective
+    // AnalysisInputLocation
     List<AnalysisInputLocation> unmodifiableInputLocations =
         Collections.unmodifiableList(new ArrayList<>(inputLocations));
 

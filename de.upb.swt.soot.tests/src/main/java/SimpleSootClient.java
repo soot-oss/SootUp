@@ -1,6 +1,7 @@
 import com.ibm.wala.ipa.callgraph.CallGraph;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
@@ -20,10 +21,12 @@ public class SimpleSootClient {
     String javaSourcePath = "de/upb/soot/example/src";
 
     AnalysisInputLocation cpBased =
-        new JavaClassPathAnalysisInputLocation(javaClassPath, new AsmJavaClassProvider());
+        new JavaClassPathAnalysisInputLocation(
+            javaClassPath, SourceType.Application, new AsmJavaClassProvider());
 
     AnalysisInputLocation walaSource =
-        new JavaSourcePathAnalysisInputLocation(Collections.singleton(javaSourcePath));
+        new JavaSourcePathAnalysisInputLocation(
+            Collections.singleton(javaSourcePath), SourceType.Application);
 
     Project<AnalysisInputLocation> p = new Project<>(walaSource);
 

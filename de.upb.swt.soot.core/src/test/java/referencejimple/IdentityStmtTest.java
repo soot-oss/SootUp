@@ -78,7 +78,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     EagerJavaClassSource javaClassSource =
         new EagerJavaClassSource(
-            new EagerInputLocation(),
+            new EagerInputLocation(SourceType.Application),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
             superClassSignature,

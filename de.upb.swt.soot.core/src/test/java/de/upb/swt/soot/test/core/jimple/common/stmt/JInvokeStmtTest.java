@@ -74,7 +74,7 @@ public class JInvokeStmtTest {
     Set<SootMethod> methods = new LinkedHashSet<>();
     EagerJavaClassSource javaClassSource =
         new EagerJavaClassSource(
-            new EagerInputLocation(),
+            new EagerInputLocation(SourceType.Application),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
             superClassSignature,

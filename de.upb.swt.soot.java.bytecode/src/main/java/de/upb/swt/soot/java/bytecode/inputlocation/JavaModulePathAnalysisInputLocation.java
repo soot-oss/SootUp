@@ -10,6 +10,7 @@ import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -54,9 +55,11 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
    *     ClassSource}es for the files found on the class path
    */
   public JavaModulePathAnalysisInputLocation(
-      @Nonnull String modulePath, @Nonnull ClassProvider classProvider) {
-    super(classProvider);
-    this.moduleFinder = new ModuleFinder(classProvider, modulePath);
+      @Nonnull String modulePath,
+      @Nonnull SourceType sourceType,
+      @Nonnull ClassProvider classProvider) {
+    super(classProvider, sourceType);
+    this.moduleFinder = new ModuleFinder(classProvider, modulePath, getSourceType());
   }
 
   @Override

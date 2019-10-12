@@ -15,6 +15,7 @@ import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
@@ -68,12 +69,15 @@ public class WalaIRToJimpleConverter {
   private HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
 
-  public WalaIRToJimpleConverter(Set<String> sourceDirPath) {
-    srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
+  public WalaIRToJimpleConverter(Set<String> sourceDirPath, SourceType sourceType) {
+    // TODO: implement sane / remove fixed sourceType
+    srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath, sourceType);
+    // FIXME: [ms] remove generating an own project+view here
     Project<AnalysisInputLocation> project =
         new Project<>(srcNamespace, DefaultIdentifierFactory.getInstance());
 
     view = new JavaView<>(project);
+    defaultIdentifierFactory = DefaultIdentifierFactory.getInstance();
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
   }

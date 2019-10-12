@@ -9,7 +9,6 @@ import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -29,9 +28,7 @@ public abstract class ClassSource extends AbstractClassSource {
 
   @Override
   public AbstractClass reifyClass() {
-    // TODO: [cb] Don't use a fixed SourceType here. [ms]: lift determination of SourceType up to
-    // classSource->AnalysisInputLocation?
-    return new SootClass(this, SourceType.Application);
+    return new SootClass(this, srcNamespace.getSourceType());
   }
 
   /**

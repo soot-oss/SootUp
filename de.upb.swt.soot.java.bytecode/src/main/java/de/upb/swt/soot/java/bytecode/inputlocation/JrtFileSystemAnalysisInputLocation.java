@@ -9,6 +9,7 @@ import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.ModulePackageName;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -35,8 +36,8 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
 
   private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
-  public JrtFileSystemAnalysisInputLocation(ClassProvider classProvider) {
-    super(classProvider);
+  public JrtFileSystemAnalysisInputLocation(ClassProvider classProvider, SourceType sourceType) {
+    super(classProvider, sourceType);
   }
 
   @Override

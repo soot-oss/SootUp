@@ -42,7 +42,7 @@ public class JFieldRefTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation(),
+                new EagerInputLocation(SourceType.Application),
                 null,
                 declaringClassSignature,
                 null,
@@ -74,7 +74,7 @@ public class JFieldRefTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation(),
+                new EagerInputLocation(SourceType.Application),
                 null,
                 declaringClassSignature,
                 null,

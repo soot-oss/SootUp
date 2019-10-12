@@ -63,7 +63,9 @@ public class ViewTypeHierarchyTest {
             .collect(Collectors.joining(File.pathSeparator));
     analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(
-            jarFile + File.pathSeparator + rtJarClassPath, new AsmJavaClassProvider());
+            jarFile + File.pathSeparator + rtJarClassPath,
+            SourceType.Application,
+            new AsmJavaClassProvider());
     Project<JavaClassPathAnalysisInputLocation> p = new Project<>(analysisInputLocation);
     view = p.createOnDemandView();
     typeHierarchy = new ViewTypeHierarchy(view);

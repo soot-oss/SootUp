@@ -4,6 +4,7 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
@@ -36,8 +37,9 @@ public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLo
    *
    * @param sourcePaths the source code path to search in
    */
-  public JavaSourcePathAnalysisInputLocation(@Nonnull Set<String> sourcePaths) {
-    this(sourcePaths, null);
+  public JavaSourcePathAnalysisInputLocation(
+      @Nonnull Set<String> sourcePaths, SourceType sourceType) {
+    this(sourcePaths, null, sourceType);
   }
 
   /**
@@ -47,9 +49,10 @@ public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLo
    * @param sourcePaths the source code path to search in
    */
   public JavaSourcePathAnalysisInputLocation(
-      @Nonnull Set<String> sourcePaths, @Nullable String exclusionFilePath) {
-    super(new WalaJavaClassProvider(exclusionFilePath));
-
+      @Nonnull Set<String> sourcePaths,
+      @Nullable String exclusionFilePath,
+      @Nonnull SourceType sourceType) {
+    super(new WalaJavaClassProvider(exclusionFilePath), sourceType);
     this.sourcePaths = sourcePaths;
     this.exclusionFilePath = exclusionFilePath;
   }
@@ -58,7 +61,7 @@ public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLo
   @Nonnull
   public Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
-    return new WalaClassLoader(sourcePaths, exclusionFilePath).getClassSources();
+    return new WalaClassLoader(sourcePaths, exclusionFilePath, getSourceType()).getClassSources();
   }
 
   @Override

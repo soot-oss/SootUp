@@ -19,6 +19,7 @@ import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,6 +42,7 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  */
 public class WalaClassLoader {
+  private final SourceType sourceType;
   private Set<String> sourcePath;
   private IClassHierarchy classHierarchy;
   private List<SootClass> sootClasses;
@@ -81,15 +83,16 @@ public class WalaClassLoader {
     }
   }
 
-  public WalaClassLoader(String sourceDirPath) {
-    this(sourceDirPath, null);
+  public WalaClassLoader(String sourceDirPath, SourceType sourceType) {
+    this(sourceDirPath, null, sourceType);
   }
 
-  public WalaClassLoader(Set<String> sourcePath) {
-    this(sourcePath, "");
+  public WalaClassLoader(Set<String> sourcePath, SourceType sourceType) {
+    this(sourcePath, "", sourceType);
   }
 
-  public WalaClassLoader(Set<String> sourcePath, @Nullable String exclusionFilePath) {
+  public WalaClassLoader(
+      Set<String> sourcePath, @Nullable String exclusionFilePath, SourceType sourceType) {
     addScopesForJava();
     this.sourcePath = sourcePath;
     try {
@@ -111,11 +114,17 @@ public class WalaClassLoader {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    this.sourceType = sourceType;
   }
 
-  public WalaClassLoader(Set<String> sourcePath, Set<String> libPath, String exclusionFilePath) {
+  public WalaClassLoader(
+      Set<String> sourcePath,
+      Set<String> libPath,
+      String exclusionFilePath,
+      SourceType sourceType) {
     addScopesForJava();
     this.sourcePath = sourcePath;
+    this.sourceType = sourceType;
     try {
       // add the source directory to scope
       for (String path : sourcePath) {
@@ -145,7 +154,8 @@ public class WalaClassLoader {
       Set<String> sourcePath,
       String apkPath,
       String androidJar,
-      @Nullable String exclusionFilePath) {
+      @Nullable String exclusionFilePath,
+      SourceType sourceType) {
     addScopesForJava();
     this.sourcePath = sourcePath;
     try {
@@ -172,6 +182,7 @@ public class WalaClassLoader {
     } catch (IllegalArgumentException | IOException e) {
       throw new RuntimeException("Failed to construct frontend.WalaClassLoader", e);
     }
+    this.sourceType = sourceType;
   }
 
   /**
@@ -180,7 +191,8 @@ public class WalaClassLoader {
    * @param sourceDirPath
    * @param exclusionFilePath
    */
-  public WalaClassLoader(String sourceDirPath, @Nullable String exclusionFilePath) {
+  public WalaClassLoader(
+      String sourceDirPath, @Nullable String exclusionFilePath, SourceType sourceType) {
     addScopesForJava();
     this.sourcePath = Collections.singleton(sourceDirPath);
     try {
@@ -200,6 +212,7 @@ public class WalaClassLoader {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    this.sourceType = sourceType;
   }
 
   /**
@@ -207,12 +220,13 @@ public class WalaClassLoader {
    *
    * @param moduleFiles
    */
-  public WalaClassLoader(Collection<? extends Module> moduleFiles) {
+  public WalaClassLoader(Collection<? extends Module> moduleFiles, SourceType sourceType) {
     addScopesForJava();
     for (Module m : moduleFiles) {
       scope.addToScope(JavaSourceAnalysisScope.SOURCE, m);
     }
     factory = new ECJClassLoaderFactory(scope.getExclusions());
+    this.sourceType = sourceType;
   }
 
   /** Use WALA's JAVA source code front-end to build class hierarchy. */
@@ -235,10 +249,9 @@ public class WalaClassLoader {
     if (classSources == null) {
       classSources = new ArrayList<>();
     }
-    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
+    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath, sourceType);
     while (it.hasNext()) {
-      com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass walaClass =
-          (com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass) it.next();
+      JavaClass walaClass = (JavaClass) it.next();
       ClassSource sootClass = walaToSoot.convertToClassSource(walaClass);
       classSources.add(sootClass);
     }
@@ -258,10 +271,9 @@ public class WalaClassLoader {
     if (sootClasses == null) {
       sootClasses = new ArrayList<>();
     }
-    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
+    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath, sourceType);
     while (it.hasNext()) {
-      com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass walaClass =
-          (com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass) it.next();
+      JavaClass walaClass = (JavaClass) it.next();
       SootClass sootClass = walaToSoot.convertClass(walaClass);
       sootClasses.add(sootClass);
     }
@@ -290,7 +302,7 @@ public class WalaClassLoader {
     if (classHierarchy == null) {
       buildClassHierachy();
     }
-    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
+    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath, sourceType);
     JavaClass walaClass = loadWalaClass(signature, walaToSoot);
     return Optional.ofNullable(walaClass).map(walaToSoot::convertClass);
   }
@@ -300,7 +312,7 @@ public class WalaClassLoader {
     if (classHierarchy == null) {
       buildClassHierachy();
     }
-    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
+    WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath, sourceType);
     JavaClass walaClass = loadWalaClass(signature, walaToSoot);
     return Optional.ofNullable(walaClass).map(walaToSoot::convertToClassSource);
   }

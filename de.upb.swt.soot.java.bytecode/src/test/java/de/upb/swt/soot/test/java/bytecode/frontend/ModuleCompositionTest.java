@@ -50,7 +50,9 @@ public class ModuleCompositionTest {
 
     // Create a project
     Project<JavaClassPathAnalysisInputLocation> p =
-        new Project<>(new JavaClassPathAnalysisInputLocation(jarFile, new AsmJavaClassProvider()));
+        new Project<>(
+            new JavaClassPathAnalysisInputLocation(
+                jarFile, SourceType.Application, new AsmJavaClassProvider()));
 
     // Get the view
     View view = p.createOnDemandView();
@@ -108,7 +110,7 @@ public class ModuleCompositionTest {
     SootClass c =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation(),
+                new EagerInputLocation(SourceType.Application),
                 null,
                 classSignature,
                 null,
