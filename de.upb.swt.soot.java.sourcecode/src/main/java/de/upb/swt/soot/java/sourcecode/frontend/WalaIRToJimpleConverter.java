@@ -70,7 +70,6 @@ public class WalaIRToJimpleConverter {
   private Set<SootField> sootFields;
 
   public WalaIRToJimpleConverter(Set<String> sourceDirPath, SourceType sourceType) {
-    // TODO: implement sane / remove fixed sourceType
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath, sourceType);
     // FIXME: [ms] remove generating an own project+view here
     Project<AnalysisInputLocation> project =
