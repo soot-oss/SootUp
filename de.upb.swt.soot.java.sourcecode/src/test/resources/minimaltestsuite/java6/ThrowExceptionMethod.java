@@ -1,5 +1,3 @@
-import java.lang.Exception.ArithmaticException;
-
 class ThrowExceptionMethod{
     void divide() {
         try{
@@ -8,7 +6,7 @@ class ThrowExceptionMethod{
         catch(ArithmeticException e){}
     }
 
-    void divideByZero() throws ArithmaticException{
+    void divideByZero() throws ArithmeticException{
         int i=8/0;
     }
 
