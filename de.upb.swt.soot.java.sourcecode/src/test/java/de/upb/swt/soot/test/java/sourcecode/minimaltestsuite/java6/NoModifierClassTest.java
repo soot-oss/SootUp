@@ -5,6 +5,8 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -20,14 +22,17 @@ public class NoModifierClassTest extends MinimalTestSuiteBase {
   public void defaultTest() {
     HashMap<String, HashMap<String, Object>> methodList = setValues();
     Set<String> methodListKeys = methodList.keySet();
+    checkClassModifier("");
 
     for (String methodListKey : methodListKeys) {
       methodName = methodListKey;
       HashMap<String, Object> mv = methodList.get(methodListKey);
       methodSignature = (String) mv.get("methodSignature");
+      jimpleLines = (List<String>) mv.get("jimpleLines");
       methodModifier = (String) mv.get("methodModifier");
-      checkClassModifier("");
-      checkMethodModifier(methodModifier, getMethodSignature());
+
+      super.defaultTest();
+      checkMethodModifier(methodModifier);
     }
   }
 
@@ -47,21 +52,33 @@ public class NoModifierClassTest extends MinimalTestSuiteBase {
     HashMap<String, Object> methodValues = new HashMap<>();
 
     methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
+        Stream.of("r0 := @this: NoModifierClass", "return").collect(Collectors.toList()));
     methodValues.put("methodModifier", "PUBLIC");
     methodList.put("publicMethod", methodValues);
 
     methodValues = new HashMap<>();
     methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
+        Stream.of("r0 := @this: NoModifierClass", "return").collect(Collectors.toList()));
     methodValues.put("methodModifier", "PRIVATE");
     methodList.put("privateMethod", methodValues);
 
     methodValues = new HashMap<>();
     methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
+        Stream.of("r0 := @this: NoModifierClass", "return").collect(Collectors.toList()));
     methodValues.put("methodModifier", "PROTECTED");
     methodList.put("protectedMethod", methodValues);
 
     methodValues = new HashMap<>();
     methodValues.put("methodSignature", "void");
+    methodValues.put(
+        "jimpleLines",
+        Stream.of("r0 := @this: NoModifierClass", "return").collect(Collectors.toList()));
     methodValues.put("methodModifier", "");
     methodList.put("noModifierMethod", methodValues);
 
