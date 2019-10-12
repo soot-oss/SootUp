@@ -106,6 +106,18 @@ public abstract class MinimalTestSuiteBase {
     return sootClass.getFields();
   }
 
+  public Set<JavaClassType> getInterfaces(){
+
+    WalaClassLoader loader =
+            new WalaClassLoader(
+                    baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+    sootClass =
+            new SootClass(
+                    loader.getClassSource(getDeclaredClassSignature()).get(), SourceType.Application);
+    return sootClass.getInterfaces();
+
+  }
+
   public void checkClassModifier(String modifier) {
     WalaClassLoader loader =
         new WalaClassLoader(
