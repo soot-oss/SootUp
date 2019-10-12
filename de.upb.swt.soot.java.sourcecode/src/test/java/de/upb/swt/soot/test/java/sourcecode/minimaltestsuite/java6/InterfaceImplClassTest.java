@@ -15,7 +15,7 @@ import org.junit.Test;
 public class InterfaceImplClassTest extends MinimalTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-            "interfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "interfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test
@@ -23,11 +23,11 @@ public class InterfaceImplClassTest extends MinimalTestSuiteBase {
   public void defaultTest() {
     super.defaultTest();
     assertTrue(
-            getInterfaces().stream()
-                    .anyMatch(
-                            javaClassType -> {
-                              return javaClassType.getClassName().equalsIgnoreCase("InterfaceImpl");
-                            }));
+        getInterfaces().stream()
+            .anyMatch(
+                javaClassType -> {
+                  return javaClassType.getClassName().equalsIgnoreCase("InterfaceImpl");
+                }));
   }
 
   @Override
@@ -40,6 +40,6 @@ public class InterfaceImplClassTest extends MinimalTestSuiteBase {
             "$r3 = \"Variable from InterfaceImpl is \" + 10",
             "virtualinvoke $r2.<java.io.PrintStream: void println(java.lang.String)>($r3)",
             "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 }

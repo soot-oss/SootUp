@@ -17,12 +17,12 @@ import org.junit.Test;
 public class MethodOverloadingTest extends MinimalTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-            "calculate", getDeclaredClassSignature(), "int", Arrays.asList("int", "int"));
+        "calculate", getDeclaredClassSignature(), "int", Arrays.asList("int", "int"));
   }
   /** @returns the method signature needed for second method in testCase */
   public MethodSignature getMethodSignature1() {
     return identifierFactory.getMethodSignature(
-            "calculate", getDeclaredClassSignature(), "int", Collections.singletonList("int"));
+        "calculate", getDeclaredClassSignature(), "int", Collections.singletonList("int"));
   }
 
   @Test
@@ -43,7 +43,7 @@ public class MethodOverloadingTest extends MinimalTestSuiteBase {
             "$i1 := @parameter1: int",
             "$i2 = $i0 + $i1",
             "return $i2")
-            .collect(Collectors.toCollection(ArrayList::new));
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   public List<String> expectedBodyStmts1() {
@@ -52,6 +52,6 @@ public class MethodOverloadingTest extends MinimalTestSuiteBase {
             "$i0 := @parameter0: int",
             "$i1 = $i0 + $i0",
             "return $i1")
-            .collect(Collectors.toCollection(ArrayList::new));
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 }

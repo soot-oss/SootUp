@@ -14,10 +14,10 @@ public class MethodOverridingTest extends MinimalTestSuiteBase {
   public MethodSignature getMethodSignature() {
 
     return identifierFactory.getMethodSignature(
-            "calculateArea",
-            identifierFactory.getClassType("MethodOverridingSubclass"),
-            "void",
-            Collections.emptyList());
+        "calculateArea",
+        identifierFactory.getClassType("MethodOverridingSubclass"),
+        "void",
+        Collections.emptyList());
   }
 
   @Override
@@ -27,6 +27,6 @@ public class MethodOverridingTest extends MinimalTestSuiteBase {
             "$r1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"Inside MethodOverridingSubclass-calculateArea()\")",
             "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 }

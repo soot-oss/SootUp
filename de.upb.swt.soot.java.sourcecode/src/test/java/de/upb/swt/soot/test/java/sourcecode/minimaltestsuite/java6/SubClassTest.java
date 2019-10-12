@@ -13,13 +13,13 @@ import org.junit.Test;
 public class SubClassTest extends MinimalTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-            "subclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "subclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   /** @returns the method signature needed for second method in testCase */
   public MethodSignature getMethodSignature1() {
     return identifierFactory.getMethodSignature(
-            "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test
@@ -36,7 +36,7 @@ public class SubClassTest extends MinimalTestSuiteBase {
             "r0.<SubClass: int cc> = 30",
             "r0.<SubClass: int dd> = 40",
             "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   public List<String> expectedBodyStmts1() {
@@ -47,6 +47,6 @@ public class SubClassTest extends MinimalTestSuiteBase {
             "r0.<SuperClass: int b> = 200",
             "r0.<SuperClass: int c> = 300",
             "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 }

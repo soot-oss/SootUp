@@ -17,7 +17,7 @@ public class StaticMethodTest extends MinimalTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-            "staticMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "staticMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test
@@ -33,6 +33,6 @@ public class StaticMethodTest extends MinimalTestSuiteBase {
             "$r0 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>(\"static method\")",
             "return")
-            .collect(Collectors.toList());
+        .collect(Collectors.toList());
   }
 }

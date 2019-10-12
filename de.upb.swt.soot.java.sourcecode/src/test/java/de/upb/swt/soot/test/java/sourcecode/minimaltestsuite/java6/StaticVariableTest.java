@@ -16,7 +16,7 @@ public class StaticVariableTest extends MinimalTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-            "staticVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "staticVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test
@@ -24,11 +24,11 @@ public class StaticVariableTest extends MinimalTestSuiteBase {
   public void defaultTest() {
     super.defaultTest();
     assertTrue(
-            getFields().stream()
-                    .anyMatch(
-                            element -> {
-                              return element.getName().equals("num") && element.isStatic();
-                            }));
+        getFields().stream()
+            .anyMatch(
+                element -> {
+                  return element.getName().equals("num") && element.isStatic();
+                }));
   }
 
   @Override
@@ -38,6 +38,6 @@ public class StaticVariableTest extends MinimalTestSuiteBase {
             "$i0 = <StaticVariable: int num>",
             "virtualinvoke $r0.<java.io.PrintStream: void println(int)>($i0)",
             "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 }

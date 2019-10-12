@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public class SuperClassTest extends MinimalTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-            "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "superclassMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Override
@@ -24,6 +24,6 @@ public class SuperClassTest extends MinimalTestSuiteBase {
             "r0.<SuperClass: int c> = 30",
             "r0.<SuperClass: int d> = 40",
             "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 }

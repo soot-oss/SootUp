@@ -16,7 +16,7 @@ import org.junit.Test;
 public class TransientVariableTest extends MinimalTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-            "transientVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "transientVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test
@@ -24,12 +24,12 @@ public class TransientVariableTest extends MinimalTestSuiteBase {
   public void defaultTest() {
     super.defaultTest();
     assertTrue(
-            getFields().stream()
-                    .anyMatch(
-                            sootField -> {
-                              return sootField.getName().equals("transientVar")
-                                      && sootField.getModifiers().contains(Modifier.TRANSIENT);
-                            }));
+        getFields().stream()
+            .anyMatch(
+                sootField -> {
+                  return sootField.getName().equals("transientVar")
+                      && sootField.getModifiers().contains(Modifier.TRANSIENT);
+                }));
   }
 
   @Override
@@ -40,6 +40,6 @@ public class TransientVariableTest extends MinimalTestSuiteBase {
             "$i0 = r0.<TransientVariable: int transientVar>",
             "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0)",
             "return")
-            .collect(Collectors.toCollection(ArrayList::new));
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 }
