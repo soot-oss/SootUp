@@ -41,7 +41,6 @@ import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
-import de.upb.swt.soot.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.net.URL;
 import java.nio.file.Path;
@@ -63,7 +62,7 @@ import javax.annotation.Nullable;
  */
 public class WalaIRToJimpleConverter {
 
-  protected JavaView<AnalysisInputLocation> view;
+  protected final IdentifierFactory defaultIdentifierFactory;
   private AnalysisInputLocation srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
   private HashMap<String, String> walaToSootNameTable;
@@ -71,11 +70,6 @@ public class WalaIRToJimpleConverter {
 
   public WalaIRToJimpleConverter(Set<String> sourceDirPath, SourceType sourceType) {
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath, sourceType);
-    // FIXME: [ms] remove generating an own project+view here
-    Project<AnalysisInputLocation> project =
-        new Project<>(srcNamespace, DefaultIdentifierFactory.getInstance());
-
-    view = new JavaView<>(project);
     defaultIdentifierFactory = DefaultIdentifierFactory.getInstance();
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
@@ -101,7 +95,7 @@ public class WalaIRToJimpleConverter {
     JavaClassType superClass = null;
     if (sc != null) {
       superClass =
-          view.getIdentifierFactory()
+          defaultIdentifierFactory
               .getClassType(convertClassNameFromWala(sc.getName().toString()));
     }
 
@@ -109,7 +103,7 @@ public class WalaIRToJimpleConverter {
     Set<JavaClassType> interfaces = new HashSet<>();
     for (IClass i : walaClass.getDirectInterfaces()) {
       JavaClassType inter =
-          view.getIdentifierFactory()
+          defaultIdentifierFactory
               .getClassType(convertClassNameFromWala(i.getName().toString()));
       interfaces.add(inter);
     }
@@ -122,7 +116,7 @@ public class WalaIRToJimpleConverter {
       IClass ec = javaClass.getEnclosingClass();
       if (ec != null) {
         outerClass =
-            view.getIdentifierFactory()
+            defaultIdentifierFactory
                 .getClassType(convertClassNameFromWala(ec.getName().toString()));
       }
     }
@@ -145,7 +139,7 @@ public class WalaIRToJimpleConverter {
     if (outerClass != null) {
       // create enclosing reference to outerClass
       FieldSignature signature =
-          view.getIdentifierFactory().getFieldSignature("this$0", classSig, outerClass);
+          defaultIdentifierFactory.getFieldSignature("this$0", classSig, outerClass);
       SootField enclosingObject = new SootField(signature, EnumSet.of(Modifier.FINAL));
       sootFields.add(enclosingObject);
     }
@@ -208,7 +202,7 @@ public class WalaIRToJimpleConverter {
     Type type = convertType(walaField.getFieldTypeReference());
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
     FieldSignature signature =
-        view.getIdentifierFactory()
+        defaultIdentifierFactory
             .getFieldSignature(walaField.getName().toString(), classSig, type);
     return new SootField(signature, modifiers);
   }
@@ -233,7 +227,7 @@ public class WalaIRToJimpleConverter {
           }
         }
         Type paraType = convertType(type);
-        paraTypes.add(this.view.getIdentifierFactory().getType(paraType.toString()));
+        paraTypes.add(this.defaultIdentifierFactory.getType(paraType.toString()));
         sigs.add(paraType.toString());
       }
     }
@@ -246,7 +240,7 @@ public class WalaIRToJimpleConverter {
     try {
       for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
         String exceptionName = convertClassNameFromWala(exception.getName().toString());
-        JavaClassType exceptionSig = this.view.getIdentifierFactory().getClassType(exceptionName);
+        JavaClassType exceptionSig = this.defaultIdentifierFactory.getClassType(exceptionName);
         thrownExceptions.add(exceptionSig);
       }
     } catch (UnsupportedOperationException | InvalidClassFileException e) {
@@ -255,9 +249,8 @@ public class WalaIRToJimpleConverter {
     // add debug info
     DebuggingInformation debugInfo = walaMethod.debugInfo();
     MethodSignature methodSig =
-        this.view
-            .getIdentifierFactory()
-            .getMethodSignature(
+            defaultIdentifierFactory
+                    .getMethodSignature(
                 walaMethod.getName().toString(), classSig, returnType.toString(), sigs);
 
     Body body = createBody(methodSig, modifiers, walaMethod);
@@ -297,7 +290,7 @@ public class WalaIRToJimpleConverter {
           return NullType.getInstance();
         } else {
           String className = convertClassNameFromWala(type.getName().toString());
-          return this.view.getIdentifierFactory().getClassType(className);
+          return this.defaultIdentifierFactory.getClassType(className);
         }
       }
     }
