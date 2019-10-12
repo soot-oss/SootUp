@@ -135,7 +135,7 @@ public class InstructionConverter {
     this.targetsOfLookUpSwitchStmts = new HashMap<>();
     this.defaultOfLookUpSwitchStmts = new HashMap<>();
     this.locals = new HashMap<>();
-    this.identifierFactory = converter.view.getIdentifierFactory();
+    this.identifierFactory = converter.sigFactory;
   }
 
   public List<Stmt> convertInstruction(DebuggingInformation debugInfo, SSAInstruction inst) {
@@ -797,8 +797,7 @@ public class InstructionConverter {
 
     MethodSignature methodSig =
         converter
-            .view
-            .getIdentifierFactory()
+            .sigFactory
             .getMethodSignature(
                 target.getName().toString(), declaringClassSignature, returnType, parameters);
 
