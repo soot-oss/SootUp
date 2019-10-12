@@ -1,4 +1,4 @@
-class DeclareLong{
+public class DeclareLong{
     long i=154L;
     long j=874l;
 
