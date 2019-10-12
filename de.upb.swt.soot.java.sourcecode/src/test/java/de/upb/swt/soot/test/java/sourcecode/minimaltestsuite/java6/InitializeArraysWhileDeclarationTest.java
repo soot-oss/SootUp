@@ -28,7 +28,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalTestSuiteBase {
       methodSignature = (String) mv.get("methodSignature");
       jimpleLines = (List<String>) mv.get("jimpleLines");
 
-      test(getJimpleLines(), getMethodSignature());
+      loadMethod(expectedBodyStmts(), getMethodSignature());
     }
   }
 
@@ -39,7 +39,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return jimpleLines;
   }
 

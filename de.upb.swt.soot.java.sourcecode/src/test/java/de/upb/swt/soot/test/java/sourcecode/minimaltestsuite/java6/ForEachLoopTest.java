@@ -20,7 +20,7 @@ public class ForEachLoopTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: ForEachLoop",
             "$r1 = newarray (int[])[9]", // numArray

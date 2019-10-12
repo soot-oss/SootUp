@@ -23,17 +23,19 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Markus Schmidt Hasitha Rajapakse */
+/**
+ * @author: Markus Schmidt,
+ * @author: Hasitha Rajapakse
+ */
 @Category(Java8Test.class)
 public abstract class MinimalTestSuiteBase {
 
   static final String baseDir = "src/test/resources/minimaltestsuite/";
   protected DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
-  protected SootMethod method;
 
   public abstract MethodSignature getMethodSignature();
 
-  public abstract List<String> getJimpleLines();
+  public abstract List<String> expectedBodyStmts();
 
   /**
    * @returns the name of the parent directory - assuming the directory structure is only one level
@@ -67,10 +69,10 @@ public abstract class MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    test(getJimpleLines(), getMethodSignature());
+    loadMethod(expectedBodyStmts(), getMethodSignature());
   }
 
-  public void test(List<String> expectedStmts, MethodSignature methodSignature) {
+  public SootMethod loadMethod(List<String> expectedStmts, MethodSignature methodSignature) {
 
     WalaClassLoader loader =
         new WalaClassLoader(
@@ -78,7 +80,7 @@ public abstract class MinimalTestSuiteBase {
     Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
 
     assertTrue("No matching method signature found", m.isPresent());
-    method = m.get();
+    SootMethod method = m.get();
     Utils.print(method, false);
     Body body = method.getBody();
     assertNotNull(body);
@@ -89,6 +91,7 @@ public abstract class MinimalTestSuiteBase {
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
+    return method;
   }
 
   public void checkClassModifier(String modifier) {

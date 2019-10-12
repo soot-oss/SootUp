@@ -20,7 +20,7 @@ public class EmptyStatementTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: EmptyStatement", "$i0 = 5", "return")
         .collect(Collectors.toList());
   }

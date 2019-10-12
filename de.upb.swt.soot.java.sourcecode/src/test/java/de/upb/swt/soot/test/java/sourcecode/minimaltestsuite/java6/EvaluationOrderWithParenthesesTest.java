@@ -23,7 +23,7 @@ public class EvaluationOrderWithParenthesesTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: EvaluationOrderWithParentheses", "$i0 = 1 + 2", "$i1 = $i0 * 3", "return")
         .collect(Collectors.toList());

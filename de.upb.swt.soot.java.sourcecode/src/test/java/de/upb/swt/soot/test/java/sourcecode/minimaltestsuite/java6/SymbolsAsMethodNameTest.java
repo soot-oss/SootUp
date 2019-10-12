@@ -1,3 +1,4 @@
+/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -15,7 +16,7 @@ public class SymbolsAsMethodNameTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: SymbolsAsMethodName",
             "$r1 = <java.lang.System: java.io.PrintStream out>",

@@ -20,7 +20,7 @@ public class ContinueInWhileLoopTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: ContinueInWhileLoop",
             "$i0 = 0",

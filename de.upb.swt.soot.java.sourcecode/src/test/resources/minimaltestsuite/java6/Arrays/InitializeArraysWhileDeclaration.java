@@ -1,3 +1,5 @@
+/** @author: Hasitha Rajapakse */
+
 public class InitializeArraysWhileDeclaration {
 
     public void intArrays(){

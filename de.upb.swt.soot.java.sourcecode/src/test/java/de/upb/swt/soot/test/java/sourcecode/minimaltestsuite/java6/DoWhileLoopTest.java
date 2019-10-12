@@ -20,7 +20,7 @@ public class DoWhileLoopTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: DoWhileLoop",
             "$i0 = 10",

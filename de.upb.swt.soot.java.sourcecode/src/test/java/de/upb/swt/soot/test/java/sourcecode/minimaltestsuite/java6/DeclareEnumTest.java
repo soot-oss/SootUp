@@ -20,7 +20,7 @@ public class DeclareEnumTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: DeclareEnum",
             "$r1 = staticinvoke <DeclareEnum$Type: DeclareEnum$Type[] values()>()",

@@ -20,7 +20,7 @@ public class StringConcatenationTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: StringConcatenation", "$r1 = \"the\" + \"string\"", "return")
         .collect(Collectors.toList());
   }

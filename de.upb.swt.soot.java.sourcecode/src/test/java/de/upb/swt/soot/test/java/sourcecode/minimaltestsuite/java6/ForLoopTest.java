@@ -20,7 +20,7 @@ public class ForLoopTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: ForLoop",
             "$i0 = 10", // j
