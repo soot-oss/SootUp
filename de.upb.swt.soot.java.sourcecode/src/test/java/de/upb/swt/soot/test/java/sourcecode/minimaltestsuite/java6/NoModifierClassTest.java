@@ -1,87 +1,49 @@
 /** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author: Hasitha Rajapakse */
 @Category(Java8Test.class)
 public class NoModifierClassTest extends MinimalTestSuiteBase {
 
-  private String methodName;
-  private String methodSignature;
-  private String methodModifier;
-  private List<String> jimpleLines;
-
   @Test
   public void defaultTest() {
-    HashMap<String, HashMap<String, Object>> methodList = setValues();
-    Set<String> methodListKeys = methodList.keySet();
-    checkClassModifier("");
+    SootClass clazz = loadClass(getDeclaredClassSignature());
+    assertEquals(EnumSet.noneOf(Modifier.class), clazz.getModifiers());
 
-    for (String methodListKey : methodListKeys) {
-      methodName = methodListKey;
-      HashMap<String, Object> mv = methodList.get(methodListKey);
-      methodSignature = (String) mv.get("methodSignature");
-      jimpleLines = (List<String>) mv.get("jimpleLines");
-      methodModifier = (String) mv.get("methodModifier");
-
-      super.defaultTest();
-      checkMethodModifier(methodModifier);
-    }
+    assertTrue(clazz.getMethod(getMethodSignature("private")).get().isPrivate());
+    assertTrue(clazz.getMethod(getMethodSignature("protected")).get().isProtected());
+    assertTrue(clazz.getMethod(getMethodSignature("public")).get().isPublic());
+    assertEquals(
+        clazz.getMethod(getMethodSignature("noModifier")).get().getModifiers().toString(), "[]");
   }
+
+  public MethodSignature getMethodSignature(String modifier) {
+    return identifierFactory.getMethodSignature(
+        modifier + "Method", getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
+
 
   @Override
   public MethodSignature getMethodSignature() {
-    return identifierFactory.getMethodSignature(
-        methodName, getDeclaredClassSignature(), methodSignature, Collections.emptyList());
+    // semantically not necessary here
+    return null;
   }
 
   @Override
   public List<String> expectedBodyStmts() {
-    return jimpleLines;
-  }
-
-  public HashMap<String, HashMap<String, Object>> setValues() {
-    HashMap<String, HashMap<String, Object>> methodList = new HashMap<>();
-    HashMap<String, Object> methodValues = new HashMap<>();
-
-    methodValues.put("methodSignature", "void");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: NoModifierClass", "return").collect(Collectors.toList()));
-    methodValues.put("methodModifier", "PUBLIC");
-    methodList.put("publicMethod", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "void");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: NoModifierClass", "return").collect(Collectors.toList()));
-    methodValues.put("methodModifier", "PRIVATE");
-    methodList.put("privateMethod", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "void");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: NoModifierClass", "return").collect(Collectors.toList()));
-    methodValues.put("methodModifier", "PROTECTED");
-    methodList.put("protectedMethod", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "void");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: NoModifierClass", "return").collect(Collectors.toList()));
-    methodValues.put("methodModifier", "");
-    methodList.put("noModifierMethod", methodValues);
-
-    return methodList;
+    // semantically not necessary here
+    return null;
   }
 }

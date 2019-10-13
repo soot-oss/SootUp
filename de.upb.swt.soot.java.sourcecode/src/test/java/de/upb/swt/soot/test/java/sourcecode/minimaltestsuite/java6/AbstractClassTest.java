@@ -1,7 +1,10 @@
 /** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.Collections;
@@ -16,9 +19,11 @@ public class AbstractClassTest extends MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
+    SootClass clazz = loadClass(getDeclaredClassSignature());
+    // The SuperClass is the abstract one
+    SootClass superClazz = loadClass(clazz.getSuperclass().get());
+    assertTrue(superClazz.isAbstract());
     super.defaultTest();
-
-    isAbstractClass();
   }
 
   @Override

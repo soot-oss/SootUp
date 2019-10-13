@@ -1,7 +1,12 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.*;
@@ -10,78 +15,47 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author: Hasitha Rajapakse */
 @Category(Java8Test.class)
 public class PublicClassTest extends MinimalTestSuiteBase {
 
-  private String methodName;
-  private String methodSignature;
-  private String methodModifier;
-  private List<String> jimpleLines;
-
   @Test
   public void defaultTest() {
-    HashMap<String, HashMap<String, Object>> methodList = setValues();
-    Set<String> methodListKeys = methodList.keySet();
-    checkClassModifier("PUBLIC");
+    SootClass clazz = loadClass(getDeclaredClassSignature());
+    assertEquals(EnumSet.of(Modifier.PUBLIC), clazz.getModifiers());
 
-    for (String methodListKey : methodListKeys) {
-      methodName = methodListKey;
-      HashMap<String, Object> mv = methodList.get(methodListKey);
-      methodSignature = (String) mv.get("methodSignature");
-      jimpleLines = (List<String>) mv.get("jimpleLines");
-      methodModifier = (String) mv.get("methodModifier");
+    SootMethod method;
+    method = clazz.getMethod(getMethodSignature("private")).get();
+    assertTrue(method.isPrivate());
+    assertJimpleStmts(method,expectedBodyStmts());
 
-      super.defaultTest();
-      checkMethodModifier(methodModifier);
-    }
+    method = clazz.getMethod(getMethodSignature("protected")).get();
+    assertTrue(method.isProtected());
+    assertJimpleStmts(method,expectedBodyStmts());
+
+    method = clazz.getMethod(getMethodSignature("public")).get();
+    assertTrue(method.isPublic());
+    assertJimpleStmts(method,expectedBodyStmts());
+
+    method = clazz.getMethod(getMethodSignature("noModifier")).get();
+    assertEquals(
+        method.getModifiers().toString(), "[]");
+    assertJimpleStmts(method,expectedBodyStmts());
   }
 
-  @Override
-  public MethodSignature getMethodSignature() {
+  public MethodSignature getMethodSignature(String modifier) {
     return identifierFactory.getMethodSignature(
-        methodName, getDeclaredClassSignature(), methodSignature, Collections.emptyList());
+        modifier + "Method", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Override
   public List<String> expectedBodyStmts() {
-    return jimpleLines;
+    return Stream.of("r0 := @this: PublicClass", "return").collect(Collectors.toList());
   }
 
-  public HashMap<String, HashMap<String, Object>> setValues() {
-    HashMap<String, HashMap<String, Object>> methodList = new HashMap<>();
-    HashMap<String, Object> methodValues = new HashMap<>();
-
-    methodValues.put("methodSignature", "void");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: PublicClass", "return").collect(Collectors.toList()));
-    methodValues.put("methodModifier", "PUBLIC");
-    methodList.put("publicMethod", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "void");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: PublicClass", "return").collect(Collectors.toList()));
-    methodValues.put("methodModifier", "PRIVATE");
-    methodList.put("privateMethod", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "void");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: PublicClass", "return").collect(Collectors.toList()));
-    methodValues.put("methodModifier", "PROTECTED");
-    methodList.put("protectedMethod", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "void");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: PublicClass", "return").collect(Collectors.toList()));
-    methodValues.put("methodModifier", "");
-    methodList.put("noModifierMethod", methodValues);
-
-    return methodList;
+  @Override
+  public MethodSignature getMethodSignature() {
+    // semantically not necessary here
+    return null;
   }
 }
