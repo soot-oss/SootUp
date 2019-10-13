@@ -1,9 +1,9 @@
 public class DeclareLong{
-    long i=154L;
-    long j=874l;
+    long l1=154L;
+    long l2=874l;
 
-    void methodDeclareLong(){
-        System.out.println(i);
-        System.out.println(j);
+    void declareLongMethod(){
+        System.out.println(l1);
+        System.out.println(l2);
     }
 }
