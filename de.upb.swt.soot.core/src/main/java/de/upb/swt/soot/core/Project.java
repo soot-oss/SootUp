@@ -4,6 +4,10 @@ import de.upb.swt.soot.core.buildactor.ViewBuilder;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.util.NotYetImplementedException;
 import de.upb.swt.soot.core.views.View;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -15,26 +19,38 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  */
 public class Project<S extends AnalysisInputLocation> {
-  /** Create a project from an arbitrary list of input locations */
-  public Project(@Nonnull S inputLocation) {
-    this(inputLocation, DefaultIdentifierFactory.getInstance());
-  }
+
+  @Nonnull private final IdentifierFactory identifierFactory;
+  @Nonnull private final List<S> inputLocations;
 
   /** Create a project from an arbitrary list of input locations */
-  public Project(@Nonnull S inputLocations, @Nonnull DefaultIdentifierFactory identifierFactory) {
-    this.inputLocation = inputLocations;
+  public Project(@Nonnull S inputLocation) {
+    this(Collections.singleton(inputLocation), DefaultIdentifierFactory.getInstance());
+  }
+
+  public Project(@Nonnull S inputLocation, @Nonnull DefaultIdentifierFactory identifierFactory) {
+    this(Collections.singleton(inputLocation), identifierFactory);
+  }
+  /** Create a project from an arbitrary list of input locations */
+  public Project(
+      @Nonnull Set<S> inputLocations, @Nonnull DefaultIdentifierFactory identifierFactory) {
+
+    List<S> unmodifiableInputLocations =
+        Collections.unmodifiableList(new ArrayList<>(inputLocations));
+
+    if (unmodifiableInputLocations.isEmpty()) {
+      throw new IllegalArgumentException("The inputLocations collection must not be empty.");
+    }
+
+    this.inputLocations = unmodifiableInputLocations;
     this.identifierFactory = identifierFactory;
   }
 
-  @Nonnull private final S inputLocation;
-
-  /** Gets the inputLocation. */
+  /** Gets the inputLocations. */
   @Nonnull
-  public S getInputLocation() {
-    return this.inputLocation;
+  public List<S> getInputLocations() {
+    return this.inputLocations;
   }
-
-  @Nonnull private final IdentifierFactory identifierFactory;
 
   @Nonnull
   public IdentifierFactory getIdentifierFactory() {

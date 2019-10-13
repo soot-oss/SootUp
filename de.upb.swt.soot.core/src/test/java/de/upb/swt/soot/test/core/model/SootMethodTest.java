@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.EagerMethodSource;
@@ -36,8 +35,7 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    DefaultIdentifierFactory factories = DefaultIdentifierFactory.getInstance();
-    View view = new JavaView<>(new Project<>(null, factories));
+    View view = new JavaView<>(new Project<>(new EagerInputLocation(SourceType.Application)));
     JavaClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     List<Stmt> stmts = new ArrayList<>();
