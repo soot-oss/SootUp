@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -30,8 +31,16 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public abstract class MinimalTestSuiteBase {
 
+  private WalaClassLoader loader;
   static final String baseDir = "src/test/resources/minimaltestsuite/";
   protected DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+
+  @Before
+  public void init() {
+    loader =
+        new WalaClassLoader(
+            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+  }
 
   public MethodSignature getMethodSignature() {
     fail("getMethodSignature() is used but not overridden");
@@ -79,9 +88,6 @@ public abstract class MinimalTestSuiteBase {
   }
 
   public SootClass loadClass(JavaClassType clazz) {
-    WalaClassLoader loader =
-        new WalaClassLoader(
-            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
     Optional<ClassSource> cs = loader.getClassSource(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
     ClassSource classSource = cs.get();
@@ -89,10 +95,6 @@ public abstract class MinimalTestSuiteBase {
   }
 
   public SootMethod loadMethod(List<String> expectedStmts, MethodSignature methodSignature) {
-
-    WalaClassLoader loader =
-        new WalaClassLoader(
-            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
     Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
 
     assertTrue("No matching method signature found", m.isPresent());
