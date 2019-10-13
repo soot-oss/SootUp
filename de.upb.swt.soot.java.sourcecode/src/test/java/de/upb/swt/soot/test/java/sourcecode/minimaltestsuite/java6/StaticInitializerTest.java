@@ -1,5 +1,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.Collections;
@@ -11,15 +13,26 @@ import java.util.stream.Stream;
 public class StaticInitializerTest extends MinimalTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "staticMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "methodStaticInitializer", getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
+
+  @Override
+  public void defaultTest() {
+    super.defaultTest();
+    assertTrue(
+        getFields().stream()
+            .anyMatch(
+                sootField -> {
+                  return sootField.getName().equals("i") && sootField.isStatic();
+                }));
   }
 
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "$r0 = <java.lang.System: java.io.PrintStream out>",
-            "$i0 = r0.<StaticVariable: int i>",
-            "virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>(\"Static Block called\")",
+            "$i0 = <StaticInitializer: int i>",
+            "virtualinvoke $r0.<java.io.PrintStream: void println(int)>($i0)",
             "return")
         .collect(Collectors.toList());
   }

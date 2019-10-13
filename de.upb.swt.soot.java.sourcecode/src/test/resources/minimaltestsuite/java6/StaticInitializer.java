@@ -1,8 +1,14 @@
 public class StaticInitializer{
-    static int i;
+    static int i=5;
 
     static{
-        i=10;
-        System.out.println("Static Block called");
+        if(i>4)
+        {
+            i=4;
+        }
+    }
+
+    static methodStaticInitializer(){
+        System.out.println(i);
     }
 }
