@@ -3,14 +3,17 @@
 
 
 public class SwitchCaseStatement {
+    public enum Color{
+        RED, GREEN
+    }
 
     public String switchCaseStatement(String color) {
-        String str;
-        switch (color){
-            case "red":
+        String str = "";
+        switch (Color.valueOf(color)){
+            case RED:
                 str = "color red detected";
                 break;
-            case "green":
+            case GREEN:
                 str = "color green detected";
                 break;
             default:
@@ -18,6 +21,5 @@ public class SwitchCaseStatement {
                 break;
         }
         return str;
-
     }
 }
