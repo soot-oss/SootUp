@@ -1,6 +1,6 @@
-class MethodOverridingSubclass extends MethodOverriding{
+public class MethodOverridingSubclass extends MethodOverriding{
 
-    public double calculateArea(){
+    public void calculateArea(){
         System.out.println("Inside MethodOverridingSubclass-calculateArea()");
     }
 }
