@@ -18,6 +18,7 @@ import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 import de.upb.swt.soot.core.frontend.ClassSource;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
@@ -34,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.jar.JarFile;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -83,16 +85,18 @@ public class WalaClassLoader {
     }
   }
 
-  public WalaClassLoader(String sourceDirPath, SourceType sourceType) {
+  public WalaClassLoader(@Nonnull String sourceDirPath, @Nonnull SourceType sourceType) {
     this(sourceDirPath, null, sourceType);
   }
 
-  public WalaClassLoader(Set<String> sourcePath, SourceType sourceType) {
-    this(sourcePath, "", sourceType);
+  public WalaClassLoader(@Nonnull Set<String> sourcePath, @Nonnull SourceType sourceType) {
+    this(sourcePath, null, sourceType);
   }
 
   public WalaClassLoader(
-      Set<String> sourcePath, @Nullable String exclusionFilePath, SourceType sourceType) {
+      @Nonnull Set<String> sourcePath,
+      @Nullable String exclusionFilePath,
+      @Nonnull SourceType sourceType) {
     addScopesForJava();
     this.sourcePath = sourcePath;
     try {
@@ -108,6 +112,9 @@ public class WalaClassLoader {
           FileOfClasses classes;
           classes = new FileOfClasses(new FileInputStream(exclusionFile));
           scope.setExclusions(classes);
+        } else {
+          throw new ResolveException(
+              "the given path to the exclusion file does not point to a file.");
         }
       }
       factory = new ECJClassLoaderFactory(scope.getExclusions());

@@ -32,7 +32,11 @@ public class JFieldRefTest {
 
   @Ignore
   public void testJStaticFieldRef() {
-    View view = new JavaView<>(new Project<>(null, DefaultIdentifierFactory.getInstance()));
+    View view =
+        new JavaView<>(
+            new Project<>(
+                new EagerInputLocation(SourceType.Application),
+                DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
         DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");
@@ -64,7 +68,11 @@ public class JFieldRefTest {
 
   @Ignore
   public void testJInstanceFieldRef() {
-    View view = new JavaView<>(new Project<>(null, DefaultIdentifierFactory.getInstance()));
+    View view =
+        new JavaView<>(
+            new Project<>(
+                new EagerInputLocation(SourceType.Application),
+                DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
         DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");
