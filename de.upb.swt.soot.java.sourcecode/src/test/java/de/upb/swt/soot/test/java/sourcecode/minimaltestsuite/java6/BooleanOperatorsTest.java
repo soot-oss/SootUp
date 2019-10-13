@@ -27,7 +27,7 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
       methodSignature = (String) mv.get("methodSignature");
       jimpleLines = (List<String>) mv.get("jimpleLines");
 
-      test(getJimpleLines(), getMethodSignature());
+      super.defaultTest();
     }
   }
 
@@ -38,7 +38,7 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
   }
 
   @Override
-  public List<String> getJimpleLines() {
+  public List<String> expectedBodyStmts() {
     return jimpleLines;
   }
 
