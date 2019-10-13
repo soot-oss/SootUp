@@ -34,7 +34,6 @@ public class NoModifierClassTest extends MinimalTestSuiteBase {
         modifier + "Method", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-
   @Override
   public MethodSignature getMethodSignature() {
     // semantically not necessary here

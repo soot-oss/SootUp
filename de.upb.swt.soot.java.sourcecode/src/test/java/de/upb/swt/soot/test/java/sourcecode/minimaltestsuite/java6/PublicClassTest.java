@@ -27,20 +27,19 @@ public class PublicClassTest extends MinimalTestSuiteBase {
     SootMethod method;
     method = clazz.getMethod(getMethodSignature("private")).get();
     assertTrue(method.isPrivate());
-    assertJimpleStmts(method,expectedBodyStmts());
+    assertJimpleStmts(method, expectedBodyStmts());
 
     method = clazz.getMethod(getMethodSignature("protected")).get();
     assertTrue(method.isProtected());
-    assertJimpleStmts(method,expectedBodyStmts());
+    assertJimpleStmts(method, expectedBodyStmts());
 
     method = clazz.getMethod(getMethodSignature("public")).get();
     assertTrue(method.isPublic());
-    assertJimpleStmts(method,expectedBodyStmts());
+    assertJimpleStmts(method, expectedBodyStmts());
 
     method = clazz.getMethod(getMethodSignature("noModifier")).get();
-    assertEquals(
-        method.getModifiers().toString(), "[]");
-    assertJimpleStmts(method,expectedBodyStmts());
+    assertEquals(method.getModifiers().toString(), "[]");
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 
   public MethodSignature getMethodSignature(String modifier) {

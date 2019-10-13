@@ -96,17 +96,15 @@ public abstract class MinimalTestSuiteBase {
     return method;
   }
 
-  public void assertJimpleStmts(SootMethod method, List<String>  expectedStmts ){
+  public void assertJimpleStmts(SootMethod method, List<String> expectedStmts) {
     Body body = method.getBody();
     assertNotNull(body);
 
     List<String> actualStmts =
-            body.getStmts().stream()
-                    .map(Stmt::toString)
-                    .collect(Collectors.toCollection(ArrayList::new));
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
-
   }
-
 }
