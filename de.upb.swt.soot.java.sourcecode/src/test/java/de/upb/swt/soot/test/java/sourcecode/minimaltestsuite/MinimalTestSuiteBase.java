@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -15,7 +16,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,8 +31,6 @@ public abstract class MinimalTestSuiteBase {
 
   static final String baseDir = "src/test/resources/minimaltestsuite/";
   protected DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
-  protected SootMethod method;
-  protected SootClass sootClass;
 
   public abstract MethodSignature getMethodSignature();
 
@@ -82,11 +80,18 @@ public abstract class MinimalTestSuiteBase {
     loadMethod(expectedBodyStmts(), getMethodSignature());
   }
 
+  public SootClass loadClass(JavaClassType clazz) {
+    Optional<ClassSource> cs = loader.getClassSource(clazz);
+    assertTrue("no matching class signature found", cs.isPresent());
+    ClassSource classSource = cs.get();
+    return new SootClass(classSource, SourceType.Application);
+  }
+
   public SootMethod loadMethod(List<String> expectedStmts, MethodSignature methodSignature) {
 
     Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
     assertTrue("No matching method signature found", m.isPresent());
-    method = m.get();
+    SootMethod method = m.get();
     Utils.print(method, false);
     Body body = method.getBody();
     assertNotNull(body);
@@ -98,20 +103,5 @@ public abstract class MinimalTestSuiteBase {
 
     assertEquals(expectedStmts, actualStmts);
     return method;
-  }
-
-  public Set<SootField> getFields() {
-    sootClass =
-        new SootClass(
-            loader.getClassSource(getDeclaredClassSignature()).get(), SourceType.Application);
-
-    return sootClass.getFields();
-  }
-
-  public Set<JavaClassType> getInterfaces() {
-    sootClass =
-        new SootClass(
-            loader.getClassSource(getDeclaredClassSignature()).get(), SourceType.Application);
-    return sootClass.getInterfaces();
   }
 }

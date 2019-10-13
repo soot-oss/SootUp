@@ -2,6 +2,7 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertTrue;
 
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.ArrayList;
@@ -22,8 +23,9 @@ public class InterfaceImplClassTest extends MinimalTestSuiteBase {
   @Override
   public void defaultTest() {
     super.defaultTest();
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
-        getInterfaces().stream()
+        clazz.getInterfaces().stream()
             .anyMatch(
                 javaClassType -> {
                   return javaClassType.getClassName().equalsIgnoreCase("InterfaceImpl");
