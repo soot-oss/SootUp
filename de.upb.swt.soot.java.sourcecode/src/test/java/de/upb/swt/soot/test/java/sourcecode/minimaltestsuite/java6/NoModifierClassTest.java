@@ -33,16 +33,4 @@ public class NoModifierClassTest extends MinimalTestSuiteBase {
     return identifierFactory.getMethodSignature(
         modifier + "Method", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
-
-  @Override
-  public MethodSignature getMethodSignature() {
-    // semantically not necessary here
-    return null;
-  }
-
-  @Override
-  public List<String> expectedBodyStmts() {
-    // semantically not necessary here
-    return null;
-  }
 }

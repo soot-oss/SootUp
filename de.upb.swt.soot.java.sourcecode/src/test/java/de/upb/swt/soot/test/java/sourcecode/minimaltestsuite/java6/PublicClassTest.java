@@ -51,10 +51,4 @@ public class PublicClassTest extends MinimalTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of("r0 := @this: PublicClass", "return").collect(Collectors.toList());
   }
-
-  @Override
-  public MethodSignature getMethodSignature() {
-    // semantically not necessary here
-    return null;
-  }
 }

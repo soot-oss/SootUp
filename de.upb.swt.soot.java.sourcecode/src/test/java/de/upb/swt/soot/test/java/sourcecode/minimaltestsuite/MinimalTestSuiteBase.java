@@ -33,9 +33,15 @@ public abstract class MinimalTestSuiteBase {
   static final String baseDir = "src/test/resources/minimaltestsuite/";
   protected DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
 
-  public abstract MethodSignature getMethodSignature();
+  public MethodSignature getMethodSignature() {
+    fail("getMethodSignature() is used but not overridden");
+    return null;
+  }
 
-  public abstract List<String> expectedBodyStmts();
+  public List<String> expectedBodyStmts() {
+    fail("expectedBodyStmts() is used but not overridden");
+    return null;
+  }
 
   /**
    * @returns the name of the parent directory - assuming the directory structure is only one level
