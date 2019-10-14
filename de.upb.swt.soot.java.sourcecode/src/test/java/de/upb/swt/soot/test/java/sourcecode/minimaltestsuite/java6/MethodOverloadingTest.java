@@ -28,7 +28,7 @@ public class MethodOverloadingTest extends MinimalTestSuiteBase {
 
   public MethodSignature getMethodSignatureInit() {
     return identifierFactory.getMethodSignature(
-            "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test
@@ -38,9 +38,9 @@ public class MethodOverloadingTest extends MinimalTestSuiteBase {
     loadMethod(expectedBodyStmts1(), getMethodSignatureSingleParam());
 
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    assertTrue( sootClass.getMethod(getMethodSignature()).isPresent());
-    assertTrue( sootClass.getMethod(getMethodSignatureSingleParam()).isPresent());
-    assertTrue( sootClass.getMethod(getMethodSignatureInit()).isPresent());
+    assertTrue(sootClass.getMethod(getMethodSignature()).isPresent());
+    assertTrue(sootClass.getMethod(getMethodSignatureSingleParam()).isPresent());
+    assertTrue(sootClass.getMethod(getMethodSignatureInit()).isPresent());
     assertEquals(3, sootClass.getMethods().size());
   }
 
