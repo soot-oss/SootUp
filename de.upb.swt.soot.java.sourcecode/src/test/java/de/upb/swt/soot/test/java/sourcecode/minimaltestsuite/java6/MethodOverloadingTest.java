@@ -33,8 +33,12 @@ public class MethodOverloadingTest extends MinimalTestSuiteBase {
     loadMethod(expectedBodyStmts1(), getMethodSignature1());
 
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    assertTrue(sootClass.getMethods().stream().anyMatch( m -> m.getSignature().equals(getMethodSignature()) ));
-    assertTrue(sootClass.getMethods().stream().anyMatch( m -> m.getSignature().equals(getMethodSignature1()) ));
+    assertTrue(
+        sootClass.getMethods().stream()
+            .anyMatch(m -> m.getSignature().equals(getMethodSignature())));
+    assertTrue(
+        sootClass.getMethods().stream()
+            .anyMatch(m -> m.getSignature().equals(getMethodSignature1())));
     assertEquals(3, sootClass.getMethods().size());
   }
 
