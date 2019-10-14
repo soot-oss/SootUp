@@ -19,6 +19,7 @@ pipeline {
         }
     }
 
+
     stage('Work Work Work') {
       parallel {
         stage("JDK8") {
