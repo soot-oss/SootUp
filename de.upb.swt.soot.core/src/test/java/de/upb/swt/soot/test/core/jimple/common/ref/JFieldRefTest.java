@@ -8,6 +8,7 @@ import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -35,7 +36,7 @@ public class JFieldRefTest {
     View view =
         new JavaView<>(
             new Project<>(
-                new EagerInputLocation(SourceType.Application),
+                new EagerInputLocation(new DefaultSourceTypeSpecifier()),
                 DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
@@ -46,7 +47,7 @@ public class JFieldRefTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation(SourceType.Application),
+                new EagerInputLocation(new DefaultSourceTypeSpecifier()),
                 null,
                 declaringClassSignature,
                 null,
@@ -71,7 +72,7 @@ public class JFieldRefTest {
     View view =
         new JavaView<>(
             new Project<>(
-                new EagerInputLocation(SourceType.Application),
+                new EagerInputLocation(new DefaultSourceTypeSpecifier()),
                 DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
@@ -82,7 +83,7 @@ public class JFieldRefTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation(SourceType.Application),
+                new EagerInputLocation(new DefaultSourceTypeSpecifier()),
                 null,
                 declaringClassSignature,
                 null,

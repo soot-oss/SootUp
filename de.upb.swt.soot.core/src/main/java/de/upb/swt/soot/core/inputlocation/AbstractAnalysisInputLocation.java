@@ -2,7 +2,6 @@ package de.upb.swt.soot.core.inputlocation;
 
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -45,8 +44,8 @@ public abstract class AbstractAnalysisInputLocation extends AnalysisInputLocatio
    * @param classProvider The class provider to be used
    */
   public AbstractAnalysisInputLocation(
-      @Nonnull ClassProvider classProvider, SourceType sourceType) {
-    super(sourceType);
+      @Nonnull ClassProvider classProvider, SourceTypeSpecifier sourceTypeSpecifier) {
+    super(sourceTypeSpecifier);
     this.classProvider = classProvider;
   }
 

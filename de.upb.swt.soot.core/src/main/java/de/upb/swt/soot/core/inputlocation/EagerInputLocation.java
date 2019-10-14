@@ -4,21 +4,18 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
-/*
- * @author Markus Schmidt
- */
+/** @author Markus Schmidt */
 
 // TODO: implement sth useful - more than this dummy
 public class EagerInputLocation extends AnalysisInputLocation {
 
-  public EagerInputLocation(@Nonnull SourceType sourceType) {
-    super(sourceType);
+  public EagerInputLocation(@Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+    super(sourceTypeSpecifier);
   }
 
   @Override

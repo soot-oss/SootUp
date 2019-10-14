@@ -21,10 +21,24 @@ import javax.annotation.Nonnull;
  */
 public abstract class AnalysisInputLocation {
 
-  @Nonnull private final SourceType sourceType;
+  @Nonnull protected final SourceTypeSpecifier sourceTypeSpecifier;
 
-  protected AnalysisInputLocation(@Nonnull SourceType sourceType) {
-    this.sourceType = sourceType;
+  protected AnalysisInputLocation(@Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+    this.sourceTypeSpecifier = sourceTypeSpecifier;
+  }
+
+  /**
+   * The SourceType attached to this input location.
+   *
+   * @return the type of Source
+   */
+  @Nonnull
+  public SourceType getSourceType(JavaClassType jct) {
+    return sourceTypeSpecifier.sourceTypeFor(jct);
+  }
+
+  public SourceTypeSpecifier getSourceTypeSpecifier() {
+    return sourceTypeSpecifier;
   }
 
   /**
@@ -47,14 +61,4 @@ public abstract class AnalysisInputLocation {
    */
   @Nonnull
   public abstract ClassProvider getClassProvider();
-
-  /**
-   * The SourceType attached to this input location.
-   *
-   * @return the type of Source
-   */
-  @Nonnull
-  public SourceType getSourceType() {
-    return sourceType;
-  }
 }

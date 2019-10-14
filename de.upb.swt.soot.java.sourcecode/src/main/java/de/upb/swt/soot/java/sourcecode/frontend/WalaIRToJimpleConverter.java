@@ -19,6 +19,7 @@ import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.EagerMethodSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
@@ -51,6 +52,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -66,8 +68,9 @@ public class WalaIRToJimpleConverter {
   private HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
 
-  public WalaIRToJimpleConverter(Set<String> sourceDirPath, SourceType sourceType) {
-    srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath, sourceType);
+  public WalaIRToJimpleConverter(
+      @Nonnull Set<String> sourceDirPath, @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+    srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath, sourceTypeSpecifier);
     sigFactory = DefaultIdentifierFactory.getInstance();
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
