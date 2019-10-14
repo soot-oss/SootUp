@@ -115,14 +115,15 @@ public class OverridingClassSource extends ClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withReplacedMethod(SootMethod toReplace, SootMethod replacement) {
+  public OverridingClassSource withReplacedMethod(
+      @Nonnull SootMethod toReplace, @Nonnull SootMethod replacement) {
     Set<SootMethod> newMethods = new HashSet<>(resolveMethods());
     CollectionUtils.replace(newMethods, toReplace, replacement);
     return withMethods(newMethods);
   }
 
   @Nonnull
-  public OverridingClassSource withMethods(Collection<SootMethod> overriddenSootMethods) {
+  public OverridingClassSource withMethods(@Nonnull Collection<SootMethod> overriddenSootMethods) {
     return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
@@ -136,14 +137,15 @@ public class OverridingClassSource extends ClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withReplacedField(SootField toReplace, SootField replacement) {
+  public OverridingClassSource withReplacedField(
+      @Nonnull SootField toReplace, @Nonnull SootField replacement) {
     Set<SootField> newFields = new HashSet<>(resolveFields());
     CollectionUtils.replace(newFields, toReplace, replacement);
     return withFields(newFields);
   }
 
   @Nonnull
-  public OverridingClassSource withFields(Collection<SootField> overriddenSootFields) {
+  public OverridingClassSource withFields(@Nonnull Collection<SootField> overriddenSootFields) {
     return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
@@ -157,7 +159,7 @@ public class OverridingClassSource extends ClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withModifiers(Set<Modifier> overriddenModifiers) {
+  public OverridingClassSource withModifiers(@Nonnull Set<Modifier> overriddenModifiers) {
     return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
@@ -171,7 +173,7 @@ public class OverridingClassSource extends ClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withInterfaces(Set<JavaClassType> overriddenInterfaces) {
+  public OverridingClassSource withInterfaces(@Nonnull Set<JavaClassType> overriddenInterfaces) {
     return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
@@ -185,7 +187,8 @@ public class OverridingClassSource extends ClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withSuperclass(Optional<JavaClassType> overriddenSuperclass) {
+  public OverridingClassSource withSuperclass(
+      @Nonnull Optional<JavaClassType> overriddenSuperclass) {
     return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
@@ -199,7 +202,8 @@ public class OverridingClassSource extends ClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withOuterClass(Optional<JavaClassType> overriddenOuterClass) {
+  public OverridingClassSource withOuterClass(
+      @Nonnull Optional<JavaClassType> overriddenOuterClass) {
     return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
