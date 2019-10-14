@@ -7,13 +7,9 @@ import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.MethodSource;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
@@ -52,7 +48,7 @@ public class ModuleCompositionTest {
     Project<JavaClassPathAnalysisInputLocation> p =
         new Project<>(
             new JavaClassPathAnalysisInputLocation(
-                jarFile, SourceType.Application, new AsmJavaClassProvider()));
+                jarFile, new DefaultSourceTypeSpecifier(), new AsmJavaClassProvider()));
 
     // Get the view
     View view = p.createOnDemandView();
@@ -110,7 +106,7 @@ public class ModuleCompositionTest {
     SootClass c =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation(SourceType.Application),
+                new EagerInputLocation(new DefaultSourceTypeSpecifier()),
                 null,
                 classSignature,
                 null,

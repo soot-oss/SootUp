@@ -26,7 +26,7 @@ public class WalaJavaClassProvider implements ClassProvider {
   public ClassSource createClassSource(
       AnalysisInputLocation srcNamespace, Path sourcePath, JavaClassType type) {
     return new WalaClassLoader(
-            sourcePath.toString(), exclusionFilePath, srcNamespace.getSourceType())
+            sourcePath.toString(), exclusionFilePath, srcNamespace.getSourceTypeSpecifier())
         .getClassSource(type)
         .orElseThrow(() -> new ResolveException("Could not resolve " + type + " in " + sourcePath));
   }

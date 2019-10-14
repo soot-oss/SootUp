@@ -28,7 +28,7 @@ public abstract class ClassSource extends AbstractClassSource {
 
   @Override
   public AbstractClass reifyClass() {
-    return new SootClass(this, srcNamespace.getSourceType());
+    return new SootClass(this, srcNamespace.getSourceType(getClassType()));
   }
 
   /**

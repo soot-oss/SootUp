@@ -10,7 +10,7 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
-import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
@@ -58,13 +58,16 @@ import javax.annotation.Nonnull;
 public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInputLocation {
   protected final Path path;
 
-  private PathBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType sourceType) {
-    this(path, sourceType, new AsmJavaClassProvider());
+  private PathBasedAnalysisInputLocation(
+      @Nonnull Path path, @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+    this(path, sourceTypeSpecifier, new AsmJavaClassProvider());
   }
 
   private PathBasedAnalysisInputLocation(
-      @Nonnull Path path, @Nonnull SourceType sourceType, @Nonnull ClassProvider classProvider) {
-    super(classProvider, sourceType);
+      @Nonnull Path path,
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier,
+      @Nonnull ClassProvider classProvider) {
+    super(classProvider, sourceTypeSpecifier);
     this.path = path;
   }
 
@@ -77,11 +80,11 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
    *     Path}'s {@link FileSystem}
    */
   public static @Nonnull PathBasedAnalysisInputLocation createForClassContainer(
-      @Nonnull Path path, @Nonnull SourceType sourceType) {
+      @Nonnull Path path, @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     if (Files.isDirectory(path)) {
-      return new DirectoryBasedAnalysisInputLocation(path, sourceType);
+      return new DirectoryBasedAnalysisInputLocation(path, sourceTypeSpecifier);
     } else if (PathUtils.isArchive(path)) {
-      return new ArchiveBasedAnalysisInputLocation(path, sourceType);
+      return new ArchiveBasedAnalysisInputLocation(path, sourceTypeSpecifier);
     } else {
       throw new IllegalArgumentException(
           "Path has to be pointing to the root of a class container, e.g. directory, jar, zip, apk, etc.");
@@ -122,8 +125,8 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
       extends PathBasedAnalysisInputLocation {
 
     private DirectoryBasedAnalysisInputLocation(
-        @Nonnull Path path, @Nonnull SourceType sourceType) {
-      super(path, sourceType);
+        @Nonnull Path path, @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+      super(path, sourceTypeSpecifier);
     }
 
     @Override
@@ -167,8 +170,9 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
                       }
                     }));
 
-    private ArchiveBasedAnalysisInputLocation(@Nonnull Path path, @Nonnull SourceType sourceType) {
-      super(path, sourceType);
+    private ArchiveBasedAnalysisInputLocation(
+        @Nonnull Path path, @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+      super(path, sourceTypeSpecifier);
     }
 
     @Override

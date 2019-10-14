@@ -9,8 +9,8 @@ import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
+import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -56,10 +56,10 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
    */
   public JavaModulePathAnalysisInputLocation(
       @Nonnull String modulePath,
-      @Nonnull SourceType sourceType,
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier,
       @Nonnull ClassProvider classProvider) {
-    super(classProvider, sourceType);
-    this.moduleFinder = new ModuleFinder(classProvider, modulePath, getSourceType());
+    super(classProvider, sourceTypeSpecifier);
+    this.moduleFinder = new ModuleFinder(classProvider, modulePath, sourceTypeSpecifier);
   }
 
   @Override

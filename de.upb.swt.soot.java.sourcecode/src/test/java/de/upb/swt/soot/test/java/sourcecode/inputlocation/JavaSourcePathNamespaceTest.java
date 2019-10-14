@@ -10,7 +10,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
@@ -30,7 +30,9 @@ public class JavaSourcePathNamespaceTest {
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(
-            ImmutableUtils.immutableSet(srcDir), exclusionFilePath, SourceType.Application);
+            ImmutableUtils.immutableSet(srcDir),
+            exclusionFilePath,
+            new DefaultSourceTypeSpecifier());
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     Optional<? extends AbstractClassSource> classSourceOptional =
@@ -53,7 +55,9 @@ public class JavaSourcePathNamespaceTest {
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(
-            ImmutableUtils.immutableSet(srcDir), exclusionFilePath, SourceType.Application);
+            ImmutableUtils.immutableSet(srcDir),
+            exclusionFilePath,
+            new DefaultSourceTypeSpecifier());
 
     ClassProvider classProvider = inputLocation.getClassProvider();
     assertTrue(classProvider instanceof WalaJavaClassProvider);
@@ -65,7 +69,9 @@ public class JavaSourcePathNamespaceTest {
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     AnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(
-            ImmutableUtils.immutableSet(srcDir), exclusionFilePath, SourceType.Application);
+            ImmutableUtils.immutableSet(srcDir),
+            exclusionFilePath,
+            new DefaultSourceTypeSpecifier());
 
     DefaultIdentifierFactory defaultFactories = DefaultIdentifierFactory.getInstance();
     Collection<? extends AbstractClassSource> classSources =
