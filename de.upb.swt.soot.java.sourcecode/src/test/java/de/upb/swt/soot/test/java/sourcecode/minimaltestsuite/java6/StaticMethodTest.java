@@ -4,6 +4,7 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertTrue;
 
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.Collections;
@@ -23,7 +24,7 @@ public class StaticMethodTest extends MinimalTestSuiteBase {
   @Test
   @Override
   public void defaultTest() {
-    super.defaultTest();
+    SootMethod method = loadMethod(expectedBodyStmts(), getMethodSignature());
     assertTrue(method.isStatic());
   }
 

@@ -29,12 +29,13 @@ public class MethodOverloadingTest extends MinimalTestSuiteBase {
   @Test
   @Override
   public void defaultTest() {
-    super.defaultTest();
+    loadMethod(expectedBodyStmts(), getMethodSignature());
     loadMethod(expectedBodyStmts1(), getMethodSignature1());
+
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    assertTrue(sootClass.getMethods().contains(getMethodSignature()));
-    assertTrue(sootClass.getMethods().contains(getMethodSignature1()));
-    assertEquals(2, sootClass.getMethods().size());
+    assertTrue(sootClass.getMethods().stream().anyMatch( m -> m.getSignature().equals(getMethodSignature()) ));
+    assertTrue(sootClass.getMethods().stream().anyMatch( m -> m.getSignature().equals(getMethodSignature1()) ));
+    assertEquals(3, sootClass.getMethods().size());
   }
 
   @Override
