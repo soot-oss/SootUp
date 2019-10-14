@@ -4,7 +4,7 @@ pipeline {
     parallelsAlwaysFailFast()
   }
   environment {
-      MAVEN_OPTS = ''
+      MAVEN_OPTS = '-XX:+TieredCompilation -XX:TieredStopAtLevel=1'
   }
   stages {
     stage('Check Format'){
