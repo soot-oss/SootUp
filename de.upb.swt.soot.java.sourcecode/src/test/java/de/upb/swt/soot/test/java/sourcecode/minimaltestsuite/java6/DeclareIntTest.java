@@ -1,6 +1,5 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.ArrayList;

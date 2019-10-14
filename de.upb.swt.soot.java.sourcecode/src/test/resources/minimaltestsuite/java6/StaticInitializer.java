@@ -8,7 +8,7 @@ public class StaticInitializer{
         }
     }
 
-    static methodStaticInitializer(){
+    static void methodStaticInitializer(){
         System.out.println(i);
     }
 }

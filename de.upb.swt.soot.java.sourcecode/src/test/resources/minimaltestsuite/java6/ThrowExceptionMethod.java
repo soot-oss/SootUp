@@ -1,16 +1,16 @@
 class ThrowExceptionMethod{
-    void divide() {
+    void divideByZero() {
         try{
             int i = 8/0;
         }
         catch(ArithmeticException e){}
     }
 
-    void divideByZero() throws ArithmeticException{
+    void divideThrowsException() throws ArithmeticException{
         int i=8/0;
     }
 
-    void divideThrows() {
+    void divideThrowException() {
         throw new ArithmeticException();
     }
 }
