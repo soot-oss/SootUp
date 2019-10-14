@@ -32,12 +32,12 @@ pipeline {
           stages {
             stage("Build (JDK8)") {
               steps {
-                sh 'mvn clean compile'
+                sh 'mvn clean compile -Dfmt.skip'
               }
             }
             stage("Test (JDK8)") {
               steps {
-                sh 'mvn verify -PJava8'
+                sh 'mvn verify -Dfmt.skip -PJava8'
               }
               post {
                   always {
@@ -62,12 +62,12 @@ pipeline {
           stages {
             stage("Build (JDK9)") {
               steps {
-                sh 'mvn clean compile'
+                sh 'mvn clean compile -Dfmt.skip'
               }
             }
             stage("Test (JDK9)") {
               steps {
-                sh 'mvn verify -PJava9'
+                sh 'mvn verify -Dfmt.skip -PJava9'
               }
               post {
                   always {
