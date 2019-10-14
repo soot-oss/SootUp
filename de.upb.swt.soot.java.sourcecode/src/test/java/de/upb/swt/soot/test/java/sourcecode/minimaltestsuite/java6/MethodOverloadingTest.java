@@ -21,24 +21,26 @@ public class MethodOverloadingTest extends MinimalTestSuiteBase {
         "calculate", getDeclaredClassSignature(), "int", Arrays.asList("int", "int"));
   }
   /** @returns the method signature needed for second method in testCase */
-  public MethodSignature getMethodSignature1() {
+  public MethodSignature getMethodSignatureSingleParam() {
     return identifierFactory.getMethodSignature(
         "calculate", getDeclaredClassSignature(), "int", Collections.singletonList("int"));
+  }
+
+  public MethodSignature getMethodSignatureInit() {
+    return identifierFactory.getMethodSignature(
+            "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test
   @Override
   public void defaultTest() {
     loadMethod(expectedBodyStmts(), getMethodSignature());
-    loadMethod(expectedBodyStmts1(), getMethodSignature1());
+    loadMethod(expectedBodyStmts1(), getMethodSignatureSingleParam());
 
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    assertTrue(
-        sootClass.getMethods().stream()
-            .anyMatch(m -> m.getSignature().equals(getMethodSignature())));
-    assertTrue(
-        sootClass.getMethods().stream()
-            .anyMatch(m -> m.getSignature().equals(getMethodSignature1())));
+    assertTrue( sootClass.getMethod(getMethodSignature()).isPresent());
+    assertTrue( sootClass.getMethod(getMethodSignatureSingleParam()).isPresent());
+    assertTrue( sootClass.getMethod(getMethodSignatureInit()).isPresent());
     assertEquals(3, sootClass.getMethods().size());
   }
 
