@@ -12,95 +12,58 @@ import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class MethodReturningVarTest extends MinimalTestSuiteBase {
-  private String methodName;
-  private String methodSignature;
-  private List<String> jimpleLines;
 
   @Test
   public void defaultTest() {
-    HashMap<String, HashMap<String, Object>> methodList = setValues();
-    Set<String> methodListKeys = methodList.keySet();
+    loadMethod(
+        expectedBodyStmts(
+            Stream.of("r0 := @this: MethodReturningVar", "$i0 = 10", "return $i0")
+                .collect(Collectors.toList())),
+        getMethodSignature("short"));
 
-    for (String methodListKey : methodListKeys) {
-      methodName = methodListKey;
-      HashMap<String, Object> mv = methodList.get(methodListKey);
-      methodSignature = (String) mv.get("methodSignature");
-      jimpleLines = (List<String>) mv.get("jimpleLines");
+    loadMethod(
+        expectedBodyStmts(
+            Stream.of("r0 := @this: MethodReturningVar", "$i0 = 0", "return $i0")
+                .collect(Collectors.toList())),
+        getMethodSignature("byte"));
 
-      super.defaultTest();
-    }
+    loadMethod(
+        expectedBodyStmts(
+            Stream.of("r0 := @this: MethodReturningVar", "$i0 = 97", "return $i0")
+                .collect(Collectors.toList())),
+        getMethodSignature("char"));
+
+    loadMethod(
+        expectedBodyStmts(
+            Stream.of("r0 := @this: MethodReturningVar", "$i0 = 512", "return $i0")
+                .collect(Collectors.toList())),
+        getMethodSignature("int"));
+
+    loadMethod(
+        expectedBodyStmts(
+            Stream.of("r0 := @this: MethodReturningVar", "$i0 = 123456789", "return $i0")
+                .collect(Collectors.toList())),
+        getMethodSignature("long"));
+
+    loadMethod(
+        expectedBodyStmts(
+            Stream.of("r0 := @this: MethodReturningVar", "$f0 = 3.14F", "return $f0")
+                .collect(Collectors.toList())),
+        getMethodSignature("float"));
+
+    loadMethod(
+        expectedBodyStmts(
+            Stream.of("r0 := @this: MethodReturningVar", "$d0 = 1.96969654", "return $d0")
+                .collect(Collectors.toList())),
+        getMethodSignature("double"));
   }
 
-  @Override
-  public MethodSignature getMethodSignature() {
+  public MethodSignature getMethodSignature(String datatype) {
     return identifierFactory.getMethodSignature(
-        methodName, getDeclaredClassSignature(), methodSignature, Collections.emptyList());
+        datatype + "Variable", getDeclaredClassSignature(), datatype, Collections.emptyList());
   }
 
-  @Override
-  public List<String> expectedBodyStmts() {
+  public List<String> expectedBodyStmts(List<String> jimpleLines) {
     return jimpleLines;
-  }
-
-  private HashMap<String, HashMap<String, Object>> setValues() {
-    HashMap<String, HashMap<String, Object>> methodList = new HashMap<>();
-    HashMap<String, Object> methodValues = new HashMap<>();
-
-    methodValues.put("methodSignature", "short");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: MethodReturningVar", "$i0 = 10", "return $i0")
-            .collect(Collectors.toList()));
-    methodList.put("shortVariable", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "byte");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: MethodReturningVar", "$i0 = 0", "return $i0")
-            .collect(Collectors.toList()));
-    methodList.put("byteVariable", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "char");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: MethodReturningVar", "$i0 = 97", "return $i0")
-            .collect(Collectors.toList()));
-    methodList.put("charVariable", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "int");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: MethodReturningVar", "$i0 = 512", "return $i0")
-            .collect(Collectors.toList()));
-    methodList.put("intVariable", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "long");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: MethodReturningVar", "$i0 = 123456789", "return $i0")
-            .collect(Collectors.toList()));
-    methodList.put("longVariable", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "float");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: MethodReturningVar", "$f0 = 3.14F", "return $f0")
-            .collect(Collectors.toList()));
-    methodList.put("floatVariable", methodValues);
-
-    methodValues = new HashMap<>();
-    methodValues.put("methodSignature", "double");
-    methodValues.put(
-        "jimpleLines",
-        Stream.of("r0 := @this: MethodReturningVar", "$d0 = 1.96969654", "return $d0")
-            .collect(Collectors.toCollection(ArrayList::new)));
-    methodList.put("doubleVariable", methodValues);
-
-    return methodList;
   }
 }

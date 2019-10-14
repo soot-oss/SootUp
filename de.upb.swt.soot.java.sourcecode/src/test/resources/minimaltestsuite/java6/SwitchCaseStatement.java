@@ -7,7 +7,8 @@ public class SwitchCaseStatement {
         RED, GREEN
     }
 
-    public String switchCaseStatementEnum(String color) {
+    public void switchCaseStatementEnum() {
+        String color = "RED";
         String str = "";
         switch (Color.valueOf(color)){
             case RED:
@@ -20,7 +21,6 @@ public class SwitchCaseStatement {
                 str = "invalid color";
                 break;
         }
-        return str;
     }
 
     public void switchCaseStatementInt() {
