@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -36,7 +37,7 @@ public class IfInstructionConversionTest {
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
-    loader = new WalaClassLoader(srcDir, null);
+    loader = new WalaClassLoader(srcDir, DefaultSourceTypeSpecifier.getInstance());
     typeFactory = DefaultIdentifierFactory.getInstance();
     declareClassSig =
         typeFactory.getClassType("de.upb.soot.concrete.controlStatements.ControlStatements");

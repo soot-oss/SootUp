@@ -20,7 +20,6 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
@@ -79,7 +78,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     EagerJavaClassSource javaClassSource =
         new EagerJavaClassSource(
-            new EagerInputLocation(new DefaultSourceTypeSpecifier()),
+            new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
             superClassSignature,
@@ -90,7 +89,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
             new NoPositionInformation(),
             EnumSet.of(Modifier.PUBLIC));
 
-    sootClass = new SootClass(javaClassSource, SourceType.Application);
+    sootClass = new SootClass(javaClassSource);
   }
 
   SootMethod init(@Nonnull FieldSignature initFieldSignature) {

@@ -48,7 +48,7 @@ public class ModuleCompositionTest {
     Project<JavaClassPathAnalysisInputLocation> p =
         new Project<>(
             new JavaClassPathAnalysisInputLocation(
-                jarFile, new DefaultSourceTypeSpecifier(), new AsmJavaClassProvider()));
+                jarFile, DefaultSourceTypeSpecifier.getInstance(), new AsmJavaClassProvider()));
 
     // Get the view
     View view = p.createOnDemandView();
@@ -106,7 +106,7 @@ public class ModuleCompositionTest {
     SootClass c =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation(new DefaultSourceTypeSpecifier()),
+                new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()),
                 null,
                 classSignature,
                 null,
@@ -140,8 +140,7 @@ public class ModuleCompositionTest {
                         .withModifiers(Modifier.PUBLIC)
                         .build()),
                 null,
-                EnumSet.of(Modifier.PUBLIC)),
-            SourceType.Application);
+                EnumSet.of(Modifier.PUBLIC)));
 
     // Print some information
     // System.out.println("Field sub-signature: " + nameFieldSubSignature);

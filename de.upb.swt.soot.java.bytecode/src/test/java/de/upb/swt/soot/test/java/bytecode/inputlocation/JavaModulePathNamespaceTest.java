@@ -40,7 +40,7 @@ public class JavaModulePathNamespaceTest extends AbstractAnalysisInputLocationTe
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules",
-            new DefaultSourceTypeSpecifier(),
+            DefaultSourceTypeSpecifier.getInstance(),
             getClassProvider());
     final JavaClassType sig = getIdentifierFactory().getClassType("module-info", "", "fancyMod");
     Optional<? extends AbstractClassSource> classSource =
@@ -54,7 +54,7 @@ public class JavaModulePathNamespaceTest extends AbstractAnalysisInputLocationTe
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules",
-            new DefaultSourceTypeSpecifier(),
+            DefaultSourceTypeSpecifier.getInstance(),
             getClassProvider());
     final JavaClassType sig = getIdentifierFactory().getClassType("module-info", "", "fancyMod");
     // TODO: check for a better minClassFoundNumber
@@ -67,7 +67,7 @@ public class JavaModulePathNamespaceTest extends AbstractAnalysisInputLocationTe
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/de.upb.mod.jar",
-            new DefaultSourceTypeSpecifier(),
+            DefaultSourceTypeSpecifier.getInstance(),
             getClassProvider());
     final JavaClassType sig = getIdentifierFactory().getClassType("module-info", "", "de.upb.mod");
     Optional<? extends AbstractClassSource> classSource =
@@ -80,7 +80,7 @@ public class JavaModulePathNamespaceTest extends AbstractAnalysisInputLocationTe
     final JavaModulePathAnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/de.upb.mod.jar",
-            new DefaultSourceTypeSpecifier(),
+            DefaultSourceTypeSpecifier.getInstance(),
             getClassProvider());
     Class<?> signatureClass =
         Whitebox.getInnerClassType(

@@ -17,7 +17,6 @@ import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.NullType;
@@ -65,7 +64,7 @@ public class ViewTypeHierarchyTest {
     analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(
             jarFile + File.pathSeparator + rtJarClassPath,
-            new DefaultSourceTypeSpecifier(),
+            DefaultSourceTypeSpecifier.getInstance(),
             new AsmJavaClassProvider());
     Project<JavaClassPathAnalysisInputLocation> p = new Project<>(analysisInputLocation);
     view = p.createOnDemandView();
@@ -220,7 +219,7 @@ public class ViewTypeHierarchyTest {
             Collections.emptySet(),
             null,
             EnumSet.of(Modifier.FINAL));
-    SootClass sootClass = new SootClass(classSource, SourceType.Application);
+    SootClass sootClass = new SootClass(classSource);
 
     typeHierarchy.addType(sootClass);
 

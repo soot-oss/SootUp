@@ -65,9 +65,9 @@ import javax.annotation.Nonnull;
  */
 public class SootClass extends AbstractClass<ClassSource> {
 
-  public SootClass(ClassSource classSource, SourceType sourceType) {
+  public SootClass(ClassSource classSource) {
     super(classSource);
-    this.sourceType = sourceType;
+    this.sourceType = classSource.getSourceType();
     this.classSignature = classSource.getClassType();
   }
 
@@ -430,16 +430,16 @@ public class SootClass extends AbstractClass<ClassSource> {
   @Nonnull
   public SootClass withOverridingClassSource(
       Function<OverridingClassSource, OverridingClassSource> overrider) {
-    return new SootClass(overrider.apply(new OverridingClassSource(classSource)), sourceType);
+    return new SootClass(overrider.apply(new OverridingClassSource(classSource)));
   }
 
   @Nonnull
   public SootClass withClassSource(ClassSource classSource) {
-    return new SootClass(classSource, sourceType);
+    return new SootClass(classSource);
   }
 
   @Nonnull
   public SootClass withSourceType(SourceType sourceType) {
-    return new SootClass(classSource, sourceType);
+    return new SootClass(classSource);
   }
 }

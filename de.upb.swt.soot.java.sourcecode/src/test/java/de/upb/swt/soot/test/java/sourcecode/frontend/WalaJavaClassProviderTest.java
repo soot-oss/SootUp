@@ -30,7 +30,7 @@ public class WalaJavaClassProviderTest {
         new JavaSourcePathAnalysisInputLocation(
             ImmutableUtils.immutableSet(srcDir),
             exclusionFilePath,
-            new DefaultSourceTypeSpecifier());
+            DefaultSourceTypeSpecifier.getInstance());
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     WalaJavaClassProvider provider = new WalaJavaClassProvider(exclusionFilePath);

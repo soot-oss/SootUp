@@ -18,7 +18,7 @@ public class JrtFileSystemNamespaceTest extends AbstractAnalysisInputLocationTes
   public void getClassSource() {
     JrtFileSystemAnalysisInputLocation ns =
         new JrtFileSystemAnalysisInputLocation(
-            getClassProvider(), new DefaultSourceTypeSpecifier());
+            getClassProvider(), DefaultSourceTypeSpecifier.getInstance());
     final JavaClassType sig = getIdentifierFactory().getClassType("java.lang.System");
     testClassReceival(ns, sig, 1);
   }
@@ -28,7 +28,7 @@ public class JrtFileSystemNamespaceTest extends AbstractAnalysisInputLocationTes
   public void getClassSourceModule() {
     JrtFileSystemAnalysisInputLocation ns =
         new JrtFileSystemAnalysisInputLocation(
-            getClassProvider(), new DefaultSourceTypeSpecifier());
+            getClassProvider(), DefaultSourceTypeSpecifier.getInstance());
     final JavaClassType sig =
         ModuleIdentifierFactory.getInstance().getClassType("System", "java.lang", "java.base");
     testClassReceival(ns, sig, 1);
@@ -38,7 +38,7 @@ public class JrtFileSystemNamespaceTest extends AbstractAnalysisInputLocationTes
   public void getClassSourcesClasspath() {
     JrtFileSystemAnalysisInputLocation ns =
         new JrtFileSystemAnalysisInputLocation(
-            getClassProvider(), new DefaultSourceTypeSpecifier());
+            getClassProvider(), DefaultSourceTypeSpecifier.getInstance());
     ns.getClassSources(getIdentifierFactory());
   }
 
@@ -46,14 +46,14 @@ public class JrtFileSystemNamespaceTest extends AbstractAnalysisInputLocationTes
   public void getClassSourcesModulePath() {
     JrtFileSystemAnalysisInputLocation ns =
         new JrtFileSystemAnalysisInputLocation(
-            getClassProvider(), new DefaultSourceTypeSpecifier());
+            getClassProvider(), DefaultSourceTypeSpecifier.getInstance());
   }
 
   @Test
   public void discoverModules() {
     JrtFileSystemAnalysisInputLocation ns =
         new JrtFileSystemAnalysisInputLocation(
-            getClassProvider(), new DefaultSourceTypeSpecifier());
+            getClassProvider(), DefaultSourceTypeSpecifier.getInstance());
     Collection<String> modules = ns.discoverModules();
     Assert.assertThat(modules.size(), new GreaterOrEqual<>(70));
   }

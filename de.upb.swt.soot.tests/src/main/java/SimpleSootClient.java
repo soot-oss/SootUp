@@ -22,11 +22,11 @@ public class SimpleSootClient {
 
     AnalysisInputLocation cpBased =
         new JavaClassPathAnalysisInputLocation(
-            javaClassPath, new DefaultSourceTypeSpecifier(), new AsmJavaClassProvider());
+            javaClassPath, DefaultSourceTypeSpecifier.getInstance(), new AsmJavaClassProvider());
 
     AnalysisInputLocation walaSource =
         new JavaSourcePathAnalysisInputLocation(
-            Collections.singleton(javaSourcePath), new DefaultSourceTypeSpecifier());
+            Collections.singleton(javaSourcePath), DefaultSourceTypeSpecifier.getInstance());
 
     Project<AnalysisInputLocation> p = new Project<>(walaSource);
 

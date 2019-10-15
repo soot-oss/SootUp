@@ -40,7 +40,7 @@ public class PathBasedAnalysisInputLocationTest extends AbstractAnalysisInputLoc
   public void testJar() {
     PathBasedAnalysisInputLocation pathBasedNamespace =
         PathBasedAnalysisInputLocation.createForClassContainer(
-            jar, new DefaultSourceTypeSpecifier());
+            jar, DefaultSourceTypeSpecifier.getInstance());
     System.err.println(jar.toFile().getAbsolutePath());
     final JavaClassType sig =
         getIdentifierFactory().getClassType("PathBasedNamespace", "de.upb.soot.namespaces");

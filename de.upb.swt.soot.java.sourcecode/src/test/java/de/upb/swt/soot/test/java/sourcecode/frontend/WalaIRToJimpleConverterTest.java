@@ -13,7 +13,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class WalaIRToJimpleConverterTest {
   private WalaIRToJimpleConverter converter =
-      new WalaIRToJimpleConverter(Collections.emptySet(), new DefaultSourceTypeSpecifier());
+      new WalaIRToJimpleConverter(Collections.emptySet(), DefaultSourceTypeSpecifier.getInstance());
 
   @Test
   public void testConvertClassName1() {

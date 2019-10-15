@@ -17,7 +17,6 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.views.JavaView;
@@ -37,7 +36,8 @@ public class SootMethodTest {
   @Test
   public void testCreateMethod() {
     View view =
-        new JavaView<>(new Project<>(new EagerInputLocation(new DefaultSourceTypeSpecifier())));
+        new JavaView<>(
+            new Project<>(new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance())));
     JavaClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     List<Stmt> stmts = new ArrayList<>();
@@ -70,7 +70,7 @@ public class SootMethodTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation(new DefaultSourceTypeSpecifier()),
+                new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),
                 null,
@@ -79,8 +79,7 @@ public class SootMethodTest {
                 Collections.emptySet(),
                 Collections.singleton(dummyMainMethod),
                 null,
-                EnumSet.of(Modifier.PUBLIC)),
-            SourceType.Application);
+                EnumSet.of(Modifier.PUBLIC)));
 
     assertEquals(mainClass.getMethods().size(), 1);
     assertTrue(

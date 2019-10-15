@@ -43,7 +43,6 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.net.URI;
@@ -75,7 +74,7 @@ public class JInvokeStmtTest {
     Set<SootMethod> methods = new LinkedHashSet<>();
     EagerJavaClassSource javaClassSource =
         new EagerJavaClassSource(
-            new EagerInputLocation(new DefaultSourceTypeSpecifier()),
+            new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
             superClassSignature,
@@ -86,7 +85,7 @@ public class JInvokeStmtTest {
             new NoPositionInformation(),
             EnumSet.of(Modifier.PUBLIC));
 
-    SootClass sootClass = new SootClass(javaClassSource, SourceType.Application);
+    SootClass sootClass = new SootClass(javaClassSource);
 
     // JStaticInvokeExpr
     MethodSignature statMethodSig =

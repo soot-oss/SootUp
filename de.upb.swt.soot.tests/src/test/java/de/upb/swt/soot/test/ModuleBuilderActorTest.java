@@ -26,7 +26,7 @@ public class ModuleBuilderActorTest {
     final AnalysisInputLocation javaClassPathNamespace =
         new JavaModulePathAnalysisInputLocation(
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules",
-            new DefaultSourceTypeSpecifier(),
+            DefaultSourceTypeSpecifier.getInstance(),
             new AsmJavaClassProvider());
 
     Project<AnalysisInputLocation> project =

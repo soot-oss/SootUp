@@ -45,7 +45,7 @@ public class MethodDispatchResolverTest {
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(
             jarFile + File.pathSeparator + rtJarClassPath,
-            new DefaultSourceTypeSpecifier(),
+            DefaultSourceTypeSpecifier.getInstance(),
             new AsmJavaClassProvider());
     Project<JavaClassPathAnalysisInputLocation> p = new Project<>(analysisInputLocation);
     view = p.createOnDemandView();

@@ -32,7 +32,7 @@ public class JavaSourcePathNamespaceTest {
         new JavaSourcePathAnalysisInputLocation(
             ImmutableUtils.immutableSet(srcDir),
             exclusionFilePath,
-            new DefaultSourceTypeSpecifier());
+            DefaultSourceTypeSpecifier.getInstance());
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     Optional<? extends AbstractClassSource> classSourceOptional =
@@ -57,7 +57,7 @@ public class JavaSourcePathNamespaceTest {
         new JavaSourcePathAnalysisInputLocation(
             ImmutableUtils.immutableSet(srcDir),
             exclusionFilePath,
-            new DefaultSourceTypeSpecifier());
+            DefaultSourceTypeSpecifier.getInstance());
 
     ClassProvider classProvider = inputLocation.getClassProvider();
     assertTrue(classProvider instanceof WalaJavaClassProvider);
@@ -71,7 +71,7 @@ public class JavaSourcePathNamespaceTest {
         new JavaSourcePathAnalysisInputLocation(
             ImmutableUtils.immutableSet(srcDir),
             exclusionFilePath,
-            new DefaultSourceTypeSpecifier());
+            DefaultSourceTypeSpecifier.getInstance());
 
     DefaultIdentifierFactory defaultFactories = DefaultIdentifierFactory.getInstance();
     Collection<? extends AbstractClassSource> classSources =

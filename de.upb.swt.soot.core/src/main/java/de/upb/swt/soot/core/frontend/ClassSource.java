@@ -3,12 +3,7 @@ package de.upb.swt.soot.core.frontend;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.AbstractClass;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.Position;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -28,7 +23,11 @@ public abstract class ClassSource extends AbstractClassSource {
 
   @Override
   public AbstractClass reifyClass() {
-    return new SootClass(this, srcNamespace.getSourceType(getClassType()));
+    return new SootClass(this);
+  }
+
+  public SourceType getSourceType() {
+    return srcNamespace.getSourceType(getClassType());
   }
 
   /**

@@ -17,7 +17,6 @@ import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.views.JavaView;
@@ -36,7 +35,7 @@ public class JFieldRefTest {
     View view =
         new JavaView<>(
             new Project<>(
-                new EagerInputLocation(new DefaultSourceTypeSpecifier()),
+                new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()),
                 DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
@@ -47,7 +46,7 @@ public class JFieldRefTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation(new DefaultSourceTypeSpecifier()),
+                new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()),
                 null,
                 declaringClassSignature,
                 null,
@@ -56,8 +55,7 @@ public class JFieldRefTest {
                 Collections.singleton(field),
                 Collections.emptySet(),
                 null,
-                EnumSet.of(Modifier.PUBLIC)),
-            SourceType.Application);
+                EnumSet.of(Modifier.PUBLIC)));
     JStaticFieldRef ref = Jimple.newStaticFieldRef(fieldSig);
     assertEquals("<dummyMainClass: int dummyField>", ref.toString());
 
@@ -72,7 +70,7 @@ public class JFieldRefTest {
     View view =
         new JavaView<>(
             new Project<>(
-                new EagerInputLocation(new DefaultSourceTypeSpecifier()),
+                new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()),
                 DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
@@ -83,7 +81,7 @@ public class JFieldRefTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation(new DefaultSourceTypeSpecifier()),
+                new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()),
                 null,
                 declaringClassSignature,
                 null,
@@ -92,8 +90,7 @@ public class JFieldRefTest {
                 Collections.singleton(field),
                 Collections.emptySet(),
                 null,
-                EnumSet.of(Modifier.PUBLIC)),
-            SourceType.Application);
+                EnumSet.of(Modifier.PUBLIC)));
     Local base = new Local("obj", declaringClassSignature);
     JInstanceFieldRef ref = Jimple.newInstanceFieldRef(base, fieldSig);
     assertEquals("obj.<dummyMainClass: int dummyField>", ref.toString());
