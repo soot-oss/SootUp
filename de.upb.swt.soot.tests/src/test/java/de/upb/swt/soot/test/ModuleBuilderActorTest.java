@@ -9,7 +9,6 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.model.AbstractClass;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
