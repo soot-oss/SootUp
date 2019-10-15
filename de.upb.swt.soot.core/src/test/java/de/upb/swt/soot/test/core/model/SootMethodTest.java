@@ -13,10 +13,7 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.views.View;
@@ -77,7 +74,8 @@ public class SootMethodTest {
                 Collections.emptySet(),
                 Collections.singleton(dummyMainMethod),
                 null,
-                EnumSet.of(Modifier.PUBLIC)));
+                EnumSet.of(Modifier.PUBLIC)),
+            SourceType.Application);
 
     assertEquals(mainClass.getMethods().size(), 1);
     assertTrue(

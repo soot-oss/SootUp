@@ -2,6 +2,8 @@ package de.upb.swt.soot.core;
 
 import de.upb.swt.soot.core.buildactor.ViewBuilder;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
+import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.util.NotYetImplementedException;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
@@ -22,18 +24,35 @@ public class Project<S extends AnalysisInputLocation> {
 
   @Nonnull private final IdentifierFactory identifierFactory;
   @Nonnull private final List<S> inputLocations;
+  private final SourceTypeSpecifier sourceTypeSpecifier;
 
   /** Create a project from an arbitrary list of input locations */
   public Project(@Nonnull S inputLocation) {
-    this(Collections.singleton(inputLocation), DefaultIdentifierFactory.getInstance());
+    this(
+        Collections.singleton(inputLocation),
+        DefaultIdentifierFactory.getInstance(),
+        DefaultSourceTypeSpecifier.getInstance());
   }
 
   public Project(@Nonnull S inputLocation, @Nonnull DefaultIdentifierFactory identifierFactory) {
-    this(Collections.singleton(inputLocation), identifierFactory);
+    this(
+        Collections.singleton(inputLocation),
+        identifierFactory,
+        DefaultSourceTypeSpecifier.getInstance());
   }
+
+  public Project(@Nonnull S inputLocation, @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+    this(
+        Collections.singleton(inputLocation),
+        DefaultIdentifierFactory.getInstance(),
+        sourceTypeSpecifier);
+  }
+
   /** Create a project from an arbitrary list of input locations */
   public Project(
-      @Nonnull Set<S> inputLocations, @Nonnull DefaultIdentifierFactory identifierFactory) {
+      @Nonnull Set<S> inputLocations,
+      @Nonnull DefaultIdentifierFactory identifierFactory,
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
 
     List<S> unmodifiableInputLocations =
         Collections.unmodifiableList(new ArrayList<>(inputLocations));
@@ -42,6 +61,7 @@ public class Project<S extends AnalysisInputLocation> {
       throw new IllegalArgumentException("The inputLocations collection must not be empty.");
     }
 
+    this.sourceTypeSpecifier = sourceTypeSpecifier;
     this.inputLocations = unmodifiableInputLocations;
     this.identifierFactory = identifierFactory;
   }
@@ -57,6 +77,10 @@ public class Project<S extends AnalysisInputLocation> {
     return this.identifierFactory;
   }
 
+  @Nonnull
+  public SourceTypeSpecifier getSourceTypeSpecifier() {
+    return sourceTypeSpecifier;
+  }
   /**
    * Create a complete view from everything in all provided input locations. This methodRef starts
    * the reification process.

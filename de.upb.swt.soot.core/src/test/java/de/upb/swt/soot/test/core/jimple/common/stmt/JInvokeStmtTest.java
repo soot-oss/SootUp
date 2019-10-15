@@ -39,10 +39,7 @@ import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.net.URI;
@@ -85,7 +82,7 @@ public class JInvokeStmtTest {
             new NoPositionInformation(),
             EnumSet.of(Modifier.PUBLIC));
 
-    SootClass sootClass = new SootClass(javaClassSource);
+    SootClass sootClass = new SootClass(javaClassSource, SourceType.Application);
 
     // JStaticInvokeExpr
     MethodSignature statMethodSig =

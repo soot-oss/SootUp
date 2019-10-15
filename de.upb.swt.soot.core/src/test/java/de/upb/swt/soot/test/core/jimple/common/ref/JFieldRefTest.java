@@ -17,6 +17,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.views.View;
@@ -59,7 +60,8 @@ public class JFieldRefTest {
                 Collections.singleton(field),
                 Collections.emptySet(),
                 null,
-                EnumSet.of(Modifier.PUBLIC)));
+                EnumSet.of(Modifier.PUBLIC)),
+            SourceType.Application);
     JStaticFieldRef ref = Jimple.newStaticFieldRef(fieldSig);
     assertEquals("<dummyMainClass: int dummyField>", ref.toString());
 
@@ -89,7 +91,8 @@ public class JFieldRefTest {
                 Collections.singleton(field),
                 Collections.emptySet(),
                 null,
-                EnumSet.of(Modifier.PUBLIC)));
+                EnumSet.of(Modifier.PUBLIC)),
+            SourceType.Application);
     Local base = new Local("obj", declaringClassSignature);
     JInstanceFieldRef ref = Jimple.newInstanceFieldRef(base, fieldSig);
     assertEquals("obj.<dummyMainClass: int dummyField>", ref.toString());

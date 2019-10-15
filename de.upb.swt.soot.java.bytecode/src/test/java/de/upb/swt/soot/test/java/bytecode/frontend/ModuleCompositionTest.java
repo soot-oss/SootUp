@@ -140,7 +140,8 @@ public class ModuleCompositionTest {
                         .withModifiers(Modifier.PUBLIC)
                         .build()),
                 null,
-                EnumSet.of(Modifier.PUBLIC)));
+                EnumSet.of(Modifier.PUBLIC)),
+            SourceType.Application);
 
     // Print some information
     // System.out.println("Field sub-signature: " + nameFieldSubSignature);

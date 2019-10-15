@@ -17,6 +17,7 @@ import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.NullType;
@@ -219,7 +220,7 @@ public class ViewTypeHierarchyTest {
             Collections.emptySet(),
             null,
             EnumSet.of(Modifier.FINAL));
-    SootClass sootClass = new SootClass(classSource);
+    SootClass sootClass = new SootClass(classSource, SourceType.Application);
 
     typeHierarchy.addType(sootClass);
 

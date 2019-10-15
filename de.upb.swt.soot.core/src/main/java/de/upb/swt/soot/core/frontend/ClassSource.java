@@ -22,12 +22,8 @@ import javax.annotation.Nonnull;
 public abstract class ClassSource extends AbstractClassSource {
 
   @Override
-  public AbstractClass reifyClass() {
-    return new SootClass(this);
-  }
-
-  public SourceType getSourceType() {
-    return srcNamespace.getSourceType(getClassType());
+  public AbstractClass reifyClass(SourceType sourceType) {
+    return new SootClass(this, sourceType);
   }
 
   /**

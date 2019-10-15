@@ -15,11 +15,7 @@ import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
@@ -89,7 +85,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
             new NoPositionInformation(),
             EnumSet.of(Modifier.PUBLIC));
 
-    sootClass = new SootClass(javaClassSource);
+    sootClass = new SootClass(javaClassSource, SourceType.Application);
   }
 
   SootMethod init(@Nonnull FieldSignature initFieldSignature) {

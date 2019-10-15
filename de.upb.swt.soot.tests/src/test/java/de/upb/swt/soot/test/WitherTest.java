@@ -15,6 +15,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import java.util.Arrays;
@@ -42,7 +43,7 @@ public class WitherTest {
   public void testWithers() {
     Optional<ClassSource> classSource = loader.getClassSource(declareClassSig);
     assertTrue(classSource.isPresent());
-    SootClass sootClass = new SootClass(classSource.get());
+    SootClass sootClass = new SootClass(classSource.get(), SourceType.Application);
 
     Optional<SootMethod> m =
         sootClass.getMethod(

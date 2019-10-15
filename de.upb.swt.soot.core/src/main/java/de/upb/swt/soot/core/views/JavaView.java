@@ -139,7 +139,9 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
     AbstractClass<? extends AbstractClassSource> theClass =
         this.map.get(classSource.getClassType());
     if (theClass == null) {
-      theClass = classSource.reifyClass();
+      theClass =
+          classSource.reifyClass(
+              getProject().getSourceTypeSpecifier().sourceTypeFor(classSource.getClassType()));
       map.putIfAbsent(theClass.getType(), theClass);
     }
     return Optional.of(theClass);
