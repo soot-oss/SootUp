@@ -25,8 +25,7 @@ public class NoModifierClassTest extends MinimalTestSuiteBase {
     assertTrue(clazz.getMethod(getMethodSignature("private")).get().isPrivate());
     assertTrue(clazz.getMethod(getMethodSignature("protected")).get().isProtected());
     assertTrue(clazz.getMethod(getMethodSignature("public")).get().isPublic());
-    assertEquals(
-        clazz.getMethod(getMethodSignature("noModifier")).get().getModifiers().toString(), "[]");
+    assertTrue(clazz.getMethod(getMethodSignature("noModifier")).get().getModifiers().isEmpty());
   }
 
   public MethodSignature getMethodSignature(String modifier) {

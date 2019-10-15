@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -114,5 +115,9 @@ public abstract class MinimalTestSuiteBase {
             .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
+  }
+
+  public List<String> expectedBodyStmts(String... jimpleLines) {
+    return Stream.of(jimpleLines).collect(Collectors.toList());
   }
 }
