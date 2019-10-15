@@ -19,10 +19,10 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.views.JavaView;
 import de.upb.swt.soot.core.views.View;
 import java.util.Collections;
 import java.util.EnumSet;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.experimental.categories.Category;
 
@@ -30,13 +30,17 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class JFieldRefTest {
 
+  View view;
+
+  @Before
+  public void setUp() {
+    Project project =
+        new Project<>(new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()));
+    view = project.createOnDemandView();
+  }
+
   @Ignore
   public void testJStaticFieldRef() {
-    View view =
-        new JavaView<>(
-            new Project<>(
-                new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()),
-                DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
         DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");
@@ -67,11 +71,6 @@ public class JFieldRefTest {
 
   @Ignore
   public void testJInstanceFieldRef() {
-    View view =
-        new JavaView<>(
-            new Project<>(
-                new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()),
-                DefaultIdentifierFactory.getInstance()));
     IdentifierFactory fact = view.getIdentifierFactory();
     JavaClassType declaringClassSignature =
         DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");
