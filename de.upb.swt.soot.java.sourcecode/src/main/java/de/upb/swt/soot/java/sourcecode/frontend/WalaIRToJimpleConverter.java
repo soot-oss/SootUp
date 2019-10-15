@@ -169,8 +169,7 @@ public class WalaIRToJimpleConverter {
       Position position,
       EnumSet<Modifier> modifiers) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-    JavaClassType classSignature =
-        sigFactory.getClassType(fullyQualifiedClassName);
+    JavaClassType classSignature = sigFactory.getClassType(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
     return new EagerJavaClassSource(
