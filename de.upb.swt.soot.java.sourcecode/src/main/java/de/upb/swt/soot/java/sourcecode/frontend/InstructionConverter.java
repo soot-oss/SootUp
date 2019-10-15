@@ -796,7 +796,7 @@ public class InstructionConverter {
     }
 
     MethodSignature methodSig =
-        converter.sigFactory.getMethodSignature(
+        identifierFactory.getMethodSignature(
             target.getName().toString(), declaringClassSignature, returnType, parameters);
 
     if (!callee.isStatic()) {

@@ -19,7 +19,6 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.views.JavaView;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,9 +34,8 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    View view =
-        new JavaView<>(
-            new Project<>(new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance())));
+    Project p = new Project<>(new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()));
+    View view = p.createOnDemandView();
     JavaClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     List<Stmt> stmts = new ArrayList<>();
