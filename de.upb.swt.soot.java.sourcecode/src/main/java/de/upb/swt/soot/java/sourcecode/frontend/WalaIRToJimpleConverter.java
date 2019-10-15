@@ -20,7 +20,6 @@ import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.EagerMethodSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
@@ -64,9 +63,8 @@ public class WalaIRToJimpleConverter {
   private HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
 
-  public WalaIRToJimpleConverter(
-      @Nonnull Set<String> sourceDirPath, @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath, sourceTypeSpecifier);
+  public WalaIRToJimpleConverter(@Nonnull Set<String> sourceDirPath) {
+    srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
     // TODO: [ms] get it from view - view can hold a different implementation
     sigFactory = DefaultIdentifierFactory.getInstance();
     clsWithInnerCls = new HashMap<>();
@@ -81,7 +79,7 @@ public class WalaIRToJimpleConverter {
   @Deprecated
   public SootClass convertClass(AstClass walaClass) {
     ClassSource classSource = convertToClassSource(walaClass);
-    // TODO fix fixed SourceType
+    // TODO fix fixed SourceType - get it from project
     return new SootClass(classSource, SourceType.Application);
   }
 

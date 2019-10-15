@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
@@ -41,7 +40,7 @@ public class GetInstructionConversionTest {
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/wala-tests/";
-    loader = new WalaClassLoader(srcDir, DefaultSourceTypeSpecifier.getInstance());
+    loader = new WalaClassLoader(srcDir);
     typeFactory = DefaultIdentifierFactory.getInstance();
     declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");
   }

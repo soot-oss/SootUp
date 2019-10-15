@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.inputlocation.ModuleFinder;
@@ -24,9 +23,7 @@ public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
 
   @Test
   public void discoverModule() {
-    ModuleFinder moduleFinder =
-        new ModuleFinder(
-            this.getClassProvider(), jarFile, DefaultSourceTypeSpecifier.getInstance());
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
     Collection<String> modules = moduleFinder.discoverAllModules();
     String computedModuleName = "Soot";
     assertTrue(modules.contains(computedModuleName));
@@ -34,27 +31,21 @@ public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
 
   @Test
   public void discoverModule2() {
-    ModuleFinder moduleFinder =
-        new ModuleFinder(
-            this.getClassProvider(), jarFile, DefaultSourceTypeSpecifier.getInstance());
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
     AbstractAnalysisInputLocation inputLocation = moduleFinder.discoverModule("Soot");
     assertTrue(inputLocation instanceof PathBasedAnalysisInputLocation);
   }
 
   @Test
   public void discoverModule3() {
-    ModuleFinder moduleFinder =
-        new ModuleFinder(
-            this.getClassProvider(), jarFile, DefaultSourceTypeSpecifier.getInstance());
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
     AbstractAnalysisInputLocation inputLocation = moduleFinder.discoverModule("java.base");
     assertTrue(inputLocation instanceof JrtFileSystemAnalysisInputLocation);
   }
 
   @Test
   public void automaticModuleName() throws Exception {
-    ModuleFinder moduleFinder =
-        new ModuleFinder(
-            this.getClassProvider(), jarFile, DefaultSourceTypeSpecifier.getInstance());
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
     String jarName = "foo-1.2.3-SNAPSHOT.jar";
     String result =
         Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);
@@ -63,9 +54,7 @@ public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
 
   @Test
   public void automaticModuleName2() throws Exception {
-    ModuleFinder moduleFinder =
-        new ModuleFinder(
-            this.getClassProvider(), jarFile, DefaultSourceTypeSpecifier.getInstance());
+    ModuleFinder moduleFinder = new ModuleFinder(this.getClassProvider(), jarFile);
     String jarName = "foo-bar.jar";
     String result =
         Whitebox.invokeMethod(moduleFinder, "createModuleNameForAutomaticModule", jarName);
@@ -77,8 +66,7 @@ public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
     ModuleFinder moduleFinder =
         new ModuleFinder(
             new AsmJavaClassProvider(),
-            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/",
-            DefaultSourceTypeSpecifier.getInstance());
+            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
     Collection<String> discoveredModules = moduleFinder.discoverAllModules();
     assertTrue(discoveredModules.contains("de.upb.mod"));
   }
@@ -90,8 +78,7 @@ public class ModuleFinderTest extends AbstractAnalysisInputLocationTest {
     ModuleFinder moduleFinder =
         new ModuleFinder(
             new AsmJavaClassProvider(),
-            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules",
-            DefaultSourceTypeSpecifier.getInstance());
+            "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules");
     Path p =
         Paths.get("../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/testMod");
     Whitebox.invokeMethod(moduleFinder, "buildModuleForExplodedModule", p);

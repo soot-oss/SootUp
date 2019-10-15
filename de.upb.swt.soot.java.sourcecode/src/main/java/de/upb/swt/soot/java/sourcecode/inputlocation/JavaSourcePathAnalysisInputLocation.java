@@ -4,7 +4,6 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
@@ -37,9 +36,8 @@ public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLo
    *
    * @param sourcePaths the source code path to search in
    */
-  public JavaSourcePathAnalysisInputLocation(
-      @Nonnull Set<String> sourcePaths, SourceTypeSpecifier sourceTypeSpecifier) {
-    this(sourcePaths, null, sourceTypeSpecifier);
+  public JavaSourcePathAnalysisInputLocation(@Nonnull Set<String> sourcePaths) {
+    this(sourcePaths, null);
   }
 
   /**
@@ -49,10 +47,8 @@ public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLo
    * @param sourcePaths the source code path to search in
    */
   public JavaSourcePathAnalysisInputLocation(
-      @Nonnull Set<String> sourcePaths,
-      @Nullable String exclusionFilePath,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(new WalaJavaClassProvider(exclusionFilePath), sourceTypeSpecifier);
+      @Nonnull Set<String> sourcePaths, @Nullable String exclusionFilePath) {
+    super(new WalaJavaClassProvider(exclusionFilePath));
     this.sourcePaths = sourcePaths;
     this.exclusionFilePath = exclusionFilePath;
   }
@@ -61,8 +57,7 @@ public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLo
   @Nonnull
   public Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory) {
-    return new WalaClassLoader(sourcePaths, exclusionFilePath, sourceTypeSpecifier)
-        .getClassSources();
+    return new WalaClassLoader(sourcePaths, exclusionFilePath).getClassSources();
   }
 
   @Override

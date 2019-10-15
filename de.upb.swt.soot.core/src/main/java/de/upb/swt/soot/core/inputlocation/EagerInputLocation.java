@@ -14,10 +14,6 @@ import javax.annotation.Nonnull;
 // TODO: implement sth useful - more than this dummy
 public class EagerInputLocation extends AnalysisInputLocation {
 
-  public EagerInputLocation(@Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(sourceTypeSpecifier);
-  }
-
   @Override
   public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
     return Optional.empty();

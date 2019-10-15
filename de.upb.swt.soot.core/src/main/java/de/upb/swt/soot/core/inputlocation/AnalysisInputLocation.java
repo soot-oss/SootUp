@@ -4,7 +4,6 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
@@ -20,27 +19,6 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  */
 public abstract class AnalysisInputLocation {
-
-  @Nonnull protected final SourceTypeSpecifier sourceTypeSpecifier;
-
-  protected AnalysisInputLocation(@Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    this.sourceTypeSpecifier = sourceTypeSpecifier;
-  }
-
-  /**
-   * The SourceType attached to this input location.
-   *
-   * @return the type of Source
-   */
-  @Nonnull
-  public SourceType getSourceType(JavaClassType jct) {
-    return sourceTypeSpecifier.sourceTypeFor(jct);
-  }
-
-  public SourceTypeSpecifier getSourceTypeSpecifier() {
-    return sourceTypeSpecifier;
-  }
-
   /**
    * Create or find a class source for a given signature.
    *

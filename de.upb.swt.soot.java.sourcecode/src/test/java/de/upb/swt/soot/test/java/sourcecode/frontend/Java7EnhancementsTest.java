@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
@@ -23,7 +22,7 @@ public class Java7EnhancementsTest {
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/java-target/java7";
-    loader = new WalaClassLoader(srcDir, DefaultSourceTypeSpecifier.getInstance());
+    loader = new WalaClassLoader(srcDir);
     typeFactory = DefaultIdentifierFactory.getInstance();
   }
 

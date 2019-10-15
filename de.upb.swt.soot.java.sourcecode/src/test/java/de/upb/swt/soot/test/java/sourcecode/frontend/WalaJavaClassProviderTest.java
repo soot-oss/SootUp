@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.ClassSource;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.JavaClassType;
@@ -28,9 +27,7 @@ public class WalaJavaClassProviderTest {
     String exclusionFilePath = srcDir + "WalaExclusions.txt";
     JavaSourcePathAnalysisInputLocation inputLocation =
         new JavaSourcePathAnalysisInputLocation(
-            ImmutableUtils.immutableSet(srcDir),
-            exclusionFilePath,
-            DefaultSourceTypeSpecifier.getInstance());
+            ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     WalaJavaClassProvider provider = new WalaJavaClassProvider(exclusionFilePath);

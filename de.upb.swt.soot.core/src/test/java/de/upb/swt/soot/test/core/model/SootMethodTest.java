@@ -7,7 +7,6 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.EagerMethodSource;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
@@ -31,7 +30,7 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    Project p = new Project<>(new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()));
+    Project p = new Project<>(new EagerInputLocation());
     View view = p.createOnDemandView();
     JavaClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
@@ -65,7 +64,7 @@ public class SootMethodTest {
     SootClass mainClass =
         new SootClass(
             new EagerJavaClassSource(
-                new EagerInputLocation(DefaultSourceTypeSpecifier.getInstance()),
+                new EagerInputLocation(),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),
                 null,

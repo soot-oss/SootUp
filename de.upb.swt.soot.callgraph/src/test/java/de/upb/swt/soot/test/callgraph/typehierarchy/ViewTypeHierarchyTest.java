@@ -14,7 +14,6 @@ import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
@@ -64,9 +63,7 @@ public class ViewTypeHierarchyTest {
             .collect(Collectors.joining(File.pathSeparator));
     analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(
-            jarFile + File.pathSeparator + rtJarClassPath,
-            DefaultSourceTypeSpecifier.getInstance(),
-            new AsmJavaClassProvider());
+            jarFile + File.pathSeparator + rtJarClassPath, new AsmJavaClassProvider());
     Project<JavaClassPathAnalysisInputLocation> p = new Project<>(analysisInputLocation);
     view = p.createOnDemandView();
     typeHierarchy = new ViewTypeHierarchy(view);

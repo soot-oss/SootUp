@@ -6,7 +6,6 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
-import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.signatures.ModuleSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.ModuleDecoratorClassType;
@@ -42,7 +41,6 @@ import javax.annotation.Nullable;
  * @author Andreas Dann on 28.06.18
  */
 public class ModuleFinder {
-  private final @Nonnull SourceTypeSpecifier sourceTypeSpecifier;
   private @Nonnull ClassProvider classProvider;
   // associate a module name with the input location, that represents the module
   private @Nonnull Map<String, AbstractAnalysisInputLocation> moduleInputLocation = new HashMap<>();
@@ -58,18 +56,13 @@ public class ModuleFinder {
    * @param classProvider the class provider for resolving found classes
    * @param modulePath the module path
    */
-  public ModuleFinder(
-      @Nonnull ClassProvider classProvider,
-      @Nonnull String modulePath,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    this.sourceTypeSpecifier = sourceTypeSpecifier;
+  public ModuleFinder(@Nonnull ClassProvider classProvider, @Nonnull String modulePath) {
     this.classProvider = classProvider;
     this.modulePathEntries =
         JavaClassPathAnalysisInputLocation.explode(modulePath).collect(Collectors.toList());
     // add the input location for the jrt virtual file system
     // FIXME: Set Jrt File input location by default?
-    jrtFileSystemNamespace =
-        new JrtFileSystemAnalysisInputLocation(classProvider, sourceTypeSpecifier);
+    jrtFileSystemNamespace = new JrtFileSystemAnalysisInputLocation(classProvider);
 
     // discover all system's modules
     Collection<String> modules = jrtFileSystemNamespace.discoverModules();
@@ -171,7 +164,7 @@ public class ModuleFinder {
   private void buildModuleForExplodedModule(@Nonnull Path dir) throws ClassResolvingException {
     // create the input location for this module dir
     PathBasedAnalysisInputLocation inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(dir, sourceTypeSpecifier);
+        PathBasedAnalysisInputLocation.createForClassContainer(dir);
 
     Path moduleInfoFile =
         dir.resolve(
@@ -197,7 +190,7 @@ public class ModuleFinder {
    */
   private void buildModuleForJar(@Nonnull Path jar) {
     PathBasedAnalysisInputLocation inputLocation =
-        PathBasedAnalysisInputLocation.createForClassContainer(jar, sourceTypeSpecifier);
+        PathBasedAnalysisInputLocation.createForClassContainer(jar);
     Optional<? extends AbstractClassSource> moduleInfoFile = Optional.empty();
     try (FileSystem zipFileSystem = FileSystems.newFileSystem(jar, null)) {
       final Path archiveRoot = zipFileSystem.getPath("/");

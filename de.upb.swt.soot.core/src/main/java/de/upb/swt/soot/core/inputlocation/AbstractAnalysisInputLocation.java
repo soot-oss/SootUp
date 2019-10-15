@@ -43,9 +43,7 @@ public abstract class AbstractAnalysisInputLocation extends AnalysisInputLocatio
    *
    * @param classProvider The class provider to be used
    */
-  public AbstractAnalysisInputLocation(
-      @Nonnull ClassProvider classProvider, SourceTypeSpecifier sourceTypeSpecifier) {
-    super(sourceTypeSpecifier);
+  public AbstractAnalysisInputLocation(@Nonnull ClassProvider classProvider) {
     this.classProvider = classProvider;
   }
 

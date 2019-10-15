@@ -3,7 +3,6 @@ package de.upb.swt.soot.test.java.sourcecode.frontend;
 import static org.junit.Assert.assertEquals;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaIRToJimpleConverter;
 import java.util.Collections;
 import org.junit.Test;
@@ -12,8 +11,7 @@ import org.junit.experimental.categories.Category;
 /** @author Linghui Luo */
 @Category(Java8Test.class)
 public class WalaIRToJimpleConverterTest {
-  private WalaIRToJimpleConverter converter =
-      new WalaIRToJimpleConverter(Collections.emptySet(), DefaultSourceTypeSpecifier.getInstance());
+  private WalaIRToJimpleConverter converter = new WalaIRToJimpleConverter(Collections.emptySet());
 
   @Test
   public void testConvertClassName1() {

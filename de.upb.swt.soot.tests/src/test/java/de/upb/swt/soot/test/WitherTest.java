@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.frontend.ClassSource;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -34,7 +33,7 @@ public class WitherTest {
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
-    loader = new WalaClassLoader(srcDir, DefaultSourceTypeSpecifier.getInstance());
+    loader = new WalaClassLoader(srcDir);
     identifierFactory = DefaultIdentifierFactory.getInstance();
     declareClassSig = identifierFactory.getClassType("BinaryOperations");
   }
