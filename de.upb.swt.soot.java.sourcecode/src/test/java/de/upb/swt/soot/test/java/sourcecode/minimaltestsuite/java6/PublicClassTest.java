@@ -38,7 +38,7 @@ public class PublicClassTest extends MinimalTestSuiteBase {
     assertJimpleStmts(method, expectedBodyStmts());
 
     method = clazz.getMethod(getMethodSignature("noModifier")).get();
-    assertEquals(method.getModifiers().toString(), "[]");
+    assertTrue(method.getModifiers().isEmpty());
     assertJimpleStmts(method, expectedBodyStmts());
   }
 
