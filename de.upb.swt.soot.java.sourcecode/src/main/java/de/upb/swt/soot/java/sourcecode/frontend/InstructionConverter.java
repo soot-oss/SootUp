@@ -135,7 +135,7 @@ public class InstructionConverter {
     this.targetsOfLookUpSwitchStmts = new HashMap<>();
     this.defaultOfLookUpSwitchStmts = new HashMap<>();
     this.locals = new HashMap<>();
-    this.identifierFactory = converter.sigFactory;
+    this.identifierFactory = converter.identifierFactory;
   }
 
   public List<Stmt> convertInstruction(DebuggingInformation debugInfo, SSAInstruction inst) {

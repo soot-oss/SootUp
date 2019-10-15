@@ -1,7 +1,5 @@
 package de.upb.swt.soot.core.frontend;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.types.JavaClassType;
@@ -22,7 +20,8 @@ import javax.annotation.Nonnull;
 public abstract class ClassSource extends AbstractClassSource {
 
   @Override
-  public AbstractClass reifyClass(SourceType sourceType) {
+  @Nonnull
+  public AbstractClass<? extends AbstractClassSource> buildClass(@Nonnull SourceType sourceType) {
     return new SootClass(this, sourceType);
   }
 
@@ -41,9 +40,10 @@ public abstract class ClassSource extends AbstractClassSource {
    *     {@link ClassSource}, backed up by the given file
    */
   public ClassSource(
-      AnalysisInputLocation srcNamespace, JavaClassType classSignature, Path sourcePath) {
+      @Nonnull AnalysisInputLocation srcNamespace,
+      @Nonnull JavaClassType classSignature,
+      @Nonnull Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);
-    checkNotNull(srcNamespace);
   }
 
   @Nonnull

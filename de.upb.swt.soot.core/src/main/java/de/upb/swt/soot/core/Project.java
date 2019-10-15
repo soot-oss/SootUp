@@ -24,7 +24,7 @@ public class Project<S extends AnalysisInputLocation> {
 
   @Nonnull private final IdentifierFactory identifierFactory;
   @Nonnull private final List<S> inputLocations;
-  private final SourceTypeSpecifier sourceTypeSpecifier;
+  @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
 
   /** Create a project from an arbitrary list of input locations */
   public Project(@Nonnull S inputLocation) {
