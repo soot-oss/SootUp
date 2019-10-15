@@ -15,6 +15,7 @@ import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.EagerMethodSource;
@@ -61,7 +62,7 @@ import javax.annotation.Nullable;
  */
 public class WalaIRToJimpleConverter {
 
-  protected final DefaultIdentifierFactory sigFactory;
+  protected final IdentifierFactory sigFactory;
   private AnalysisInputLocation srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
   private HashMap<String, String> walaToSootNameTable;
@@ -70,6 +71,7 @@ public class WalaIRToJimpleConverter {
   public WalaIRToJimpleConverter(
       @Nonnull Set<String> sourceDirPath, @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath, sourceTypeSpecifier);
+    // TODO: [ms] get it from view - view can hold a different implementation
     sigFactory = DefaultIdentifierFactory.getInstance();
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
@@ -88,8 +90,7 @@ public class WalaIRToJimpleConverter {
 
   ClassSource convertToClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-    JavaClassType classSig =
-        DefaultIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
+    JavaClassType classSig = sigFactory.getClassType(fullyQualifiedClassName);
     // get super class
     IClass sc = walaClass.getSuperclass();
     JavaClassType superClass = null;
@@ -169,7 +170,7 @@ public class WalaIRToJimpleConverter {
       EnumSet<Modifier> modifiers) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSignature =
-        DefaultIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
+        sigFactory.getClassType(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
     return new EagerJavaClassSource(
@@ -276,7 +277,7 @@ public class WalaIRToJimpleConverter {
         TypeReference t = type.getInnermostElementType();
         Type baseType = convertType(t);
         int dim = type.getDimensionality();
-        return DefaultIdentifierFactory.getInstance().getArrayType(baseType, dim);
+        return sigFactory.getArrayType(baseType, dim);
       } else if (type.isClassType()) {
         if (type.equals(TypeReference.Null)) {
           return NullType.getInstance();
