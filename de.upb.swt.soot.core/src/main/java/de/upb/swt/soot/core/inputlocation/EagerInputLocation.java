@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 /** @author Markus Schmidt */
 
 // TODO: implement sth useful - more than this dummy
-public class EagerInputLocation extends AnalysisInputLocation {
+public class EagerInputLocation implements AnalysisInputLocation {
 
   @Override
   public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {

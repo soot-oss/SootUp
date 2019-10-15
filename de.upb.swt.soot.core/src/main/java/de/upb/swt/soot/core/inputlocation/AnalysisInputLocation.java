@@ -18,7 +18,7 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Linghui Luo
  */
-public abstract class AnalysisInputLocation {
+public interface AnalysisInputLocation {
   /**
    * Create or find a class source for a given signature.
    *
@@ -26,11 +26,10 @@ public abstract class AnalysisInputLocation {
    * @return The source entry for that class.
    */
   @Nonnull
-  public abstract Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType signature);
+  Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType signature);
 
   @Nonnull
-  public abstract Collection<? extends AbstractClassSource> getClassSources(
+  Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory);
   /**
    * The class provider attached to this input location.
@@ -38,5 +37,5 @@ public abstract class AnalysisInputLocation {
    * @return An instance of {@link ClassProvider} to be used.
    */
   @Nonnull
-  public abstract ClassProvider getClassProvider();
+  ClassProvider getClassProvider();
 }

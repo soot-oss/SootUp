@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
  *
  * @author Manuel Benz created on 22.05.18
  */
-public abstract class AbstractAnalysisInputLocation extends AnalysisInputLocation {
+public abstract class AbstractAnalysisInputLocation implements AnalysisInputLocation {
   protected final @Nonnull ClassProvider classProvider;
 
   /**
