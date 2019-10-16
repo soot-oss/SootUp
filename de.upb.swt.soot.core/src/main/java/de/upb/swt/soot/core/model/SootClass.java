@@ -24,7 +24,7 @@ package de.upb.swt.soot.core.model;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
 import de.upb.swt.soot.core.frontend.ClassSource;
-import de.upb.swt.soot.core.frontend.OverridingClassSource;
+import de.upb.swt.soot.core.frontend.ClassSourceController;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -422,15 +422,15 @@ public class SootClass extends AbstractClass<ClassSource> {
   }
 
   /**
-   * Creates a new SootClass based on a new {@link OverridingClassSource}. This is useful to change
+   * Creates a new SootClass based on a new {@link ClassSourceController}. This is useful to change
    * selected parts of a {@link SootClass} without recreating a {@link ClassSource} completely.
-   * {@link OverridingClassSource} allows for replacing specific parts of a class, such as fields
+   * {@link ClassSourceController} allows for replacing specific parts of a class, such as fields
    * and methods.
    */
   @Nonnull
   public SootClass withOverridingClassSource(
-      Function<OverridingClassSource, OverridingClassSource> overrider) {
-    return new SootClass(overrider.apply(new OverridingClassSource(classSource)), sourceType);
+      Function<ClassSourceController, ClassSourceController> overrider) {
+    return new SootClass(overrider.apply(new ClassSourceController(classSource)), sourceType);
   }
 
   @Nonnull
