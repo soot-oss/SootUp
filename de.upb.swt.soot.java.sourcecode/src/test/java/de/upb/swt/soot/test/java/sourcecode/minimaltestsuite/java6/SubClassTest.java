@@ -23,7 +23,7 @@ public class SubClassTest extends MinimalTestSuiteBase {
   }
 
   @Test
-  public void testDemo() {
+  public void testSuperClassStmts() {
     loadMethod(expectedBodyStmts1(), getMethodSignature1());
   }
 

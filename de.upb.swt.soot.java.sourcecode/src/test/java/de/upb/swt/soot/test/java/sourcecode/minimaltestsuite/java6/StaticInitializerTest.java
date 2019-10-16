@@ -19,10 +19,7 @@ public class StaticInitializerTest extends MinimalTestSuiteBase {
   @Override
   public void defaultTest() {
     super.defaultTest();
-    /**
-     * TODO assertTrue(method.isStaticInitializer());
-     */
-
+    /** TODO assertTrue(method.isStaticInitializer()); */
     assertTrue(
         getFields().stream()
             .anyMatch(

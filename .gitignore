@@ -152,6 +152,7 @@ fabric.properties
 \.project
 
 \.classpath
-src/test/resources/minimaltestsuite/java6/SynchronizedMethod.java
 .vscode/launch.json
 .vscode/settings.json
+=======
+.vscode/

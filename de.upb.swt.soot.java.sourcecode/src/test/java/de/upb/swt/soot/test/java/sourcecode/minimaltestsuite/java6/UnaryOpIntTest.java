@@ -20,9 +20,11 @@ public class UnaryOpIntTest extends MinimalTestSuiteBase {
   @Override
   public void defaultTest() {
     super.defaultTest();
-    /** TODO Do we need to check the type of variable as int?
-     assertTrue(getFields().stream().anyMatch(sootField -> {return
-     sootField.getType().equals("int");})); */
+    /**
+     * TODO Do we need to check the type of variable as int?
+     * assertTrue(getFields().stream().anyMatch(sootField -> {return
+     * sootField.getType().equals("int");}));
+     */
   }
 
   @Override

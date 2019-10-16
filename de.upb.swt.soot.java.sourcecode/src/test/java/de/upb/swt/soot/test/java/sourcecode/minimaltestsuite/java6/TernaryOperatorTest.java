@@ -8,27 +8,24 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class SynchronizedMethodTest extends MinimalTestSuiteBase {
-
+/** @author Kaustubh Kelkar */
+public class TernaryOperatorTest extends MinimalTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "run", getDeclaredClassSignature(), "void", Collections.emptyList());
-  }
-
-  @Override
-  public void defaultTest() {
-    super.defaultTest();
-    /** TODO assertTrue(method.isSynchronized()); */
+        "ternaryOperatorMethod", getDeclaredClassSignature(), "boolean", Collections.emptyList());
   }
 
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: SynchronizedMethod",
-            "$r1 = r0.<SynchronizedMethod: SenderMethod sender>",
-            "$r2 = r0.<SynchronizedMethod: java.lang.String msg>",
-            "virtualinvoke $r1.<SenderMethod: void send(java.lang.String)>($r2)",
-            "return")
+            "r0 := @this: TernaryOperator",
+            "$i0 = r0.<TernaryOperator: int num>",
+            "$z0 = $i0 < 0",
+            "if $z0 == 0 goto $z1 = 1",
+            "$z1 = 0",
+            "goto [?= return $z1]",
+            "$z1 = 1",
+            "return $z1")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 }

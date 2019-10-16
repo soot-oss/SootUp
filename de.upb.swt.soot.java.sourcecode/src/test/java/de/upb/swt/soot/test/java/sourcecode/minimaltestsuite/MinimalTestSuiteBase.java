@@ -4,20 +4,23 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.frontend.ClassSource;
+import de.upb.swt.soot.core.Project;
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
-import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -31,12 +34,22 @@ public abstract class MinimalTestSuiteBase {
 
   static final String baseDir = "src/test/resources/minimaltestsuite/";
   protected DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
-  protected SootMethod method;
-  protected SootClass sootClass;
+  private View view;
 
   public abstract MethodSignature getMethodSignature();
 
   public abstract List<String> expectedBodyStmts();
+
+  @Before
+  public void init() {
+
+    AnalysisInputLocation walaSource =
+        new JavaSourcePathAnalysisInputLocation(
+            Collections.singleton(
+                baseDir + File.separator + getTestDirectoryName() + File.separator));
+    de.upb.swt.soot.core.Project<AnalysisInputLocation> p = new Project<>(walaSource);
+    view = p.createOnDemandView();
+  }
 
   /**
    * @returns the name of the parent directory - assuming the directory structure is only one level
@@ -73,15 +86,20 @@ public abstract class MinimalTestSuiteBase {
     loadMethod(expectedBodyStmts(), getMethodSignature());
   }
 
+  public SootClass loadClass(JavaClassType clazz) {
+    Optional<AbstractClass<? extends AbstractClassSource>> sc = view.getClass(clazz);
+    assertTrue("no matching class signature found", sc.isPresent());
+    return (SootClass) sc.get();
+  }
+
   public SootMethod loadMethod(List<String> expectedStmts, MethodSignature methodSignature) {
+    Optional<AbstractClass<? extends AbstractClassSource>> cs =
+        view.getClass(methodSignature.getDeclClassType());
+    assertTrue("no matching class signature found", cs.isPresent());
 
-    WalaClassLoader loader =
-        new WalaClassLoader(
-            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
-    Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
-
+    Optional<? extends Method> m = cs.get().getMethod(methodSignature);
     assertTrue("No matching method signature found", m.isPresent());
-    method = m.get();
+    SootMethod method = (SootMethod) m.get();
     Utils.print(method, false);
     Body body = method.getBody();
     assertNotNull(body);
@@ -93,95 +111,5 @@ public abstract class MinimalTestSuiteBase {
 
     assertEquals(expectedStmts, actualStmts);
     return method;
-  }
-
-  public Set<SootField> getFields() {
-    WalaClassLoader loader =
-        new WalaClassLoader(
-            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
-    sootClass =
-        new SootClass(
-            loader.getClassSource(getDeclaredClassSignature()).get(), SourceType.Application);
-
-    return sootClass.getFields();
-  }
-
-  public Set<JavaClassType> getInterfaces() {
-
-    WalaClassLoader loader =
-        new WalaClassLoader(
-            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
-    sootClass =
-        new SootClass(
-            loader.getClassSource(getDeclaredClassSignature()).get(), SourceType.Application);
-    return sootClass.getInterfaces();
-  }
-
-  public void checkClassModifier(String modifier) {
-    WalaClassLoader loader =
-        new WalaClassLoader(
-            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
-    Optional<ClassSource> cs = loader.getClassSource(getDeclaredClassSignature());
-    assertTrue("no matching class signature found", cs.isPresent());
-    ClassSource classSource = cs.get();
-    SootClass sootClass = new SootClass(classSource, SourceType.Application);
-    switch (modifier) {
-      case "PUBLIC":
-        assertTrue(sootClass.isPublic());
-        break;
-      case "PRIVATE":
-        assertTrue(sootClass.isPrivate());
-        break;
-      case "PROTECTED":
-        assertTrue(sootClass.isProtected());
-        break;
-      case "":
-        assertEquals(classSource.resolveModifiers().toString(), "[]");
-        break;
-      default:
-        throw new IllegalStateException("Unexpected value: " + modifier);
-    }
-  }
-
-  public void isAbstractClass() {
-    WalaClassLoader loader =
-        new WalaClassLoader(
-            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
-    Optional<ClassSource> cs = loader.getClassSource(getDeclaredClassSignature());
-    assertTrue("no matching class signature found", cs.isPresent());
-    ClassSource classSource = cs.get();
-    SootClass sootClass = new SootClass(classSource, SourceType.Application);
-    /** get abstract class details assuming abstract class is extended by the tested class */
-    Optional<JavaClassType> parentClass = sootClass.getSuperclass();
-    Optional<ClassSource> cs2 = loader.getClassSource(parentClass.get());
-    assertTrue("no matching class signature found", cs.isPresent());
-    ClassSource classSource2 = cs2.get();
-    SootClass sootClass2 = new SootClass(classSource2, SourceType.Application);
-    assertTrue(sootClass2.isAbstract());
-  }
-
-  public void checkMethodModifier(String modifier, MethodSignature methodSignature) {
-    WalaClassLoader loader =
-        new WalaClassLoader(
-            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
-    Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
-    assertTrue("No matching method signature found", m.isPresent());
-    SootMethod method = m.get();
-    switch (modifier) {
-      case "PUBLIC":
-        assertTrue(method.isPublic());
-        break;
-      case "PRIVATE":
-        assertTrue(method.isPrivate());
-        break;
-      case "PROTECTED":
-        assertTrue(method.isProtected());
-        break;
-      case "":
-        assertEquals(method.getModifiers().toString(), "[]");
-        break;
-      default:
-        throw new IllegalStateException("Unexpected value: " + modifier);
-    }
   }
 }

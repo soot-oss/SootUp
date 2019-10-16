@@ -3,6 +3,7 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.ArrayList;
@@ -20,19 +21,27 @@ public class MethodOverloadingTest extends MinimalTestSuiteBase {
         "calculate", getDeclaredClassSignature(), "int", Arrays.asList("int", "int"));
   }
   /** @returns the method signature needed for second method in testCase */
-  public MethodSignature getMethodSignature1() {
+  public MethodSignature getMethodSignatureSingleParam() {
     return identifierFactory.getMethodSignature(
         "calculate", getDeclaredClassSignature(), "int", Collections.singletonList("int"));
+  }
+
+  public MethodSignature getMethodSignatureInit() {
+    return identifierFactory.getMethodSignature(
+        "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test
   @Override
   public void defaultTest() {
-    super.defaultTest();
-    loadMethod(expectedBodyStmts1(), getMethodSignature1());
-    assertTrue(sootClass.getMethods().contains(getMethodSignature()));
-    assertTrue(sootClass.getMethods().contains(getMethodSignature1()));
-    assertEquals(2, sootClass.getMethods().size());
+    loadMethod(expectedBodyStmts(), getMethodSignature());
+    loadMethod(expectedBodyStmts1(), getMethodSignatureSingleParam());
+
+    SootClass sootClass = loadClass(getDeclaredClassSignature());
+    assertTrue(sootClass.getMethod(getMethodSignature()).isPresent());
+    assertTrue(sootClass.getMethod(getMethodSignatureSingleParam()).isPresent());
+    assertTrue(sootClass.getMethod(getMethodSignatureInit()).isPresent());
+    assertEquals(3, sootClass.getMethods().size());
   }
 
   @Override
