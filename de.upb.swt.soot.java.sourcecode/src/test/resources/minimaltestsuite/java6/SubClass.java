@@ -16,10 +16,5 @@ class SubClass extends SuperClass {
         a=100;
         b=200;
         c=300;
-<<<<<<< HEAD:de.upb.swt.soot.java.sourcecode/src/test/resources/minimaltestsuite/java6/SubClass.java
-=======
-        
-
->>>>>>> 9c1aaee87458482e6e9b89d556d7b257280f004c:de.upb.swt.soot.java.sourcecode/src/test/resources/minimaltestsuite/java6/SubClass.java
-    }
+   }
 }
