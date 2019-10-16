@@ -2,6 +2,7 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertTrue;
 
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.Collections;
@@ -19,9 +20,10 @@ public class StaticInitializerTest extends MinimalTestSuiteBase {
   @Override
   public void defaultTest() {
     super.defaultTest();
+    SootClass clazz = loadClass(getDeclaredClassSignature());
     /** TODO assertTrue(method.isStaticInitializer()); */
     assertTrue(
-        getFields().stream()
+        clazz.getFields().stream()
             .anyMatch(
                 sootField -> {
                   return sootField.getName().equals("i") && sootField.isStatic();
