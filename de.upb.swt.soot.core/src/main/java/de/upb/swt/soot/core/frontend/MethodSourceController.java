@@ -43,16 +43,13 @@ public class MethodSourceController implements MethodSource {
     this.methodSignature = null;
   }
 
-  /**
-   * Method source where all information already available
-   **/
-  public MethodSourceController(MethodSignature methodSignature, Body body){
+  /** Method source where all information already available */
+  public MethodSourceController(MethodSignature methodSignature, Body body) {
     this.delegate = null;
     this.overriddenBody = true;
     this.body = body;
     this.methodSignature = methodSignature;
   }
-
 
   @Nullable
   @Override

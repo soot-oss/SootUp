@@ -7,7 +7,6 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.CollectionUtils;
-
 import java.nio.file.Path;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -73,20 +72,18 @@ public class ClassSourceController extends ClassSource {
     this.delegate = delegate;
   }
 
-  /**
-   * Class source where all information already available
-   **/
+  /** Class source where all information already available */
   public ClassSourceController(
-          AnalysisInputLocation srcNamespace,
-          Path sourcePath,
-          JavaClassType classType,
-          JavaClassType superClass,
-          Set<JavaClassType> interfaces,
-          JavaClassType outerClass,
-          Set<SootField> sootFields,
-          Set<SootMethod> sootMethods,
-          Position position,
-          EnumSet<Modifier> modifiers){
+      AnalysisInputLocation srcNamespace,
+      Path sourcePath,
+      JavaClassType classType,
+      JavaClassType superClass,
+      Set<JavaClassType> interfaces,
+      JavaClassType outerClass,
+      Set<SootField> sootFields,
+      Set<SootMethod> sootMethods,
+      Position position,
+      EnumSet<Modifier> modifiers) {
     super(srcNamespace, classType, sourcePath);
 
     this.delegate = null;
@@ -98,7 +95,6 @@ public class ClassSourceController extends ClassSource {
     this.overriddenOuterClass = Optional.ofNullable(outerClass);
     this.overriddenPosition = true;
     this.position = position;
-
   }
 
   @Nonnull
@@ -142,10 +138,7 @@ public class ClassSourceController extends ClassSource {
     return overriddenPosition ? position : delegate.resolvePosition();
   }
 
-  /**
-   *
-   */
-
+  /** */
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -156,48 +149,48 @@ public class ClassSourceController extends ClassSource {
     }
     ClassSourceController that = (ClassSourceController) o;
     return Objects.equals(this.overriddenSuperclass, that.overriddenSuperclass)
-            && Objects.equals(this.overriddenInterfaces, that.overriddenInterfaces)
-            && Objects.equals(this.overriddenOuterClass, that.overriddenOuterClass)
-            && Objects.equals(this.overriddenSootFields, that.overriddenSootFields)
-            && Objects.equals(this.overriddenSootMethods, that.overriddenSootMethods)
-            && Objects.equals(position, that.position)
-            && Objects.equals(this.overriddenModifiers, that.overriddenModifiers)
-            && Objects.equals(this.classSignature, that.classSignature);
+        && Objects.equals(this.overriddenInterfaces, that.overriddenInterfaces)
+        && Objects.equals(this.overriddenOuterClass, that.overriddenOuterClass)
+        && Objects.equals(this.overriddenSootFields, that.overriddenSootFields)
+        && Objects.equals(this.overriddenSootMethods, that.overriddenSootMethods)
+        && Objects.equals(position, that.position)
+        && Objects.equals(this.overriddenModifiers, that.overriddenModifiers)
+        && Objects.equals(this.classSignature, that.classSignature);
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(
-            this.overriddenSuperclass,
-            this.overriddenInterfaces,
-            this.overriddenOuterClass,
-            this.overriddenSootFields,
-            this.overriddenSootMethods,
-            this.position,
-            this.overriddenModifiers,
-            this.classSignature);
+        this.overriddenSuperclass,
+        this.overriddenInterfaces,
+        this.overriddenOuterClass,
+        this.overriddenSootFields,
+        this.overriddenSootMethods,
+        this.position,
+        this.overriddenModifiers,
+        this.classSignature);
   }
 
   @Override
   public String toString() {
     return "frontend.EagerJavaClassSource{"
-            + "superClass="
-            + this.overriddenSuperclass
-            + ", interfaces="
-            + this.overriddenInterfaces
-            + ", outerClass="
-            + this.overriddenOuterClass
-            + ", sootFields="
-            + this.overriddenSootFields
-            + ", sootMethods="
-            + this.overriddenSootMethods
-            + ", position="
-            + this.position
-            + ", modifiers="
-            + this.overriddenModifiers
-            + ", classType="
-            + this.classSignature
-            + '}';
+        + "superClass="
+        + this.overriddenSuperclass
+        + ", interfaces="
+        + this.overriddenInterfaces
+        + ", outerClass="
+        + this.overriddenOuterClass
+        + ", sootFields="
+        + this.overriddenSootFields
+        + ", sootMethods="
+        + this.overriddenSootMethods
+        + ", position="
+        + this.position
+        + ", modifiers="
+        + this.overriddenModifiers
+        + ", classType="
+        + this.classSignature
+        + '}';
   }
 
   @Nonnull
