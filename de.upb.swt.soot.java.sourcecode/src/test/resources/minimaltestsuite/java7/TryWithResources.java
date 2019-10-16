@@ -12,10 +12,4 @@ class TryWithResources{
             }
         }
     }
-
-  public static void main(String[] args) throws  Exception{
-    TryWithResources tryWithResources = new TryWithResources();
-
-    tryWithResources.printFile();
-  }
 }
