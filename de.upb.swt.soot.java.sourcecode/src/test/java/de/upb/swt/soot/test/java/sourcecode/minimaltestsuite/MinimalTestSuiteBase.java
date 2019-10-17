@@ -1,11 +1,13 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.frontend.ClassSource;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -16,7 +18,6 @@ import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
 import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -109,10 +110,7 @@ public abstract class MinimalTestSuiteBase {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     assertEquals(expectedStmts, actualStmts);
   }
