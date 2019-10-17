@@ -12,7 +12,6 @@ class DeclareInnerClass{
         innerClass.methodDisplayInner();
     }
 
-
   public static void main(String[] args) {
         DeclareInnerClass declareInnerClass = new DeclareInnerClass();
         declareInnerClass.methodDisplayOuter();
