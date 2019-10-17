@@ -5,6 +5,4 @@ public class StaticVariable {
     public static void staticVariable(){
         System.out.println(num);
     }
-
-    
 }

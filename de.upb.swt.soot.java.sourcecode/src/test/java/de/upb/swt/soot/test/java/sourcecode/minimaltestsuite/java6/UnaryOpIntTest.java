@@ -1,40 +1,40 @@
-/*Author Kaustubh Kelkar*/
-
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertTrue;
-
-import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
 
-/** @author Kaustubh Kelkar */
-public class StaticMethodTest extends MinimalTestSuiteBase {
+public class UnaryOpIntTest extends MinimalTestSuiteBase {
 
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "staticMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "methodUnaryOpInt", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   @Test
   @Override
   public void defaultTest() {
     super.defaultTest();
-    SootMethod method = loadMethod(expectedBodyStmts(), getMethodSignature());
-    assertTrue(method.isStatic());
+    /**
+     * TODO Do we need to check the type of variable as int?
+     * assertTrue(getFields().stream().anyMatch(sootField -> {return
+     * sootField.getType().equals("int");}));
+     */
   }
 
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$r0 = <java.lang.System: java.io.PrintStream out>",
-            "virtualinvoke $r0.<java.io.PrintStream: void println(java.lang.String)>(\"static method\")",
+            "r0 := @this: UnaryOpInt",
+            "$i0 = r0.<UnaryOpInt: int i>",
+            "$i1 = r0.<UnaryOpInt: int j>",
+            "$i2 = $i0 + $i1",
             "return")
-        .collect(Collectors.toList());
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 }
