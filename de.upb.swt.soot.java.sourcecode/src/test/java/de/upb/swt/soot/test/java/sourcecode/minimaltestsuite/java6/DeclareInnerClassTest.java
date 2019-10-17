@@ -1,6 +1,5 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
@@ -36,9 +35,6 @@ public class DeclareInnerClassTest extends MinimalTestSuiteBase {
             "r0 := @this: DeclareInnerClass",
             "$r1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r1.<java.io.PrintStream: void println(java.lang.String)>(\"methodDisplayOuter\")",
-            "$r2 = new DeclareInnerClass1$InnerClass",
-            "specialinvoke $r2.<DeclareInnerClass1$InnerClass: void <init>()>()",
-            "virtualinvoke $r2.<DeclareInnerClass1$InnerClass: void methodDisplayInner()>()",
             "return")
         .collect(Collectors.toList());
   }
