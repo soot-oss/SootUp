@@ -5,9 +5,13 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.inputlocation.*;
+import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.inputlocation.PathUtils;
 import de.upb.swt.soot.core.signatures.ModulePackageName;
 import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.util.StreamUtils;
 import java.io.IOException;
 import java.net.URI;
@@ -38,11 +42,12 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType signature) {
-    if (signature.getPackageName() instanceof ModulePackageName) {
-      return this.getClassSourceInternalForModule(signature);
+      @Nonnull ReferenceType classType) {
+    JavaClassType klassType = (JavaClassType) classType;
+    if (klassType.getPackageName() instanceof ModulePackageName) {
+      return this.getClassSourceInternalForModule(klassType);
     }
-    return this.getClassSourceInternalForClassPath(signature);
+    return this.getClassSourceInternalForClassPath(klassType);
   }
 
   private @Nonnull Optional<AbstractClassSource> getClassSourceInternalForClassPath(
