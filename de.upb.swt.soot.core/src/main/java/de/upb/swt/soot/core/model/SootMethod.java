@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableList;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
@@ -37,6 +38,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -255,6 +257,25 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   @Nonnull
   public SootMethod withThrownExceptions(Iterable<JavaClassType> thrownExceptions) {
     return new SootMethod(methodSource, getSignature(), getModifiers(), thrownExceptions);
+  }
+
+  @Nonnull
+  public SootMethod withBody(@Nullable Body body) {
+    return new SootMethod(
+        new OverridingMethodSource(methodSource).withBody(body),
+        getSignature(),
+        getModifiers(),
+        exceptions);
+  }
+
+  /** @see OverridingMethodSource#withBodyStmts(Consumer) */
+  @Nonnull
+  public SootMethod withBodyStmts(Consumer<List<Stmt>> stmtModifier) {
+    return new SootMethod(
+        new OverridingMethodSource(methodSource).withBodyStmts(stmtModifier),
+        getSignature(),
+        getModifiers(),
+        exceptions);
   }
 
   /**

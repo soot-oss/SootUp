@@ -61,7 +61,7 @@ public class OverridingMethodSource implements MethodSource {
    * If the body is resolved as null, this method throws {@link IllegalStateException}.
    */
   @Nonnull
-  public OverridingMethodSource withBodyStmts(Consumer<List<Stmt>> stmtModifier) {
+  public OverridingMethodSource withBodyStmts(@Nonnull Consumer<List<Stmt>> stmtModifier) {
     Body body = resolveBody();
     if (body == null) {
       throw new IllegalStateException(
