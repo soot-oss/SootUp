@@ -23,7 +23,7 @@ import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class IfElseStatementTest {
-
+  // TODO extends MinimalTestSuiteBase
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
   private String className = "IfElseStatement";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();

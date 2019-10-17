@@ -23,7 +23,7 @@ import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class DoWhileLoopTest {
-
+  // TODO extends MinimalTestSuiteBase
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
   private String className = "DoWhileLoop";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();

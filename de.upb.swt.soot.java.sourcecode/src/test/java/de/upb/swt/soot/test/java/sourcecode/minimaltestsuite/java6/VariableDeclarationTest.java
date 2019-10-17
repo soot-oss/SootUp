@@ -27,7 +27,7 @@ public class VariableDeclarationTest {
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
   private String className = "VariableDeclaration";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
-
+  // TODO extends MinimalTestSuiteBase
   @Before
   public void loadClasses() {
     loadClassesWithWala.classLoader(srcDir, className);

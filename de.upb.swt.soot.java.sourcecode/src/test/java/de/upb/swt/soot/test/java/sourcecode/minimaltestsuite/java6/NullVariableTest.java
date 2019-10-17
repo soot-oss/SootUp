@@ -26,7 +26,7 @@ public class NullVariableTest {
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
   private String className = "NullVariable";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();
-
+  // TODO extends MinimalTestSuiteBase
   @Before
   public void loadClasses() {
     loadClassesWithWala.classLoader(srcDir, className);

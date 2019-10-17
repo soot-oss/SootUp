@@ -23,6 +23,7 @@ import org.junit.experimental.categories.Category;
 
 @Category(Java8Test.class)
 public class FinalMethodTest {
+  // TODO extends MinimalTestSuiteBase
   private String srcDir = "src/test/resources/minimaltestsuite/java6/";
   private String className = "FinalMethod";
   private LoadClassesWithWala loadClassesWithWala = new LoadClassesWithWala();

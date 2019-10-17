@@ -1,25 +1,28 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.*;
+import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.Method;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -104,10 +107,7 @@ public abstract class MinimalTestSuiteBase {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     assertEquals(expectedStmts, actualStmts);
     return method;
