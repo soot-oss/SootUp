@@ -46,9 +46,8 @@ import de.upb.swt.soot.core.validation.TrapsValidator;
 import de.upb.swt.soot.core.validation.UsesValidator;
 import de.upb.swt.soot.core.validation.ValidationException;
 import de.upb.swt.soot.core.validation.ValueBoxesValidator;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -261,16 +260,11 @@ public final class Body implements Copyable {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    ByteArrayOutputStream streamOut = new ByteArrayOutputStream();
-    PrintWriter writerOut = new PrintWriter(new EscapedWriter(new OutputStreamWriter(streamOut)));
-    try {
+    StringWriter writer = new StringWriter();
+    try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
       new Printer().printTo(this, writerOut);
-    } catch (RuntimeException e) {
-      throw new RuntimeException();
     }
-    writerOut.flush();
-    writerOut.close();
-    return streamOut.toString();
+    return writer.toString();
   }
 
   @Nullable
