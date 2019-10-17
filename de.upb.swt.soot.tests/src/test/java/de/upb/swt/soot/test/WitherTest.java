@@ -55,21 +55,13 @@ public class WitherTest {
     assertNotNull(body);
 
     // Let's change a name of a variable deep down in the body of a method of a class
+    JIdentityStmt stmt = (JIdentityStmt) body.getStmts().get(0);
+    Local local = (Local) stmt.getLeftOp();
+    Local newLocal = local.withName("newName");
+    Stmt newStmt = stmt.withLocal(newLocal);
     SootClass newSootClass =
-        sootClass.withOverridingClassSource(
-            overridingClassSource -> {
-              SootMethod newMethod =
-                  method.withOverridingMethodSource(
-                      methodSource -> {
-                        JIdentityStmt stmt = (JIdentityStmt) body.getStmts().get(0);
-                        Local local = (Local) stmt.getLeftOp();
-                        Local newLocal = local.withName("newName");
-                        Stmt newStmt = stmt.withLocal(newLocal);
-
-                        return methodSource.withBodyStmts(newStmts -> newStmts.set(0, newStmt));
-                      });
-              return overridingClassSource.withReplacedMethod(method, newMethod);
-            });
+        sootClass.withReplacedMethod(
+            method, method.withBodyStmts(newStmts -> newStmts.set(0, newStmt)));
 
     Optional<SootMethod> newM = newSootClass.getMethod(method.getSignature());
     assertTrue(newM.isPresent());

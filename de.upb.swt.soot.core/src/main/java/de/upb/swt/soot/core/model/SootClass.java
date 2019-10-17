@@ -32,11 +32,13 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /*
  * Incomplete and inefficient implementation.
@@ -441,5 +443,57 @@ public class SootClass extends AbstractClass<ClassSource> {
   @Nonnull
   public SootClass withSourceType(SourceType sourceType) {
     return new SootClass(classSource, sourceType);
+  }
+
+  // Convenience withers that delegate to an OverridingClassSource
+
+  @Nonnull
+  public SootClass withReplacedMethod(
+      @Nonnull SootMethod toReplace, @Nonnull SootMethod replacement) {
+    return new SootClass(
+        new OverridingClassSource(classSource).withReplacedMethod(toReplace, replacement),
+        sourceType);
+  }
+
+  @Nonnull
+  public SootClass withMethods(@Nonnull Collection<SootMethod> methods) {
+    return new SootClass(new OverridingClassSource(classSource).withMethods(methods), sourceType);
+  }
+
+  @Nonnull
+  public SootClass withReplacedField(@Nonnull SootField toReplace, @Nonnull SootField replacement) {
+    return new SootClass(
+        new OverridingClassSource(classSource).withReplacedField(toReplace, replacement),
+        sourceType);
+  }
+
+  @Nonnull
+  public SootClass withFields(@Nonnull Collection<SootField> fields) {
+    return new SootClass(new OverridingClassSource(classSource).withFields(fields), sourceType);
+  }
+
+  @Nonnull
+  public SootClass withModifiers(@Nonnull Set<Modifier> modifiers) {
+    return new SootClass(
+        new OverridingClassSource(classSource).withModifiers(modifiers), sourceType);
+  }
+
+  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+  @Nonnull
+  public SootClass withSuperclass(@Nonnull Optional<JavaClassType> superclass) {
+    return new SootClass(
+        new OverridingClassSource(classSource).withSuperclass(superclass), sourceType);
+  }
+
+  @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+  @Nonnull
+  public SootClass withOuterClass(@Nonnull Optional<JavaClassType> outerClass) {
+    return new SootClass(
+        new OverridingClassSource(classSource).withOuterClass(outerClass), sourceType);
+  }
+
+  @Nonnull
+  public SootClass withPosition(@Nullable Position position) {
+    return new SootClass(new OverridingClassSource(classSource).withPosition(position), sourceType);
   }
 }
