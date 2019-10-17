@@ -1,3 +1,7 @@
+
+/** @author: Hasitha Rajapakse */
+
+
 public class WhileLoop {
 
     public void whileLoop(){

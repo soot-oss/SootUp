@@ -1,17 +1,17 @@
-package de.upb.soot.java6;
+
+/** @author: Hasitha Rajapakse */
+
 
 public class ContinueInWhileLoop {
 
-    public int continueInWhileLoop(int num1, int num2){
-        int total = 0;
-        while (num1 > num2){
-            if(num1==0) {
+    public void continueInWhileLoop(){
+        int num = 0;
+        while (num < 10) {
+            if (num == 5) {
+                num++;
                 continue;
             }
-            total += num1;
-            num1--;
-            System.out.println("Current total is = " + total);
+            num++;
         }
-        return total;
     }
 }

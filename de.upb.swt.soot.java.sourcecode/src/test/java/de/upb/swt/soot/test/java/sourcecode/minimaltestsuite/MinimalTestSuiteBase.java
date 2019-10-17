@@ -1,28 +1,26 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.frontend.ClassSource;
+import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
+import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
+import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
 import java.io.File;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -30,28 +28,29 @@ import org.junit.experimental.categories.Category;
 /**
  * @author: Markus Schmidt,
  * @author: Hasitha Rajapakse
- * @author: Kaustubh Kelkar
  */
 @Category(Java8Test.class)
 public abstract class MinimalTestSuiteBase {
 
+  private WalaClassLoader loader;
   static final String baseDir = "src/test/resources/minimaltestsuite/";
   protected DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
-  private View view;
-
-  public abstract MethodSignature getMethodSignature();
-
-  public abstract List<String> expectedBodyStmts();
 
   @Before
   public void init() {
+    loader =
+        new WalaClassLoader(
+            baseDir + File.separator + getTestDirectoryName() + File.separator, null);
+  }
 
-    AnalysisInputLocation walaSource =
-        new JavaSourcePathAnalysisInputLocation(
-            Collections.singleton(
-                baseDir + File.separator + getTestDirectoryName() + File.separator));
-    de.upb.swt.soot.core.Project<AnalysisInputLocation> p = new Project<>(walaSource);
-    view = p.createOnDemandView();
+  public MethodSignature getMethodSignature() {
+    fail("getMethodSignature() is used but not overridden");
+    return null;
+  }
+
+  public List<String> expectedBodyStmts() {
+    fail("expectedBodyStmts() is used but not overridden");
+    return null;
   }
 
   /**
@@ -90,26 +89,35 @@ public abstract class MinimalTestSuiteBase {
   }
 
   public SootClass loadClass(JavaClassType clazz) {
-    Optional<AbstractClass<? extends AbstractClassSource>> sc = view.getClass(clazz);
-    assertTrue("no matching class signature found", sc.isPresent());
-    return (SootClass) sc.get();
+    Optional<ClassSource> cs = loader.getClassSource(clazz);
+    assertTrue("no matching class signature found", cs.isPresent());
+    ClassSource classSource = cs.get();
+    return new SootClass(classSource, SourceType.Application);
   }
 
   public SootMethod loadMethod(List<String> expectedStmts, MethodSignature methodSignature) {
-    Optional<AbstractClass<? extends AbstractClassSource>> cs =
-        view.getClass(methodSignature.getDeclClassType());
-    assertTrue("no matching class signature found", cs.isPresent());
+    Optional<SootMethod> m = WalaClassLoaderTestUtils.getSootMethod(loader, methodSignature);
 
-    Optional<? extends Method> m = cs.get().getMethod(methodSignature);
     assertTrue("No matching method signature found", m.isPresent());
-    SootMethod method = (SootMethod) m.get();
+    SootMethod method = m.get();
     Utils.print(method, false);
+    assertJimpleStmts(method, expectedStmts);
+    return method;
+  }
+
+  public void assertJimpleStmts(SootMethod method, List<String> expectedStmts) {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
+    List<String> actualStmts =
+        body.getStmts().stream()
+            .map(Stmt::toString)
+            .collect(Collectors.toCollection(ArrayList::new));
 
     assertEquals(expectedStmts, actualStmts);
-    return method;
+  }
+
+  public List<String> expectedBodyStmts(String... jimpleLines) {
+    return Stream.of(jimpleLines).collect(Collectors.toList());
   }
 }
