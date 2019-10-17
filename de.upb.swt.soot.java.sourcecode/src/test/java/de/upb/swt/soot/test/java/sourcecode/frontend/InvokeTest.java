@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.JavaClassType;
@@ -51,10 +50,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -82,10 +78,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -114,10 +107,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -143,10 +133,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -177,10 +164,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -207,10 +191,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -237,10 +218,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -250,13 +228,16 @@ public class InvokeTest {
                 "$r3 = \"A\"",
                 "$r4 = \"B\"",
                 "$z0 = $r3 == $r4",
-                "if $z0 == 0 goto $z1 = 5 < 3",
+                "if $z0 == 0 goto label1",
                 "return",
+                "label1:",
                 "$z1 = 5 < 3",
-                "if $z1 == 0 goto $z2 = 5.0 < 3.0",
+                "if $z1 == 0 goto label2",
                 "return",
+                "label2:",
                 "$z2 = 5.0 < 3.0",
-                "if $z2 == 0 goto return",
+                "if $z2 == 0 goto label3",
+                "label3:",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -277,10 +258,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -309,10 +287,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -339,10 +314,7 @@ public class InvokeTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
