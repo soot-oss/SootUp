@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.inputlocation;
  */
 
 import java.util.EnumSet;
-
 import javax.annotation.Nonnull;
 
 /**
