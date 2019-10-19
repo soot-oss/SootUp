@@ -7,6 +7,7 @@ import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.MethodSource;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
@@ -45,7 +46,10 @@ public class ModuleCompositionTest {
 
     // Create a project
     Project<JavaClassPathAnalysisInputLocation> p =
-        new Project<>(new JavaClassPathAnalysisInputLocation(jarFile, new AsmJavaClassProvider()));
+        new Project<>(
+            new JavaClassPathAnalysisInputLocation(jarFile, new AsmJavaClassProvider()),
+            DefaultIdentifierFactory.getInstance(),
+            DefaultSourceTypeSpecifier.getInstance());
 
     // Get the view
     View view = p.createOnDemandView();

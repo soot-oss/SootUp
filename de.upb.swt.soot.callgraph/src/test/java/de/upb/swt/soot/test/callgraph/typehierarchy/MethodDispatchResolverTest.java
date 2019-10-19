@@ -5,9 +5,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
+import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -44,7 +46,11 @@ public class MethodDispatchResolverTest {
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(
             jarFile + File.pathSeparator + rtJarClassPath, new AsmJavaClassProvider());
-    Project<JavaClassPathAnalysisInputLocation> p = new Project<>(analysisInputLocation);
+    Project<JavaClassPathAnalysisInputLocation> p =
+        new Project<>(
+            analysisInputLocation,
+            DefaultIdentifierFactory.getInstance(),
+            DefaultSourceTypeSpecifier.getInstance());
     view = p.createOnDemandView();
   }
 
