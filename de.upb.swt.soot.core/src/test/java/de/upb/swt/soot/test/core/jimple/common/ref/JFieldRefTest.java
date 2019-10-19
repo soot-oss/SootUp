@@ -8,6 +8,7 @@ import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -34,7 +35,11 @@ public class JFieldRefTest {
 
   @Before
   public void setUp() {
-    Project project = new Project<>(new EagerInputLocation());
+    Project project =
+        new Project<>(
+            new EagerInputLocation(),
+            DefaultIdentifierFactory.getInstance(),
+            DefaultSourceTypeSpecifier.getInstance());
     view = project.createOnDemandView();
   }
 

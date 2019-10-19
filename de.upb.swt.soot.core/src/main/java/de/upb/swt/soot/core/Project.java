@@ -27,13 +27,6 @@ public class Project<S extends AnalysisInputLocation> {
   @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
 
   /** Create a project from an arbitrary list of input locations */
-  public Project(@Nonnull S inputLocation) {
-    this(
-        Collections.singleton(inputLocation),
-        DefaultIdentifierFactory.getInstance(),
-        DefaultSourceTypeSpecifier.getInstance());
-  }
-
   public Project(@Nonnull S inputLocation, @Nonnull IdentifierFactory identifierFactory) {
     this(
         Collections.singleton(inputLocation),
@@ -41,11 +34,11 @@ public class Project<S extends AnalysisInputLocation> {
         DefaultSourceTypeSpecifier.getInstance());
   }
 
-  public Project(@Nonnull S inputLocation, @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    this(
-        Collections.singleton(inputLocation),
-        DefaultIdentifierFactory.getInstance(),
-        sourceTypeSpecifier);
+  public Project(
+      @Nonnull S inputLocation,
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+    this(Collections.singleton(inputLocation), identifierFactory, sourceTypeSpecifier);
   }
 
   /** Create a project from an arbitrary list of input locations */

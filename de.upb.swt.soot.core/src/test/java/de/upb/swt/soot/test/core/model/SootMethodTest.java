@@ -4,9 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.EagerMethodSource;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
@@ -30,7 +32,11 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    Project p = new Project<>(new EagerInputLocation());
+    Project p =
+        new Project<>(
+            new EagerInputLocation(),
+            DefaultIdentifierFactory.getInstance(),
+            DefaultSourceTypeSpecifier.getInstance());
     View view = p.createOnDemandView();
     JavaClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
