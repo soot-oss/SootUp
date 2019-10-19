@@ -30,7 +30,7 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.util.StreamUtils;
 import java.io.File;
 import java.io.IOException;
@@ -148,7 +148,7 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType signature) {
+      @Nonnull ReferenceType signature) {
     for (AbstractAnalysisInputLocation ns : cpEntries) {
       final Optional<? extends AbstractClassSource> classSource = ns.getClassSource(signature);
       if (classSource.isPresent()) {

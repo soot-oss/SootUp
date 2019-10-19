@@ -4,7 +4,7 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.nio.file.Paths;
@@ -62,7 +62,7 @@ public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLo
 
   @Override
   @Nonnull
-  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
+  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull ReferenceType type) {
     for (String path : sourcePaths) {
       try {
         return Optional.of(getClassProvider().createClassSource(this, Paths.get(path), type));
