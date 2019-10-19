@@ -330,7 +330,7 @@ public class SootClass extends AbstractClass<ClassSource> {
   }
 
   public boolean isJavaLibraryClass() {
-    return classSignature.isJavaLibraryClass();
+    return classSignature.isBuiltInClass();
   }
 
   /** Returns true if this class is a phantom class. */

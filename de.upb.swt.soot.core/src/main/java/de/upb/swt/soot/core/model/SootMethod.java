@@ -186,8 +186,8 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   }
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
-  public boolean isJavaLibraryMethod() {
-    return getSignature().getDeclClassType().isJavaLibraryClass();
+  public boolean isBuiltInMethod() {
+    return getSignature().getDeclClassType().isBuiltInClass();
   }
 
   /**
