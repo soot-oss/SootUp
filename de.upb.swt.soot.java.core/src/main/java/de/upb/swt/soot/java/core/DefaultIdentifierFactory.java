@@ -8,11 +8,7 @@ import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.NullType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -219,7 +215,7 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
   @Override
   public MethodSignature getMethodSignature(
       final String methodName,
-      final JavaClassType declaringClassSignature,
+      final ClassType declaringClassSignature,
       final String fqReturnType,
       final List<String> parameters) {
     Type returnType = getType(fqReturnType);
@@ -235,7 +231,7 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
   @Override
   public MethodSignature getMethodSignature(
       final String methodName,
-      final JavaClassType declaringClassSignature,
+      final ClassType declaringClassSignature,
       final Type fqReturnType,
       final List<Type> parameters) {
 
@@ -252,7 +248,7 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
   @Override
   @Nonnull
   public MethodSignature getMethodSignature(
-      @Nonnull JavaClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature) {
+      @Nonnull ClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature) {
     return new MethodSignature(declaringClassSignature, subSignature);
   }
 
@@ -506,21 +502,21 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
 
   @Override
   public FieldSignature getFieldSignature(
-      final String fieldName, final JavaClassType declaringClassSignature, final String fieldType) {
+      final String fieldName, final ClassType declaringClassSignature, final String fieldType) {
     Type type = getType(fieldType);
     return new FieldSignature(declaringClassSignature, fieldName, type);
   }
 
   @Override
   public FieldSignature getFieldSignature(
-      final String fieldName, final JavaClassType declaringClassSignature, final Type fieldType) {
+      final String fieldName, final ClassType declaringClassSignature, final Type fieldType) {
     return new FieldSignature(declaringClassSignature, fieldName, fieldType);
   }
 
   @Override
   @Nonnull
   public FieldSignature getFieldSignature(
-      @Nonnull JavaClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature) {
+      @Nonnull ClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature) {
     return new FieldSignature(declaringClassSignature, subSignature);
   }
 
