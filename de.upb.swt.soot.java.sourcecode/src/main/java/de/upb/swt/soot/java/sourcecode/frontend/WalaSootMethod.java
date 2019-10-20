@@ -2,7 +2,7 @@ package de.upb.swt.soot.java.sourcecode.frontend;
 
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
 import de.upb.swt.soot.core.frontend.MethodSource;
-import de.upb.swt.soot.core.frontend.MethodSourceController;
+import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
@@ -44,9 +44,9 @@ public class WalaSootMethod extends SootMethod {
 
   @Nonnull
   public SootMethod withOverridingMethodSource(
-      Function<MethodSourceController, MethodSourceController> overrider) {
+      Function<OverridingMethodSource, OverridingMethodSource> overrider) {
     return new WalaSootMethod(
-        overrider.apply(new MethodSourceController(methodSource)),
+        overrider.apply(new OverridingMethodSource(methodSource)),
         getSignature(),
         getModifiers(),
         exceptions,
