@@ -23,6 +23,4 @@ package de.upb.swt.soot.core.types;
  */
 
 /** Represents the signature of a Java type, e.g., a class, an array type, or null. */
-public abstract class ReferenceType extends Type {
-  public abstract boolean isBuiltInClass();
-}
+public abstract class ReferenceType extends Type {}

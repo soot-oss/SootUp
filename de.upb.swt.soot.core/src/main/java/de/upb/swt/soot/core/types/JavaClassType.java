@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
-public class JavaClassType extends ReferenceType {
+public class JavaClassType extends ClassType {
 
   /**
    * Sometimes we need to know which class is a JDK class. There is no simple way to distinguish a
