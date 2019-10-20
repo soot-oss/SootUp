@@ -8,7 +8,6 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.signatures.ClassSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.views.View;
 import java.nio.file.FileSystem;
@@ -19,7 +18,7 @@ import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
 /** Represents the unique fully-qualified name of a Class (aka its signature). */
-public class JavaClassType extends ReferenceType implements ClassSignature {
+public class JavaClassType extends ReferenceType {
 
   /**
    * Sometimes we need to know which class is a JDK class. There is no simple way to distinguish a

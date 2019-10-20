@@ -1,7 +1,7 @@
 package de.upb.swt.soot.core.inputlocation;
 
 import de.upb.swt.soot.core.model.SourceType;
-import de.upb.swt.soot.core.signatures.ClassSignature;
+import de.upb.swt.soot.core.types.ReferenceType;
 
 /**
  * Implements a very basic Version of a Source Specifier
@@ -19,7 +19,7 @@ public class DefaultSourceTypeSpecifier implements SourceTypeSpecifier {
 
   private DefaultSourceTypeSpecifier() {}
 
-  public SourceType sourceTypeFor(ClassSignature type) {
+  public SourceType sourceTypeFor(ReferenceType type) {
     if (type.isBuiltInClass()) {
       return SourceType.Library;
     }

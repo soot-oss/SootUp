@@ -47,4 +47,9 @@ public class ArrayType extends ReferenceType {
   public int getDimension() {
     return dimension;
   }
+
+  @Override
+  public boolean isBuiltInClass() {
+    return baseType instanceof ReferenceType && ((ReferenceType) baseType).isBuiltInClass();
+  }
 }

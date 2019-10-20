@@ -41,4 +41,9 @@ public class NullType extends ReferenceType {
   public String toString() {
     return "null";
   }
+
+  @Override
+  public boolean isBuiltInClass() {
+    return true;
+  }
 }
