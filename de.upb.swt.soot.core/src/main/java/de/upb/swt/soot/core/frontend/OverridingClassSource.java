@@ -17,11 +17,11 @@ import javax.annotation.Nullable;
  * delegates to the {@link ClassSource} delegate provided in the constructor.
  *
  * <p>To alter the results of invocations to e.g. {@link #resolveFields()}, simply call {@link
- * #withFields(Collection)} to obtain a new {@link ClassSourceController}. The new instance will
+ * #withFields(Collection)} to obtain a new {@link OverridingClassSource}. The new instance will
  * then use the supplied value instead of calling {@link #resolveFields()} on the delegate.
  */
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "OptionalAssignedToNull"})
-public class ClassSourceController extends ClassSource {
+public class OverridingClassSource extends ClassSource {
 
   @Nullable private final Collection<SootMethod> overriddenSootMethods;
   @Nullable private final Collection<SootField> overriddenSootFields;
@@ -37,7 +37,7 @@ public class ClassSourceController extends ClassSource {
 
   private final ClassSource delegate;
 
-  public ClassSourceController(@Nonnull ClassSource delegate) {
+  public OverridingClassSource(@Nonnull ClassSource delegate) {
     super(delegate.srcNamespace, delegate.classSignature, delegate.sourcePath);
     this.delegate = delegate;
     overriddenSootMethods = null;
@@ -50,7 +50,7 @@ public class ClassSourceController extends ClassSource {
     position = null;
   }
 
-  private ClassSourceController(
+  private OverridingClassSource(
       @Nullable Collection<SootMethod> overriddenSootMethods,
       @Nullable Collection<SootField> overriddenSootFields,
       @Nullable Set<Modifier> overriddenModifiers,
@@ -73,7 +73,7 @@ public class ClassSourceController extends ClassSource {
   }
 
   /** Class source where all information already available */
-  public ClassSourceController(
+  public OverridingClassSource(
       AnalysisInputLocation srcNamespace,
       Path sourcePath,
       JavaClassType classType,
@@ -147,7 +147,7 @@ public class ClassSourceController extends ClassSource {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ClassSourceController that = (ClassSourceController) o;
+    OverridingClassSource that = (OverridingClassSource) o;
     return Objects.equals(this.overriddenSuperclass, that.overriddenSuperclass)
         && Objects.equals(this.overriddenInterfaces, that.overriddenInterfaces)
         && Objects.equals(this.overriddenOuterClass, that.overriddenOuterClass)
@@ -194,15 +194,15 @@ public class ClassSourceController extends ClassSource {
   }
 
   @Nonnull
-  public ClassSourceController withReplacedMethod(SootMethod toReplace, SootMethod replacement) {
+  public OverridingClassSource withReplacedMethod(SootMethod toReplace, SootMethod replacement) {
     Set<SootMethod> newMethods = new HashSet<>(resolveMethods());
     CollectionUtils.replace(newMethods, toReplace, replacement);
     return withMethods(newMethods);
   }
 
   @Nonnull
-  public ClassSourceController withMethods(Collection<SootMethod> overriddenSootMethods) {
-    return new ClassSourceController(
+  public OverridingClassSource withMethods(Collection<SootMethod> overriddenSootMethods) {
+    return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -215,15 +215,15 @@ public class ClassSourceController extends ClassSource {
   }
 
   @Nonnull
-  public ClassSourceController withReplacedField(SootField toReplace, SootField replacement) {
+  public OverridingClassSource withReplacedField(SootField toReplace, SootField replacement) {
     Set<SootField> newFields = new HashSet<>(resolveFields());
     CollectionUtils.replace(newFields, toReplace, replacement);
     return withFields(newFields);
   }
 
   @Nonnull
-  public ClassSourceController withFields(Collection<SootField> overriddenSootFields) {
-    return new ClassSourceController(
+  public OverridingClassSource withFields(Collection<SootField> overriddenSootFields) {
+    return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -236,8 +236,8 @@ public class ClassSourceController extends ClassSource {
   }
 
   @Nonnull
-  public ClassSourceController withModifiers(Set<Modifier> overriddenModifiers) {
-    return new ClassSourceController(
+  public OverridingClassSource withModifiers(Set<Modifier> overriddenModifiers) {
+    return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -250,8 +250,8 @@ public class ClassSourceController extends ClassSource {
   }
 
   @Nonnull
-  public ClassSourceController withInterfaces(Set<JavaClassType> overriddenInterfaces) {
-    return new ClassSourceController(
+  public OverridingClassSource withInterfaces(Set<JavaClassType> overriddenInterfaces) {
+    return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -264,8 +264,8 @@ public class ClassSourceController extends ClassSource {
   }
 
   @Nonnull
-  public ClassSourceController withSuperclass(Optional<JavaClassType> overriddenSuperclass) {
-    return new ClassSourceController(
+  public OverridingClassSource withSuperclass(Optional<JavaClassType> overriddenSuperclass) {
+    return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -278,8 +278,8 @@ public class ClassSourceController extends ClassSource {
   }
 
   @Nonnull
-  public ClassSourceController withOuterClass(Optional<JavaClassType> overriddenOuterClass) {
-    return new ClassSourceController(
+  public OverridingClassSource withOuterClass(Optional<JavaClassType> overriddenOuterClass) {
+    return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -292,8 +292,8 @@ public class ClassSourceController extends ClassSource {
   }
 
   @Nonnull
-  public ClassSourceController withPosition(@Nullable Position position) {
-    return new ClassSourceController(
+  public OverridingClassSource withPosition(@Nullable Position position) {
+    return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
