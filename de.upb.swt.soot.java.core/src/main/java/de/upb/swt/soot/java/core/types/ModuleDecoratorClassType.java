@@ -1,7 +1,7 @@
 package de.upb.swt.soot.java.core.types;
 
 import com.google.common.base.Objects;
-import de.upb.swt.soot.core.signatures.ModuleSignature;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
 
 public class ModuleDecoratorClassType extends JavaClassType {
 

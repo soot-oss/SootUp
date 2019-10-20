@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.signatures;
+package de.upb.swt.soot.java.core.signatures;
 
 /*-
  * #%L
@@ -23,6 +23,7 @@ package de.upb.swt.soot.core.signatures;
  */
 
 import com.google.common.base.Objects;
+import de.upb.swt.soot.core.signatures.Signature;
 import scala.collection.script.Remove;
 
 // TODO Rename this too?

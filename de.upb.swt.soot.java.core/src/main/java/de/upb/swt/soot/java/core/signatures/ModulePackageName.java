@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.signatures;
+package de.upb.swt.soot.java.core.signatures;
 
 /*-
  * #%L
@@ -24,6 +24,7 @@ package de.upb.swt.soot.core.signatures;
 
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.IdentifierFactory;
+import de.upb.swt.soot.core.signatures.PackageName;
 
 /** Represents the signature of a Java 9 package, referencing its module. */
 public class ModulePackageName extends PackageName {
