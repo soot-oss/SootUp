@@ -155,7 +155,6 @@ public class ClassConstant implements Constant {
 
   @Override
   public Type getType() {
-    // TODO: [JMP] Used cached instance
     return DefaultIdentifierFactory.getInstance().getType("java.lang.Class");
   }
 

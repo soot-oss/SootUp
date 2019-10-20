@@ -2,7 +2,6 @@ package de.upb.swt.soot.core.buildactor;
 
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.views.JavaView;
 import de.upb.swt.soot.core.views.View;
 import javax.annotation.Nonnull;
 
@@ -22,13 +21,17 @@ public class ViewBuilder<S extends AnalysisInputLocation> {
 
   @Nonnull
   public View buildComplete() {
+    // TODO [ms] commented out due to refactoring (language independence)
+    /*
     JavaView<S> javaView = new JavaView<>(project);
     javaView.getClasses(); // Forces a full resolve
     return javaView;
+     */
+    return null;
   }
 
   @Nonnull
   public View buildOnDemand() {
-    return new JavaView<>(this.project);
+    return new JavaView<S>(this.project);
   }
 }

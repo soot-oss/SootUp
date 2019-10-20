@@ -11,7 +11,7 @@ import javax.annotation.Nonnull;
 
 public class MethodType implements Constant, Copyable {
 
-  // FIXME: adapt this class
+  // FIXME: [AD] adapt this class
   private final Type returnType;
   private final List<Type> parameterTypes;
 

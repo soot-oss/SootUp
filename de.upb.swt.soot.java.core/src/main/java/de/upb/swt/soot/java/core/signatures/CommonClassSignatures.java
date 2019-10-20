@@ -1,7 +1,7 @@
-package de.upb.swt.soot.core.signatures;
+package de.upb.swt.soot.java.core.signatures;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
 
 /**
  * Features class signatures for commonly used standard classes from the JDK
