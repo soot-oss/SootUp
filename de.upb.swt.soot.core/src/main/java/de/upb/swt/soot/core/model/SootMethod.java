@@ -24,7 +24,7 @@ package de.upb.swt.soot.core.model;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import de.upb.swt.soot.core.frontend.MethodSource;
-import de.upb.swt.soot.core.frontend.MethodSourceController;
+import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
@@ -228,15 +228,15 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   }
 
   /**
-   * Creates a new SootMethod based on a new {@link MethodSourceController}. This is useful to
+   * Creates a new SootMethod based on a new {@link OverridingMethodSource}. This is useful to
    * change selected parts of a {@link SootMethod} without recreating a {@link MethodSource}
-   * completely. {@link MethodSourceController} allows for replacing the body of a method.
+   * completely. {@link OverridingMethodSource} allows for replacing the body of a method.
    */
   @Nonnull
   public SootMethod withOverridingMethodSource(
-      Function<MethodSourceController, MethodSourceController> overrider) {
+      Function<OverridingMethodSource, OverridingMethodSource> overrider) {
     return new SootMethod(
-        overrider.apply(new MethodSourceController(methodSource)),
+        overrider.apply(new OverridingMethodSource(methodSource)),
         getSignature(),
         getModifiers(),
         exceptions);
