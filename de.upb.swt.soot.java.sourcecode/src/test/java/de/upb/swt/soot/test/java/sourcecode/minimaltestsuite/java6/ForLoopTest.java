@@ -23,18 +23,20 @@ public class ForLoopTest extends MinimalTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: ForLoop",
-            "$i0 = 10", // j
-            "$i1 = 0", // num
-            "$i2 = 0", // i
+            "$i0 = 10",
+            "$i1 = 0",
+            "$i2 = 0",
+            "label1:",
             "$z0 = $i2 < $i0",
-            "if $z0 == 0 goto return",
+            "if $z0 == 0 goto label2",
             "$i3 = $i1",
             "$i4 = $i1 + 1",
             "$i1 = $i4",
             "$i5 = $i2",
             "$i6 = $i2 + 1",
             "$i2 = $i6",
-            "goto [?= $z0 = $i2 < $i0]",
+            "goto label1",
+            "label2:",
             "return")
         .collect(Collectors.toList());
   }
