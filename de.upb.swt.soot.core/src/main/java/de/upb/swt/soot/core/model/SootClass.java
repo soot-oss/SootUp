@@ -166,7 +166,7 @@ public class SootClass extends AbstractClass<ClassSource> {
 
   /**
    * Attempts to retrieve the methodRef with the given signature, parameters and return type. If no
-   * matching methodRef can be found, null is returned.
+   * matching method can be found, null is returned.
    */
   @Nonnull
   public Optional<SootMethod> getMethod(@Nonnull MethodSignature signature) {
@@ -176,9 +176,8 @@ public class SootClass extends AbstractClass<ClassSource> {
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given name and parameters. This methodRef may throw
-   * an AmbiguousMethodException if there is more than one methodRef with the given name and
-   * parameter.
+   * Attempts to retrieve the method with the given name and parameters. This method may throw an
+   * AmbiguousMethodException if there is more than one method with the given name and parameter.
    */
   @Nonnull
   public Optional<SootMethod> getMethod(String name, Iterable<? extends Type> parameterTypes) {
@@ -189,14 +188,14 @@ public class SootClass extends AbstractClass<ClassSource> {
                     && Iterables.elementsEqual(parameterTypes, method.getParameterTypes()))
         .reduce(
             (l, r) -> {
-              throw new RuntimeException("ambiguous methodRef: " + name);
+              throw new RuntimeException("ambiguous method: " + name);
             });
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given subSignature. This methodRef may throw an
-   * AmbiguousMethodException if there are more than one methodRef with the given subSignature. If
-   * no methodRef with the given is found, null is returned.
+   * Attempts to retrieve the method with the given subSignature. This method may throw an
+   * AmbiguousMethodException if there are more than one method with the given subSignature. If no
+   * method with the given is found, null is returned.
    */
   @Nonnull
   public Optional<SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
@@ -272,7 +271,7 @@ public class SootClass extends AbstractClass<ClassSource> {
     return lazyOuterClass.get().isPresent();
   }
 
-  /** This methodRef returns the outer class. */
+  /** This method returns the outer class. */
   public @Nonnull Optional<ClassType> getOuterClass() {
     return lazyOuterClass.get();
   }
@@ -287,17 +286,17 @@ public class SootClass extends AbstractClass<ClassSource> {
     return classSignature;
   }
 
-  /** Convenience methodRef; returns true if this class is an interface. */
+  /** Convenience method; returns true if this class is an interface. */
   public boolean isInterface() {
     return Modifier.isInterface(this.getModifiers());
   }
 
-  /** Convenience methodRef; returns true if this class is an enumeration. */
+  /** Convenience method; returns true if this class is an enumeration. */
   public boolean isEnum() {
     return Modifier.isEnum(this.getModifiers());
   }
 
-  /** Convenience methodRef; returns true if this class is synchronized. */
+  /** Convenience method; returns true if this class is synchronized. */
   public boolean isSynchronized() {
     return Modifier.isSynchronized(this.getModifiers());
   }
@@ -307,7 +306,7 @@ public class SootClass extends AbstractClass<ClassSource> {
     return !isInterface() && !isAbstract();
   }
 
-  /** Convenience methodRef; returns true if this class is public. */
+  /** Convenience method; returns true if this class is public. */
   public boolean isPublic() {
     return Modifier.isPublic(this.getModifiers());
   }
@@ -338,27 +337,27 @@ public class SootClass extends AbstractClass<ClassSource> {
     return sourceType.equals(SourceType.Phantom);
   }
 
-  /** Convenience methodRef returning true if this class is private. */
+  /** Convenience method returning true if this class is private. */
   public boolean isPrivate() {
     return Modifier.isPrivate(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this class is protected. */
+  /** Convenience method returning true if this class is protected. */
   public boolean isProtected() {
     return Modifier.isProtected(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this class is abstract. */
+  /** Convenience method returning true if this class is abstract. */
   public boolean isAbstract() {
     return Modifier.isAbstract(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this class is final. */
+  /** Convenience method returning true if this class is final. */
   public boolean isFinal() {
     return Modifier.isFinal(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this class is static. */
+  /** Convenience method returning true if this class is static. */
   public boolean isStatic() {
     return Modifier.isStatic(this.getModifiers());
   }
@@ -377,7 +376,7 @@ public class SootClass extends AbstractClass<ClassSource> {
   // ClassFlagsValidator());
   //
   // /**
-  // * Validates this SootClass for logical errors. Note that this does not validate the methodRef
+  // * Validates this SootClass for logical errors. Note that this does not validate the method
   // bodies, only the class
   // * structure.
   // */
@@ -390,7 +389,7 @@ public class SootClass extends AbstractClass<ClassSource> {
   // }
   //
   // /**
-  // * Validates this SootClass for logical errors. Note that this does not validate the methodRef
+  // * Validates this SootClass for logical errors. Note that this does not validate the method
   // bodies, only the class
   // * structure. All found errors are saved into the given list.
   // */
