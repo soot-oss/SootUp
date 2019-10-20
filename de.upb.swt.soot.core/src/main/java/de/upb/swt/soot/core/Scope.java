@@ -2,7 +2,7 @@ package de.upb.swt.soot.core;
 
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.NotYetImplementedException;
 
 /**
@@ -24,11 +24,11 @@ public class Scope {
   }
 
   /** Define a scope consists of multiple classes. */
-  public Scope(JavaClassType... classSignatures) {
+  public Scope(ClassType... classSignatures) {
     // TODO Auto-generated constructor stub
   }
 
-  public Scope withStartingSignature(JavaClassType classSignature) {
+  public Scope withStartingSignature(ClassType classSignature) {
     throw new NotYetImplementedException();
   }
 }

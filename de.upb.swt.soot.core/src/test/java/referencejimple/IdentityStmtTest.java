@@ -17,7 +17,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.VoidType;
 import java.net.URI;
@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 /** @author Markus Schmidt */
 public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
-  JavaClassType classSignature;
+  ClassType classSignature;
 
   @Override
   public void build() {
@@ -44,7 +44,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
 
-    JavaClassType superClassSignature = dif.getClassType("java.lang.Object");
+    ClassType superClassSignature = dif.getClassType("java.lang.Object");
     classSignature = dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
 
     Set<SootField> fields = new LinkedHashSet<>();
@@ -100,7 +100,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     List<Trap> traps = new LinkedList<>();
     List<Stmt> stmts = new LinkedList<>();
 
-    JavaClassType typeSignature = dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
+    ClassType typeSignature = dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt");
     //    new RefType(view, dsm.getTypeSignature("de.upb.soot.instructions.stmt.IdentityStmt"));
     //    RefType type = RefType.getInstance("de.upb.soot.instructions.stmt.IdentityStmt");
 

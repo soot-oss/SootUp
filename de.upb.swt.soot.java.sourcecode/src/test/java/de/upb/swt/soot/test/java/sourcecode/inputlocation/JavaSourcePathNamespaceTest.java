@@ -5,14 +5,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collection;

@@ -94,7 +94,7 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.ReferenceType;
@@ -703,7 +703,7 @@ public class Jimple {
   }
 
   public static JTrap newTrap(
-      JavaClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
+      ClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
     return new JTrap(exception, beginStmt, endStmt, handlerStmt);
   }
 }

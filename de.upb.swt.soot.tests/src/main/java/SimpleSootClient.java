@@ -1,11 +1,11 @@
 import com.ibm.wala.ipa.callgraph.CallGraph;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.util.Collections;
 

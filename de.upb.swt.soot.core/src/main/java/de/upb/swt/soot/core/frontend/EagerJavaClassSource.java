@@ -5,7 +5,7 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -22,9 +22,9 @@ import javax.annotation.Nonnull;
  */
 public class EagerJavaClassSource extends ClassSource {
 
-  private final JavaClassType superClass;
-  private final Set<JavaClassType> interfaces;
-  private final JavaClassType outerClass;
+  private final ClassType superClass;
+  private final Set<ClassType> interfaces;
+  private final ClassType outerClass;
   private final Set<SootField> sootFields;
   private final Set<SootMethod> sootMethods;
   private final Position position;
@@ -33,10 +33,10 @@ public class EagerJavaClassSource extends ClassSource {
   public EagerJavaClassSource(
       AnalysisInputLocation srcNamespace,
       Path sourcePath,
-      JavaClassType classType,
-      JavaClassType superClass,
-      Set<JavaClassType> interfaces,
-      JavaClassType outerClass,
+      ClassType classType,
+      ClassType superClass,
+      Set<ClassType> interfaces,
+      ClassType outerClass,
       Set<SootField> sootFields,
       Set<SootMethod> sootMethods,
       Position position,
@@ -72,19 +72,19 @@ public class EagerJavaClassSource extends ClassSource {
 
   @Nonnull
   @Override
-  public Set<JavaClassType> resolveInterfaces() {
+  public Set<ClassType> resolveInterfaces() {
     return interfaces;
   }
 
   @Nonnull
   @Override
-  public Optional<JavaClassType> resolveSuperclass() {
+  public Optional<ClassType> resolveSuperclass() {
     return Optional.ofNullable(superClass);
   }
 
   @Nonnull
   @Override
-  public Optional<JavaClassType> resolveOuterClass() {
+  public Optional<ClassType> resolveOuterClass() {
     return Optional.ofNullable(outerClass);
   }
 

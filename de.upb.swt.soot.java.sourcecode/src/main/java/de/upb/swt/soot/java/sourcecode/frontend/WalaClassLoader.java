@@ -21,7 +21,7 @@ import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

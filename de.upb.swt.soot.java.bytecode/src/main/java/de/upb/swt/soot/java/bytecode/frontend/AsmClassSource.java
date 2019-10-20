@@ -1,6 +1,5 @@
 package de.upb.swt.soot.java.bytecode.frontend;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
@@ -11,8 +10,9 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.views;
+package de.upb.swt.soot.java.core.views;
 
 import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.Project;
@@ -6,9 +6,10 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.core.views.AbstractView;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;

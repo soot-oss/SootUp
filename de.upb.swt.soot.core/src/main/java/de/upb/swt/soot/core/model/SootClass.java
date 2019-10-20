@@ -29,7 +29,7 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import java.util.Collection;
@@ -74,7 +74,7 @@ public class SootClass extends AbstractClass<ClassSource> {
   }
 
   private final SourceType sourceType;
-  @Nonnull private final JavaClassType classSignature;
+  @Nonnull private final ClassType classSignature;
 
   // TODO: [JMP] Create type signature for this dummy type and move it closer to its usage.
   @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
@@ -214,7 +214,7 @@ public class SootClass extends AbstractClass<ClassSource> {
     return lazyModifiers.get();
   }
 
-  private final Supplier<Set<JavaClassType>> lazyInterfaces =
+  private final Supplier<Set<ClassType>> lazyInterfaces =
       Suppliers.memoize(classSource::resolveInterfaces);
 
   /**
@@ -231,13 +231,13 @@ public class SootClass extends AbstractClass<ClassSource> {
    * Returns a backed Chain of the interfaces that are directly implemented by this class. (see
    * getInterfaceCount())
    */
-  public Set<JavaClassType> getInterfaces() {
+  public Set<ClassType> getInterfaces() {
     return lazyInterfaces.get();
   }
 
   /** Does this class directly implement the given interface? (see getInterfaceCount()) */
-  public boolean implementsInterface(JavaClassType classSignature) {
-    for (JavaClassType sc : getInterfaces()) {
+  public boolean implementsInterface(ClassType classSignature) {
+    for (ClassType sc : getInterfaces()) {
       if (sc.equals(classSignature)) {
         return true;
       }
@@ -245,7 +245,7 @@ public class SootClass extends AbstractClass<ClassSource> {
     return false;
   }
 
-  private final Supplier<Optional<JavaClassType>> lazySuperclass =
+  private final Supplier<Optional<ClassType>> lazySuperclass =
       Suppliers.memoize(classSource::resolveSuperclass);
 
   /**
@@ -261,11 +261,11 @@ public class SootClass extends AbstractClass<ClassSource> {
    * WARNING: interfaces are subclasses of the java.lang.Object class! Returns the superclass of
    * this class. (see hasSuperclass())
    */
-  public Optional<JavaClassType> getSuperclass() {
+  public Optional<ClassType> getSuperclass() {
     return lazySuperclass.get();
   }
 
-  private final Supplier<Optional<JavaClassType>> lazyOuterClass =
+  private final Supplier<Optional<ClassType>> lazyOuterClass =
       Suppliers.memoize(classSource::resolveOuterClass);
 
   public boolean hasOuterClass() {
@@ -273,7 +273,7 @@ public class SootClass extends AbstractClass<ClassSource> {
   }
 
   /** This methodRef returns the outer class. */
-  public @Nonnull Optional<JavaClassType> getOuterClass() {
+  public @Nonnull Optional<ClassType> getOuterClass() {
     return lazyOuterClass.get();
   }
 
@@ -283,7 +283,7 @@ public class SootClass extends AbstractClass<ClassSource> {
 
   /** Returns the ClassSignature of this class. */
   @Override
-  public JavaClassType getType() {
+  public ClassType getType() {
     return classSignature;
   }
 
@@ -480,14 +480,14 @@ public class SootClass extends AbstractClass<ClassSource> {
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   @Nonnull
-  public SootClass withSuperclass(@Nonnull Optional<JavaClassType> superclass) {
+  public SootClass withSuperclass(@Nonnull Optional<ClassType> superclass) {
     return new SootClass(
         new OverridingClassSource(classSource).withSuperclass(superclass), sourceType);
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   @Nonnull
-  public SootClass withOuterClass(@Nonnull Optional<JavaClassType> outerClass) {
+  public SootClass withOuterClass(@Nonnull Optional<ClassType> outerClass) {
     return new SootClass(
         new OverridingClassSource(classSource).withOuterClass(outerClass), sourceType);
   }

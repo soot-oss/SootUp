@@ -6,7 +6,7 @@ import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

@@ -23,9 +23,9 @@
 package referencejimple;
 
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.util.printer.Printer;

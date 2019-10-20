@@ -1,5 +1,6 @@
-package de.upb.swt.soot.core.inputlocation;
+package de.upb.swt.soot.core;
 
+import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 

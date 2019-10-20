@@ -2,7 +2,6 @@ package de.upb.swt.soot.core;
 
 import de.upb.swt.soot.core.buildactor.ViewBuilder;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.util.NotYetImplementedException;
 import de.upb.swt.soot.core.views.View;

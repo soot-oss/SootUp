@@ -4,7 +4,7 @@ import com.google.common.base.Objects;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SourceType;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,18 +14,18 @@ public abstract class AbstractClassSource {
   protected final Path sourcePath;
   // TODO: AD unfortunately I need to change it in the ModuleFinder, since I only know a module's
   // name after resolving its module-info.class
-  protected JavaClassType classSignature;
+  protected ClassType classSignature;
 
   public AbstractClassSource(
       @Nonnull AnalysisInputLocation srcNamespace,
-      @Nonnull JavaClassType classSignature,
+      @Nonnull ClassType classSignature,
       @Nonnull Path sourcePath) {
     this.srcNamespace = srcNamespace;
     this.classSignature = classSignature;
     this.sourcePath = sourcePath;
   }
 
-  public JavaClassType getClassType() {
+  public ClassType getClassType() {
     return classSignature;
   }
 
@@ -36,7 +36,7 @@ public abstract class AbstractClassSource {
     return sourcePath;
   }
 
-  public void setClassSignature(JavaClassType classSignature) {
+  public void setClassSignature(ClassType classSignature) {
     this.classSignature = classSignature;
   }
 

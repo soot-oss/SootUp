@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,7 +1,7 @@
 package de.upb.swt.soot.core.signatures;
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 public class MethodSignature extends AbstractClassMemberSignature {
 
   public MethodSignature(
-      JavaClassType declaringClassSignature,
+      ClassType declaringClassSignature,
       String methodName,
       Iterable<Type> parameters,
       Type fqReturnType) {
@@ -25,7 +25,7 @@ public class MethodSignature extends AbstractClassMemberSignature {
    * @param subSignature the sub-signature
    */
   public MethodSignature(
-      final @Nonnull JavaClassType declaringClass, final @Nonnull MethodSubSignature subSignature) {
+      final @Nonnull ClassType declaringClass, final @Nonnull MethodSubSignature subSignature) {
     super(declaringClass, subSignature);
 
     this._subSignature = subSignature;

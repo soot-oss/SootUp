@@ -24,7 +24,7 @@ package de.upb.swt.soot.core.model;
 import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.signatures.AbstractClassMemberSignature;
 import de.upb.swt.soot.core.signatures.AbstractClassMemberSubSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.builder.AbstractBuilder;
 import de.upb.swt.soot.core.util.builder.BuilderException;
@@ -50,7 +50,7 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
 
   /** Returns the SootClass declaring this one. */
   @Nonnull
-  public JavaClassType getDeclaringClassType() {
+  public ClassType getDeclaringClassType() {
     return this._signature.getDeclClassType();
   }
 

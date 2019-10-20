@@ -22,8 +22,8 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
  * #L%
  */
 import categories.Java8Test;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.Test;

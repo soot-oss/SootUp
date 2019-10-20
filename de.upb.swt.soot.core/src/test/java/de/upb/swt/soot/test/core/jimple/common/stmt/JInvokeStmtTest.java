@@ -40,7 +40,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,7 +65,7 @@ public class JInvokeStmtTest {
     DefaultIdentifierFactory dif = DefaultIdentifierFactory.getInstance();
 
     Path dummyPath = Paths.get(URI.create("file:/nonexistent.java"));
-    JavaClassType superClassSignature = dif.getClassType("java.lang.Object");
+    ClassType superClassSignature = dif.getClassType("java.lang.Object");
     Set<SootField> fields = new LinkedHashSet<>();
     Set<SootMethod> methods = new LinkedHashSet<>();
     EagerJavaClassSource javaClassSource =

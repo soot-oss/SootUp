@@ -5,7 +5,7 @@ import de.upb.swt.soot.core.Options;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.AbstractClass;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
@@ -38,7 +38,7 @@ public interface View {
    * @return A class with given signature.
    */
   @Nonnull
-  Optional<AbstractClass<? extends AbstractClassSource>> getClass(@Nonnull JavaClassType signature);
+  Optional<AbstractClass<? extends AbstractClassSource>> getClass(@Nonnull ClassType signature);
 
   /**
    * Returns the scope if the view is scoped.
@@ -49,12 +49,12 @@ public interface View {
   Optional<Scope> getScope();
 
   //  /**
-  //   * Returns the {@link JavaClassType} with given class Signature from the view. If there
+  //   * Returns the {@link ClassType} with given class Signature from the view. If there
   // is no RefType with given className
   //   * exists, create a new instance.
   //   */
   //  @Nonnull
-  //  JavaClassType getRefType(@Nonnull Type classSignature);
+  //  ClassType getRefType(@Nonnull Type classSignature);
 
   /** Returns the {@link IdentifierFactory} for this view. */
   @Nonnull
@@ -104,7 +104,7 @@ public interface View {
 
   //  // TODO: [JMP] This was placed in `JDynamicInvokeExpr`
   //  public Optional<SootMethod> getBootstrapMethod() {
-  //    JavaClassType signature = bsm.declClassSignature;
+  //    ClassType signature = bsm.declClassSignature;
   //    Optional<AbstractClass> op = this.getView().getClass(signature);
   //    if (op.isPresent()) {
   //      AbstractClass klass = op.get();

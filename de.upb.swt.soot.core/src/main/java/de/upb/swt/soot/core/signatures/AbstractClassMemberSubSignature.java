@@ -2,7 +2,7 @@ package de.upb.swt.soot.core.signatures;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Suppliers;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
@@ -89,7 +89,7 @@ public abstract class AbstractClassMemberSubSignature {
 
   @Nonnull
   public abstract AbstractClassMemberSignature toFullSignature(
-      @Nonnull JavaClassType declClassSignature);
+      @Nonnull ClassType declClassSignature);
 
   private final Supplier<String> _cachedToString =
       Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));

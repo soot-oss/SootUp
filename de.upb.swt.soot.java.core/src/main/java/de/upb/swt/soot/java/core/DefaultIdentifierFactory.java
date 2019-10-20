@@ -1,6 +1,7 @@
-package de.upb.swt.soot.core;
+package de.upb.swt.soot.java.core;
 
 import com.google.common.base.Preconditions;
+import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
@@ -8,11 +9,11 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;

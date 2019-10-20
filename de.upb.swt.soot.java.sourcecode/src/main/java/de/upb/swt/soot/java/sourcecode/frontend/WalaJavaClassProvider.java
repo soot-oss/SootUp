@@ -5,8 +5,8 @@ import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 

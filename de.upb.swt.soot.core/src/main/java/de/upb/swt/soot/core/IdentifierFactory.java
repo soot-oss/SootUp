@@ -7,7 +7,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import java.nio.file.Path;
@@ -49,13 +49,13 @@ public interface IdentifierFactory {
 
   MethodSignature getMethodSignature(
       String methodName,
-      JavaClassType declaringClassSignature,
+      ClassType declaringClassSignature,
       String fqReturnType,
       List<String> parameters);
 
   MethodSignature getMethodSignature(
       String methodName,
-      JavaClassType declaringClassSignature,
+      ClassType declaringClassSignature,
       Type fqReturnType,
       List<Type> parameters);
 
@@ -65,7 +65,7 @@ public interface IdentifierFactory {
 
   @Nonnull
   MethodSignature getMethodSignature(
-      @Nonnull JavaClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature);
+      @Nonnull ClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature);
 
   @Nonnull
   MethodSignature parseMethodSignature(@Nonnull String methodSignature);
@@ -83,14 +83,14 @@ public interface IdentifierFactory {
   FieldSignature parseFieldSignature(@Nonnull String fieldSignature);
 
   FieldSignature getFieldSignature(
-      String fieldName, JavaClassType declaringClassSignature, String fieldType);
+      String fieldName, ClassType declaringClassSignature, String fieldType);
 
   FieldSignature getFieldSignature(
-      String fieldName, JavaClassType declaringClassSignature, Type fieldType);
+      String fieldName, ClassType declaringClassSignature, Type fieldType);
 
   @Nonnull
   FieldSignature getFieldSignature(
-      @Nonnull JavaClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature);
+      @Nonnull ClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature);
 
   @Nonnull
   FieldSubSignature getFieldSubSignature(@Nonnull String name, @Nonnull Type type);
@@ -98,9 +98,9 @@ public interface IdentifierFactory {
   @Nonnull
   FieldSubSignature parseFieldSubSignature(@Nonnull String subSignature);
 
-  JavaClassType getClassType(String className, String packageName);
+  ClassType getClassType(String className, String packageName);
 
-  JavaClassType getClassType(String fullyQualifiedClassName);
+  ClassType getClassType(String fullyQualifiedClassName);
 
   Type getType(String typeName);
 
@@ -109,5 +109,5 @@ public interface IdentifierFactory {
 
   ArrayType getArrayType(Type baseType, int dim);
 
-  JavaClassType fromPath(Path file);
+  ClassType fromPath(Path file);
 }

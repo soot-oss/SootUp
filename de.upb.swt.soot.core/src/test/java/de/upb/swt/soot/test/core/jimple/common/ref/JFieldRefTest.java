@@ -5,10 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -19,7 +19,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -46,7 +46,7 @@ public class JFieldRefTest {
   @Ignore
   public void testJStaticFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
-    JavaClassType declaringClassSignature =
+    ClassType declaringClassSignature =
         DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
@@ -77,7 +77,7 @@ public class JFieldRefTest {
   @Ignore
   public void testJInstanceFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
-    JavaClassType declaringClassSignature =
+    ClassType declaringClassSignature =
         DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));

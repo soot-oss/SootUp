@@ -1,11 +1,12 @@
-package de.upb.swt.soot.core.types;
+package de.upb.swt.soot.java.core.types;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;

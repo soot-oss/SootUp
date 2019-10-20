@@ -1,7 +1,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 
 public class LoadClassesWithWala {

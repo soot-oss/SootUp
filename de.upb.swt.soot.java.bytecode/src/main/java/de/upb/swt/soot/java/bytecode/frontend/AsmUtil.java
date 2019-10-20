@@ -1,11 +1,11 @@
 package de.upb.swt.soot.java.bytecode.frontend;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;

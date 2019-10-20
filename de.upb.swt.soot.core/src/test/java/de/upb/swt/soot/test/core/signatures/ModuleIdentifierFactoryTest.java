@@ -12,7 +12,7 @@ import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.signatures.ModulePackageName;
 import de.upb.swt.soot.core.signatures.ModuleSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -116,13 +116,13 @@ public class ModuleIdentifierFactoryTest extends IdentifierFactoryTest {
   @Test(expected = NullPointerException.class)
   public void checkNullModule2() {
     ModuleIdentifierFactory typeFactory = ModuleIdentifierFactory.getInstance();
-    JavaClassType classSignature = typeFactory.getClassType("A", "mypackage", null);
+    ClassType classSignature = typeFactory.getClassType("A", "mypackage", null);
   }
 
   @Test
   public void testModuleInfoSignature() {
     ModuleIdentifierFactory typeFactory = ModuleIdentifierFactory.getInstance();
-    JavaClassType classSignature1 = typeFactory.getClassType("module-info");
+    ClassType classSignature1 = typeFactory.getClassType("module-info");
     assertTrue(classSignature1.isModuleInfo());
   }
 

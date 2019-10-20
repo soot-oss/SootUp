@@ -1,10 +1,9 @@
 package de.upb.swt.soot.java.core;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import java.util.Set;
 import javax.annotation.Nonnull;

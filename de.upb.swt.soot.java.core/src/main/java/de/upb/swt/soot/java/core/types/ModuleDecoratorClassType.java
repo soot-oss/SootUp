@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.types;
+package de.upb.swt.soot.java.core.types;
 
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.signatures.ModuleSignature;

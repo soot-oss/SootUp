@@ -5,10 +5,10 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.EagerMethodSource;
-import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
@@ -16,7 +16,7 @@ import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +38,7 @@ public class SootMethodTest {
             DefaultIdentifierFactory.getInstance(),
             DefaultSourceTypeSpecifier.getInstance());
     View view = p.createOnDemandView();
-    JavaClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
+    ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 
     List<Stmt> stmts = new ArrayList<>();
     LocalGenerator generator = new LocalGenerator(new HashSet<>());

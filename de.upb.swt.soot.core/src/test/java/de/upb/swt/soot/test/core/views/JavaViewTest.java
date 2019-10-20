@@ -10,7 +10,7 @@ import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.JavaView;
 import java.io.File;
@@ -31,7 +31,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class JavaViewTest {
 
-  private List<JavaClassType> signatures;
+  private List<ClassType> signatures;
   private JavaView<AnalysisInputLocation> view;
 
   public static final String jarFile =
@@ -51,7 +51,7 @@ public class JavaViewTest {
         Collections.unmodifiableList(
             inputLocation.getClassSources(DefaultIdentifierFactory.getInstance()).stream()
                 .map(AbstractClassSource::getClassType)
-                .sorted(Comparator.comparing(JavaClassType::toString))
+                .sorted(Comparator.comparing(ClassType::toString))
                 .collect(Collectors.toList()));
 
     Project<AnalysisInputLocation> project = new Project<>(inputLocation);
@@ -72,7 +72,7 @@ public class JavaViewTest {
   }
 
   private void resolveUndefinedClass() {
-    JavaClassType signature =
+    ClassType signature =
         DefaultIdentifierFactory.getInstance().getClassType("com.example.NonExistingClass");
 
     if (this.signatures.contains(signature)) {

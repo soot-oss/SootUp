@@ -10,7 +10,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +37,7 @@ public class AkkaClassResolver {
    * @return the initial resolved SootClass or an empty optional, if resolving fails
    */
   public Optional<AbstractClass<? extends AbstractClassSource>> getClass(
-      JavaClassType signature, View view, ClassSource source) {
+      ClassType signature, View view, ClassSource source) {
     // TODO: cache
 
     // TODO: decide for phantom ---> That's a good question, and how to create them ...

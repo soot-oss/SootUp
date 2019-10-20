@@ -7,4 +7,6 @@ package de.upb.swt.soot.core.types;
  */
 public abstract class ClassType extends ReferenceType {
   public abstract boolean isBuiltInClass();
+
+  public abstract String getFullyQualifiedName();
 }

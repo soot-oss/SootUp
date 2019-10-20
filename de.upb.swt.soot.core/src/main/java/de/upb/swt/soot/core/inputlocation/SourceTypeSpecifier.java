@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
  * @author Markus Schmidt
  */
 public interface SourceTypeSpecifier {
-  /** Specifies which SourceType a specific JavaClassType maps to. */
+  /** Specifies which SourceType a specific ClassType maps to. */
   @Nonnull
   SourceType sourceTypeFor(ClassType type);
 }
