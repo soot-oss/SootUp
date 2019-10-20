@@ -1,19 +1,14 @@
 package de.upb.swt.soot.core.types;
 
-import static de.upb.swt.soot.core.util.FunctionalUtils.tryCastTo;
-
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.inputlocation.FileType;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.views.View;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
 
@@ -147,18 +142,5 @@ public class JavaClassType extends ReferenceType {
     @Nonnull
     private static final Pattern SPLIT_PATTERN =
         Pattern.compile(Character.toString(SPLIT_CHAR), Pattern.LITERAL);
-  }
-
-  /**
-   * Tries to resolve this {@link JavaClassType} to the corresponding {@link SootClass}.
-   *
-   * @param view The {@link View} to resolve with.
-   * @return An {@link Optional} containing the {@link SootClass}, if the resolution was successful;
-   *     otherwise, an {@link Optional#empty() empty Optional}.
-   */
-  @Nonnull
-  public Optional<SootClass> resolve(@Nonnull View view) {
-    // TODO: [JMP] Clarify: What if cast fails? Return empty or throw cast exception?
-    return view.getClass(this).flatMap(tryCastTo(SootClass.class));
   }
 }

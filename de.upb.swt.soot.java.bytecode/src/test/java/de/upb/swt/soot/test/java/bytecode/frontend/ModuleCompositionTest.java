@@ -58,8 +58,7 @@ public class ModuleCompositionTest {
     JavaClassType utilsClassSignature = p.getIdentifierFactory().getClassType("de.upb.soot.Utils");
 
     // Resolve signature to `SootClass`
-    SootClass utilsClass =
-        utilsClassSignature.resolve(view).orElseThrow(IllegalStateException::new);
+    SootClass utilsClass = (SootClass) view.getClass(utilsClassSignature).get();
 
     // Print all methods that are loaded on-demand
     // System.out.println("Methods of " + utilsClassSignature + " class:");
