@@ -173,7 +173,7 @@ public class OverridingClassSource extends ClassSource {
 
   @Override
   public String toString() {
-    return "frontend.EagerJavaClassSource{"
+    return "frontend.OverridingClassSource{"
         + "superClass="
         + this.overriddenSuperclass
         + ", interfaces="
