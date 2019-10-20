@@ -5,6 +5,8 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
+import de.upb.swt.soot.core.views.View;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -60,5 +62,13 @@ public class JavaProject extends Project<AnalysisInputLocation> {
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     super(inputLocation, identifierFactory, sourceTypeSpecifier);
+  }
+
+  @Nonnull
+  @Override
+  public View createOnDemandView() {
+    // TODO: [ms] abstract implementation due to language independence; call it via ViewBuilder
+    // again
+    return new JavaView<>(this);
   }
 }

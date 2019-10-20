@@ -1,6 +1,5 @@
 package de.upb.swt.soot.core;
 
-import de.upb.swt.soot.core.buildactor.ViewBuilder;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.util.NotYetImplementedException;
@@ -19,7 +18,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public class Project<S extends AnalysisInputLocation> {
+public abstract class Project<S extends AnalysisInputLocation> {
 
   @Nonnull private final IdentifierFactory identifierFactory;
   @Nonnull private final List<S> inputLocations;
@@ -88,10 +87,10 @@ public class Project<S extends AnalysisInputLocation> {
   }
 
   @Nonnull
-  public View createOnDemandView() {
-    ViewBuilder<S> vb = new ViewBuilder<>(this);
-    return vb.buildOnDemand();
-  }
+  public abstract View createOnDemandView();
+  // TODO: [ms] commented/abstract due to language independence
+  // ViewBuilder<S> vb = new ViewBuilder<>(this);
+  // return vb.buildOnDemand();
 
   /**
    * Returns a partial view on the code based on the provided scope and all input locations in the

@@ -32,6 +32,8 @@ public class ViewBuilder<S extends AnalysisInputLocation> {
 
   @Nonnull
   public View buildOnDemand() {
-    return new JavaView<S>(this.project);
+    // TODO [ms] commented out due to refactoring (language independence)
+    //    return new JavaView<S>(this.project);
+    return null;
   }
 }
