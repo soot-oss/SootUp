@@ -17,8 +17,12 @@ import javax.annotation.Nullable;
  */
 
 /**
- * Allows for replacing specific parts of a class, such as fields and methods. By default, it
- * delegates to the {@link ClassSource} delegate provided in the constructor.
+ * Allows for replacing specific parts of a class, such as fields and methods or,
+ * allows to resolve classes that are batchparsed like .java files using
+ * wala java source frontend or in tests where all information is already existing.
+ *
+ * When replacing specific parts of a class by default,
+ * it delegates to the {@link ClassSource} delegate provided in the constructor.
  *
  * <p>To alter the results of invocations to e.g. {@link #resolveFields()}, simply call {@link
  * #withFields(Collection)} to obtain a new {@link OverridingClassSource}. The new instance will
