@@ -14,7 +14,10 @@ import javax.annotation.Nullable;
  */
 
 /**
- * Allows for replacing specific parts of a method. By default, it delegates to the {@link
+ * Allows for replacing specific parts of a method or,
+ * resolve methods where all information is already existing.
+ *
+ * When replacing specific parts of a method by default, it delegates to the {@link
  * MethodSource} delegate provided in the constructor.
  *
  * <p>To alter the results of invocations to e.g. {@link #resolveBody()}, simply call {@link
