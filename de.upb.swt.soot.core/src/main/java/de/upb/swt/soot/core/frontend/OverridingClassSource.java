@@ -13,6 +13,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
+ * @author: Hasitha Rajapakse
+ */
+
+/**
  * Allows for replacing specific parts of a class, such as fields and methods. By default, it
  * delegates to the {@link ClassSource} delegate provided in the constructor.
  *
@@ -20,6 +24,7 @@ import javax.annotation.Nullable;
  * #withFields(Collection)} to obtain a new {@link OverridingClassSource}. The new instance will
  * then use the supplied value instead of calling {@link #resolveFields()} on the delegate.
  */
+
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "OptionalAssignedToNull"})
 public class OverridingClassSource extends ClassSource {
 
