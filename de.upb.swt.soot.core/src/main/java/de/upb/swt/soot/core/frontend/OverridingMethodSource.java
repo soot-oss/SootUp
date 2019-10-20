@@ -14,10 +14,10 @@ import javax.annotation.Nullable;
  * MethodSource} delegate provided in the constructor.
  *
  * <p>To alter the results of invocations to e.g. {@link #resolveBody()}, simply call {@link
- * #withBody(Body)} to obtain a new {@link MethodSourceController}. The new instance will then use
+ * #withBody(Body)} to obtain a new {@link OverridingMethodSource}. The new instance will then use
  * the supplied value instead of calling {@link #resolveBody()} on the delegate.
  */
-public class MethodSourceController implements MethodSource {
+public class OverridingMethodSource implements MethodSource {
 
   private final MethodSource delegate;
 
@@ -28,14 +28,14 @@ public class MethodSourceController implements MethodSource {
 
   private final MethodSignature methodSignature;
 
-  public MethodSourceController(@Nonnull MethodSource delegate) {
+  public OverridingMethodSource(@Nonnull MethodSource delegate) {
     this.delegate = delegate;
     overriddenBody = false;
     body = null;
     this.methodSignature = null;
   }
 
-  private MethodSourceController(
+  private OverridingMethodSource(
       @Nonnull MethodSource delegate, boolean overriddenBody, @Nullable Body body) {
     this.delegate = delegate;
     this.overriddenBody = overriddenBody;
@@ -44,7 +44,7 @@ public class MethodSourceController implements MethodSource {
   }
 
   /** Method source where all information already available */
-  public MethodSourceController(MethodSignature methodSignature, Body body) {
+  public OverridingMethodSource(MethodSignature methodSignature, Body body) {
     this.delegate = null;
     this.overriddenBody = true;
     this.body = body;
@@ -64,16 +64,16 @@ public class MethodSourceController implements MethodSource {
   }
 
   @Nonnull
-  public MethodSourceController withBody(@Nullable Body body) {
-    return new MethodSourceController(delegate, true, body);
+  public OverridingMethodSource withBody(@Nullable Body body) {
+    return new OverridingMethodSource(delegate, true, body);
   }
 
   /**
-   * Creates a new {@link MethodSourceController} that replaces the statements of the method's body.
+   * Creates a new {@link OverridingMethodSource} that replaces the statements of the method's body.
    * If the body is resolved as null, this method throws {@link IllegalStateException}.
    */
   @Nonnull
-  public MethodSourceController withBodyStmts(Consumer<List<Stmt>> stmtModifier) {
+  public OverridingMethodSource withBodyStmts(Consumer<List<Stmt>> stmtModifier) {
     Body body = resolveBody();
     if (body == null) {
       throw new IllegalStateException(
