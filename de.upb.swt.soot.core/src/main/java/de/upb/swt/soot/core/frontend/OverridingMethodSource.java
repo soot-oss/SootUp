@@ -9,16 +9,14 @@ import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- * @author: Hasitha Rajapakse
- */
+/** @author: Hasitha Rajapakse */
 
 /**
- * Allows for replacing specific parts of a method or,
- * resolve methods where all information is already existing.
+ * Allows for replacing specific parts of a method or, resolve methods where all information is
+ * already existing.
  *
- * When replacing specific parts of a method by default, it delegates to the {@link
- * MethodSource} delegate provided in the constructor.
+ * <p>When replacing specific parts of a method by default, it delegates to the {@link MethodSource}
+ * delegate provided in the constructor.
  *
  * <p>To alter the results of invocations to e.g. {@link #resolveBody()}, simply call {@link
  * #withBody(Body)} to obtain a new {@link OverridingMethodSource}. The new instance will then use

@@ -12,23 +12,20 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- * @author: Hasitha Rajapakse
- */
+/** @author: Hasitha Rajapakse */
 
 /**
- * Allows for replacing specific parts of a class, such as fields and methods or,
- * allows to resolve classes that are batchparsed like .java files using
- * wala java source frontend or in tests where all information is already existing.
+ * Allows for replacing specific parts of a class, such as fields and methods or, allows to resolve
+ * classes that are batchparsed like .java files using wala java source frontend or in tests where
+ * all information is already existing.
  *
- * When replacing specific parts of a class by default,
- * it delegates to the {@link ClassSource} delegate provided in the constructor.
+ * <p>When replacing specific parts of a class by default, it delegates to the {@link ClassSource}
+ * delegate provided in the constructor.
  *
  * <p>To alter the results of invocations to e.g. {@link #resolveFields()}, simply call {@link
  * #withFields(Collection)} to obtain a new {@link OverridingClassSource}. The new instance will
  * then use the supplied value instead of calling {@link #resolveFields()} on the delegate.
  */
-
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "OptionalAssignedToNull"})
 public class OverridingClassSource extends ClassSource {
 
