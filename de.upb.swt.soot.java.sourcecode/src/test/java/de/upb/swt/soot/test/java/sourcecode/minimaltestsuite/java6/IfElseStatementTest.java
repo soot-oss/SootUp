@@ -28,14 +28,17 @@ public class IfElseStatementTest extends MinimalTestSuiteBase {
             "$i2 = 30",
             "$i3 = 0",
             "$z0 = $i0 < $i1",
-            "if $z0 == 0 goto $z1 = $i1 < $i2",
+            "if $z0 == 0 goto label1",
             "$i3 = 1",
-            "goto [?= return]",
+            "goto label3",
+            "label1:",
             "$z1 = $i1 < $i2",
-            "if $z1 == 0 goto $i3 = 3",
+            "if $z1 == 0 goto label2",
             "$i3 = 2",
-            "goto [?= return]",
+            "goto label3",
+            "label2:",
             "$i3 = 3",
+            "label3:",
             "return")
         .collect(Collectors.toList());
   }
