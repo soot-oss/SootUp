@@ -25,16 +25,19 @@ public class LabelStatementTest extends MinimalTestSuiteBase {
             "r0 := @this: LabelStatement",
             "$i0 = 20",
             "$i1 = 1",
+            "label1:",
             "$z0 = $i1 < $i0",
-            "if $z0 == 0 goto return",
+            "if $z0 == 0 goto label3",
             "$i2 = $i1 % 10",
             "$z1 = $i2 == 0",
-            "if $z1 == 0 goto $i3 = $i1",
-            "goto [?= return]",
+            "if $z1 == 0 goto label2",
+            "goto label3",
+            "label2:",
             "$i3 = $i1",
             "$i4 = $i1 + 1",
             "$i1 = $i4",
-            "goto [?= $z0 = $i1 < $i0]",
+            "goto label1",
+            "label3:",
             "return")
         .collect(Collectors.toList());
   }
