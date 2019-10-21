@@ -38,11 +38,13 @@ import de.upb.swt.soot.core.types.Type;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
@@ -52,27 +54,31 @@ import java.util.StringTokenizer;
  */
 public class Printer {
 
-  private static final int USE_ABBREVIATIONS = 0x0001;
-  private static final int ADD_JIMPLE_LN = 0x0010;
-  private int options = 0;
+  public enum Option {
+    UseAbbreviations,
+    OmitLocalsDeclaration,
+    AddJimpleLn
+  }
+
+  private final Set<Option> options = EnumSet.noneOf(Option.class);
   private static int jimpleLnNum = 0; // actual line number
 
   public Printer() {}
 
-  public boolean useAbbreviations() {
-    return (options & USE_ABBREVIATIONS) != 0;
+  private boolean useAbbreviations() {
+    return options.contains(Option.UseAbbreviations);
   }
 
-  public boolean addJimpleLn() {
-    return (options & ADD_JIMPLE_LN) != 0;
+  private boolean addJimpleLn() {
+    return options.contains(Option.AddJimpleLn);
   }
 
-  public void setOption(int opt) {
-    options |= opt;
+  public void setOption(Option opt) {
+    options.add(opt);
   }
 
-  public void clearOption(int opt) {
-    options &= ~opt;
+  public void clearOption(Option opt) {
+    options.remove(opt);
   }
 
   public int getJimpleLnNum() {
@@ -249,7 +255,9 @@ public class Printer {
 
     AbstractStmtGraph unitGraph = new BriefStmtGraph(b);
 
-    printLocalsInBody(b, printer);
+    if (!options.contains(Option.OmitLocalsDeclaration)) {
+      printLocalsInBody(b, printer);
+    }
     printStatementsInBody(b, out, printer, unitGraph);
 
     out.println("    }");
