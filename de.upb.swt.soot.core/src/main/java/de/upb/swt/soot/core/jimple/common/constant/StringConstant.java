@@ -36,7 +36,7 @@ public class StringConstant implements Constant {
   private final String value;
 
   private StringConstant(String s) {
-    this.value = s;
+    value = s;
   }
 
   public static StringConstant getInstance(String value) {
@@ -46,7 +46,7 @@ public class StringConstant implements Constant {
   // In this case, equals should be structural equality.
   @Override
   public boolean equals(Object c) {
-    return (c instanceof StringConstant && ((StringConstant) c).value.equals(this.value));
+    return (c instanceof StringConstant && ((StringConstant) c).value.equals(value));
   }
 
   /** Returns a hash code for this StringConstant object. */

@@ -45,7 +45,7 @@ public class LongConstant implements ShiftableConstant<LongConstant> {
 
   @Override
   public boolean equals(Object c) {
-    return c instanceof LongConstant && ((LongConstant) c).value == this.value;
+    return c instanceof LongConstant && ((LongConstant) c).value == value;
   }
 
   /** Returns a hash code for this DoubleConstant object. */
@@ -58,74 +58,74 @@ public class LongConstant implements ShiftableConstant<LongConstant> {
   @Nonnull
   @Override
   public LongConstant add(@Nonnull LongConstant c) {
-    return LongConstant.getInstance(this.value + c.value);
+    return LongConstant.getInstance(value + c.value);
   }
 
   @Nonnull
   @Override
   public LongConstant subtract(@Nonnull LongConstant c) {
-    return LongConstant.getInstance(this.value - c.value);
+    return LongConstant.getInstance(value - c.value);
   }
 
   @Nonnull
   @Override
   public LongConstant multiply(@Nonnull LongConstant c) {
-    return LongConstant.getInstance(this.value * c.value);
+    return LongConstant.getInstance(value * c.value);
   }
 
   @Nonnull
   @Override
   public LongConstant divide(@Nonnull LongConstant c) {
-    return LongConstant.getInstance(this.value / c.value);
+    return LongConstant.getInstance(value / c.value);
   }
 
   @Nonnull
   @Override
   public LongConstant remainder(@Nonnull LongConstant c) {
-    return LongConstant.getInstance(this.value % c.value);
+    return LongConstant.getInstance(value % c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant equalEqual(@Nonnull LongConstant c) {
-    return BooleanConstant.getInstance(this.value == c.value);
+    return BooleanConstant.getInstance(value == c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant notEqual(@Nonnull LongConstant c) {
-    return BooleanConstant.getInstance(this.value != c.value);
+    return BooleanConstant.getInstance(value != c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant lessThan(@Nonnull LongConstant c) {
-    return BooleanConstant.getInstance(this.value < c.value);
+    return BooleanConstant.getInstance(value < c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant lessThanOrEqual(@Nonnull LongConstant c) {
-    return BooleanConstant.getInstance(this.value <= c.value);
+    return BooleanConstant.getInstance(value <= c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant greaterThan(@Nonnull LongConstant c) {
-    return BooleanConstant.getInstance(this.value > c.value);
+    return BooleanConstant.getInstance(value > c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant greaterThanOrEqual(@Nonnull LongConstant c) {
-    return BooleanConstant.getInstance(this.value >= c.value);
+    return BooleanConstant.getInstance(value >= c.value);
   }
 
   /** Compares the value of LongConstant. */
   public IntConstant cmp(LongConstant c) {
-    if (this.value > c.value) {
+    if (value > c.value) {
       return IntConstant.getInstance(1);
-    } else if (this.value == c.value) {
+    } else if (value == c.value) {
       return IntConstant.getInstance(0);
     } else {
       return IntConstant.getInstance(-1);
@@ -135,43 +135,43 @@ public class LongConstant implements ShiftableConstant<LongConstant> {
   @Nonnull
   @Override
   public LongConstant negate() {
-    return LongConstant.getInstance(-(this.value));
+    return LongConstant.getInstance(-(value));
   }
 
   @Nonnull
   @Override
   public LongConstant and(@Nonnull LongConstant c) {
-    return LongConstant.getInstance(this.value & c.value);
+    return LongConstant.getInstance(value & c.value);
   }
 
   @Nonnull
   @Override
   public LongConstant or(@Nonnull LongConstant c) {
-    return LongConstant.getInstance(this.value | c.value);
+    return LongConstant.getInstance(value | c.value);
   }
 
   @Nonnull
   @Override
   public LongConstant xor(@Nonnull LongConstant c) {
-    return LongConstant.getInstance(this.value ^ c.value);
+    return LongConstant.getInstance(value ^ c.value);
   }
 
   @Nonnull
   @Override
   public LongConstant shiftLeft(@Nonnull IntConstant c) {
-    return LongConstant.getInstance(this.value << c.getValue());
+    return LongConstant.getInstance(value << c.getValue());
   }
 
   @Nonnull
   @Override
   public LongConstant shiftRight(@Nonnull IntConstant c) {
-    return LongConstant.getInstance(this.value >> c.getValue());
+    return LongConstant.getInstance(value >> c.getValue());
   }
 
   @Nonnull
   @Override
   public LongConstant unsignedShiftRight(@Nonnull IntConstant c) {
-    return LongConstant.getInstance(this.value >>> c.getValue());
+    return LongConstant.getInstance(value >>> c.getValue());
   }
 
   @Override

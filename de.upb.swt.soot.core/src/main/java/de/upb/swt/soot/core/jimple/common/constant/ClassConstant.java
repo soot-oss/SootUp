@@ -35,8 +35,8 @@ import de.upb.swt.soot.core.util.StringTools;
 public class ClassConstant implements Constant {
   private final String value;
 
-  private ClassConstant(String s) {
-    this.value = s;
+  private ClassConstant(String str) {
+    this.value = str;
   }
 
   /** Returns an instance of ClassConstant. */
@@ -140,7 +140,7 @@ public class ClassConstant implements Constant {
   // In this case, equals should be structural equality.
   @Override
   public boolean equals(Object c) {
-    return (c instanceof ClassConstant && ((ClassConstant) c).value.equals(this.value));
+    return (c instanceof ClassConstant && ((ClassConstant) c).value.equals(value));
   }
 
   /** Returns a hash code for this ClassConstant object. */

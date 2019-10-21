@@ -57,109 +57,109 @@ public class IntConstant implements ShiftableConstant<IntConstant> {
   @Nonnull
   @Override
   public IntConstant add(@Nonnull IntConstant c) {
-    return IntConstant.getInstance(this.value + c.value);
+    return IntConstant.getInstance(value + c.value);
   }
 
   @Nonnull
   @Override
   public IntConstant subtract(@Nonnull IntConstant c) {
-    return IntConstant.getInstance(this.value - c.value);
+    return IntConstant.getInstance(value - c.value);
   }
 
   @Nonnull
   @Override
   public IntConstant multiply(@Nonnull IntConstant c) {
-    return IntConstant.getInstance(this.value * c.value);
+    return IntConstant.getInstance(value * c.value);
   }
 
   @Nonnull
   @Override
   public IntConstant divide(@Nonnull IntConstant c) {
-    return IntConstant.getInstance(this.value / c.value);
+    return IntConstant.getInstance(value / c.value);
   }
 
   @Nonnull
   @Override
   public IntConstant remainder(@Nonnull IntConstant c) {
-    return IntConstant.getInstance(this.value % c.value);
+    return IntConstant.getInstance(value % c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant equalEqual(@Nonnull IntConstant c) {
-    return BooleanConstant.getInstance(this.value == c.value);
+    return BooleanConstant.getInstance(value == c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant notEqual(@Nonnull IntConstant c) {
-    return BooleanConstant.getInstance(this.value != c.value);
+    return BooleanConstant.getInstance(value != c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant lessThan(@Nonnull IntConstant c) {
-    return BooleanConstant.getInstance(this.value < c.value);
+    return BooleanConstant.getInstance(value < c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant lessThanOrEqual(@Nonnull IntConstant c) {
-    return BooleanConstant.getInstance(this.value <= c.value);
+    return BooleanConstant.getInstance(value <= c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant greaterThan(@Nonnull IntConstant c) {
-    return BooleanConstant.getInstance(this.value > c.value);
+    return BooleanConstant.getInstance(value > c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant greaterThanOrEqual(@Nonnull IntConstant c) {
-    return BooleanConstant.getInstance(this.value >= c.value);
+    return BooleanConstant.getInstance(value >= c.value);
   }
 
   @Nonnull
   @Override
   public IntConstant negate() {
-    return IntConstant.getInstance(-(this.value));
+    return IntConstant.getInstance(-(value));
   }
 
   @Nonnull
   @Override
   public IntConstant and(@Nonnull IntConstant c) {
-    return IntConstant.getInstance(this.value & c.value);
+    return IntConstant.getInstance(value & c.value);
   }
 
   @Nonnull
   @Override
   public IntConstant or(@Nonnull IntConstant c) {
-    return IntConstant.getInstance(this.value | c.value);
+    return IntConstant.getInstance(value | c.value);
   }
 
   @Nonnull
   @Override
   public IntConstant xor(@Nonnull IntConstant c) {
-    return IntConstant.getInstance(this.value ^ c.value);
+    return IntConstant.getInstance(value ^ c.value);
   }
 
   @Nonnull
   @Override
   public IntConstant shiftLeft(@Nonnull IntConstant c) {
-    return IntConstant.getInstance(this.value << c.value);
+    return IntConstant.getInstance(value << c.value);
   }
 
   @Nonnull
   @Override
   public IntConstant shiftRight(@Nonnull IntConstant c) {
-    return IntConstant.getInstance(this.value >> c.value);
+    return IntConstant.getInstance(value >> c.value);
   }
 
   @Nonnull
   @Override
   public IntConstant unsignedShiftRight(@Nonnull IntConstant c) {
-    return IntConstant.getInstance(this.value >>> c.value);
+    return IntConstant.getInstance(value >>> c.value);
   }
 
   @Override

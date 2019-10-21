@@ -57,30 +57,30 @@ public class BooleanConstant
   @Nonnull
   @Override
   public BooleanConstant equalEqual(@Nonnull BooleanConstant c) {
-    return BooleanConstant.getInstance(this.value == c.value);
+    return BooleanConstant.getInstance(value == c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant notEqual(@Nonnull BooleanConstant c) {
-    return BooleanConstant.getInstance(this.value != c.value);
+    return BooleanConstant.getInstance(value != c.value);
   }
 
   @Nonnull
   public BooleanConstant and(@Nonnull BooleanConstant c) {
-    return BooleanConstant.getInstance(this.value & c.value);
+    return BooleanConstant.getInstance(value & c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant or(@Nonnull BooleanConstant c) {
-    return BooleanConstant.getInstance(this.value | c.value);
+    return BooleanConstant.getInstance(value | c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant xor(@Nonnull BooleanConstant c) {
-    return BooleanConstant.getInstance(this.value ^ c.value);
+    return BooleanConstant.getInstance(value ^ c.value);
   }
 
   @Override
