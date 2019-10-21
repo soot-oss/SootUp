@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Composes an input location out of other inputLocations hence removing the necessity to adapt
@@ -49,10 +50,11 @@ public class CompositeInputLocation implements AnalysisInputLocation {
    * @return The {@link ClassSource} instance found or created... Or an empty Optional.
    */
   @Override
-  public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
+  public @Nonnull Optional<AbstractClassSource> getClassSource(
+      @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
     List<AbstractClassSource> result =
         inputLocations.stream()
-            .map(n -> n.getClassSource(type))
+            .map(n -> n.getClassSource(type, classLoadingOptions))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toList());
@@ -68,7 +70,8 @@ public class CompositeInputLocation implements AnalysisInputLocation {
 
   @Override
   public @Nonnull Collection<AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nullable ClassLoadingOptions classLoadingOptions) {
     // TODO Auto-generated methodRef stub
     throw new NotYetImplementedException("Getting class sources is not implemented, yet.");
   }
