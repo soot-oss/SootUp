@@ -110,6 +110,8 @@ public final class JNewArrayExpr implements Expr, Copyable {
     return useBoxes;
   }
 
+  // TODO [ms] should it ? the other [jimpleObject].getType()'s work different -
+  // they dont create a new (Array)Type (via IdentifierFactory) in getType()
   /** Returns an instance of ArrayType(). */
   @Override
   public Type getType() {
