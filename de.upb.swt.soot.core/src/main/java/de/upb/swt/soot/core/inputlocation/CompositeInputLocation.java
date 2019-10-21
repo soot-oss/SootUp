@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Composes an input location out of other inputLocations hence removing the necessity to adapt
@@ -51,7 +50,7 @@ public class CompositeInputLocation implements AnalysisInputLocation {
    */
   @Override
   public @Nonnull Optional<AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
+      @Nonnull JavaClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
     List<AbstractClassSource> result =
         inputLocations.stream()
             .map(n -> n.getClassSource(type, classLoadingOptions))
@@ -68,10 +67,37 @@ public class CompositeInputLocation implements AnalysisInputLocation {
     return result.stream().findFirst();
   }
 
+  @Nonnull
+  @Override
+  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
+    List<AbstractClassSource> result =
+        inputLocations.stream()
+            .map(n -> n.getClassSource(type))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
+    if (result.size() > 1) {
+      // FIXME: [JMP] Is an empty result better than the first item in the list?
+      // TODO: Warn here b/c of multiple results
+      return Optional.empty();
+    }
+
+    return result.stream().findFirst();
+  }
+
   @Override
   public @Nonnull Collection<AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
-      @Nullable ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
+    // TODO Auto-generated methodRef stub
+    throw new NotYetImplementedException("Getting class sources is not implemented, yet.");
+  }
+
+  @Nonnull
+  @Override
+  public Collection<? extends AbstractClassSource> getClassSources(
+      @Nonnull IdentifierFactory identifierFactory) {
     // TODO Auto-generated methodRef stub
     throw new NotYetImplementedException("Getting class sources is not implemented, yet.");
   }

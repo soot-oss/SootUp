@@ -16,6 +16,19 @@ import javax.annotation.Nullable;
 // TODO: implement sth useful - more than this dummy
 public class EagerInputLocation implements AnalysisInputLocation {
 
+  @Nonnull
+  @Override
+  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
+    return Optional.empty();
+  }
+
+  @Nonnull
+  @Override
+  public Collection<? extends AbstractClassSource> getClassSources(
+      @Nonnull IdentifierFactory identifierFactory) {
+    throw new ResolveException("getClassSources not implemented - No class sources found.");
+  }
+
   @Override
   public @Nonnull Optional<AbstractClassSource> getClassSource(
       @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {

@@ -83,8 +83,6 @@ import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.types.VoidType;
-import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.java.bytecode.interceptors.CastAndReturnInliner;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -125,8 +123,6 @@ import org.objectweb.asm.tree.VarInsnNode;
 class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
-  private static final List<BodyInterceptor> DEFAULT_BODY_INTERCEPTORS =
-      ImmutableUtils.immutableList(new CastAndReturnInliner());
 
   // private static final String METAFACTORY_SIGNATURE =
   // "<java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite "
@@ -177,25 +173,15 @@ class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private final Supplier<Set<Modifier>> lazyModifiers =
       Suppliers.memoize(() -> AsmUtil.getModifiers(access));
 
-  public AsmMethodSource(
-      int access,
-      @Nonnull String name,
-      @Nonnull String desc,
-      @Nonnull String signature,
-      @Nonnull String[] exceptions) {
-    this(access, name, desc, signature, exceptions, null);
-  }
-
-  public AsmMethodSource(
+  AsmMethodSource(
       int access,
       @Nonnull String name,
       @Nonnull String desc,
       @Nonnull String signature,
       @Nonnull String[] exceptions,
-      @Nullable List<BodyInterceptor> customBodyInterceptors) {
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
-    this.bodyInterceptors =
-        customBodyInterceptors == null ? DEFAULT_BODY_INTERCEPTORS : customBodyInterceptors;
+    this.bodyInterceptors = bodyInterceptors;
   }
 
   @Override

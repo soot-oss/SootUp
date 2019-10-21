@@ -10,20 +10,15 @@ import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
 import java.nio.file.Path;
 import java.util.List;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.ClassNode;
 
 public class AsmJavaClassProvider implements ClassProvider {
 
-  @Nullable private final List<BodyInterceptor> customBodyInterceptors;
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
-  public AsmJavaClassProvider() {
-    this(null);
-  }
-
-  public AsmJavaClassProvider(@Nullable List<BodyInterceptor> customBodyInterceptors) {
-    this.customBodyInterceptors = customBodyInterceptors;
+  public AsmJavaClassProvider(@Nonnull List<BodyInterceptor> bodyInterceptors) {
+    this.bodyInterceptors = bodyInterceptors;
   }
 
   @Override
@@ -63,7 +58,7 @@ public class AsmJavaClassProvider implements ClassProvider {
         @Nonnull String[] exceptions) {
 
       AsmMethodSource mn;
-      mn = new AsmMethodSource(access, name, desc, signature, exceptions, customBodyInterceptors);
+      mn = new AsmMethodSource(access, name, desc, signature, exceptions, bodyInterceptors);
       methods.add(mn);
       return mn;
     }

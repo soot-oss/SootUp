@@ -7,7 +7,6 @@ import de.upb.swt.soot.core.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Public interface to an input location. <code>AnalysisInputLocation</code>s are sources for {@link
@@ -27,15 +26,11 @@ public interface AnalysisInputLocation {
    * @return The source entry for that class.
    */
   @Nonnull
-  default Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
-    return getClassSource(type, null);
-  }
+  Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType type);
 
   @Nonnull
-  default Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
-    return getClassSources(identifierFactory, null);
-  }
+  Collection<? extends AbstractClassSource> getClassSources(
+      @Nonnull IdentifierFactory identifierFactory);
 
   /**
    * Create or find a class source for a given type.
@@ -45,10 +40,10 @@ public interface AnalysisInputLocation {
    */
   @Nonnull
   Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions);
+      @Nonnull JavaClassType type, @Nonnull ClassLoadingOptions classLoadingOptions);
 
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
-      @Nullable ClassLoadingOptions classLoadingOptions);
+      @Nonnull ClassLoadingOptions classLoadingOptions);
 }

@@ -27,28 +27,25 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Base class for {@link AnalysisInputLocation}s that can be located by a {@link Path} object.
  *
  * @author Andreas Dann created on 06.06.18
  */
-public class JrtFileSystemAnalysisInputLocation implements AnalysisInputLocation {
+public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInputLocation {
 
   private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
-    List<BodyInterceptor> customBodyInterceptors =
-        classLoadingOptions != null ? classLoadingOptions.getCustomBodyInterceptors() : null;
+      @Nonnull JavaClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     if (type.getPackageName() instanceof ModulePackageName) {
-      return this.getClassSourceInternalForModule(
-          type, new AsmJavaClassProvider(customBodyInterceptors));
+      return this.getClassSourceInternalForModule(type, new AsmJavaClassProvider(bodyInterceptors));
     }
     return this.getClassSourceInternalForClassPath(
-        type, new AsmJavaClassProvider(customBodyInterceptors));
+        type, new AsmJavaClassProvider(bodyInterceptors));
   }
 
   private @Nonnull Optional<AbstractClassSource> getClassSourceInternalForClassPath(
@@ -97,13 +94,12 @@ public class JrtFileSystemAnalysisInputLocation implements AnalysisInputLocation
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
-      @Nullable ClassLoadingOptions classLoadingOptions) {
-    List<BodyInterceptor> customBodyInterceptors =
-        classLoadingOptions != null ? classLoadingOptions.getCustomBodyInterceptors() : null;
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
 
     final Path archiveRoot = theFileSystem.getPath("modules");
     return walkDirectory(
-        archiveRoot, identifierFactory, new AsmJavaClassProvider(customBodyInterceptors));
+        archiveRoot, identifierFactory, new AsmJavaClassProvider(bodyInterceptors));
   }
 
   protected @Nonnull Collection<? extends AbstractClassSource> walkDirectory(

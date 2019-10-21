@@ -16,6 +16,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.signatures.ModulePackageName;
 import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -28,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @see <a
  *     href=http://docs.oracle.com/javase/9/docs/api/java/lang/module/ModuleFinder.html#of-java.nio.file.Path...->ModuleFinder</a>
  */
-public class JavaModulePathAnalysisInputLocation implements AnalysisInputLocation {
+public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInputLocation {
   private static final @Nonnull Logger logger =
       LoggerFactory.getLogger(JavaModulePathAnalysisInputLocation.class);
 
@@ -62,12 +62,14 @@ public class JavaModulePathAnalysisInputLocation implements AnalysisInputLocatio
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
-      @Nullable ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
     Preconditions.checkArgument(
         identifierFactory instanceof ModuleIdentifierFactory,
         "Factory must be a ModuleSignatureFactory");
 
-    ModuleFinder moduleFinder = new ModuleFinder(new AsmJavaClassProvider(), modulePath);
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+    ModuleFinder moduleFinder =
+        new ModuleFinder(new AsmJavaClassProvider(bodyInterceptors), modulePath);
     Set<AbstractClassSource> found = new HashSet<>();
     Collection<String> availableModules = moduleFinder.discoverAllModules();
     for (String module : availableModules) {
@@ -91,13 +93,15 @@ public class JavaModulePathAnalysisInputLocation implements AnalysisInputLocatio
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
+      @Nonnull JavaClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
 
     String modulename =
         ((ModulePackageName) type.getPackageName()).getModuleSignature().getModuleName();
     // lookup the inputLocation for the class provider from the cache and use him...
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     AnalysisInputLocation inputLocation =
-        new ModuleFinder(new AsmJavaClassProvider(), modulePath).discoverModule(modulename);
+        new ModuleFinder(new AsmJavaClassProvider(bodyInterceptors), modulePath)
+            .discoverModule(modulename);
 
     if (inputLocation == null) {
       try {

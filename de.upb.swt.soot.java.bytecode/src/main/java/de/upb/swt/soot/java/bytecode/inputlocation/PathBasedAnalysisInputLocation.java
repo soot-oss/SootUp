@@ -7,7 +7,6 @@ import com.google.common.cache.RemovalNotification;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
@@ -28,7 +27,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /*-
  * #%L
@@ -58,7 +56,7 @@ import javax.annotation.Nullable;
  *
  * @author Manuel Benz created on 22.05.18
  */
-public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLocation {
+public abstract class PathBasedAnalysisInputLocation implements BytecodeAnalysisInputLocation {
   protected final Path path;
 
   private PathBasedAnalysisInputLocation(@Nonnull Path path) {
@@ -117,10 +115,9 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
   }
 
-  ClassProvider buildClassProvider(@Nullable ClassLoadingOptions classLoadingOptions) {
-    List<BodyInterceptor> customBodyInterceptors =
-        classLoadingOptions != null ? classLoadingOptions.getCustomBodyInterceptors() : null;
-    return new AsmJavaClassProvider(customBodyInterceptors);
+  ClassProvider buildClassProvider(@Nonnull ClassLoadingOptions classLoadingOptions) {
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+    return new AsmJavaClassProvider(bodyInterceptors);
   }
 
   private static final class DirectoryBasedAnalysisInputLocation
@@ -133,13 +130,13 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     @Override
     public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
-        @Nullable ClassLoadingOptions classLoadingOptions) {
+        @Nonnull ClassLoadingOptions classLoadingOptions) {
       return walkDirectory(path, identifierFactory, buildClassProvider(classLoadingOptions));
     }
 
     @Override
     public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-        @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
+        @Nonnull JavaClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
       return getClassSourceInternal(type, path, buildClassProvider(classLoadingOptions));
     }
   }
@@ -178,7 +175,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
     @Override
     public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-        @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
+        @Nonnull JavaClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
       try {
         FileSystem fs = fileSystemCache.get(path);
         final Path archiveRoot = fs.getPath("/");
@@ -191,7 +188,7 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     @Override
     public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
         @Nonnull IdentifierFactory identifierFactory,
-        @Nullable ClassLoadingOptions classLoadingOptions) {
+        @Nonnull ClassLoadingOptions classLoadingOptions) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
         return walkDirectory(
