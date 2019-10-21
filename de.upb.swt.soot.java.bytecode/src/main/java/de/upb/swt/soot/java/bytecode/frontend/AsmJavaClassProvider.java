@@ -57,8 +57,8 @@ public class AsmJavaClassProvider implements ClassProvider {
         @Nonnull String signature,
         @Nonnull String[] exceptions) {
 
-      AsmMethodSource mn;
-      mn = new AsmMethodSource(access, name, desc, signature, exceptions, bodyInterceptors);
+      AsmMethodSource mn =
+          new AsmMethodSource(access, name, desc, signature, exceptions, bodyInterceptors);
       methods.add(mn);
       return mn;
     }
