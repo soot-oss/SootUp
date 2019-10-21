@@ -7,6 +7,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +61,8 @@ public class JavaModulePathAnalysisInputLocation implements AnalysisInputLocatio
 
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nullable ClassLoadingOptions classLoadingOptions) {
     Preconditions.checkArgument(
         identifierFactory instanceof ModuleIdentifierFactory,
         "Factory must be a ModuleSignatureFactory");
@@ -68,10 +71,10 @@ public class JavaModulePathAnalysisInputLocation implements AnalysisInputLocatio
     Set<AbstractClassSource> found = new HashSet<>();
     Collection<String> availableModules = moduleFinder.discoverAllModules();
     for (String module : availableModules) {
-      AnalysisInputLocation ns = moduleFinder.discoverModule(module);
+      AnalysisInputLocation inputLocation = moduleFinder.discoverModule(module);
       IdentifierFactory identifierFactoryWrapper = identifierFactory;
 
-      if (!(ns instanceof JrtFileSystemAnalysisInputLocation)) {
+      if (!(inputLocation instanceof JrtFileSystemAnalysisInputLocation)) {
         /*
          * we need a wrapper to create correct types for the found classes, all other ignore modules by default, or have
          * no clue about modules.
@@ -79,8 +82,8 @@ public class JavaModulePathAnalysisInputLocation implements AnalysisInputLocatio
         identifierFactoryWrapper = new IdentifierFactoryWrapper(identifierFactoryWrapper, module);
       }
 
-      // FIXME: [JMP] `ns` may be `null`
-      found.addAll(ns.getClassSources(identifierFactoryWrapper));
+      // FIXME: [JMP] `inputLocation` may be `null`
+      found.addAll(inputLocation.getClassSources(identifierFactoryWrapper, classLoadingOptions));
     }
 
     return found;
@@ -88,26 +91,27 @@ public class JavaModulePathAnalysisInputLocation implements AnalysisInputLocatio
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType signature) {
+      @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
 
     String modulename =
-        ((ModulePackageName) signature.getPackageName()).getModuleSignature().getModuleName();
-    // lookup the ns for the class provider from the cache and use him...
-    AnalysisInputLocation ns =
+        ((ModulePackageName) type.getPackageName()).getModuleSignature().getModuleName();
+    // lookup the inputLocation for the class provider from the cache and use him...
+    AnalysisInputLocation inputLocation =
         new ModuleFinder(new AsmJavaClassProvider(), modulePath).discoverModule(modulename);
 
-    if (ns == null) {
+    if (inputLocation == null) {
       try {
-        throw new ClassResolvingException("No Namespace for class " + signature);
+        throw new ClassResolvingException("No Namespace for class " + type);
       } catch (ClassResolvingException e) {
         e.printStackTrace();
-        // FIXME: [JMP] Throwing exception and catching it immediately? This causes `ns` to remain
+        // FIXME: [JMP] Throwing exception and catching it immediately? This causes `inputLocation`
+        // to remain
         // `null`.
       }
     }
 
-    // FIXME: [JMP] `ns` may be `null`
-    return ns.getClassSource(signature);
+    // FIXME: [JMP] `inputLocation` may be `null`
+    return inputLocation.getClassSource(type, classLoadingOptions);
   }
 
   private static class IdentifierFactoryWrapper implements IdentifierFactory {

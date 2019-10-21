@@ -27,6 +27,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
@@ -130,21 +131,23 @@ public class JavaClassPathAnalysisInputLocation implements AnalysisInputLocation
 
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nullable ClassLoadingOptions classLoadingOptions) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
     Set<AbstractClassSource> found = new HashSet<>();
-    for (AnalysisInputLocation ns : cpEntries) {
-      found.addAll(ns.getClassSources(identifierFactory));
+    for (AnalysisInputLocation inputLocation : cpEntries) {
+      found.addAll(inputLocation.getClassSources(identifierFactory, classLoadingOptions));
     }
     return found;
   }
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType signature) {
-    for (AnalysisInputLocation ns : cpEntries) {
-      final Optional<? extends AbstractClassSource> classSource = ns.getClassSource(signature);
+      @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
+    for (AnalysisInputLocation inputLocation : cpEntries) {
+      final Optional<? extends AbstractClassSource> classSource =
+          inputLocation.getClassSource(type, classLoadingOptions);
       if (classSource.isPresent()) {
         return classSource;
       }

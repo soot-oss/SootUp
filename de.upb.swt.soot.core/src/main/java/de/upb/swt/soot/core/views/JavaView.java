@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -15,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
@@ -97,9 +99,17 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
   private volatile boolean isFullyResolved = false;
 
+  @Nullable private final ClassLoadingOptions classLoadingOptions;
+
   /** Creates a new instance of the {@link JavaView} class. */
   public JavaView(@Nonnull Project<S> project) {
+    this(project, null);
+  }
+
+  /** Creates a new instance of the {@link JavaView} class. */
+  public JavaView(@Nonnull Project<S> project, @Nullable ClassLoadingOptions classLoadingOptions) {
     super(project);
+    this.classLoadingOptions = classLoadingOptions;
   }
 
   @Override

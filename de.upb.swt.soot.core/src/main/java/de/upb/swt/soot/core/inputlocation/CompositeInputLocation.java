@@ -45,14 +45,14 @@ public class CompositeInputLocation implements AnalysisInputLocation {
   /**
    * Provides the first class source instance found in the inputLocations represented.
    *
-   * @param signature The class to be searched.
+   * @param type The class to be searched.
    * @return The {@link ClassSource} instance found or created... Or an empty Optional.
    */
   @Override
-  public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
+  public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
     List<AbstractClassSource> result =
         inputLocations.stream()
-            .map(n -> n.getClassSource(signature))
+            .map(n -> n.getClassSource(type))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(Collectors.toList());

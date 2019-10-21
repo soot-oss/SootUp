@@ -7,6 +7,7 @@ import de.upb.swt.soot.core.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Public interface to an input location. <code>AnalysisInputLocation</code>s are sources for {@link
@@ -19,18 +20,35 @@ import javax.annotation.Nonnull;
  */
 public interface AnalysisInputLocation {
 
-  // TODO Overloads with options
-
   /**
-   * Create or find a class source for a given signature.
+   * Create or find a class source for a given type.
    *
-   * @param signature The signature of the class to be found.
+   * @param type The type of the class to be found.
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType signature);
+  default Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
+    return getClassSource(type, null);
+  }
+
+  @Nonnull
+  default Collection<? extends AbstractClassSource> getClassSources(
+      @Nonnull IdentifierFactory identifierFactory) {
+    return getClassSources(identifierFactory, null);
+  }
+
+  /**
+   * Create or find a class source for a given type.
+   *
+   * @param type The type of the class to be found.
+   * @return The source entry for that class.
+   */
+  @Nonnull
+  Optional<? extends AbstractClassSource> getClassSource(
+      @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions);
 
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory);
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nullable ClassLoadingOptions classLoadingOptions);
 }

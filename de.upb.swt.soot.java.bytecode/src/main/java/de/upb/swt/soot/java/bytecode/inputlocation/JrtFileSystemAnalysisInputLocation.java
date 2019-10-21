@@ -6,9 +6,11 @@ import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
 import de.upb.swt.soot.core.signatures.ModulePackageName;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
@@ -25,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Base class for {@link AnalysisInputLocation}s that can be located by a {@link Path} object.
@@ -37,11 +40,15 @@ public class JrtFileSystemAnalysisInputLocation implements AnalysisInputLocation
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType signature) {
-    if (signature.getPackageName() instanceof ModulePackageName) {
-      return this.getClassSourceInternalForModule(signature, new AsmJavaClassProvider());
+      @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
+    List<BodyInterceptor> customBodyInterceptors =
+        classLoadingOptions != null ? classLoadingOptions.getCustomBodyInterceptors() : null;
+    if (type.getPackageName() instanceof ModulePackageName) {
+      return this.getClassSourceInternalForModule(
+          type, new AsmJavaClassProvider(customBodyInterceptors));
     }
-    return this.getClassSourceInternalForClassPath(signature, new AsmJavaClassProvider());
+    return this.getClassSourceInternalForClassPath(
+        type, new AsmJavaClassProvider(customBodyInterceptors));
   }
 
   private @Nonnull Optional<AbstractClassSource> getClassSourceInternalForClassPath(
@@ -89,10 +96,14 @@ public class JrtFileSystemAnalysisInputLocation implements AnalysisInputLocation
   // get the factory, which I should use the create the correspond class signatures
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nullable ClassLoadingOptions classLoadingOptions) {
+    List<BodyInterceptor> customBodyInterceptors =
+        classLoadingOptions != null ? classLoadingOptions.getCustomBodyInterceptors() : null;
 
     final Path archiveRoot = theFileSystem.getPath("modules");
-    return walkDirectory(archiveRoot, identifierFactory, new AsmJavaClassProvider());
+    return walkDirectory(
+        archiveRoot, identifierFactory, new AsmJavaClassProvider(customBodyInterceptors));
   }
 
   protected @Nonnull Collection<? extends AbstractClassSource> walkDirectory(

@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 public class EagerInputLocation implements AnalysisInputLocation {
 
   @Override
-  public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType signature) {
+  public @Nonnull Optional<AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
     return Optional.empty();
   }
 

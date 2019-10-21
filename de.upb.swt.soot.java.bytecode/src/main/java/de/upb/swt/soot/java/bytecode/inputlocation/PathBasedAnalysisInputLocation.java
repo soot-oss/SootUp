@@ -8,8 +8,10 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
@@ -19,12 +21,14 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /*-
  * #%L
@@ -113,8 +117,10 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
     return Optional.of(classProvider.createClassSource(this, pathToClass, signature));
   }
 
-  ClassProvider buildClassProvider() {
-    return new AsmJavaClassProvider();
+  ClassProvider buildClassProvider(@Nullable ClassLoadingOptions classLoadingOptions) {
+    List<BodyInterceptor> customBodyInterceptors =
+        classLoadingOptions != null ? classLoadingOptions.getCustomBodyInterceptors() : null;
+    return new AsmJavaClassProvider(customBodyInterceptors);
   }
 
   private static final class DirectoryBasedAnalysisInputLocation
@@ -126,14 +132,15 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
     @Override
     public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory) {
-      return walkDirectory(path, identifierFactory, buildClassProvider());
+        @Nonnull IdentifierFactory identifierFactory,
+        @Nullable ClassLoadingOptions classLoadingOptions) {
+      return walkDirectory(path, identifierFactory, buildClassProvider(classLoadingOptions));
     }
 
     @Override
     public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-        @Nonnull JavaClassType signature) {
-      return getClassSourceInternal(signature, path, buildClassProvider());
+        @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
+      return getClassSourceInternal(type, path, buildClassProvider(classLoadingOptions));
     }
   }
 
@@ -171,11 +178,11 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
     @Override
     public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-        @Nonnull JavaClassType signature) {
+        @Nonnull JavaClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
       try {
         FileSystem fs = fileSystemCache.get(path);
         final Path archiveRoot = fs.getPath("/");
-        return getClassSourceInternal(signature, archiveRoot, buildClassProvider());
+        return getClassSourceInternal(type, archiveRoot, buildClassProvider(classLoadingOptions));
       } catch (ExecutionException e) {
         throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
       }
@@ -183,10 +190,12 @@ public abstract class PathBasedAnalysisInputLocation implements AnalysisInputLoc
 
     @Override
     public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-        @Nonnull IdentifierFactory identifierFactory) {
+        @Nonnull IdentifierFactory identifierFactory,
+        @Nullable ClassLoadingOptions classLoadingOptions) {
       try (FileSystem fs = FileSystems.newFileSystem(path, null)) {
         final Path archiveRoot = fs.getPath("/");
-        return walkDirectory(archiveRoot, identifierFactory, buildClassProvider());
+        return walkDirectory(
+            archiveRoot, identifierFactory, buildClassProvider(classLoadingOptions));
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
