@@ -24,11 +24,12 @@ public class AssertStatementTest extends MinimalTestSuiteBase {
             "r0 := @this: AssertStatement",
             "$z0 = \"\" != null",
             "$z1 = <AssertStatement: boolean $assertionsDisabled>",
-            "if $z1 == 1 goto nop",
-            "if $z0 == 1 goto nop",
+            "if $z1 == 1 goto label1",
+            "if $z0 == 1 goto label1",
             "$r1 = new java.lang.AssertionError",
             "specialinvoke $r1.<java.lang.AssertionError: void <init>()>()",
             "throw $r1",
+            "label1:",
             "nop",
             "return")
         .collect(Collectors.toList());
