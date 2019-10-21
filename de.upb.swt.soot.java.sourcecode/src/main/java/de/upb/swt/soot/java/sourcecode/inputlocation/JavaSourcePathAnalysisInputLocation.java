@@ -4,6 +4,7 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
@@ -51,16 +52,31 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
     this.exclusionFilePath = exclusionFilePath;
   }
 
+  @Nonnull
+  @Override
+  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
+    return getClassSource(type, SourcecodeClassLoadingOptions.Default);
+  }
+
+  @Nonnull
+  @Override
+  public Collection<? extends AbstractClassSource> getClassSources(
+      @Nonnull IdentifierFactory identifierFactory) {
+    return getClassSources(identifierFactory, SourcecodeClassLoadingOptions.Default);
+  }
+
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
     return new WalaClassLoader(sourcePaths, exclusionFilePath).getClassSources();
   }
 
   @Override
   @Nonnull
-  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
+  public Optional<? extends AbstractClassSource> getClassSource(
+      @Nonnull JavaClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
     for (String path : sourcePaths) {
       try {
         return Optional.of(

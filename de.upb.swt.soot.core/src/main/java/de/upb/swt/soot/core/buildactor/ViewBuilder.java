@@ -2,9 +2,11 @@ package de.upb.swt.soot.core.buildactor;
 
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.views.JavaView;
 import de.upb.swt.soot.core.views.View;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Bridges the process from bytecode representation to Soot IR (Jimple) representation
@@ -22,13 +24,23 @@ public class ViewBuilder<S extends AnalysisInputLocation> {
 
   @Nonnull
   public View buildComplete() {
-    JavaView<S> javaView = new JavaView<>(project);
+    return buildComplete(null);
+  }
+
+  @Nonnull
+  public View buildComplete(@Nullable ClassLoadingOptions classLoadingOptions) {
+    JavaView<S> javaView = new JavaView<>(project, classLoadingOptions);
     javaView.getClasses(); // Forces a full resolve
     return javaView;
   }
 
   @Nonnull
   public View buildOnDemand() {
-    return new JavaView<>(this.project);
+    return buildOnDemand(null);
+  }
+
+  @Nonnull
+  public View buildOnDemand(@Nullable ClassLoadingOptions classLoadingOptions) {
+    return new JavaView<>(this.project, classLoadingOptions);
   }
 }

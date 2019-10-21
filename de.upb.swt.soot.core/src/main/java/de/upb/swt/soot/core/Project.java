@@ -2,9 +2,11 @@ package de.upb.swt.soot.core;
 
 import de.upb.swt.soot.core.buildactor.ViewBuilder;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.util.NotYetImplementedException;
 import de.upb.swt.soot.core.views.View;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A Soot user should first define a Project instance to describe the outlines of an analysis run.
@@ -57,8 +59,13 @@ public class Project<S extends AnalysisInputLocation> {
 
   @Nonnull
   public View createOnDemandView() {
+    return createOnDemandView(null);
+  }
+
+  @Nonnull
+  public View createOnDemandView(@Nullable ClassLoadingOptions classLoadingOptions) {
     ViewBuilder<S> vb = new ViewBuilder<>(this);
-    return vb.buildOnDemand();
+    return vb.buildOnDemand(classLoadingOptions);
   }
 
   /**
