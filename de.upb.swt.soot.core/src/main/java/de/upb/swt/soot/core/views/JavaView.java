@@ -130,7 +130,12 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
       return Optional.of(sootClass);
     }
 
-    return getProject().getInputLocation().getClassSource(type).flatMap(this::getClass);
+    S inputLocation = getProject().getInputLocation();
+    if (classLoadingOptions != null) {
+      return inputLocation.getClassSource(type, classLoadingOptions).flatMap(this::getClass);
+    } else {
+      return inputLocation.getClassSource(type).flatMap(this::getClass);
+    }
   }
 
   @Nonnull
@@ -148,10 +153,14 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   private synchronized void resolveAll() {
     if (!isFullyResolved) {
       // Calling getClass fills the map
-      getProject()
-          .getInputLocation()
-          .getClassSources(getIdentifierFactory())
-          .forEach(this::getClass);
+      S inputLocation = getProject().getInputLocation();
+      if (classLoadingOptions != null) {
+        inputLocation
+            .getClassSources(getIdentifierFactory(), classLoadingOptions)
+            .forEach(this::getClass);
+      } else {
+        inputLocation.getClassSources(getIdentifierFactory()).forEach(this::getClass);
+      }
       isFullyResolved = true;
     }
   }
