@@ -102,6 +102,14 @@ public class PrimitiveType extends Type {
     return Optional.ofNullable(CACHED_SIGNATURES.get(name));
   }
 
+  public static boolean isIntLikeType(Type t) {
+    return t.equals(PrimitiveType.getInt())
+        || t.equals(PrimitiveType.getByte())
+        || t.equals(PrimitiveType.getShort())
+        || t.equals(PrimitiveType.getChar())
+        || t.equals(PrimitiveType.getBoolean());
+  }
+
   @Nonnull
   public static PrimitiveType getByte() {
     return BYTE_TYPE;
