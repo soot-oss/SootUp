@@ -84,6 +84,7 @@ import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.java.bytecode.interceptors.CastAndReturnInliner;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;

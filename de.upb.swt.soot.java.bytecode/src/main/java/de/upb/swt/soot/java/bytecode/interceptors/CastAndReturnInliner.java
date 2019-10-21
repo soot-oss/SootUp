@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.bytecode.frontend;
+package de.upb.swt.soot.java.bytecode.interceptors;
 
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
@@ -40,7 +40,7 @@ import javax.annotation.Nonnull;
  *
  * @author Steven Arzt
  */
-class CastAndReturnInliner implements BodyInterceptor {
+public class CastAndReturnInliner implements BodyInterceptor {
 
   @Nonnull
   @Override
