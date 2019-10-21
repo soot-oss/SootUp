@@ -122,7 +122,7 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
         break;
       default:
         ret =
-            this.getPrimitiveType(typeNameLowerCase)
+            getPrimitiveType(typeNameLowerCase)
                 .map(obj -> (Type) obj)
                 .orElseGet(() -> getClassType(typeName));
     }
@@ -154,7 +154,7 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
                 path.startsWith(separator) ? path.substring(separator.length()) : path)
             .replace(separator, ".");
 
-    return this.getClassType(fullyQualifiedName);
+    return getClassType(fullyQualifiedName);
   }
 
   /**
@@ -242,7 +242,7 @@ public class DefaultIdentifierFactory implements IdentifierFactory {
   @Nonnull
   public MethodSignature getMethodSignature(
       @Nonnull SootClass declaringClass, @Nonnull MethodSubSignature subSignature) {
-    return this.getMethodSignature(declaringClass.getType(), subSignature);
+    return getMethodSignature(declaringClass.getType(), subSignature);
   }
 
   @Override

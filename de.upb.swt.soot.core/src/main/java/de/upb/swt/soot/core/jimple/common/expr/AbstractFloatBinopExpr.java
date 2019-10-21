@@ -49,6 +49,8 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
     Value op2 = getOp2();
     Type op1t = op1.getType();
     Type op2t = op2.getType();
+    // TODO: [ms] possible bug? structural difference/anomaly in the first condition (op1.type &&
+    // op2.type) vs. the others (op1.type || op2.type)
     if ((op1t.equals(PrimitiveType.getInt())
             || op1t.equals(PrimitiveType.getByte())
             || op1t.equals(PrimitiveType.getShort())
