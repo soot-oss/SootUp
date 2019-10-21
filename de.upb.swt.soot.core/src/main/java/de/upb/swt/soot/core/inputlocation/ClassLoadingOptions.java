@@ -8,9 +8,4 @@ public interface ClassLoadingOptions {
 
   @Nonnull
   List<BodyInterceptor> getBodyInterceptors();
-
-  interface BodyInterceptors {
-    @Nonnull
-    List<BodyInterceptor> bodyInterceptors();
-  }
 }
