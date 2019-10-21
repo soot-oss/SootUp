@@ -30,10 +30,11 @@ public class TryCatchFinallyTest extends MinimalTestSuiteBase {
             "$i0 = $i2",
             "$r2 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r2.<java.io.PrintStream: void println(int)>($i0)",
-            "goto [?= $r1 = \"this is finally block\"]",
+            "goto label1",
             "$r3 := @caughtexception",
             "$r4 = $r3",
             "$r1 = \"this is catch block\"",
+            "label1:",
             "$r1 = \"this is finally block\"",
             "return")
         .collect(Collectors.toList());
