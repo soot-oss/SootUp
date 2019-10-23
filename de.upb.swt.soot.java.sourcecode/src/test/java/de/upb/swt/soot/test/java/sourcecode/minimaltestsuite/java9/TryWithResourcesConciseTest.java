@@ -26,16 +26,19 @@ public class TryWithResourcesConciseTest extends MinimalTestSuiteBase {
             "specialinvoke $r2.<java.io.FileReader: void <init>(java.lang.String)>(\"file.txt\")",
             "specialinvoke $r1.<java.io.BufferedReader: void <init>(java.io.Reader)>($r2)",
             "$r3 = \"\"",
+            "label1:",
             "$r4 = virtualinvoke $r1.<java.io.BufferedReader: java.lang.String readLine()>()",
-            "goto [?= $r3 = $r4]",
+            "goto label2",
             "$r5 := @caughtexception",
             "throw $r5",
+            "label2:",
             "$r3 = $r4",
             "$z0 = $r4 != null",
-            "if $z0 == 0 goto return",
+            "if $z0 == 0 goto label3",
             "$r6 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $r6.<java.io.PrintStream: void println(java.lang.String)>($r3)",
-            "goto [?= $r4 = virtualinvoke $r1.<java.io.BufferedReader: java.lang.String readLine()>()]",
+            "goto label1",
+            "label3:",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
