@@ -6,10 +6,10 @@ class StaticMethodInterfaceImpl implements StaticMethodInterface{
     public void methodStaticMethodInterfaceImpl(){
         System.out.println("Inside display - StaticmethodInterfaceImpl");
     }
-/*public static void main(String[] args){
-    StaticMethodInterface.initStatic();
-    initStatic();
-    StaticMethodInterfaceImpl obj = new StaticMethodInterfaceImpl();
-    obj.display();
-}*/
+    public static void main(String[] args){
+        StaticMethodInterface.initStatic();
+        initStatic();
+        StaticMethodInterfaceImpl obj = new StaticMethodInterfaceImpl();
+        obj.display();
+    }
 }
