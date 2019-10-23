@@ -16,21 +16,21 @@ import org.junit.Test;
 
 public class DeclareConstrctorTest extends MinimalTestSuiteBase {
 
-  public MethodSignature getMethodSignature() {
+  public MethodSignature getMethodSignatureInitOneParam() {
     return identifierFactory.getMethodSignature(
-        "DeclareConstructor", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  public MethodSignature getMethodSignatureTwoParam() {
+  public MethodSignature getMethodSignatureInitTwoParam() {
     return identifierFactory.getMethodSignature(
-        "DeclareConstructor", getDeclaredClassSignature(), "void", Arrays.asList("int", "int"));
+        "<init>", getDeclaredClassSignature(), "void", Arrays.asList("int", "int"));
   }
 
   @Test
   @Override
   public void defaultTest() {
-    loadMethod(expectedBodyStmts(), getMethodSignature());
-    loadMethod(expectedBodyStmts1(), getMethodSignatureTwoParam());
+    loadMethod(expectedBodyStmts(), getMethodSignatureInitOneParam());
+    loadMethod(expectedBodyStmts1(), getMethodSignatureInitTwoParam());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(sootClass.getMethod(getMethodSignature()).isPresent());
     assertEquals(3, sootClass.getMethods().size());
@@ -41,9 +41,8 @@ public class DeclareConstrctorTest extends MinimalTestSuiteBase {
     return Stream.of(
             "r0 := @this: DeclareConstructor",
             "$i0 := @parameter0: int",
-            "$i1 := @parameter1: int",
-            "$i2 = $i0 + $i1",
-            "return $i2")
+            // "$i1 := @parameter1: int",
+            "return ")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
@@ -51,8 +50,8 @@ public class DeclareConstrctorTest extends MinimalTestSuiteBase {
     return Stream.of(
             "r0 := @this: DeclareConstructor",
             "$i0 := @parameter0: int",
-            "$i1 = $i0 + $i0",
-            "return $i1")
+            "$i1 := @parameter1: int",
+            "return ")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 }
