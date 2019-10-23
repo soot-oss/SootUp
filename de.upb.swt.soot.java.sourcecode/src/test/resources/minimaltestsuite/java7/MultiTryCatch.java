@@ -26,9 +26,4 @@ class MultiTryCatch {
       }
     }
   }
-
-  public static void main(String[] args) throws Exception {
-    MultiTryCatch mulitTryCatch = new MultiTryCatch();
-      mulitTryCatch.printFile();
-  }
 }
