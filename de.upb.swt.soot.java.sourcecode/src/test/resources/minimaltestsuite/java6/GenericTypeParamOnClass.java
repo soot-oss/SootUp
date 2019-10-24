@@ -16,7 +16,7 @@ public class GenericTypeParamOnClass{
         }
     }
 
-    public void genericTypeParamOnJava() {
+    public void genericTypeParamOnClass() {
         A<Integer> a = new A<Integer>();
         a.set(5);
         int x = a.get();
