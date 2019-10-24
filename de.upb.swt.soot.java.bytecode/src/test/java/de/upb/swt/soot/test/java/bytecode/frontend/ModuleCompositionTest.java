@@ -7,13 +7,9 @@ import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
@@ -50,7 +46,10 @@ public class ModuleCompositionTest {
 
     // Create a project
     Project<JavaClassPathAnalysisInputLocation> p =
-        new Project<>(new JavaClassPathAnalysisInputLocation(jarFile, new AsmJavaClassProvider()));
+        new Project<>(
+            new JavaClassPathAnalysisInputLocation(jarFile, new AsmJavaClassProvider()),
+            DefaultIdentifierFactory.getInstance(),
+            DefaultSourceTypeSpecifier.getInstance());
 
     // Get the view
     View view = p.createOnDemandView();

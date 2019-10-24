@@ -11,6 +11,7 @@ import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
 import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import java.io.IOException;
@@ -131,8 +132,8 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
 
     @Override
     public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-        @Nonnull JavaClassType signature) {
-      return getClassSourceInternal(signature, path);
+        @Nonnull ReferenceType signature) {
+      return getClassSourceInternal((JavaClassType) signature, path);
     }
   }
 
@@ -170,11 +171,11 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
 
     @Override
     public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-        @Nonnull JavaClassType signature) {
+        @Nonnull ReferenceType signature) {
       try {
         FileSystem fs = fileSystemCache.get(path);
         final Path archiveRoot = fs.getPath("/");
-        return getClassSourceInternal(signature, archiveRoot);
+        return getClassSourceInternal((JavaClassType) signature, archiveRoot);
       } catch (ExecutionException e) {
         throw new RuntimeException("Failed to retrieve file system from cache for " + path, e);
       }

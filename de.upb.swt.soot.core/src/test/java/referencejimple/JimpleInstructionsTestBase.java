@@ -22,11 +22,14 @@
 
 package referencejimple;
 
+import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
+import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.util.printer.Printer;
-import de.upb.swt.soot.core.views.JavaView;
+import de.upb.swt.soot.core.views.View;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,7 +41,7 @@ import org.junit.Test;
 
 public abstract class JimpleInstructionsTestBase {
 
-  public JavaView<AnalysisInputLocation> view;
+  public View view;
   protected SootClass sootClass;
   String JimpleReferencePathPrefix =
       "src/test/java8/resources/reference-jimple/de.upb.soot.instructions.";
@@ -62,8 +65,12 @@ public abstract class JimpleInstructionsTestBase {
     directory = directory.substring(startPos, endPos);
 
     // soot config
-    Project<AnalysisInputLocation> project = new Project<>(null);
-    view = new JavaView<>(project);
+    Project<AnalysisInputLocation> project =
+        new Project<>(
+            new EagerInputLocation(),
+            DefaultIdentifierFactory.getInstance(),
+            DefaultSourceTypeSpecifier.getInstance());
+    view = project.createOnDemandView();
 
     // build class structure
     build();

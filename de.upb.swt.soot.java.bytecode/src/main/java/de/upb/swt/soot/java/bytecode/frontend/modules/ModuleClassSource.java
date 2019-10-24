@@ -5,10 +5,12 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
 /**
  * Converts a single source into Soot IR (Jimple).
@@ -39,7 +41,8 @@ public abstract class ModuleClassSource extends AbstractClassSource {
   public abstract Position resolvePosition();
 
   @Override
-  public AbstractClass reifyClass() {
+  @Nonnull
+  public AbstractClass buildClass(@Nonnull SourceType sourceType) {
     return new SootModuleInfo(this, false);
   }
 }

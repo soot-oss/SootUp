@@ -19,6 +19,7 @@ import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -89,16 +90,16 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType signature) {
-
+      @Nonnull ReferenceType classType) {
+    JavaClassType klassType = (JavaClassType) classType;
     String modulename =
-        ((ModulePackageName) signature.getPackageName()).getModuleSignature().getModuleName();
+        ((ModulePackageName) klassType.getPackageName()).getModuleSignature().getModuleName();
     // lookup the ns for the class provider from the cache and use him...
     AbstractAnalysisInputLocation ns = moduleFinder.discoverModule(modulename);
 
     if (ns == null) {
       try {
-        throw new ClassResolvingException("No Namespace for class " + signature);
+        throw new ClassResolvingException("No Namespace for class " + klassType);
       } catch (ClassResolvingException e) {
         e.printStackTrace();
         // FIXME: [JMP] Throwing exception and catching it immediately? This causes `ns` to remain
@@ -107,7 +108,7 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     }
 
     // FIXME: [JMP] `ns` may be `null`
-    return ns.getClassSource(signature);
+    return ns.getClassSource(klassType);
   }
 
   private static class IdentifierFactoryWrapper implements IdentifierFactory {
