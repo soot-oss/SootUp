@@ -1,9 +1,6 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.ArrayList;
