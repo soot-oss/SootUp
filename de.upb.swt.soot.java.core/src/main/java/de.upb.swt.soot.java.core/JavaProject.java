@@ -17,7 +17,7 @@ import javax.annotation.Nonnull;
  *
  * @author Markus Schmidt
  */
-public class JavaProject extends Project<AnalysisInputLocation> {
+public class JavaProject extends Project {
 
   public JavaProject(
       @Nonnull List<AnalysisInputLocation> inputLocations,
@@ -30,7 +30,7 @@ public class JavaProject extends Project<AnalysisInputLocation> {
   @Override
   public View createOnDemandView() {
     // TODO: [ms] abstract implementation due to language independence; call it via
-    // ViewBuilder.createOnDemandView() again
+    // ViewBuilder.createOnDemandView() again?
     return new JavaView<>(this);
   }
 

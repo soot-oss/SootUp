@@ -25,7 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.ref;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -45,14 +45,47 @@ public final class JArrayRef implements ConcreteRef, Copyable {
 
   private final ValueBox baseBox;
   private final ValueBox indexBox;
+  private final Type type;
 
-  public JArrayRef(Value base, Value index) {
-    this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index));
+  public JArrayRef(Value base, Value index, IdentifierFactory identifierFactory) {
+    this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index), identifierFactory);
   }
 
-  private JArrayRef(ValueBox baseBox, ValueBox indexBox) {
+  // TODO: [ms] change references to other constructor
+  private JArrayRef(ValueBox baseBox, ValueBox indexBox, IdentifierFactory identifierFactory) {
     this.baseBox = baseBox;
     this.indexBox = indexBox;
+    this.type = determineType(identifierFactory);
+  }
+
+  private Type determineType(IdentifierFactory identifierFactory) {
+    Value base = baseBox.getValue();
+    Type type = base.getType();
+
+    if (type.equals(UnknownType.getInstance())) {
+      return UnknownType.getInstance();
+    } else if (type.equals(NullType.getInstance())) {
+      return NullType.getInstance();
+    } else {
+      // use makeArrayType on non-array type references when they propagate to this point.
+      // kludge, most likely not correct.
+      // may stop spark from complaining when it gets passed phantoms.
+      // ideally I'd want to find out just how they manage to get this far.
+      ArrayType arrayType;
+      if (type instanceof ArrayType) {
+        arrayType = (ArrayType) type;
+      } else {
+        arrayType = identifierFactory.getArrayType(type, 1);
+      }
+
+      // FIXME: [JMP] Should unwrapping not be done by the `ArrayType` itself?
+      if (arrayType.getDimension() == 1) {
+        return arrayType.getBaseType();
+      } else {
+        return identifierFactory.getArrayType(
+            arrayType.getBaseType(), arrayType.getDimension() - 1);
+      }
+    }
   }
 
   @Override
@@ -109,33 +142,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
 
   @Override
   public Type getType() {
-    Value base = baseBox.getValue();
-    Type type = base.getType();
-
-    if (type.equals(UnknownType.getInstance())) {
-      return UnknownType.getInstance();
-    } else if (type.equals(NullType.getInstance())) {
-      return NullType.getInstance();
-    } else {
-      // use makeArrayType on non-array type references when they propagate to this point.
-      // kludge, most likely not correct.
-      // may stop spark from complaining when it gets passed phantoms.
-      // ideally I'd want to find out just how they manage to get this far.
-      ArrayType arrayType;
-      if (type instanceof ArrayType) {
-        arrayType = (ArrayType) type;
-      } else {
-        arrayType = DefaultIdentifierFactory.getInstance().getArrayType(type, 1);
-      }
-
-      // FIXME: [JMP] Should unwrapping not be done by the `ArrayType` itself?
-      if (arrayType.getDimension() == 1) {
-        return arrayType.getBaseType();
-      } else {
-        return DefaultIdentifierFactory.getInstance()
-            .getArrayType(arrayType.getBaseType(), arrayType.getDimension() - 1);
-      }
-    }
+    return type;
   }
 
   @Override

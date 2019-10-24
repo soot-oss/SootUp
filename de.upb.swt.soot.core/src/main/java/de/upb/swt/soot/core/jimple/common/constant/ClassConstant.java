@@ -25,7 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.constant;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
@@ -34,17 +34,20 @@ import de.upb.swt.soot.core.util.StringTools;
 @SuppressWarnings("serial")
 public class ClassConstant implements Constant {
   private final String value;
+  private final Type type;
 
-  private ClassConstant(String str) {
+  private ClassConstant(String str, Type type) {
     this.value = str;
+    this.type = type;
   }
 
   /** Returns an instance of ClassConstant. */
-  public static ClassConstant getInstance(String value) {
+  // TODO: [ms] change references to this getInstance
+  public static ClassConstant getInstance(String value, IdentifierFactory identifierFactory) {
     if (value.contains(".")) {
       throw new RuntimeException("ClassConstants must use class names separated by '/', not '.'!");
     }
-    return new ClassConstant(value);
+    return new ClassConstant(value, identifierFactory.getType("java.lang.Class"));
   }
 
   // FIXME The following code is commented out due to incompatibility, but
@@ -155,7 +158,7 @@ public class ClassConstant implements Constant {
 
   @Override
   public Type getType() {
-    return DefaultIdentifierFactory.getInstance().getType("java.lang.Class");
+    return type;
   }
 
   @Override

@@ -25,7 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.constant;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -33,6 +33,8 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 
 public class MethodHandle implements Constant {
+
+  private final Type type;
 
   public enum Kind {
     REF_GET_FIELD(1, "REF_GET_FIELD"),
@@ -86,24 +88,28 @@ public class MethodHandle implements Constant {
 
   public int tag;
 
-  private MethodHandle(MethodSignature ref, int tag) {
+  private MethodHandle(MethodSignature ref, int tag, Type type) {
     this.methodRef = ref;
     this.tag = tag;
     this.fieldRef = null;
+    this.type = type;
   }
 
-  private MethodHandle(FieldRef ref, int tag) {
+  private MethodHandle(FieldRef ref, int tag, Type type) {
     this.fieldRef = ref;
     this.tag = tag;
     this.methodRef = null;
+    this.type = type;
   }
 
-  public static MethodHandle getInstance(MethodSignature ref, int tag) {
-    return new MethodHandle(ref, tag);
+  public static MethodHandle getInstance(
+      MethodSignature ref, int tag, IdentifierFactory identifierFactory) {
+    return new MethodHandle(ref, tag, identifierFactory.getType("java.lang.invoke.MethodHandle"));
   }
 
-  public static MethodHandle getInstance(FieldRef ref, int tag) {
-    return new MethodHandle(ref, tag);
+  public static MethodHandle getInstance(
+      FieldRef ref, int tag, IdentifierFactory identifierFactory) {
+    return new MethodHandle(ref, tag, identifierFactory.getType("java.lang.invoke.MethodHandle"));
   }
 
   public static boolean isMethodRef(int kind) {
@@ -121,7 +127,7 @@ public class MethodHandle implements Constant {
 
   @Override
   public Type getType() {
-    return DefaultIdentifierFactory.getInstance().getType("java.lang.invoke.MethodHandle");
+    return type;
   }
 
   public MethodSignature getMethodRef() {

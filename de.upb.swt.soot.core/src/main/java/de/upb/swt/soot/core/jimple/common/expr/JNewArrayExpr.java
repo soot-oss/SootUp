@@ -25,7 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
@@ -44,10 +44,26 @@ public final class JNewArrayExpr implements Expr, Copyable {
 
   private final Type baseType;
   private final ValueBox sizeBox;
+  private final Type type;
 
-  public JNewArrayExpr(Type type, Value size) {
-    this.baseType = type;
+  public JNewArrayExpr(Type baseType, Value size, IdentifierFactory identifierFactory) {
+    this(baseType, size, simplify(baseType, size, identifierFactory));
+  }
+
+  // TODO: [ms] change references to other constructor
+  public JNewArrayExpr(Type baseType, Value size, Type type) {
+    this.baseType = baseType;
     this.sizeBox = Jimple.newImmediateBox(size);
+    this.type = type;
+  }
+
+  private static Type simplify(Type baseType, Value size, IdentifierFactory identifierFactory) {
+    if (baseType instanceof ArrayType) {
+      return identifierFactory.getArrayType(
+          ((ArrayType) baseType).getBaseType(), ((ArrayType) baseType).getDimension() + 1);
+    } else {
+      return identifierFactory.getArrayType(baseType, 1);
+    }
   }
 
   @Override
@@ -110,18 +126,10 @@ public final class JNewArrayExpr implements Expr, Copyable {
     return useBoxes;
   }
 
-  // TODO [ms] should it ? the other [jimpleObject].getType()'s work different -
-  // they dont create a new (Array)Type (via IdentifierFactory) in getType()
   /** Returns an instance of ArrayType(). */
   @Override
   public Type getType() {
-    if (baseType instanceof ArrayType) {
-      return DefaultIdentifierFactory.getInstance()
-          .getArrayType(
-              ((ArrayType) baseType).getBaseType(), ((ArrayType) baseType).getDimension() + 1);
-    } else {
-      return DefaultIdentifierFactory.getInstance().getArrayType(baseType, 1);
-    }
+    return type;
   }
 
   @Override
@@ -131,11 +139,11 @@ public final class JNewArrayExpr implements Expr, Copyable {
 
   @Nonnull
   public JNewArrayExpr withBaseType(Type baseType) {
-    return new JNewArrayExpr(baseType, getSize());
+    return new JNewArrayExpr(baseType, getSize(), type);
   }
 
   @Nonnull
   public JNewArrayExpr withSize(Value size) {
-    return new JNewArrayExpr(baseType, size);
+    return new JNewArrayExpr(baseType, size, type);
   }
 }

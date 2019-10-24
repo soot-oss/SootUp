@@ -15,23 +15,15 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public abstract class Project<S extends AnalysisInputLocation> {
+public abstract class Project {
 
   @Nonnull private final IdentifierFactory identifierFactory;
-  @Nonnull private final List<S> inputLocations;
+  @Nonnull private final List<AnalysisInputLocation> inputLocations;
   @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
 
-  /** Create a project from an arbitrary list of input locations */
-  public Project(@Nonnull S inputLocation, @Nonnull IdentifierFactory identifierFactory) {
-    this(Arrays.asList(inputLocation), identifierFactory, DefaultSourceTypeSpecifier.getInstance());
-  }
-
-  public Project(@Nonnull List<S> inputLocations, @Nonnull IdentifierFactory identifierFactory) {
-    this(inputLocations, identifierFactory, DefaultSourceTypeSpecifier.getInstance());
-  }
-
+  /** Create a project from an arbitrary input location */
   public Project(
-      @Nonnull S inputLocation,
+      @Nonnull AnalysisInputLocation inputLocation,
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     this(Arrays.asList(inputLocation), identifierFactory, sourceTypeSpecifier);
@@ -39,11 +31,11 @@ public abstract class Project<S extends AnalysisInputLocation> {
 
   /** Create a project from an arbitrary list of input locations */
   public Project(
-      @Nonnull List<S> inputLocations,
+      @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
 
-    List<S> unmodifiableInputLocations =
+    List<AnalysisInputLocation> unmodifiableInputLocations =
         Collections.unmodifiableList(new ArrayList<>(inputLocations));
 
     if (unmodifiableInputLocations.isEmpty()) {
@@ -57,7 +49,7 @@ public abstract class Project<S extends AnalysisInputLocation> {
 
   /** Gets the inputLocations. */
   @Nonnull
-  public List<S> getInputLocations() {
+  public List<AnalysisInputLocation> getInputLocations() {
     return this.inputLocations;
   }
 
