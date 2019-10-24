@@ -11,7 +11,7 @@ import org.junit.experimental.categories.Category;
 
 /** @author: Hasitha Rajapakse * */
 @Category(Java8Test.class)
-public class GenericTypeParamOnJavaTest extends MinimalTestSuiteBase {
+public class GenericTypeParamOnClassTest extends MinimalTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
@@ -21,11 +21,11 @@ public class GenericTypeParamOnJavaTest extends MinimalTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: GenericTypeParamOnJava",
-            "$r1 = new GenericTypeParamOnJava$A",
-            "specialinvoke $r1.<GenericTypeParamOnJava$A: void <init>()>()",
-            "specialinvoke $r1.<GenericTypeParamOnJava$A: void set(java.lang.Object)>(5)",
-            "$r2 = virtualinvoke $r1.<GenericTypeParamOnJava$A: java.lang.Object get()>()",
+            "r0 := @this: GenericTypeParamOnClass",
+            "$r1 = new GenericTypeParamOnClass$A",
+            "specialinvoke $r1.<GenericTypeParamOnClass$A: void <init>()>()",
+            "specialinvoke $r1.<GenericTypeParamOnClass$A: void set(java.lang.Object)>(5)",
+            "$r2 = virtualinvoke $r1.<GenericTypeParamOnClass$A: java.lang.Object get()>()",
             "$r3 = (java.lang.Integer) $r2",
             "return")
         .collect(Collectors.toList());

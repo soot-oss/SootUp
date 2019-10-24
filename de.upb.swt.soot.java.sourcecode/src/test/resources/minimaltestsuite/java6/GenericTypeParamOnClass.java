@@ -2,7 +2,7 @@
 /** @author: Hasitha Rajapakse **/
 
 
-public class GenericTypeParamOnJava{
+public class GenericTypeParamOnClass{
 
     public class A<T> {
         private T t;
