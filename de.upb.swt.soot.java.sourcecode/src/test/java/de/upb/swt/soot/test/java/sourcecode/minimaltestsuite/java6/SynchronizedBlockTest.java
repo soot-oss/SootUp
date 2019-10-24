@@ -25,10 +25,11 @@ public class SynchronizedBlockTest extends MinimalTestSuiteBase {
             "$r2 = r0.<SynchronizedBlock: Sender sender>",
             "$r3 = r0.<SynchronizedBlock: java.lang.String msg>",
             "virtualinvoke $r2.<Sender: void send(java.lang.String)>($r3)",
-            "goto [?= exitmonitor $r1]",
+            "goto label1",
             "$r4 := @caughtexception",
             "exitmonitor $r1",
             "throw $r4",
+            "label1:",
             "exitmonitor $r1",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
