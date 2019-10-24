@@ -7,7 +7,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
+import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
@@ -53,7 +53,7 @@ public class JFieldRefTest {
 
     SootClass mainClass =
         new SootClass(
-            new EagerJavaClassSource(
+            new OverridingClassSource(
                 new EagerInputLocation(),
                 null,
                 declaringClassSignature,
@@ -84,7 +84,7 @@ public class JFieldRefTest {
 
     SootClass mainClass =
         new SootClass(
-            new EagerJavaClassSource(
+            new OverridingClassSource(
                 new EagerInputLocation(),
                 null,
                 declaringClassSignature,

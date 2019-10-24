@@ -9,9 +9,14 @@ import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/** @author: Hasitha Rajapakse */
+
 /**
- * Allows for replacing specific parts of a method. By default, it delegates to the {@link
- * MethodSource} delegate provided in the constructor.
+ * Allows for replacing specific parts of a method or, resolve methods where all information is
+ * already existing.
+ *
+ * <p>When replacing specific parts of a method by default, it delegates to the {@link MethodSource}
+ * delegate provided in the constructor.
  *
  * <p>To alter the results of invocations to e.g. {@link #resolveBody()}, simply call {@link
  * #withBody(Body)} to obtain a new {@link OverridingMethodSource}. The new instance will then use
@@ -19,17 +24,20 @@ import javax.annotation.Nullable;
  */
 public class OverridingMethodSource implements MethodSource {
 
-  @Nonnull private final MethodSource delegate;
+  private final MethodSource delegate;
 
   // Since resolveBody may return null, we cannot use `null` here to indicate that `body`
   // is not overridden.
   private final boolean overriddenBody;
   @Nullable private final Body body;
 
+  private final MethodSignature methodSignature;
+
   public OverridingMethodSource(@Nonnull MethodSource delegate) {
     this.delegate = delegate;
     overriddenBody = false;
     body = null;
+    this.methodSignature = null;
   }
 
   private OverridingMethodSource(
@@ -37,6 +45,15 @@ public class OverridingMethodSource implements MethodSource {
     this.delegate = delegate;
     this.overriddenBody = overriddenBody;
     this.body = body;
+    this.methodSignature = null;
+  }
+
+  /** Method source where all information already available */
+  public OverridingMethodSource(MethodSignature methodSignature, Body body) {
+    this.delegate = null;
+    this.overriddenBody = true;
+    this.body = body;
+    this.methodSignature = methodSignature;
   }
 
   @Nullable
@@ -48,7 +65,7 @@ public class OverridingMethodSource implements MethodSource {
   @Nonnull
   @Override
   public MethodSignature getSignature() {
-    return delegate.getSignature();
+    return overriddenBody ? methodSignature : delegate.getSignature();
   }
 
   @Nonnull
