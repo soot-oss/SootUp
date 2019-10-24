@@ -35,7 +35,7 @@ public class IfInstructionConversionTest {
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
-    loader = new WalaClassLoader(srcDir, null);
+    loader = new WalaClassLoader(srcDir);
     typeFactory = DefaultIdentifierFactory.getInstance();
     declareClassSig =
         typeFactory.getClassType("de.upb.soot.concrete.controlStatements.ControlStatements");

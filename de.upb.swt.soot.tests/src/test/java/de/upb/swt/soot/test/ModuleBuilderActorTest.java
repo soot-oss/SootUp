@@ -7,6 +7,7 @@ import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.views.View;
@@ -26,7 +27,10 @@ public class ModuleBuilderActorTest {
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules");
 
     Project<AnalysisInputLocation> project =
-        new Project<>(javaClassPathNamespace, ModuleIdentifierFactory.getInstance());
+        new Project<>(
+            javaClassPathNamespace,
+            ModuleIdentifierFactory.getInstance(),
+            DefaultSourceTypeSpecifier.getInstance());
 
     // de.upb.soot.views.JavaView view = new de.upb.soot.views.JavaView(project);
 

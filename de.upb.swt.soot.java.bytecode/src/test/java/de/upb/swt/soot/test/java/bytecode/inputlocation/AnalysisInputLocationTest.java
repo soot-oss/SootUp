@@ -7,6 +7,7 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import java.util.Collection;
 import java.util.Optional;
 import org.junit.Assert;
@@ -48,7 +49,7 @@ public abstract class AnalysisInputLocationTest {
   @Before
   public void setUp() {
     identifierFactory = DefaultIdentifierFactory.getInstance();
-    classProvider = new AsmJavaClassProvider();
+    classProvider = new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
   }
 
   protected IdentifierFactory getIdentifierFactory() {

@@ -3,7 +3,7 @@ package de.upb.swt.soot.core.inputlocation;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -18,7 +18,6 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  */
 public interface AnalysisInputLocation {
-
   /**
    * Create or find a class source for a given type.
    *
@@ -26,7 +25,7 @@ public interface AnalysisInputLocation {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType type);
+  Optional<? extends AbstractClassSource> getClassSource(@Nonnull ReferenceType type);
 
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(
@@ -40,7 +39,7 @@ public interface AnalysisInputLocation {
    */
   @Nonnull
   Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType type, @Nonnull ClassLoadingOptions classLoadingOptions);
+      @Nonnull ReferenceType type, @Nonnull ClassLoadingOptions classLoadingOptions);
 
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(

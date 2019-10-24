@@ -20,6 +20,7 @@ import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import java.nio.file.Path;
@@ -93,19 +94,20 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ReferenceType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
+    JavaClassType klassType = (JavaClassType) classType;
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
 
     String modulename =
-        ((ModulePackageName) type.getPackageName()).getModuleSignature().getModuleName();
-    // lookup the inputLocation for the class provider from the cache and use him...
-    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
+        ((ModulePackageName) klassType.getPackageName()).getModuleSignature().getModuleName();
+    // lookup the ns for the class provider from the cache and use him...
     AnalysisInputLocation inputLocation =
         new ModuleFinder(new AsmJavaClassProvider(bodyInterceptors), modulePath)
             .discoverModule(modulename);
 
     if (inputLocation == null) {
       try {
-        throw new ClassResolvingException("No Namespace for class " + type);
+        throw new ClassResolvingException("No Namespace for class " + klassType);
       } catch (ClassResolvingException e) {
         e.printStackTrace();
         // FIXME: [JMP] Throwing exception and catching it immediately? This causes `inputLocation`
@@ -115,7 +117,7 @@ public class JavaModulePathAnalysisInputLocation implements BytecodeAnalysisInpu
     }
 
     // FIXME: [JMP] `inputLocation` may be `null`
-    return inputLocation.getClassSource(type, classLoadingOptions);
+    return inputLocation.getClassSource(klassType);
   }
 
   private static class IdentifierFactoryWrapper implements IdentifierFactory {

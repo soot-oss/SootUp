@@ -61,13 +61,14 @@ public class Utils {
     }
   }
 
-  static void assertEquiv(EquivTo expected, EquivTo actual) {
+  public static void assertEquiv(EquivTo expected, EquivTo actual) {
     if (!expected.equivTo(actual)) {
       throw new AssertionError("Expected '" + expected + "', actual is '" + actual + "'");
     }
   }
 
-  static <T> void assertInstanceOfSatisfying(Object actual, Class<T> tClass, Consumer<T> checker) {
+  public static <T> void assertInstanceOfSatisfying(
+      Object actual, Class<T> tClass, Consumer<T> checker) {
     try {
       checker.accept(tClass.cast(actual));
     } catch (ClassCastException e) {
@@ -80,7 +81,7 @@ public class Utils {
   }
 
   @Nonnull
-  static ArrayList<String> bodyStmtsAsStrings(@Nonnull Body body) {
+  public static ArrayList<String> bodyStmtsAsStrings(@Nonnull Body body) {
     StringWriter writer = new StringWriter();
     try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
       Printer printer = new Printer();

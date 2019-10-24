@@ -31,7 +31,7 @@ public class InstanceofInstructionConversionTest {
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
-    loader = new WalaClassLoader(srcDir, null);
+    loader = new WalaClassLoader(srcDir);
     typeFactory = DefaultIdentifierFactory.getInstance();
     declareClassSig = typeFactory.getClassType("InstanceOf");
   }

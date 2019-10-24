@@ -24,7 +24,7 @@ package de.upb.swt.soot.test.core.jimple.common.stmt;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
+import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
@@ -38,11 +38,7 @@ import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootField;
-import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.net.URI;
@@ -72,8 +68,8 @@ public class JInvokeStmtTest {
     JavaClassType superClassSignature = dif.getClassType("java.lang.Object");
     Set<SootField> fields = new LinkedHashSet<>();
     Set<SootMethod> methods = new LinkedHashSet<>();
-    EagerJavaClassSource javaClassSource =
-        new EagerJavaClassSource(
+    OverridingClassSource javaClassSource =
+        new OverridingClassSource(
             new EagerInputLocation(),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),

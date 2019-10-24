@@ -8,6 +8,7 @@ import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
 import de.upb.swt.soot.java.bytecode.inputlocation.ModuleFinder;
 import de.upb.swt.soot.java.bytecode.inputlocation.PathBasedAnalysisInputLocation;
+import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,7 +66,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
   public void modularJar() {
     ModuleFinder moduleFinder =
         new ModuleFinder(
-            new AsmJavaClassProvider(),
+            new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors()),
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/");
     Collection<String> discoveredModules = moduleFinder.discoverAllModules();
     assertTrue(discoveredModules.contains("de.upb.mod"));
@@ -77,7 +78,7 @@ public class ModuleFinderTest extends AnalysisInputLocationTest {
 
     ModuleFinder moduleFinder =
         new ModuleFinder(
-            new AsmJavaClassProvider(),
+            new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors()),
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules");
     Path p =
         Paths.get("../shared-test-resources/java9-target/de/upb/soot/namespaces/modules/testMod");

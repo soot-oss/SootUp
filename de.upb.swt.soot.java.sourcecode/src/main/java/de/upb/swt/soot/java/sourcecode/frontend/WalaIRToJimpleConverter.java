@@ -15,10 +15,9 @@ import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.ClassSource;
-import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
-import de.upb.swt.soot.core.frontend.EagerMethodSource;
+import de.upb.swt.soot.core.frontend.OverridingClassSource;
+import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -40,7 +39,6 @@ import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
-import de.upb.swt.soot.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.net.URL;
 import java.nio.file.Path;
@@ -53,6 +51,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -62,18 +61,16 @@ import javax.annotation.Nullable;
  */
 public class WalaIRToJimpleConverter {
 
-  JavaView<AnalysisInputLocation> view;
+  final DefaultIdentifierFactory identifierFactory;
   private AnalysisInputLocation srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
   private HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
 
-  public WalaIRToJimpleConverter(Set<String> sourceDirPath) {
+  public WalaIRToJimpleConverter(@Nonnull Set<String> sourceDirPath) {
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
-    Project<AnalysisInputLocation> project =
-        new Project<>(srcNamespace, DefaultIdentifierFactory.getInstance());
-
-    view = new JavaView<>(project);
+    // TODO: [ms] get it from view - view can hold a different implementation
+    identifierFactory = DefaultIdentifierFactory.getInstance();
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
   }
@@ -86,28 +83,26 @@ public class WalaIRToJimpleConverter {
   @Deprecated
   public SootClass convertClass(AstClass walaClass) {
     ClassSource classSource = convertToClassSource(walaClass);
+    // TODO fix fixed SourceType - get it from project
     return new SootClass(classSource, SourceType.Application);
   }
 
   ClassSource convertToClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-    JavaClassType classSig =
-        DefaultIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
+    JavaClassType classSig = identifierFactory.getClassType(fullyQualifiedClassName);
     // get super class
     IClass sc = walaClass.getSuperclass();
     JavaClassType superClass = null;
     if (sc != null) {
       superClass =
-          view.getIdentifierFactory()
-              .getClassType(convertClassNameFromWala(sc.getName().toString()));
+          identifierFactory.getClassType(convertClassNameFromWala(sc.getName().toString()));
     }
 
     // get interfaces
     Set<JavaClassType> interfaces = new HashSet<>();
     for (IClass i : walaClass.getDirectInterfaces()) {
       JavaClassType inter =
-          view.getIdentifierFactory()
-              .getClassType(convertClassNameFromWala(i.getName().toString()));
+          identifierFactory.getClassType(convertClassNameFromWala(i.getName().toString()));
       interfaces.add(inter);
     }
 
@@ -119,8 +114,7 @@ public class WalaIRToJimpleConverter {
       IClass ec = javaClass.getEnclosingClass();
       if (ec != null) {
         outerClass =
-            view.getIdentifierFactory()
-                .getClassType(convertClassNameFromWala(ec.getName().toString()));
+            identifierFactory.getClassType(convertClassNameFromWala(ec.getName().toString()));
       }
     }
 
@@ -142,7 +136,7 @@ public class WalaIRToJimpleConverter {
     if (outerClass != null) {
       // create enclosing reference to outerClass
       FieldSignature signature =
-          view.getIdentifierFactory().getFieldSignature("this$0", classSig, outerClass);
+          identifierFactory.getFieldSignature("this$0", classSig, outerClass);
       SootField enclosingObject = new SootField(signature, EnumSet.of(Modifier.FINAL));
       sootFields.add(enclosingObject);
     }
@@ -166,8 +160,11 @@ public class WalaIRToJimpleConverter {
         modifiers);
   }
 
-  /** Create a {@link EagerJavaClassSource} object for the given walaClass. */
-  public EagerJavaClassSource createClassSource(
+  /**
+   * Create a {@link de.upb.swt.soot.core.frontend.OverridingClassSource} object for the given
+   * walaClass.
+   */
+  public OverridingClassSource createClassSource(
       AstClass walaClass,
       JavaClassType superClass,
       Set<JavaClassType> interfaces,
@@ -177,11 +174,10 @@ public class WalaIRToJimpleConverter {
       Position position,
       EnumSet<Modifier> modifiers) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-    JavaClassType classSignature =
-        DefaultIdentifierFactory.getInstance().getClassType(fullyQualifiedClassName);
+    JavaClassType classSignature = identifierFactory.getClassType(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
-    return new EagerJavaClassSource(
+    return new OverridingClassSource(
         srcNamespace,
         sourcePath,
         classSignature,
@@ -205,8 +201,7 @@ public class WalaIRToJimpleConverter {
     Type type = convertType(walaField.getFieldTypeReference());
     EnumSet<Modifier> modifiers = convertModifiers(walaField);
     FieldSignature signature =
-        view.getIdentifierFactory()
-            .getFieldSignature(walaField.getName().toString(), classSig, type);
+        identifierFactory.getFieldSignature(walaField.getName().toString(), classSig, type);
     return new SootField(signature, modifiers);
   }
 
@@ -230,7 +225,7 @@ public class WalaIRToJimpleConverter {
           }
         }
         Type paraType = convertType(type);
-        paraTypes.add(this.view.getIdentifierFactory().getType(paraType.toString()));
+        paraTypes.add(identifierFactory.getType(paraType.toString()));
         sigs.add(paraType.toString());
       }
     }
@@ -243,7 +238,7 @@ public class WalaIRToJimpleConverter {
     try {
       for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
         String exceptionName = convertClassNameFromWala(exception.getName().toString());
-        JavaClassType exceptionSig = this.view.getIdentifierFactory().getClassType(exceptionName);
+        JavaClassType exceptionSig = identifierFactory.getClassType(exceptionName);
         thrownExceptions.add(exceptionSig);
       }
     } catch (UnsupportedOperationException | InvalidClassFileException e) {
@@ -252,14 +247,16 @@ public class WalaIRToJimpleConverter {
     // add debug info
     DebuggingInformation debugInfo = walaMethod.debugInfo();
     MethodSignature methodSig =
-        this.view
-            .getIdentifierFactory()
-            .getMethodSignature(
-                walaMethod.getName().toString(), classSig, returnType.toString(), sigs);
+        identifierFactory.getMethodSignature(
+            walaMethod.getName().toString(), classSig, returnType.toString(), sigs);
 
     Body body = createBody(methodSig, modifiers, walaMethod);
     return new de.upb.swt.soot.java.sourcecode.frontend.WalaSootMethod(
-        new EagerMethodSource(methodSig, body), methodSig, modifiers, thrownExceptions, debugInfo);
+        new OverridingMethodSource(methodSig, body),
+        methodSig,
+        modifiers,
+        thrownExceptions,
+        debugInfo);
   }
 
   public Type convertType(TypeReference type) {
@@ -288,13 +285,13 @@ public class WalaIRToJimpleConverter {
         TypeReference t = type.getInnermostElementType();
         Type baseType = convertType(t);
         int dim = type.getDimensionality();
-        return DefaultIdentifierFactory.getInstance().getArrayType(baseType, dim);
+        return identifierFactory.getArrayType(baseType, dim);
       } else if (type.isClassType()) {
         if (type.equals(TypeReference.Null)) {
           return NullType.getInstance();
         } else {
           String className = convertClassNameFromWala(type.getName().toString());
-          return this.view.getIdentifierFactory().getClassType(className);
+          return identifierFactory.getClassType(className);
         }
       }
     }

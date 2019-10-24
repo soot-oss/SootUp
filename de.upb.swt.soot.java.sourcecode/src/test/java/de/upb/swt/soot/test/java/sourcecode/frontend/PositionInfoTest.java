@@ -37,7 +37,7 @@ public class PositionInfoTest {
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
-    loader = new WalaClassLoader(srcDir, null);
+    loader = new WalaClassLoader(srcDir);
     identifierFactory = DefaultIdentifierFactory.getInstance();
     declareClassSig = identifierFactory.getClassType("InstructionCollection");
   }

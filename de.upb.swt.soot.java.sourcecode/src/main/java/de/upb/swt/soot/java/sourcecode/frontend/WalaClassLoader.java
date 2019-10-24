@@ -18,6 +18,8 @@ import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 import de.upb.swt.soot.core.frontend.ClassSource;
+import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.JavaClassType;
 import java.io.File;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.jar.JarFile;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -81,70 +84,57 @@ public class WalaClassLoader {
     }
   }
 
-  public WalaClassLoader(String sourceDirPath) {
+  public WalaClassLoader(@Nonnull String sourceDirPath) {
     this(sourceDirPath, null);
   }
 
-  public WalaClassLoader(Set<String> sourcePath) {
-    this(sourcePath, "");
+  public WalaClassLoader(@Nonnull String sourceDirPath, @Nullable String exclusionFilePath) {
+    this(Collections.singleton(sourceDirPath), exclusionFilePath);
   }
 
-  public WalaClassLoader(Set<String> sourcePath, @Nullable String exclusionFilePath) {
+  public WalaClassLoader(@Nonnull Set<String> sourcePath) {
+    this(sourcePath, null);
+  }
+
+  public WalaClassLoader(@Nonnull Set<String> sourcePath, @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = sourcePath;
-    try {
-      // add the source directory to scope
-      for (String path : sourcePath) {
-        scope.addToScope(
-            JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(path)));
-      }
-      // set exclusions
-      if (exclusionFilePath != null) {
-        File exclusionFile = new File(exclusionFilePath);
-        if (exclusionFile.isFile()) {
-          FileOfClasses classes;
-          classes = new FileOfClasses(new FileInputStream(exclusionFile));
-          scope.setExclusions(classes);
-        }
-      }
-      factory = new ECJClassLoaderFactory(scope.getExclusions());
-    } catch (IOException e) {
-      e.printStackTrace();
+    // add the source directory to scope
+    for (String path : sourcePath) {
+      scope.addToScope(
+          JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(path)));
     }
+    setExclusions(exclusionFilePath);
+    factory = new ECJClassLoaderFactory(scope.getExclusions());
   }
 
-  public WalaClassLoader(Set<String> sourcePath, Set<String> libPath, String exclusionFilePath) {
+  public WalaClassLoader(
+      @Nonnull Set<String> sourcePath,
+      @Nonnull Set<String> libPath,
+      @Nonnull String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = sourcePath;
+    // add the source directory to scope
+    for (String path : sourcePath) {
+      scope.addToScope(
+          JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(path)));
+    }
     try {
-      // add the source directory to scope
-      for (String path : sourcePath) {
-        scope.addToScope(
-            JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(path)));
-      }
       // add Jars to scope
       for (String libJar : libPath) {
         scope.addToScope(ClassLoaderReference.Primordial, new JarFile(libJar));
       }
-      // set exclusions
-      if (exclusionFilePath != null) {
-        File exclusionFile = new File(exclusionFilePath);
-        if (exclusionFile.isFile()) {
-          FileOfClasses classes;
-          classes = new FileOfClasses(new FileInputStream(exclusionFile));
-          scope.setExclusions(classes);
-        }
-      }
-      factory = new ECJClassLoaderFactory(scope.getExclusions());
     } catch (IOException e) {
       e.printStackTrace();
     }
+    setExclusions(exclusionFilePath);
+    factory = new ECJClassLoaderFactory(scope.getExclusions());
   }
 
   public WalaClassLoader(
-      Set<String> sourcePath,
-      String apkPath,
-      String androidJar,
+      @Nonnull Set<String> sourcePath,
+      @Nonnull String apkPath,
+      @Nonnull String androidJar,
       @Nullable String exclusionFilePath) {
     addScopesForJava();
     this.sourcePath = sourcePath;
@@ -159,15 +149,7 @@ public class WalaClassLoader {
       // add androidJar and apkPath to scope
       scope.addToScope(ClassLoaderReference.Primordial, new JarFile(androidJar));
       scope.addToScope(ClassLoaderReference.Application, DexFileModule.make(new File(apkPath)));
-      // set exclusions
-      if (exclusionFilePath != null) {
-        File exclusionFile = new File(exclusionFilePath);
-        if (exclusionFile.isFile()) {
-          FileOfClasses classes;
-          classes = new FileOfClasses(new FileInputStream(exclusionFile));
-          scope.setExclusions(classes);
-        }
-      }
+      setExclusions(exclusionFilePath);
       factory = new ECJClassLoaderFactory(scope.getExclusions());
     } catch (IllegalArgumentException | IOException e) {
       throw new RuntimeException("Failed to construct frontend.WalaClassLoader", e);
@@ -180,26 +162,17 @@ public class WalaClassLoader {
    * @param sourceDirPath
    * @param exclusionFilePath
    */
-  public WalaClassLoader(String sourceDirPath, @Nullable String exclusionFilePath) {
+  public WalaClassLoader(
+      @Nonnull String sourceDirPath,
+      @Nullable String exclusionFilePath,
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     addScopesForJava();
     this.sourcePath = Collections.singleton(sourceDirPath);
-    try {
-      // add the source directory to scope
-      scope.addToScope(
-          JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(sourceDirPath)));
-      // set exclusions
-      if (exclusionFilePath != null) {
-        File exclusionFile = new File(exclusionFilePath);
-        if (exclusionFile.isFile()) {
-          FileOfClasses classes;
-          classes = new FileOfClasses(new FileInputStream(exclusionFile));
-          scope.setExclusions(classes);
-        }
-      }
-      factory = new ECJClassLoaderFactory(scope.getExclusions());
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    // add the source directory to scope
+    scope.addToScope(
+        JavaSourceAnalysisScope.SOURCE, new SourceDirectoryTreeModule(new File(sourceDirPath)));
+    setExclusions(exclusionFilePath);
+    factory = new ECJClassLoaderFactory(scope.getExclusions());
   }
 
   /**
@@ -207,7 +180,9 @@ public class WalaClassLoader {
    *
    * @param moduleFiles
    */
-  public WalaClassLoader(Collection<? extends Module> moduleFiles) {
+  public WalaClassLoader(
+      @Nonnull Collection<? extends Module> moduleFiles,
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
     addScopesForJava();
     for (Module m : moduleFiles) {
       scope.addToScope(JavaSourceAnalysisScope.SOURCE, m);
@@ -237,8 +212,7 @@ public class WalaClassLoader {
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
     while (it.hasNext()) {
-      com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass walaClass =
-          (com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass) it.next();
+      JavaClass walaClass = (JavaClass) it.next();
       ClassSource sootClass = walaToSoot.convertToClassSource(walaClass);
       classSources.add(sootClass);
     }
@@ -260,8 +234,7 @@ public class WalaClassLoader {
     }
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
     while (it.hasNext()) {
-      com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass walaClass =
-          (com.ibm.wala.cast.java.loader.JavaSourceLoaderImpl.JavaClass) it.next();
+      JavaClass walaClass = (JavaClass) it.next();
       SootClass sootClass = walaToSoot.convertClass(walaClass);
       sootClasses.add(sootClass);
     }
@@ -326,5 +299,24 @@ public class WalaClassLoader {
       }
     }
     return walaClass;
+  }
+
+  private void setExclusions(@Nullable String exclusionFilePath) {
+    // set exclusions
+    if (exclusionFilePath != null) {
+      File exclusionFile = new File(exclusionFilePath);
+      if (exclusionFile.isFile()) {
+        FileOfClasses classes;
+        try {
+          classes = new FileOfClasses(new FileInputStream(exclusionFile));
+          scope.setExclusions(classes);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      } else {
+        throw new ResolveException(
+            "the given path to the exclusion file does not point to a file.");
+      }
+    }
   }
 }

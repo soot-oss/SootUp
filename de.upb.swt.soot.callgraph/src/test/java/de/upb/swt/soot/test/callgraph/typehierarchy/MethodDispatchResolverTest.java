@@ -5,9 +5,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
+import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -26,7 +28,6 @@ import org.junit.Test;
 public class MethodDispatchResolverTest {
 
   private View view;
-  // TODO: hacky.. check for better way to access the test jar from other module
   public static final String jarFile = "../shared-test-resources/Soot-4.0-SNAPSHOT.jar";
 
   @Before
@@ -43,7 +44,11 @@ public class MethodDispatchResolverTest {
             .collect(Collectors.joining(File.pathSeparator));
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
-    Project<JavaClassPathAnalysisInputLocation> p = new Project<>(analysisInputLocation);
+    Project<JavaClassPathAnalysisInputLocation> p =
+        new Project<>(
+            analysisInputLocation,
+            DefaultIdentifierFactory.getInstance(),
+            DefaultSourceTypeSpecifier.getInstance());
     view = p.createOnDemandView();
   }
 

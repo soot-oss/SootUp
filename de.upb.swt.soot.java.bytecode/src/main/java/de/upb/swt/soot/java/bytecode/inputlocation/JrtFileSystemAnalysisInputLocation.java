@@ -12,6 +12,7 @@ import de.upb.swt.soot.core.inputlocation.PathUtils;
 import de.upb.swt.soot.core.signatures.ModulePackageName;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import java.io.IOException;
@@ -39,13 +40,15 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ReferenceType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
+    JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
-    if (type.getPackageName() instanceof ModulePackageName) {
-      return this.getClassSourceInternalForModule(type, new AsmJavaClassProvider(bodyInterceptors));
+    if (klassType.getPackageName() instanceof ModulePackageName) {
+      return this.getClassSourceInternalForModule(
+          klassType, new AsmJavaClassProvider(bodyInterceptors));
     }
     return this.getClassSourceInternalForClassPath(
-        type, new AsmJavaClassProvider(bodyInterceptors));
+        klassType, new AsmJavaClassProvider(bodyInterceptors));
   }
 
   private @Nonnull Optional<AbstractClassSource> getClassSourceInternalForClassPath(

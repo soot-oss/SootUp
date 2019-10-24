@@ -6,6 +6,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
 import java.nio.file.Path;
 import java.util.List;
@@ -23,16 +24,17 @@ public class AsmJavaClassProvider implements ClassProvider {
 
   @Override
   public AbstractClassSource createClassSource(
-      AnalysisInputLocation srcNamespace, Path sourcePath, JavaClassType classSignature) {
+      AnalysisInputLocation srcNamespace, Path sourcePath, ReferenceType classType) {
     SootClassNode classNode = new SootClassNode();
 
     AsmUtil.initAsmClassSource(sourcePath, classNode);
 
-    if (classSignature.isModuleInfo()) {
-      return new AsmModuleClassSource(srcNamespace, sourcePath, classSignature, classNode.module);
+    JavaClassType klassType = (JavaClassType) classType;
+    if (klassType.isModuleInfo()) {
+      return new AsmModuleClassSource(srcNamespace, sourcePath, klassType, classNode.module);
 
     } else {
-      return new AsmClassSource(srcNamespace, sourcePath, classSignature, classNode);
+      return new AsmClassSource(srcNamespace, sourcePath, klassType, classNode);
     }
   }
 
