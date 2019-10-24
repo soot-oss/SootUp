@@ -1,9 +1,7 @@
 package referencejimple;
 
 import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
-import de.upb.swt.soot.core.frontend.EagerMethodSource;
-import de.upb.swt.soot.core.frontend.MethodSource;
+import de.upb.swt.soot.core.frontend.*;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -76,8 +74,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     // atExceptionThrow();
     // atExceptionThrowAndCatch();
 
-    EagerJavaClassSource javaClassSource =
-        new EagerJavaClassSource(
+    OverridingClassSource javaClassSource =
+        new OverridingClassSource(
             new EagerInputLocation(),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),
@@ -121,7 +119,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     stmts.add(Jimple.newReturnVoidStmt(nop));
 
     Body body = new Body(locals, traps, stmts, new NoPositionInformation());
-    MethodSource methodSource = new EagerMethodSource(methodSignature, body);
+    MethodSource methodSource = new OverridingMethodSource(methodSignature, body);
 
     return new SootMethod(
         methodSource, methodSignature, EnumSet.of(Modifier.PUBLIC), Collections.emptyList());
