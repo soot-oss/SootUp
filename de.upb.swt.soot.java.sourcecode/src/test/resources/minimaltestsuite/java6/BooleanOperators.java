@@ -1,3 +1,7 @@
+
+/** @author: Hasitha Rajapakse */
+
+
 public class BooleanOperators{
 
     public void relationalOpEqual(){
