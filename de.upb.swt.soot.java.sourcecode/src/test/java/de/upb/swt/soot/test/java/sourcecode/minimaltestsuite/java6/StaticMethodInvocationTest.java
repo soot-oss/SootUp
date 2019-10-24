@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse **/
+/** @author: Hasitha Rajapakse * */
 @Category(Java8Test.class)
 public class StaticMethodInvocationTest extends MinimalTestSuiteBase {
   @Override
