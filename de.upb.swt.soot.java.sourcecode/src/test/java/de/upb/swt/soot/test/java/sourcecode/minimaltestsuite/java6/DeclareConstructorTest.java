@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
 
-public class DeclareConstrctorTest extends MinimalTestSuiteBase {
+public class DeclareConstructorTest extends MinimalTestSuiteBase {
 
   public MethodSignature getMethodSignatureInitOneParam() {
     return identifierFactory.getMethodSignature(
-        "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "<init>", getDeclaredClassSignature(), "void", Collections.singletonList("int"));
   }
 
   public MethodSignature getMethodSignatureInitTwoParam() {
@@ -31,9 +31,6 @@ public class DeclareConstrctorTest extends MinimalTestSuiteBase {
   public void defaultTest() {
     loadMethod(expectedBodyStmts(), getMethodSignatureInitOneParam());
     loadMethod(expectedBodyStmts1(), getMethodSignatureInitTwoParam());
-    SootClass sootClass = loadClass(getDeclaredClassSignature());
-    assertTrue(sootClass.getMethod(getMethodSignature()).isPresent());
-    assertEquals(3, sootClass.getMethods().size());
   }
 
   @Override
@@ -41,8 +38,10 @@ public class DeclareConstrctorTest extends MinimalTestSuiteBase {
     return Stream.of(
             "r0 := @this: DeclareConstructor",
             "$i0 := @parameter0: int",
-            // "$i1 := @parameter1: int",
-            "return ")
+            "specialinvoke r0.<java.lang.Object: void <init>()>()",
+            "r0.<DeclareConstructor: int var1> = $i0",
+            "r0.<DeclareConstructor: int var2> = 0",
+            "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
@@ -51,7 +50,10 @@ public class DeclareConstrctorTest extends MinimalTestSuiteBase {
             "r0 := @this: DeclareConstructor",
             "$i0 := @parameter0: int",
             "$i1 := @parameter1: int",
-            "return ")
+            "specialinvoke r0.<java.lang.Object: void <init>()>()",
+            "r0.<DeclareConstructor: int var1> = $i0",
+            "r0.<DeclareConstructor: int var2> = $i1",
+            "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 }

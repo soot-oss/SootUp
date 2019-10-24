@@ -5,15 +5,12 @@ class DeclareConstructor{
     public DeclareConstructor(int var1){
         this.var1=var1;
         this.var2=0;
-        System.out.println("Default Constructor");
     }
-/*
+
     public DeclareConstructor(int var1, int var2){
         this.var1=var1;
         this.var2=var2;
-        System.out.println("Parameterized Constructor");
     }
 
-  public static void main(String[] args) {
-  }*/
+
 }
