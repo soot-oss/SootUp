@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * A Soot user should first define a Project instance to describe the outlines of an analysis run.
@@ -102,14 +102,16 @@ public class Project<S extends AnalysisInputLocation> {
    */
   @Nonnull
   public View createOnDemandView() {
-    return createOnDemandView(null);
+    ViewBuilder<S> vb = new ViewBuilder<>(this);
+    return vb.buildOnDemand();
   }
 
   /** Creates an on-demand View with custom {@link ClassLoadingOptions}. */
   @Nonnull
-  public View createOnDemandView(@Nullable ClassLoadingOptions classLoadingOptions) {
+  public View createOnDemandView(
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
     ViewBuilder<S> vb = new ViewBuilder<>(this);
-    return vb.buildOnDemand(classLoadingOptions);
+    return vb.buildOnDemand(classLoadingOptionsSpecifier);
   }
 
   /**

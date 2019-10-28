@@ -16,10 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * The Class JavaView manages the Java classes of the application being analyzed.
@@ -102,17 +102,26 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
 
   private volatile boolean isFullyResolved = false;
 
-  @Nullable private final ClassLoadingOptions classLoadingOptions;
+  @Nonnull
+  private final Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link JavaView} class. */
   public JavaView(@Nonnull Project<S> project) {
-    this(project, null);
+    this(project, analysisInputLocation -> null);
   }
 
-  /** Creates a new instance of the {@link JavaView} class. */
-  public JavaView(@Nonnull Project<S> project, @Nullable ClassLoadingOptions classLoadingOptions) {
+  /**
+   * Creates a new instance of the {@link JavaView} class.
+   *
+   * @param classLoadingOptionsSpecifier To use the default {@link ClassLoadingOptions} for an
+   *     {@link AnalysisInputLocation}, simply return <code>null</code>, otherwise the desired
+   *     options.
+   */
+  public JavaView(
+      @Nonnull Project<S> project,
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
     super(project);
-    this.classLoadingOptions = classLoadingOptions;
+    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
 
   @Override
@@ -137,6 +146,8 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
         getProject().getInputLocations().stream()
             .map(
                 location -> {
+                  ClassLoadingOptions classLoadingOptions =
+                      classLoadingOptionsSpecifier.apply(location);
                   if (classLoadingOptions != null) {
                     return location.getClassSource(type, classLoadingOptions);
                   } else {
@@ -177,11 +188,13 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
     getProject().getInputLocations().stream()
         .flatMap(
             location -> {
+              ClassLoadingOptions classLoadingOptions =
+                  classLoadingOptionsSpecifier.apply(location);
               if (classLoadingOptions != null) {
-                return location.getClassSources(getIdentifierFactory()).stream();
-              } else {
                 return location.getClassSources(getIdentifierFactory(), classLoadingOptions)
                     .stream();
+              } else {
+                return location.getClassSources(getIdentifierFactory()).stream();
               }
             })
         .forEach(this::getClass);

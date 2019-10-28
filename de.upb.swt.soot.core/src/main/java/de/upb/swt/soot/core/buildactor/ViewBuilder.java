@@ -5,8 +5,8 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.views.JavaView;
 import de.upb.swt.soot.core.views.View;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Bridges the process from bytecode representation to Soot IR (Jimple) representation
@@ -24,23 +24,27 @@ public class ViewBuilder<S extends AnalysisInputLocation> {
 
   @Nonnull
   public View buildComplete() {
-    return buildComplete(null);
+    JavaView<S> javaView = new JavaView<>(project);
+    javaView.getClasses(); // Forces a full resolve
+    return javaView;
   }
 
   @Nonnull
-  public View buildComplete(@Nullable ClassLoadingOptions classLoadingOptions) {
-    JavaView<S> javaView = new JavaView<>(project, classLoadingOptions);
+  public View buildComplete(
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
+    JavaView<S> javaView = new JavaView<>(project, classLoadingOptionsSpecifier);
     javaView.getClasses(); // Forces a full resolve
     return javaView;
   }
 
   @Nonnull
   public View buildOnDemand() {
-    return buildOnDemand(null);
+    return new JavaView<>(this.project);
   }
 
   @Nonnull
-  public View buildOnDemand(@Nullable ClassLoadingOptions classLoadingOptions) {
-    return new JavaView<>(this.project, classLoadingOptions);
+  public View buildOnDemand(
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
+    return new JavaView<>(this.project, classLoadingOptionsSpecifier);
   }
 }
