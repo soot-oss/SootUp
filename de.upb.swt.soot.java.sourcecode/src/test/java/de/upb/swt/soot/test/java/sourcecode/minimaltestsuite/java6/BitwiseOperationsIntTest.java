@@ -2,6 +2,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.Collections;
@@ -14,52 +15,59 @@ public class BitwiseOperationsIntTest extends MinimalTestSuiteBase {
   @Test
   public void defaultTest() {
 
-    loadMethod(
+    SootMethod method = loadMethod(getMethodSignature("bitwiseOpAnd"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BitwiseOperationsInt",
             "$i0 = 70",
             "$i1 = 20",
             "$i2 = $i0 & $i1",
-            "return"),
-        getMethodSignature("bitwiseOpAnd"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("bitwiseOpOr"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BitwiseOperationsInt",
             "$i0 = 70",
             "$i1 = 20",
             "$i2 = $i0 | $i1",
-            "return"),
-        getMethodSignature("bitwiseOpOr"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("bitwiseOpXor"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BitwiseOperationsInt",
             "$i0 = 70",
             "$i1 = 20",
             "$i2 = $i0 ^ $i1",
-            "return"),
-        getMethodSignature("bitwiseOpXor"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("bitwiseOpComplement"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
-            "r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = neg $i0", "return"),
-        getMethodSignature("bitwiseOpComplement"));
+            "r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = neg $i0", "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("bitwiseOpSignedRightShift"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
-            "r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 >> 5", "return"),
-        getMethodSignature("bitwiseOpSignedRightShift"));
+            "r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 >> 5", "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("bitwiseOpLeftShift"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
-            "r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 << 5", "return"),
-        getMethodSignature("bitwiseOpLeftShift"));
+            "r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 << 5", "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("bitwiseOpUnsignedRightShift"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
-            "r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 >>> 5", "return"),
-        getMethodSignature("bitwiseOpUnsignedRightShift"));
+            "r0 := @this: BitwiseOperationsInt", "$i0 = 70", "$i1 = $i0 >>> 5", "return"));
   }
 
   public MethodSignature getMethodSignature(String methodName) {

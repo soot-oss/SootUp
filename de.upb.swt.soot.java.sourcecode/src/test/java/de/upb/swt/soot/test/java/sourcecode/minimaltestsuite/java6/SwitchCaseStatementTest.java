@@ -2,6 +2,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.*;
@@ -19,7 +20,9 @@ public class SwitchCaseStatementTest extends MinimalTestSuiteBase {
 
   @Ignore
   public void defaultTest2() {
-    loadMethod(
+    SootMethod method = loadMethod(getMethodSignature("switchCaseStatementEnum"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: SwitchCaseStatement",
             "$r1 = \"RED\"",
@@ -42,10 +45,10 @@ public class SwitchCaseStatementTest extends MinimalTestSuiteBase {
             "$r2 = \"invalid color\"",
             "goto label4",
             "label4:",
-            "return"),
-        getMethodSignature("switchCaseStatementEnum"));
-
-    loadMethod(
+            "return"));
+    method = loadMethod(getMethodSignature("switchCaseStatementInt"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: SwitchCaseStatement",
             "$i0 = 2",
@@ -64,8 +67,7 @@ public class SwitchCaseStatementTest extends MinimalTestSuiteBase {
             "$r1 = \"number 3 detected\"",
             "goto label3",
             "label3:",
-            "return"),
-        getMethodSignature("switchCaseStatementInt"));
+            "return"));
   }
 
   public MethodSignature getMethodSignature(String methodName) {

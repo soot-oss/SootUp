@@ -113,7 +113,8 @@ public abstract class MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    loadMethod(expectedBodyStmts(), getMethodSignature());
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 
   public SootClass loadClass(JavaClassType clazz) {
@@ -123,14 +124,12 @@ public abstract class MinimalTestSuiteBase {
     return new SootClass(classSource, SourceType.Application);
   }
 
-  public SootMethod loadMethod(List<String> expectedStmts, MethodSignature methodSignature) {
+  public SootMethod loadMethod(MethodSignature methodSignature) {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(customTestWatcher.getLoader(), methodSignature);
 
     assertTrue("No matching method signature found", m.isPresent());
     SootMethod method = m.get();
-    Utils.print(method, false);
-    assertJimpleStmts(method, expectedStmts);
     return method;
   }
 
@@ -139,7 +138,6 @@ public abstract class MinimalTestSuiteBase {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-
     assertEquals(expectedStmts, actualStmts);
   }
 
