@@ -75,9 +75,8 @@ public class CastAndReturnInliner implements BodyInterceptor {
           // We need to replace the GOTO with the return
           JReturnStmt newStmt = retStmt.withOp(ce.getOp());
 
-          // TODO(cbruegg) I think this is also necessary?
-          bodyStmts.set(nextStmtIndex, newStmt);
-          // TODO(cbruegg) The cast statement also should be removed?
+          // Replaces the GOTO with the new return stmt
+          bodyStmts.set(i, newStmt);
 
           for (int j = 0; j < bodyTraps.size(); j++) {
             Trap originalTrap = bodyTraps.get(j);
