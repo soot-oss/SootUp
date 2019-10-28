@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** Built-in sets of {@link BodyInterceptor}s for the bytecode frontend */
 public enum BytecodeBodyInterceptors {
   Default(new CastAndReturnInliner());
 

@@ -6,6 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/**
+ * Built-in sets of {@link ClassLoadingOptions} for the sourcecode frontend.
+ *
+ * @author Christian Brüggemann
+ */
 public enum SourcecodeClassLoadingOptions implements ClassLoadingOptions {
   Default {
     @Nonnull

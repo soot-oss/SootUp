@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
-/** @author Christian Brüggemann */
+/**
+ * @author Christian Brüggemann
+ * @see #interceptBody(Body)
+ */
 public interface BodyInterceptor {
 
   /**

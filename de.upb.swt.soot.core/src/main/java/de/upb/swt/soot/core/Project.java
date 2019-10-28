@@ -96,11 +96,16 @@ public class Project<S extends AnalysisInputLocation> {
     throw new NotYetImplementedException();
   }
 
+  /**
+   * Creates an on-demand View that uses the default {@link
+   * de.upb.swt.soot.core.inputlocation.ClassLoadingOptions} of each frontend.
+   */
   @Nonnull
   public View createOnDemandView() {
     return createOnDemandView(null);
   }
 
+  /** Creates an on-demand View with custom {@link ClassLoadingOptions}. */
   @Nonnull
   public View createOnDemandView(@Nullable ClassLoadingOptions classLoadingOptions) {
     ViewBuilder<S> vb = new ViewBuilder<>(this);
