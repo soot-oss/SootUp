@@ -13,6 +13,11 @@ import javax.annotation.Nonnull;
  * SootClass}es, e.g. Java Classpath, Android APK, JAR file, etc. The strategy to traverse
  * something.
  *
+ * <p>{@link #getClassSource(ReferenceType)} and {@link #getClassSources(IdentifierFactory)} should
+ * in most cases simply call {@link #getClassSource(ReferenceType, ClassLoadingOptions)} or {@link
+ * #getClassSources(IdentifierFactory, ClassLoadingOptions)} respectively with the default {@link
+ * ClassLoadingOptions} of the frontend.
+ *
  * @author Manuel Benz created on 22.05.18
  * @author Ben Hermann
  * @author Linghui Luo
