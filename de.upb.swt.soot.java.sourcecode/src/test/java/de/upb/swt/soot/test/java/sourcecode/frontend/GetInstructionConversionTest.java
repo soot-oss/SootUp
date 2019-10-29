@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.JavaJimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
@@ -69,7 +69,7 @@ public class GetInstructionConversionTest {
               new Local("r0", typeFactory.getClassType("alreadywalaunittests.InnerClassAA")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(typeFactory.getClassType("alreadywalaunittests.InnerClassAA")),
+              JavaJimple.newThisRef(typeFactory.getClassType("alreadywalaunittests.InnerClassAA")),
               stmt.getRightOp());
         });
 

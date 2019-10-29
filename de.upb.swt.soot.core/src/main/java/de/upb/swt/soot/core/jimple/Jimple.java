@@ -24,6 +24,7 @@
 
 package de.upb.swt.soot.core.jimple;
 
+import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.basic.ConditionExprBox;
 import de.upb.swt.soot.core.jimple.basic.IdentityRefBox;
 import de.upb.swt.soot.core.jimple.basic.ImmediateBox;
@@ -93,13 +94,7 @@ import de.upb.swt.soot.core.jimple.javabytecode.stmt.JRetStmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.NullType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.ReferenceType;
-import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.types.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -253,6 +248,11 @@ public class Jimple {
     return l;
   }
 
+  private static IdentifierFactory getIdentifierFactory() {
+    throw new RuntimeException("please call the language specific Jimple IdentifierFactory.");
+  }
+
+  // TODO: [ms] refactor! Java Specific
   public static boolean isJavaKeywordType(Type t) {
     // TODO: [JMP] Ensure that the check is complete.
     return t instanceof PrimitiveType || t instanceof VoidType || t instanceof NullType;
@@ -380,7 +380,7 @@ public class Jimple {
 
   /** Constructs a NewArrayExpr(Type, Immediate) grammar chunk. */
   public static JNewArrayExpr newNewArrayExpr(Type type, Value size) {
-    return new JNewArrayExpr(type, size);
+    return new JNewArrayExpr(type, size, getIdentifierFactory());
   }
 
   /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */
@@ -651,12 +651,12 @@ public class Jimple {
 
   /** Constructs a ArrayRef(Local, Immediate) grammar chunk. */
   public static JArrayRef newArrayRef(Value base, Value index) {
-    return new JArrayRef(base, index);
+    return new JArrayRef(base, index, getIdentifierFactory());
   }
 
   /** Constructs a CaughtExceptionRef() grammar chunk. */
   public static JCaughtExceptionRef newCaughtExceptionRef() {
-    return new JCaughtExceptionRef();
+    return new JCaughtExceptionRef(getIdentifierFactory().getType("java.lang.Throwable"));
   }
 
   public static ValueBox newArgBox(Value value) {

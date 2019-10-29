@@ -14,12 +14,10 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.EagerMethodSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.PositionInfo;
@@ -34,6 +32,7 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.net.URL;
@@ -57,7 +56,7 @@ import javax.annotation.Nullable;
  */
 public class WalaIRToJimpleConverter {
 
-  protected final IdentifierFactory identifierFactory;
+  protected final DefaultIdentifierFactory identifierFactory;
   private AnalysisInputLocation srcNamespace;
   private HashMap<String, Integer> clsWithInnerCls;
   private HashMap<String, String> walaToSootNameTable;
@@ -85,7 +84,8 @@ public class WalaIRToJimpleConverter {
 
   ClassSource convertToClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-    JavaClassType classSig = identifierFactory.getClassType(fullyQualifiedClassName);
+    JavaClassType classSig =
+        (JavaClassType) identifierFactory.getClassType(fullyQualifiedClassName);
     // get super class
     IClass sc = walaClass.getSuperclass();
     JavaClassType superClass = null;
@@ -404,9 +404,9 @@ public class WalaIRToJimpleConverter {
           JavaClassType thisType = methodSignature.getDeclClassType();
           Local thisLocal = localGenerator.generateThisLocal(thisType);
           Stmt stmt =
-              Jimple.newIdentityStmt(
+              JavaJimple.newIdentityStmt(
                   thisLocal,
-                  Jimple.newThisRef(thisType),
+                  JavaJimple.newThisRef(thisType),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
@@ -425,9 +425,9 @@ public class WalaIRToJimpleConverter {
             index = startPara - 1;
           }
           Stmt stmt =
-              Jimple.newIdentityStmt(
+              JavaJimple.newIdentityStmt(
                   paraLocal,
-                  Jimple.newParameterRef(type, index),
+                  JavaJimple.newParameterRef(type, index),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
@@ -460,7 +460,7 @@ public class WalaIRToJimpleConverter {
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?
             ret =
-                Jimple.newReturnVoidStmt(
+                JavaJimple.newReturnVoidStmt(
                     convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
             stmts.add(ret);
           } else {

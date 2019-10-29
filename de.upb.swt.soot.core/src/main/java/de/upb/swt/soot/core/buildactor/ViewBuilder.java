@@ -1,7 +1,6 @@
 package de.upb.swt.soot.core.buildactor;
 
 import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.views.View;
 import javax.annotation.Nonnull;
 
@@ -12,10 +11,10 @@ import javax.annotation.Nonnull;
  * @author Ben Hermann
  * @author Andreas Dann
  */
-public class ViewBuilder<S extends AnalysisInputLocation> {
-  private @Nonnull Project<S> project;
+public class ViewBuilder {
+  private @Nonnull Project project;
 
-  public ViewBuilder(@Nonnull Project<S> project) {
+  public ViewBuilder(@Nonnull Project project) {
     this.project = project;
   }
 

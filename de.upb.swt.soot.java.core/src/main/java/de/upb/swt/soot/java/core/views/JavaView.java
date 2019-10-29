@@ -97,7 +97,7 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
   private volatile boolean isFullyResolved = false;
 
   /** Creates a new instance of the {@link JavaView} class. */
-  public JavaView(@Nonnull Project<S> project) {
+  public JavaView(@Nonnull Project project) {
     super(project);
   }
 

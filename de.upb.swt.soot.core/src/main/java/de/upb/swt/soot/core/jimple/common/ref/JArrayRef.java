@@ -39,7 +39,6 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
 
 public final class JArrayRef implements ConcreteRef, Copyable {
 
@@ -150,6 +149,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
     // TODO
   }
 
+  /* TODO: uncomment
   @Nonnull
   public JArrayRef withBase(Value base) {
     return new JArrayRef(base, getIndex());
@@ -159,4 +159,5 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   public JArrayRef withIndex(Value index) {
     return new JArrayRef(getBase(), index);
   }
+  */
 }

@@ -18,13 +18,13 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractView<S extends AnalysisInputLocation> implements View {
 
-  @Nonnull private final Project<S> project;
+  @Nonnull private final Project project;
 
   @Nonnull private final Options options = new Options();
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
-  public AbstractView(@Nonnull Project<S> project) {
+  public AbstractView(@Nonnull Project project) {
     this.project = project;
   }
 
@@ -48,7 +48,7 @@ public abstract class AbstractView<S extends AnalysisInputLocation> implements V
   }
 
   @Nonnull
-  public Project<S> getProject() {
+  public Project getProject() {
     return project;
   }
 

@@ -25,7 +25,6 @@
 
 package de.upb.swt.soot.core.jimple.common.ref;
 
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -39,14 +38,8 @@ public final class JCaughtExceptionRef implements IdentityRef, Copyable {
 
   private final Type type;
 
-  // TODO: [ms] change references to this constructor
-  private JCaughtExceptionRef(Type type) {
+  public JCaughtExceptionRef(Type type) {
     this.type = type;
-  }
-
-  public static JCaughtExceptionRef getInstance(IdentifierFactory identifierFactory) {
-    // TODO: [ms] still.. very javaish -.- generalize to type and lift this up to Jimple Factory ?!
-    return new JCaughtExceptionRef(identifierFactory.getType("java.lang.Throwable"));
   }
 
   @Override
