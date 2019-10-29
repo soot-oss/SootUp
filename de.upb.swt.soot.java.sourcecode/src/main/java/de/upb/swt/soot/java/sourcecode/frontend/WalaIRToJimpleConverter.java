@@ -27,10 +27,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.NullType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -95,7 +92,7 @@ public class WalaIRToJimpleConverter {
     }
 
     // get interfaces
-    Set<JavaClassType> interfaces = new HashSet<>();
+    Set<ClassType> interfaces = new HashSet<>();
     for (IClass i : walaClass.getDirectInterfaces()) {
       JavaClassType inter =
           identifierFactory.getClassType(convertClassNameFromWala(i.getName().toString()));
@@ -160,7 +157,7 @@ public class WalaIRToJimpleConverter {
   public EagerJavaClassSource createClassSource(
       AstClass walaClass,
       JavaClassType superClass,
-      Set<JavaClassType> interfaces,
+      Set<ClassType> interfaces,
       JavaClassType outerClass,
       Set<SootField> sootFields,
       Set<SootMethod> sootMethods,
@@ -227,7 +224,7 @@ public class WalaIRToJimpleConverter {
 
     EnumSet<Modifier> modifiers = convertModifiers(walaMethod);
 
-    List<JavaClassType> thrownExceptions = new ArrayList<>();
+    List<ClassType> thrownExceptions = new ArrayList<>();
     try {
       for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
         String exceptionName = convertClassNameFromWala(exception.getName().toString());
@@ -244,7 +241,7 @@ public class WalaIRToJimpleConverter {
             walaMethod.getName().toString(), classSig, returnType.toString(), sigs);
 
     Body body = createBody(methodSig, modifiers, walaMethod);
-    return new de.upb.swt.soot.java.sourcecode.frontend.WalaSootMethod(
+    return new WalaSootMethod(
         new EagerMethodSource(methodSig, body), methodSig, modifiers, thrownExceptions, debugInfo);
   }
 
@@ -401,7 +398,7 @@ public class WalaIRToJimpleConverter {
         /* Look AsmMethodSourceContent.getBody, see AsmMethodSourceContent.emitLocals(); */
 
         if (!Modifier.isStatic(modifiers)) {
-          JavaClassType thisType = methodSignature.getDeclClassType();
+          JavaClassType thisType = (JavaClassType) methodSignature.getDeclClassType();
           Local thisLocal = localGenerator.generateThisLocal(thisType);
           Stmt stmt =
               JavaJimple.newIdentityStmt(

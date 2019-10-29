@@ -329,7 +329,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, AstAssertInstruction inst) {
     List<Stmt> stmts = new ArrayList<>();
     // create a static field for checking if assertion is disabled.
-    JavaClassType cSig = methodSignature.getDeclClassType();
+    JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
     FieldSignature fieldSig =
         identifierFactory.getFieldSignature("$assertionsDisabled", cSig, "boolean");
     SootField assertionsDisabled =
@@ -422,7 +422,7 @@ public class InstructionConverter {
       } else {
         right = getLocal(type, access.valueNumber);
       }
-      JavaClassType cSig = methodSignature.getDeclClassType();
+      JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
       // TODO check modifier
       Value left;
       if (!walaMethod.isStatic()) {
@@ -453,7 +453,7 @@ public class InstructionConverter {
       Access access = inst.getAccess(i);
       Type type = converter.convertType(access.type);
       Local left = getLocal(type, access.valueNumber);
-      JavaClassType cSig = methodSignature.getDeclClassType();
+      JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
       // TODO check modifier
       Value rvalue = null;
       if (!walaMethod.isStatic()) {
@@ -482,7 +482,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, EnclosingObjectReference inst) {
     Type enclosingType = converter.convertType(inst.getEnclosingType());
     Value variable = getLocal(enclosingType, inst.getDef());
-    JavaClassType cSig = methodSignature.getDeclClassType();
+    JavaClassType cSig = (JavaClassType) methodSignature.getDeclClassType();
 
     // TODO check modifier
     FieldSignature fieldSig =
@@ -525,7 +525,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSALoadMetadataInstruction inst) {
     Local lval = getLocal(converter.convertType(inst.getType()), inst.getDef());
     TypeReference token = (TypeReference) inst.getToken();
-    ClassConstant c = ClassConstant.getInstance(token.getName().toString());
+    ClassConstant c = ClassConstant.getInstance(token.getName().toString(), identifierFactory);
 
     // TODO: [ms] no instruction example found to add positioninfo
     return JavaJimple.newAssignStmt(
@@ -631,7 +631,8 @@ public class InstructionConverter {
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassType classSig =
-        identifierFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
+        (JavaClassType)
+            identifierFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig =
         identifierFactory.getFieldSignature(
             fieldRef.getName().toString(), classSig, fieldType.toString());
@@ -1013,7 +1014,8 @@ public class InstructionConverter {
     Type fieldType = converter.convertType(inst.getDeclaredFieldType());
     String walaClassName = fieldRef.getDeclaringClass().getName().toString();
     JavaClassType classSig =
-        identifierFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
+        (JavaClassType)
+            identifierFactory.getClassType(converter.convertClassNameFromWala(walaClassName));
     FieldSignature fieldSig =
         identifierFactory.getFieldSignature(
             fieldRef.getName().toString(), classSig, fieldType.toString());
@@ -1053,7 +1055,7 @@ public class InstructionConverter {
     } else if (symbolTable.isFloatConstant(valueNumber)) {
       return FloatConstant.getInstance((float) value);
     } else if (symbolTable.isStringConstant(valueNumber)) {
-      return StringConstant.getInstance((String) value);
+      return StringConstant.getInstance((String) value, identifierFactory);
     } else if (symbolTable.isNullConstant(valueNumber)) {
       return NullConstant.getInstance();
     } else {
