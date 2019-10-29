@@ -254,13 +254,8 @@ public class Jimple {
   }
 
   public static boolean isJavaKeywordType(Type t) {
-    // TODO: Ensure that the check is complete.
+    // TODO: [JMP] Ensure that the check is complete.
     return t instanceof PrimitiveType || t instanceof VoidType || t instanceof NullType;
-  }
-
-  public static Value cloneIfNecessary(Value val) {
-    // TODO: [JMP] Clone, if necessary
-    return val;
   }
 
   /** Constructs a XorExpr(Immediate, Immediate) grammar chunk. */
