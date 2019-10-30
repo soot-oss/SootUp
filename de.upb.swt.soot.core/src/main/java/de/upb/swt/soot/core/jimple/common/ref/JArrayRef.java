@@ -50,7 +50,6 @@ public final class JArrayRef implements ConcreteRef, Copyable {
     this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index), identifierFactory);
   }
 
-  // TODO: [ms] change references to other constructor
   private JArrayRef(ValueBox baseBox, ValueBox indexBox, IdentifierFactory identifierFactory) {
     this.baseBox = baseBox;
     this.indexBox = indexBox;
@@ -149,7 +148,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
     // TODO
   }
 
-  /* TODO: uncomment
+  /* TODO: [ms] uncomment and fix
   @Nonnull
   public JArrayRef withBase(Value base) {
     return new JArrayRef(base, getIndex());

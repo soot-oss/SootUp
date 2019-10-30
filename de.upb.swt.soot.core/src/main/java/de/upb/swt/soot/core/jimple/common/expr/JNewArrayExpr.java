@@ -50,7 +50,6 @@ public final class JNewArrayExpr implements Expr, Copyable {
     this(baseType, size, simplify(baseType, size, identifierFactory));
   }
 
-  // TODO: [ms] change references to other constructor
   public JNewArrayExpr(Type baseType, Value size, Type type) {
     this.baseType = baseType;
     this.sizeBox = Jimple.newImmediateBox(size);
