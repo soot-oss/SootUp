@@ -25,18 +25,18 @@ import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
 
-public class DefaultIdentifierFactory implements IdentifierFactory {
+public class JavaIdentifierFactory implements IdentifierFactory {
 
-  @Nonnull private static final DefaultIdentifierFactory INSTANCE = new DefaultIdentifierFactory();
+  @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();
 
   /** Caches the created PackageNames for packages. */
   final Map<String, PackageName> packages = new HashMap<>();
 
-  public static DefaultIdentifierFactory getInstance() {
+  public static JavaIdentifierFactory getInstance() {
     return INSTANCE;
   }
 
-  DefaultIdentifierFactory() {
+  JavaIdentifierFactory() {
     /* Represents the default package. */
     packages.put(PackageName.DEFAULT_PACKAGE.getPackageName(), PackageName.DEFAULT_PACKAGE);
   }

@@ -18,7 +18,7 @@ import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.util.Collections;
@@ -43,7 +43,7 @@ public class JFieldRefTest {
   public void testJStaticFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
     ClassType declaringClassSignature =
-        DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");
+        JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 
@@ -74,7 +74,7 @@ public class JFieldRefTest {
   public void testJInstanceFieldRef() {
     IdentifierFactory fact = view.getIdentifierFactory();
     ClassType declaringClassSignature =
-        DefaultIdentifierFactory.getInstance().getClassType("dummyMainClass");
+        JavaIdentifierFactory.getInstance().getClassType("dummyMainClass");
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 

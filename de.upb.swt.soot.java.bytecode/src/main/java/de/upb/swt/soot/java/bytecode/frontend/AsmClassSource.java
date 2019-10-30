@@ -12,7 +12,7 @@ import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -97,14 +97,14 @@ class AsmClassSource extends ClassSource {
 
   @Nonnull
   public Collection<SootMethod> resolveMethods() throws ResolveException {
-    IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveMethods(classNode.methods, identifierFactory, classSignature)
         .collect(Collectors.toSet());
   }
 
   @Nonnull
   public Collection<SootField> resolveFields() throws ResolveException {
-    IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveFields(classNode.fields, identifierFactory, classSignature);
   }
 

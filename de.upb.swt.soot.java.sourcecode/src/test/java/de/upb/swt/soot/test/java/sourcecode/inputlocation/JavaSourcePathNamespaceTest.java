@@ -12,7 +12,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
@@ -67,7 +67,7 @@ public class JavaSourcePathNamespaceTest {
         new JavaSourcePathAnalysisInputLocation(
             ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
 
-    DefaultIdentifierFactory defaultFactories = DefaultIdentifierFactory.getInstance();
+    JavaIdentifierFactory defaultFactories = JavaIdentifierFactory.getInstance();
     Collection<? extends AbstractClassSource> classSources =
         inputLocation.getClassSources(defaultFactories);
 

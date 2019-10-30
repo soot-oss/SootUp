@@ -88,7 +88,7 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.ArrayList;
@@ -292,7 +292,7 @@ public class InstructionConverter {
     int exceptionValue = inst.getException();
     Local local =
         getLocal(
-            DefaultIdentifierFactory.getInstance().getClassType("java.lang.Throwable"),
+            JavaIdentifierFactory.getInstance().getClassType("java.lang.Throwable"),
             exceptionValue);
     JCaughtExceptionRef caught = JavaJimple.getInstance().newCaughtExceptionRef();
 
@@ -388,7 +388,7 @@ public class InstructionConverter {
     // create failed assertion code.
 
     ReferenceType assertionErrorType =
-        DefaultIdentifierFactory.getInstance().getClassType("java.lang.AssertionError");
+        JavaIdentifierFactory.getInstance().getClassType("java.lang.AssertionError");
     Local failureLocal = localGenerator.generateLocal(assertionErrorType);
     JNewExpr newExpr = JavaJimple.getInstance().newNewExpr(assertionErrorType);
 

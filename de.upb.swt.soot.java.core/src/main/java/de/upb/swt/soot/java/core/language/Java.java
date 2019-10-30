@@ -2,7 +2,7 @@ package de.upb.swt.soot.java.core.language;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.language.SootLanguage;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import javax.annotation.Nonnull;
 
 /**
@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 public class Java extends SootLanguage {
 
   @Nonnull
-  private static final IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+  private static final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
   @Override
   @Nonnull

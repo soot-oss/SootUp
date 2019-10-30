@@ -17,7 +17,7 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
@@ -34,14 +34,14 @@ import org.junit.experimental.categories.Category;
 public class GetInstructionConversionTest {
 
   private WalaClassLoader loader;
-  private DefaultIdentifierFactory typeFactory;
+  private JavaIdentifierFactory typeFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/wala-tests/";
     loader = new WalaClassLoader(srcDir);
-    typeFactory = DefaultIdentifierFactory.getInstance();
+    typeFactory = JavaIdentifierFactory.getInstance();
     declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");
   }
 

@@ -16,7 +16,7 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import java.io.File;
 import java.util.EnumSet;
@@ -68,7 +68,7 @@ public class ModuleCompositionTest {
 
     // Parse sub-signature for "optionalToStream" method
     MethodSubSignature optionalToStreamMethodSubSignature =
-        DefaultIdentifierFactory.getInstance()
+        JavaIdentifierFactory.getInstance()
             .parseMethodSubSignature(
                 "java.util.stream.Stream optionalToStream(java.util.Optional)");
 
@@ -96,7 +96,7 @@ public class ModuleCompositionTest {
 
     // Parse sub-signature for "name" field
     FieldSubSignature nameFieldSubSignature =
-        DefaultIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String name");
+        JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String name");
 
     // Create the class signature
     ClassType classSignature = view.getIdentifierFactory().getClassType("x.y.z.foo.Bar");
@@ -130,7 +130,7 @@ public class ModuleCompositionTest {
                               @Override
                               @Nonnull
                               public MethodSignature getSignature() {
-                                return DefaultIdentifierFactory.getInstance()
+                                return JavaIdentifierFactory.getInstance()
                                     .getMethodSignature(
                                         utilsClass, optionalToStreamMethodSubSignature);
                               }

@@ -46,7 +46,7 @@ public class JavaProject extends Project {
 
   public static class JavaProjectBuilder {
     final List<AnalysisInputLocation> analysisInputLocations = new ArrayList();
-    IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
 
     @Nonnull

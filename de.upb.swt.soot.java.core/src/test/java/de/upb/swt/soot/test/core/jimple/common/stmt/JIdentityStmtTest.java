@@ -30,7 +30,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,7 +43,7 @@ public class JIdentityStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    DefaultIdentifierFactory typeFactory = DefaultIdentifierFactory.getInstance();
+    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
     Local thiz = new Local("$r0", typeFactory.getType("somepackage.dummy.MyClass"));
     Stmt thisIdStmt =

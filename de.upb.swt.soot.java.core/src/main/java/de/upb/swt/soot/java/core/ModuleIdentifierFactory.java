@@ -8,7 +8,7 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class ModuleIdentifierFactory extends DefaultIdentifierFactory {
+public final class ModuleIdentifierFactory extends JavaIdentifierFactory {
 
   public static final JavaClassType MODULE_INFO_CLASS =
       new JavaClassType("module-info", PackageName.DEFAULT_PACKAGE);

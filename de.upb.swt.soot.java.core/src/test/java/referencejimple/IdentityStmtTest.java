@@ -13,7 +13,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.VoidType;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.net.URI;
 import java.nio.file.Path;
@@ -28,7 +28,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
   @Override
   public void build() {
-    DefaultIdentifierFactory dif = DefaultIdentifierFactory.getInstance();
+    JavaIdentifierFactory dif = JavaIdentifierFactory.getInstance();
 
     Path dummyPath = Paths.get(URI.create("file:/C:/nonexistent.java"));
 
@@ -77,7 +77,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
   SootMethod init(@Nonnull FieldSignature initFieldSignature) {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    DefaultIdentifierFactory dif = DefaultIdentifierFactory.getInstance();
+    JavaIdentifierFactory dif = JavaIdentifierFactory.getInstance();
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
 
     MethodSignature methodSignature =

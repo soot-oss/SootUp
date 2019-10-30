@@ -30,7 +30,7 @@ import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -42,7 +42,7 @@ public class JGotoStmtTest {
   @Test
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
-    DefaultIdentifierFactory typeFactory = DefaultIdentifierFactory.getInstance();
+    JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
     Local local1 = new Local("$r0", typeFactory.getType("java.lang.Exception"));
     Local local2 = new Local("$r0", typeFactory.getType("somepackage.dummy.Exception"));

@@ -6,7 +6,7 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import java.util.Collection;
 import java.util.Optional;
 import org.junit.Assert;
@@ -47,7 +47,7 @@ public abstract class AbstractAnalysisInputLocationTest {
 
   @Before
   public void setUp() {
-    identifierFactory = DefaultIdentifierFactory.getInstance();
+    identifierFactory = JavaIdentifierFactory.getInstance();
     classProvider = createClassProvider();
   }
 

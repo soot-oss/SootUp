@@ -8,7 +8,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
 import java.util.Collection;
@@ -70,7 +70,7 @@ public class JavaViewTest {
 
   private void resolveUndefinedClass() {
     ClassType signature =
-        DefaultIdentifierFactory.getInstance().getClassType("com.example.NonExistingClass");
+        JavaIdentifierFactory.getInstance().getClassType("com.example.NonExistingClass");
 
     if (this.signatures.contains(signature)) {
       Assert.fail("FATAL ERROR: Non-existing class exists in signature list!");

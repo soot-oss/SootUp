@@ -40,7 +40,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -57,7 +57,7 @@ public class JInvokeStmtTest {
   public void test() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
 
-    DefaultIdentifierFactory dif = DefaultIdentifierFactory.getInstance();
+    JavaIdentifierFactory dif = JavaIdentifierFactory.getInstance();
 
     Path dummyPath = Paths.get(URI.create("file:/nonexistent.java"));
     ClassType superClassSignature = dif.getClassType("java.lang.Object");
@@ -86,7 +86,7 @@ public class JInvokeStmtTest {
             new JStaticInvokeExpr(
                 statMethodSig,
                 Arrays.asList(
-                    StringConstant.getInstance("Towel", DefaultIdentifierFactory.getInstance()))),
+                    StringConstant.getInstance("Towel", JavaIdentifierFactory.getInstance()))),
             nop);
 
     // toString

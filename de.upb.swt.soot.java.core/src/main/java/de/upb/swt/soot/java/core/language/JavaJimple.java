@@ -2,7 +2,7 @@ package de.upb.swt.soot.java.core.language;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 
 public class JavaJimple extends Jimple {
 
@@ -14,6 +14,6 @@ public class JavaJimple extends Jimple {
 
   @Override
   public IdentifierFactory getIdentifierFactory() {
-    return DefaultIdentifierFactory.getInstance();
+    return JavaIdentifierFactory.getInstance();
   }
 }
