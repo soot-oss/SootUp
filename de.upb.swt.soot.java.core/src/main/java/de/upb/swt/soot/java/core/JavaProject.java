@@ -1,7 +1,6 @@
 package de.upb.swt.soot.java.core;
 
 import de.upb.swt.soot.core.DefaultSourceTypeSpecifier;
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
@@ -21,9 +20,8 @@ public class JavaProject extends Project {
 
   public JavaProject(
       @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    super(inputLocations, identifierFactory, sourceTypeSpecifier);
+    super(inputLocations, JavaIdentifierFactory.getInstance(), sourceTypeSpecifier);
   }
 
   @Nonnull
@@ -46,22 +44,16 @@ public class JavaProject extends Project {
 
   public static class JavaProjectBuilder {
     final List<AnalysisInputLocation> analysisInputLocations = new ArrayList();
-    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
 
     @Nonnull
-    public JavaProjectBuilder setSourceTypeSpecifier(IdentifierFactory identifierFactory) {
-      this.identifierFactory = identifierFactory;
+    public JavaProjectBuilder setSourceTypeSpecifier(SourceTypeSpecifier sourceTypeSpecifier) {
+      this.sourceTypeSpecifier = sourceTypeSpecifier;
       return this;
     }
-    /*  TODO: [ms] should not be necessary anymore when project<Language> is implemented
-    Builder setIdentifierFactory(IdentifierFactory identifierFactory){
-      this.identifierFactory = identifierFactory;
-      return this;
-    }
-    */
 
-    // TODO: [ms] create AnalysisInputLocations here? determining the needed one automatically? then
+    // TODO: [ms] create AnalysisInputLocations here? determining the needed one automatically from
+    // String? then
     // we need a possibility to "debug"/see which files where found for the consumer.
     @Nonnull
     public JavaProjectBuilder addClassPath(
@@ -92,7 +84,7 @@ public class JavaProject extends Project {
 
     @Nonnull
     public JavaProject make() {
-      return new JavaProject(analysisInputLocations, identifierFactory, sourceTypeSpecifier);
+      return new JavaProject(analysisInputLocations, sourceTypeSpecifier);
     }
   }
 }
