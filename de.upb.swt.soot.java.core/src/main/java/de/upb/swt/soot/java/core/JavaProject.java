@@ -40,17 +40,17 @@ public class JavaProject extends Project {
    * @return A {@link JavaProject} builder.
    */
   @Nonnull
-  public static JavaProject.Builder builder() {
-    return new Builder();
+  public static JavaProjectBuilder builder() {
+    return new JavaProjectBuilder();
   }
 
-  public static class Builder {
+  public static class JavaProjectBuilder {
     final List<AnalysisInputLocation> analysisInputLocations = new ArrayList();
     IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
     SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
 
     @Nonnull
-    public Builder setSourceTypeSpecifier(IdentifierFactory identifierFactory) {
+    public JavaProjectBuilder setSourceTypeSpecifier(IdentifierFactory identifierFactory) {
       this.identifierFactory = identifierFactory;
       return this;
     }
@@ -64,26 +64,27 @@ public class JavaProject extends Project {
     // TODO: [ms] create AnalysisInputLocations here? determining the needed one automatically? then
     // we need a possibility to "debug"/see which files where found for the consumer.
     @Nonnull
-    public Builder addClassPath(Collection<AnalysisInputLocation> analysisInputLocations) {
+    public JavaProjectBuilder addClassPath(
+        Collection<AnalysisInputLocation> analysisInputLocations) {
       this.analysisInputLocations.addAll(analysisInputLocations);
       return this;
     }
 
     @Nonnull
-    public Builder addClassPath(AnalysisInputLocation analysisInputLocation) {
+    public JavaProjectBuilder addClassPath(AnalysisInputLocation analysisInputLocation) {
       this.analysisInputLocations.add(analysisInputLocation);
       return this;
     }
 
     @Nonnull
-    Builder addModulePath(Collection<AnalysisInputLocation> analysisInputLocation) {
+    JavaProjectBuilder addModulePath(Collection<AnalysisInputLocation> analysisInputLocation) {
       // TODO: [ms] java9
       this.analysisInputLocations.addAll(analysisInputLocation);
       return this;
     }
 
     @Nonnull
-    Builder addModulePath(AnalysisInputLocation analysisInputLocation) {
+    JavaProjectBuilder addModulePath(AnalysisInputLocation analysisInputLocation) {
       // TODO: [ms] java9
       this.analysisInputLocations.add(analysisInputLocation);
       return this;

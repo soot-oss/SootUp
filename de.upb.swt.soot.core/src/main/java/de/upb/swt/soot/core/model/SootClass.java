@@ -362,8 +362,6 @@ public class SootClass extends AbstractClass<ClassSource> {
     return Modifier.isStatic(this.getModifiers());
   }
 
-  protected int number = 0;
-
   // FIXME The following code is commented out due to incompatibility, but
   // may still be needed.
   // https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r266971653

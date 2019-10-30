@@ -3,7 +3,6 @@ package de.upb.swt.soot.test;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java9Test;
-import de.upb.swt.soot.core.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
@@ -12,6 +11,7 @@ import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.frontend.modules.SootModuleInfo;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaModulePathAnalysisInputLocation;
+import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Optional;
@@ -28,11 +28,7 @@ public class ModuleBuilderActorTest {
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules",
             new AsmJavaClassProvider());
 
-    Project<AnalysisInputLocation> project =
-        new Project<>(
-            javaClassPathNamespace,
-            ModuleIdentifierFactory.getInstance(),
-            DefaultSourceTypeSpecifier.getInstance());
+    Project project = JavaProject.builder().addClassPath(javaClassPathNamespace).make();
 
     // de.upb.soot.views.JavaView view = new de.upb.soot.views.JavaView(project);
 

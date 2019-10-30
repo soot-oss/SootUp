@@ -42,6 +42,7 @@ public class StringConstant implements Constant {
   }
 
   public static StringConstant getInstance(String value, IdentifierFactory identifierFactory) {
+    // TODO: [ms] still very javaish...
     return new StringConstant(value, identifierFactory.getType("java.lang.String"));
   }
 

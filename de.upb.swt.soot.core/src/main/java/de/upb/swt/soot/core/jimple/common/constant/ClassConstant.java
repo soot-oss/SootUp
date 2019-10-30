@@ -42,11 +42,11 @@ public class ClassConstant implements Constant {
   }
 
   /** Returns an instance of ClassConstant. */
-  // TODO: [ms] change references to this getInstance
   public static ClassConstant getInstance(String value, IdentifierFactory identifierFactory) {
     if (value.contains(".")) {
       throw new RuntimeException("ClassConstants must use class names separated by '/', not '.'!");
     }
+    // TODO: [ms] still very javaish..
     return new ClassConstant(value, identifierFactory.getType("java.lang.Class"));
   }
 
