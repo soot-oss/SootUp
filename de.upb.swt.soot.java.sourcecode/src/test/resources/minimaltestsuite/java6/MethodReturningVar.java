@@ -1,3 +1,7 @@
+
+/** @author: Hasitha Rajapakse */
+
+
 public class MethodReturningVar {
 
     public short shortVariable() {

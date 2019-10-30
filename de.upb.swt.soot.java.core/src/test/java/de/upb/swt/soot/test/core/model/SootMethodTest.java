@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
-import de.upb.swt.soot.core.frontend.EagerMethodSource;
+import de.upb.swt.soot.core.frontend.OverridingClassSource;
+import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.PositionInfo;
@@ -55,14 +55,14 @@ public class SootMethodTest {
             .getMethodSignature("main", "dummyMain", "void", Collections.emptyList());
     SootMethod dummyMainMethod =
         new SootMethod(
-            new EagerMethodSource(methodSignature, body),
+            new OverridingMethodSource(methodSignature, body),
             methodSignature,
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
             Collections.emptyList());
 
     SootClass mainClass =
         new SootClass(
-            new EagerJavaClassSource(
+            new OverridingClassSource(
                 new EagerInputLocation(),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),

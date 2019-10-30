@@ -14,9 +14,8 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
+import de.upb.swt.soot.core.frontend.*;
 import de.upb.swt.soot.core.frontend.ClassSource;
-import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
-import de.upb.swt.soot.core.frontend.EagerMethodSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
@@ -153,8 +152,11 @@ public class WalaIRToJimpleConverter {
         modifiers);
   }
 
-  /** Create a {@link EagerJavaClassSource} object for the given walaClass. */
-  public EagerJavaClassSource createClassSource(
+  /**
+   * Create a {@link de.upb.swt.soot.core.frontend.OverridingClassSource} object for the given
+   * walaClass.
+   */
+  public OverridingClassSource createClassSource(
       AstClass walaClass,
       JavaClassType superClass,
       Set<ClassType> interfaces,
@@ -167,7 +169,7 @@ public class WalaIRToJimpleConverter {
     JavaClassType classSignature = identifierFactory.getClassType(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
-    return new EagerJavaClassSource(
+    return new OverridingClassSource(
         srcNamespace,
         sourcePath,
         classSignature,
@@ -242,7 +244,11 @@ public class WalaIRToJimpleConverter {
 
     Body body = createBody(methodSig, modifiers, walaMethod);
     return new WalaSootMethod(
-        new EagerMethodSource(methodSig, body), methodSig, modifiers, thrownExceptions, debugInfo);
+        new OverridingMethodSource(methodSig, body),
+        methodSig,
+        modifiers,
+        thrownExceptions,
+        debugInfo);
   }
 
   public Type convertType(TypeReference type) {

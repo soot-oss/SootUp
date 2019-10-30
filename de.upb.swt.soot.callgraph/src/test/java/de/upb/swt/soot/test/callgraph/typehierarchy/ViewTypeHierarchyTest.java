@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
+import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
@@ -203,8 +203,8 @@ public class ViewTypeHierarchyTest {
   @Test
   public void addType() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    EagerJavaClassSource classSource =
-        new EagerJavaClassSource(
+    OverridingClassSource classSource =
+        new OverridingClassSource(
             analysisInputLocation,
             null,
             factory.getClassType("adummytype.Type"),

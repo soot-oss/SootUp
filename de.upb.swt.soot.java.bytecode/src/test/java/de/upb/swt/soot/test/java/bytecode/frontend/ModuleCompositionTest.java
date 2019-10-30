@@ -4,8 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.MethodSource;
+import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
@@ -105,7 +105,7 @@ public class ModuleCompositionTest {
 
     SootClass c =
         new SootClass(
-            new EagerJavaClassSource(
+            new OverridingClassSource(
                 new EagerInputLocation(),
                 null,
                 classSignature,
