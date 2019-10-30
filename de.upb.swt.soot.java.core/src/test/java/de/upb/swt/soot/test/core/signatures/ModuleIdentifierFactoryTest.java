@@ -3,7 +3,6 @@ package de.upb.swt.soot.test.core.signatures;
 import static org.junit.Assert.*;
 
 import categories.Java9Test;
-import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
@@ -40,10 +39,9 @@ public class ModuleIdentifierFactoryTest extends IdentifierFactoryTest {
   @Test
   public void getPackageSignatureUnnamedModule() {
     ModuleIdentifierFactory identifierFactory = ModuleIdentifierFactory.getInstance();
-    PackageName packageName1 = identifierFactory.getPackageName("java.lang");
+    ModulePackageName packageName1 = identifierFactory.getPackageName("java.lang");
     assertTrue(packageName1 instanceof ModulePackageName);
-    assertSame(
-        ((ModulePackageName) packageName1).getModuleSignature(), ModuleSignature.UNNAMED_MODULE);
+    assertSame(packageName1.getModuleSignature(), ModuleSignature.UNNAMED_MODULE);
   }
 
   // @Test
@@ -56,10 +54,9 @@ public class ModuleIdentifierFactoryTest extends IdentifierFactoryTest {
   @Test
   public void getPackageSignatureNamedModule() {
     ModuleIdentifierFactory identifierFactory = ModuleIdentifierFactory.getInstance();
-    PackageName packageName1 = identifierFactory.getPackageSignature("java.lang", "myModule");
+    ModulePackageName packageName1 = identifierFactory.getPackageSignature("java.lang", "myModule");
     assertTrue(packageName1 instanceof ModulePackageName);
-    assertNotSame(
-        ((ModulePackageName) packageName1).getModuleSignature(), ModuleSignature.UNNAMED_MODULE);
+    assertNotSame(packageName1.getModuleSignature(), ModuleSignature.UNNAMED_MODULE);
   }
 
   @Test

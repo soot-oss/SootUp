@@ -18,7 +18,6 @@ import javax.annotation.Nonnull;
  *
  * @author Aaloan Miftah
  */
-@SuppressWarnings("serial")
 class StmtContainer extends Stmt {
 
   @Nonnull final Stmt[] units;

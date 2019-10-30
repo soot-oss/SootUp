@@ -34,7 +34,6 @@ import java.util.List;
  */
 
 /** Partial implementation of trap (exception catcher), used within Body classes. */
-@SuppressWarnings("serial")
 public class AbstractTrap implements Trap {
   /** The exception being caught. */
   private transient ClassType exception;

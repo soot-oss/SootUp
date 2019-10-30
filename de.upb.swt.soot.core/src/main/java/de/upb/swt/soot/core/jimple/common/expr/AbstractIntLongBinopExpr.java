@@ -31,7 +31,6 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 
-@SuppressWarnings("serial")
 public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
 
   AbstractIntLongBinopExpr(Value op1, Value op2) {

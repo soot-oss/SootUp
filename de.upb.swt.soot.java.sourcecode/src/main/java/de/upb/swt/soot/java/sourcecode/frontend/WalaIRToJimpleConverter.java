@@ -79,8 +79,7 @@ public class WalaIRToJimpleConverter {
 
   ClassSource convertToClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
-    JavaClassType classSig =
-        (JavaClassType) identifierFactory.getClassType(fullyQualifiedClassName);
+    JavaClassType classSig = identifierFactory.getClassType(fullyQualifiedClassName);
     // get super class
     IClass sc = walaClass.getSuperclass();
     JavaClassType superClass = null;
@@ -456,7 +455,7 @@ public class WalaIRToJimpleConverter {
 
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
-          Stmt ret = null;
+          Stmt ret;
           if (stmts.isEmpty() || !(stmts.get(stmts.size() - 1) instanceof JReturnVoidStmt)) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with

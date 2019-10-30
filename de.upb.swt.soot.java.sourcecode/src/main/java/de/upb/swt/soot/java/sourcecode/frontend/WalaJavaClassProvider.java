@@ -6,7 +6,6 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 
@@ -27,7 +26,7 @@ public class WalaJavaClassProvider implements ClassProvider {
   public ClassSource createClassSource(
       AnalysisInputLocation srcNamespace, Path sourcePath, ClassType type) {
     return new WalaClassLoader(sourcePath.toString(), exclusionFilePath)
-        .getClassSource((JavaClassType) type)
+        .getClassSource(type)
         .orElseThrow(() -> new ResolveException("Could not resolve " + type + " in " + sourcePath));
   }
 

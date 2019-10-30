@@ -31,7 +31,6 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.StringTools;
 
-@SuppressWarnings("serial")
 public class ClassConstant implements Constant {
   private final String value;
   private final Type type;

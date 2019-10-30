@@ -32,7 +32,6 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 
-@SuppressWarnings("serial")
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
 
   AbstractFloatBinopExpr(Value op1, Value op2) {
