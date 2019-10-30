@@ -151,7 +151,7 @@ public class FloatConstant implements RealConstant<FloatConstant> {
   @Nonnull
   @Override
   public FloatConstant negate() {
-    return FloatConstant.getInstance(-(value));
+    return FloatConstant.getInstance(-value);
   }
 
   @Override
