@@ -51,7 +51,7 @@ public class WalaClassLoader {
   private List<ClassSource> classSources;
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
-  private File walaPropertiesFile = new File("target/classes/wala.properties");
+  private final File walaPropertiesFile = new File("target/classes/wala.properties");
 
   /** Create wala.properties to class path */
   private void createWalaproperties() {

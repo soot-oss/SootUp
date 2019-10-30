@@ -78,11 +78,6 @@ public final class JThrowStmt extends AbstractOpStmt implements Copyable {
     return comparator.caseThrowStmt(this, o);
   }
 
-  @Override
-  public int equivHashCode() {
-    return super.equivHashCode();
-  }
-
   @Nonnull
   public JThrowStmt withOp(Value op) {
     return new JThrowStmt(op, getPositionInfo());

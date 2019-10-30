@@ -80,12 +80,13 @@ public class JInvokeStmtTest {
 
     // JStaticInvokeExpr
     MethodSignature statMethodSig =
-        dif.getMethodSignature("print", "java.system.Out", "void", Arrays.asList("String"));
+        dif.getMethodSignature(
+            "print", "java.system.Out", "void", Collections.singletonList("String"));
     Stmt staticInvokeStmt =
         new JInvokeStmt(
             new JStaticInvokeExpr(
                 statMethodSig,
-                Arrays.asList(
+                Collections.singletonList(
                     StringConstant.getInstance("Towel", JavaIdentifierFactory.getInstance()))),
             nop);
 
@@ -100,11 +101,11 @@ public class JInvokeStmtTest {
 
     // JSpecialInvoke
     MethodSignature smethodSig =
-        dif.getMethodSignature("<init>", "java.lang.Object", "void", Arrays.asList());
+        dif.getMethodSignature("<init>", "java.lang.Object", "void", Collections.emptyList());
     Stmt specialInvokeStmt =
         new JInvokeStmt(
             new JSpecialInvokeExpr(
-                new Local("$r0", sootClass.getType()), smethodSig, Arrays.asList()),
+                new Local("$r0", sootClass.getType()), smethodSig, Collections.emptyList()),
             nop);
 
     // toString
@@ -117,11 +118,11 @@ public class JInvokeStmtTest {
 
     // JInterfaceInvoke
     MethodSignature imethodSig =
-        dif.getMethodSignature("remove", "java.util.Iterator", "void", Arrays.asList());
+        dif.getMethodSignature("remove", "java.util.Iterator", "void", Collections.emptyList());
     Stmt interfaceInvokeStmt =
         new JInvokeStmt(
             new JInterfaceInvokeExpr(
-                new Local("r2", sootClass.getType()), imethodSig, Arrays.asList()),
+                new Local("r2", sootClass.getType()), imethodSig, Collections.emptyList()),
             nop);
 
     // toString
@@ -135,11 +136,11 @@ public class JInvokeStmtTest {
     // JDynamicInvoke
     MethodSignature dmethodSig =
         dif.getMethodSignature(
-            "mylambda", SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME, "void", Arrays.asList());
+            "mylambda", SootClass.INVOKEDYNAMIC_DUMMY_CLASS_NAME, "void", Collections.emptyList());
     MethodSignature bootstrapMethodSig =
-        dif.getMethodSignature("run", "Runnable", "void", Arrays.asList());
-    List<? extends Value> bootstrapArgs = Arrays.asList();
-    List<? extends Value> methodArgs = Arrays.asList();
+        dif.getMethodSignature("run", "Runnable", "void", Collections.emptyList());
+    List<? extends Value> bootstrapArgs = Collections.emptyList();
+    List<? extends Value> methodArgs = Collections.emptyList();
 
     Stmt dynamicInvokeStmt =
         new JInvokeStmt(

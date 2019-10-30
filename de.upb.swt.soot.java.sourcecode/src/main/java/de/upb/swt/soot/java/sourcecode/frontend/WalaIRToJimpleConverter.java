@@ -15,8 +15,8 @@ import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.swt.soot.core.frontend.*;
-import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.PositionInfo;
@@ -28,7 +28,6 @@ import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.net.URL;
@@ -53,9 +52,9 @@ import javax.annotation.Nullable;
 public class WalaIRToJimpleConverter {
 
   protected final JavaIdentifierFactory identifierFactory;
-  private AnalysisInputLocation srcNamespace;
-  private HashMap<String, Integer> clsWithInnerCls;
-  private HashMap<String, String> walaToSootNameTable;
+  private final AnalysisInputLocation srcNamespace;
+  private final HashMap<String, Integer> clsWithInnerCls;
+  private final HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
 
   public WalaIRToJimpleConverter(@Nonnull Set<String> sourceDirPath) {
@@ -407,11 +406,10 @@ public class WalaIRToJimpleConverter {
           JavaClassType thisType = (JavaClassType) methodSignature.getDeclClassType();
           Local thisLocal = localGenerator.generateThisLocal(thisType);
           Stmt stmt =
-              JavaJimple.getInstance()
-                  .newIdentityStmt(
-                      thisLocal,
-                      JavaJimple.getInstance().newThisRef(thisType),
-                      convertPositionInfo(debugInfo.getInstructionPosition(0), null));
+              Jimple.newIdentityStmt(
+                  thisLocal,
+                  Jimple.newThisRef(thisType),
+                  convertPositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
 
@@ -429,11 +427,10 @@ public class WalaIRToJimpleConverter {
             index = startPara - 1;
           }
           Stmt stmt =
-              JavaJimple.getInstance()
-                  .newIdentityStmt(
-                      paraLocal,
-                      JavaJimple.getInstance().newParameterRef(type, index),
-                      convertPositionInfo(debugInfo.getInstructionPosition(0), null));
+              Jimple.newIdentityStmt(
+                  paraLocal,
+                  Jimple.newParameterRef(type, index),
+                  convertPositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
 
@@ -465,10 +462,8 @@ public class WalaIRToJimpleConverter {
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?
             ret =
-                JavaJimple.getInstance()
-                    .newReturnVoidStmt(
-                        convertPositionInfo(
-                            debugInfo.getInstructionPosition(insts.length - 1), null));
+                Jimple.newReturnVoidStmt(
+                    convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
             stmts.add(ret);
           } else {
             ret = stmts.get(stmts.size() - 1);

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
@@ -18,7 +19,6 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import java.util.Collections;
@@ -69,8 +69,7 @@ public class GetInstructionConversionTest {
               new Local("r0", typeFactory.getClassType("alreadywalaunittests.InnerClassAA")),
               stmt.getLeftOp());
           assertEquiv(
-              JavaJimple.getInstance()
-                  .newThisRef(typeFactory.getClassType("alreadywalaunittests.InnerClassAA")),
+              Jimple.newThisRef(typeFactory.getClassType("alreadywalaunittests.InnerClassAA")),
               stmt.getRightOp());
         });
 

@@ -15,6 +15,8 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
+
+// TODO: <S extends SootLanguage>
 public abstract class Project {
 
   @Nonnull private final IdentifierFactory identifierFactory;
@@ -26,7 +28,7 @@ public abstract class Project {
       @Nonnull AnalysisInputLocation inputLocation,
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    this(Arrays.asList(inputLocation), identifierFactory, sourceTypeSpecifier);
+    this(Collections.singletonList(inputLocation), identifierFactory, sourceTypeSpecifier);
   }
 
   /** Create a project from an arbitrary list of input locations */

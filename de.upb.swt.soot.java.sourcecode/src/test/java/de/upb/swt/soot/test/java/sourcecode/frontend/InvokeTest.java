@@ -184,7 +184,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "repro1", declareClassSig, "void", Arrays.asList("java.lang.Object")));
+                "repro1", declareClassSig, "void", Collections.singletonList("java.lang.Object")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -211,7 +211,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "repro2", declareClassSig, "void", Arrays.asList("java.lang.Object")));
+                "repro2", declareClassSig, "void", Collections.singletonList("java.lang.Object")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 

@@ -43,7 +43,7 @@ public class JavaProject extends Project {
   }
 
   public static class JavaProjectBuilder {
-    final List<AnalysisInputLocation> analysisInputLocations = new ArrayList();
+    final List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
     SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
 
     @Nonnull

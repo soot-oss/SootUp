@@ -11,10 +11,7 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -88,7 +85,7 @@ public class PositionInfoTest {
   @Test
   public void testBinaryOpInstructionMultiline() {
 
-    loadCurrentMethod("complexOperands", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("complexOperands", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(8);
     PositionInfo info = stmt.getPositionInfo();
@@ -118,7 +115,7 @@ public class PositionInfoTest {
   @Test
   public void testReturnInstruction() {
 
-    loadCurrentMethod("call1", declareClassSig, "long", Arrays.asList("int"));
+    loadCurrentMethod("call1", declareClassSig, "long", Collections.singletonList("int"));
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(4);
@@ -141,7 +138,7 @@ public class PositionInfoTest {
   public void testReturnVoidInstruction() {
 
     // implicit return i.e. end of method
-    loadCurrentMethod("call0", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("call0", declareClassSig, "void", Collections.emptyList());
     {
       List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
       Stmt stmt = stmts.get(6);
@@ -158,7 +155,7 @@ public class PositionInfoTest {
     }
 
     // with explicit return (at the end)
-    loadCurrentMethod("call01", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("call01", declareClassSig, "void", Collections.emptyList());
     {
       List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
       Stmt stmt = stmts.get(2);
@@ -191,7 +188,7 @@ public class PositionInfoTest {
   @Test
   public void testGetInstruction() {
 
-    loadCurrentMethod("readSth", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("readSth", declareClassSig, "void", Collections.emptyList());
     {
       List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
       Stmt stmt = stmts.get(1);
@@ -260,7 +257,7 @@ public class PositionInfoTest {
 
   @Test
   public void testPutInstruction() {
-    loadCurrentMethod("<init>", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("<init>", declareClassSig, "void", Collections.emptyList());
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(2);
@@ -374,7 +371,7 @@ public class PositionInfoTest {
 
   @Test
   public void testConversionInstruction() {
-    loadCurrentMethod("complexOperands", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("complexOperands", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     {
@@ -456,7 +453,7 @@ public class PositionInfoTest {
 
   @Test
   public void testUnaryInstruction() {
-    loadCurrentMethod("complexOperands", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("complexOperands", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     { // assignment: int a;
@@ -525,7 +522,7 @@ public class PositionInfoTest {
 
   @Test
   public void testThrowInstruction() {
-    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(3);
@@ -550,7 +547,7 @@ public class PositionInfoTest {
 
   @Test
   public void testSwitchInstruction() {
-    loadCurrentMethod("favouriteNumber", declareClassSig, "int", Arrays.asList());
+    loadCurrentMethod("favouriteNumber", declareClassSig, "int", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(2);
@@ -569,7 +566,7 @@ public class PositionInfoTest {
   @Ignore
   public void testLoadMetadataInstruction() {
     // TODO: implement - no instruction example found
-    loadCurrentMethod("metadata", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("metadata", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(0);
@@ -592,7 +589,7 @@ public class PositionInfoTest {
   @Ignore
   public void testCheckCastInstruction() {
     // TODO: implement - no instruction example found
-    loadCurrentMethod("TODO", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("TODO", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(0);
@@ -615,7 +612,7 @@ public class PositionInfoTest {
   @Ignore
   public void testEnclosingObjectReference() {
     // TODO: implement - no instruction example found
-    loadCurrentMethod("enclosingobject", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("enclosingobject", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(0);
@@ -638,7 +635,7 @@ public class PositionInfoTest {
   @Ignore
   public void testAstLexicalRead() {
     // TODO: implement - no instruction example found
-    loadCurrentMethod("TODO", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("TODO", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(0);
@@ -661,7 +658,7 @@ public class PositionInfoTest {
   @Ignore
   public void testAstLexicalWrite() {
     // TODO: implement - no instruction example found
-    loadCurrentMethod("TODO", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("TODO", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(0);
@@ -683,7 +680,7 @@ public class PositionInfoTest {
 
   @Test
   public void testAssertInstruction() {
-    loadCurrentMethod("atomictwo", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("atomictwo", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     {
@@ -712,7 +709,7 @@ public class PositionInfoTest {
 
     // FIXME: [ms] synchronized void atomicone has no monitors?
 
-    loadCurrentMethod("atomictwo", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("atomictwo", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     { // entermonitor
@@ -748,7 +745,7 @@ public class PositionInfoTest {
 
   @Test
   public void testGetCaughtExceptionInstruction() {
-    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(4);
@@ -771,7 +768,7 @@ public class PositionInfoTest {
 
   @Test
   public void testArrayLengthInstruction() {
-    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Collections.emptyList());
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(7);
@@ -793,7 +790,7 @@ public class PositionInfoTest {
 
   @Test
   public void testArrayLoadInstruction() {
-    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Collections.emptyList());
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(11);
@@ -816,7 +813,7 @@ public class PositionInfoTest {
 
   @Test
   public void testArrayStoreInstruction() {
-    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Arrays.asList());
+    loadCurrentMethod("exceptionMethod", declareClassSig, "void", Collections.emptyList());
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(8);

@@ -1,8 +1,8 @@
 package referencejimple;
 
 import de.upb.swt.soot.core.frontend.*;
-import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -13,7 +13,6 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -81,7 +80,10 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     MethodSignature methodSignature =
         dif.getMethodSignature(
-            "<init>", classSignature, VoidType.getInstance().toString(), Arrays.asList(""));
+            "<init>",
+            classSignature,
+            VoidType.getInstance().toString(),
+            Collections.singletonList(""));
 
     HashSet<Local> locals = new HashSet<>();
     List<Trap> traps = new LinkedList<>();
@@ -92,20 +94,15 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     //    RefType type = RefType.getInstance("de.upb.soot.instructions.stmt.IdentityStmt");
 
     Local r0 = generator.generateField(typeSignature);
-    stmts.add(
-        JavaJimple.getInstance()
-            .newIdentityStmt(r0, JavaJimple.getInstance().newThisRef(typeSignature), nop));
+    stmts.add(Jimple.newIdentityStmt(r0, Jimple.newThisRef(typeSignature), nop));
 
     // TODO: how to add expr to body?
     // add(JavaJimple.getInstance().newSpecialInvokeExpr( r0 , currentMethod ));
 
     Value value = IntConstant.getInstance(42);
-    stmts.add(
-        JavaJimple.getInstance()
-            .newAssignStmt(
-                JavaJimple.getInstance().newInstanceFieldRef(r0, initFieldSignature), value, nop));
+    stmts.add(Jimple.newAssignStmt(Jimple.newInstanceFieldRef(r0, initFieldSignature), value, nop));
 
-    stmts.add(JavaJimple.getInstance().newReturnVoidStmt(nop));
+    stmts.add(Jimple.newReturnVoidStmt(nop));
 
     Body body = new Body(locals, traps, stmts, new NoPositionInformation());
     MethodSource methodSource = new OverridingMethodSource(methodSignature, body);

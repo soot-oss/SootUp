@@ -1,12 +1,12 @@
 package de.upb.swt.soot.java.bytecode.frontend;
 
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.util.ArrayList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -97,14 +97,13 @@ final class StackFrame {
         if (newOp.stack == null) {
           newOp.stack = stack;
           JAssignStmt as =
-              JavaJimple.getInstance()
-                  .newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
+              Jimple.newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
           src.setUnit(newOp.insn, as);
           newOp.updateBoxes();
         } else {
           JAssignStmt as =
-              JavaJimple.getInstance()
-                  .newAssignStmt(stack, newOp.stackOrValue(), PositionInfo.createNoPositionInfo());
+              Jimple.newAssignStmt(
+                  stack, newOp.stackOrValue(), PositionInfo.createNoPositionInfo());
           src.mergeUnits(newOp.insn, as);
           newOp.addBox(as.getRightOpBox());
         }
@@ -132,8 +131,7 @@ final class StackFrame {
           if (prevOp.stack == null) {
             prevOp.stack = stack;
             JAssignStmt as =
-                JavaJimple.getInstance()
-                    .newAssignStmt(stack, prevOp.value, PositionInfo.createNoPositionInfo());
+                Jimple.newAssignStmt(stack, prevOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(prevOp.insn, as);
           } else {
             Stmt u = src.getUnit(prevOp.insn);
@@ -151,8 +149,7 @@ final class StackFrame {
           if (newOp.stack == null) {
             newOp.stack = stack;
             JAssignStmt as =
-                JavaJimple.getInstance()
-                    .newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
+                Jimple.newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(newOp.insn, as);
           } else {
             Stmt u = src.getUnit(newOp.insn);

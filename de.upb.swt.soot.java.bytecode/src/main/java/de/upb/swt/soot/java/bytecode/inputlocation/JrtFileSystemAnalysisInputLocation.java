@@ -34,7 +34,7 @@ import javax.annotation.Nonnull;
  */
 public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLocation {
 
-  private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
+  private final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
   public JrtFileSystemAnalysisInputLocation(@Nonnull ClassProvider classProvider) {
     super(classProvider);

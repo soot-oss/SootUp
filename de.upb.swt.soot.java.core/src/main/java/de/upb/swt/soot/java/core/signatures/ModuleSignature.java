@@ -24,7 +24,6 @@ package de.upb.swt.soot.java.core.signatures;
 
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.signatures.Signature;
-import scala.collection.script.Remove;
 
 // TODO Rename this too?
 
@@ -42,7 +41,7 @@ public class ModuleSignature implements Signature {
 
   /**
    * Construct Module Signature of a Java 9 module. Instances should only be created a {@link
-   * Remove}
+   * de.upb.swt.soot.core.IdentifierFactory}
    *
    * @param moduleName module's name
    */

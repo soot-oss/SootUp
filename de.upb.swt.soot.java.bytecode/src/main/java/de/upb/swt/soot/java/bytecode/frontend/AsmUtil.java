@@ -224,7 +224,7 @@ public final class AsmUtil {
 
   @Nullable
   public static JavaClassType asmIDToSignature(@Nonnull String asmClassName) {
-    if (asmClassName == null || asmClassName.isEmpty()) {
+    if (asmClassName.isEmpty()) {
       return null;
     }
     return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
