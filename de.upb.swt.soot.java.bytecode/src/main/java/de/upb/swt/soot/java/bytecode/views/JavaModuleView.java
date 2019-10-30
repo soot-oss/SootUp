@@ -4,11 +4,10 @@ import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.modules.SootModuleInfo;
-import de.upb.swt.soot.java.bytecode.inputlocation.JavaModulePathAnalysisInputLocation;
-import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -19,12 +18,12 @@ public abstract class JavaModuleView implements View {
 
   @Nonnull private final Map<Pair<SootModuleInfo, Type>, SootClass> map = new HashMap<>();
 
-  public JavaModuleView(Project<JavaModulePathAnalysisInputLocation> project) {}
+  public JavaModuleView(Project project) {}
 
   @Override
   @Nonnull
   public synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
-      @Nonnull JavaClassType type) {
+      @Nonnull ClassType type) {
     // FIXME: get the first class you find, in the annouymous module...
     return null;
   }

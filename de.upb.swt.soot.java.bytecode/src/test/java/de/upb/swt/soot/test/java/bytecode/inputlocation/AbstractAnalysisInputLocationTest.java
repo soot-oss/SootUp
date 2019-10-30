@@ -4,9 +4,9 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collection;
 import java.util.Optional;
 import org.junit.Assert;
@@ -64,15 +64,12 @@ public abstract class AbstractAnalysisInputLocationTest {
   }
 
   protected void testClassReceival(
-      AbstractAnalysisInputLocation ns, JavaClassType sig, int minClassesFound) {
+      AbstractAnalysisInputLocation ns, ClassType sig, int minClassesFound) {
     testClassReceival(ns, sig, minClassesFound, -1);
   }
 
   protected void testClassReceival(
-      AbstractAnalysisInputLocation ns,
-      JavaClassType sig,
-      int minClassesFound,
-      int maxClassesFound) {
+      AbstractAnalysisInputLocation ns, ClassType sig, int minClassesFound, int maxClassesFound) {
     final Optional<? extends AbstractClassSource> clazz = ns.getClassSource(sig);
 
     Assert.assertTrue(clazz.isPresent());

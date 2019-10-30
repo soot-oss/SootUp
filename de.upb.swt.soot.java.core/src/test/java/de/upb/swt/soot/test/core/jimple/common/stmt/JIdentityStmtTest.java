@@ -55,7 +55,8 @@ public class JIdentityStmtTest {
         new JIdentityStmt(param, new JParameterRef(PrimitiveType.getInt(), 123), nop);
 
     Local exception = new Local("$r1", typeFactory.getType("java.lang.Exception"));
-    Stmt exceptionIdStmt = new JIdentityStmt(exception, JavaJimple.newCaughtExceptionRef(), nop);
+    Stmt exceptionIdStmt =
+        new JIdentityStmt(exception, JavaJimple.getInstance().newCaughtExceptionRef(), nop);
 
     // toString
     Assert.assertEquals("$r0 := @this: somepackage.dummy.MyClass", thisIdStmt.toString());
@@ -99,7 +100,7 @@ public class JIdentityStmtTest {
         thisIdStmt.equivTo(
             new JIdentityStmt(
                 new Local("$r1", typeFactory.getType("somepckg.NotMyException")),
-                JavaJimple.newCaughtExceptionRef(),
+                JavaJimple.getInstance().newCaughtExceptionRef(),
                 nop)));
     Assert.assertFalse(paramIdStmt.equivTo(thisIdStmt));
     Assert.assertFalse(paramIdStmt.equivTo(exceptionIdStmt));

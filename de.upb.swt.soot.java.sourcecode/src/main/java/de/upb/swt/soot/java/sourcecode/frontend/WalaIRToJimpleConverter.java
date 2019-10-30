@@ -401,10 +401,11 @@ public class WalaIRToJimpleConverter {
           JavaClassType thisType = (JavaClassType) methodSignature.getDeclClassType();
           Local thisLocal = localGenerator.generateThisLocal(thisType);
           Stmt stmt =
-              JavaJimple.newIdentityStmt(
-                  thisLocal,
-                  JavaJimple.newThisRef(thisType),
-                  convertPositionInfo(debugInfo.getInstructionPosition(0), null));
+              JavaJimple.getInstance()
+                  .newIdentityStmt(
+                      thisLocal,
+                      JavaJimple.getInstance().newThisRef(thisType),
+                      convertPositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
 
@@ -422,10 +423,11 @@ public class WalaIRToJimpleConverter {
             index = startPara - 1;
           }
           Stmt stmt =
-              JavaJimple.newIdentityStmt(
-                  paraLocal,
-                  JavaJimple.newParameterRef(type, index),
-                  convertPositionInfo(debugInfo.getInstructionPosition(0), null));
+              JavaJimple.getInstance()
+                  .newIdentityStmt(
+                      paraLocal,
+                      JavaJimple.getInstance().newParameterRef(type, index),
+                      convertPositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
 
@@ -457,8 +459,10 @@ public class WalaIRToJimpleConverter {
             // maybe use lastLine with
             // startcol: -1 because it does not exist in the source explicitly?
             ret =
-                JavaJimple.newReturnVoidStmt(
-                    convertPositionInfo(debugInfo.getInstructionPosition(insts.length - 1), null));
+                JavaJimple.getInstance()
+                    .newReturnVoidStmt(
+                        convertPositionInfo(
+                            debugInfo.getInstructionPosition(insts.length - 1), null));
             stmts.add(ret);
           } else {
             ret = stmts.get(stmts.size() - 1);

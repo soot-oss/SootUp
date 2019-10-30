@@ -8,7 +8,7 @@ import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.inputlocation.PathUtils;
-import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
@@ -42,7 +42,7 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull ReferenceType classType) {
+      @Nonnull ClassType classType) {
     JavaClassType klassType = (JavaClassType) classType;
     if (klassType.getPackageName() instanceof ModulePackageName) {
       return this.getClassSourceInternalForModule(klassType);
@@ -157,6 +157,8 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
     // else use the module system and create fully class signature
+    JavaClassType sig = (JavaClassType) identifierFactory.fromPath(filename);
+
     if (identifierFactory instanceof ModuleIdentifierFactory) {
       // FIXME: adann clean this up!
       // String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
@@ -167,7 +169,6 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
       // String packagename = packageFileName.toString().replace('/', '.');
       // String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
       //
-      JavaClassType sig = identifierFactory.fromPath(filename);
 
       return ((ModuleIdentifierFactory) identifierFactory)
           .getClassType(
@@ -175,6 +176,6 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
     }
 
     // if we are using the normal signature factory, than trim the module from the path
-    return identifierFactory.fromPath(filename);
+    return sig;
   }
 }

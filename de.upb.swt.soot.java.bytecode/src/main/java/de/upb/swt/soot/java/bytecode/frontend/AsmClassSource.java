@@ -10,6 +10,7 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -42,9 +43,7 @@ class AsmClassSource extends ClassSource {
   }
 
   private static Set<SootField> resolveFields(
-      List<FieldNode> fieldNodes,
-      IdentifierFactory signatureFactory,
-      JavaClassType classSignature) {
+      List<FieldNode> fieldNodes, IdentifierFactory signatureFactory, ClassType classSignature) {
     // FIXME: add support for annotation
     return fieldNodes.stream()
         .map(
@@ -61,7 +60,7 @@ class AsmClassSource extends ClassSource {
   }
 
   private static Stream<SootMethod> resolveMethods(
-      List<MethodNode> methodNodes, IdentifierFactory signatureFactory, JavaClassType cs) {
+      List<MethodNode> methodNodes, IdentifierFactory signatureFactory, ClassType cs) {
     return methodNodes.stream()
         .map(
             methodSource -> {
@@ -72,7 +71,7 @@ class AsmClassSource extends ClassSource {
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
               asmClassClassSourceContent.setDeclaringClass(cs);
 
-              List<JavaClassType> exceptions = new ArrayList<>();
+              List<ClassType> exceptions = new ArrayList<>();
               Iterable<JavaClassType> exceptionsSignatures =
                   AsmUtil.asmIdToSignature(methodSource.exceptions);
 
@@ -116,17 +115,17 @@ class AsmClassSource extends ClassSource {
   }
 
   @Nonnull
-  public Set<JavaClassType> resolveInterfaces() {
+  public Set<ClassType> resolveInterfaces() {
     return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
   }
 
   @Nonnull
-  public Optional<JavaClassType> resolveSuperclass() {
+  public Optional<ClassType> resolveSuperclass() {
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.superName));
   }
 
   @Nonnull
-  public Optional<JavaClassType> resolveOuterClass() {
+  public Optional<ClassType> resolveOuterClass() {
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
   }
 

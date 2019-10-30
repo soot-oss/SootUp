@@ -7,6 +7,7 @@ import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -19,7 +20,7 @@ import javax.annotation.Nonnull;
 
 public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
 
-  @Nonnull private final JavaClassType classSignature;
+  @Nonnull private final ClassType classSignature;
   // FIXME: how to create automatic modules
   private boolean isAutomaticModule;
   private EnumSet<Modifier> modifiers;

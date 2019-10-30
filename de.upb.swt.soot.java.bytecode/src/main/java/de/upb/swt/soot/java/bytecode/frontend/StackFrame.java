@@ -97,13 +97,14 @@ final class StackFrame {
         if (newOp.stack == null) {
           newOp.stack = stack;
           JAssignStmt as =
-              JavaJimple.newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
+              JavaJimple.getInstance()
+                  .newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
           src.setUnit(newOp.insn, as);
           newOp.updateBoxes();
         } else {
           JAssignStmt as =
-              JavaJimple.newAssignStmt(
-                  stack, newOp.stackOrValue(), PositionInfo.createNoPositionInfo());
+              JavaJimple.getInstance()
+                  .newAssignStmt(stack, newOp.stackOrValue(), PositionInfo.createNoPositionInfo());
           src.mergeUnits(newOp.insn, as);
           newOp.addBox(as.getRightOpBox());
         }
@@ -131,7 +132,8 @@ final class StackFrame {
           if (prevOp.stack == null) {
             prevOp.stack = stack;
             JAssignStmt as =
-                JavaJimple.newAssignStmt(stack, prevOp.value, PositionInfo.createNoPositionInfo());
+                JavaJimple.getInstance()
+                    .newAssignStmt(stack, prevOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(prevOp.insn, as);
           } else {
             Stmt u = src.getUnit(prevOp.insn);
@@ -149,7 +151,8 @@ final class StackFrame {
           if (newOp.stack == null) {
             newOp.stack = stack;
             JAssignStmt as =
-                JavaJimple.newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
+                JavaJimple.getInstance()
+                    .newAssignStmt(stack, newOp.value, PositionInfo.createNoPositionInfo());
             src.setUnit(newOp.insn, as);
           } else {
             Stmt u = src.getUnit(newOp.insn);

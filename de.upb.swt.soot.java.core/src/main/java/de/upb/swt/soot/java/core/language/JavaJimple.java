@@ -6,7 +6,14 @@ import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
 
 public class JavaJimple extends Jimple {
 
-  private static IdentifierFactory getIdentifierFactory() {
+  private static final JavaJimple INSTANCE = new JavaJimple();
+
+  public static JavaJimple getInstance() {
+    return INSTANCE;
+  }
+
+  @Override
+  public IdentifierFactory getIdentifierFactory() {
     return DefaultIdentifierFactory.getInstance();
   }
 }

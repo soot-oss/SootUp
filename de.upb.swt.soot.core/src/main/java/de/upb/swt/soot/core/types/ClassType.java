@@ -9,4 +9,6 @@ public abstract class ClassType extends ReferenceType {
   public abstract boolean isBuiltInClass();
 
   public abstract String getFullyQualifiedName();
+
+  public abstract String getClassName();
 }

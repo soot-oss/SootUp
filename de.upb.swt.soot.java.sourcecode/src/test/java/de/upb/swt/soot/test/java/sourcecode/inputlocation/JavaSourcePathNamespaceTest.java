@@ -10,6 +10,7 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -70,8 +71,8 @@ public class JavaSourcePathNamespaceTest {
     Collection<? extends AbstractClassSource> classSources =
         inputLocation.getClassSources(defaultFactories);
 
-    JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
-    Optional<JavaClassType> optionalFoundType =
+    ClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
+    Optional<ClassType> optionalFoundType =
         classSources.stream()
             .filter(classSource -> classSource.getClassType().equals(type))
             .map(AbstractClassSource::getClassType)

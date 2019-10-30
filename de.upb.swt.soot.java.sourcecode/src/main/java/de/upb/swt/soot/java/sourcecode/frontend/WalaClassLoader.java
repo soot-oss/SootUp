@@ -21,6 +21,7 @@ import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.File;
 import java.io.FileInputStream;
@@ -269,7 +270,7 @@ public class WalaClassLoader {
   }
 
   /** Return a ClassSource with the given signature converted from a WALA class. */
-  public Optional<ClassSource> getClassSource(JavaClassType signature) {
+  public Optional<ClassSource> getClassSource(ClassType signature) {
     if (classHierarchy == null) {
       buildClassHierachy();
     }
@@ -279,7 +280,7 @@ public class WalaClassLoader {
   }
 
   @Nullable
-  private JavaClass loadWalaClass(JavaClassType signature, WalaIRToJimpleConverter walaToSoot) {
+  private JavaClass loadWalaClass(ClassType signature, WalaIRToJimpleConverter walaToSoot) {
     String className = walaToSoot.convertClassNameFromSoot(signature.getFullyQualifiedName());
     JavaClass walaClass =
         (JavaClass)

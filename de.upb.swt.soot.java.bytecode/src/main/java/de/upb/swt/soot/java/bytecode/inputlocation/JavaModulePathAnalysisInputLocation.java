@@ -87,7 +87,7 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull ReferenceType classType) {
+      @Nonnull ClassType classType) {
     JavaClassType klassType = (JavaClassType) classType;
     String modulename =
         ((ModulePackageName) klassType.getPackageName()).getModuleSignature().getModuleName();

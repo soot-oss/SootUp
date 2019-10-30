@@ -8,7 +8,6 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
@@ -21,6 +20,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.util.Collections;
 import java.util.EnumSet;
 import org.junit.Before;
@@ -61,7 +61,7 @@ public class JFieldRefTest {
                 null,
                 EnumSet.of(Modifier.PUBLIC)),
             SourceType.Application);
-    JStaticFieldRef ref = Jimple.newStaticFieldRef(fieldSig);
+    JStaticFieldRef ref = JavaJimple.getInstance().newStaticFieldRef(fieldSig);
     assertEquals("<dummyMainClass: int dummyField>", ref.toString());
 
     // FIXME: [JMP] This assert always fails, because the view does not contain any class.
@@ -93,7 +93,7 @@ public class JFieldRefTest {
                 EnumSet.of(Modifier.PUBLIC)),
             SourceType.Application);
     Local base = new Local("obj", declaringClassSignature);
-    JInstanceFieldRef ref = Jimple.newInstanceFieldRef(base, fieldSig);
+    JInstanceFieldRef ref = JavaJimple.getInstance().newInstanceFieldRef(base, fieldSig);
     assertEquals("obj.<dummyMainClass: int dummyField>", ref.toString());
 
     // FIXME: [JMP] This assert always fails, because the view does not contain any class.

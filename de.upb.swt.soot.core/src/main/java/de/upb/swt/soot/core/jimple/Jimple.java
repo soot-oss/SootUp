@@ -109,7 +109,7 @@ import java.util.List;
  * RValue -> Local | Constant | ConcreteRef | Expr<br>
  * Variable -> Local | ArrayRef | InstanceFieldRef | StaticFieldRef <br>
  */
-public class Jimple {
+public abstract class Jimple {
   public static final String NEWARRAY = "newarray";
   public static final String NEWMULTIARRAY = "newmultiarray";
   public static final String NOP = "nop";
@@ -248,9 +248,7 @@ public class Jimple {
     return l;
   }
 
-  private static IdentifierFactory getIdentifierFactory() {
-    throw new RuntimeException("please call the language specific Jimple IdentifierFactory.");
-  }
+  public abstract IdentifierFactory getIdentifierFactory();
 
   // TODO: [ms] refactor! Java Specific
   public static boolean isJavaKeywordType(Type t) {
@@ -379,7 +377,7 @@ public class Jimple {
   }
 
   /** Constructs a NewArrayExpr(Type, Immediate) grammar chunk. */
-  public static JNewArrayExpr newNewArrayExpr(Type type, Value size) {
+  public JNewArrayExpr newNewArrayExpr(Type type, Value size) {
     return new JNewArrayExpr(type, size, getIdentifierFactory());
   }
 
@@ -650,12 +648,13 @@ public class Jimple {
   }
 
   /** Constructs a ArrayRef(Local, Immediate) grammar chunk. */
-  public static JArrayRef newArrayRef(Value base, Value index) {
+  public JArrayRef newArrayRef(Value base, Value index) {
     return new JArrayRef(base, index, getIdentifierFactory());
   }
 
   /** Constructs a CaughtExceptionRef() grammar chunk. */
-  public static JCaughtExceptionRef newCaughtExceptionRef() {
+  public JCaughtExceptionRef newCaughtExceptionRef() {
+    // TODO: [ms] still very javaish..
     return new JCaughtExceptionRef(getIdentifierFactory().getType("java.lang.Throwable"));
   }
 

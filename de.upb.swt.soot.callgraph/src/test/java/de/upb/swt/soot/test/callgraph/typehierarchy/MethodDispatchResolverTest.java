@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
-import de.upb.swt.soot.core.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.ResolveException;
@@ -17,7 +16,8 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import de.upb.swt.soot.java.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
@@ -46,11 +46,7 @@ public class MethodDispatchResolverTest {
     JavaClassPathAnalysisInputLocation analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(
             jarFile + File.pathSeparator + rtJarClassPath, new AsmJavaClassProvider());
-    Project<JavaClassPathAnalysisInputLocation> p =
-        new Project<>(
-            analysisInputLocation,
-            DefaultIdentifierFactory.getInstance(),
-            DefaultSourceTypeSpecifier.getInstance());
+    Project p = JavaProject.builder().addClassPath(analysisInputLocation).make();
     view = p.createOnDemandView();
   }
 
@@ -125,7 +121,9 @@ public class MethodDispatchResolverTest {
         new JSpecialInvokeExpr(
             new Local("str", factory.getClassType("java.lang.String")),
             strInit,
-            ImmutableUtils.immutableList(StringConstant.getInstance("abc")));
+            ImmutableUtils.immutableList(
+                StringConstant.getInstance(
+                    "abc", JavaJimple.getInstance().getIdentifierFactory())));
 
     assertEquals(
         "String init should resolve to itself",
@@ -139,7 +137,9 @@ public class MethodDispatchResolverTest {
         new JSpecialInvokeExpr(
             new Local("jcp", factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace")),
             privateExplode,
-            ImmutableUtils.immutableList(StringConstant.getInstance("abc")));
+            ImmutableUtils.immutableList(
+                StringConstant.getInstance(
+                    "abc", JavaJimple.getInstance().getIdentifierFactory())));
     assertEquals(
         privateExplode + " is private and should resolve to itself",
         privateExplode,

@@ -7,8 +7,8 @@ import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Method;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -66,9 +66,9 @@ public final class MethodDispatchResolver {
   public static MethodSignature resolveConcreteDispatch(View view, MethodSignature m) {
     TypeHierarchy hierarchy = TypeHierarchy.fromView(view);
 
-    JavaClassType superClassType = m.getDeclClassType();
+    ClassType superClassType = m.getDeclClassType();
     do {
-      JavaClassType finalSuperClassType = superClassType;
+      ClassType finalSuperClassType = superClassType;
       AbstractClass<? extends AbstractClassSource> superClass =
           view.getClass(superClassType)
               .orElseThrow(
