@@ -46,7 +46,7 @@ public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
 
     if (PrimitiveType.isIntLikeType(op1t) && PrimitiveType.isIntLikeType(op2t)) {
       return PrimitiveType.getInt();
-    } else if (op1t.equals(PrimitiveType.getLong()) && op2t.equals(PrimitiveType.getLong())) {
+    } else if (op1t.equals(PrimitiveType.getLong()) || op2t.equals(PrimitiveType.getLong())) {
       return PrimitiveType.getLong();
     } else {
       return UnknownType.getInstance();
