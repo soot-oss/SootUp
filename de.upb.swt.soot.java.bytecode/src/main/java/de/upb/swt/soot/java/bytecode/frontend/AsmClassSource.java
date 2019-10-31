@@ -4,6 +4,7 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootField;
@@ -25,6 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -132,9 +134,9 @@ class AsmClassSource extends ClassSource {
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
   }
 
+  @NonNull
   public Position resolvePosition() {
-    // FIXME: what is this??? the source code line number of the complete file?
-    return null;
+    return new NoPositionInformation();
   }
 
   @Override
