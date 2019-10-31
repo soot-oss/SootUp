@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -29,7 +28,7 @@ import org.junit.experimental.categories.Category;
 public class JavaViewTest {
 
   private List<ClassType> signatures;
-  private JavaView<AnalysisInputLocation> view;
+  private JavaView view;
 
   public static final String jarFile =
       "../shared-test-resources/java9-target/de/upb/soot/namespaces/Soot-4.0-SNAPSHOT.jar";

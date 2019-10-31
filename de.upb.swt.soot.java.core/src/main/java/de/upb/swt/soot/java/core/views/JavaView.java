@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
@@ -21,7 +20,7 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo created on 31.07.2018
  * @author Jan Martin Persch
  */
-public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
+public class JavaView extends AbstractView {
 
   /** Defines Java's reserved names. */
   @Nonnull

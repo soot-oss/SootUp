@@ -4,7 +4,6 @@ import de.upb.swt.soot.core.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
-import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,10 +25,10 @@ public class JavaProject extends Project {
 
   @Nonnull
   @Override
-  public View createOnDemandView() {
+  public JavaView createOnDemandView() {
     // TODO: [ms] abstract implementation due to language independence; call it via
     // ViewBuilder.createOnDemandView() again?
-    return new JavaView<>(this);
+    return new JavaView(this);
   }
 
   /**

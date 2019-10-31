@@ -4,7 +4,6 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Options;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.Scope;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -16,7 +15,7 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractView<S extends AnalysisInputLocation> implements View {
+public abstract class AbstractView implements View {
 
   @Nonnull private final Project project;
 
