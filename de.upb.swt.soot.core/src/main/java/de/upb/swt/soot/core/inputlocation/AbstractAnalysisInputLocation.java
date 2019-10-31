@@ -2,7 +2,7 @@ package de.upb.swt.soot.core.inputlocation;
 
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ReferenceType;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
 /**
  * Basic implementation of {@link AnalysisInputLocation}, encapsulating common behavior. Also used
  * to keep the {@link AnalysisInputLocation} interface clean from internal methods like {@link
- * AbstractAnalysisInputLocation#getClassSource(JavaClassType)}.
+ * AbstractAnalysisInputLocation#getClassSource(ReferenceType)}.
  *
  * @author Manuel Benz created on 22.05.18
  */
@@ -71,5 +71,5 @@ public abstract class AbstractAnalysisInputLocation implements AnalysisInputLoca
 
   @Override
   public abstract @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType classSignature);
+      @Nonnull ReferenceType classSignature);
 }

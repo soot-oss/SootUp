@@ -93,7 +93,7 @@ public interface View {
 
   //  // TODO: [JMP] Move type resolving into view.
   //  /**
-  //   * Returns a backed list of the exceptions thrown by this methodRef.
+  //   * Returns a backed list of the exceptions thrown by this method.
   //   */
   //  public @Nonnull Collection<SootClass> getExceptions() {
   //    return this.exceptions.stream()
@@ -102,7 +102,7 @@ public interface View {
   //             .map(it -> (SootClass) it).collect(Collectors.toSet());
   //  }
 
-  //  // TODO: This was placed in `JDynamicInvokeExpr`
+  //  // TODO: [JMP] This was placed in `JDynamicInvokeExpr`
   //  public Optional<SootMethod> getBootstrapMethod() {
   //    JavaClassType signature = bsm.declClassSignature;
   //    Optional<AbstractClass> op = this.getView().getClass(signature);

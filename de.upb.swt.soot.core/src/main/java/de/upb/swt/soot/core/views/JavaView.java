@@ -3,17 +3,15 @@ package de.upb.swt.soot.core.views;
 import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
+import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -120,7 +118,19 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
       return Optional.of(sootClass);
     }
 
-    return getProject().getInputLocation().getClassSource(type).flatMap(this::getClass);
+    final List<AbstractClassSource> foundClassSources =
+        getProject().getInputLocations().stream()
+            .map(location -> location.getClassSource(type))
+            .filter(Optional::isPresent)
+            .limit(2)
+            .map(Optional::get)
+            .collect(Collectors.toList());
+
+    if (foundClassSources.size() > 1) {
+      throw new ResolveException(
+          "Class candidates for \"" + type + "\" found in multiple AnalysisInputLocations.");
+    }
+    return foundClassSources.stream().findAny().map(this::getClass).get();
   }
 
   @Nonnull
@@ -129,21 +139,23 @@ public class JavaView<S extends AnalysisInputLocation> extends AbstractView<S> {
     AbstractClass<? extends AbstractClassSource> theClass =
         this.map.get(classSource.getClassType());
     if (theClass == null) {
-      theClass = classSource.reifyClass();
+      theClass =
+          classSource.buildClass(
+              getProject().getSourceTypeSpecifier().sourceTypeFor(classSource.getClassType()));
       map.putIfAbsent(theClass.getType(), theClass);
     }
     return Optional.of(theClass);
   }
 
   private synchronized void resolveAll() {
-    if (!isFullyResolved) {
-      // Calling getClass fills the map
-      getProject()
-          .getInputLocation()
-          .getClassSources(getIdentifierFactory())
-          .forEach(this::getClass);
-      isFullyResolved = true;
+    if (isFullyResolved) {
+      return;
     }
+    // Calling getClass fills the map
+    getProject().getInputLocations().stream()
+        .flatMap(location -> location.getClassSources(getIdentifierFactory()).stream())
+        .forEach(this::getClass);
+    isFullyResolved = true;
   }
 
   @Override
