@@ -121,6 +121,9 @@ class AsmClassSource extends ClassSource {
 
   @Nonnull
   public Optional<ClassType> resolveSuperclass() {
+    if (classNode.superName == null) {
+      return Optional.empty();
+    }
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.superName));
   }
 
