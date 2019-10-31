@@ -39,12 +39,13 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nonnull;
 
 public final class JArrayRef implements ConcreteRef, Copyable {
 
   private final ValueBox baseBox;
   private final ValueBox indexBox;
-  private final Type type;
+  private final IdentifierFactory identifierFactory;
 
   public JArrayRef(Value base, Value index, IdentifierFactory identifierFactory) {
     this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index), identifierFactory);
@@ -53,7 +54,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   private JArrayRef(ValueBox baseBox, ValueBox indexBox, IdentifierFactory identifierFactory) {
     this.baseBox = baseBox;
     this.indexBox = indexBox;
-    this.type = determineType(identifierFactory);
+    this.identifierFactory = identifierFactory;
   }
 
   private Type determineType(IdentifierFactory identifierFactory) {
@@ -140,7 +141,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
 
   @Override
   public Type getType() {
-    return type;
+    return determineType(identifierFactory);
   }
 
   @Override
@@ -148,15 +149,13 @@ public final class JArrayRef implements ConcreteRef, Copyable {
     // TODO
   }
 
-  /* TODO: [ms] uncomment and fix
   @Nonnull
   public JArrayRef withBase(Value base) {
-    return new JArrayRef(base, getIndex());
+    return new JArrayRef(base, getIndex(), identifierFactory);
   }
 
   @Nonnull
   public JArrayRef withIndex(Value index) {
-    return new JArrayRef(getBase(), index);
+    return new JArrayRef(getBase(), index, identifierFactory);
   }
-  */
 }

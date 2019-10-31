@@ -44,19 +44,15 @@ public final class JNewArrayExpr implements Expr, Copyable {
 
   private final Type baseType;
   private final ValueBox sizeBox;
-  private final Type type;
+  private final IdentifierFactory identifierFactory;
 
   public JNewArrayExpr(Type baseType, Value size, IdentifierFactory identifierFactory) {
-    this(baseType, size, simplify(baseType, size, identifierFactory));
-  }
-
-  public JNewArrayExpr(Type baseType, Value size, Type type) {
     this.baseType = baseType;
     this.sizeBox = Jimple.newImmediateBox(size);
-    this.type = type;
+    this.identifierFactory = identifierFactory;
   }
 
-  private static Type simplify(Type baseType, Value size, IdentifierFactory identifierFactory) {
+  private static Type simplify(Type baseType, IdentifierFactory identifierFactory) {
     if (baseType instanceof ArrayType) {
       return identifierFactory.getArrayType(
           ((ArrayType) baseType).getBaseType(), ((ArrayType) baseType).getDimension() + 1);
@@ -128,7 +124,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
   /** Returns an instance of ArrayType(). */
   @Override
   public Type getType() {
-    return type;
+    return simplify(baseType, identifierFactory);
   }
 
   @Override
@@ -138,11 +134,11 @@ public final class JNewArrayExpr implements Expr, Copyable {
 
   @Nonnull
   public JNewArrayExpr withBaseType(Type baseType) {
-    return new JNewArrayExpr(baseType, getSize(), type);
+    return new JNewArrayExpr(baseType, getSize(), identifierFactory);
   }
 
   @Nonnull
   public JNewArrayExpr withSize(Value size) {
-    return new JNewArrayExpr(baseType, size, type);
+    return new JNewArrayExpr(baseType, size, identifierFactory);
   }
 }
