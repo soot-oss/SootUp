@@ -35,7 +35,7 @@ public class JFieldRefTest {
 
   @Before
   public void setUp() {
-    Project project = JavaProject.builder().addClassPath(new EagerInputLocation()).make();
+    Project project = JavaProject.builder().addClassPath(new EagerInputLocation()).build();
     view = project.createOnDemandView();
   }
 

@@ -85,7 +85,7 @@ public class JavaProject extends Project {
     }
 
     @Nonnull
-    public JavaProject make() {
+    public JavaProject build() {
       return new JavaProject(analysisInputLocations, sourceTypeSpecifier, usesJavaModules);
     }
   }

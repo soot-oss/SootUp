@@ -26,7 +26,7 @@ public class SimpleSootClient {
     AnalysisInputLocation walaSource =
         new JavaSourcePathAnalysisInputLocation(Collections.singleton(javaSourcePath));
 
-    Project p = JavaProject.builder().addClassPath(walaSource).make();
+    Project p = JavaProject.builder().addClassPath(walaSource).build();
 
     // 1. simple case
     View fullView = p.createFullView();

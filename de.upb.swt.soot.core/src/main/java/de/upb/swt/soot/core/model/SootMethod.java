@@ -456,7 +456,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
     @Override
     @Nonnull
-    protected SootMethod make() {
+    public SootMethod build() {
       return new SootMethod(
           this.getSource(), this.getSignature(), this.getModifiers(), this.getThrownExceptions());
     }

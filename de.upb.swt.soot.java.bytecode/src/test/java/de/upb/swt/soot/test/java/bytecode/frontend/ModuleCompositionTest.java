@@ -49,7 +49,7 @@ public class ModuleCompositionTest {
         JavaProject.builder()
             .addClassPath(
                 new JavaClassPathAnalysisInputLocation(jarFile, new AsmJavaClassProvider()))
-            .make();
+            .build();
 
     // Get the view
     View view = p.createOnDemandView();

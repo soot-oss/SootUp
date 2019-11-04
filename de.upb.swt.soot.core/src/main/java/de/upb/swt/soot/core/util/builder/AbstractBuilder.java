@@ -83,23 +83,7 @@ public abstract class AbstractBuilder<T> {
    * @return The created instance of the buildable class.
    */
   @Nonnull
-  protected abstract T make();
-
-  /**
-   * Builds the {@link T buildable}.
-   *
-   * @return The created {@link T buildable}.
-   * @throws BuilderException A build error occurred. See the {@link Exception#getCause() cause} to
-   *     get details about the original exception.
-   */
-  @Nonnull
-  public T build() {
-    try {
-      return this.make();
-    } catch (RuntimeException e) {
-      throw new BuilderException(this.getClass(), this.getBuildableClass(), e);
-    }
-  }
+  public abstract T build();
 
   @Override
   @Nonnull

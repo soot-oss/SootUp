@@ -28,7 +28,7 @@ public class ModuleBuilderActorTest {
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules",
             new AsmJavaClassProvider());
 
-    Project project = JavaProject.builder().addClassPath(javaClassPathNamespace).make();
+    Project project = JavaProject.builder().addClassPath(javaClassPathNamespace).build();
 
     // de.upb.soot.views.JavaView view = new de.upb.soot.views.JavaView(project);
 

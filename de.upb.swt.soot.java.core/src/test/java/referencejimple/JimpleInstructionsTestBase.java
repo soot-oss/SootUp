@@ -63,7 +63,7 @@ public abstract class JimpleInstructionsTestBase {
     directory = directory.substring(startPos, endPos);
 
     // soot config
-    Project project = JavaProject.builder().addClassPath(new EagerInputLocation()).make();
+    Project project = JavaProject.builder().addClassPath(new EagerInputLocation()).build();
     view = project.createOnDemandView();
 
     // build class structure

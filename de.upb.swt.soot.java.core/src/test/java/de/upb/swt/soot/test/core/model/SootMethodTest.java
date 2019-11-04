@@ -27,7 +27,7 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    Project project = JavaProject.builder().addClassPath(new EagerInputLocation()).make();
+    Project project = JavaProject.builder().addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 

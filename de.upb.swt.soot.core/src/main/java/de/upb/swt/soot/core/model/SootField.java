@@ -193,7 +193,7 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
 
     @Override
     @Nonnull
-    protected SootField make() {
+    public SootField build() {
       return new SootField(this.getSignature(), this.getModifiers());
     }
 
