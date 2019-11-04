@@ -41,12 +41,11 @@ public class JavaJimple extends Jimple {
   }
 
   public ClassConstant newClassConstant(String value) {
-    return new ClassConstant(value, (ClassType) getIdentifierFactory().getType("java.lang.Class"));
+    return new ClassConstant(value, getIdentifierFactory().getType("java.lang.Class"));
   }
 
   public StringConstant newStringConstant(String value) {
-    return new StringConstant(
-        value, (ClassType) getIdentifierFactory().getType("java.lang.String"));
+    return new StringConstant(value, getIdentifierFactory().getType("java.lang.String"));
   }
 
   public MethodHandle newMethodHandle(FieldRef ref, int tag) {

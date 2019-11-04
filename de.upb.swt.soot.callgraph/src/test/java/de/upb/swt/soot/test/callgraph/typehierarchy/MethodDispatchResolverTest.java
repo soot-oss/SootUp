@@ -9,7 +9,6 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.ImmutableUtils;
@@ -121,9 +120,7 @@ public class MethodDispatchResolverTest {
         new JSpecialInvokeExpr(
             new Local("str", factory.getClassType("java.lang.String")),
             strInit,
-            ImmutableUtils.immutableList(
-                StringConstant.getInstance(
-                    "abc", JavaJimple.getInstance().getIdentifierFactory())));
+            ImmutableUtils.immutableList(JavaJimple.getInstance().newStringConstant("abc")));
 
     assertEquals(
         "String init should resolve to itself",
@@ -137,9 +134,7 @@ public class MethodDispatchResolverTest {
         new JSpecialInvokeExpr(
             new Local("jcp", factory.getClassType("de.upb.soot.namespaces.JavaClassPathNamespace")),
             privateExplode,
-            ImmutableUtils.immutableList(
-                StringConstant.getInstance(
-                    "abc", JavaJimple.getInstance().getIdentifierFactory())));
+            ImmutableUtils.immutableList(JavaJimple.getInstance().newStringConstant("abc")));
     assertEquals(
         privateExplode + " is private and should resolve to itself",
         privateExplode,
