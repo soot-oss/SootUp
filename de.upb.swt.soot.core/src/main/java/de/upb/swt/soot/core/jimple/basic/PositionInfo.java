@@ -52,7 +52,7 @@ public final class PositionInfo implements Copyable {
     if (this.stmtPosition != null) {
       return this.stmtPosition;
     } else {
-      return new NoPositionInformation();
+      return NoPositionInformation.getInstance();
     }
   }
 
@@ -66,7 +66,7 @@ public final class PositionInfo implements Copyable {
     if (this.operandPositions != null && index >= 0 && index < this.operandPositions.length) {
       return this.operandPositions[index];
     } else {
-      return new NoPositionInformation();
+      return NoPositionInformation.getInstance();
     }
   }
 

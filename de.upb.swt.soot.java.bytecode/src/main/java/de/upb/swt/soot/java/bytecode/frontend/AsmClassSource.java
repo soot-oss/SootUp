@@ -136,7 +136,7 @@ class AsmClassSource extends ClassSource {
 
   @NonNull
   public Position resolvePosition() {
-    return new NoPositionInformation();
+    return NoPositionInformation.getInstance();
   }
 
   @Override

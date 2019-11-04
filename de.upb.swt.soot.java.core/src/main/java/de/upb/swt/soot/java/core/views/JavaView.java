@@ -103,7 +103,7 @@ public class JavaView extends AbstractView {
   @Override
   @Nonnull
   public synchronized Collection<AbstractClass<? extends AbstractClassSource>> getClasses() {
-    this.resolveAll();
+    resolveAll();
 
     // The map may be in concurrent use, so we must return a copy
     return new ArrayList<>(map.values());
@@ -113,7 +113,7 @@ public class JavaView extends AbstractView {
   @Nonnull
   public synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
       @Nonnull ClassType type) {
-    AbstractClass<? extends AbstractClassSource> sootClass = this.map.get(type);
+    AbstractClass<? extends AbstractClassSource> sootClass = map.get(type);
     if (sootClass != null) {
       return Optional.of(sootClass);
     }
@@ -136,8 +136,8 @@ public class JavaView extends AbstractView {
   @Nonnull
   private synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
       AbstractClassSource classSource) {
-    AbstractClass<? extends AbstractClassSource> theClass =
-        this.map.get(classSource.getClassType());
+    AbstractClass<? extends AbstractClassSource> theClass = map.get(classSource.getClassType());
+    // TODO: [ms] simplify --> use computeIfAbsent
     if (theClass == null) {
       theClass =
           classSource.buildClass(

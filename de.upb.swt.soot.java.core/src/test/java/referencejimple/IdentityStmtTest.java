@@ -67,7 +67,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
             null,
             fields,
             methods,
-            new NoPositionInformation(),
+            NoPositionInformation.getInstance(),
             EnumSet.of(Modifier.PUBLIC));
 
     sootClass = new SootClass(javaClassSource, SourceType.Application);
@@ -104,7 +104,7 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
 
     stmts.add(Jimple.newReturnVoidStmt(nop));
 
-    Body body = new Body(locals, traps, stmts, new NoPositionInformation());
+    Body body = new Body(locals, traps, stmts, NoPositionInformation.getInstance());
     MethodSource methodSource = new OverridingMethodSource(methodSignature, body);
 
     return new SootMethod(
