@@ -11,16 +11,19 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
- * Convenience Project for analyzing Java.
+ * Project Implementation for analyzing Java.
  *
  * @author Markus Schmidt
  */
 public class JavaProject extends Project {
+  final boolean useJavaModules;
 
   public JavaProject(
       @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier,
+      boolean useJavaModules) {
     super(inputLocations, JavaIdentifierFactory.getInstance(), sourceTypeSpecifier);
+    this.useJavaModules = useJavaModules;
   }
 
   @Nonnull
@@ -28,6 +31,8 @@ public class JavaProject extends Project {
   public JavaView createOnDemandView() {
     // TODO: [ms] abstract implementation due to language independence; call it via
     // ViewBuilder.createOnDemandView() again?
+
+    // TODO: decide whether to use the >java9 View ( this.useJavaModules )
     return new JavaView(this);
   }
 
@@ -42,6 +47,7 @@ public class JavaProject extends Project {
   }
 
   public static class JavaProjectBuilder {
+    boolean usesJavaModules = false;
     final List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
     SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
 
@@ -51,9 +57,6 @@ public class JavaProject extends Project {
       return this;
     }
 
-    // TODO: [ms] create AnalysisInputLocations here? determining the needed one automatically from
-    // String? then
-    // we need a possibility to "debug"/see which files where found for the consumer.
     @Nonnull
     public JavaProjectBuilder addClassPath(
         Collection<AnalysisInputLocation> analysisInputLocations) {
@@ -69,21 +72,21 @@ public class JavaProject extends Project {
 
     @Nonnull
     JavaProjectBuilder addModulePath(Collection<AnalysisInputLocation> analysisInputLocation) {
-      // TODO: [ms] java9
+      usesJavaModules = true;
       this.analysisInputLocations.addAll(analysisInputLocation);
       return this;
     }
 
     @Nonnull
     JavaProjectBuilder addModulePath(AnalysisInputLocation analysisInputLocation) {
-      // TODO: [ms] java9
+      usesJavaModules = true;
       this.analysisInputLocations.add(analysisInputLocation);
       return this;
     }
 
     @Nonnull
     public JavaProject make() {
-      return new JavaProject(analysisInputLocations, sourceTypeSpecifier);
+      return new JavaProject(analysisInputLocations, sourceTypeSpecifier, usesJavaModules);
     }
   }
 }

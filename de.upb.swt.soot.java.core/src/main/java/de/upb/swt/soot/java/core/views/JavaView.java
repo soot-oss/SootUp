@@ -127,7 +127,9 @@ public class JavaView extends AbstractView {
 
     if (foundClassSources.size() > 1) {
       throw new ResolveException(
-          "Class candidates for \"" + type + "\" found in multiple AnalysisInputLocations.");
+          "Class candidates for \""
+              + type
+              + "\" found in multiple AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.");
     }
     return foundClassSources.stream().findAny().map(this::getClass).get();
   }
