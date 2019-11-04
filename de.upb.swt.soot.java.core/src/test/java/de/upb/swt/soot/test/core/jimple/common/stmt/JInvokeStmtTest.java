@@ -29,7 +29,6 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JInterfaceInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
@@ -41,6 +40,7 @@ import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -86,8 +86,7 @@ public class JInvokeStmtTest {
         new JInvokeStmt(
             new JStaticInvokeExpr(
                 statMethodSig,
-                Collections.singletonList(
-                    StringConstant.getInstance("Towel", JavaIdentifierFactory.getInstance()))),
+                Collections.singletonList(JavaJimple.getInstance().newStringConstant("Towel"))),
             nop);
 
     // toString

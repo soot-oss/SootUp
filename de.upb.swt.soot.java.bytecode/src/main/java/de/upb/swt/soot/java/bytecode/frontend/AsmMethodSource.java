@@ -30,16 +30,13 @@ import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
-import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
 import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.constant.MethodHandle;
-import de.upb.swt.soot.core.jimple.common.constant.MethodType;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractBinopExpr;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInstanceInvokeExpr;
@@ -1196,38 +1193,29 @@ class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter implem
     } else if (val instanceof Double) {
       v = DoubleConstant.getInstance((Double) val);
     } else if (val instanceof String) {
-      v =
-          StringConstant.getInstance(
-              val.toString(), JavaJimple.getInstance().getIdentifierFactory());
+      v = JavaJimple.getInstance().newStringConstant(val.toString());
     } else if (val instanceof org.objectweb.asm.Type) {
       org.objectweb.asm.Type t = (org.objectweb.asm.Type) val;
       if (t.getSort() == org.objectweb.asm.Type.METHOD) {
         List<Type> paramTypes =
             AsmUtil.toJimpleSignatureDesc(((org.objectweb.asm.Type) val).getDescriptor());
         Type returnType = paramTypes.remove(paramTypes.size() - 1);
-        v =
-            MethodType.getInstance(
-                paramTypes, returnType, JavaJimple.getInstance().getIdentifierFactory());
+        v = JavaJimple.getInstance().newMethodType(paramTypes, returnType);
       } else {
         v =
-            ClassConstant.getInstance(
-                ((org.objectweb.asm.Type) val).getDescriptor(),
-                JavaJimple.getInstance().getIdentifierFactory());
+            JavaJimple.getInstance()
+                .newClassConstant(((org.objectweb.asm.Type) val).getDescriptor());
       }
     } else if (val instanceof Handle) {
       Handle h = (Handle) val;
       if (MethodHandle.isMethodRef(h.getTag())) {
         v =
-            MethodHandle.getInstance(
-                toMethodSignature((Handle) val),
-                ((Handle) val).getTag(),
-                JavaJimple.getInstance().getIdentifierFactory());
+            JavaJimple.getInstance()
+                .newMethodHandle(toMethodSignature((Handle) val), ((Handle) val).getTag());
       } else {
         v =
-            MethodHandle.getInstance(
-                toSootFieldRef((Handle) val),
-                ((Handle) val).getTag(),
-                JavaJimple.getInstance().getIdentifierFactory());
+            JavaJimple.getInstance()
+                .newMethodHandle(toSootFieldRef((Handle) val), ((Handle) val).getTag());
       }
     } else {
       throw new AssertionError("Unknown constant type: " + val.getClass());

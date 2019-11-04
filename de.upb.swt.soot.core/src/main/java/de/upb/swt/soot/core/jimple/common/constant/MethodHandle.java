@@ -25,7 +25,6 @@
 
 package de.upb.swt.soot.core.jimple.common.constant;
 
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -88,28 +87,18 @@ public class MethodHandle implements Constant {
 
   public int tag;
 
-  private MethodHandle(MethodSignature ref, int tag, Type type) {
+  public MethodHandle(MethodSignature ref, int tag, Type type) {
     this.methodRef = ref;
     this.tag = tag;
     this.fieldRef = null;
     this.type = type;
   }
 
-  private MethodHandle(FieldRef ref, int tag, Type type) {
+  public MethodHandle(FieldRef ref, int tag, Type type) {
     this.fieldRef = ref;
     this.tag = tag;
     this.methodRef = null;
     this.type = type;
-  }
-
-  public static MethodHandle getInstance(
-      MethodSignature ref, int tag, IdentifierFactory identifierFactory) {
-    return new MethodHandle(ref, tag, identifierFactory.getType("java.lang.invoke.MethodHandle"));
-  }
-
-  public static MethodHandle getInstance(
-      FieldRef ref, int tag, IdentifierFactory identifierFactory) {
-    return new MethodHandle(ref, tag, identifierFactory.getType("java.lang.invoke.MethodHandle"));
   }
 
   public static boolean isMethodRef(int kind) {

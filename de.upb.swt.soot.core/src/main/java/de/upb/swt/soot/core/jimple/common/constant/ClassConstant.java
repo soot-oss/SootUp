@@ -25,7 +25,6 @@
 
 package de.upb.swt.soot.core.jimple.common.constant;
 
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
@@ -35,18 +34,12 @@ public class ClassConstant implements Constant {
   private final String value;
   private final Type type;
 
-  private ClassConstant(String str, Type type) {
-    this.value = str;
-    this.type = type;
-  }
-
-  /** Returns an instance of ClassConstant. */
-  public static ClassConstant getInstance(String value, IdentifierFactory identifierFactory) {
-    if (value.contains(".")) {
+  public ClassConstant(String str, Type type) {
+    if (str.contains(".")) {
       throw new RuntimeException("ClassConstants must use class names separated by '/', not '.'!");
     }
-    // TODO: [ms] still very javaish..
-    return new ClassConstant(value, identifierFactory.getType("java.lang.Class"));
+    this.value = str;
+    this.type = type;
   }
 
   // FIXME The following code is commented out due to incompatibility, but

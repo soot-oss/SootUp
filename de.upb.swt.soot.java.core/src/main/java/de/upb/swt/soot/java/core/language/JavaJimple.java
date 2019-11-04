@@ -2,12 +2,16 @@ package de.upb.swt.soot.java.core.language;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
+import de.upb.swt.soot.core.jimple.common.constant.MethodHandle;
+import de.upb.swt.soot.core.jimple.common.constant.MethodType;
+import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
+import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.swt.soot.core.types.NullType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import java.util.List;
 
 /**
  * JavaJimple implements the Java specific terms for {@link Jimple}
@@ -36,6 +40,29 @@ public class JavaJimple extends Jimple {
     return new JCaughtExceptionRef(getIdentifierFactory().getType("java.lang.Throwable"));
   }
 
-  // TODO: [ms] add constant instantiation too
+  public ClassConstant newClassConstant(String value) {
+    return new ClassConstant(value, (ClassType) getIdentifierFactory().getType("java.lang.Class"));
+  }
 
+  public StringConstant newStringConstant(String value) {
+    return new StringConstant(
+        value, (ClassType) getIdentifierFactory().getType("java.lang.String"));
+  }
+
+  public MethodHandle newMethodHandle(FieldRef ref, int tag) {
+    return new MethodHandle(
+        ref, tag, getIdentifierFactory().getType("java.lang.invoke.MethodHandle"));
+  }
+
+  public MethodHandle newMethodHandle(MethodSignature ref, int tag) {
+    return new MethodHandle(
+        ref, tag, getIdentifierFactory().getType("java.lang.invoke.MethodHandle"));
+  }
+
+  public MethodType newMethodType(List<Type> parameterTypes, Type returnType) {
+    return new MethodType(
+        parameterTypes,
+        returnType,
+        getIdentifierFactory().getClassType("java.lang.invoke.MethodType"));
+  }
 }

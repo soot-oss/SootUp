@@ -1,6 +1,5 @@
 package de.upb.swt.soot.core.jimple.common.constant;
 
-import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
@@ -16,17 +15,10 @@ public class MethodType implements Constant, Copyable {
   private final List<Type> parameterTypes;
   private final Type type;
 
-  private MethodType(List<Type> parameterTypes, Type returnType, Type type) {
+  public MethodType(List<Type> parameterTypes, Type returnType, Type type) {
     this.returnType = returnType;
     this.parameterTypes = Collections.unmodifiableList(parameterTypes);
     this.type = type;
-  }
-
-  public static MethodType getInstance(
-      List<Type> paramaterTypes, Type returnType, IdentifierFactory identifierFactory) {
-    // TODO: [ms] still.. quite javaish -.- generalize to type and lift this up to Jimple Factory ?!
-    return new MethodType(
-        paramaterTypes, returnType, identifierFactory.getClassType("java.lang.invoke.MethodType"));
   }
 
   @Override

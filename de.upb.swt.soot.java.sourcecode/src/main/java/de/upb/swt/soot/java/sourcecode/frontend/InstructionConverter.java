@@ -58,7 +58,6 @@ import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.constant.LongConstant;
 import de.upb.swt.soot.core.jimple.common.constant.NullConstant;
-import de.upb.swt.soot.core.jimple.common.constant.StringConstant;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractBinopExpr;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractConditionExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
@@ -525,7 +524,7 @@ public class InstructionConverter {
       DebuggingInformation debugInfo, SSALoadMetadataInstruction inst) {
     Local lval = getLocal(converter.convertType(inst.getType()), inst.getDef());
     TypeReference token = (TypeReference) inst.getToken();
-    ClassConstant c = ClassConstant.getInstance(token.getName().toString(), identifierFactory);
+    ClassConstant c = JavaJimple.getInstance().newClassConstant(token.getName().toString());
 
     // TODO: [ms] no instruction example found to add positioninfo
     return Jimple.newAssignStmt(
@@ -1055,7 +1054,7 @@ public class InstructionConverter {
     } else if (symbolTable.isFloatConstant(valueNumber)) {
       return FloatConstant.getInstance((float) value);
     } else if (symbolTable.isStringConstant(valueNumber)) {
-      return StringConstant.getInstance((String) value, identifierFactory);
+      return JavaJimple.getInstance().newStringConstant((String) value);
     } else if (symbolTable.isNullConstant(valueNumber)) {
       return NullConstant.getInstance();
     } else {
