@@ -39,7 +39,7 @@ public class JavaProject extends Project {
   /**
    * Creates a {@link JavaProject} builder.
    *
-   * @return A {@link JavaProject} builder.
+   * @return A {@link JavaProjectBuilder}.
    */
   @Nonnull
   public static JavaProjectBuilder builder() {

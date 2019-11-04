@@ -250,12 +250,6 @@ public abstract class Jimple {
 
   public abstract IdentifierFactory getIdentifierFactory();
 
-  // TODO: [ms] refactor! Java Specific
-  public static boolean isJavaKeywordType(Type t) {
-    // TODO: [JMP] Ensure that the check is complete.
-    return t instanceof PrimitiveType || t instanceof VoidType || t instanceof NullType;
-  }
-
   /** Constructs a XorExpr(Immediate, Immediate) grammar chunk. */
   public static JXorExpr newXorExpr(Value op1, Value op2) {
     return new JXorExpr(op1, op2);
@@ -653,10 +647,7 @@ public abstract class Jimple {
   }
 
   /** Constructs a CaughtExceptionRef() grammar chunk. */
-  public JCaughtExceptionRef newCaughtExceptionRef() {
-    // TODO: [ms] still very javaish..
-    return new JCaughtExceptionRef(getIdentifierFactory().getType("java.lang.Throwable"));
-  }
+  public abstract JCaughtExceptionRef newCaughtExceptionRef();
 
   public static ValueBox newArgBox(Value value) {
     return new ImmediateBox(value);
