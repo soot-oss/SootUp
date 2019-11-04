@@ -6,7 +6,6 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.AbstractView;
 import java.util.*;
@@ -91,7 +90,7 @@ public class JavaView extends AbstractView {
           "strictfp");
 
   @Nonnull
-  private final Map<Type, AbstractClass<? extends AbstractClassSource>> map = new HashMap<>();
+  private final Map<ClassType, AbstractClass<? extends AbstractClassSource>> map = new HashMap<>();
 
   private volatile boolean isFullyResolved = false;
 
@@ -136,14 +135,11 @@ public class JavaView extends AbstractView {
   @Nonnull
   private synchronized Optional<AbstractClass<? extends AbstractClassSource>> getClass(
       AbstractClassSource classSource) {
-    AbstractClass<? extends AbstractClassSource> theClass = map.get(classSource.getClassType());
-    // TODO: [ms] simplify --> use computeIfAbsent
-    if (theClass == null) {
-      theClass =
-          classSource.buildClass(
-              getProject().getSourceTypeSpecifier().sourceTypeFor(classSource.getClassType()));
-      map.putIfAbsent(theClass.getType(), theClass);
-    }
+    AbstractClass<? extends AbstractClassSource> theClass =
+        map.computeIfAbsent(
+            classSource.getClassType(),
+            type ->
+                classSource.buildClass(getProject().getSourceTypeSpecifier().sourceTypeFor(type)));
     return Optional.of(theClass);
   }
 
@@ -171,7 +167,6 @@ public class JavaView extends AbstractView {
         Pattern.compile(Character.toString(SPLIT_CHAR), Pattern.LITERAL);
   }
 
-  // TODO: [ms] usecase?
   @Override
   @Nonnull
   public String quotedNameOf(@Nonnull String s) {
