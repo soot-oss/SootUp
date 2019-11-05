@@ -1,13 +1,13 @@
 package de.upb.swt.soot.test.java.bytecode.inputlocation;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import java.util.Collection;
 import java.util.Optional;
 import org.junit.Assert;
@@ -48,7 +48,7 @@ public abstract class AnalysisInputLocationTest {
 
   @Before
   public void setUp() {
-    identifierFactory = DefaultIdentifierFactory.getInstance();
+    identifierFactory = JavaIdentifierFactory.getInstance();
     classProvider = new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
   }
 
@@ -60,13 +60,12 @@ public abstract class AnalysisInputLocationTest {
     return classProvider;
   }
 
-  protected void testClassReceival(
-      AnalysisInputLocation ns, JavaClassType sig, int minClassesFound) {
+  protected void testClassReceival(AnalysisInputLocation ns, ClassType sig, int minClassesFound) {
     testClassReceival(ns, sig, minClassesFound, -1);
   }
 
   protected void testClassReceival(
-      AnalysisInputLocation ns, JavaClassType sig, int minClassesFound, int maxClassesFound) {
+      AnalysisInputLocation ns, ClassType sig, int minClassesFound, int maxClassesFound) {
     final Optional<? extends AbstractClassSource> clazz = ns.getClassSource(sig);
 
     Assert.assertTrue(clazz.isPresent());

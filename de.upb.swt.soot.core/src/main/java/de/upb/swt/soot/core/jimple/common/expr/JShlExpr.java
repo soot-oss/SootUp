@@ -55,11 +55,11 @@ public final class JShlExpr extends AbstractIntLongBinopExpr implements Copyable
     Value op1 = getOp1();
     Value op2 = getOp2();
 
-    if (!isIntLikeType(op2.getType())) {
+    if (!PrimitiveType.isIntLikeType(op2.getType())) {
       return UnknownType.getInstance();
     }
 
-    if (isIntLikeType(op1.getType())) {
+    if (PrimitiveType.isIntLikeType(op1.getType())) {
       return PrimitiveType.getInt();
     }
     if (op1.getType().equals(PrimitiveType.getLong())) {

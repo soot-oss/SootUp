@@ -14,7 +14,7 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
+import de.upb.swt.soot.core.frontend.*;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
@@ -22,7 +22,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -34,11 +34,14 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.net.URL;
 import java.nio.file.Path;
@@ -61,16 +64,16 @@ import javax.annotation.Nullable;
  */
 public class WalaIRToJimpleConverter {
 
-  final DefaultIdentifierFactory identifierFactory;
-  private AnalysisInputLocation srcNamespace;
-  private HashMap<String, Integer> clsWithInnerCls;
-  private HashMap<String, String> walaToSootNameTable;
+  final JavaIdentifierFactory identifierFactory;
+  private final AnalysisInputLocation srcNamespace;
+  private final HashMap<String, Integer> clsWithInnerCls;
+  private final HashMap<String, String> walaToSootNameTable;
   private Set<SootField> sootFields;
 
   public WalaIRToJimpleConverter(@Nonnull Set<String> sourceDirPath) {
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
     // TODO: [ms] get it from view - view can hold a different implementation
-    identifierFactory = DefaultIdentifierFactory.getInstance();
+    identifierFactory = JavaIdentifierFactory.getInstance();
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
   }
@@ -84,7 +87,7 @@ public class WalaIRToJimpleConverter {
   public SootClass convertClass(AstClass walaClass) {
     ClassSource classSource = convertToClassSource(walaClass);
     // TODO fix fixed SourceType - get it from project
-    return new SootClass(classSource, SourceType.Application);
+    return new JavaSootClass(classSource, SourceType.Application);
   }
 
   ClassSource convertToClassSource(AstClass walaClass) {
@@ -99,7 +102,7 @@ public class WalaIRToJimpleConverter {
     }
 
     // get interfaces
-    Set<JavaClassType> interfaces = new HashSet<>();
+    Set<ClassType> interfaces = new HashSet<>();
     for (IClass i : walaClass.getDirectInterfaces()) {
       JavaClassType inter =
           identifierFactory.getClassType(convertClassNameFromWala(i.getName().toString()));
@@ -167,7 +170,7 @@ public class WalaIRToJimpleConverter {
   public OverridingClassSource createClassSource(
       AstClass walaClass,
       JavaClassType superClass,
-      Set<JavaClassType> interfaces,
+      Set<ClassType> interfaces,
       JavaClassType outerClass,
       Set<SootField> sootFields,
       Set<SootMethod> sootMethods,
@@ -234,7 +237,7 @@ public class WalaIRToJimpleConverter {
 
     EnumSet<Modifier> modifiers = convertModifiers(walaMethod);
 
-    List<JavaClassType> thrownExceptions = new ArrayList<>();
+    List<ClassType> thrownExceptions = new ArrayList<>();
     try {
       for (TypeReference exception : walaMethod.getDeclaredExceptions()) {
         String exceptionName = convertClassNameFromWala(exception.getName().toString());
@@ -251,7 +254,7 @@ public class WalaIRToJimpleConverter {
             walaMethod.getName().toString(), classSig, returnType.toString(), sigs);
 
     Body body = createBody(methodSig, modifiers, walaMethod);
-    return new de.upb.swt.soot.java.sourcecode.frontend.WalaSootMethod(
+    return new WalaSootMethod(
         new OverridingMethodSource(methodSig, body),
         methodSig,
         modifiers,
@@ -412,7 +415,7 @@ public class WalaIRToJimpleConverter {
         /* Look AsmMethodSourceContent.getBody, see AsmMethodSourceContent.emitLocals(); */
 
         if (!Modifier.isStatic(modifiers)) {
-          JavaClassType thisType = methodSignature.getDeclClassType();
+          JavaClassType thisType = (JavaClassType) methodSignature.getDeclClassType();
           Local thisLocal = localGenerator.generateThisLocal(thisType);
           Stmt stmt =
               Jimple.newIdentityStmt(
@@ -465,7 +468,7 @@ public class WalaIRToJimpleConverter {
 
         // add return void stmt for methods with return type being void
         if (walaMethod.getReturnType().equals(TypeReference.Void)) {
-          Stmt ret = null;
+          Stmt ret;
           if (stmts.isEmpty() || !(stmts.get(stmts.size() - 1) instanceof JReturnVoidStmt)) {
             // TODO? [ms] InstructionPosition of last line in the method seems strange to me ->
             // maybe use lastLine with
@@ -567,11 +570,11 @@ public class WalaIRToJimpleConverter {
         instructionPosition.getLastCol());
   }
 
-  public static PositionInfo convertPositionInfo(
+  public static StmtPositionInfo convertPositionInfo(
       Position instructionPosition, Position[] operandPosition) {
 
     if (operandPosition == null) {
-      return new PositionInfo(convertPosition(instructionPosition), null);
+      return new StmtPositionInfo(convertPosition(instructionPosition), null);
     }
     de.upb.swt.soot.core.model.Position[] operandPos =
         Arrays.stream(operandPosition)
@@ -587,6 +590,6 @@ public class WalaIRToJimpleConverter {
                 })
             .toArray(de.upb.swt.soot.core.model.Position[]::new);
 
-    return new PositionInfo(convertPosition(instructionPosition), operandPos);
+    return new StmtPositionInfo(convertPosition(instructionPosition), operandPos);
   }
 }

@@ -3,7 +3,7 @@ package de.upb.swt.soot.core.inputlocation;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -16,7 +16,7 @@ public class EagerInputLocation implements AnalysisInputLocation {
 
   @Nonnull
   @Override
-  public Optional<AbstractClassSource> getClassSource(@Nonnull ReferenceType type) {
+  public Optional<AbstractClassSource> getClassSource(@Nonnull ClassType type) {
     return Optional.empty();
   }
 
@@ -29,7 +29,7 @@ public class EagerInputLocation implements AnalysisInputLocation {
 
   @Override
   public @Nonnull Optional<AbstractClassSource> getClassSource(
-      @Nonnull ReferenceType type, @Nullable ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassType type, @Nullable ClassLoadingOptions classLoadingOptions) {
     return Optional.empty();
   }
 

@@ -1,8 +1,8 @@
 package de.upb.swt.soot.java.bytecode.frontend;
 
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
@@ -18,7 +18,6 @@ import javax.annotation.Nonnull;
  *
  * @author Aaloan Miftah
  */
-@SuppressWarnings("serial")
 class StmtContainer extends Stmt {
 
   @Nonnull final Stmt[] units;
@@ -142,7 +141,7 @@ class StmtContainer extends Stmt {
   }
 
   @Override
-  public PositionInfo getPositionInfo() {
+  public StmtPositionInfo getPositionInfo() {
     throw new UnsupportedOperationException();
   }
 }

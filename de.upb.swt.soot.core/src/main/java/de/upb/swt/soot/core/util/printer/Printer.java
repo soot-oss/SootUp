@@ -33,7 +33,7 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -130,7 +130,7 @@ public class Printer {
 
     // Print extension
     {
-      Optional<JavaClassType> superclassSignature = cl.getSuperclass();
+      Optional<ClassType> superclassSignature = cl.getSuperclass();
 
       superclassSignature.ifPresent(
           javaClassSignature -> out.print(" extends " + javaClassSignature));
@@ -138,7 +138,7 @@ public class Printer {
 
     // Print interfaces
     {
-      Iterator<JavaClassType> interfaceIt = cl.getInterfaces().iterator();
+      Iterator<ClassType> interfaceIt = cl.getInterfaces().iterator();
 
       if (interfaceIt.hasNext()) {
         out.print(" implements ");

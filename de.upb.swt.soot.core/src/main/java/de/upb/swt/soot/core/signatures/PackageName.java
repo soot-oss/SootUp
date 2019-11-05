@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.signatures;
  */
 
 import com.google.common.base.Objects;
-import scala.collection.script.Remove;
 
 /**
  * Represents a Java Package.
@@ -39,7 +38,7 @@ public class PackageName {
 
   /**
    * Internal: Constructs a Package Signature of a Java package. Instances should only be created by
-   * a {@link Remove}
+   * a {@link de.upb.swt.soot.core.IdentifierFactory }
    *
    * @param packageName the package's name
    */

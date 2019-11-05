@@ -59,76 +59,76 @@ public class FloatConstant implements RealConstant<FloatConstant> {
   @Nonnull
   @Override
   public FloatConstant add(@Nonnull FloatConstant c) {
-    return FloatConstant.getInstance(this.value + c.value);
+    return FloatConstant.getInstance(value + c.value);
   }
 
   @Nonnull
   @Override
   public FloatConstant subtract(@Nonnull FloatConstant c) {
-    return FloatConstant.getInstance(this.value - c.value);
+    return FloatConstant.getInstance(value - c.value);
   }
 
   @Nonnull
   @Override
   public FloatConstant multiply(@Nonnull FloatConstant c) {
-    return FloatConstant.getInstance(this.value * c.value);
+    return FloatConstant.getInstance(value * c.value);
   }
 
   @Nonnull
   @Override
   public FloatConstant divide(@Nonnull FloatConstant c) {
-    return FloatConstant.getInstance(this.value / c.value);
+    return FloatConstant.getInstance(value / c.value);
   }
 
   @Nonnull
   @Override
   public FloatConstant remainder(@Nonnull FloatConstant c) {
-    return FloatConstant.getInstance(this.value % c.value);
+    return FloatConstant.getInstance(value % c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant equalEqual(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(this.value, c.value) == 0);
+    return BooleanConstant.getInstance(Float.compare(value, c.value) == 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant notEqual(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(this.value, c.value) != 0);
+    return BooleanConstant.getInstance(Float.compare(value, c.value) != 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant lessThan(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(this.value, c.value) < 0);
+    return BooleanConstant.getInstance(Float.compare(value, c.value) < 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant lessThanOrEqual(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(this.value, c.value) <= 0);
+    return BooleanConstant.getInstance(Float.compare(value, c.value) <= 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant greaterThan(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(this.value, c.value) > 0);
+    return BooleanConstant.getInstance(Float.compare(value, c.value) > 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant greaterThanOrEqual(@Nonnull FloatConstant c) {
-    return BooleanConstant.getInstance(Float.compare(this.value, c.value) >= 0);
+    return BooleanConstant.getInstance(Float.compare(value, c.value) >= 0);
   }
 
   @Nonnull
   @Override
   public IntConstant cmpg(@Nonnull FloatConstant constant) {
     final float cValue = constant.value;
-    if (this.value < cValue) {
+    if (value < cValue) {
       return IntConstant.getInstance(-1);
-    } else if (this.value == cValue) {
+    } else if (value == cValue) {
       return IntConstant.getInstance(0);
     } else {
       return IntConstant.getInstance(1);
@@ -139,9 +139,9 @@ public class FloatConstant implements RealConstant<FloatConstant> {
   @Override
   public IntConstant cmpl(@Nonnull FloatConstant constant) {
     final float cValue = constant.value;
-    if (this.value > cValue) {
+    if (value > cValue) {
       return IntConstant.getInstance(1);
-    } else if (this.value == cValue) {
+    } else if (value == cValue) {
       return IntConstant.getInstance(0);
     } else {
       return IntConstant.getInstance(-1);
@@ -151,7 +151,7 @@ public class FloatConstant implements RealConstant<FloatConstant> {
   @Nonnull
   @Override
   public FloatConstant negate() {
-    return FloatConstant.getInstance(-(this.value));
+    return FloatConstant.getInstance(-value);
   }
 
   @Override

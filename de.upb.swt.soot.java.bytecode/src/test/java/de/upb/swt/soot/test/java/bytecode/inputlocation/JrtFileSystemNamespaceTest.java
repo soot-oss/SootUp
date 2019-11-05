@@ -1,9 +1,10 @@
 package de.upb.swt.soot.test.java.bytecode.inputlocation;
 
 import categories.Java9Test;
-import de.upb.swt.soot.core.ModuleIdentifierFactory;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.inputlocation.JrtFileSystemAnalysisInputLocation;
+import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,7 +17,7 @@ public class JrtFileSystemNamespaceTest extends AnalysisInputLocationTest {
   @Test
   public void getClassSource() {
     JrtFileSystemAnalysisInputLocation ns = new JrtFileSystemAnalysisInputLocation();
-    final JavaClassType sig = getIdentifierFactory().getClassType("java.lang.System");
+    final ClassType sig = getIdentifierFactory().getClassType("java.lang.System");
     testClassReceival(ns, sig, 1);
   }
 

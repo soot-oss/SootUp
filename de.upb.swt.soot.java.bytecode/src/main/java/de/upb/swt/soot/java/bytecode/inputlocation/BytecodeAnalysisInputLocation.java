@@ -3,7 +3,7 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -12,7 +12,7 @@ public interface BytecodeAnalysisInputLocation extends AnalysisInputLocation {
 
   @Nonnull
   @Override
-  default Optional<? extends AbstractClassSource> getClassSource(@Nonnull ReferenceType type) {
+  default Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType type) {
     return getClassSource(type, BytecodeClassLoadingOptions.Default);
   }
 

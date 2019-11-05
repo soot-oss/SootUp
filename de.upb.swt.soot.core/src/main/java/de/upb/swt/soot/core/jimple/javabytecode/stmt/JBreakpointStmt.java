@@ -27,7 +27,7 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractStmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -37,7 +37,7 @@ import javax.annotation.Nonnull;
 
 public final class JBreakpointStmt extends AbstractStmt implements Copyable {
 
-  public JBreakpointStmt(PositionInfo positionInfo) {
+  public JBreakpointStmt(StmtPositionInfo positionInfo) {
     super(positionInfo);
   }
 
@@ -77,7 +77,7 @@ public final class JBreakpointStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JBreakpointStmt withPositionInfo(PositionInfo positionInfo) {
+  public JBreakpointStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JBreakpointStmt(positionInfo);
   }
 }

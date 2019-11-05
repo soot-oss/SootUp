@@ -5,7 +5,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.nio.file.Paths;
@@ -54,7 +54,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
 
   @Nonnull
   @Override
-  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull ReferenceType type) {
+  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType type) {
     return getClassSource(type, SourcecodeClassLoadingOptions.Default);
   }
 
@@ -76,7 +76,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
   @Override
   @Nonnull
   public Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull ReferenceType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
     for (String path : sourcePaths) {
       try {
         return Optional.of(

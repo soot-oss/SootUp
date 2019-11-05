@@ -5,10 +5,15 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.CollectionUtils;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -32,9 +37,9 @@ public class OverridingClassSource extends ClassSource {
   @Nullable private final Collection<SootMethod> overriddenSootMethods;
   @Nullable private final Collection<SootField> overriddenSootFields;
   @Nullable private final Set<Modifier> overriddenModifiers;
-  @Nullable private final Set<JavaClassType> overriddenInterfaces;
-  @Nullable private final Optional<JavaClassType> overriddenSuperclass;
-  @Nullable private final Optional<JavaClassType> overriddenOuterClass;
+  @Nullable private final Set<ClassType> overriddenInterfaces;
+  @Nullable private final Optional<ClassType> overriddenSuperclass;
+  @Nullable private final Optional<ClassType> overriddenOuterClass;
 
   // Since resolvePosition may return null, we cannot use `null` here to indicate that `position`
   // is not overridden.
@@ -60,9 +65,9 @@ public class OverridingClassSource extends ClassSource {
       @Nullable Collection<SootMethod> overriddenSootMethods,
       @Nullable Collection<SootField> overriddenSootFields,
       @Nullable Set<Modifier> overriddenModifiers,
-      @Nullable Set<JavaClassType> overriddenInterfaces,
-      @Nullable Optional<JavaClassType> overriddenSuperclass,
-      @Nullable Optional<JavaClassType> overriddenOuterClass,
+      @Nullable Set<ClassType> overriddenInterfaces,
+      @Nullable Optional<ClassType> overriddenSuperclass,
+      @Nullable Optional<ClassType> overriddenOuterClass,
       boolean overriddenPosition,
       @Nullable Position position,
       @Nonnull ClassSource delegate) {
@@ -82,10 +87,10 @@ public class OverridingClassSource extends ClassSource {
   public OverridingClassSource(
       AnalysisInputLocation srcNamespace,
       Path sourcePath,
-      JavaClassType classType,
-      JavaClassType superClass,
-      Set<JavaClassType> interfaces,
-      JavaClassType outerClass,
+      ClassType classType,
+      ClassType superClass,
+      Set<ClassType> interfaces,
+      ClassType outerClass,
       Set<SootField> sootFields,
       Set<SootMethod> sootMethods,
       Position position,
@@ -123,19 +128,19 @@ public class OverridingClassSource extends ClassSource {
 
   @Nonnull
   @Override
-  public Set<JavaClassType> resolveInterfaces() {
+  public Set<ClassType> resolveInterfaces() {
     return overriddenInterfaces != null ? overriddenInterfaces : delegate.resolveInterfaces();
   }
 
   @Nonnull
   @Override
-  public Optional<JavaClassType> resolveSuperclass() {
+  public Optional<ClassType> resolveSuperclass() {
     return overriddenSuperclass != null ? overriddenSuperclass : delegate.resolveSuperclass();
   }
 
   @Nonnull
   @Override
-  public Optional<JavaClassType> resolveOuterClass() {
+  public Optional<ClassType> resolveOuterClass() {
     return overriddenOuterClass != null ? overriddenOuterClass : delegate.resolveOuterClass();
   }
 
@@ -258,7 +263,7 @@ public class OverridingClassSource extends ClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withInterfaces(@Nonnull Set<JavaClassType> overriddenInterfaces) {
+  public OverridingClassSource withInterfaces(@Nonnull Set<ClassType> overriddenInterfaces) {
     return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
@@ -272,8 +277,7 @@ public class OverridingClassSource extends ClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withSuperclass(
-      @Nonnull Optional<JavaClassType> overriddenSuperclass) {
+  public OverridingClassSource withSuperclass(@Nonnull Optional<ClassType> overriddenSuperclass) {
     return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,
@@ -287,8 +291,7 @@ public class OverridingClassSource extends ClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withOuterClass(
-      @Nonnull Optional<JavaClassType> overriddenOuterClass) {
+  public OverridingClassSource withOuterClass(@Nonnull Optional<ClassType> overriddenOuterClass) {
     return new OverridingClassSource(
         overriddenSootMethods,
         overriddenSootFields,

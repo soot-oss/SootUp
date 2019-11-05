@@ -2,19 +2,19 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
 
 import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
-import de.upb.swt.soot.core.inputlocation.PathUtils;
-import de.upb.swt.soot.core.signatures.ModulePackageName;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.signatures.ModulePackageName;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.DirectoryStream;
@@ -36,11 +36,11 @@ import javax.annotation.Nonnull;
  */
 public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInputLocation {
 
-  private FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
+  private final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull ReferenceType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
     JavaClassType klassType = (JavaClassType) classType;
     List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     if (klassType.getPackageName() instanceof ModulePackageName) {
@@ -163,6 +163,8 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
       final Path filename, final Path moduleDir, final IdentifierFactory identifierFactory) {
 
     // else use the module system and create fully class signature
+    JavaClassType sig = (JavaClassType) identifierFactory.fromPath(filename);
+
     if (identifierFactory instanceof ModuleIdentifierFactory) {
       // FIXME: adann clean this up!
       // String filename = FilenameUtils.removeExtension(file.toString()).replace('/', '.');
@@ -173,7 +175,6 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
       // String packagename = packageFileName.toString().replace('/', '.');
       // String classname = FilenameUtils.removeExtension(packageFileName.getFileName().toString());
       //
-      JavaClassType sig = identifierFactory.fromPath(filename);
 
       return ((ModuleIdentifierFactory) identifierFactory)
           .getClassType(
@@ -181,6 +182,6 @@ public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInput
     }
 
     // if we are using the normal signature factory, than trim the module from the path
-    return identifierFactory.fromPath(filename);
+    return sig;
   }
 }

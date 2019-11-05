@@ -13,10 +13,10 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.basic.Immediate;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.RValueBox;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.basic.StmtBoxOwner;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.basic.VariableBox;
@@ -124,7 +124,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param variable the variable on the left side of the assign statement.
    * @param rValue the value on the right side of the assign statement.
    */
-  public JAssignStmt(Value variable, Value rValue, PositionInfo positionInfo) {
+  public JAssignStmt(Value variable, Value rValue, StmtPositionInfo positionInfo) {
     this(new LinkedVariableBox(variable), new LinkedRValueBox(rValue), positionInfo);
 
     ((LinkedVariableBox) getLeftBox()).setOtherBox(getRightBox());
@@ -142,7 +142,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
    * @param variableBox the variable box on the left side of the assign statement.
    * @param rvalueBox the rvalue box on the right side of the assign statement.
    */
-  protected JAssignStmt(ValueBox variableBox, ValueBox rvalueBox, PositionInfo positionInfo) {
+  protected JAssignStmt(ValueBox variableBox, ValueBox rvalueBox, StmtPositionInfo positionInfo) {
     super(variableBox, rvalueBox, positionInfo);
   }
 
@@ -346,7 +346,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   }
 
   @Nonnull
-  public JAssignStmt withPositionInfo(PositionInfo positionInfo) {
+  public JAssignStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JAssignStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

@@ -28,8 +28,8 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.inputlocation.PathUtils;
-import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import java.io.File;
 import java.io.IOException;
@@ -144,7 +144,7 @@ public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInput
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull ReferenceType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+      @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
     for (AnalysisInputLocation inputLocation : cpEntries) {
       final Optional<? extends AbstractClassSource> classSource =
           inputLocation.getClassSource(type, classLoadingOptions);

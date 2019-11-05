@@ -24,10 +24,8 @@ package de.upb.swt.soot.core.model;
 import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.signatures.AbstractClassMemberSignature;
 import de.upb.swt.soot.core.signatures.AbstractClassMemberSubSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.core.util.builder.AbstractBuilder;
-import de.upb.swt.soot.core.util.builder.BuilderException;
 import java.util.EnumSet;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -50,7 +48,7 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
 
   /** Returns the SootClass declaring this one. */
   @Nonnull
-  public JavaClassType getDeclaringClassType() {
+  public ClassType getDeclaringClassType() {
     return this._signature.getDeclClassType();
   }
 
@@ -168,11 +166,6 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
   abstract static class SootClassMemberBuilder<
           S extends AbstractClassMemberSignature, T extends SootClassMember<S>>
       extends AbstractBuilder<T> {
-    // region Fields
-
-    // endregion /Fields/
-
-    // region Constructor
 
     /**
      * Creates a new instance of the {@link SootMethod.SootMethodBuilder} class.
@@ -182,15 +175,5 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
     SootClassMemberBuilder(@Nonnull Class<T> buildableClass) {
       super(buildableClass);
     }
-
-    // endregion /Constructor/
-
-    // region Properties
-
-    // endregion /Properties/
-
-    // region Methods
-
-    // endregion /Methods/
   }
 }

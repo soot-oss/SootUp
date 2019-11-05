@@ -3,7 +3,7 @@ package de.upb.swt.soot.core.inputlocation;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -13,8 +13,8 @@ import javax.annotation.Nonnull;
  * SootClass}es, e.g. Java Classpath, Android APK, JAR file, etc. The strategy to traverse
  * something.
  *
- * <p>{@link #getClassSource(ReferenceType)} and {@link #getClassSources(IdentifierFactory)} should
- * in most cases simply call {@link #getClassSource(ReferenceType, ClassLoadingOptions)} or {@link
+ * <p>{@link #getClassSource(ClassType)} and {@link #getClassSources(IdentifierFactory)} should in
+ * most cases simply call {@link #getClassSource(ClassType, ClassLoadingOptions)} or {@link
  * #getClassSources(IdentifierFactory, ClassLoadingOptions)} respectively with the default {@link
  * ClassLoadingOptions} of the frontend.
  *
@@ -30,7 +30,7 @@ public interface AnalysisInputLocation {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<? extends AbstractClassSource> getClassSource(@Nonnull ReferenceType type);
+  Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType type);
 
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(
@@ -44,7 +44,7 @@ public interface AnalysisInputLocation {
    */
   @Nonnull
   Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull ReferenceType type, @Nonnull ClassLoadingOptions classLoadingOptions);
+      @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions);
 
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(

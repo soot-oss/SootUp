@@ -1,15 +1,15 @@
 package de.upb.swt.soot.java.bytecode.inputlocation;
 
-import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
-import de.upb.swt.soot.core.inputlocation.PathUtils;
-import de.upb.swt.soot.core.signatures.ModuleSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.types.ModuleDecoratorClassType;
+import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
+import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.signatures.ModuleSignature;
+import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.types.ModuleDecoratorClassType;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;

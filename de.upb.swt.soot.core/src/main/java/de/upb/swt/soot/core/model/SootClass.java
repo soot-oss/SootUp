@@ -29,7 +29,7 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import java.util.Collection;
@@ -67,16 +67,18 @@ import javax.annotation.Nullable;
  */
 public class SootClass extends AbstractClass<ClassSource> {
 
+  @Nonnull protected final SourceType sourceType;
+
+  @Nonnull protected final ClassType classSignature;
+
   public SootClass(ClassSource classSource, SourceType sourceType) {
     super(classSource);
     this.sourceType = sourceType;
     this.classSignature = classSource.getClassType();
   }
 
-  private final SourceType sourceType;
-  @Nonnull private final JavaClassType classSignature;
-
-  // TODO: [JMP] Create type signature for this dummy type and move it closer to its usage.
+  // TODO: [JMP] Create type signature for this dummy type and move it closer to
+  // its usage.
   @Nonnull public static final String INVOKEDYNAMIC_DUMMY_CLASS_NAME = "soot.dummy.InvokeDynamic";
 
   @Nonnull
@@ -166,7 +168,7 @@ public class SootClass extends AbstractClass<ClassSource> {
 
   /**
    * Attempts to retrieve the methodRef with the given signature, parameters and return type. If no
-   * matching methodRef can be found, null is returned.
+   * matching method can be found, null is returned.
    */
   @Nonnull
   public Optional<SootMethod> getMethod(@Nonnull MethodSignature signature) {
@@ -176,9 +178,8 @@ public class SootClass extends AbstractClass<ClassSource> {
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given name and parameters. This methodRef may throw
-   * an AmbiguousMethodException if there is more than one methodRef with the given name and
-   * parameter.
+   * Attempts to retrieve the method with the given name and parameters. This method may throw an
+   * AmbiguousMethodException if there is more than one method with the given name and parameter.
    */
   @Nonnull
   public Optional<SootMethod> getMethod(String name, Iterable<? extends Type> parameterTypes) {
@@ -189,14 +190,14 @@ public class SootClass extends AbstractClass<ClassSource> {
                     && Iterables.elementsEqual(parameterTypes, method.getParameterTypes()))
         .reduce(
             (l, r) -> {
-              throw new RuntimeException("ambiguous methodRef: " + name);
+              throw new RuntimeException("ambiguous method: " + name);
             });
   }
 
   /**
-   * Attempts to retrieve the methodRef with the given subSignature. This methodRef may throw an
-   * AmbiguousMethodException if there are more than one methodRef with the given subSignature. If
-   * no methodRef with the given is found, null is returned.
+   * Attempts to retrieve the method with the given subSignature. This method may throw an
+   * AmbiguousMethodException if there are more than one method with the given subSignature. If no
+   * method with the given is found, null is returned.
    */
   @Nonnull
   public Optional<SootMethod> getMethod(@Nonnull MethodSubSignature subSignature) {
@@ -214,7 +215,7 @@ public class SootClass extends AbstractClass<ClassSource> {
     return lazyModifiers.get();
   }
 
-  private final Supplier<Set<JavaClassType>> lazyInterfaces =
+  private final Supplier<Set<ClassType>> lazyInterfaces =
       Suppliers.memoize(classSource::resolveInterfaces);
 
   /**
@@ -231,13 +232,13 @@ public class SootClass extends AbstractClass<ClassSource> {
    * Returns a backed Chain of the interfaces that are directly implemented by this class. (see
    * getInterfaceCount())
    */
-  public Set<JavaClassType> getInterfaces() {
+  public Set<ClassType> getInterfaces() {
     return lazyInterfaces.get();
   }
 
   /** Does this class directly implement the given interface? (see getInterfaceCount()) */
-  public boolean implementsInterface(JavaClassType classSignature) {
-    for (JavaClassType sc : getInterfaces()) {
+  public boolean implementsInterface(ClassType classSignature) {
+    for (ClassType sc : getInterfaces()) {
       if (sc.equals(classSignature)) {
         return true;
       }
@@ -245,7 +246,7 @@ public class SootClass extends AbstractClass<ClassSource> {
     return false;
   }
 
-  private final Supplier<Optional<JavaClassType>> lazySuperclass =
+  private final Supplier<Optional<ClassType>> lazySuperclass =
       Suppliers.memoize(classSource::resolveSuperclass);
 
   /**
@@ -261,19 +262,19 @@ public class SootClass extends AbstractClass<ClassSource> {
    * WARNING: interfaces are subclasses of the java.lang.Object class! Returns the superclass of
    * this class. (see hasSuperclass())
    */
-  public Optional<JavaClassType> getSuperclass() {
+  public Optional<ClassType> getSuperclass() {
     return lazySuperclass.get();
   }
 
-  private final Supplier<Optional<JavaClassType>> lazyOuterClass =
+  private final Supplier<Optional<ClassType>> lazyOuterClass =
       Suppliers.memoize(classSource::resolveOuterClass);
 
   public boolean hasOuterClass() {
     return lazyOuterClass.get().isPresent();
   }
 
-  /** This methodRef returns the outer class. */
-  public @Nonnull Optional<JavaClassType> getOuterClass() {
+  /** This method returns the outer class. */
+  public @Nonnull Optional<ClassType> getOuterClass() {
     return lazyOuterClass.get();
   }
 
@@ -283,21 +284,21 @@ public class SootClass extends AbstractClass<ClassSource> {
 
   /** Returns the ClassSignature of this class. */
   @Override
-  public JavaClassType getType() {
+  public ClassType getType() {
     return classSignature;
   }
 
-  /** Convenience methodRef; returns true if this class is an interface. */
+  /** Convenience method; returns true if this class is an interface. */
   public boolean isInterface() {
     return Modifier.isInterface(this.getModifiers());
   }
 
-  /** Convenience methodRef; returns true if this class is an enumeration. */
+  /** Convenience method; returns true if this class is an enumeration. */
   public boolean isEnum() {
     return Modifier.isEnum(this.getModifiers());
   }
 
-  /** Convenience methodRef; returns true if this class is synchronized. */
+  /** Convenience method; returns true if this class is synchronized. */
   public boolean isSynchronized() {
     return Modifier.isSynchronized(this.getModifiers());
   }
@@ -307,7 +308,7 @@ public class SootClass extends AbstractClass<ClassSource> {
     return !isInterface() && !isAbstract();
   }
 
-  /** Convenience methodRef; returns true if this class is public. */
+  /** Convenience method; returns true if this class is public. */
   public boolean isPublic() {
     return Modifier.isPublic(this.getModifiers());
   }
@@ -329,81 +330,35 @@ public class SootClass extends AbstractClass<ClassSource> {
     return sourceType.equals(SourceType.Library);
   }
 
-  public boolean isJavaLibraryClass() {
-    return classSignature.isJavaLibraryClass();
-  }
-
   /** Returns true if this class is a phantom class. */
   public boolean isPhantomClass() {
     return sourceType.equals(SourceType.Phantom);
   }
 
-  /** Convenience methodRef returning true if this class is private. */
+  /** Convenience method returning true if this class is private. */
   public boolean isPrivate() {
     return Modifier.isPrivate(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this class is protected. */
+  /** Convenience method returning true if this class is protected. */
   public boolean isProtected() {
     return Modifier.isProtected(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this class is abstract. */
+  /** Convenience method returning true if this class is abstract. */
   public boolean isAbstract() {
     return Modifier.isAbstract(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this class is final. */
+  /** Convenience method returning true if this class is final. */
   public boolean isFinal() {
     return Modifier.isFinal(this.getModifiers());
   }
 
-  /** Convenience methodRef returning true if this class is static. */
+  /** Convenience method returning true if this class is static. */
   public boolean isStatic() {
     return Modifier.isStatic(this.getModifiers());
   }
-
-  protected int number = 0;
-
-  // FIXME The following code is commented out due to incompatibility, but
-  // may still be needed.
-  // https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r266971653
-
-  // /**
-  // * An array containing some validators in order to validate the SootClass
-  // */
-  // private static final List<ClassValidator> validators
-  // = Arrays.asList(new OuterClassValidator(), new MethodDeclarationValidator(), new
-  // ClassFlagsValidator());
-  //
-  // /**
-  // * Validates this SootClass for logical errors. Note that this does not validate the methodRef
-  // bodies, only the class
-  // * structure.
-  // */
-  // public void validate() {
-  // final List<ValidationException> exceptionList = new ArrayList<>();
-  // validate(exceptionList);
-  // if (!exceptionList.isEmpty()) {
-  // throw exceptionList.get(0);
-  // }
-  // }
-  //
-  // /**
-  // * Validates this SootClass for logical errors. Note that this does not validate the methodRef
-  // bodies, only the class
-  // * structure. All found errors are saved into the given list.
-  // */
-  // public void validate(List<ValidationException> exceptionList) {
-  // final boolean runAllValidators = this.getView().getOptions().debug() ||
-  // this.getView().getOptions().validate();
-  // for (ClassValidator validator : validators) {
-  // if (!validator.isBasicValidator() && !runAllValidators) {
-  // continue;
-  // }
-  // validator.validate(this, exceptionList);
-  // }
-  // }
 
   private final Supplier<Position> lazyPosition = Suppliers.memoize(classSource::resolvePosition);
 
@@ -480,14 +435,14 @@ public class SootClass extends AbstractClass<ClassSource> {
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   @Nonnull
-  public SootClass withSuperclass(@Nonnull Optional<JavaClassType> superclass) {
+  public SootClass withSuperclass(@Nonnull Optional<ClassType> superclass) {
     return new SootClass(
         new OverridingClassSource(classSource).withSuperclass(superclass), sourceType);
   }
 
   @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
   @Nonnull
-  public SootClass withOuterClass(@Nonnull Optional<JavaClassType> outerClass) {
+  public SootClass withOuterClass(@Nonnull Optional<ClassType> outerClass) {
     return new SootClass(
         new OverridingClassSource(classSource).withOuterClass(outerClass), sourceType);
   }
