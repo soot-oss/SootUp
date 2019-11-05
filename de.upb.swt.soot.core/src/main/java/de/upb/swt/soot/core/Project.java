@@ -16,8 +16,6 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-
-// TODO: <S extends SootLanguage>
 public abstract class Project {
 
   @Nonnull private final IdentifierFactory identifierFactory;
