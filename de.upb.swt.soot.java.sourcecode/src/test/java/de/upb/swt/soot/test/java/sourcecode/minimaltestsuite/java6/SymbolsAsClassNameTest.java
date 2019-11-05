@@ -1,7 +1,6 @@
 /** @author: Kaustubh Kelkar */
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.Collections;
@@ -19,10 +18,8 @@ public class SymbolsAsClassNameTest extends MinimalTestSuiteBase {
   @Override
   public void defaultTest() {
     super.defaultTest();
-    SootClass sootClass = loadClass(getDeclaredClassSignature());
-    System.out.println("dummy");
-    // System.out.println(sootClass.getClassSource().getClassType().getClassName());
-    // assertTrue(sootClass.getClass().getName().equals("\u03b1\u03c1\u03b5\u03c4\u03b7"));
+    // test if class is found/loaded with that name
+    loadClass(getDeclaredClassSignature());
   }
 
   @Override
