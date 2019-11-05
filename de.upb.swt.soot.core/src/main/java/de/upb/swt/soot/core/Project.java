@@ -71,15 +71,11 @@ public abstract class Project {
    * @return A complete view on the provided code
    */
   @Nonnull
-  public View createFullView() {
-    //    ViewBuilder vb = new ViewBuilder(this);
-    //    return vb.buildComplete();
-
-    throw new NotYetImplementedException();
-  }
+  public abstract View createFullView();
 
   @Nonnull
   public abstract View createOnDemandView();
+
   // TODO: [ms] commented/abstract due to language independence
   // ViewBuilder<S> vb = new ViewBuilder<>(this);
   // return vb.buildOnDemand();

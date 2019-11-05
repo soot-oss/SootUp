@@ -36,6 +36,15 @@ public class JavaProject extends Project {
     return new JavaView(this);
   }
 
+  @Nonnull
+  @Override
+  public JavaView createFullView() {
+    // TODO: decide whether to use the >java9 View ( this.useJavaModules )
+    JavaView view = new JavaView(this);
+    view.getClasses();
+    return view;
+  }
+
   /**
    * Creates a {@link JavaProject} builder.
    *
