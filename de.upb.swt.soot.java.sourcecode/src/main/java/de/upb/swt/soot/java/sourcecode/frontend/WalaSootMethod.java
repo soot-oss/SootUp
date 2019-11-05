@@ -1,17 +1,21 @@
 package de.upb.swt.soot.java.sourcecode.frontend;
 
+import java.util.function.Function;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.ibm.wala.cast.loader.AstMethod.DebuggingInformation;
+
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
-import java.util.function.Function;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import de.upb.swt.soot.java.core.JavaSootMethod;
 
-public class WalaSootMethod extends SootMethod {
+public class WalaSootMethod extends JavaSootMethod {
 
   @Nullable private final DebuggingInformation debugInfo;
 

@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
-public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
+public class JavaModuleInfo extends AbstractClass<ModuleClassSource> {
 
   @Nonnull private final ClassType classSignature;
   // FIXME: how to create automatic modules
@@ -28,7 +28,7 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
   // FIXME: or module Signature?
   private String moduleName;
 
-  public SootModuleInfo(ModuleClassSource classSource, boolean isAutomaticModule) {
+  public JavaModuleInfo(ModuleClassSource classSource, boolean isAutomaticModule) {
     super(classSource);
     this.classSignature = classSource.getClassType();
     this.isAutomaticModule = isAutomaticModule;
@@ -65,7 +65,7 @@ public class SootModuleInfo extends AbstractClass<ModuleClassSource> {
       return this.targetModules.isEmpty();
     }
 
-    public boolean exportedTo(SootModuleInfo moduleInfo) {
+    public boolean exportedTo(JavaModuleInfo moduleInfo) {
       if (isPublic()) {
         return true;
       }

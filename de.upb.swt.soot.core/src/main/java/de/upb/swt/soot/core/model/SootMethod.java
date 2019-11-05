@@ -21,8 +21,20 @@ package de.upb.swt.soot.core.model;
  * #L%
  */
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
+
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
@@ -33,15 +45,6 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Soot's counterpart of the source language's method concept. Soot representation of a Java method.
@@ -52,9 +55,6 @@ import javax.annotation.Nullable;
  * @author Jan Martin Persch
  */
 public class SootMethod extends SootClassMember<MethodSignature> implements Method, Copyable {
-
-  @Nonnull protected static final String CONSTRUCTOR_NAME = "<init>";
-  @Nonnull protected static final String STATIC_INITIALIZER_NAME = "<clinit>";
 
   /**
    * An array of parameter types taken by this <code>SootMethod</code> object, in declaration order.
@@ -171,18 +171,6 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
         && this.getSubSignature().toString().equals("void main(java.lang.String[])");
   }
 
-  /**
-   * @return yes, if this function is a constructor. Please not that &lt;clinit&gt; methods are not
-   *     treated as constructors in this methodRef.
-   */
-  public boolean isConstructor() {
-    return this.getSignature().getName().equals(CONSTRUCTOR_NAME);
-  }
-
-  /** @return yes, if this function is a static initializer. */
-  public boolean isStaticInitializer() {
-    return this.getSignature().getName().equals(STATIC_INITIALIZER_NAME);
-  }
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
   public boolean isBuiltInMethod() {

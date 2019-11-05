@@ -9,7 +9,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
-import de.upb.swt.soot.java.bytecode.frontend.modules.SootModuleInfo;
+import de.upb.swt.soot.java.bytecode.frontend.modules.JavaModuleInfo;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaModulePathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
@@ -56,7 +56,7 @@ public class ModuleBuilderActorTest {
     // stuffAViewNeeds.reifyClass(source.get(), view);
 
     assertTrue(result.isPresent());
-    assertTrue(result.get() instanceof SootModuleInfo);
+    assertTrue(result.get() instanceof JavaModuleInfo);
   }
 
   @Test
@@ -68,6 +68,6 @@ public class ModuleBuilderActorTest {
 
     Optional<AbstractClass<? extends AbstractClassSource>> result = view.getClass(sig);
     assertTrue(result.isPresent());
-    assertTrue(result.get() instanceof SootModuleInfo);
+    assertTrue(result.get() instanceof JavaModuleInfo);
   }
 }

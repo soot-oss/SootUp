@@ -26,11 +26,11 @@ public abstract class ModuleClassSource extends AbstractClassSource {
 
   public abstract String getModuleName();
 
-  public abstract Collection<SootModuleInfo.ModuleReference> requires();
+  public abstract Collection<JavaModuleInfo.ModuleReference> requires();
 
-  public abstract Collection<SootModuleInfo.PackageReference> exports();
+  public abstract Collection<JavaModuleInfo.PackageReference> exports();
 
-  public abstract Collection<SootModuleInfo.PackageReference> opens();
+  public abstract Collection<JavaModuleInfo.PackageReference> opens();
 
   public abstract Collection<JavaClassType> provides();
 
@@ -43,6 +43,6 @@ public abstract class ModuleClassSource extends AbstractClassSource {
   @Override
   @Nonnull
   public AbstractClass buildClass(@Nonnull SourceType sourceType) {
-    return new SootModuleInfo(this, false);
+    return new JavaModuleInfo(this, false);
   }
 }
