@@ -1,20 +1,18 @@
 package de.upb.swt.soot.core.views;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.Options;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.ClassType;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A view on code.

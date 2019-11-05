@@ -21,12 +21,11 @@ package de.upb.swt.soot.core.model;
  * #L%
  */
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.types.Type;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Soot's counterpart of the source language's field concept. Soot representation of a Java field.
