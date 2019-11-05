@@ -27,7 +27,7 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
 
 public final class JNopStmt extends AbstractStmt implements Copyable {
 
-  public JNopStmt(PositionInfo positionInfo) {
+  public JNopStmt(StmtPositionInfo positionInfo) {
     super(positionInfo);
   }
 
@@ -76,7 +76,7 @@ public final class JNopStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JNopStmt withPositionInfo(PositionInfo positionInfo) {
+  public JNopStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JNopStmt(positionInfo);
   }
 }

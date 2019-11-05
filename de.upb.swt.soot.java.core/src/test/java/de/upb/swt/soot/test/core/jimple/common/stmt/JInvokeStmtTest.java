@@ -27,7 +27,7 @@ import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.expr.JDynamicInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.expr.JInterfaceInvokeExpr;
@@ -36,7 +36,11 @@ import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.model.*;
+import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootField;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -44,7 +48,12 @@ import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -55,7 +64,7 @@ public class JInvokeStmtTest {
 
   @Test
   public void test() {
-    PositionInfo nop = PositionInfo.createNoPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
 
     JavaIdentifierFactory dif = JavaIdentifierFactory.getInstance();
 

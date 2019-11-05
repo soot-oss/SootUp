@@ -22,11 +22,13 @@
 
 package de.upb.swt.soot.test.core.jimple.javabytecode.stmt;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -39,7 +41,7 @@ public class JExitMonitorStmtTest {
 
   @Test
   public void test() {
-    PositionInfo nop = PositionInfo.createNoPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
     Local sandman = new Local("sandman", PrimitiveType.getInt());
     Local night = new Local("night", PrimitiveType.getBoolean());
     Local light = new Local("light", PrimitiveType.getBoolean());

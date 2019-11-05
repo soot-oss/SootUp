@@ -23,7 +23,7 @@
 package de.upb.swt.soot.test.core.jimple.common.stmt;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
@@ -39,7 +39,7 @@ public class JReturnVoidStmtTest {
 
   @Test
   public void test() {
-    PositionInfo nop = PositionInfo.createNoPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
     Stmt rStmt = new JReturnVoidStmt(nop);
 
     // equivTo

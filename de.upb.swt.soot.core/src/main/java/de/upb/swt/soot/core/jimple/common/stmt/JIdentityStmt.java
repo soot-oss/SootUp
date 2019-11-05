@@ -27,7 +27,7 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
@@ -39,11 +39,12 @@ import javax.annotation.Nonnull;
 
 public final class JIdentityStmt extends AbstractDefinitionStmt implements Copyable {
 
-  public JIdentityStmt(Value local, Value identityValue, PositionInfo positionInfo) {
+  public JIdentityStmt(Value local, Value identityValue, StmtPositionInfo positionInfo) {
     this(Jimple.newLocalBox(local), Jimple.newIdentityRefBox(identityValue), positionInfo);
   }
 
-  protected JIdentityStmt(ValueBox localBox, ValueBox identityValueBox, PositionInfo positionInfo) {
+  protected JIdentityStmt(
+      ValueBox localBox, ValueBox identityValueBox, StmtPositionInfo positionInfo) {
     super(localBox, identityValueBox, positionInfo);
   }
 
@@ -89,7 +90,7 @@ public final class JIdentityStmt extends AbstractDefinitionStmt implements Copya
   }
 
   @Nonnull
-  public JIdentityStmt withPositionInfo(PositionInfo positionInfo) {
+  public JIdentityStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JIdentityStmt(getLeftOp(), getRightOp(), positionInfo);
   }
 }

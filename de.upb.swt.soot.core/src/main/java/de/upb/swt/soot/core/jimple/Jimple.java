@@ -33,8 +33,8 @@ import de.upb.swt.soot.core.jimple.basic.JStmtBox;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalBox;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
@@ -500,77 +500,77 @@ public abstract class Jimple {
   }
 
   /** Constructs a ThrowStmt(Immediate) grammar chunk. */
-  public static JThrowStmt newThrowStmt(Value op, PositionInfo posInfo) {
+  public static JThrowStmt newThrowStmt(Value op, StmtPositionInfo posInfo) {
     return new JThrowStmt(op, posInfo);
   }
 
   /** Constructs a ExitMonitorStmt(Immediate) grammar chunk. */
-  public static JExitMonitorStmt newExitMonitorStmt(Value op, PositionInfo posInfo) {
+  public static JExitMonitorStmt newExitMonitorStmt(Value op, StmtPositionInfo posInfo) {
     return new JExitMonitorStmt(op, posInfo);
   }
 
   /** Constructs a EnterMonitorStmt(Immediate) grammar chunk. */
-  public static JEnterMonitorStmt newEnterMonitorStmt(Value op, PositionInfo posInfo) {
+  public static JEnterMonitorStmt newEnterMonitorStmt(Value op, StmtPositionInfo posInfo) {
     return new JEnterMonitorStmt(op, posInfo);
   }
 
   /** Constructs a BreakpointStmt() grammar chunk. */
-  public static JBreakpointStmt newBreakpointStmt(PositionInfo posInfo) {
+  public static JBreakpointStmt newBreakpointStmt(StmtPositionInfo posInfo) {
     return new JBreakpointStmt(posInfo);
   }
 
   /** Constructs a GotoStmt(Stmt) grammar chunk. */
-  public static JGotoStmt newGotoStmt(Stmt target, PositionInfo posInfo) {
+  public static JGotoStmt newGotoStmt(Stmt target, StmtPositionInfo posInfo) {
     return new JGotoStmt(target, posInfo);
   }
 
-  public static JGotoStmt newGotoStmt(StmtBox stmtBox, PositionInfo posInfo) {
+  public static JGotoStmt newGotoStmt(StmtBox stmtBox, StmtPositionInfo posInfo) {
     return new JGotoStmt(stmtBox, posInfo);
   }
 
   /** Constructs a NopStmt() grammar chunk. */
-  public static JNopStmt newNopStmt(PositionInfo posInfo) {
+  public static JNopStmt newNopStmt(StmtPositionInfo posInfo) {
     return new JNopStmt(posInfo);
   }
 
   /** Constructs a ReturnVoidStmt() grammar chunk. */
-  public static JReturnVoidStmt newReturnVoidStmt(PositionInfo posInfo) {
+  public static JReturnVoidStmt newReturnVoidStmt(StmtPositionInfo posInfo) {
     return new JReturnVoidStmt(posInfo);
   }
 
   /** Constructs a ReturnStmt(Immediate) grammar chunk. */
-  public static JReturnStmt newReturnStmt(Value op, PositionInfo posInfo) {
+  public static JReturnStmt newReturnStmt(Value op, StmtPositionInfo posInfo) {
     return new JReturnStmt(op, posInfo);
   }
 
   /** Constructs a RetStmt(Local) grammar chunk. */
-  public static JRetStmt newRetStmt(Value stmtAddress, PositionInfo posInfo) {
+  public static JRetStmt newRetStmt(Value stmtAddress, StmtPositionInfo posInfo) {
     return new JRetStmt(stmtAddress, posInfo);
   }
 
   /** Constructs a IfStmt(Condition, Stmt) grammar chunk. */
-  public static JIfStmt newIfStmt(Value condition, Stmt target, PositionInfo posInfo) {
+  public static JIfStmt newIfStmt(Value condition, Stmt target, StmtPositionInfo posInfo) {
     return new JIfStmt(condition, target, posInfo);
   }
 
   /** Constructs a IfStmt(Condition, UnitBox) grammar chunk. */
-  public static JIfStmt newIfStmt(Value condition, StmtBox target, PositionInfo posInfo) {
+  public static JIfStmt newIfStmt(Value condition, StmtBox target, StmtPositionInfo posInfo) {
     return new JIfStmt(condition, target, posInfo);
   }
 
   /** Constructs a IdentityStmt(Local, IdentityRef) grammar chunk. */
   public static JIdentityStmt newIdentityStmt(
-      Value local, Value identityRef, PositionInfo posInfo) {
+      Value local, Value identityRef, StmtPositionInfo posInfo) {
     return new JIdentityStmt(local, identityRef, posInfo);
   }
 
   /** Constructs a AssignStmt(Variable, RValue) grammar chunk. */
-  public static JAssignStmt newAssignStmt(Value variable, Value rvalue, PositionInfo posInfo) {
+  public static JAssignStmt newAssignStmt(Value variable, Value rvalue, StmtPositionInfo posInfo) {
     return new JAssignStmt(variable, rvalue, posInfo);
   }
 
   /** Constructs a InvokeStmt(InvokeExpr) grammar chunk. */
-  public static JInvokeStmt newInvokeStmt(Value op, PositionInfo posInfo) {
+  public static JInvokeStmt newInvokeStmt(Value op, StmtPositionInfo posInfo) {
     return new JInvokeStmt(op, posInfo);
   }
 
@@ -581,7 +581,7 @@ public abstract class Jimple {
       int highIndex,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
-      PositionInfo posInfo) {
+      StmtPositionInfo posInfo) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
 
@@ -591,7 +591,7 @@ public abstract class Jimple {
       int highIndex,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
-      PositionInfo posInfo) {
+      StmtPositionInfo posInfo) {
     return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
 
@@ -603,7 +603,7 @@ public abstract class Jimple {
       List<IntConstant> lookupValues,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
-      PositionInfo posInfo) {
+      StmtPositionInfo posInfo) {
     return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
 
@@ -612,7 +612,7 @@ public abstract class Jimple {
       List<IntConstant> lookupValues,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
-      PositionInfo posInfo) {
+      StmtPositionInfo posInfo) {
     return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
 

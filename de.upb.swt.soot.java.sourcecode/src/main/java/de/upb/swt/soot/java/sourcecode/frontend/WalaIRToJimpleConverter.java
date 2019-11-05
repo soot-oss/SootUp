@@ -21,7 +21,7 @@ import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -569,11 +569,11 @@ public class WalaIRToJimpleConverter {
         instructionPosition.getLastCol());
   }
 
-  public static PositionInfo convertPositionInfo(
+  public static StmtPositionInfo convertPositionInfo(
       Position instructionPosition, Position[] operandPosition) {
 
     if (operandPosition == null) {
-      return new PositionInfo(convertPosition(instructionPosition), null);
+      return new StmtPositionInfo(convertPosition(instructionPosition), null);
     }
     de.upb.swt.soot.core.model.Position[] operandPos =
         Arrays.stream(operandPosition)
@@ -589,6 +589,6 @@ public class WalaIRToJimpleConverter {
                 })
             .toArray(de.upb.swt.soot.core.model.Position[]::new);
 
-    return new PositionInfo(convertPosition(instructionPosition), operandPos);
+    return new StmtPositionInfo(convertPosition(instructionPosition), operandPos);
   }
 }

@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public final class PositionInfo implements Copyable {
+public final class StmtPositionInfo implements Copyable {
   private final Position stmtPosition;
   private final Position[] operandPositions;
 
@@ -18,8 +18,8 @@ public final class PositionInfo implements Copyable {
    *
    * @return an instance with no position information.
    */
-  public static PositionInfo createNoPositionInfo() {
-    return new PositionInfo(null, null);
+  public static StmtPositionInfo createNoStmtPositionInfo() {
+    return new StmtPositionInfo(null, null);
   }
 
   /**
@@ -27,7 +27,7 @@ public final class PositionInfo implements Copyable {
    *
    * @param lineNumber the line number of the statement.
    */
-  public PositionInfo(int lineNumber) {
+  public StmtPositionInfo(int lineNumber) {
     this.stmtPosition = new Position(lineNumber, -1, lineNumber, -1);
     this.operandPositions = null;
   }
@@ -38,7 +38,7 @@ public final class PositionInfo implements Copyable {
    * @param stmtPosition the position of the statement
    * @param operandPositions the operand positions
    */
-  public PositionInfo(Position stmtPosition, Position[] operandPositions) {
+  public StmtPositionInfo(Position stmtPosition, Position[] operandPositions) {
     this.stmtPosition = stmtPosition;
     this.operandPositions = operandPositions;
   }
@@ -87,12 +87,12 @@ public final class PositionInfo implements Copyable {
   }
 
   @Nonnull
-  public PositionInfo withStmtPosition(Position stmtPosition) {
-    return new PositionInfo(stmtPosition, operandPositions);
+  public StmtPositionInfo withStmtPosition(Position stmtPosition) {
+    return new StmtPositionInfo(stmtPosition, operandPositions);
   }
 
   @Nonnull
-  public PositionInfo withOperandPositions(Position[] operandPositions) {
-    return new PositionInfo(stmtPosition, operandPositions);
+  public StmtPositionInfo withOperandPositions(Position[] operandPositions) {
+    return new StmtPositionInfo(stmtPosition, operandPositions);
   }
 }

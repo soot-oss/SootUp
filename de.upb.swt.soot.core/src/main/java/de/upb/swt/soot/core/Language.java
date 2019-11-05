@@ -5,7 +5,7 @@ package de.upb.swt.soot.core;
  *
  * @author Markus Schmidt
  */
-public abstract class SootLanguage {
+public abstract class Language {
   public abstract String getName();
 
   public abstract IdentifierFactory getIdentifierFactory();
