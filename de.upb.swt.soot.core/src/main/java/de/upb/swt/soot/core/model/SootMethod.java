@@ -33,7 +33,6 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.core.util.builder.BuilderException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;

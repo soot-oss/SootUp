@@ -1,7 +1,7 @@
 package de.upb.swt.soot.java.core.language;
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.language.SootLanguage;
+import de.upb.swt.soot.core.SootLanguage;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import javax.annotation.Nonnull;
 

@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.util.builder;
+package de.upb.swt.soot.core.model;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -9,11 +9,6 @@ import javax.annotation.Nullable;
  * @author Jan Martin Persch
  */
 public abstract class AbstractBuilder<T> {
-  // region Fields
-
-  // endregion /Fields/
-
-  // region Constructor
 
   /**
    * Creates a new instance of the {@link AbstractBuilder} class.
@@ -23,10 +18,6 @@ public abstract class AbstractBuilder<T> {
   protected AbstractBuilder(@Nonnull Class<T> buildableClass) {
     this._buildableClass = buildableClass;
   }
-
-  // endregion /Constructor/
-
-  // region Properties
 
   @Nonnull private final Class<T> _buildableClass;
 
@@ -39,10 +30,6 @@ public abstract class AbstractBuilder<T> {
   public Class<T> getBuildableClass() {
     return this._buildableClass;
   }
-
-  // endregion /Properties/
-
-  // region Methods
 
   /**
    * Ensures that a value has been set. Use this method for values that must not be <code>null

@@ -1,6 +1,4 @@
-package de.upb.swt.soot.core.language;
-
-import de.upb.swt.soot.core.IdentifierFactory;
+package de.upb.swt.soot.core;
 
 /**
  * This class is a container for language specific information

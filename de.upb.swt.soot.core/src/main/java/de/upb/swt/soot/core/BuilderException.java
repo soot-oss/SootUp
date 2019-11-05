@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.util.builder;
+package de.upb.swt.soot.core;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

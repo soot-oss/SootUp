@@ -1,4 +1,4 @@
-package de.upb.swt.soot.core.inputlocation;
+package de.upb.swt.soot.core.util;
 
 /*-
  * #%L
@@ -22,6 +22,7 @@ package de.upb.swt.soot.core.inputlocation;
  * #L%
  */
 
+import de.upb.swt.soot.core.inputlocation.FileType;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;

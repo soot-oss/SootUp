@@ -1,6 +1,5 @@
-package de.upb.swt.soot.core.buildactor;
+package de.upb.swt.soot.core;
 
-import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.views.View;
 import javax.annotation.Nonnull;
 

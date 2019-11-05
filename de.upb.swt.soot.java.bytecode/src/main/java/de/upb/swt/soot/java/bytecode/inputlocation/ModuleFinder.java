@@ -4,7 +4,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassResolvingException;
-import de.upb.swt.soot.core.inputlocation.PathUtils;
+import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.signatures.ModuleSignature;

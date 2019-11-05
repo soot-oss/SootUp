@@ -2,9 +2,10 @@ package de.upb.swt.soot.core;
 
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
-import de.upb.swt.soot.core.util.NotYetImplementedException;
 import de.upb.swt.soot.core.views.View;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nonnull;
 
 /**
@@ -75,7 +76,7 @@ public abstract class Project {
     //    ViewBuilder vb = new ViewBuilder(this);
     //    return vb.buildComplete();
 
-    throw new NotYetImplementedException();
+    return null;
   }
 
   @Nonnull
@@ -93,6 +94,6 @@ public abstract class Project {
    */
   @Nonnull
   public View createView(Scope s) {
-    throw new NotYetImplementedException(); // TODO
+    return null;
   }
 }

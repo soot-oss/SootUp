@@ -1,7 +1,13 @@
 package de.upb.swt.soot.core.frontend;
 
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.*;
+import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.model.Position;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootField;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
