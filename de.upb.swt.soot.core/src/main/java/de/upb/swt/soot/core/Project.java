@@ -72,18 +72,10 @@ public abstract class Project {
    * @return A complete view on the provided code
    */
   @Nonnull
-  public View createFullView() {
-    //    ViewBuilder vb = new ViewBuilder(this);
-    //    return vb.buildComplete();
-
-    return null;
-  }
+  public abstract View createFullView();
 
   @Nonnull
   public abstract View createOnDemandView();
-  // TODO: [ms] commented/abstract due to language independence
-  // ViewBuilder<S> vb = new ViewBuilder<>(this);
-  // return vb.buildOnDemand();
 
   /**
    * Returns a partial view on the code based on the provided scope and all input locations in the

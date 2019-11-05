@@ -27,13 +27,28 @@ public class JavaProject extends Project {
   }
 
   @Nonnull
+  protected JavaView chooseView() {
+    if (useJavaModules) {
+      // TODO: [ms] replace with the view for java modules.. problem: circular dependency on
+      // soot.java.bytecode
+      return new JavaView(this);
+    } else {
+      return new JavaView(this);
+    }
+  }
+
+  @Nonnull
   @Override
   public JavaView createOnDemandView() {
-    // TODO: [ms] abstract implementation due to language independence; call it via
-    // ViewBuilder.createOnDemandView() again?
+    return chooseView();
+  }
 
-    // TODO: decide whether to use the >java9 View ( this.useJavaModules )
-    return new JavaView(this);
+  @Nonnull
+  @Override
+  public JavaView createFullView() {
+    JavaView view = chooseView();
+    view.getClasses();
+    return view;
   }
 
   /**
