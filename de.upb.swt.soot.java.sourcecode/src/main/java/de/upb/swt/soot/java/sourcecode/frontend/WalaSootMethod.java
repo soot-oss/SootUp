@@ -6,12 +6,13 @@ import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.JavaSootMethod;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class WalaSootMethod extends SootMethod {
+public class WalaSootMethod extends JavaSootMethod {
 
   @Nullable private final DebuggingInformation debugInfo;
 
@@ -27,7 +28,7 @@ public class WalaSootMethod extends SootMethod {
       @Nonnull MethodSource source,
       @Nonnull MethodSignature methodSignature,
       @Nonnull Iterable<Modifier> modifiers,
-      @Nonnull Iterable<JavaClassType> thrownExceptions,
+      @Nonnull Iterable<ClassType> thrownExceptions,
       DebuggingInformation debugInfo) {
     super(source, methodSignature, modifiers, thrownExceptions);
     this.debugInfo = debugInfo;
@@ -65,7 +66,7 @@ public class WalaSootMethod extends SootMethod {
   }
 
   @Nonnull
-  public SootMethod withThrownExceptions(Iterable<JavaClassType> thrownExceptions) {
+  public SootMethod withThrownExceptions(Iterable<ClassType> thrownExceptions) {
     return new WalaSootMethod(
         methodSource, getSignature(), getModifiers(), thrownExceptions, debugInfo);
   }

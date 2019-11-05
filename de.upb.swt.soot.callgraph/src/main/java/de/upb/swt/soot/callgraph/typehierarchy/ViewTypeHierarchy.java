@@ -9,7 +9,7 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +49,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Nonnull
   @Override
-  public Set<JavaClassType> implementersOf(@Nonnull JavaClassType interfaceType) {
+  public Set<ClassType> implementersOf(@Nonnull ClassType interfaceType) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(interfaceType);
     if (vertex == null) {
       throw new ResolveException("Could not find " + interfaceType + " in hierarchy.");
@@ -62,7 +62,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Nonnull
   @Override
-  public Set<JavaClassType> subclassesOf(@Nonnull JavaClassType classType) {
+  public Set<ClassType> subclassesOf(@Nonnull ClassType classType) {
     Vertex vertex = lazyScanResult.get().typeToVertex.get(classType);
     if (vertex == null) {
       throw new ResolveException("Could not find " + classType + " in hierarchy.");
@@ -75,14 +75,14 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Nonnull
   @Override
-  public Set<JavaClassType> subtypesOf(@Nonnull JavaClassType type) {
+  public Set<ClassType> subtypesOf(@Nonnull ClassType type) {
     ScanResult scanResult = lazyScanResult.get();
     Vertex vertex = scanResult.typeToVertex.get(type);
     if (vertex == null) {
       throw new ResolveException("Could not find " + type + " in hierarchy.");
     }
 
-    Set<JavaClassType> subclasses = new HashSet<>();
+    Set<ClassType> subclasses = new HashSet<>();
     // We now traverse the subgraph of the vertex to find all its subtypes
     visitSubgraph(
         scanResult.graph, vertex, false, subvertex -> subclasses.add(subvertex.javaClassType));
@@ -132,7 +132,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Nonnull
   @Override
-  public Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType type) {
+  public Set<ClassType> implementedInterfacesOf(@Nonnull ClassType type) {
     ScanResult scanResult = lazyScanResult.get();
     Vertex vertex = scanResult.typeToVertex.get(type);
 
@@ -164,7 +164,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
    * interfaces.
    */
   @Nonnull
-  private Stream<JavaClassType> selfAndImplementedInterfaces(Vertex vertex) {
+  private Stream<ClassType> selfAndImplementedInterfaces(Vertex vertex) {
     ScanResult scanResult = lazyScanResult.get();
     Graph<Vertex, Edge> graph = scanResult.graph;
 
@@ -180,7 +180,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
 
   @Nullable
   @Override
-  public JavaClassType superClassOf(@Nonnull JavaClassType classType) {
+  public ClassType superClassOf(@Nonnull ClassType classType) {
     return sootClassFor(classType).getSuperclass().orElse(null);
   }
 
@@ -228,7 +228,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
    */
   private ScanResult scanView() {
     long startNanos = System.nanoTime();
-    Map<JavaClassType, Vertex> typeToVertex = new HashMap<>();
+    Map<ClassType, Vertex> typeToVertex = new HashMap<>();
     Graph<Vertex, Edge> graph = new SimpleDirectedGraph<>(null, null, false);
 
     view.getClassesStream()
@@ -241,12 +241,12 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   private static void addSootClassToGraph(
-      SootClass sootClass, Map<JavaClassType, Vertex> typeToVertex, Graph<Vertex, Edge> graph) {
+      SootClass sootClass, Map<ClassType, Vertex> typeToVertex, Graph<Vertex, Edge> graph) {
     if (sootClass.isInterface()) {
       Vertex vertex =
           typeToVertex.computeIfAbsent(
               sootClass.getType(), type -> createAndAddInterfaceVertex(graph, type));
-      for (JavaClassType extendedInterface : sootClass.getInterfaces()) {
+      for (ClassType extendedInterface : sootClass.getInterfaces()) {
         Vertex extendedInterfaceVertex =
             typeToVertex.computeIfAbsent(
                 extendedInterface, type -> createAndAddInterfaceVertex(graph, type));
@@ -256,7 +256,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
       Vertex vertex =
           typeToVertex.computeIfAbsent(
               sootClass.getType(), type -> createAndAddClassVertex(graph, type));
-      for (JavaClassType implementedInterface : sootClass.getInterfaces()) {
+      for (ClassType implementedInterface : sootClass.getInterfaces()) {
         Vertex implementedInterfaceVertex =
             typeToVertex.computeIfAbsent(
                 implementedInterface, type -> createAndAddInterfaceVertex(graph, type));
@@ -276,21 +276,21 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
   }
 
   @Nonnull
-  private static Vertex createAndAddClassVertex(Graph<Vertex, Edge> graph, JavaClassType type) {
+  private static Vertex createAndAddClassVertex(Graph<Vertex, Edge> graph, ClassType type) {
     Vertex classVertex = new Vertex(type, VertexType.Class);
     graph.addVertex(classVertex);
     return classVertex;
   }
 
   @Nonnull
-  private static Vertex createAndAddInterfaceVertex(Graph<Vertex, Edge> graph, JavaClassType type) {
+  private static Vertex createAndAddInterfaceVertex(Graph<Vertex, Edge> graph, ClassType type) {
     Vertex interfaceVertex = new Vertex(type, VertexType.Interface);
     graph.addVertex(interfaceVertex);
     return interfaceVertex;
   }
 
   @Nonnull
-  private SootClass sootClassFor(@Nonnull JavaClassType classType) {
+  private SootClass sootClassFor(@Nonnull ClassType classType) {
     AbstractClass<? extends AbstractClassSource> aClass =
         view.getClass(classType)
             .orElseThrow(
@@ -307,7 +307,7 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     addSootClassToGraph(sootClass, scanResult.typeToVertex, scanResult.graph);
   }
 
-  /** Holds a vertex for each {@link JavaClassType} encountered during the scan. */
+  /** Holds a vertex for each {@link ClassType} encountered during the scan. */
   static class ScanResult {
 
     enum VertexType {
@@ -320,10 +320,10 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
      * @see #type
      */
     static class Vertex {
-      @Nonnull final JavaClassType javaClassType;
+      @Nonnull final ClassType javaClassType;
       @Nonnull final VertexType type;
 
-      Vertex(@Nonnull JavaClassType javaClassType, @Nonnull VertexType type) {
+      Vertex(@Nonnull ClassType javaClassType, @Nonnull VertexType type) {
         this.javaClassType = javaClassType;
         this.type = type;
       }
@@ -348,12 +348,12 @@ public class ViewTypeHierarchy implements MutableTypeHierarchy {
     }
 
     /** Holds the vertex for each type. */
-    @Nonnull final Map<JavaClassType, Vertex> typeToVertex;
+    @Nonnull final Map<ClassType, Vertex> typeToVertex;
 
     @Nonnull final Graph<Vertex, Edge> graph;
 
     private ScanResult(
-        @Nonnull Map<JavaClassType, Vertex> typeToVertex, @Nonnull Graph<Vertex, Edge> graph) {
+        @Nonnull Map<ClassType, Vertex> typeToVertex, @Nonnull Graph<Vertex, Edge> graph) {
       this.typeToVertex = typeToVertex;
       this.graph = graph;
     }

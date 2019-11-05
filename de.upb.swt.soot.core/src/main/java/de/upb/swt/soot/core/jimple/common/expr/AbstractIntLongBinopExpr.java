@@ -31,30 +31,22 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 
-@SuppressWarnings("serial")
 public abstract class AbstractIntLongBinopExpr extends AbstractBinopExpr {
 
   AbstractIntLongBinopExpr(Value op1, Value op2) {
     super(Jimple.newArgBox(op1), Jimple.newArgBox(op2));
   }
 
-  static boolean isIntLikeType(Type t) {
-    return t.equals(PrimitiveType.getInt())
-        || t.equals(PrimitiveType.getByte())
-        || t.equals(PrimitiveType.getShort())
-        || t.equals(PrimitiveType.getChar())
-        || t.equals(PrimitiveType.getBoolean());
-  }
-
   @Override
   public Type getType() {
     Value op1 = getOp1();
     Value op2 = getOp2();
+    Type op1t = op1.getType();
+    Type op2t = op2.getType();
 
-    if (isIntLikeType(op1.getType()) && isIntLikeType(op2.getType())) {
+    if (PrimitiveType.isIntLikeType(op1t) && PrimitiveType.isIntLikeType(op2t)) {
       return PrimitiveType.getInt();
-    } else if (op1.getType().equals(PrimitiveType.getLong())
-        && op2.getType().equals(PrimitiveType.getLong())) {
+    } else if (op1t.equals(PrimitiveType.getLong()) || op2t.equals(PrimitiveType.getLong())) {
       return PrimitiveType.getLong();
     } else {
       return UnknownType.getInstance();

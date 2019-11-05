@@ -4,7 +4,7 @@ import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
@@ -26,7 +26,7 @@ public interface AnalysisInputLocation {
    * @return The source entry for that class.
    */
   @Nonnull
-  Optional<? extends AbstractClassSource> getClassSource(@Nonnull ReferenceType signature);
+  Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType signature);
 
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(

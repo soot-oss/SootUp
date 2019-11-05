@@ -25,8 +25,8 @@
 
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public abstract class AbstractSwitchStmt extends AbstractStmt {
   private final StmtBox[] targetBoxes;
 
   protected AbstractSwitchStmt(
-      PositionInfo positionInfo,
+      StmtPositionInfo positionInfo,
       ValueBox keyBox,
       StmtBox defaultTargetBox,
       StmtBox... targetBoxes) {

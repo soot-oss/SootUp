@@ -27,13 +27,13 @@ package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
 public final class JTrap extends AbstractTrap implements Copyable {
 
-  public JTrap(JavaClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
+  public JTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
     super(
         exception,
         Jimple.newStmtBox(beginStmt),
@@ -41,7 +41,7 @@ public final class JTrap extends AbstractTrap implements Copyable {
         Jimple.newStmtBox(handlerStmt));
   }
 
-  public JTrap(JavaClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
+  public JTrap(ClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
     super(exception, beginStmt, endStmt, handlerStmt);
   }
 
@@ -58,7 +58,7 @@ public final class JTrap extends AbstractTrap implements Copyable {
   }
 
   @Nonnull
-  public JTrap withException(JavaClassType exception) {
+  public JTrap withException(ClassType exception) {
     return new JTrap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
   }
 

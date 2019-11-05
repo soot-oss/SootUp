@@ -27,8 +27,8 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
@@ -64,7 +64,7 @@ public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copya
       List<IntConstant> lookupValues,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     this(
         Jimple.newImmediateBox(key),
         lookupValues,
@@ -79,7 +79,7 @@ public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copya
       List<IntConstant> lookupValues,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     this(
         Jimple.newImmediateBox(key),
         lookupValues,
@@ -93,7 +93,7 @@ public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copya
       List<IntConstant> lookupValues,
       StmtBox[] targetBoxes,
       StmtBox defaultTargetBox,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     super(positionInfo, keyBox, defaultTargetBox, targetBoxes);
     this.lookupValues = Collections.unmodifiableList(new ArrayList<>(lookupValues));
   }
@@ -223,7 +223,7 @@ public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copya
   }
 
   @Nonnull
-  public JLookupSwitchStmt withPositionInfo(PositionInfo positionInfo) {
+  public JLookupSwitchStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JLookupSwitchStmt(
         getKey(), lookupValues, getTargets(), getDefaultTarget(), positionInfo);
   }

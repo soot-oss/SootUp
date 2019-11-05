@@ -1,6 +1,6 @@
 package de.upb.swt.soot.core.signatures;
 
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import javax.annotation.Nonnull;
 
@@ -43,7 +43,7 @@ public class FieldSubSignature extends AbstractClassMemberSubSignature
 
   @Override
   @Nonnull
-  public FieldSignature toFullSignature(@Nonnull JavaClassType declClassSignature) {
+  public FieldSignature toFullSignature(@Nonnull ClassType declClassSignature) {
     return new FieldSignature(declClassSignature, this);
   }
 

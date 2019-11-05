@@ -9,11 +9,11 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
-import de.upb.swt.soot.core.inputlocation.PathUtils;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
@@ -132,7 +132,7 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
 
     @Override
     public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-        @Nonnull ReferenceType signature) {
+        @Nonnull ClassType signature) {
       return getClassSourceInternal((JavaClassType) signature, path);
     }
   }
@@ -171,7 +171,7 @@ public abstract class PathBasedAnalysisInputLocation extends AbstractAnalysisInp
 
     @Override
     public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-        @Nonnull ReferenceType signature) {
+        @Nonnull ClassType signature) {
       try {
         FileSystem fs = fileSystemCache.get(path);
         final Path archiveRoot = fs.getPath("/");

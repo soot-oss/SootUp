@@ -1,11 +1,11 @@
 package de.upb.swt.soot.java.bytecode.frontend;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -125,7 +125,7 @@ public final class AsmUtil {
         }
         String name = desc.substring(1, desc.length() - 1);
         name = toQualifiedName(name);
-        baseType = DefaultIdentifierFactory.getInstance().getType(toQualifiedName(name));
+        baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(name));
         break;
       default:
         throw new AssertionError("Unknown descriptor: " + desc);
@@ -134,7 +134,7 @@ public final class AsmUtil {
       throw new AssertionError("Invalid primitive type descriptor: " + desc);
     }
     return nrDims > 0
-        ? DefaultIdentifierFactory.getInstance().getArrayType(baseType, nrDims)
+        ? JavaIdentifierFactory.getInstance().getArrayType(baseType, nrDims)
         : baseType;
   }
 
@@ -193,7 +193,7 @@ public final class AsmUtil {
             }
 
             String cls = desc.substring(begin, idx++);
-            baseType = DefaultIdentifierFactory.getInstance().getType(toQualifiedName(cls));
+            baseType = JavaIdentifierFactory.getInstance().getType(toQualifiedName(cls));
             break this_type;
           default:
             throw new AssertionError("Unknown type: " + c);
@@ -201,7 +201,7 @@ public final class AsmUtil {
       }
 
       if (baseType != null && nrDims > 0) {
-        types.add(DefaultIdentifierFactory.getInstance().getArrayType(baseType, nrDims));
+        types.add(JavaIdentifierFactory.getInstance().getArrayType(baseType, nrDims));
 
       } else {
         types.add(baseType);
@@ -224,9 +224,9 @@ public final class AsmUtil {
 
   @Nullable
   public static JavaClassType asmIDToSignature(@Nonnull String asmClassName) {
-    if (asmClassName == null || asmClassName.isEmpty()) {
+    if (asmClassName.isEmpty()) {
       return null;
     }
-    return DefaultIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
+    return JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(asmClassName));
   }
 }
