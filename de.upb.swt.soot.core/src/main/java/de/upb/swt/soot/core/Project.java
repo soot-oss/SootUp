@@ -15,8 +15,6 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-
-// TODO: <S extends SootLanguage>
 public abstract class Project {
 
   @Nonnull private final IdentifierFactory identifierFactory;
@@ -76,10 +74,6 @@ public abstract class Project {
   @Nonnull
   public abstract View createOnDemandView();
 
-  // TODO: [ms] commented/abstract due to language independence
-  // ViewBuilder<S> vb = new ViewBuilder<>(this);
-  // return vb.buildOnDemand();
-
   /**
    * Returns a partial view on the code based on the provided scope and all input locations in the
    * project. This methodRef starts the reification process.
@@ -89,6 +83,6 @@ public abstract class Project {
    */
   @Nonnull
   public View createView(Scope s) {
-    throw new NotYetImplementedException(); // TODO
+    throw new NotYetImplementedException(); // TODO implement scoping the View
   }
 }
