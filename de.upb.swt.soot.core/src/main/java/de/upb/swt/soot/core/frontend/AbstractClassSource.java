@@ -12,8 +12,6 @@ import javax.annotation.Nullable;
 public abstract class AbstractClassSource {
   protected final AnalysisInputLocation srcNamespace;
   protected final Path sourcePath;
-  // TODO: AD unfortunately I need to change it in the ModuleFinder, since I only know a module's
-  // name after resolving its module-info.class
   protected ClassType classSignature;
 
   public AbstractClassSource(

@@ -1,7 +1,6 @@
 package de.upb.swt.soot.core.views;
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.Options;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.AbstractClass;
@@ -51,10 +50,6 @@ public interface View {
   /** Returns the {@link IdentifierFactory} for this view. */
   @Nonnull
   IdentifierFactory getIdentifierFactory();
-
-  /** Return the {@link Options} of this view. */
-  @Nonnull
-  Options getOptions();
 
   boolean doneResolving();
 

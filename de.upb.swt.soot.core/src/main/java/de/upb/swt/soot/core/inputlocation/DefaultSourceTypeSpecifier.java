@@ -1,11 +1,12 @@
-package de.upb.swt.soot.core;
+package de.upb.swt.soot.core.inputlocation;
 
-import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
+import de.upb.swt.soot.core.SourceTypeSpecifier;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
 
 /**
- * Implements a very basic Version of a Source Specifier
+ * Implements a very basic version of {@link SourceTypeSpecifier} which tells the type of a class by
+ * checking if it is a language build-in class.
  *
  * @author Markus Schmidt
  */

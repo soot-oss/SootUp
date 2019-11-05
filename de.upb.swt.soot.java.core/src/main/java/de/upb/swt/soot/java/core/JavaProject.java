@@ -1,9 +1,11 @@
 package de.upb.swt.soot.java.core;
 
-import de.upb.swt.soot.core.DefaultSourceTypeSpecifier;
 import de.upb.swt.soot.core.Project;
+import de.upb.swt.soot.core.Scope;
+import de.upb.swt.soot.core.SourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
+import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,41 +16,36 @@ import javax.annotation.Nonnull;
  * Project Implementation for analyzing Java.
  *
  * @author Markus Schmidt
+ * @author Linghui Luo
  */
 public class JavaProject extends Project {
-  final boolean useJavaModules;
+
+  private JavaViewBuilder viewBuilder;
 
   public JavaProject(
+      JavaLanguage language,
       @Nonnull List<AnalysisInputLocation> inputLocations,
-      @Nonnull SourceTypeSpecifier sourceTypeSpecifier,
-      boolean useJavaModules) {
-    super(inputLocations, JavaIdentifierFactory.getInstance(), sourceTypeSpecifier);
-    this.useJavaModules = useJavaModules;
-  }
-
-  @Nonnull
-  protected JavaView chooseView() {
-    if (useJavaModules) {
-      // TODO: [ms] replace with the view for java modules.. problem: circular dependency on
-      // soot.java.bytecode
-      return new JavaView(this);
-    } else {
-      return new JavaView(this);
-    }
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+    super(language, inputLocations, JavaIdentifierFactory.getInstance(), sourceTypeSpecifier);
+    this.viewBuilder = new JavaViewBuilder(this);
   }
 
   @Nonnull
   @Override
   public JavaView createOnDemandView() {
-    return chooseView();
+    return viewBuilder.createOnDemandView();
   }
 
   @Nonnull
   @Override
   public JavaView createFullView() {
-    JavaView view = chooseView();
-    view.getClasses();
-    return view;
+    return viewBuilder.createFullView();
+  }
+
+  @Nonnull
+  @Override
+  public JavaView createView(Scope s) {
+    return viewBuilder.createView(s);
   }
 
   /**
@@ -57,14 +54,18 @@ public class JavaProject extends Project {
    * @return A {@link JavaProjectBuilder}.
    */
   @Nonnull
-  public static JavaProjectBuilder builder() {
-    return new JavaProjectBuilder();
+  public static JavaProjectBuilder builder(JavaLanguage language) {
+    return new JavaProjectBuilder(language);
   }
 
   public static class JavaProjectBuilder {
-    boolean usesJavaModules = false;
-    final List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
-    SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
+    private final List<AnalysisInputLocation> analysisInputLocations = new ArrayList<>();
+    private SourceTypeSpecifier sourceTypeSpecifier = DefaultSourceTypeSpecifier.getInstance();
+    private final JavaLanguage language;
+
+    public JavaProjectBuilder(JavaLanguage language) {
+      this.language = language;
+    }
 
     @Nonnull
     public JavaProjectBuilder setSourceTypeSpecifier(SourceTypeSpecifier sourceTypeSpecifier) {
@@ -87,21 +88,19 @@ public class JavaProject extends Project {
 
     @Nonnull
     JavaProjectBuilder addModulePath(Collection<AnalysisInputLocation> analysisInputLocation) {
-      usesJavaModules = true;
       this.analysisInputLocations.addAll(analysisInputLocation);
       return this;
     }
 
     @Nonnull
     JavaProjectBuilder addModulePath(AnalysisInputLocation analysisInputLocation) {
-      usesJavaModules = true;
       this.analysisInputLocations.add(analysisInputLocation);
       return this;
     }
 
     @Nonnull
     public JavaProject build() {
-      return new JavaProject(analysisInputLocations, sourceTypeSpecifier, usesJavaModules);
+      return new JavaProject(language, analysisInputLocations, sourceTypeSpecifier);
     }
   }
 }

@@ -21,6 +21,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -35,7 +36,8 @@ public class SootMethodTest {
 
   @Test
   public void testCreateMethod() {
-    Project project = JavaProject.builder().addClassPath(new EagerInputLocation()).build();
+    Project project =
+        JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     View view = project.createOnDemandView();
     ClassType type = view.getIdentifierFactory().getClassType("java.lang.String");
 

@@ -13,6 +13,7 @@ import de.upb.swt.soot.java.bytecode.frontend.modules.JavaModuleInfo;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaModulePathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.util.Optional;
 import org.junit.Test;
@@ -28,7 +29,8 @@ public class ModuleBuilderActorTest {
             "../shared-test-resources/java9-target/de/upb/soot/namespaces/modules",
             new AsmJavaClassProvider());
 
-    Project project = JavaProject.builder().addClassPath(javaClassPathNamespace).build();
+    Project project =
+        JavaProject.builder(new JavaLanguage(9)).addClassPath(javaClassPathNamespace).build();
 
     // de.upb.soot.views.JavaView view = new de.upb.soot.views.JavaView(project);
 

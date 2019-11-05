@@ -23,6 +23,7 @@ import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
@@ -61,7 +62,8 @@ public class ViewTypeHierarchyTest {
     analysisInputLocation =
         new JavaClassPathAnalysisInputLocation(
             jarFile + File.pathSeparator + rtJarClassPath, new AsmJavaClassProvider());
-    Project p = JavaProject.builder().addClassPath(analysisInputLocation).build();
+    Project p =
+        JavaProject.builder(new JavaLanguage(8)).addClassPath(analysisInputLocation).build();
 
     view = p.createOnDemandView();
     typeHierarchy = new ViewTypeHierarchy(view);

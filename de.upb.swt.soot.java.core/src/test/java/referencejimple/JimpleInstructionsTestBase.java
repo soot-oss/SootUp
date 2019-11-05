@@ -28,6 +28,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.util.printer.Printer;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -63,7 +64,8 @@ public abstract class JimpleInstructionsTestBase {
     directory = directory.substring(startPos, endPos);
 
     // soot config
-    Project project = JavaProject.builder().addClassPath(new EagerInputLocation()).build();
+    Project project =
+        JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     view = project.createOnDemandView();
 
     // build class structure

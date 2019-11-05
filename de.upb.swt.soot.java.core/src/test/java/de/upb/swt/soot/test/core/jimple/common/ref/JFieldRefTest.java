@@ -21,6 +21,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.util.Collections;
 import java.util.EnumSet;
 import org.junit.Before;
@@ -35,7 +36,8 @@ public class JFieldRefTest {
 
   @Before
   public void setUp() {
-    Project project = JavaProject.builder().addClassPath(new EagerInputLocation()).build();
+    Project project =
+        JavaProject.builder(new JavaLanguage(8)).addClassPath(new EagerInputLocation()).build();
     view = project.createOnDemandView();
   }
 

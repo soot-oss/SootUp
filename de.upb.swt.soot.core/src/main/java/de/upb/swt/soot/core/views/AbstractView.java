@@ -1,7 +1,6 @@
 package de.upb.swt.soot.core.views;
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.Options;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.Scope;
 import java.util.HashMap;
@@ -18,8 +17,6 @@ import javax.annotation.Nullable;
 public abstract class AbstractView implements View {
 
   @Nonnull private final Project project;
-
-  @Nonnull private final Options options = new Options();
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
@@ -38,12 +35,6 @@ public abstract class AbstractView implements View {
   public Optional<Scope> getScope() {
     // TODO Auto-generated methodRef stub
     return null;
-  }
-
-  @Override
-  @Nonnull
-  public Options getOptions() {
-    return this.options;
   }
 
   @Nonnull

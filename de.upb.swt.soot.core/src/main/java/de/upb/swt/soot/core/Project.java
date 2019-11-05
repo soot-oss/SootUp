@@ -1,7 +1,9 @@
+/*
+ * @author Linghui Luo
+ */
 package de.upb.swt.soot.core;
 
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.SourceTypeSpecifier;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,28 +18,44 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-
-// TODO: <S extends SootLanguage>
 public abstract class Project {
 
   @Nonnull private final IdentifierFactory identifierFactory;
   @Nonnull private final List<AnalysisInputLocation> inputLocations;
   @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
-
-  /** Create a project from an arbitrary input location */
+  @Nonnull private final Language language;
+  /**
+   * Create a project from an arbitrary input location.
+   *
+   * @param language the language
+   * @param inputLocation the input location
+   * @param sourceTypeSpecifier the source type specifier
+   */
   public Project(
+      @Nonnull Language language,
       @Nonnull AnalysisInputLocation inputLocation,
-      @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-    this(Collections.singletonList(inputLocation), identifierFactory, sourceTypeSpecifier);
+    this(
+        language,
+        Collections.singletonList(inputLocation),
+        language.getIdentifierFactory(),
+        sourceTypeSpecifier);
   }
 
-  /** Create a project from an arbitrary list of input locations */
+  /**
+   * Create a project from an arbitrary list of input locations.
+   *
+   * @param language the language
+   * @param inputLocations the input locations
+   * @param identifierFactory the identifier factory
+   * @param sourceTypeSpecifier the source type specifier
+   */
   public Project(
+      @Nonnull Language language,
       @Nonnull List<AnalysisInputLocation> inputLocations,
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
-
+    this.language = language;
     List<AnalysisInputLocation> unmodifiableInputLocations =
         Collections.unmodifiableList(new ArrayList<>(inputLocations));
 
@@ -65,6 +83,12 @@ public abstract class Project {
   public SourceTypeSpecifier getSourceTypeSpecifier() {
     return sourceTypeSpecifier;
   }
+
+  @Nonnull
+  public Language getLanguage() {
+    return language;
+  }
+
   /**
    * Create a complete view from everything in all provided input locations. This methodRef starts
    * the reification process.
@@ -85,7 +109,5 @@ public abstract class Project {
    * @return A scoped view of the provided code
    */
   @Nonnull
-  public View createView(Scope s) {
-    return null;
-  }
+  public abstract View createView(Scope s);
 }

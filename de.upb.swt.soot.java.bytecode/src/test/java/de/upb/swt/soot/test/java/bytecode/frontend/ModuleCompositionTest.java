@@ -7,7 +7,12 @@ import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
-import de.upb.swt.soot.core.model.*;
+import de.upb.swt.soot.core.model.Body;
+import de.upb.swt.soot.core.model.Modifier;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootField;
+import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
@@ -18,6 +23,7 @@ import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.io.File;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
@@ -46,7 +52,7 @@ public class ModuleCompositionTest {
 
     // Create a project
     Project p =
-        JavaProject.builder()
+        JavaProject.builder(new JavaLanguage(9))
             .addClassPath(
                 new JavaClassPathAnalysisInputLocation(jarFile, new AsmJavaClassProvider()))
             .build();
