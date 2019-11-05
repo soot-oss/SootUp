@@ -29,9 +29,6 @@ public class JavaProject extends Project {
   @Nonnull
   @Override
   public JavaView createOnDemandView() {
-    // TODO: [ms] abstract implementation due to language independence; call it via
-    // ViewBuilder.createOnDemandView() again?
-
     // TODO: decide whether to use the >java9 View ( this.useJavaModules )
     return new JavaView(this);
   }
