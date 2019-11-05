@@ -4,11 +4,18 @@ import com.google.common.base.Objects;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.signatures.Signature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.views.View;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * AbstractClassSource represents a Compilation Unit (Interpretation Unit for interpreted
+ * languages). e.g. its connecting a file with source(code) to a {@link Signature} that a {@link
+ * View} can resolve.
+ */
 public abstract class AbstractClassSource {
   protected final AnalysisInputLocation srcNamespace;
   protected final Path sourcePath;
