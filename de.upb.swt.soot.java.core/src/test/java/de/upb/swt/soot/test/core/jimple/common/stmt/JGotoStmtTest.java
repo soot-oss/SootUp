@@ -25,8 +25,8 @@ package de.upb.swt.soot.test.core.jimple.common.stmt;
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.JStmtBox;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -41,7 +41,7 @@ public class JGotoStmtTest {
 
   @Test
   public void test() {
-    PositionInfo nop = PositionInfo.createNoPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
     JavaIdentifierFactory typeFactory = JavaIdentifierFactory.getInstance();
 
     Local local1 = new Local("$r0", typeFactory.getType("java.lang.Exception"));

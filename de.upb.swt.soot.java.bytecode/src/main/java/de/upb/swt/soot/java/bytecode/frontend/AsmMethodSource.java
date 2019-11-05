@@ -25,8 +25,8 @@ import com.google.common.collect.Table;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
@@ -337,7 +337,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     Local l = o.stack;
     if (l == null && !(v instanceof Local)) {
       l = o.stack = newStackLocal();
-      setUnit(o.insn, Jimple.newAssignStmt(l, v, PositionInfo.createNoPositionInfo()));
+      setUnit(o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
       o.updateBoxes();
     }
     return o;
@@ -349,7 +349,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     Local l = o.stack;
     if (l == null && !(v instanceof Local) && !(v instanceof Constant)) {
       l = o.stack = newStackLocal();
-      setUnit(o.insn, Jimple.newAssignStmt(l, v, PositionInfo.createNoPositionInfo()));
+      setUnit(o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
       o.updateBoxes();
     }
     return o;
@@ -361,7 +361,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     Local l = o.stack;
     if (l == null && !(v instanceof Constant)) {
       l = o.stack = newStackLocal();
-      setUnit(o.insn, Jimple.newAssignStmt(l, v, PositionInfo.createNoPositionInfo()));
+      setUnit(o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
       o.updateBoxes();
     }
     return o;
@@ -478,7 +478,8 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
       }
       Local stack = newStackLocal();
       opr.stack = stack;
-      JAssignStmt as = Jimple.newAssignStmt(stack, opr.value, PositionInfo.createNoPositionInfo());
+      JAssignStmt as =
+          Jimple.newAssignStmt(stack, opr.value, StmtPositionInfo.createNoStmtPositionInfo());
       opr.updateBoxes();
       setUnit(opr.insn, as);
     }
@@ -559,7 +560,8 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
       opr = new Operand(insn, val);
       frame.out(opr);
       JAssignStmt as =
-          Jimple.newAssignStmt(val, rvalue.stackOrValue(), PositionInfo.createNoPositionInfo());
+          Jimple.newAssignStmt(
+              val, rvalue.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       rvalue.addBox(as.getRightOpBox());
       if (!instance) {
         frame.boxes(as.getRightOpBox());
@@ -600,7 +602,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     assignReadOps(local);
     if (!units.containsKey(insn)) {
       JAddExpr add = Jimple.newAddExpr(local, IntConstant.getInstance(insn.incr));
-      setUnit(insn, Jimple.newAssignStmt(local, add, PositionInfo.createNoPositionInfo()));
+      setUnit(insn, Jimple.newAssignStmt(local, add, StmtPositionInfo.createNoStmtPositionInfo()));
     }
   }
 
@@ -938,7 +940,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     if (!units.containsKey(insn)) {
       Operand val = dword ? popImmediateDual() : popImmediate();
       JReturnStmt ret =
-          Jimple.newReturnStmt(val.stackOrValue(), PositionInfo.createNoPositionInfo());
+          Jimple.newReturnStmt(val.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       val.addBox(ret.getOpBox());
       frame.in(val);
       frame.boxes(ret.getOpBox());
@@ -955,7 +957,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
        * We can ignore NOP instructions, but for completeness, we handle them
        */
       if (!units.containsKey(insn)) {
-        units.put(insn, Jimple.newNopStmt(PositionInfo.createNoPositionInfo()));
+        units.put(insn, Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
       }
     } else if (op >= ACONST_NULL && op <= DCONST_1) {
       convertConstInsn(insn);
@@ -991,7 +993,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
       convertReturnInsn(insn);
     } else if (op == RETURN) {
       if (!units.containsKey(insn)) {
-        setUnit(insn, Jimple.newReturnVoidStmt(PositionInfo.createNoPositionInfo()));
+        setUnit(insn, Jimple.newReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo()));
       }
     } else if (op == ATHROW) {
       StackFrame frame = getFrame(insn);
@@ -999,7 +1001,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
       if (!units.containsKey(insn)) {
         opr = popImmediate();
         JThrowStmt ts =
-            Jimple.newThrowStmt(opr.stackOrValue(), PositionInfo.createNoPositionInfo());
+            Jimple.newThrowStmt(opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
         opr.addBox(ts.getOpBox());
         frame.in(opr);
         frame.out(opr);
@@ -1017,9 +1019,9 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
         AbstractOpStmt ts =
             op == MONITORENTER
                 ? Jimple.newEnterMonitorStmt(
-                    opr.stackOrValue(), PositionInfo.createNoPositionInfo())
+                    opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo())
                 : Jimple.newExitMonitorStmt(
-                    opr.stackOrValue(), PositionInfo.createNoPositionInfo());
+                    opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
         opr.addBox(ts.getOpBox());
         frame.in(opr);
         frame.boxes(ts.getOpBox());
@@ -1096,7 +1098,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
       if (!units.containsKey(insn)) {
         StmtBox box = Jimple.newStmtBox(null);
         labels.put(insn.label, box);
-        setUnit(insn, Jimple.newGotoStmt(box, PositionInfo.createNoPositionInfo()));
+        setUnit(insn, Jimple.newGotoStmt(box, StmtPositionInfo.createNoStmtPositionInfo()));
       }
       return;
     }
@@ -1158,7 +1160,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
       }
       StmtBox box = Jimple.newStmtBox(null);
       labels.put(insn.label, box);
-      setUnit(insn, Jimple.newIfStmt(cond, box, PositionInfo.createNoPositionInfo()));
+      setUnit(insn, Jimple.newIfStmt(cond, box, StmtPositionInfo.createNoStmtPositionInfo()));
     } else {
       if (op >= IF_ICMPEQ && op <= IF_ACMPNE) {
         frame.mergeIn(pop(), pop());
@@ -1278,7 +1280,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
 
     JLookupSwitchStmt lss =
         Jimple.newLookupSwitchStmt(
-            key.stackOrValue(), keys, targets, dflt, PositionInfo.createNoPositionInfo());
+            key.stackOrValue(), keys, targets, dflt, StmtPositionInfo.createNoStmtPositionInfo());
     key.addBox(lss.getKeyBox());
     frame.in(key);
     frame.boxes(lss.getKeyBox());
@@ -1394,7 +1396,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     } else if (!(returnType == VoidType.getInstance())) {
       push(opr);
     } else if (!units.containsKey(insn)) {
-      setUnit(insn, Jimple.newInvokeStmt(opr.value, PositionInfo.createNoPositionInfo()));
+      setUnit(insn, Jimple.newInvokeStmt(opr.value, StmtPositionInfo.createNoStmtPositionInfo()));
     }
     /*
      * assign all read ops in case the methodRef modifies any of the fields
@@ -1488,7 +1490,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
       push(opr);
     } else if (!units.containsKey(insn)) {
       // FIXME: [JMP] Set correct position information
-      setUnit(insn, Jimple.newInvokeStmt(opr.value, PositionInfo.createNoPositionInfo()));
+      setUnit(insn, Jimple.newInvokeStmt(opr.value, StmtPositionInfo.createNoStmtPositionInfo()));
     }
     /*
      * assign all read ops in case the method modifies any of the fields
@@ -1580,7 +1582,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
             insn.max,
             targets,
             dflt,
-            PositionInfo.createNoPositionInfo());
+            StmtPositionInfo.createNoStmtPositionInfo());
     key.addBox(tss.getKeyBox());
     frame.in(key);
     frame.boxes(tss.getKeyBox());
@@ -1658,7 +1660,8 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     Local local = getLocal(insn.var);
     if (!units.containsKey(insn)) {
       AbstractDefinitionStmt as =
-          Jimple.newAssignStmt(local, opr.stackOrValue(), PositionInfo.createNoPositionInfo());
+          Jimple.newAssignStmt(
+              local, opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       opr.addBox(as.getRightOpBox());
       frame.boxes(as.getRightOpBox());
       frame.in(opr);
@@ -1678,7 +1681,9 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     } else if (op == RET) {
       /* we handle it, even thought it should be removed */
       if (!units.containsKey(insn)) {
-        setUnit(insn, Jimple.newRetStmt(getLocal(insn.var), PositionInfo.createNoPositionInfo()));
+        setUnit(
+            insn,
+            Jimple.newRetStmt(getLocal(insn.var), StmtPositionInfo.createNoStmtPositionInfo()));
       }
     } else {
       throw new AssertionError("Unknown var op: " + op);
@@ -1695,7 +1700,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     // code
     if (inlineExceptionLabels.contains(ln)) {
       if (!units.containsKey(ln)) {
-        JNopStmt nop = Jimple.newNopStmt(PositionInfo.createNoPositionInfo());
+        JNopStmt nop = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
         setUnit(ln, nop);
       }
       return;
@@ -1708,7 +1713,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
       JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
       Local stack = newStackLocal();
       AbstractDefinitionStmt as =
-          Jimple.newIdentityStmt(stack, ref, PositionInfo.createNoPositionInfo());
+          Jimple.newIdentityStmt(stack, ref, StmtPositionInfo.createNoStmtPositionInfo());
       opr = new Operand(ln, ref);
       opr.stack = stack;
       frame.out(opr);
@@ -1884,7 +1889,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
     Local local = newStackLocal();
     AbstractDefinitionStmt as =
-        Jimple.newIdentityStmt(local, ref, PositionInfo.createNoPositionInfo());
+        Jimple.newIdentityStmt(local, ref, StmtPositionInfo.createNoStmtPositionInfo());
 
     Operand opr = new Operand(ln, ref);
     opr.stack = local;
@@ -1934,14 +1939,14 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
       Local l = getLocal(iloc++);
       jbu.add(
           Jimple.newIdentityStmt(
-              l, Jimple.newThisRef(declaringClass), PositionInfo.createNoPositionInfo()));
+              l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
     }
     int nrp = 0;
     for (Type ot : methodSignature.getParameterSignatures()) {
       Local l = getLocal(iloc);
       jbu.add(
           Jimple.newIdentityStmt(
-              l, Jimple.newParameterRef(ot, nrp++), PositionInfo.createNoPositionInfo()));
+              l, Jimple.newParameterRef(ot, nrp++), StmtPositionInfo.createNoStmtPositionInfo()));
       if (AsmUtil.isDWord(ot)) {
         iloc += 2;
       } else {
@@ -2056,7 +2061,8 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
 
       // We need to jump to the original implementation
       Stmt targetUnit = units.get(ln);
-      JGotoStmt gotoImpl = Jimple.newGotoStmt(targetUnit, PositionInfo.createNoPositionInfo());
+      JGotoStmt gotoImpl =
+          Jimple.newGotoStmt(targetUnit, StmtPositionInfo.createNoStmtPositionInfo());
       bodyStmts.add(gotoImpl);
     }
 
@@ -2064,7 +2070,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     if (labls.isEmpty()) {
       return;
     }
-    Stmt end = Jimple.newNopStmt(PositionInfo.createNoPositionInfo());
+    Stmt end = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     bodyStmts.add(end);
     while (!labls.isEmpty()) {
       LabelNode ln = labls.poll();

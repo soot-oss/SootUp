@@ -24,7 +24,7 @@ package de.upb.swt.soot.test.core.jimple.common.stmt;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
@@ -40,7 +40,7 @@ public class JNopStmtTest {
 
   @Test
   public void test() {
-    PositionInfo nopos = PositionInfo.createNoPositionInfo();
+    StmtPositionInfo nopos = StmtPositionInfo.createNoStmtPositionInfo();
     Stmt nop = new JNopStmt(nopos);
 
     Assert.assertTrue(nop.equivTo(nop));

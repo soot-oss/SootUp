@@ -4,14 +4,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -24,7 +28,7 @@ import org.junit.experimental.categories.Category;
  * @author Linghui Luo
  */
 @Category(Java8Test.class)
-public class PositionInfoTest {
+public class StmtPositionInfoTest {
   private WalaClassLoader loader;
 
   private JavaIdentifierFactory identifierFactory;
@@ -59,7 +63,7 @@ public class PositionInfoTest {
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(3);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
     Position pos1 = info.getOperandPosition(0);
     Position pos2 = info.getOperandPosition(1);
@@ -88,7 +92,7 @@ public class PositionInfoTest {
     loadCurrentMethod("complexOperands", declareClassSig, "void", Collections.emptyList());
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(8);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
 
     assertEquals(85, stmtPos.getFirstLine());
@@ -119,7 +123,7 @@ public class PositionInfoTest {
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(4);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
 
     Position pos1 = info.getOperandPosition(0);
@@ -142,7 +146,7 @@ public class PositionInfoTest {
     {
       List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
       Stmt stmt = stmts.get(6);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
 
       // TODO: to be discussed? there is no explicit return -> position of the last statement seems
@@ -159,7 +163,7 @@ public class PositionInfoTest {
     {
       List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
       Stmt stmt = stmts.get(2);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
 
       assertEquals(47, stmtPos.getFirstLine());
@@ -176,7 +180,7 @@ public class PositionInfoTest {
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(12);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
 
     assertEquals(20, stmtPos.getFirstLine());
@@ -192,7 +196,7 @@ public class PositionInfoTest {
     {
       List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
       Stmt stmt = stmts.get(1);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
 
       /*
@@ -209,7 +213,7 @@ public class PositionInfoTest {
     {
       List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
       Stmt stmt = stmts.get(2);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
 
       /*
@@ -225,7 +229,7 @@ public class PositionInfoTest {
     {
       List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
       Stmt stmt = stmts.get(3);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
 
       /*
@@ -241,7 +245,7 @@ public class PositionInfoTest {
     {
       List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
       Stmt stmt = stmts.get(4);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
 
       /*
@@ -261,7 +265,7 @@ public class PositionInfoTest {
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(2);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
 
     assertEquals(11, stmtPos.getFirstLine());
@@ -287,7 +291,7 @@ public class PositionInfoTest {
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     {
       Stmt stmt = stmts.get(9);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
 
       // TODO: stmtPos
@@ -302,7 +306,7 @@ public class PositionInfoTest {
     }
     {
       Stmt stmt = stmts.get(14);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
 
       /* FIXME
@@ -324,7 +328,7 @@ public class PositionInfoTest {
     {
       // !hasDef() -> same class, no parameters
       Stmt stmt = stmts.get(4);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
       assertEquals(15, stmtPos.getFirstLine());
       assertEquals(15, stmtPos.getLastLine());
@@ -335,7 +339,7 @@ public class PositionInfoTest {
     {
       // hasDef -> has parameter or is method of different class
       Stmt stmt = stmts.get(5);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
       assertEquals(16, stmtPos.getFirstLine());
       assertEquals(16, stmtPos.getLastLine());
@@ -350,7 +354,7 @@ public class PositionInfoTest {
 
     {
       Stmt stmt = stmts.get(6);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
       Position stmtPos = info.getStmtPosition();
       assertEquals(17, stmtPos.getFirstLine());
       assertEquals(17, stmtPos.getLastLine());
@@ -376,7 +380,7 @@ public class PositionInfoTest {
 
     {
       Stmt stmt = stmts.get(15);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
 
       Position stmtPos = info.getStmtPosition();
       assertEquals(90, stmtPos.getFirstLine());
@@ -401,7 +405,7 @@ public class PositionInfoTest {
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(30);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
 
     Position stmtPos = info.getStmtPosition();
     assertEquals(25, stmtPos.getFirstLine());
@@ -425,7 +429,7 @@ public class PositionInfoTest {
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(18);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
 
     Position stmtPos = info.getStmtPosition();
     assertEquals(21, stmtPos.getFirstLine());
@@ -458,7 +462,7 @@ public class PositionInfoTest {
 
     { // assignment: int a;
       Stmt stmt = stmts.get(1);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
 
       Position stmtPos = info.getStmtPosition();
       assertEquals(78, stmtPos.getFirstLine());
@@ -477,7 +481,7 @@ public class PositionInfoTest {
 
     { // assignment: int b = 2;
       Stmt stmt = stmts.get(2);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
 
       Position stmtPos = info.getStmtPosition();
       assertEquals(79, stmtPos.getFirstLine());
@@ -502,7 +506,7 @@ public class PositionInfoTest {
 
     { // unary: !
       Stmt stmt = stmts.get(20);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
 
       Position stmtPos = info.getStmtPosition();
       assertEquals(92, stmtPos.getFirstLine());
@@ -526,7 +530,7 @@ public class PositionInfoTest {
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(3);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
 
     Position stmtPos = info.getStmtPosition();
     assertEquals(106, stmtPos.getFirstLine());
@@ -551,7 +555,7 @@ public class PositionInfoTest {
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(2);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
 
     Position stmtPos = info.getStmtPosition();
     assertEquals(65, stmtPos.getFirstLine());
@@ -570,7 +574,7 @@ public class PositionInfoTest {
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(0);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     /*
     Position stmtPos = info.getStmtPosition();
     assertEquals(, stmtPos.getFirstLine());
@@ -593,7 +597,7 @@ public class PositionInfoTest {
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(0);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     /*
     Position stmtPos = info.getStmtPosition();
     assertEquals(, stmtPos.getFirstLine());
@@ -616,7 +620,7 @@ public class PositionInfoTest {
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(0);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     /*
     Position stmtPos = info.getStmtPosition();
     assertEquals(, stmtPos.getFirstLine());
@@ -639,7 +643,7 @@ public class PositionInfoTest {
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(0);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     /*
     Position stmtPos = info.getStmtPosition();
     assertEquals(, stmtPos.getFirstLine());
@@ -662,7 +666,7 @@ public class PositionInfoTest {
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(0);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     /*
     Position stmtPos = info.getStmtPosition();
     assertEquals(, stmtPos.getFirstLine());
@@ -685,7 +689,7 @@ public class PositionInfoTest {
 
     {
       Stmt stmt = stmts.get(9); // to 17
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
 
       Position stmtPos = info.getStmtPosition();
       assertEquals(133, stmtPos.getFirstLine());
@@ -714,7 +718,7 @@ public class PositionInfoTest {
 
     { // entermonitor
       Stmt stmt = stmts.get(2);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
 
       Position stmtPos = info.getStmtPosition();
       assertEquals(130, stmtPos.getFirstLine());
@@ -733,7 +737,7 @@ public class PositionInfoTest {
 
     { // exitmonitor
       Stmt stmt = stmts.get(4);
-      PositionInfo info = stmt.getPositionInfo();
+      StmtPositionInfo info = stmt.getPositionInfo();
 
       Position stmtPos = info.getStmtPosition();
       assertEquals(130, stmtPos.getFirstLine());
@@ -749,7 +753,7 @@ public class PositionInfoTest {
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
     Stmt stmt = stmts.get(4);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
 
     Position stmtPos = info.getStmtPosition();
     assertEquals(107, stmtPos.getFirstLine());
@@ -772,7 +776,7 @@ public class PositionInfoTest {
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(7);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
 
     assertEquals(111, stmtPos.getFirstLine());
@@ -794,7 +798,7 @@ public class PositionInfoTest {
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(11);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
 
     assertEquals(115, stmtPos.getFirstLine());
@@ -817,7 +821,7 @@ public class PositionInfoTest {
 
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
     Stmt stmt = stmts.get(8);
-    PositionInfo info = stmt.getPositionInfo();
+    StmtPositionInfo info = stmt.getPositionInfo();
     Position stmtPos = info.getStmtPosition();
 
     assertEquals(112, stmtPos.getFirstLine());

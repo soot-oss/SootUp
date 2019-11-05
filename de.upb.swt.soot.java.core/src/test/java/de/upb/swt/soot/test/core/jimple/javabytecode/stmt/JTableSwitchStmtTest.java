@@ -22,10 +22,12 @@
 
 package de.upb.swt.soot.test.core.jimple.javabytecode.stmt;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
@@ -41,7 +43,7 @@ public class JTableSwitchStmtTest {
 
   @Test
   public void test() {
-    PositionInfo nop = PositionInfo.createNoPositionInfo();
+    StmtPositionInfo nop = StmtPositionInfo.createNoStmtPositionInfo();
     ArrayList<Stmt> targets = new ArrayList<>();
     targets.add(new JReturnStmt(IntConstant.getInstance(1), nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(2), nop));

@@ -27,8 +27,8 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractSwitchStmt;
@@ -60,7 +60,7 @@ public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyab
       int highIndex,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     this(
         Jimple.newImmediateBox(key),
         lowIndex,
@@ -76,7 +76,7 @@ public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyab
       int highIndex,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     this(
         Jimple.newImmediateBox(key),
         lowIndex,
@@ -92,7 +92,7 @@ public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyab
       int highIndex,
       StmtBox[] targetBoxes,
       StmtBox defaultTargetBox,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     super(positionInfo, keyBox, defaultTargetBox, targetBoxes);
 
     if (lowIndex > highIndex) {
@@ -256,7 +256,7 @@ public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyab
   }
 
   @Nonnull
-  public JTableSwitchStmt withPositionInfo(PositionInfo positionInfo) {
+  public JTableSwitchStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JTableSwitchStmt(
         getKey(), lowIndex, highIndex, getTargets(), getDefaultTarget(), positionInfo);
   }

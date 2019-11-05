@@ -29,7 +29,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.jimple.IgnoreLocalNameComparator;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import org.junit.Test;
@@ -59,6 +59,7 @@ public class LocalTest {
     assertFalse(l2.equivTo(l3));
     assertFalse(l2.equivTo(l3, comparator));
 
-    assertFalse(l1.equivTo(new JBreakpointStmt(PositionInfo.createNoPositionInfo()), comparator));
+    assertFalse(
+        l1.equivTo(new JBreakpointStmt(StmtPositionInfo.createNoStmtPositionInfo()), comparator));
   }
 }

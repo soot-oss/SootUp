@@ -48,7 +48,7 @@ import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JStmtBox;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
 import de.upb.swt.soot.core.jimple.common.constant.ClassConstant;
@@ -838,7 +838,7 @@ public class InstructionConverter {
 
   private List<Stmt> convertBranchInstruction(
       DebuggingInformation debugInfo, SSAConditionalBranchInstruction condInst) {
-    PositionInfo posInfo =
+    StmtPositionInfo posInfo =
         WalaIRToJimpleConverter.convertPositionInfo(
             debugInfo.getInstructionPosition(condInst.iIndex()), null);
     List<Stmt> stmts = new ArrayList<>();
@@ -872,7 +872,7 @@ public class InstructionConverter {
     return stmts;
   }
 
-  private Value extractValueAndAddAssignStmt(PositionInfo posInfo, List<Stmt> addTo, int val) {
+  private Value extractValueAndAddAssignStmt(StmtPositionInfo posInfo, List<Stmt> addTo, int val) {
     Value value;
     Integer constant = null;
     if (symbolTable.isZero(val)) {
