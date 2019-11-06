@@ -46,8 +46,7 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
 
   @Override
   public boolean equals(Object c) {
-    return (c instanceof DoubleConstant
-        && Double.compare(((DoubleConstant) c).value, this.value) == 0);
+    return (c instanceof DoubleConstant && Double.compare(((DoubleConstant) c).value, value) == 0);
   }
 
   /** Returns a hash code for this DoubleConstant object. */
@@ -61,76 +60,76 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   @Nonnull
   @Override
   public DoubleConstant add(@Nonnull DoubleConstant c) {
-    return DoubleConstant.getInstance(this.value + c.value);
+    return DoubleConstant.getInstance(value + c.value);
   }
 
   @Nonnull
   @Override
   public DoubleConstant subtract(@Nonnull DoubleConstant c) {
-    return DoubleConstant.getInstance(this.value - c.value);
+    return DoubleConstant.getInstance(value - c.value);
   }
 
   @Nonnull
   @Override
   public DoubleConstant multiply(@Nonnull DoubleConstant c) {
-    return DoubleConstant.getInstance(this.value * c.value);
+    return DoubleConstant.getInstance(value * c.value);
   }
 
   @Nonnull
   @Override
   public DoubleConstant divide(@Nonnull DoubleConstant c) {
-    return DoubleConstant.getInstance(this.value / c.value);
+    return DoubleConstant.getInstance(value / c.value);
   }
 
   @Nonnull
   @Override
   public DoubleConstant remainder(@Nonnull DoubleConstant c) {
-    return DoubleConstant.getInstance(this.value % c.value);
+    return DoubleConstant.getInstance(value % c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant equalEqual(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) == 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) == 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant notEqual(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) != 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) != 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant lessThan(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) < 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) < 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant lessThanOrEqual(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) <= 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) <= 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant greaterThan(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) > 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) > 0);
   }
 
   @Nonnull
   @Override
   public BooleanConstant greaterThanOrEqual(@Nonnull DoubleConstant c) {
-    return BooleanConstant.getInstance(Double.compare(this.value, c.value) >= 0);
+    return BooleanConstant.getInstance(Double.compare(value, c.value) >= 0);
   }
 
   @Nonnull
   @Override
   public IntConstant cmpg(@Nonnull DoubleConstant constant) {
     final double cValue = constant.value;
-    if (this.value < cValue) {
+    if (value < cValue) {
       return IntConstant.getInstance(-1);
-    } else if (this.value == cValue) {
+    } else if (value == cValue) {
       return IntConstant.getInstance(0);
     } else {
       return IntConstant.getInstance(1);
@@ -141,9 +140,9 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   @Override
   public IntConstant cmpl(@Nonnull DoubleConstant constant) {
     final double cValue = constant.value;
-    if (this.value > cValue) {
+    if (value > cValue) {
       return IntConstant.getInstance(1);
-    } else if (this.value == cValue) {
+    } else if (value == cValue) {
       return IntConstant.getInstance(0);
     } else {
       return IntConstant.getInstance(-1);
@@ -153,7 +152,7 @@ public class DoubleConstant implements RealConstant<DoubleConstant> {
   @Nonnull
   @Override
   public DoubleConstant negate() {
-    return DoubleConstant.getInstance(-(this.value));
+    return DoubleConstant.getInstance(-(value));
   }
 
   @Override

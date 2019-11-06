@@ -63,6 +63,6 @@ public class NullConstant implements Constant {
 
   @Override
   public String toString() {
-    return this.getType().toString();
+    return getType().toString();
   }
 }

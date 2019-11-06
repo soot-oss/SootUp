@@ -27,8 +27,8 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
@@ -47,15 +47,15 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
 
   private final List<StmtBox> targetBoxes;
 
-  public JIfStmt(Value condition, Stmt target, PositionInfo positionInfo) {
+  public JIfStmt(Value condition, Stmt target, StmtPositionInfo positionInfo) {
     this(condition, Jimple.newStmtBox(target), positionInfo);
   }
 
-  public JIfStmt(Value condition, StmtBox target, PositionInfo positionInfo) {
+  public JIfStmt(Value condition, StmtBox target, StmtPositionInfo positionInfo) {
     this(Jimple.newConditionExprBox(condition), target, positionInfo);
   }
 
-  private JIfStmt(ValueBox conditionBox, StmtBox targetBox, PositionInfo positionInfo) {
+  private JIfStmt(ValueBox conditionBox, StmtBox targetBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.conditionBox = conditionBox;
     this.targetBox = targetBox;
@@ -156,7 +156,7 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JIfStmt withPositionInfo(PositionInfo positionInfo) {
+  public JIfStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JIfStmt(getCondition(), getTarget(), positionInfo);
   }
 

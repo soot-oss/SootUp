@@ -93,7 +93,7 @@ pipeline {
       }
       steps {
         script{
-          sootmodules = ['core','java.bytecode','java.sourcecode','callgraph'];
+          sootmodules = ['java.core','java.bytecode','java.sourcecode','callgraph'];
           sootmodules.each{ item ->
             sh "mkdir -p target/coverage-reports"
             unstash 'reports1'

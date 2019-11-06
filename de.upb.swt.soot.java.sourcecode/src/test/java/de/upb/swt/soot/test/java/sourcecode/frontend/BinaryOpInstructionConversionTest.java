@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
@@ -39,8 +38,9 @@ import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import java.util.Arrays;
 import java.util.Collections;
@@ -54,14 +54,14 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class BinaryOpInstructionConversionTest {
   private WalaClassLoader loader;
-  private DefaultIdentifierFactory identifierFactory;
+  private JavaIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir);
-    identifierFactory = DefaultIdentifierFactory.getInstance();
+    identifierFactory = JavaIdentifierFactory.getInstance();
     declareClassSig = identifierFactory.getClassType("BinaryOperations");
   }
 

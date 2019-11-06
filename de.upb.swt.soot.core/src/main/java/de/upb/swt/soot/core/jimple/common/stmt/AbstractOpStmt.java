@@ -25,7 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public abstract class AbstractOpStmt extends AbstractStmt {
 
   protected final ValueBox opBox;
 
-  protected AbstractOpStmt(ValueBox opBox, PositionInfo positionInfo) {
+  protected AbstractOpStmt(ValueBox opBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.opBox = opBox;
   }

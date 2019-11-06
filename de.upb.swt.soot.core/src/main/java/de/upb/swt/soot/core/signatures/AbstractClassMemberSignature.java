@@ -2,7 +2,7 @@ package de.upb.swt.soot.core.signatures;
 
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.model.SootClassMember;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import javax.annotation.Nonnull;
 
@@ -15,12 +15,12 @@ import javax.annotation.Nonnull;
 public abstract class AbstractClassMemberSignature implements Signature {
 
   /** The signature of the declaring class. */
-  @Nonnull private final JavaClassType declClassSignature;
+  @Nonnull private final ClassType declClassSignature;
 
   @Nonnull private final AbstractClassMemberSubSignature subSignature;
 
   public AbstractClassMemberSignature(
-      @Nonnull JavaClassType klass, @Nonnull AbstractClassMemberSubSignature subSignature) {
+      @Nonnull ClassType klass, @Nonnull AbstractClassMemberSubSignature subSignature) {
     this.declClassSignature = klass;
     this.subSignature = subSignature;
   }
@@ -55,7 +55,7 @@ public abstract class AbstractClassMemberSignature implements Signature {
 
   /** The signature of the declaring class. */
   @Nonnull
-  public JavaClassType getDeclClassType() {
+  public ClassType getDeclClassType() {
     return declClassSignature;
   }
 

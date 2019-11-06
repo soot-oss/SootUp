@@ -25,26 +25,21 @@
 
 package de.upb.swt.soot.core.jimple.common.constant;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.StringTools;
 
-@SuppressWarnings("serial")
 public class ClassConstant implements Constant {
   private final String value;
+  private final Type type;
 
-  private ClassConstant(String s) {
-    this.value = s;
-  }
-
-  /** Returns an instance of ClassConstant. */
-  public static ClassConstant getInstance(String value) {
-    if (value.contains(".")) {
+  public ClassConstant(String str, Type type) {
+    if (str.contains(".")) {
       throw new RuntimeException("ClassConstants must use class names separated by '/', not '.'!");
     }
-    return new ClassConstant(value);
+    this.value = str;
+    this.type = type;
   }
 
   // FIXME The following code is commented out due to incompatibility, but
@@ -140,7 +135,7 @@ public class ClassConstant implements Constant {
   // In this case, equals should be structural equality.
   @Override
   public boolean equals(Object c) {
-    return (c instanceof ClassConstant && ((ClassConstant) c).value.equals(this.value));
+    return (c instanceof ClassConstant && ((ClassConstant) c).value.equals(value));
   }
 
   /** Returns a hash code for this ClassConstant object. */
@@ -155,8 +150,7 @@ public class ClassConstant implements Constant {
 
   @Override
   public Type getType() {
-    // TODO: [JMP] Used cached instance
-    return DefaultIdentifierFactory.getInstance().getType("java.lang.Class");
+    return type;
   }
 
   @Override

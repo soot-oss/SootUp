@@ -32,7 +32,6 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.UnknownType;
 
-@SuppressWarnings("serial")
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
 
   AbstractFloatBinopExpr(Value op1, Value op2) {
@@ -49,16 +48,8 @@ public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
     Value op2 = getOp2();
     Type op1t = op1.getType();
     Type op2t = op2.getType();
-    if ((op1t.equals(PrimitiveType.getInt())
-            || op1t.equals(PrimitiveType.getByte())
-            || op1t.equals(PrimitiveType.getShort())
-            || op1t.equals(PrimitiveType.getChar())
-            || op1t.equals(PrimitiveType.getBoolean()))
-        && (op2t.equals(PrimitiveType.getInt())
-            || op2t.equals(PrimitiveType.getByte())
-            || op2t.equals(PrimitiveType.getShort())
-            || op2t.equals(PrimitiveType.getChar())
-            || op2t.equals(PrimitiveType.getBoolean()))) {
+
+    if (PrimitiveType.isIntLikeType(op1t) && PrimitiveType.isIntLikeType(op2t)) {
       return PrimitiveType.getInt();
     } else if (op1t.equals(PrimitiveType.getLong()) || op2t.equals(PrimitiveType.getLong())) {
       return PrimitiveType.getLong();

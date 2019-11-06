@@ -1,18 +1,20 @@
 package de.upb.swt.soot.java.bytecode.frontend;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,6 +26,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -42,9 +45,7 @@ class AsmClassSource extends ClassSource {
   }
 
   private static Set<SootField> resolveFields(
-      List<FieldNode> fieldNodes,
-      IdentifierFactory signatureFactory,
-      JavaClassType classSignature) {
+      List<FieldNode> fieldNodes, IdentifierFactory signatureFactory, ClassType classSignature) {
     // FIXME: add support for annotation
     return fieldNodes.stream()
         .map(
@@ -61,7 +62,7 @@ class AsmClassSource extends ClassSource {
   }
 
   private static Stream<SootMethod> resolveMethods(
-      List<MethodNode> methodNodes, IdentifierFactory signatureFactory, JavaClassType cs) {
+      List<MethodNode> methodNodes, IdentifierFactory signatureFactory, ClassType cs) {
     return methodNodes.stream()
         .map(
             methodSource -> {
@@ -72,7 +73,7 @@ class AsmClassSource extends ClassSource {
               AsmMethodSource asmClassClassSourceContent = (AsmMethodSource) methodSource;
               asmClassClassSourceContent.setDeclaringClass(cs);
 
-              List<JavaClassType> exceptions = new ArrayList<>();
+              List<ClassType> exceptions = new ArrayList<>();
               Iterable<JavaClassType> exceptionsSignatures =
                   AsmUtil.asmIdToSignature(methodSource.exceptions);
 
@@ -98,14 +99,14 @@ class AsmClassSource extends ClassSource {
 
   @Nonnull
   public Collection<SootMethod> resolveMethods() throws ResolveException {
-    IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveMethods(classNode.methods, identifierFactory, classSignature)
         .collect(Collectors.toSet());
   }
 
   @Nonnull
   public Collection<SootField> resolveFields() throws ResolveException {
-    IdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+    IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
     return resolveFields(classNode.fields, identifierFactory, classSignature);
   }
 
@@ -116,23 +117,26 @@ class AsmClassSource extends ClassSource {
   }
 
   @Nonnull
-  public Set<JavaClassType> resolveInterfaces() {
+  public Set<ClassType> resolveInterfaces() {
     return new HashSet<>(AsmUtil.asmIdToSignature(classNode.interfaces));
   }
 
   @Nonnull
-  public Optional<JavaClassType> resolveSuperclass() {
+  public Optional<ClassType> resolveSuperclass() {
+    if (classNode.superName == null) {
+      return Optional.empty();
+    }
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.superName));
   }
 
   @Nonnull
-  public Optional<JavaClassType> resolveOuterClass() {
+  public Optional<ClassType> resolveOuterClass() {
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
   }
 
+  @NonNull
   public Position resolvePosition() {
-    // FIXME: what is this??? the source code line number of the complete file?
-    return null;
+    return NoPositionInformation.getInstance();
   }
 
   @Override

@@ -9,8 +9,14 @@ import de.upb.swt.soot.core.model.Position;
  */
 public class NoPositionInformation extends Position {
 
-  public NoPositionInformation() {
+  private static final NoPositionInformation INSTANCE = new NoPositionInformation();
+
+  private NoPositionInformation() {
     super(-1, -1, -1, -1);
+  }
+
+  public static NoPositionInformation getInstance() {
+    return INSTANCE;
   }
 
   @Override

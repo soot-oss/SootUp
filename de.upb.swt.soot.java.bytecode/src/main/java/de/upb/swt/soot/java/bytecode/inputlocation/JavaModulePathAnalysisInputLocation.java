@@ -2,7 +2,6 @@ package de.upb.swt.soot.java.bytecode.inputlocation;
 
 import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ClassSource;
@@ -14,13 +13,11 @@ import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.signatures.ModulePackageName;
 import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.ReferenceType;
-import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
+import de.upb.swt.soot.java.core.signatures.ModulePackageName;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -90,7 +87,7 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull ReferenceType classType) {
+      @Nonnull ClassType classType) {
     JavaClassType klassType = (JavaClassType) classType;
     String modulename =
         ((ModulePackageName) klassType.getPackageName()).getModuleSignature().getModuleName();
@@ -122,13 +119,12 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     }
 
     @Override
-    public @Nonnull JavaClassType getClassType(
-        @Nonnull String className, @Nonnull String packageName) {
+    public @Nonnull ClassType getClassType(@Nonnull String className, @Nonnull String packageName) {
       return factory.getClassType(className, packageName);
     }
 
     @Override
-    public @Nonnull JavaClassType getClassType(@Nonnull String fullyQualifiedClassName) {
+    public @Nonnull ClassType getClassType(@Nonnull String fullyQualifiedClassName) {
       return factory.getClassType(fullyQualifiedClassName);
     }
 
@@ -148,7 +144,7 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     }
 
     @Override
-    public @Nonnull JavaClassType fromPath(@Nonnull Path file) {
+    public @Nonnull ClassType fromPath(@Nonnull Path file) {
       if (factory instanceof ModuleIdentifierFactory) {
         ModuleIdentifierFactory moduleSignatureFactory = (ModuleIdentifierFactory) factory;
         String fullyQualifiedName =
@@ -183,7 +179,7 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     @Override
     public MethodSignature getMethodSignature(
         String methodName,
-        JavaClassType declaringClassSignature,
+        ClassType declaringClassSignature,
         String fqReturnType,
         List<String> parameters) {
       return factory.getMethodSignature(
@@ -193,7 +189,7 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     @Override
     public MethodSignature getMethodSignature(
         String methodName,
-        JavaClassType declaringClassSignature,
+        ClassType declaringClassSignature,
         Type fqReturnType,
         List<Type> parameters) {
       return factory.getMethodSignature(
@@ -210,7 +206,7 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
     @Override
     @Nonnull
     public MethodSignature getMethodSignature(
-        @Nonnull JavaClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature) {
+        @Nonnull ClassType declaringClassSignature, @Nonnull MethodSubSignature subSignature) {
       return factory.getMethodSignature(declaringClassSignature, subSignature);
     }
 
@@ -243,20 +239,20 @@ public class JavaModulePathAnalysisInputLocation extends AbstractAnalysisInputLo
 
     @Override
     public FieldSignature getFieldSignature(
-        String fieldName, JavaClassType declaringClassSignature, String fieldType) {
+        String fieldName, ClassType declaringClassSignature, String fieldType) {
       return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
     }
 
     @Override
     public FieldSignature getFieldSignature(
-        String fieldName, JavaClassType declaringClassSignature, Type fieldType) {
+        String fieldName, ClassType declaringClassSignature, Type fieldType) {
       return factory.getFieldSignature(fieldName, declaringClassSignature, fieldType);
     }
 
     @Override
     @Nonnull
     public FieldSignature getFieldSignature(
-        @Nonnull JavaClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature) {
+        @Nonnull ClassType declaringClassSignature, @Nonnull FieldSubSignature subSignature) {
       return factory.getFieldSignature(declaringClassSignature, subSignature);
     }
 

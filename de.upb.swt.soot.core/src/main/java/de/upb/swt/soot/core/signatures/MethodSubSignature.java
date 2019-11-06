@@ -3,7 +3,7 @@ package de.upb.swt.soot.core.signatures;
 import com.google.common.base.Objects;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.util.List;
 import java.util.function.Supplier;
@@ -91,7 +91,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
 
   @Override
   @Nonnull
-  public MethodSignature toFullSignature(@Nonnull JavaClassType declClassSignature) {
+  public MethodSignature toFullSignature(@Nonnull ClassType declClassSignature) {
     return new MethodSignature(declClassSignature, this);
   }
 

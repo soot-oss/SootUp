@@ -1,8 +1,8 @@
 package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.basic.EquivTo;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
@@ -140,7 +140,7 @@ public abstract class Stmt implements EquivTo, Acceptor, Copyable {
     throw new RuntimeException("getFieldRefBox() called with no JFieldRef present!");
   }
 
-  public abstract PositionInfo getPositionInfo();
+  public abstract StmtPositionInfo getPositionInfo();
 
   /** This class is for internal use only. It will be removed in the future. */
   @Deprecated

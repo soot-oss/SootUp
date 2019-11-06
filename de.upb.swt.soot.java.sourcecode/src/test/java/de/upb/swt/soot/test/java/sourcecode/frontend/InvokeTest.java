@@ -5,10 +5,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,14 +26,14 @@ import org.junit.experimental.categories.Category;
 public class InvokeTest {
   private WalaClassLoader loader;
 
-  private DefaultIdentifierFactory identifierFactory;
+  private JavaIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
     loader = new WalaClassLoader(srcDir);
-    identifierFactory = DefaultIdentifierFactory.getInstance();
+    identifierFactory = JavaIdentifierFactory.getInstance();
   }
 
   @Test
@@ -184,7 +184,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "repro1", declareClassSig, "void", Arrays.asList("java.lang.Object")));
+                "repro1", declareClassSig, "void", Collections.singletonList("java.lang.Object")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 
@@ -211,7 +211,7 @@ public class InvokeTest {
         WalaClassLoaderTestUtils.getSootMethod(
             loader,
             identifierFactory.getMethodSignature(
-                "repro2", declareClassSig, "void", Arrays.asList("java.lang.Object")));
+                "repro2", declareClassSig, "void", Collections.singletonList("java.lang.Object")));
     assertTrue(m.isPresent());
     SootMethod method = m.get();
 

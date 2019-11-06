@@ -1,10 +1,8 @@
 package de.upb.swt.soot.core.views;
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.Options;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.Scope;
-import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -16,15 +14,13 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  */
-public abstract class AbstractView<S extends AnalysisInputLocation> implements View {
+public abstract class AbstractView implements View {
 
-  @Nonnull private final Project<S> project;
-
-  @Nonnull private final Options options = new Options();
+  @Nonnull private final Project project;
 
   @Nonnull private final Map<ModuleDataKey<?>, Object> moduleData = new HashMap<>();
 
-  public AbstractView(@Nonnull Project<S> project) {
+  public AbstractView(@Nonnull Project project) {
     this.project = project;
   }
 
@@ -41,14 +37,8 @@ public abstract class AbstractView<S extends AnalysisInputLocation> implements V
     return null;
   }
 
-  @Override
   @Nonnull
-  public Options getOptions() {
-    return this.options;
-  }
-
-  @Nonnull
-  public Project<S> getProject() {
+  public Project getProject() {
     return project;
   }
 
