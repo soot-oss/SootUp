@@ -39,6 +39,7 @@ import javax.annotation.Nonnull;
  * valid typing at all, we must break apart the uses of "a".
  *
  * @author Steven Arzt
+ * @author Christian Brüggemann
  */
 public class CastAndReturnInliner implements BodyInterceptor {
 
