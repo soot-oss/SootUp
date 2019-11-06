@@ -51,7 +51,7 @@ public class ModuleCompositionTest {
 
     // Create a project
     Project p =
-        JavaProject.builder(new JavaLanguage(9))
+        JavaProject.builder(new JavaLanguage(8))
             .addClassPath(new JavaClassPathAnalysisInputLocation(jarFile))
             .build();
 
