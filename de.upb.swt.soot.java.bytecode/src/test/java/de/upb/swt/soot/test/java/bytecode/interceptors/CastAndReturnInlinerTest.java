@@ -24,6 +24,25 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class CastAndReturnInlinerTest {
 
+  /**
+   * Tests the transformation from
+   *
+   * <pre>
+   * a = "str";
+   * goto l0;
+   * l0: b = (String) a;
+   * return b;
+   * </pre>
+   *
+   * to
+   *
+   * <pre>
+   * a = "str";
+   * return a; // This has changed
+   * l0: b = (String) a;
+   * return b;
+   * </pre>
+   */
   @Test
   public void testModification() {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
@@ -53,6 +72,17 @@ public class CastAndReturnInlinerTest {
         processedBody.getStmts());
   }
 
+  /**
+   * Tests that the following body is not modified, as it is not eligible for inlining: *
+   *
+   * <pre>
+   * a = "str";
+   * c = "str2";
+   * goto l0;
+   * l0: b = (String) a;
+   * return c; // Note that this does not return b
+   * </pre>
+   */
   @Test
   public void testNoModification() {
     JavaIdentifierFactory factory = JavaIdentifierFactory.getInstance();
@@ -66,6 +96,7 @@ public class CastAndReturnInlinerTest {
     Local c = JavaJimple.newLocal("c", stringType);
 
     Stmt strToA = JavaJimple.newAssignStmt(a, javaJimple.newStringConstant("str"), noPositionInfo);
+    Stmt strToC = JavaJimple.newAssignStmt(c, javaJimple.newStringConstant("str2"), noPositionInfo);
     Stmt bToA = JavaJimple.newAssignStmt(b, JavaJimple.newCastExpr(a, stringType), noPositionInfo);
     // Note this returns c, not b, hence the cast and return must not be inlined
     Stmt ret = JavaJimple.newReturnStmt(c, noPositionInfo);
@@ -73,7 +104,7 @@ public class CastAndReturnInlinerTest {
 
     Set<Local> locals = ImmutableUtils.immutableSet(a, b);
     List<Trap> traps = Collections.emptyList();
-    List<Stmt> stmts = ImmutableUtils.immutableList(strToA, jump, bToA, ret);
+    List<Stmt> stmts = ImmutableUtils.immutableList(strToA, strToC, jump, bToA, ret);
     Body testBody = new Body(locals, traps, stmts, null);
 
     Body processedBody = new CastAndReturnInliner().interceptBody(testBody);
