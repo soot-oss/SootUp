@@ -103,7 +103,7 @@ public class JavaView extends AbstractView {
   private volatile boolean isFullyResolved = false;
 
   @Nonnull
-  private final Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier;
+  protected Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier;
 
   /** Creates a new instance of the {@link JavaView} class. */
   public JavaView(@Nonnull Project project) {

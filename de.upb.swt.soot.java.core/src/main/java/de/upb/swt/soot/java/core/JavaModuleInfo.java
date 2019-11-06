@@ -1,4 +1,4 @@
-package de.upb.swt.soot.java.bytecode.frontend.modules;
+package de.upb.swt.soot.java.core;
 
 import com.google.common.base.Suppliers;
 import de.upb.swt.soot.core.frontend.ClassSource;
@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
-public class JavaModuleInfo extends AbstractClass<AsmModuleClassSource> {
+public class JavaModuleInfo extends AbstractClass<AbstractModuleClassSource> {
 
   @Nonnull private final ClassType classSignature;
   // FIXME: how to create automatic modules
@@ -28,7 +28,7 @@ public class JavaModuleInfo extends AbstractClass<AsmModuleClassSource> {
   // FIXME: or module Signature?
   private String moduleName;
 
-  public JavaModuleInfo(AsmModuleClassSource classSource, boolean isAutomaticModule) {
+  public JavaModuleInfo(AbstractModuleClassSource classSource, boolean isAutomaticModule) {
     super(classSource);
     this.classSignature = classSource.getClassType();
     this.isAutomaticModule = isAutomaticModule;
@@ -89,7 +89,7 @@ public class JavaModuleInfo extends AbstractClass<AsmModuleClassSource> {
   private final Supplier<Set<JavaClassType>> _lazyProvidedServices =
       Suppliers.memoize(this::lazyProvidesInitializer);
 
-  private AsmModuleClassSource getModuleClassSourceContent() throws ResolveException {
+  private AbstractModuleClassSource getModuleClassSourceContent() throws ResolveException {
     if (this.classSource == null) {
       throw new ResolveException("Module classSource is null");
     }
