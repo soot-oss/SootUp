@@ -14,6 +14,7 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
+import de.upb.swt.soot.core.frontend.*;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
@@ -63,7 +64,7 @@ import javax.annotation.Nullable;
  */
 public class WalaIRToJimpleConverter {
 
-  protected final JavaIdentifierFactory identifierFactory;
+  final JavaIdentifierFactory identifierFactory;
   private final AnalysisInputLocation srcNamespace;
   private final HashMap<String, Integer> clsWithInnerCls;
   private final HashMap<String, String> walaToSootNameTable;

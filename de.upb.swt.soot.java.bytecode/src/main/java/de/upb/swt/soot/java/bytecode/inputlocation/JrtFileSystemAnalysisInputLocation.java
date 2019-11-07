@@ -4,12 +4,14 @@ import com.google.common.base.Preconditions;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.FileType;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
+import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.core.ModuleIdentifierFactory;
 import de.upb.swt.soot.java.core.signatures.ModulePackageName;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -32,26 +34,25 @@ import javax.annotation.Nonnull;
  *
  * @author Andreas Dann created on 06.06.18
  */
-public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLocation {
+public class JrtFileSystemAnalysisInputLocation implements BytecodeAnalysisInputLocation {
 
   private final FileSystem theFileSystem = FileSystems.getFileSystem(URI.create("jrt:/"));
 
-  public JrtFileSystemAnalysisInputLocation(@Nonnull ClassProvider classProvider) {
-    super(classProvider);
-  }
-
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull ClassType classType) {
+      @Nonnull ClassType classType, @Nonnull ClassLoadingOptions classLoadingOptions) {
     JavaClassType klassType = (JavaClassType) classType;
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
     if (klassType.getPackageName() instanceof ModulePackageName) {
-      return this.getClassSourceInternalForModule(klassType);
+      return this.getClassSourceInternalForModule(
+          klassType, new AsmJavaClassProvider(bodyInterceptors));
     }
-    return this.getClassSourceInternalForClassPath(klassType);
+    return this.getClassSourceInternalForClassPath(
+        klassType, new AsmJavaClassProvider(bodyInterceptors));
   }
 
   private @Nonnull Optional<AbstractClassSource> getClassSourceInternalForClassPath(
-      @Nonnull JavaClassType classSignature) {
+      @Nonnull JavaClassType classSignature, @Nonnull ClassProvider classProvider) {
 
     Path filepath = classSignature.toPath(classProvider.getHandledFileType(), theFileSystem);
     final Path moduleRoot = theFileSystem.getPath("modules");
@@ -73,7 +74,7 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
   }
 
   private @Nonnull Optional<? extends AbstractClassSource> getClassSourceInternalForModule(
-      @Nonnull JavaClassType classSignature) {
+      @Nonnull JavaClassType classSignature, @Nonnull ClassProvider classProvider) {
     Preconditions.checkArgument(classSignature.getPackageName() instanceof ModulePackageName);
 
     ModulePackageName modulePackageSignature = (ModulePackageName) classSignature.getPackageName();
@@ -95,14 +96,19 @@ public class JrtFileSystemAnalysisInputLocation extends AbstractAnalysisInputLoc
   // get the factory, which I should use the create the correspond class signatures
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
+    List<BodyInterceptor> bodyInterceptors = classLoadingOptions.getBodyInterceptors();
 
     final Path archiveRoot = theFileSystem.getPath("modules");
-    return walkDirectory(archiveRoot, identifierFactory);
+    return walkDirectory(
+        archiveRoot, identifierFactory, new AsmJavaClassProvider(bodyInterceptors));
   }
 
   protected @Nonnull Collection<? extends AbstractClassSource> walkDirectory(
-      @Nonnull Path dirPath, @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull Path dirPath,
+      @Nonnull IdentifierFactory identifierFactory,
+      ClassProvider classProvider) {
 
     final FileType handledFileType = classProvider.getHandledFileType();
     try {
