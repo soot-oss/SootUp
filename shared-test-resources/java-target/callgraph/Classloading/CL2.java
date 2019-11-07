@@ -13,7 +13,7 @@ import java.util.Comparator;
 
 public class CL2 {
 
-    private static final String DIR = System.getProperty("user.dir") + "/resources/";
+    private static final String DIR = System.getProperty("user.dir") + "/shared-test-resources/java-target/callgraph/Classloading/";
     private static URL CLv2;
 
     static {

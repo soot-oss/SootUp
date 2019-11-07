@@ -15,8 +15,7 @@ import java.util.Comparator;
 
 public class CL3 {
 
-    //private static final String DIR = System.getProperty("user.dir") + "/resources/";
-    private static final String DIR = "/Users/mreif/Programming/git/jcg/infrastructure_incompatible_testcases/CL3/src/resources/";
+    private static final String DIR = System.getProperty("user.dir") + "/shared-test-resources/java-target/callgraph/Classloading/";
     private static URL CLv1;
     private static URL CLv2;
     private static final String CLS_NAME = "lib.IntComparator";
