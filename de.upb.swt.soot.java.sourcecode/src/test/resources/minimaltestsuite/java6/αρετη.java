@@ -1,7 +1,7 @@
 
 public class αρετη {
 
-    public void αρετηAsClassName(){
+    public void symbolAsClassName(){
         System.out.println("this is αρετη class");
     }
 }
