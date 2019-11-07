@@ -1,5 +1,6 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.ArrayList;
@@ -14,14 +15,20 @@ public class ThrowExceptionMethodTest extends MinimalTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "divideByZero", getDeclaredClassSignature(), "void", Collections.emptyList());
-  } // How to check for exceptions in method signature
+  }
 
   @Override
   public void defaultTest() {
     super.defaultTest();
-    loadMethod(expectedBodyStmts1(), getMethodSignature1());
-    loadMethod(expectedBodyStmts2(), getMethodSignature2());
-    /** TODO Checking methods' signatures for exceptions */
+    SootMethod method = loadMethod(getMethodSignature1());
+    assertJimpleStmts(method, expectedBodyStmts1());
+    method = loadMethod(getMethodSignature2());
+    assertJimpleStmts(method, expectedBodyStmts2());
+
+    // TODO: [KK] Checking methods' signatures for exceptions
+    // How to check for exceptions in method signature
+    // [ms]: method.getExceptionSignatures()
+
   }
 
   @Override

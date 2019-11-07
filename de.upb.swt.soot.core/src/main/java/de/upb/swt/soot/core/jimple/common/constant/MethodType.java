@@ -1,6 +1,5 @@
 package de.upb.swt.soot.core.jimple.common.constant;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
@@ -11,22 +10,20 @@ import javax.annotation.Nonnull;
 
 public class MethodType implements Constant, Copyable {
 
-  // FIXME: adapt this class
+  // FIXME: [AD] adapt this class
   private final Type returnType;
   private final List<Type> parameterTypes;
+  private final Type type;
 
-  private MethodType(List<Type> parameterTypes, Type returnType) {
+  public MethodType(List<Type> parameterTypes, Type returnType, Type type) {
     this.returnType = returnType;
     this.parameterTypes = Collections.unmodifiableList(parameterTypes);
-  }
-
-  public static MethodType getInstance(List<Type> paramaterTypes, Type returnType) {
-    return new MethodType(paramaterTypes, returnType);
+    this.type = type;
   }
 
   @Override
   public Type getType() {
-    return DefaultIdentifierFactory.getInstance().getClassType("java.lang.invoke.MethodType");
+    return type;
   }
 
   public List<Type> getParameterTypes() {
@@ -63,11 +60,11 @@ public class MethodType implements Constant, Copyable {
 
   @Nonnull
   public MethodType withParameterTypes(List<Type> parameterTypes) {
-    return new MethodType(parameterTypes, returnType);
+    return new MethodType(parameterTypes, returnType, type);
   }
 
   @Nonnull
   public MethodType withReturnType(Type returnType) {
-    return new MethodType(parameterTypes, returnType);
+    return new MethodType(parameterTypes, returnType, type);
   }
 }

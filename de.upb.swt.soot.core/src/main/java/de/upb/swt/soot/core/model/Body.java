@@ -272,40 +272,6 @@ public final class Body implements Copyable {
     return this.position;
   }
 
-  // FIXME "This code does not work and has to be adapted in future features."
-  //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r267259693
-  //
-  //  /**
-  //   * Make sure that the JimpleBody is well formed. If not, throw an exception. Right now,
-  // performs only a handful of checks.
-  //   */
-  //  public void validate() {
-  //    final List<ValidationException> exceptionList = new ArrayList<>();
-  //    validate(exceptionList);
-  //    if (!exceptionList.isEmpty()) {
-  //      throw exceptionList.get(0);
-  //    }
-  //  }
-
-  //  /**
-  //   * Validates the jimple body and saves a list of all validation errors
-  //   *
-  //   * @param exceptionList
-  //   *          the list of validation errors
-  //   */
-  //  public void validate(List<ValidationException> exceptionList) {
-  //    validate(exceptionList);
-  //    final boolean runAllValidators
-  //        = this.method.getView().getOptions().debug() ||
-  // this.method.getView().getOptions().validate();
-  //    for (BodyValidator validator : validators) {
-  //      if (!validator.isBasicValidator() && !runAllValidators) {
-  //        continue;
-  //      }
-  //      validator.validate(this, exceptionList);
-  //    }
-  //  }
-
   public void validateIdentityStatements() {
     runValidation(new IdentityStatementsValidator());
   }

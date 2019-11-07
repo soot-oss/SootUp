@@ -2,6 +2,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.*;
@@ -14,7 +15,9 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
   @Test
   public void defaultTest() {
 
-    loadMethod(
+    SootMethod method = loadMethod(getMethodSignature("relationalOpEqual"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BooleanOperators",
             "$i0 = 0",
@@ -30,10 +33,11 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
             "label2:",
             "goto label1",
             "label3:",
-            "return"),
-        getMethodSignature("relationalOpEqual"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("relationalOpNotEqual"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BooleanOperators",
             "$i0 = 0",
@@ -51,10 +55,11 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
             "label2:",
             "goto label1",
             "label3:",
-            "return"),
-        getMethodSignature("relationalOpNotEqual"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("complementOp"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
@@ -63,10 +68,11 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
             "$z0 = $z1",
             "goto label1",
             "label1:",
-            "return"),
-        getMethodSignature("complementOp"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("logicalOpAnd"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
@@ -102,10 +108,12 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
             "$r1 = \"D\"",
             "goto label4",
             "label4:",
-            "return"),
-        getMethodSignature("logicalOpAnd"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("logicalOpOr"));
+
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
@@ -141,10 +149,11 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
             "$r1 = \"D\"",
             "goto label4",
             "label4:",
-            "return"),
-        getMethodSignature("logicalOpOr"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("logicalOpXor"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
@@ -180,10 +189,11 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
             "$r1 = \"D\"",
             "goto label4",
             "label4:",
-            "return"),
-        getMethodSignature("logicalOpXor"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("ConditionalOpAnd"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
@@ -231,10 +241,10 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
             "$r1 = \"D\"",
             "goto label12",
             "label12:",
-            "return"),
-        getMethodSignature("ConditionalOpAnd"));
-
-    loadMethod(
+            "return"));
+    method = loadMethod(getMethodSignature("conditionalOpOr"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BooleanOperators",
             "$z0 = 1",
@@ -282,10 +292,10 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
             "$r1 = \"D\"",
             "goto label12",
             "label12:",
-            "return"),
-        getMethodSignature("conditionalOpOr"));
-
-    loadMethod(
+            "return"));
+    method = loadMethod(getMethodSignature("conditionalOp"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: BooleanOperators",
             "$i0 = 5",
@@ -298,8 +308,7 @@ public class BooleanOperatorsTest extends MinimalTestSuiteBase {
             "$r2 = \"i greater than 10\"",
             "label2:",
             "$r1 = $r2",
-            "return"),
-        getMethodSignature("conditionalOp"));
+            "return"));
   }
 
   public MethodSignature getMethodSignature(String methodName) {

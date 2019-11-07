@@ -1,7 +1,7 @@
 package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Arrays;
@@ -34,10 +34,9 @@ import java.util.List;
  */
 
 /** Partial implementation of trap (exception catcher), used within Body classes. */
-@SuppressWarnings("serial")
 public class AbstractTrap implements Trap {
   /** The exception being caught. */
-  private transient JavaClassType exception;
+  private transient ClassType exception;
 
   /** The first unit being trapped. */
   private final StmtBox beginStmtBox;
@@ -58,7 +57,7 @@ public class AbstractTrap implements Trap {
 
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
   AbstractTrap(
-      JavaClassType exception, StmtBox beginStmtBox, StmtBox endStmtBox, StmtBox handlerStmtBox) {
+      ClassType exception, StmtBox beginStmtBox, StmtBox endStmtBox, StmtBox handlerStmtBox) {
     this.exception = exception;
     this.beginStmtBox = beginStmtBox;
     this.endStmtBox = endStmtBox;
@@ -100,7 +99,7 @@ public class AbstractTrap implements Trap {
   }
 
   @Override
-  public JavaClassType getException() {
+  public ClassType getException() {
     return exception;
   }
 }

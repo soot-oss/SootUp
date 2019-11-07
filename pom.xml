@@ -14,6 +14,7 @@
   <modules>
     <!-- !!! When adding a module here, it's important to also add it to the sootmodules of the Jenkinsfile !!! -->
     <module>de.upb.swt.soot.core</module>
+    <module>de.upb.swt.soot.java.core</module>
     <module>de.upb.swt.soot.java.bytecode</module>
     <module>de.upb.swt.soot.java.sourcecode</module>
     <module>de.upb.swt.soot.tests</module>

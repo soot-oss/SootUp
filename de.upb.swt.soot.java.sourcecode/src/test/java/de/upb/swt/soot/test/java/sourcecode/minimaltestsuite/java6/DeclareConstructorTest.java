@@ -1,5 +1,6 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.ArrayList;
@@ -25,8 +26,10 @@ public class DeclareConstructorTest extends MinimalTestSuiteBase {
   @Test
   @Override
   public void defaultTest() {
-    loadMethod(expectedBodyStmts(), getMethodSignatureInitOneParam());
-    loadMethod(expectedBodyStmts1(), getMethodSignatureInitTwoParam());
+    SootMethod method = loadMethod(getMethodSignatureInitOneParam());
+    assertJimpleStmts(method, expectedBodyStmts());
+    method = loadMethod(getMethodSignatureInitTwoParam());
+    assertJimpleStmts(method, expectedBodyStmts1());
   }
 
   @Override

@@ -24,7 +24,6 @@ package de.upb.swt.soot.core.model;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.util.builder.BuilderException;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -124,20 +123,11 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
    */
   protected static class SootFieldBuilder extends SootClassMemberBuilder<FieldSignature, SootField>
       implements Builder.SignatureStep, Builder.ModifiersStep, Builder {
-    // region Fields
-
-    // endregion /Fields/
-
-    // region Constructor
 
     /** Creates a new instance of the {@link SootMethod.SootMethodBuilder} class. */
     SootFieldBuilder() {
       super(SootField.class);
     }
-
-    // endregion /Constructor/
-
-    // region Properties
 
     @Nullable private FieldSignature _signature;
 
@@ -187,16 +177,10 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
       return this;
     }
 
-    // endregion /Properties/
-
-    // region Methods
-
     @Override
     @Nonnull
-    protected SootField make() {
+    public SootField build() {
       return new SootField(this.getSignature(), this.getModifiers());
     }
-
-    // endregion /Methods/
   }
 }

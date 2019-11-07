@@ -4,9 +4,9 @@ import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.types.ReferenceType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.modules.AsmModuleClassSource;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
 import org.objectweb.asm.MethodVisitor;
@@ -18,7 +18,7 @@ public class AsmJavaClassProvider implements ClassProvider {
 
   @Override
   public AbstractClassSource createClassSource(
-      AnalysisInputLocation srcNamespace, Path sourcePath, ReferenceType classType) {
+      AnalysisInputLocation srcNamespace, Path sourcePath, ClassType classType) {
     SootClassNode classNode = new SootClassNode();
 
     AsmUtil.initAsmClassSource(sourcePath, classNode);

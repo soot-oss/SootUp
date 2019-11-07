@@ -3,14 +3,15 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
 import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
@@ -33,7 +34,7 @@ import org.junit.runner.Description;
 public abstract class MinimalTestSuiteBase {
 
   static final String baseDir = "src/test/resources/minimaltestsuite/";
-  protected DefaultIdentifierFactory identifierFactory = DefaultIdentifierFactory.getInstance();
+  protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
   @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
 
@@ -113,24 +114,23 @@ public abstract class MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    loadMethod(expectedBodyStmts(), getMethodSignature());
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
   }
 
-  public SootClass loadClass(JavaClassType clazz) {
+  public SootClass loadClass(ClassType clazz) {
     Optional<ClassSource> cs = customTestWatcher.getLoader().getClassSource(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
     ClassSource classSource = cs.get();
     return new SootClass(classSource, SourceType.Application);
   }
 
-  public SootMethod loadMethod(List<String> expectedStmts, MethodSignature methodSignature) {
+  public SootMethod loadMethod(MethodSignature methodSignature) {
     Optional<SootMethod> m =
         WalaClassLoaderTestUtils.getSootMethod(customTestWatcher.getLoader(), methodSignature);
 
     assertTrue("No matching method signature found", m.isPresent());
     SootMethod method = m.get();
-    Utils.print(method, false);
-    assertJimpleStmts(method, expectedStmts);
     return method;
   }
 
@@ -139,7 +139,6 @@ public abstract class MinimalTestSuiteBase {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-
     assertEquals(expectedStmts, actualStmts);
   }
 

@@ -30,8 +30,10 @@ public class StaticMethodInterfaceImplTest extends MinimalTestSuiteBase {
   @Test
   @Override
   public void defaultTest() {
-    loadMethod(expectedBodyStmts1(), getStaticMethodSignature());
-    SootMethod staticMethod = loadMethod(expectedBodyStmts1(), getStaticMethodSignature());
+    SootMethod method = loadMethod(getStaticMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts1());
+    SootMethod staticMethod = loadMethod(getStaticMethodSignature());
+    assertJimpleStmts(staticMethod, expectedBodyStmts1());
     assertTrue(staticMethod.isStatic() && staticMethod.getName().equals("initStatic"));
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(

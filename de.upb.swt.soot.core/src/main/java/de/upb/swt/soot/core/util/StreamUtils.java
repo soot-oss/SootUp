@@ -57,7 +57,6 @@ public class StreamUtils {
    * @param clazz The class to cast to.
    * @param <C> The type of the casted object.
    * @return The specified <i>stream</i>.
-   * @see FunctionalUtils#tryCastTo(Class)
    */
   @Nonnull
   public static <C> Stream<C> filterAllCasted(@Nonnull Stream<?> stream, @Nonnull Class<C> clazz) {

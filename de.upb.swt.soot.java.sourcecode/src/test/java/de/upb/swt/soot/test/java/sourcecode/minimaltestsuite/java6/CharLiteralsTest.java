@@ -2,6 +2,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.Collections;
@@ -13,33 +14,28 @@ public class CharLiteralsTest extends MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    loadMethod(
-        expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 97", "return"),
-        getMethodSignature("charCharacter"));
+    SootMethod method = loadMethod(getMethodSignature("charCharacter"));
+    assertJimpleStmts(method, expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 97", "return"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 37", "return"),
-        getMethodSignature("charSymbol"));
+    method = loadMethod(getMethodSignature("charSymbol"));
+    assertJimpleStmts(method, expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 37", "return"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 9", "return"),
-        getMethodSignature("charBackslashT"));
+    method = loadMethod(getMethodSignature("charBackslashT"));
+    assertJimpleStmts(method, expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 9", "return"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 92", "return"),
-        getMethodSignature("charBackslash"));
+    method = loadMethod(getMethodSignature("charBackslash"));
+    assertJimpleStmts(method, expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 92", "return"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 39", "return"),
-        getMethodSignature("charSingleQuote"));
+    method = loadMethod(getMethodSignature("charSingleQuote"));
+    assertJimpleStmts(method, expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 39", "return"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 937", "return"),
-        getMethodSignature("charUnicode"));
+    method = loadMethod(getMethodSignature("charUnicode"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 937", "return"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 8482", "return"),
-        getMethodSignature("specialChar"));
+    method = loadMethod(getMethodSignature("specialChar"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: CharLiterals", "$i0 = 8482", "return"));
   }
 
   public MethodSignature getMethodSignature(String methodName) {

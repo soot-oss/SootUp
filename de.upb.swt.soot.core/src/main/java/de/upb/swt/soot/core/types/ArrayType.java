@@ -13,8 +13,6 @@ public class ArrayType extends ReferenceType {
     this.dimension = dimension;
   }
 
-  // TODO [LL] please implement it
-
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();

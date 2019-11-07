@@ -2,6 +2,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.*;
@@ -14,33 +15,37 @@ public class VariableDeclarationTest extends MinimalTestSuiteBase {
   @Test
   public void defaultTest() {
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 10", "return"),
-        getMethodSignature("shortVariable"));
+    SootMethod method = loadMethod(getMethodSignature("shortVariable"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 0", "return"),
-        getMethodSignature("byteVariable"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 10", "return"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 97", "return"),
-        getMethodSignature("charVariable"));
+    method = loadMethod(getMethodSignature("byteVariable"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 512", "return"),
-        getMethodSignature("intVariable"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 0", "return"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 123456789", "return"),
-        getMethodSignature("longVariable"));
+    method = loadMethod(getMethodSignature("charVariable"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: VariableDeclaration", "$f0 = 3.14F", "return"),
-        getMethodSignature("floatVariable"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 97", "return"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: VariableDeclaration", "$d0 = 1.96969654", "return"),
-        getMethodSignature("doubleVariable"));
+    method = loadMethod(getMethodSignature("intVariable"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 512", "return"));
+
+    method = loadMethod(getMethodSignature("longVariable"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$i0 = 123456789", "return"));
+
+    method = loadMethod(getMethodSignature("floatVariable"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: VariableDeclaration", "$f0 = 3.14F", "return"));
+
+    method = loadMethod(getMethodSignature("doubleVariable"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts("r0 := @this: VariableDeclaration", "$d0 = 1.96969654", "return"));
   }
 
   public MethodSignature getMethodSignature(String methodName) {
