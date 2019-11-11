@@ -20,7 +20,8 @@ public enum BytecodeBodyInterceptors {
       new CopyPropagator(),
       new DeadAssignmentEliminator(),
       new NopEliminator(),
-      new ConditionalBranchFolder());
+      new ConditionalBranchFolder(),
+      new EmptySwitchEliminator());
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
