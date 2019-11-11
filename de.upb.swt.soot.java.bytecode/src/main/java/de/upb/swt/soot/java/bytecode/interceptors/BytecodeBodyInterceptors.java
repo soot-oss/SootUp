@@ -16,16 +16,11 @@ public enum BytecodeBodyInterceptors {
       new Aggregator(),
       new UnusedLocalEliminator(),
       new TypeAssigner(),
-      new UnusedLocalEliminator(),
       new LocalNameStandardizer(),
       new CopyPropagator(),
       new DeadAssignmentEliminator(),
-      new UnusedLocalEliminator(),
       new NopEliminator(),
-      new UnreachableCodeEliminator(),
-      new DeadAssignmentEliminator(),
-      new UnusedLocalEliminator(),
-      new EmptySwitchEliminator());
+      new ConditionalBranchFolder());
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
