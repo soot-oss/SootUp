@@ -1371,7 +1371,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     } else {
       opr = out[0];
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
-      List<Type> types = expr.getMethodSignature().getParameterSignatures();
+      List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
       int nrArgs = types.size();
       if (lazyModifiers.get().contains(Modifier.STATIC)) {
@@ -1465,7 +1465,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     } else {
       opr = out[0];
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
-      List<Type> types = expr.getMethodSignature().getParameterSignatures();
+      List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
       int nrArgs = types.size();
       if (expr instanceof JStaticInvokeExpr) {
@@ -1942,7 +1942,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
               l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
     }
     int nrp = 0;
-    for (Type ot : methodSignature.getParameterSignatures()) {
+    for (Type ot : methodSignature.getParameterTypes()) {
       Local l = getLocal(iloc);
       jbu.add(
           Jimple.newIdentityStmt(

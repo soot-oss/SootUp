@@ -226,7 +226,7 @@ public class IdentifierFactoryTest {
         identifierFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
     assertEquals(declClass, methodSignature.getDeclClassType());
     assertEquals(returnType, methodSignature.getType());
-    assertEquals(parameter, methodSignature.getParameterSignatures().get(0));
+    assertEquals(parameter, methodSignature.getParameterTypes().get(0));
   }
 
   @Test

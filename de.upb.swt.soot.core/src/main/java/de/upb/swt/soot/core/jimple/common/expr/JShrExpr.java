@@ -34,9 +34,7 @@ import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
-/**
- * An expression that shifts its operand to the left (>>).
- */
+/** An expression that shifts its operand to the left (>>). */
 public final class JShrExpr extends AbstractIntLongBinopExpr implements Copyable {
 
   public JShrExpr(Value op1, Value op2) {
