@@ -4,9 +4,9 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import javax.annotation.Nonnull;
 
-// https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/NopEliminator.java
+// https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/ConditionalBranchFolder.java
 
-public class NopEliminator implements BodyInterceptor {
+public class ConditionalBranchFolder implements BodyInterceptor {
 
   @Nonnull
   @Override
