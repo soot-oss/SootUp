@@ -11,6 +11,7 @@ public class Aggregator implements BodyInterceptor {
   @Nonnull
   @Override
   public Body interceptBody(@Nonnull Body originalBody) {
-    return null;
+    // TODO Implement
+    return originalBody;
   }
 }
