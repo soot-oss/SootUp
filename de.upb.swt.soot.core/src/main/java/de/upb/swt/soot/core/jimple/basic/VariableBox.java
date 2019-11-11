@@ -27,6 +27,11 @@ package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.common.ref.ConcreteRef;
 
+/**
+ * Contains a {@link Local} or a {@link ConcreteRef}.
+ *
+ * <p>Prefer to use the factory methods in {@link de.upb.swt.soot.core.jimple.Jimple}.
+ */
 public class VariableBox extends ValueBox {
 
   public VariableBox(Value value) {

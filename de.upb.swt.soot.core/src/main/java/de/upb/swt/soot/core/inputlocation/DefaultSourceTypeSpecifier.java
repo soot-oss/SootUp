@@ -3,6 +3,7 @@ package de.upb.swt.soot.core.inputlocation;
 import de.upb.swt.soot.core.SourceTypeSpecifier;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.ClassType;
+import javax.annotation.Nonnull;
 
 /**
  * Implements a very basic version of {@link SourceTypeSpecifier} which tells the type of a class by
@@ -21,6 +22,7 @@ public class DefaultSourceTypeSpecifier implements SourceTypeSpecifier {
 
   private DefaultSourceTypeSpecifier() {}
 
+  @Nonnull
   public SourceType sourceTypeFor(ClassType type) {
     if (type.isBuiltInClass()) {
       return SourceType.Library;

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** Represents the deprecated JVM <code>ret</code> statement */
 public final class JRetStmt extends AbstractStmt implements Copyable {
 
   private final ValueBox stmtAddressBox;

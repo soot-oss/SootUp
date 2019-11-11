@@ -28,6 +28,11 @@ package de.upb.swt.soot.core.jimple.basic;
 import de.upb.swt.soot.core.jimple.common.expr.Expr;
 import de.upb.swt.soot.core.jimple.common.ref.ConcreteRef;
 
+/**
+ * Contains a value for the right side of an assignment.
+ *
+ * <p>Prefer to use the factory methods in {@link de.upb.swt.soot.core.jimple.Jimple}.
+ */
 public class RValueBox extends ValueBox {
 
   public RValueBox(Value value) {

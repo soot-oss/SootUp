@@ -25,6 +25,11 @@
 
 package de.upb.swt.soot.core.jimple.basic;
 
+/**
+ * Contains a {@link Local}.
+ *
+ * <p>Prefer to use the factory methods in {@link de.upb.swt.soot.core.jimple.Jimple}.
+ */
 public class LocalBox extends ValueBox {
 
   public LocalBox(Value value) {
