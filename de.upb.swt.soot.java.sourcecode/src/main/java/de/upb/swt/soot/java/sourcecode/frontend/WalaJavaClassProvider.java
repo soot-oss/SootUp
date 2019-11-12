@@ -9,7 +9,11 @@ import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 
-/** @author Linghui Luo */
+/**
+ * A {@link ClassProvider} that can read Java source code
+ *
+ * @author Linghui Luo
+ */
 public class WalaJavaClassProvider implements ClassProvider {
 
   @Nullable private final String exclusionFilePath;

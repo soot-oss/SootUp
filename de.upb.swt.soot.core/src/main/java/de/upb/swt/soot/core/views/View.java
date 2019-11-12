@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A view on code.
+ * A View is essentially a collection of code belonging to a {@link de.upb.swt.soot.core.Project}.
  *
  * @author Linghui Luo
  * @author Ben Hermann

@@ -40,7 +40,10 @@ import javax.annotation.Nonnull;
  * #L%
  */
 
-/** Interface for identifierFactory which identifies signatures for object oriented languages. */
+/**
+ * A factory used for creating language-specific objects representing entities of the language, for
+ * instance {@link PackageName}, {@link MethodSignature} and others.
+ */
 public interface IdentifierFactory {
 
   /**

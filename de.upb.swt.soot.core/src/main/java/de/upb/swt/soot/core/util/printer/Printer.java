@@ -329,7 +329,7 @@ public class Printer {
 
         out.println(
             "        catch "
-                + trap.getException()
+                + trap.getExceptionType()
                 + " from "
                 + up.labels().get(trap.getBeginStmt())
                 + " to "

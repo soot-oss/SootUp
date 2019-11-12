@@ -28,23 +28,21 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
    * Creates a new instance of the {@link FieldSubSignature} class.
    *
    * @param name The method name.
-   * @param parameterSignatures The signatures of the method parameters.
+   * @param parameterTypes The signatures of the method parameters.
    * @param type The return type signature.
    */
   public MethodSubSignature(
-      @Nonnull String name,
-      @Nonnull Iterable<? extends Type> parameterSignatures,
-      @Nonnull Type type) {
+      @Nonnull String name, @Nonnull Iterable<? extends Type> parameterTypes, @Nonnull Type type) {
     super(name, type);
 
-    this.parameterSignatures = ImmutableList.copyOf(parameterSignatures);
+    this.parameterTypes = ImmutableList.copyOf(parameterTypes);
   }
 
   // endregion /Constructor/
 
   // region Properties
 
-  @Nonnull private final List<Type> parameterSignatures;
+  @Nonnull private final List<Type> parameterTypes;
 
   /**
    * Gets the parameters in an immutable list.
@@ -52,8 +50,8 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
    * @return The value to get.
    */
   @Nonnull
-  public List<Type> getParameterSignatures() {
-    return this.parameterSignatures;
+  public List<Type> getParameterTypes() {
+    return this.parameterTypes;
   }
 
   // endregion /Properties/
@@ -76,12 +74,12 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
 
     MethodSubSignature that = (MethodSubSignature) o;
 
-    return Objects.equal(getParameterSignatures(), that.getParameterSignatures());
+    return Objects.equal(getParameterTypes(), that.getParameterTypes());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(super.hashCode(), getParameterSignatures());
+    return Objects.hashCode(super.hashCode(), getParameterTypes());
   }
 
   @Override
@@ -102,7 +100,7 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
                   "%s %s(%s)",
                   getType(),
                   getName(),
-                  getParameterSignatures().stream()
+                  getParameterTypes().stream()
                       .map(Object::toString)
                       .collect(Collectors.joining(","))));
 

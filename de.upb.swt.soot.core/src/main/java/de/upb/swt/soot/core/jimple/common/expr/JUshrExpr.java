@@ -34,6 +34,7 @@ import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/** Similar to {@link JShrExpr}, but shifts zero into the leftmost position. */
 public final class JUshrExpr extends AbstractIntLongBinopExpr implements Copyable {
   public JUshrExpr(Value op1, Value op2) {
     super(op1, op2);

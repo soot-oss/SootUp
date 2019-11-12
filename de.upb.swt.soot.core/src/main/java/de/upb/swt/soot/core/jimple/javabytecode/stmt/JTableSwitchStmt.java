@@ -40,6 +40,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** Represents a JVM table-switch */
 public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyable {
 
   private final int lowIndex;

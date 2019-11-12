@@ -37,6 +37,7 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
+/** A statement that exits a JVM monitor, thereby ending synchronization. */
 public final class JExitMonitorStmt extends AbstractOpStmt implements Copyable {
 
   public JExitMonitorStmt(Value op, StmtPositionInfo positionInfo) {

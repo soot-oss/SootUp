@@ -52,7 +52,7 @@ public final class MethodDispatchResolver {
   private static boolean canDispatch(
       MethodSignature called, MethodSignature potentialTarget, TypeHierarchy hierarchy) {
     return called.getName().equals(potentialTarget.getName())
-        && called.getParameterSignatures().equals(potentialTarget.getParameterSignatures())
+        && called.getParameterTypes().equals(potentialTarget.getParameterTypes())
         && (called.getType().equals(potentialTarget.getType())
             || hierarchy.isSubtype(called.getType(), potentialTarget.getType()));
   }

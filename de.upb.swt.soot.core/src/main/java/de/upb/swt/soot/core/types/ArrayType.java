@@ -2,6 +2,10 @@ package de.upb.swt.soot.core.types;
 
 import com.google.common.base.Objects;
 
+/**
+ * Represents the type of an array, e.g. <code>int[]</code>, <code>Object[]</code> or <code>
+ * String[][]</code>
+ */
 public class ArrayType extends ReferenceType {
 
   private final Type baseType;

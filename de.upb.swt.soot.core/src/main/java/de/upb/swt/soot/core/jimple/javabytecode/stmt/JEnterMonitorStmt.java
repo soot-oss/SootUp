@@ -37,6 +37,7 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
+/** A statement that enters a JVM monitor, thereby synchronizing its following statements. */
 public final class JEnterMonitorStmt extends AbstractOpStmt implements Copyable {
 
   public JEnterMonitorStmt(Value op, StmtPositionInfo positionInfo) {

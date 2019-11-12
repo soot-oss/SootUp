@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/** An expression that checks whether operand 1 < operand 2. */
 public final class JLtExpr extends AbstractConditionExpr implements Copyable {
 
   public JLtExpr(Value op1, Value op2) {

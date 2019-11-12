@@ -24,7 +24,13 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.*;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
+import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
 import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
@@ -113,7 +119,11 @@ import org.objectweb.asm.tree.TryCatchBlockNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-/** @author Andreas Dann */
+/**
+ * A {@link MethodSource} that can read Java bytecode
+ *
+ * @author Andreas Dann
+ */
 public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
@@ -1371,7 +1381,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     } else {
       opr = out[0];
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
-      List<Type> types = expr.getMethodSignature().getParameterSignatures();
+      List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
       int nrArgs = types.size();
       if (lazyModifiers.get().contains(Modifier.STATIC)) {
@@ -1465,7 +1475,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     } else {
       opr = out[0];
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
-      List<Type> types = expr.getMethodSignature().getParameterSignatures();
+      List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
       int nrArgs = types.size();
       if (expr instanceof JStaticInvokeExpr) {
@@ -1942,7 +1952,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
               l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
     }
     int nrp = 0;
-    for (Type ot : methodSignature.getParameterSignatures()) {
+    for (Type ot : methodSignature.getParameterTypes()) {
       Local l = getLocal(iloc);
       jbu.add(
           Jimple.newIdentityStmt(

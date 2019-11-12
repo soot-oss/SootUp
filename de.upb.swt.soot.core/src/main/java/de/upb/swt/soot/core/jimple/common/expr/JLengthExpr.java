@@ -35,6 +35,7 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
+/** An expression that returns the length of an array. */
 public final class JLengthExpr extends AbstractUnopExpr implements Copyable {
 
   public JLengthExpr(Value op) {

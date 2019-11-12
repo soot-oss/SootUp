@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** Represents a JVM lookup-switch */
 public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copyable {
   /**
    * List of lookup values from the corresponding bytecode instruction, represented as IntConstants.

@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/** An expression that computes a binary AND of two operands. */
 public final class JAndExpr extends AbstractIntLongBinopExpr implements Copyable {
 
   public JAndExpr(Value op1, Value op2) {

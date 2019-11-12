@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** If the condition is true, jumps to the target, otherwise continues to the next stmt. */
 public final class JIfStmt extends AbstractStmt implements Copyable {
 
   private final ValueBox conditionBox;

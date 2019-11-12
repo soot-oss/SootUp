@@ -41,7 +41,7 @@ public class MethodSignature extends AbstractClassMemberSignature {
 
   /** The method's parameters' signatures. */
   @Nonnull
-  public List<Type> getParameterSignatures() {
-    return this.getSubSignature().getParameterSignatures();
+  public List<Type> getParameterTypes() {
+    return this.getSubSignature().getParameterTypes();
   }
 }
