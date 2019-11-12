@@ -32,6 +32,9 @@ public interface AnalysisInputLocation {
   @Nonnull
   Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType type);
 
+  /**
+   * Scan the input location and create ClassSources for every compilation / interpretation unit.
+   */
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory);
@@ -46,6 +49,9 @@ public interface AnalysisInputLocation {
   Optional<? extends AbstractClassSource> getClassSource(
       @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions);
 
+  /**
+   * Scan the input location and create ClassSources for every compilation / interpretation unit.
+   */
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,

@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** A method call */
 public final class JInvokeStmt extends AbstractStmt implements Copyable {
 
   private final ValueBox invokeExprBox;

@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** Unconditionally jumps to the target */
 public final class JGotoStmt extends AbstractStmt implements Copyable {
 
   private final StmtBox targetBox;

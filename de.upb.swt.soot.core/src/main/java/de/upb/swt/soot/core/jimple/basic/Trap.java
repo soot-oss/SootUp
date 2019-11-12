@@ -10,7 +10,7 @@ import de.upb.swt.soot.core.types.ClassType;
  */
 public interface Trap extends StmtBoxOwner {
 
-  ClassType getException();
+  ClassType getExceptionType();
 
   Stmt getBeginStmt();
 

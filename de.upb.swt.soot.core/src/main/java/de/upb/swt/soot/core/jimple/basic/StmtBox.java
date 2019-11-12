@@ -33,6 +33,11 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Contains a {@link Stmt}.
+ *
+ * <p>Prefer to use the factory methods in {@link de.upb.swt.soot.core.jimple.Jimple}.
+ */
 public abstract class StmtBox {
 
   @Nullable private Stmt stmt;

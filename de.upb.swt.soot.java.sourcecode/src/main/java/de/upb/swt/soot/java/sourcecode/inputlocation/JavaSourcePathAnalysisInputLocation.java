@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 /**
  * An implementation of the {@link AnalysisInputLocation} interface for the Java source code path.
  *
+ * <p>Provides default {@link ClassLoadingOptions} from {@link SourcecodeClassLoadingOptions}.
+ *
  * @author Linghui Luo
  */
 public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocation {

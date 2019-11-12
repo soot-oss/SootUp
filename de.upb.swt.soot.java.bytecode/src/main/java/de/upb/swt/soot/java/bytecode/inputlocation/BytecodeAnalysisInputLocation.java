@@ -8,6 +8,10 @@ import java.util.Collection;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 
+/**
+ * An {@link AnalysisInputLocation} containing Java bytecode. Supplies default {@link
+ * de.upb.swt.soot.core.inputlocation.ClassLoadingOptions} from {@link BytecodeClassLoadingOptions}.
+ */
 public interface BytecodeAnalysisInputLocation extends AnalysisInputLocation {
 
   @Nonnull

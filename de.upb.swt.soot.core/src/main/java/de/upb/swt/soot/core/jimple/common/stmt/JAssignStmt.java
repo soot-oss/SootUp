@@ -30,7 +30,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-/** The Class JAssignStmt. */
+/** Represents the assignment of one value to another */
 public final class JAssignStmt extends AbstractDefinitionStmt implements Copyable {
 
   /** The Class LinkedVariableBox. */

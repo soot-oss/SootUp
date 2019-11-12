@@ -37,6 +37,7 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
+/** An expression that negates its operand (-). */
 public final class JNegExpr extends AbstractUnopExpr implements Copyable {
 
   public JNegExpr(Value op) {

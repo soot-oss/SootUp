@@ -40,6 +40,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** Like {@link JNewArrayExpr}, but for multi-dimensional arrays. */
 public final class JNewMultiArrayExpr implements Expr, Copyable {
 
   private final ArrayType baseType;

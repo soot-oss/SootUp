@@ -39,6 +39,8 @@ import javax.annotation.Nonnull;
 /**
  * Local variable in {@link Body}. Use {@link LocalGenerator} to generate locals.
  *
+ * <p>Prefer to use the factory methods in {@link de.upb.swt.soot.core.jimple.Jimple}.
+ *
  * @author Linghui Luo
  */
 public final class Local implements Value, Immediate, Copyable {

@@ -36,6 +36,7 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
+/** A statement that throws an Exception */
 public final class JThrowStmt extends AbstractOpStmt implements Copyable {
 
   public JThrowStmt(Value op, StmtPositionInfo positionInfo) {

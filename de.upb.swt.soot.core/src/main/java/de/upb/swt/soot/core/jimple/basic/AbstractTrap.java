@@ -92,7 +92,7 @@ public class AbstractTrap implements Trap {
   }
 
   @Override
-  public ClassType getException() {
+  public ClassType getExceptionType() {
     return exception;
   }
 }

@@ -259,8 +259,8 @@ public class SootClass extends AbstractClass<ClassSource> {
   }
 
   /**
-   * WARNING: interfaces are subclasses of the java.lang.Object class! Returns the superclass of
-   * this class. (see hasSuperclass())
+   * WARNING: interfaces in Java are subclasses of the java.lang.Object class! Returns the
+   * superclass of this class. (see hasSuperclass())
    */
   public Optional<ClassType> getSuperclass() {
     return lazySuperclass.get();
