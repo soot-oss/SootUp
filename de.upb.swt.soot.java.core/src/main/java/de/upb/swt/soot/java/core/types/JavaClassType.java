@@ -28,8 +28,6 @@ public class JavaClassType extends ClassType {
 
   private final PackageName packageName;
 
-  private final boolean isInnerClass;
-
   // TODO Can we hide this somehow from the public API surface?
   /**
    * Internal: Constructs the fully-qualified ClassSignature. Instances should only be created by a
@@ -40,18 +38,12 @@ public class JavaClassType extends ClassType {
    */
   public JavaClassType(final String className, final PackageName packageName) {
     String realClassName = className;
-    boolean innerClass = false;
-    // use $ to separate inner and outer class name
     if (realClassName.contains(".")) {
       realClassName = realClassName.replace(".", "$");
     }
-    // if the constructor was invoked with an ASM classname
-    if (realClassName.contains("$")) {
-      innerClass = true;
-    }
+
     this.className = realClassName;
     this.packageName = packageName;
-    this.isInnerClass = innerClass;
   }
 
   @Override
@@ -64,13 +56,12 @@ public class JavaClassType extends ClassType {
     }
     JavaClassType that = (JavaClassType) o;
     return Objects.equal(className, that.className)
-        && Objects.equal(packageName, that.packageName)
-        && isInnerClass == that.isInnerClass;
+        && Objects.equal(packageName, that.packageName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(className, packageName, isInnerClass);
+    return Objects.hashCode(className, packageName);
   }
 
   /**
@@ -101,15 +92,6 @@ public class JavaClassType extends ClassType {
 
   public Path toPath(FileType fileType, FileSystem fs) {
     String fileName = getFullyQualifiedName();
-    // for a java file the file name of the inner class is the name of outerclass
-    // e.g., for an inner class org.acme.Foo$Bar, the filename is org/acme/Foo.java
-    if (fileType == FileType.JAVA && this.isInnerClass) {
-      int idxInnerClassChar = fileName.indexOf("$");
-      if (idxInnerClassChar != -1) {
-        fileName = fileName.substring(0, idxInnerClassChar);
-      }
-    }
-
     return fs.getPath(fileName.replace('.', '/') + "." + fileType.getExtension());
   }
 
@@ -125,11 +107,6 @@ public class JavaClassType extends ClassType {
   /** The package in which the class resides. */
   public PackageName getPackageName() {
     return packageName;
-  }
-
-  /** Whether the class is an inner class * */
-  public boolean isInnerClass() {
-    return isInnerClass;
   }
 
   public boolean isBuiltInClass() {
