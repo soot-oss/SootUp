@@ -91,6 +91,15 @@ public class JavaClassType extends ClassType {
 
   public Path toPath(FileType fileType, FileSystem fs) {
     String fileName = getFullyQualifiedName();
+    // Todo: fix JavaClassType.toPath (possibly implement in Soot Java Bytecode module)
+    //    for a java file the file name of the inner class is the name of outerclass
+    //    e.g., for an inner class org.acme.Foo$Bar, the filename is org/acme/Foo.java
+    //    if (fileType == FileType.JAVA && this.isInnerClass) {
+    //      int idxInnerClassChar = fileName.indexOf("$");
+    //      if (idxInnerClassChar != -1) {
+    //        fileName = fileName.substring(0, idxInnerClassChar);
+    //      }
+    //    }
     return fs.getPath(fileName.replace('.', '/') + "." + fileType.getExtension());
   }
 
