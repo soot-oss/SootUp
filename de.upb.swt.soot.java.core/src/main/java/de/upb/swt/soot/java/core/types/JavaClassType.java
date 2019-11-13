@@ -55,8 +55,7 @@ public class JavaClassType extends ClassType {
       return false;
     }
     JavaClassType that = (JavaClassType) o;
-    return Objects.equal(className, that.className)
-        && Objects.equal(packageName, that.packageName);
+    return Objects.equal(className, that.className) && Objects.equal(packageName, that.packageName);
   }
 
   @Override
