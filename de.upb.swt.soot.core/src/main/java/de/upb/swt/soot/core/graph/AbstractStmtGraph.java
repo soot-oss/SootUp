@@ -44,13 +44,13 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
    * unexceptional control flow.
    *
    * @param stmtToSuccs A {@link Map} from {@link Stmt}s to {@link List}s of {@link Stmt}s. This is
-   *     an ``out parameter''; callers must pass an empty {@link Map}.
-   *     {@code buildUnexceptionalEdges} will add a mapping for every {@code Stmt} in the body to
-   *     a list of its unexceptional successors.
+   *     an ``out parameter''; callers must pass an empty {@link Map}. {@code
+   *     buildUnexceptionalEdges} will add a mapping for every {@code Stmt} in the body to a list of
+   *     its unexceptional successors.
    * @param stmtToPreds A {@link Map} from {@link Stmt}s to {@link List}s of {@link Stmt}s. This is
-   *     an ``out parameter''; callers must pass an empty {@link Map}.
-   *     {@code buildUnexceptionalEdges} will add a mapping for every {@code Stmt} in the body to
-   *     a list of its unexceptional predecessors.
+   *     an ``out parameter''; callers must pass an empty {@link Map}. {@code
+   *     buildUnexceptionalEdges} will add a mapping for every {@code Stmt} in the body to a list of
+   *     its unexceptional predecessors.
    */
   protected void buildUnexceptionalEdges(
       Map<Stmt, List<Stmt>> stmtToSuccs, Map<Stmt, List<Stmt>> stmtToPreds) {

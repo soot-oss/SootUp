@@ -14,8 +14,10 @@ import javax.annotation.Nonnull;
  * behave while loading classes.
  *
  * <p>Besides being able to create your own by implementing this interface, each frontend has
- * built-in sets of options such as <a href="../../../../../../de/upb/swt/soot/java/bytecode/inputlocation/BytecodeClassLoadingOptions.html">java.bytecode.inputlocation.BytecodeClassLoadingOptions</a>
- * and <a href="../../../../../../de/upb/swt/soot/java/sourcecode/inputlocation/SourcecodeClassLoadingOptions.html">java.sourcecode.inputlocation.SourcecodeClassLoadingOptions</a>
+ * built-in sets of options such as <a
+ * href="../../../../../../de/upb/swt/soot/java/bytecode/inputlocation/BytecodeClassLoadingOptions.html">java.bytecode.inputlocation.BytecodeClassLoadingOptions</a>
+ * and <a
+ * href="../../../../../../de/upb/swt/soot/java/sourcecode/inputlocation/SourcecodeClassLoadingOptions.html">java.sourcecode.inputlocation.SourcecodeClassLoadingOptions</a>
  *
  * @author Christian Brüggemann
  */
