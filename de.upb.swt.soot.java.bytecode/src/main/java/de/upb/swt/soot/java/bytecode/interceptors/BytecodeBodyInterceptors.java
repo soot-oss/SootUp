@@ -8,7 +8,20 @@ import javax.annotation.Nonnull;
 
 /** Built-in sets of {@link BodyInterceptor}s for the bytecode frontend */
 public enum BytecodeBodyInterceptors {
-  Default(new CastAndReturnInliner());
+  Default(
+      new CastAndReturnInliner(),
+      new DuplicateCatchAllTrapRemover(),
+      new UnreachableCodeEliminator(),
+      new LocalSplitter(),
+      new Aggregator(),
+      new UnusedLocalEliminator(),
+      new TypeAssigner(),
+      new LocalNameStandardizer(),
+      new CopyPropagator(),
+      new DeadAssignmentEliminator(),
+      new NopEliminator(),
+      new ConditionalBranchFolder(),
+      new EmptySwitchEliminator());
 
   @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
