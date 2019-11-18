@@ -184,8 +184,7 @@ public class JavaView extends AbstractView {
               + type
               + "\" found in multiple AnalysisInputLocations. Soot can't decide which AnalysisInputLocation it should refer to for this Type.");
     }
-    return (Optional<AbstractClass<? extends AbstractClassSource>>)
-        foundClassSources.stream().findAny().map(this::buildClassFrom).get();
+    return foundClassSources.stream().findAny().map(this::buildClassFrom).get();
   }
 
   @Nonnull
