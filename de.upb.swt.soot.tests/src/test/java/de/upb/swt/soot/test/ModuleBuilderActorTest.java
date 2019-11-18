@@ -40,7 +40,7 @@ public class ModuleBuilderActorTest {
   }
 
   @Test
-  public void refiyMessageModuleInfoTest() {
+  public void buildMessageModuleInfoTest() {
     JavaModuleView view = createNewScene();
 
     final JavaClassType sig =
