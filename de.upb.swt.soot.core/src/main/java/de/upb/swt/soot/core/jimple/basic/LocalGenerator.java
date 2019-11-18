@@ -75,9 +75,7 @@ public class LocalGenerator {
     return generateParameterLocal(type, index, null);
   }
 
-  /**
-   * @param paraName If null, generates a name, otherwise uses it
-   */
+  /** @param paraName If null, generates a name, otherwise uses it */
   public Local generateParameterLocal(@Nonnull Type type, int index, @Nullable String paraName) {
     if (!this.paraLocals.containsKey(index)) {
       Local paraLocal = generate(type, false, paraName);

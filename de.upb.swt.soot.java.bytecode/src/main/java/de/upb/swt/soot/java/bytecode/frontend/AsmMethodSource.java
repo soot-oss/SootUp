@@ -274,9 +274,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     return getLocal(idx, null);
   }
 
-  /**
-   * @param name If null, this method will generate a name
-   */
+  /** @param name If null, this method will generate a name */
   private Local getLocal(int idx, @Nullable String name) {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);

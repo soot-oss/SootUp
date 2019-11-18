@@ -48,19 +48,16 @@ public class MethodOverloadingTest extends MinimalTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: MethodOverloading",
-            "$i0 := @parameter0: int",
-            "$i1 := @parameter1: int",
-            "$i2 = $i0 + $i1",
-            "return $i2")
+            "a := @parameter0: int",
+            "b := @parameter1: int",
+            "$i0 = a + b",
+            "return $i0")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "r0 := @this: MethodOverloading",
-            "$i0 := @parameter0: int",
-            "$i1 = $i0 + $i0",
-            "return $i1")
+            "r0 := @this: MethodOverloading", "a := @parameter0: int", "$i0 = a + a", "return $i0")
         .collect(Collectors.toCollection(ArrayList::new));
   }
 }

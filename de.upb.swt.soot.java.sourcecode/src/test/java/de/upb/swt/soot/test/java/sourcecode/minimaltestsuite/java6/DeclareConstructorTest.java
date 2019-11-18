@@ -33,9 +33,9 @@ public class DeclareConstructorTest extends MinimalTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: DeclareConstructor",
-            "$i0 := @parameter0: int",
+            "var1 := @parameter0: int",
             "specialinvoke r0.<java.lang.Object: void <init>()>()",
-            "r0.<DeclareConstructor: int var1> = $i0",
+            "r0.<DeclareConstructor: int var1> = var1",
             "r0.<DeclareConstructor: int var2> = 0",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
@@ -44,11 +44,11 @@ public class DeclareConstructorTest extends MinimalTestSuiteBase {
   public List<String> expectedBodyStmts1() {
     return Stream.of(
             "r0 := @this: DeclareConstructor",
-            "$i0 := @parameter0: int",
-            "$i1 := @parameter1: int",
+            "var1 := @parameter0: int",
+            "var2 := @parameter1: int",
             "specialinvoke r0.<java.lang.Object: void <init>()>()",
-            "r0.<DeclareConstructor: int var1> = $i0",
-            "r0.<DeclareConstructor: int var2> = $i1",
+            "r0.<DeclareConstructor: int var1> = var1",
+            "r0.<DeclareConstructor: int var2> = var2",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

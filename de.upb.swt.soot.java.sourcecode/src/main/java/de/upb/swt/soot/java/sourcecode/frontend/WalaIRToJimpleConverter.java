@@ -232,9 +232,8 @@ public class WalaIRToJimpleConverter {
         paraTypes.add(identifierFactory.getType(paraType.toString()));
         sigs.add(paraType.toString());
         if (debugInfo != null) {
-          int index = walaMethod.isStatic() ? i : i - 1;
-          // Parameter names start at index 2
-          paraNames.add(debugInfo.getSourceNamesForValues()[2 + index][0]);
+          // Parameter names start at index 1
+          paraNames.add(debugInfo.getSourceNamesForValues()[1 + i][0]);
         } else {
           paraNames.add(null);
         }
