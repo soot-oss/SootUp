@@ -1958,7 +1958,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
     int nrp = 0;
     for (Type ot : methodSignature.getParameterTypes()) {
-      Local l = getLocal(iloc, this.parameters.get(nrp).name);
+      Local l = getLocal(iloc, this.parameters == null ? null : this.parameters.get(nrp).name);
       jbu.add(
           Jimple.newIdentityStmt(
               l, Jimple.newParameterRef(ot, nrp++), StmtPositionInfo.createNoStmtPositionInfo()));
