@@ -5,7 +5,6 @@ package de.upb.swt.soot.java.core;
 
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SourceType;
@@ -28,7 +27,7 @@ public abstract class AbstractModuleClassSource extends AbstractClassSource {
     super(srcNamespace, classSignature, sourcePath);
   }
 
-  public AbstractClass buildClass(@Nonnull SourceType sourceType) {
+  public JavaModuleInfo buildClass(@Nonnull SourceType sourceType) {
     return new JavaModuleInfo(this, false);
   }
 

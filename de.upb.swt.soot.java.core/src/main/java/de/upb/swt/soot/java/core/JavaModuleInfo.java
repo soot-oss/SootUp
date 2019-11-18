@@ -1,8 +1,8 @@
 package de.upb.swt.soot.java.core;
 
 import com.google.common.base.Suppliers;
-import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Field;
 import de.upb.swt.soot.core.model.Method;
@@ -39,7 +39,7 @@ public class JavaModuleInfo extends AbstractClass<AbstractModuleClassSource> {
 
     private JavaClassType moduleInfo;
     private EnumSet<Modifier> modifiers;
-    private ClassSource classSource;
+    private SootClassSource classSource;
 
     public ModuleReference(JavaClassType moduleInfo, EnumSet<Modifier> accessModifier) {
       this.moduleInfo = moduleInfo;

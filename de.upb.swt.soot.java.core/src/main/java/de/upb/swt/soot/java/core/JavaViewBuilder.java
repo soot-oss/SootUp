@@ -6,7 +6,6 @@ package de.upb.swt.soot.java.core;
 import de.upb.swt.soot.core.Scope;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
-import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaModuleView;
 import de.upb.swt.soot.java.core.views.JavaView;
@@ -47,7 +46,7 @@ public class JavaViewBuilder {
     return chooseView();
   }
 
-  public View createOnDemandView(
+  public JavaView createOnDemandView(
       @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
     return chooseView(classLoadingOptionsSpecifier);
   }

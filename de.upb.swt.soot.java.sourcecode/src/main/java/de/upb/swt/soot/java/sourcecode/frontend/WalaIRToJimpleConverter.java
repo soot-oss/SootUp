@@ -14,10 +14,9 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
-import de.upb.swt.soot.core.frontend.*;
-import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -85,12 +84,12 @@ public class WalaIRToJimpleConverter {
    */
   @Deprecated
   public SootClass convertClass(AstClass walaClass) {
-    ClassSource classSource = convertToClassSource(walaClass);
+    SootClassSource classSource = convertToClassSource(walaClass);
     // TODO fix fixed SourceType - get it from project
     return new JavaSootClass(classSource, SourceType.Application);
   }
 
-  ClassSource convertToClassSource(AstClass walaClass) {
+  SootClassSource convertToClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSig = identifierFactory.getClassType(fullyQualifiedClassName);
     // get super class

@@ -3,7 +3,6 @@ package de.upb.swt.soot.test.java.bytecode.frontend;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
@@ -18,11 +17,11 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
@@ -50,19 +49,19 @@ public class ModuleCompositionTest {
     assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
 
     // Create a project
-    Project p =
+    JavaProject p =
         JavaProject.builder(new JavaLanguage(8))
             .addClassPath(new JavaClassPathAnalysisInputLocation(jarFile))
             .build();
 
     // Get the view
-    View view = p.createOnDemandView();
+    JavaView view = p.createOnDemandView();
 
     // Create java class signature
     ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("de.upb.soot.Utils");
 
     // Resolve signature to `SootClass`
-    SootClass utilsClass = (SootClass) view.getClass(utilsClassSignature).get();
+    SootClass utilsClass = view.getClass(utilsClassSignature).get();
 
     // Print all methods that are loaded on-demand
     // System.out.println("Methods of " + utilsClassSignature + " class:");
