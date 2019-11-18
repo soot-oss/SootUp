@@ -14,7 +14,6 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
-import de.upb.swt.soot.core.frontend.*;
 import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
@@ -217,7 +216,9 @@ public class WalaIRToJimpleConverter {
   public SootMethod convertMethod(JavaClassType classSig, AstMethod walaMethod) {
     // create SootMethod instance
     List<Type> paraTypes = new ArrayList<>();
+    List<String> paraNames = new ArrayList<>();
     List<String> sigs = new ArrayList<>();
+    DebuggingInformation debugInfo = walaMethod.debugInfo();
     if (walaMethod.symbolTable() != null) {
       for (int i = 0; i < walaMethod.getNumberOfParameters(); i++) {
         TypeReference type = walaMethod.getParameterType(i);
@@ -230,6 +231,13 @@ public class WalaIRToJimpleConverter {
         Type paraType = convertType(type);
         paraTypes.add(identifierFactory.getType(paraType.toString()));
         sigs.add(paraType.toString());
+        if (debugInfo != null) {
+          int index = walaMethod.isStatic() ? i : i - 1;
+          // Parameter names start at index 2
+          paraNames.add(debugInfo.getSourceNamesForValues()[2 + index][0]);
+        } else {
+          paraNames.add(null);
+        }
       }
     }
 
@@ -248,12 +256,11 @@ public class WalaIRToJimpleConverter {
       e.printStackTrace();
     }
     // add debug info
-    DebuggingInformation debugInfo = walaMethod.debugInfo();
     MethodSignature methodSig =
         identifierFactory.getMethodSignature(
             walaMethod.getName().toString(), classSig, returnType.toString(), sigs);
 
-    Body body = createBody(methodSig, modifiers, walaMethod);
+    Body body = createBody(methodSig, modifiers, walaMethod, paraNames);
     return new WalaSootMethod(
         new OverridingMethodSource(methodSig, body),
         methodSig,
@@ -393,7 +400,10 @@ public class WalaIRToJimpleConverter {
   }
 
   private @Nullable Body createBody(
-      MethodSignature methodSignature, EnumSet<Modifier> modifiers, AstMethod walaMethod) {
+      MethodSignature methodSignature,
+      EnumSet<Modifier> modifiers,
+      AstMethod walaMethod,
+      List<String> paraNames) {
 
     if (walaMethod.isAbstract()) {
       return null;
@@ -433,11 +443,12 @@ public class WalaIRToJimpleConverter {
         for (; startPara < walaMethod.getNumberOfParameters(); startPara++) {
           TypeReference t = walaMethod.getParameterType(startPara);
           Type type = convertType(t);
-          Local paraLocal = localGenerator.generateParameterLocal(type, startPara);
           int index = startPara;
           if (!walaMethod.isStatic()) {
             index = startPara - 1;
           }
+          String paraName = paraNames.get(index);
+          Local paraLocal = localGenerator.generateParameterLocal(type, startPara, paraName);
           Stmt stmt =
               Jimple.newIdentityStmt(
                   paraLocal,

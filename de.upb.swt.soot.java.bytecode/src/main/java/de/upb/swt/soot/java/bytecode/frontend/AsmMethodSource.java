@@ -271,27 +271,34 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   }
 
   private Local getLocal(int idx) {
+    return getLocal(idx, null);
+  }
+
+  /**
+   * @param name If null, this method will generate a name
+   */
+  private Local getLocal(int idx, @Nullable String name) {
     if (idx >= maxLocals) {
       throw new IllegalArgumentException("Invalid local index: " + idx);
     }
     Integer i = idx;
     Local l = locals.get(i);
     if (l == null) {
-      String name;
-      if (localVariables != null) {
-        name = null;
-        for (LocalVariableNode lvn : localVariables) {
-          if (lvn.index == idx) {
-            name = lvn.name;
-            break;
+      if (name == null) {
+        if (localVariables != null) {
+          for (LocalVariableNode lvn : localVariables) {
+            if (lvn.index == idx) {
+              name = lvn.name;
+              break;
+            }
           }
-        }
-        /* normally for try-catch blocks */
-        if (name == null) {
+          /* normally for try-catch blocks */
+          if (name == null) {
+            name = "l" + idx;
+          }
+        } else {
           name = "l" + idx;
         }
-      } else {
-        name = "l" + idx;
       }
       l = Jimple.newLocal(name, UnknownType.getInstance());
       locals.put(i, l);
@@ -1953,7 +1960,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
     int nrp = 0;
     for (Type ot : methodSignature.getParameterTypes()) {
-      Local l = getLocal(iloc);
+      Local l = getLocal(iloc, this.parameters.get(nrp).name);
       jbu.add(
           Jimple.newIdentityStmt(
               l, Jimple.newParameterRef(ot, nrp++), StmtPositionInfo.createNoStmtPositionInfo()));

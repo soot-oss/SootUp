@@ -72,14 +72,28 @@ public class LocalGenerator {
   }
 
   public Local generateParameterLocal(@Nonnull Type type, int index) {
+    return generateParameterLocal(type, index, null);
+  }
+
+  /**
+   * @param paraName If null, generates a name, otherwise uses it
+   */
+  public Local generateParameterLocal(@Nonnull Type type, int index, @Nullable String paraName) {
     if (!this.paraLocals.containsKey(index)) {
-      Local paraLocal = generate(type, false);
+      Local paraLocal = generate(type, false, paraName);
       this.paraLocals.put(index, paraLocal);
     }
     return this.paraLocals.get(index);
   }
 
   private Local generate(@Nonnull Type type, boolean isField) {
+    return generate(type, isField, null);
+  }
+
+  private Local generate(@Nonnull Type type, boolean isField, @Nullable String predefinedName) {
+    if (predefinedName != null) {
+      return createLocal(predefinedName, type);
+    }
 
     StringBuilder name = new StringBuilder(7);
     name.append("$");
