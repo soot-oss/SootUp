@@ -134,6 +134,12 @@ public class JavaView extends AbstractView {
         .collect(Collectors.toList());
   }
 
+  @Override
+  @Nonnull
+  public Stream<SootClass> getClassesStream() {
+    return getClasses().stream();
+  }
+
   @Nonnull
   synchronized Stream<AbstractClass<? extends AbstractClassSource>> getAbstractClasses() {
     resolveAll();
