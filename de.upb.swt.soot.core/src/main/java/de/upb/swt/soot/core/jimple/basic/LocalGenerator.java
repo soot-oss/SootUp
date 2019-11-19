@@ -75,25 +75,29 @@ public class LocalGenerator {
     return generateParameterLocal(type, index, null);
   }
 
-  /** @param paraName If null, generates a name, otherwise uses it */
-  public Local generateParameterLocal(@Nonnull Type type, int index, @Nullable String paraName) {
-    if (!this.paraLocals.containsKey(index)) {
-      Local paraLocal = generate(type, false, paraName);
-      this.paraLocals.put(index, paraLocal);
+  /** @param parameterName If null, generates a name, otherwise uses it */
+  public Local generateParameterLocal(
+      @Nonnull Type type, int index, @Nullable final String parameterName) {
+    if (!paraLocals.containsKey(index)) {
+      Local paraLocal = null;
+      if (parameterName != null) {
+        String localName = "$" + parameterName;
+        if (locals.contains(localName)) {
+          throw new RuntimeException(
+              "Another Local is already named \""
+                  + localName
+                  + "\". Names of Locals must be unique in the scope of a Body.");
+        }
+        paraLocal = createLocal(localName, type);
+      } else {
+        paraLocal = generateLocal(type);
+      }
+      paraLocals.put(index, paraLocal);
     }
-    return this.paraLocals.get(index);
+    return paraLocals.get(index);
   }
 
   private Local generate(@Nonnull Type type, boolean isField) {
-    return generate(type, isField, null);
-  }
-
-  private Local generate(@Nonnull Type type, boolean isField, @Nullable String predefinedName) {
-    if (predefinedName != null) {
-      String prefix = isField ? "" : "$";
-      return createLocal(prefix + predefinedName, type);
-    }
-
     StringBuilder name = new StringBuilder(7);
     name.append("$");
     String localName;
