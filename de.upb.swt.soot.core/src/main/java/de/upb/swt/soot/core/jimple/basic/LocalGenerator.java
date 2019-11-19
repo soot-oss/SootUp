@@ -41,9 +41,9 @@ import javax.annotation.Nullable;
  * @author Markus Schmidt
  */
 public class LocalGenerator {
-  private final Set<Local> locals;
+  @Nonnull private final Set<Local> locals;
   @Nullable private Local thisLocal;
-  private final Map<Integer, Local> paraLocals = new HashMap<>();
+  @Nonnull private final Map<Integer, Local> paraLocals = new HashMap<>();
 
   /**
    * Creates Locals {@link Local} with a standard naming scheme. If a Set of Locals is provided, the
@@ -54,34 +54,44 @@ public class LocalGenerator {
   }
 
   /** generate this local with given type */
+  @Nonnull
   public Local generateThisLocal(@Nonnull Type type) {
-    if (this.thisLocal == null) {
-      this.thisLocal = generateField(type);
+    if (thisLocal == null) {
+      thisLocal = generateField(type);
     }
-    return this.thisLocal;
+    return thisLocal;
   }
 
   /** generates a new {@link Local} given the type for field. */
+  @Nonnull
   public Local generateField(@Nonnull Type type) {
     return generate(type, true);
   }
 
   /** generates a new {@link Local} given the type for local. */
+  @Nonnull
   public Local generateLocal(@Nonnull Type type) {
     return generate(type, false);
   }
 
+  @Nullable
   public Local generateParameterLocal(@Nonnull Type type, int index) {
     return generateParameterLocal(type, index, null);
   }
 
   /** @param parameterName If null, generates a name, otherwise uses it */
+  // TODO: [ms] non intuitive behaviour: different logic compared to the other generate* methods
+  // (retrieve the Local if a Local at the given index already exists). better move that part of the
+  // logic into java source frontend?
+  @Nullable
   public Local generateParameterLocal(
       @Nonnull Type type, int index, @Nullable final String parameterName) {
     if (!paraLocals.containsKey(index)) {
-      Local paraLocal = null;
+      Local paraLocal;
       if (parameterName != null) {
         String localName = "$" + parameterName;
+        // hint: Locals are (uniquely) identified by its name (String)
+        //noinspection SuspiciousMethodCalls
         if (locals.contains(localName)) {
           throw new RuntimeException(
               "Another Local is already named \""
@@ -97,11 +107,14 @@ public class LocalGenerator {
     return paraLocals.get(index);
   }
 
+  @Nonnull
   private Local generate(@Nonnull Type type, boolean isField) {
     StringBuilder name = new StringBuilder(7);
     name.append("$");
     String localName;
+
     // determine locals name
+    // hint: Locals are (uniquely) identified by its name (String)
     //noinspection SuspiciousMethodCalls
     do {
       // non-field Locals traditionally begin with "$"
@@ -195,6 +208,7 @@ public class LocalGenerator {
     name.append("u").append(tempUnknownType++);
   }
 
+  @Nonnull
   private Local createLocal(String name, Type sootType) {
     Local sootLocal = Jimple.newLocal(name, sootType);
     locals.add(sootLocal);
@@ -202,15 +216,18 @@ public class LocalGenerator {
   }
 
   /** Return all locals created for the body referenced in this LocalGenrator. */
+  @Nonnull
   public Set<Local> getLocals() {
-    return this.locals;
+    return locals;
   }
 
+  @Nullable
   public Local getThisLocal() {
-    return this.thisLocal;
+    return thisLocal;
   }
 
+  @Nullable
   public Local getParameterLocal(int i) {
-    return this.paraLocals.get(i);
+    return paraLocals.get(i);
   }
 }
