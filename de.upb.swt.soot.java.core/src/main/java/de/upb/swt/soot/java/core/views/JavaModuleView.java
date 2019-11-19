@@ -45,7 +45,7 @@ public class JavaModuleView extends JavaView {
               if (clazz instanceof JavaModuleInfo) {
                 return (JavaModuleInfo) clazz;
               } else {
-                throw new ResolveException(type + " is not a regular Java class!");
+                throw new ResolveException(type + " is not a module-info class!");
               }
             });
   }
