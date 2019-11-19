@@ -90,7 +90,8 @@ public class LocalGenerator {
 
   private Local generate(@Nonnull Type type, boolean isField, @Nullable String predefinedName) {
     if (predefinedName != null) {
-      return createLocal(predefinedName, type);
+      String prefix = isField ? "" : "$";
+      return createLocal(prefix + predefinedName, type);
     }
 
     StringBuilder name = new StringBuilder(7);
