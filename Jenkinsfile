@@ -3,9 +3,6 @@ pipeline {
   options {
     parallelsAlwaysFailFast()
   }
-  environment {
-      // MAVEN_OPTS = '-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Xms1g -Xmx2g'
-  }
   stages {
     stage('Check Format'){
       agent {
