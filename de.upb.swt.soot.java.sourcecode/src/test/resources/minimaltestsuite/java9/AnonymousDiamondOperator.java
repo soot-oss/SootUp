@@ -15,7 +15,7 @@ public class AnonymousDiamondOperator {
            Integer sum = obj.add(22,23);
             return sum;
    }
-   
+
    public static void main(String args[]){
        AnonymousDiamondOperator obj= new AnonymousDiamondOperator();
 	   System.out.println(obj.innerClassDiamond());
