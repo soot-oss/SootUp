@@ -1,6 +1,7 @@
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+/** @author Kaustubh Kelkar */
 public class Reflection{
     private String s;
     public Reflection(){
@@ -13,9 +14,7 @@ public class Reflection{
         System.out.println(reflectionClass);
         Constructor constructor = reflectionClass.getConstructor();
         System.out.println(constructor.getName());
-        //for (Method method : reflectionClass.getMethods()){
-             System.out.println(reflectionClass.getMethods().length);
-         //}
+        System.out.println(reflectionClass.getMethods().length);
     }
 
   public static void main(String[] args) throws  NoSuchMethodException{

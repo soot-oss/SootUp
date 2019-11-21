@@ -27,6 +27,10 @@ public class DefaultMethodInterfaceImplTest extends MinimalTestSuiteBase {
         "defaultInterfaceMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /** TODO
+   *  Update the source code once default methods in WALA are supported
+   * */
+
   @Test
   @Override
   public void defaultTest() {

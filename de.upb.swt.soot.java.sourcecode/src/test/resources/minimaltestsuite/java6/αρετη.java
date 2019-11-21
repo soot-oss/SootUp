@@ -1,7 +1,9 @@
 
-public class αρετη {
+/** @author Kaustubh Kelkar */
+/**public
+class αρετη {
 
-    public void symbolAsClassName(){
+    public void αρετηAsClassName(){
         System.out.println("this is αρετη class");
     }
-}
+}*/

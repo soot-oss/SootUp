@@ -10,13 +10,8 @@ interface Percentage {
 public class MethodAcceptingLamExpr {
 
     public void lambdaAsParamMethod(){
-        Percentage percentageValue = (value -> value/100);
-        System.out.println("Percentage : " + percentageValue.calcPercentage(45.0));
-    }
-	
-	public static void main(String javalatte[]) {
-        MethodAcceptingLamExpr obj = new MethodAcceptingLamExpr();
-        obj.lambdaAsParamMethod();
+//        Percentage percentageValue = (value -> value/100);
+//        System.out.println("Percentage : " + percentageValue.calcPercentage(45.0));
     }
 }
 

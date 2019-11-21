@@ -8,13 +8,11 @@ class DefaultMethodInterfaceImpl implements DefaultMethodInterface {
 
     public void defaultInterfaceMethod(){
 
-        DefaultMethodInterface.super.defaultInterfaceMethod();
+        /**Add this line after default methods are supported
+
+         DefaultMethodInterface.super.defaultInterfaceMethod();
+
+         * */
         System.out.println("Method defaultInterfaceMethod() is implemented");
     };
-
-    public static void main(String[] args) {
-    DefaultMethodInterfaceImpl obj= new DefaultMethodInterfaceImpl();
-    obj.interfaceMethod();
-    obj.defaultInterfaceMethod();
-  }
 }
