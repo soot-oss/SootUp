@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 /**
  * An enumeration of common file types used for class loading/writing and other purposes.
  *
- * @author Manuel Benz created on 07.06.18
+ * @author Manuel Benz
  */
 public enum FileType {
   JAR("jar"),

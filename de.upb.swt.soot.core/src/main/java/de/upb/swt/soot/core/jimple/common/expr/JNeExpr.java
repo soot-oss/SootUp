@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/** The opposite of {@link JEqExpr} */
 public final class JNeExpr extends AbstractConditionExpr implements Copyable {
 
   public JNeExpr(Value op1, Value op2) {

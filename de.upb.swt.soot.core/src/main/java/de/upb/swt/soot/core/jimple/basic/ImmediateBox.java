@@ -25,6 +25,11 @@
 
 package de.upb.swt.soot.core.jimple.basic;
 
+/**
+ * Contains an {@link Immediate}.
+ *
+ * <p>Prefer to use the factory methods in {@link de.upb.swt.soot.core.jimple.Jimple}.
+ */
 public class ImmediateBox extends ValueBox {
 
   public ImmediateBox(Value value) {

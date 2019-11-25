@@ -1,7 +1,5 @@
 package de.upb.swt.soot.core.frontend;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Modifier;
@@ -10,7 +8,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.model.SourceType;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -19,7 +17,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * Basic class for storing information that is needed to reify a {@link SootClass}.
+ * Basic class for retrieving information that is needed to build a {@link SootClass}.
  *
  * @author Manuel Benz created on 22.05.18
  * @author Ben Hermann
@@ -28,10 +26,9 @@ import javax.annotation.Nonnull;
 public abstract class ClassSource extends AbstractClassSource {
 
   @Override
-  public AbstractClass reifyClass() {
-    // TODO: [cb] Don't use a fixed SourceType here. [ms]: lift determination of SourceType up to
-    // classSource->AnalysisInputLocation?
-    return new SootClass(this, SourceType.Application);
+  @Nonnull
+  public AbstractClass<? extends AbstractClassSource> buildClass(@Nonnull SourceType sourceType) {
+    return new SootClass(this, sourceType);
   }
 
   /**
@@ -49,28 +46,48 @@ public abstract class ClassSource extends AbstractClassSource {
    *     {@link ClassSource}, backed up by the given file
    */
   public ClassSource(
-      AnalysisInputLocation srcNamespace, JavaClassType classSignature, Path sourcePath) {
+      @Nonnull AnalysisInputLocation srcNamespace,
+      @Nonnull ClassType classSignature,
+      @Nonnull Path sourcePath) {
     super(srcNamespace, classSignature, sourcePath);
-    checkNotNull(srcNamespace);
   }
 
+  /** Reads from the source to retrieve its methods. This may be an expensive operation. */
   @Nonnull
   public abstract Collection<SootMethod> resolveMethods() throws ResolveException;
 
+  /** Reads from the source to retrieve its fields. This may be an expensive operation. */
   @Nonnull
   public abstract Collection<SootField> resolveFields() throws ResolveException;
 
+  /** Reads from the source to retrieve its modifiers. This may be an expensive operation. */
   @Nonnull
   public abstract Set<Modifier> resolveModifiers();
 
+  /**
+   * Reads from the source to retrieve its directly implemented interfaces. This may be an expensive
+   * operation.
+   */
   @Nonnull
-  public abstract Set<JavaClassType> resolveInterfaces();
+  public abstract Set<ClassType> resolveInterfaces();
 
+  /**
+   * Reads from the source to retrieve its superclass, if present. This may be an expensive
+   * operation.
+   */
   @Nonnull
-  public abstract Optional<JavaClassType> resolveSuperclass();
+  public abstract Optional<ClassType> resolveSuperclass();
 
+  /**
+   * Reads from the source to retrieve its outer class, if this is an inner class. This may be an
+   * expensive operation.
+   */
   @Nonnull
-  public abstract Optional<JavaClassType> resolveOuterClass();
+  public abstract Optional<ClassType> resolveOuterClass();
 
+  /**
+   * Reads from the source to retrieve its position in the source code. This may be an expensive
+   * operation.
+   */
   public abstract Position resolvePosition();
 }

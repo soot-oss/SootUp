@@ -5,11 +5,15 @@ import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
 
-/** @author Linghui Luo */
+/**
+ * A {@link ClassProvider} that can read Java source code
+ *
+ * @author Linghui Luo
+ */
 public class WalaJavaClassProvider implements ClassProvider {
 
   @Nullable private final String exclusionFilePath;
@@ -24,7 +28,7 @@ public class WalaJavaClassProvider implements ClassProvider {
 
   @Override
   public ClassSource createClassSource(
-      AnalysisInputLocation srcNamespace, Path sourcePath, JavaClassType type) {
+      AnalysisInputLocation srcNamespace, Path sourcePath, ClassType type) {
     return new WalaClassLoader(sourcePath.toString(), exclusionFilePath)
         .getClassSource(type)
         .orElseThrow(() -> new ResolveException("Could not resolve " + type + " in " + sourcePath));

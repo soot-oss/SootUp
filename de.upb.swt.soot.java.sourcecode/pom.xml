@@ -23,6 +23,11 @@
       <artifactId>soot.core</artifactId>
       <version>4.0.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>de.upb.swt</groupId>
+      <artifactId>soot.java.core</artifactId>
+      <version>4.0.0-SNAPSHOT</version>
+    </dependency>
 
     <!-- wala java source code front-end dependences -->
     <dependency>

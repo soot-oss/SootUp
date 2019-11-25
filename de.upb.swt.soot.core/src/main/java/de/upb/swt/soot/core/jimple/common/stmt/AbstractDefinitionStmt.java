@@ -25,7 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public abstract class AbstractDefinitionStmt extends AbstractStmt {
   private final ValueBox leftBox;
   private final ValueBox rightBox;
 
-  AbstractDefinitionStmt(ValueBox leftBox, ValueBox rightBox, PositionInfo positionInfo) {
+  AbstractDefinitionStmt(ValueBox leftBox, ValueBox rightBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.leftBox = leftBox;
     this.rightBox = rightBox;

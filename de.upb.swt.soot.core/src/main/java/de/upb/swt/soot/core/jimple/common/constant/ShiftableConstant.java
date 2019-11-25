@@ -27,7 +27,6 @@ package de.upb.swt.soot.core.jimple.common.constant;
 
 import javax.annotation.Nonnull;
 
-@SuppressWarnings("serial")
 public interface ShiftableConstant<A extends ShiftableConstant<A>>
     extends NumericConstant<A>, LogicalConstant<A> {
   @Nonnull

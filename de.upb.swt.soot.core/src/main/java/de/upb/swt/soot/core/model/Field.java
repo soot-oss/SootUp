@@ -1,6 +1,6 @@
 package de.upb.swt.soot.core.model;
 
-import de.upb.swt.soot.core.signatures.Signature;
+import de.upb.swt.soot.core.signatures.FieldSignature;
 
 /**
  * Interface for field.
@@ -8,5 +8,5 @@ import de.upb.swt.soot.core.signatures.Signature;
  * @author Linghui Luo
  */
 public interface Field {
-  Signature getSignature();
+  FieldSignature getSignature();
 }

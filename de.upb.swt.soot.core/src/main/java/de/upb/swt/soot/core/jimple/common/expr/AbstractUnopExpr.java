@@ -30,7 +30,6 @@ import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("serial")
 public abstract class AbstractUnopExpr implements Expr {
   private final ValueBox opBox;
 

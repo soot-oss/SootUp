@@ -27,7 +27,7 @@ package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
@@ -39,15 +39,16 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** A method call */
 public final class JInvokeStmt extends AbstractStmt implements Copyable {
 
   private final ValueBox invokeExprBox;
 
-  public JInvokeStmt(Value invokeExpr, PositionInfo positionInfo) {
+  public JInvokeStmt(Value invokeExpr, StmtPositionInfo positionInfo) {
     this(Jimple.newInvokeExprBox(invokeExpr), positionInfo);
   }
 
-  private JInvokeStmt(ValueBox invokeExprBox, PositionInfo positionInfo) {
+  private JInvokeStmt(ValueBox invokeExprBox, StmtPositionInfo positionInfo) {
     super(positionInfo);
     this.invokeExprBox = invokeExprBox;
   }
@@ -117,7 +118,7 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JInvokeStmt withPositionInfo(PositionInfo positionInfo) {
+  public JInvokeStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JInvokeStmt(invokeExprBox, positionInfo);
   }
 }

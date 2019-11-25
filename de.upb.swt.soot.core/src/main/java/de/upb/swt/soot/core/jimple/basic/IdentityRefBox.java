@@ -27,6 +27,11 @@ package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 
+/**
+ * Contains an {@link IdentityRef}.
+ *
+ * <p>Prefer to use the factory methods in {@link de.upb.swt.soot.core.jimple.Jimple}.
+ */
 public class IdentityRefBox extends ValueBox {
 
   public IdentityRefBox(Value value) {

@@ -1,9 +1,15 @@
+/*
+ * @author Linghui Luo
+ */
 package de.upb.swt.soot.core;
 
-import de.upb.swt.soot.core.buildactor.ViewBuilder;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.util.NotYetImplementedException;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.views.View;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 /**
@@ -14,31 +20,75 @@ import javax.annotation.Nonnull;
  * @author Linghui Luo
  * @author Ben Hermann
  */
-public class Project<S extends AnalysisInputLocation> {
-  /** Create a project from an arbitrary list of input locations */
-  public Project(@Nonnull S inputLocation) {
-    this(inputLocation, DefaultIdentifierFactory.getInstance());
+public abstract class Project {
+
+  @Nonnull private final IdentifierFactory identifierFactory;
+  @Nonnull private final List<AnalysisInputLocation> inputLocations;
+  @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
+  @Nonnull private final Language language;
+  /**
+   * Create a project from an arbitrary input location.
+   *
+   * @param language the language
+   * @param inputLocation the input location
+   * @param sourceTypeSpecifier the source type specifier
+   */
+  public Project(
+      @Nonnull Language language,
+      @Nonnull AnalysisInputLocation inputLocation,
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+    this(
+        language,
+        Collections.singletonList(inputLocation),
+        language.getIdentifierFactory(),
+        sourceTypeSpecifier);
   }
 
-  /** Create a project from an arbitrary list of input locations */
-  public Project(@Nonnull S inputLocations, @Nonnull DefaultIdentifierFactory identifierFactory) {
-    this.inputLocation = inputLocations;
+  /**
+   * Create a project from an arbitrary list of input locations.
+   *
+   * @param language the language
+   * @param inputLocations the input locations
+   * @param identifierFactory the identifier factory
+   * @param sourceTypeSpecifier the source type specifier
+   */
+  public Project(
+      @Nonnull Language language,
+      @Nonnull List<AnalysisInputLocation> inputLocations,
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nonnull SourceTypeSpecifier sourceTypeSpecifier) {
+    this.language = language;
+    List<AnalysisInputLocation> unmodifiableInputLocations =
+        Collections.unmodifiableList(new ArrayList<>(inputLocations));
+
+    if (unmodifiableInputLocations.isEmpty()) {
+      throw new IllegalArgumentException("The inputLocations collection must not be empty.");
+    }
+
+    this.sourceTypeSpecifier = sourceTypeSpecifier;
+    this.inputLocations = unmodifiableInputLocations;
     this.identifierFactory = identifierFactory;
   }
 
-  @Nonnull private final S inputLocation;
-
-  /** Gets the inputLocation. */
+  /** Gets the inputLocations. */
   @Nonnull
-  public S getInputLocation() {
-    return this.inputLocation;
+  public List<AnalysisInputLocation> getInputLocations() {
+    return this.inputLocations;
   }
-
-  @Nonnull private final IdentifierFactory identifierFactory;
 
   @Nonnull
   public IdentifierFactory getIdentifierFactory() {
     return this.identifierFactory;
+  }
+
+  @Nonnull
+  public SourceTypeSpecifier getSourceTypeSpecifier() {
+    return sourceTypeSpecifier;
+  }
+
+  @Nonnull
+  public Language getLanguage() {
+    return language;
   }
 
   /**
@@ -48,18 +98,19 @@ public class Project<S extends AnalysisInputLocation> {
    * @return A complete view on the provided code
    */
   @Nonnull
-  public View createFullView() {
-    //    ViewBuilder vb = new ViewBuilder(this);
-    //    return vb.buildComplete();
+  public abstract View createFullView();
 
-    throw new NotYetImplementedException();
-  }
-
+  /**
+   * Creates an on-demand View that uses the default {@link
+   * de.upb.swt.soot.core.inputlocation.ClassLoadingOptions} of each frontend.
+   */
   @Nonnull
-  public View createOnDemandView() {
-    ViewBuilder<S> vb = new ViewBuilder<>(this);
-    return vb.buildOnDemand();
-  }
+  public abstract View createOnDemandView();
+
+  /** Creates an on-demand View with custom {@link ClassLoadingOptions}. */
+  @Nonnull
+  public abstract View createOnDemandView(
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier);
 
   /**
    * Returns a partial view on the code based on the provided scope and all input locations in the
@@ -69,7 +120,5 @@ public class Project<S extends AnalysisInputLocation> {
    * @return A scoped view of the provided code
    */
   @Nonnull
-  public View createView(Scope s) {
-    throw new NotYetImplementedException(); // TODO
-  }
+  public abstract View createView(Scope s);
 }
