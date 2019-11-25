@@ -73,7 +73,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     super(methodSignature, modifiers);
 
     this.methodSource = source;
-    this.parameterTypes = ImmutableUtils.immutableListOf(methodSignature.getParameterSignatures());
+    this.parameterTypes = ImmutableUtils.immutableListOf(methodSignature.getParameterTypes());
     this.exceptions = ImmutableUtils.immutableListOf(thrownExceptions);
   }
 

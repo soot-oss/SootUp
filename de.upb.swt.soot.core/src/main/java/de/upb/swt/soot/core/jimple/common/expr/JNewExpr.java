@@ -38,6 +38,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** An expression that creates a new instance of a class. */
 public final class JNewExpr implements Expr, Copyable {
 
   private final ReferenceType type;

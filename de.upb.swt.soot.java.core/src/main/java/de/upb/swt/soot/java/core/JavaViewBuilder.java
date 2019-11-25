@@ -4,9 +4,13 @@
 package de.upb.swt.soot.java.core;
 
 import de.upb.swt.soot.core.Scope;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaModuleView;
 import de.upb.swt.soot.java.core.views.JavaView;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 /**
@@ -43,6 +47,11 @@ public class JavaViewBuilder {
     return chooseView();
   }
 
+  public View createOnDemandView(
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
+    return chooseView(classLoadingOptionsSpecifier);
+  }
+
   /**
    * Creates the full view.
    *
@@ -77,6 +86,21 @@ public class JavaViewBuilder {
       return new JavaModuleView(project);
     } else {
       return new JavaView(project);
+    }
+  }
+
+  /**
+   * Choose view.
+   *
+   * @return the java view
+   */
+  @Nonnull
+  private JavaView chooseView(
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
+    if (useJavaModules) {
+      return new JavaModuleView(project, classLoadingOptionsSpecifier);
+    } else {
+      return new JavaView(project, classLoadingOptionsSpecifier);
     }
   }
 }

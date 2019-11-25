@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** An expression that creates a new array of a certain type and a certain size. */
 public final class JNewArrayExpr implements Expr, Copyable {
 
   private final Type baseType;

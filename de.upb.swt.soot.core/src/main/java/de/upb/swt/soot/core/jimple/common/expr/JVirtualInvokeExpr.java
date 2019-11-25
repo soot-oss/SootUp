@@ -35,6 +35,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** An expression that invokes a virtual method. */
 public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */

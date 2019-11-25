@@ -4,11 +4,19 @@ import com.google.common.collect.ImmutableSet;
 import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.AbstractView;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -94,9 +102,26 @@ public class JavaView extends AbstractView {
 
   private volatile boolean isFullyResolved = false;
 
+  @Nonnull
+  protected Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier;
+
   /** Creates a new instance of the {@link JavaView} class. */
   public JavaView(@Nonnull Project project) {
+    this(project, analysisInputLocation -> null);
+  }
+
+  /**
+   * Creates a new instance of the {@link JavaView} class.
+   *
+   * @param classLoadingOptionsSpecifier To use the default {@link ClassLoadingOptions} for an
+   *     {@link AnalysisInputLocation}, simply return <code>null</code>, otherwise the desired
+   *     options.
+   */
+  public JavaView(
+      @Nonnull Project project,
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
     super(project);
+    this.classLoadingOptionsSpecifier = classLoadingOptionsSpecifier;
   }
 
   @Override
@@ -119,7 +144,16 @@ public class JavaView extends AbstractView {
 
     final List<AbstractClassSource> foundClassSources =
         getProject().getInputLocations().stream()
-            .map(location -> location.getClassSource(type))
+            .map(
+                location -> {
+                  ClassLoadingOptions classLoadingOptions =
+                      classLoadingOptionsSpecifier.apply(location);
+                  if (classLoadingOptions != null) {
+                    return location.getClassSource(type, classLoadingOptions);
+                  } else {
+                    return location.getClassSource(type);
+                  }
+                })
             .filter(Optional::isPresent)
             .limit(2)
             .map(Optional::get)
@@ -149,9 +183,19 @@ public class JavaView extends AbstractView {
     if (isFullyResolved) {
       return;
     }
-    // Calling getClass fills the map
+
     getProject().getInputLocations().stream()
-        .flatMap(location -> location.getClassSources(getIdentifierFactory()).stream())
+        .flatMap(
+            location -> {
+              ClassLoadingOptions classLoadingOptions =
+                  classLoadingOptionsSpecifier.apply(location);
+              if (classLoadingOptions != null) {
+                return location.getClassSources(getIdentifierFactory(), classLoadingOptions)
+                    .stream();
+              } else {
+                return location.getClassSources(getIdentifierFactory()).stream();
+              }
+            })
         .forEach(this::getClass);
     isFullyResolved = true;
   }

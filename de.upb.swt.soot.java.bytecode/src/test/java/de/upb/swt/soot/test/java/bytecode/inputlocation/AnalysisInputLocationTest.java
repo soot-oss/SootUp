@@ -3,9 +3,10 @@ package de.upb.swt.soot.test.java.bytecode.inputlocation;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
+import de.upb.swt.soot.java.bytecode.interceptors.BytecodeBodyInterceptors;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import java.util.Collection;
 import java.util.Optional;
@@ -37,7 +38,7 @@ import org.mockito.internal.matchers.LessOrEqual;
  */
 
 /** @author Manuel Benz created on 07.06.18 */
-public abstract class AbstractAnalysisInputLocationTest {
+public abstract class AnalysisInputLocationTest {
 
   public static final String jarFile = "../shared-test-resources/Soot-4.0-SNAPSHOT.jar";
 
@@ -48,7 +49,7 @@ public abstract class AbstractAnalysisInputLocationTest {
   @Before
   public void setUp() {
     identifierFactory = JavaIdentifierFactory.getInstance();
-    classProvider = createClassProvider();
+    classProvider = new AsmJavaClassProvider(BytecodeBodyInterceptors.Default.bodyInterceptors());
   }
 
   protected IdentifierFactory getIdentifierFactory() {
@@ -59,17 +60,12 @@ public abstract class AbstractAnalysisInputLocationTest {
     return classProvider;
   }
 
-  protected ClassProvider createClassProvider() {
-    return new AsmJavaClassProvider();
-  }
-
-  protected void testClassReceival(
-      AbstractAnalysisInputLocation ns, ClassType sig, int minClassesFound) {
+  protected void testClassReceival(AnalysisInputLocation ns, ClassType sig, int minClassesFound) {
     testClassReceival(ns, sig, minClassesFound, -1);
   }
 
   protected void testClassReceival(
-      AbstractAnalysisInputLocation ns, ClassType sig, int minClassesFound, int maxClassesFound) {
+      AnalysisInputLocation ns, ClassType sig, int minClassesFound, int maxClassesFound) {
     final Optional<? extends AbstractClassSource> clazz = ns.getClassSource(sig);
 
     Assert.assertTrue(clazz.isPresent());

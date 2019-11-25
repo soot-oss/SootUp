@@ -20,7 +20,6 @@ import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
@@ -60,11 +59,9 @@ public class ViewTypeHierarchyTest {
             .distinct()
             .collect(Collectors.joining(File.pathSeparator));
     analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(
-            jarFile + File.pathSeparator + rtJarClassPath, new AsmJavaClassProvider());
+        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
     Project p =
         JavaProject.builder(new JavaLanguage(8)).addClassPath(analysisInputLocation).build();
-
     view = p.createOnDemandView();
     typeHierarchy = new ViewTypeHierarchy(view);
   }

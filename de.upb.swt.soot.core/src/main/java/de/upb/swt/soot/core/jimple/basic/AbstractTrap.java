@@ -2,8 +2,6 @@ package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.types.ClassType;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -50,11 +48,6 @@ public class AbstractTrap implements Trap {
   /** The list of unitBoxes referred to in this Trap (begin, end and handler. */
   private final List<StmtBox> unitBoxes;
 
-  private void writeObject(ObjectOutputStream out) throws IOException {
-    out.defaultWriteObject();
-    out.writeObject(exception.getFullyQualifiedName());
-  }
-
   /** Creates an AbstractTrap with the given exception, handler, begin and end units. */
   AbstractTrap(
       ClassType exception, StmtBox beginStmtBox, StmtBox endStmtBox, StmtBox handlerStmtBox) {
@@ -99,7 +92,7 @@ public class AbstractTrap implements Trap {
   }
 
   @Override
-  public ClassType getException() {
+  public ClassType getExceptionType() {
     return exception;
   }
 }

@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import javax.annotation.Nonnull;
 
+/** A 32-bit integer constant. */
 public class IntConstant implements ShiftableConstant<IntConstant> {
 
   private final int value;

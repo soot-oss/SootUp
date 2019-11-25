@@ -31,6 +31,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
+/** A ClassSource that reads from Java bytecode */
 class AsmClassSource extends ClassSource {
 
   @Nonnull private final ClassNode classNode;

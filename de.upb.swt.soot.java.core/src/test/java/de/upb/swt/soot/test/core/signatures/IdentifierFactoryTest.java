@@ -193,8 +193,6 @@ public class IdentifierFactoryTest {
     boolean sameObject = classSignature1 == classSignature2;
     assertFalse(sameObject);
     assertEquals(classSignature1, classSignature2);
-    assertTrue(classSignature1.isInnerClass());
-    assertTrue(classSignature2.isInnerClass());
   }
 
   @Test
@@ -226,7 +224,7 @@ public class IdentifierFactoryTest {
         identifierFactory.getMethodSignature("foo", "java.lang.System", "java.lang.A", parameters);
     assertEquals(declClass, methodSignature.getDeclClassType());
     assertEquals(returnType, methodSignature.getType());
-    assertEquals(parameter, methodSignature.getParameterSignatures().get(0));
+    assertEquals(parameter, methodSignature.getParameterTypes().get(0));
   }
 
   @Test

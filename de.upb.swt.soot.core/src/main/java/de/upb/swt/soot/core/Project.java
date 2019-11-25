@@ -4,10 +4,12 @@
 package de.upb.swt.soot.core;
 
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 
 /**
@@ -98,8 +100,17 @@ public abstract class Project {
   @Nonnull
   public abstract View createFullView();
 
+  /**
+   * Creates an on-demand View that uses the default {@link
+   * de.upb.swt.soot.core.inputlocation.ClassLoadingOptions} of each frontend.
+   */
   @Nonnull
   public abstract View createOnDemandView();
+
+  /** Creates an on-demand View with custom {@link ClassLoadingOptions}. */
+  @Nonnull
+  public abstract View createOnDemandView(
+      @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier);
 
   /**
    * Returns a partial view on the code based on the provided scope and all input locations in the

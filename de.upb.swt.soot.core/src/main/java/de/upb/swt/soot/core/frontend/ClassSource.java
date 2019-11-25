@@ -17,7 +17,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
- * Basic class for storing information that is needed to reify a {@link SootClass}.
+ * Basic class for retrieving information that is needed to build a {@link SootClass}.
  *
  * @author Manuel Benz created on 22.05.18
  * @author Ben Hermann
@@ -52,23 +52,42 @@ public abstract class ClassSource extends AbstractClassSource {
     super(srcNamespace, classSignature, sourcePath);
   }
 
+  /** Reads from the source to retrieve its methods. This may be an expensive operation. */
   @Nonnull
   public abstract Collection<SootMethod> resolveMethods() throws ResolveException;
 
+  /** Reads from the source to retrieve its fields. This may be an expensive operation. */
   @Nonnull
   public abstract Collection<SootField> resolveFields() throws ResolveException;
 
+  /** Reads from the source to retrieve its modifiers. This may be an expensive operation. */
   @Nonnull
   public abstract Set<Modifier> resolveModifiers();
 
+  /**
+   * Reads from the source to retrieve its directly implemented interfaces. This may be an expensive
+   * operation.
+   */
   @Nonnull
   public abstract Set<ClassType> resolveInterfaces();
 
+  /**
+   * Reads from the source to retrieve its superclass, if present. This may be an expensive
+   * operation.
+   */
   @Nonnull
   public abstract Optional<ClassType> resolveSuperclass();
 
+  /**
+   * Reads from the source to retrieve its outer class, if this is an inner class. This may be an
+   * expensive operation.
+   */
   @Nonnull
   public abstract Optional<ClassType> resolveOuterClass();
 
+  /**
+   * Reads from the source to retrieve its position in the source code. This may be an expensive
+   * operation.
+   */
   public abstract Position resolvePosition();
 }

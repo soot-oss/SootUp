@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import javax.annotation.Nonnull;
 
+/** A 64-bit integer constant */
 public class LongConstant implements ShiftableConstant<LongConstant> {
 
   private final long value;

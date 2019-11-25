@@ -36,6 +36,7 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
+/** A statement that ends the method, returning a value. */
 public final class JReturnStmt extends AbstractOpStmt implements Copyable {
 
   public JReturnStmt(Value returnValue, StmtPositionInfo positionInfo) {

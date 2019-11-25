@@ -8,7 +8,12 @@ import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
-import de.upb.swt.soot.core.types.*;
+import de.upb.swt.soot.core.types.ArrayType;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.types.NullType;
+import de.upb.swt.soot.core.types.PrimitiveType;
+import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -25,6 +30,10 @@ import javax.annotation.Nonnull;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ClassUtils;
 
+/**
+ * The Java-specific implementation of {@link IdentifierFactory}. Should not be used for other
+ * languages.
+ */
 public class JavaIdentifierFactory implements IdentifierFactory {
 
   @Nonnull private static final JavaIdentifierFactory INSTANCE = new JavaIdentifierFactory();

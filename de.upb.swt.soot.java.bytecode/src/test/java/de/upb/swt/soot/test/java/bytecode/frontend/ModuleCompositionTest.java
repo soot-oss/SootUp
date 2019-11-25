@@ -19,7 +19,6 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
@@ -52,9 +51,8 @@ public class ModuleCompositionTest {
 
     // Create a project
     Project p =
-        JavaProject.builder(new JavaLanguage(9))
-            .addClassPath(
-                new JavaClassPathAnalysisInputLocation(jarFile, new AsmJavaClassProvider()))
+        JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(new JavaClassPathAnalysisInputLocation(jarFile))
             .build();
 
     // Get the view

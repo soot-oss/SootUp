@@ -1,13 +1,12 @@
 package de.upb.swt.soot.java.bytecode.frontend.modules;
 
-import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
-import de.upb.swt.soot.core.model.AbstractClass;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.java.bytecode.frontend.AsmUtil;
+import de.upb.swt.soot.java.core.AbstractModuleClassSource;
+import de.upb.swt.soot.java.core.JavaModuleInfo;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -21,7 +20,7 @@ import org.objectweb.asm.tree.ModuleOpenNode;
 import org.objectweb.asm.tree.ModuleProvideNode;
 import org.objectweb.asm.tree.ModuleRequireNode;
 
-public class AsmModuleClassSource extends AbstractClassSource {
+public class AsmModuleClassSource extends AbstractModuleClassSource {
 
   private final ModuleNode module;
 
@@ -34,14 +33,12 @@ public class AsmModuleClassSource extends AbstractClassSource {
     this.module = moduleNode;
   }
 
-  public AbstractClass buildClass(@Nonnull SourceType sourceType) {
-    return new JavaModuleInfo(this, false);
-  }
-
+  @Override
   public String getModuleName() {
     return this.module.name;
   }
 
+  @Override
   public Collection<JavaModuleInfo.ModuleReference> requires() {
     ArrayList<JavaModuleInfo.ModuleReference> requieres = new ArrayList<>();
 
@@ -60,6 +57,7 @@ public class AsmModuleClassSource extends AbstractClassSource {
     return null;
   }
 
+  @Override
   public Collection<JavaModuleInfo.PackageReference> exports() {
     ArrayList<JavaModuleInfo.PackageReference> exports = new ArrayList<>();
     for (ModuleExportNode exportNode : module.exports) {
@@ -80,6 +78,7 @@ public class AsmModuleClassSource extends AbstractClassSource {
     return exports;
   }
 
+  @Override
   public Collection<JavaModuleInfo.PackageReference> opens() {
     ArrayList<JavaModuleInfo.PackageReference> opens = new ArrayList<>();
     /// add opens
@@ -102,7 +101,7 @@ public class AsmModuleClassSource extends AbstractClassSource {
   }
 
   // FIXME: does not look right here
-
+  @Override
   public Collection<JavaClassType> provides() {
     ArrayList<JavaClassType> providers = new ArrayList<>();
     // add provides
@@ -120,6 +119,7 @@ public class AsmModuleClassSource extends AbstractClassSource {
     return providers;
   }
 
+  @Override
   public Collection<JavaClassType> uses() {
     ArrayList<JavaClassType> uses = new ArrayList<>();
     // add provides
@@ -131,11 +131,13 @@ public class AsmModuleClassSource extends AbstractClassSource {
     return uses;
   }
 
+  @Override
   public Set<Modifier> resolveModifiers() {
     EnumSet<Modifier> modifiers = AsmUtil.getModifiers(module.access);
     return modifiers;
   }
 
+  @Override
   public Position resolvePosition() {
     return NoPositionInformation.getInstance();
   }

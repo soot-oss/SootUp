@@ -24,7 +24,13 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.*;
+import de.upb.swt.soot.core.jimple.basic.Local;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
+import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
+import de.upb.swt.soot.core.jimple.basic.Trap;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
 import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
@@ -66,6 +72,7 @@ import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.transform.BodyInterceptor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -92,6 +99,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.objectweb.asm.Handle;
+import org.objectweb.asm.commons.JSRInlinerAdapter;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.IincInsnNode;
@@ -111,9 +119,12 @@ import org.objectweb.asm.tree.TryCatchBlockNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
-/** @author Andreas Dann */
-public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
-    implements MethodSource {
+/**
+ * A {@link MethodSource} that can read Java bytecode
+ *
+ * @author Andreas Dann
+ */
+public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private static final Operand DWORD_DUMMY = new Operand(null, null);
 
@@ -139,6 +150,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
   private Multimap<LabelNode, StmtBox> trapHandlers;
   private int lastLineNumber = -1;
   @Nullable private JavaClassType declaringClass;
+  @Nonnull private final List<BodyInterceptor> bodyInterceptors;
 
   /*
    * Hint: in InstructionConverter convertInvokeInstruction() ling creates string for methodRef and types and stores/replaces
@@ -151,8 +163,6 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
   @Nonnull private final Set<LabelNode> inlineExceptionLabels = new HashSet<>();
 
   @Nonnull private final Map<LabelNode, Stmt> inlineExceptionHandlers = new HashMap<>();
-
-  @Nonnull private final CastAndReturnInliner castAndReturnInliner = new CastAndReturnInliner();
 
   private final Supplier<MethodSignature> lazyMethodSignature =
       Suppliers.memoize(
@@ -167,13 +177,15 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
   private final Supplier<Set<Modifier>> lazyModifiers =
       Suppliers.memoize(() -> AsmUtil.getModifiers(access));
 
-  public AsmMethodSource(
+  AsmMethodSource(
       int access,
       @Nonnull String name,
       @Nonnull String desc,
       @Nonnull String signature,
-      @Nonnull String[] exceptions) {
+      @Nonnull String[] exceptions,
+      @Nonnull List<BodyInterceptor> bodyInterceptors) {
     super(AsmUtil.SUPPORTED_ASM_OPCODE, null, access, name, desc, signature, exceptions);
+    this.bodyInterceptors = bodyInterceptors;
   }
 
   @Override
@@ -227,6 +239,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     stack = null;
     frames = null;
 
+    // TODO CastAndReturnInliner:
     // Make sure to inline patterns of the form to enable proper variable
     // splitting and type assignment:
     // a = new A();
@@ -234,16 +247,18 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     // l0:
     // b = (B) a;
     // return b;
-    castAndReturnInliner.transform(bodyStmts, bodyTraps);
 
-    try {
-      // TODO: Implement body transformer
-      // PackManager.v().getPack("jb").apply(jb);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to apply jb to " + lazyMethodSignature.get(), e);
+    Body body = new Body(bodyLocals, bodyTraps, bodyStmts, bodyPos);
+    for (BodyInterceptor bodyInterceptor : bodyInterceptors) {
+      try {
+        body = bodyInterceptor.interceptBody(body);
+      } catch (Exception e) {
+        throw new RuntimeException(
+            "Failed to apply " + bodyInterceptor + " to " + lazyMethodSignature.get(), e);
+      }
     }
 
-    return new Body(bodyLocals, bodyTraps, bodyStmts, bodyPos);
+    return body;
   }
 
   private StackFrame getFrame(AbstractInsnNode insn) {
@@ -1366,7 +1381,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     } else {
       opr = out[0];
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
-      List<Type> types = expr.getMethodSignature().getParameterSignatures();
+      List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
       int nrArgs = types.size();
       if (lazyModifiers.get().contains(Modifier.STATIC)) {
@@ -1460,7 +1475,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
     } else {
       opr = out[0];
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
-      List<Type> types = expr.getMethodSignature().getParameterSignatures();
+      List<Type> types = expr.getMethodSignature().getParameterTypes();
       Operand[] oprs;
       int nrArgs = types.size();
       if (expr instanceof JStaticInvokeExpr) {
@@ -1937,7 +1952,7 @@ public class AsmMethodSource extends org.objectweb.asm.commons.JSRInlinerAdapter
               l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
     }
     int nrp = 0;
-    for (Type ot : methodSignature.getParameterSignatures()) {
+    for (Type ot : methodSignature.getParameterTypes()) {
       Local l = getLocal(iloc);
       jbu.add(
           Jimple.newIdentityStmt(

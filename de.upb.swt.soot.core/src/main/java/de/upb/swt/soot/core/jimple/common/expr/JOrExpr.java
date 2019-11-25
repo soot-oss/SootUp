@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/** An expression that computes a binary OR of two operands. */
 public final class JOrExpr extends AbstractIntLongBinopExpr implements Copyable {
 
   public JOrExpr(Value op1, Value op2) {
