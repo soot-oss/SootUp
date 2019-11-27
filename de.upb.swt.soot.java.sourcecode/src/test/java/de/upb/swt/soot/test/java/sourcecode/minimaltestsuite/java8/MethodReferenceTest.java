@@ -16,10 +16,7 @@ public class MethodReferenceTest extends MinimalTestSuiteBase {
         "methodRefMethod", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  /**
-   * TODO
-   * Update the source code when WALA supports lambda expression
-   * */
+  /** TODO Update the source code when WALA supports lambda expression */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(

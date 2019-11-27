@@ -3,12 +3,11 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
-import org.junit.Ignore;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Ignore;
 
 /** @author Kaustubh Kelkar */
 public class SymbolsAsClassNameTest extends MinimalTestSuiteBase {
@@ -21,12 +20,13 @@ public class SymbolsAsClassNameTest extends MinimalTestSuiteBase {
   @Override
   public void defaultTest() {
     /**
-     * Exception in thread "main" java.nio.file.InvalidPathException: Illegal char <?> at index 1: a?et?.java
-     * */
+     * Exception in thread "main" java.nio.file.InvalidPathException: Illegal char <?> at index 1:
+     * a?et?.java
+     */
   }
 
   @Ignore
-  public void ignoreTest(){
+  public void ignoreTest() {
     super.defaultTest();
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     System.out.println(sootClass.getClassSource().getClassType().getClassName());
