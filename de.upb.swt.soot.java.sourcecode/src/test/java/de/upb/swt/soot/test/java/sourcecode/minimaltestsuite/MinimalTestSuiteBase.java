@@ -27,13 +27,14 @@ import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 
 /**
- * @author: Markus Schmidt,
- * @author: Hasitha Rajapakse
+ * @author Markus Schmidt,
+ * @author Hasitha Rajapakse
+ * @author Kaustubh Kelkar
  */
 @Category(Java8Test.class)
 public abstract class MinimalTestSuiteBase {
 
-  static final String baseDir = "src/test/resources/minimaltestsuite/";
+  static final String baseDir = "../shared-test-resources/minimaltestsuite/";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
   @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
