@@ -1,6 +1,4 @@
-package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java9;
-
-
+/** @author Kaustubh Kelkar */
 abstract class MyClass<T>{
     abstract T add(T num, T num2);
 }

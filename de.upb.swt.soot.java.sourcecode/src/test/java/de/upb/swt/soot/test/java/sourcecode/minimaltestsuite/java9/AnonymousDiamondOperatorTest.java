@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.Ignore;
+import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
 public class AnonymousDiamondOperatorTest extends MinimalTestSuiteBase {
@@ -15,6 +17,14 @@ public class AnonymousDiamondOperatorTest extends MinimalTestSuiteBase {
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "innerClassDiamond", getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
+
+  @Test
+  public void defaultTest() {}
+
+  @Ignore
+  public void ignoreTest() {
+    /** TODO Check for anonymous declarations once Java 9 is supported in WALA */
   }
 
   @Override
