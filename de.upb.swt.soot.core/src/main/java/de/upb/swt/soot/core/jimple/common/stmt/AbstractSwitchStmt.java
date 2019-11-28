@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Deprecated
 public abstract class AbstractSwitchStmt extends AbstractStmt {
 
   private final StmtBox defaultTargetBox;

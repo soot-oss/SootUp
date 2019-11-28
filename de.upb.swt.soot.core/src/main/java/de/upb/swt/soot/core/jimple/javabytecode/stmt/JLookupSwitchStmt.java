@@ -34,8 +34,6 @@ import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
@@ -43,6 +41,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+@Deprecated
 public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copyable {
   /**
    * List of lookup values from the corresponding bytecode instruction, represented as IntConstants.
@@ -183,13 +182,8 @@ public final class JLookupSwitchStmt extends AbstractSwitchStmt implements Copya
   }
 
   @Override
-  public void accept(Visitor sw) {
-    ((StmtVisitor) sw).caseLookupSwitchStmt(this);
-  }
-
-  @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
-    return comparator.caseLookupSwitchStmt(this, o);
+    return comparator.caseSwitchStmt(this, o);
   }
 
   @Override

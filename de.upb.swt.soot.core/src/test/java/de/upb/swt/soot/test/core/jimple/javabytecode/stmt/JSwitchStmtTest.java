@@ -25,24 +25,23 @@ public class JSwitchStmtTest {
     testTableSwitchStmt();
   }
 
-  public void testLookupSwitchStmt(){
+  public void testLookupSwitchStmt() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
     ArrayList<IntConstant> lookupValues = new ArrayList<>();
     ArrayList<Stmt> targets = new ArrayList<>();
 
     Stmt stmt =
-            new JSwitchStmt(
-                    IntConstant.getInstance(42), lookupValues, targets, new JNopStmt(nop), nop);
+        new JSwitchStmt(IntConstant.getInstance(42), lookupValues, targets, new JNopStmt(nop), nop);
     Stmt stmtDifferentKey =
-            new JSwitchStmt(
-                    IntConstant.getInstance(123), lookupValues, targets, new JNopStmt(nop), nop);
+        new JSwitchStmt(
+            IntConstant.getInstance(123), lookupValues, targets, new JNopStmt(nop), nop);
     Stmt stmtDifferentDefault =
-            new JSwitchStmt(
-                    IntConstant.getInstance(42),
-                    lookupValues,
-                    targets,
-                    new JReturnStmt(IntConstant.getInstance(42), nop),
-                    nop);
+        new JSwitchStmt(
+            IntConstant.getInstance(42),
+            lookupValues,
+            targets,
+            new JReturnStmt(IntConstant.getInstance(42), nop),
+            nop);
 
     // toString
     assertEquals("lookupswitch(42) {     default: goto nop; }", stmt.toString());
@@ -54,11 +53,11 @@ public class JSwitchStmtTest {
     lookupValues.add(IntConstant.getInstance(33102));
 
     Stmt stmtDifferentLookupAndTarget =
-            new JSwitchStmt(
-                    IntConstant.getInstance(123), lookupValues, targets, new JNopStmt(nop), nop);
+        new JSwitchStmt(
+            IntConstant.getInstance(123), lookupValues, targets, new JNopStmt(nop), nop);
     assertEquals(
-            "lookupswitch(123) {     case 42: goto return;     case 33102: goto nop;     default: goto nop; }",
-            stmtDifferentLookupAndTarget.toString());
+        "lookupswitch(123) {     case 42: goto return;     case 33102: goto nop;     default: goto nop; }",
+        stmtDifferentLookupAndTarget.toString());
 
     // equivTo
     assertFalse(stmt.equivTo(this));
@@ -68,7 +67,7 @@ public class JSwitchStmtTest {
     assertFalse(stmt.equivTo(stmtDifferentKey));
   }
 
-  public void testTableSwitchStmt(){
+  public void testTableSwitchStmt() {
     PositionInfo nop = PositionInfo.createNoPositionInfo();
     ArrayList<Stmt> targets = new ArrayList<>();
     targets.add(new JReturnStmt(IntConstant.getInstance(1), nop));
@@ -76,13 +75,13 @@ public class JSwitchStmtTest {
     targets.add(new JReturnStmt(IntConstant.getInstance(3), nop));
     targets.add(new JNopStmt(nop));
     Stmt stmt =
-            new JSwitchStmt(
-                    IntConstant.getInstance(123),
-                    1,
-                    4,
-                    targets,
-                    new JReturnStmt(IntConstant.getInstance(666), nop),
-                    nop);
+        new JSwitchStmt(
+            IntConstant.getInstance(123),
+            1,
+            4,
+            targets,
+            new JReturnStmt(IntConstant.getInstance(666), nop),
+            nop);
 
     ArrayList<Stmt> targets2 = new ArrayList<>();
     targets.add(new JReturnStmt(IntConstant.getInstance(1), nop));
@@ -90,44 +89,44 @@ public class JSwitchStmtTest {
     targets.add(new JNopStmt(nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(3), nop));
     Stmt stmt2 =
-            new JSwitchStmt(
-                    IntConstant.getInstance(123),
-                    1,
-                    4,
-                    targets2,
-                    new JReturnStmt(IntConstant.getInstance(666), nop),
-                    nop);
+        new JSwitchStmt(
+            IntConstant.getInstance(123),
+            1,
+            4,
+            targets2,
+            new JReturnStmt(IntConstant.getInstance(666), nop),
+            nop);
     Stmt stmt3 =
-            new JSwitchStmt(
-                    IntConstant.getInstance(456),
-                    1,
-                    4,
-                    targets,
-                    new JReturnStmt(IntConstant.getInstance(666), nop),
-                    nop);
+        new JSwitchStmt(
+            IntConstant.getInstance(456),
+            1,
+            4,
+            targets,
+            new JReturnStmt(IntConstant.getInstance(666), nop),
+            nop);
     Stmt stmt4 =
-            new JSwitchStmt(
-                    IntConstant.getInstance(123),
-                    2,
-                    4,
-                    targets,
-                    new JReturnStmt(IntConstant.getInstance(666), nop),
-                    nop);
+        new JSwitchStmt(
+            IntConstant.getInstance(123),
+            2,
+            4,
+            targets,
+            new JReturnStmt(IntConstant.getInstance(666), nop),
+            nop);
     Stmt stmt5 =
-            new JSwitchStmt(
-                    IntConstant.getInstance(123),
-                    1,
-                    5,
-                    targets,
-                    new JReturnStmt(IntConstant.getInstance(666), nop),
-                    nop);
+        new JSwitchStmt(
+            IntConstant.getInstance(123),
+            1,
+            5,
+            targets,
+            new JReturnStmt(IntConstant.getInstance(666), nop),
+            nop);
     Stmt stmt6 =
-            new JSwitchStmt(IntConstant.getInstance(123), 1, 4, targets, new JNopStmt(nop), nop);
+        new JSwitchStmt(IntConstant.getInstance(123), 1, 4, targets, new JNopStmt(nop), nop);
 
     // toString
     assertEquals(
-            "tableswitch(123) {     case 1: goto return 1;     case 2: goto return 2;     case 3: goto return 3;     case 4: goto nop;     default: goto return 666; }",
-            stmt.toString());
+        "tableswitch(123) {     case 1: goto return 1;     case 2: goto return 2;     case 3: goto return 3;     case 4: goto nop;     default: goto return 666; }",
+        stmt.toString());
 
     // equivTo
     assertFalse(stmt.equivTo(new Integer(666)));

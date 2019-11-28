@@ -33,13 +33,12 @@ import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
-import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+@Deprecated
 public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyable {
 
   private final int lowIndex;
@@ -204,11 +203,6 @@ public final class JTableSwitchStmt extends AbstractSwitchStmt implements Copyab
 
   public int getHighIndex() {
     return highIndex;
-  }
-
-  @Override
-  public void accept(Visitor sw) {
-    ((StmtVisitor) sw).caseTableSwitchStmt(this);
   }
 
   @Override
