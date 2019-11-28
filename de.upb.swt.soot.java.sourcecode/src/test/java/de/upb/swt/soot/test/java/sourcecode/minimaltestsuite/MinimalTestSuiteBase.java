@@ -3,16 +3,17 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ClassSource;
-import de.upb.swt.soot.core.model.Body;
-import de.upb.swt.soot.core.model.SootClass;
-import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.java.core.views.JavaView;
+import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
 import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
 import java.io.File;
@@ -41,7 +42,8 @@ public abstract class MinimalTestSuiteBase {
 
   public static class CustomTestWatcher extends TestWatcher {
     private String classPath = MinimalTestSuiteBase.class.getSimpleName();
-    private WalaClassLoader loader;
+    private JavaView javaView;
+    private JavaProject project;
 
     /** Load WalaClassLoader once for each test directory */
     @Override
@@ -49,11 +51,12 @@ public abstract class MinimalTestSuiteBase {
       String prevClassDirName = getTestDirectoryName(getClassPath());
       setClassPath(description.getClassName());
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        WalaClassLoader loader =
-            new WalaClassLoader(
-                baseDir + File.separator + getTestDirectoryName(getClassPath()) + File.separator,
-                null);
-        setLoader(loader);
+        // WalaClassLoader loader =new WalaClassLoader(baseDir + File.separator + getTestDirectoryName(getClassPath()) + File.separator,        null);
+
+
+        project = JavaProject.builder(new JavaLanguage(8) ).addClassPath( new JavaSourcePathAnalysisInputLocation(baseDir + File.separator + getTestDirectoryName(getClassPath()) + File.separator)).build();
+        javaView = project.createOnDemandView();
+        setJavaView(javaView);
       }
     }
 
@@ -65,12 +68,12 @@ public abstract class MinimalTestSuiteBase {
       this.classPath = classPath;
     }
 
-    private void setLoader(WalaClassLoader loader) {
-      this.loader = loader;
+    private void setJavaView(JavaView javaView) {
+      this.javaView = javaView;
     }
 
-    public WalaClassLoader getLoader() {
-      return loader;
+    public JavaView getJavaView() {
+      return javaView;
     }
   }
 
@@ -120,16 +123,14 @@ public abstract class MinimalTestSuiteBase {
   }
 
   public SootClass loadClass(ClassType clazz) {
-    Optional<ClassSource> cs = customTestWatcher.getLoader().getClassSource(clazz);
+    Optional<AbstractClass<? extends AbstractClassSource>> cs = customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
-    ClassSource classSource = cs.get();
-    return new SootClass(classSource, SourceType.Application);
+    return (SootClass) cs.get();
   }
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
-    Optional<SootMethod> m =
-        WalaClassLoaderTestUtils.getSootMethod(customTestWatcher.getLoader(), methodSignature);
-
+    SootClass clazz = loadClass(methodSignature.getDeclClassType());
+    Optional<SootMethod> m= clazz.getMethod(methodSignature);
     assertTrue("No matching method signature found", m.isPresent());
     SootMethod method = m.get();
     return method;

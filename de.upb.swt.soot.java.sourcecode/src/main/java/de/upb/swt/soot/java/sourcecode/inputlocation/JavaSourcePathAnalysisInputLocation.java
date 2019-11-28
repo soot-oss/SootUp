@@ -10,6 +10,7 @@ import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -40,6 +41,10 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
    */
   public JavaSourcePathAnalysisInputLocation(@Nonnull Set<String> sourcePaths) {
     this(sourcePaths, null);
+  }
+
+  public JavaSourcePathAnalysisInputLocation(@Nonnull String sourcePath) {
+    this(Collections.singleton(sourcePath), null);
   }
 
   /**
