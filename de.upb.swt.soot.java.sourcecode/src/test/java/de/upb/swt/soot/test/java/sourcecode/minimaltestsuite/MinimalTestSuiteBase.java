@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
@@ -15,7 +14,6 @@ import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
-import de.upb.swt.soot.test.java.sourcecode.frontend.WalaClassLoaderTestUtils;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
@@ -51,10 +49,18 @@ public abstract class MinimalTestSuiteBase {
       String prevClassDirName = getTestDirectoryName(getClassPath());
       setClassPath(description.getClassName());
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        // WalaClassLoader loader =new WalaClassLoader(baseDir + File.separator + getTestDirectoryName(getClassPath()) + File.separator,        null);
+        // WalaClassLoader loader =new WalaClassLoader(baseDir + File.separator +
+        // getTestDirectoryName(getClassPath()) + File.separator,        null);
 
-
-        project = JavaProject.builder(new JavaLanguage(8) ).addClassPath( new JavaSourcePathAnalysisInputLocation(baseDir + File.separator + getTestDirectoryName(getClassPath()) + File.separator)).build();
+        project =
+            JavaProject.builder(new JavaLanguage(8))
+                .addClassPath(
+                    new JavaSourcePathAnalysisInputLocation(
+                        baseDir
+                            + File.separator
+                            + getTestDirectoryName(getClassPath())
+                            + File.separator))
+                .build();
         javaView = project.createOnDemandView();
         setJavaView(javaView);
       }
@@ -123,14 +129,15 @@ public abstract class MinimalTestSuiteBase {
   }
 
   public SootClass loadClass(ClassType clazz) {
-    Optional<AbstractClass<? extends AbstractClassSource>> cs = customTestWatcher.getJavaView().getClass(clazz);
+    Optional<AbstractClass<? extends AbstractClassSource>> cs =
+        customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
     return (SootClass) cs.get();
   }
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
     SootClass clazz = loadClass(methodSignature.getDeclClassType());
-    Optional<SootMethod> m= clazz.getMethod(methodSignature);
+    Optional<SootMethod> m = clazz.getMethod(methodSignature);
     assertTrue("No matching method signature found", m.isPresent());
     SootMethod method = m.get();
     return method;
