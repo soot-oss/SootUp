@@ -1,4 +1,5 @@
 import java.io.*;
+/** @author Kaustubh Kelkar */
 class MultiInterfaceImplClass implements InterfaceImpl, InterfaceImplDummy{
 
     public void interfaceMethod(){
