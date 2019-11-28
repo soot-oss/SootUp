@@ -1,16 +1,17 @@
+/** @author Kaustubh Kelkar */
 class ThrowExceptionMethod{
-    void divideByZero() {
-        try{
-            int i = 8/0;
-        }
-        catch(ArithmeticException e){}
-    }
 
-    void divideThrowsException() throws ArithmeticException{
+    void divideByZero() throws ArithmeticException{
         int i=8/0;
     }
+    void throwCustomException() {
+        throw new CustomException();
+    }
 
-    void divideThrowException() {
-        throw new ArithmeticException();
+}
+
+class CustomException extends Exception{
+    CustomException(){
+        System.out.println("CustomException is here");
     }
 }

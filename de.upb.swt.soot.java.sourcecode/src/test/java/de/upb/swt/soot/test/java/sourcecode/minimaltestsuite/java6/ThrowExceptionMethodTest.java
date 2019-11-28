@@ -1,5 +1,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
@@ -20,15 +22,17 @@ public class ThrowExceptionMethodTest extends MinimalTestSuiteBase {
   @Override
   public void defaultTest() {
     super.defaultTest();
-    SootMethod method = loadMethod(getMethodSignature1());
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
+    assertTrue(
+        method.getExceptionSignatures().stream()
+            .anyMatch(classType -> classType.getClassName().equals("ArithmeticException")));
+    method = loadMethod(getMethodSignature1());
     assertJimpleStmts(method, expectedBodyStmts1());
-    method = loadMethod(getMethodSignature2());
-    assertJimpleStmts(method, expectedBodyStmts2());
-
-    // TODO: [KK] Checking methods' signatures for exceptions
-    // How to check for exceptions in method signature
-    // [ms]: method.getExceptionSignatures()
-
+    /**
+     * TODO can not detect the custom exception assertTrue(method.getExceptionSignatures().stream()
+     * .anyMatch(classType -> classType.getClassName().equals("CustomException")));
+     */
   }
 
   @Override
@@ -39,24 +43,14 @@ public class ThrowExceptionMethodTest extends MinimalTestSuiteBase {
 
   public MethodSignature getMethodSignature1() {
     return identifierFactory.getMethodSignature(
-        "divideThrowsException", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "throwCustomException", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
   public List<String> expectedBodyStmts1() {
-    return Stream.of("r0 := @this: ThrowExceptionMethod", "$i0 = 8 / 0", "return")
-        .collect(Collectors.toCollection(ArrayList::new));
-  }
-
-  public MethodSignature getMethodSignature2() {
-    return identifierFactory.getMethodSignature(
-        "divideThrowException", getDeclaredClassSignature(), "void", Collections.emptyList());
-  }
-
-  public List<String> expectedBodyStmts2() {
     return Stream.of(
             "r0 := @this: ThrowExceptionMethod",
-            "$r1 = new java.lang.ArithmeticException",
-            "specialinvoke $r1.<java.lang.ArithmeticException: void <init>()>()",
+            "$r1 = new CustomException",
+            "specialinvoke $r1.<CustomException: void <init>()>()",
             "throw $r1",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
