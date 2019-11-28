@@ -31,15 +31,15 @@ import org.junit.runner.Description;
  * @author Kaustubh Kelkar
  */
 @Category(Java8Test.class)
-public abstract class MinimalTestSuiteBase {
+public abstract class MinimalSourceTestSuiteBase {
 
-  static final String baseDir = "../shared-test-resources/minimaltestsuite/";
+  static final String baseDir = "../shared-test-resources/minimaltestsuite/sourcecode";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
   @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
 
   public static class CustomTestWatcher extends TestWatcher {
-    private String classPath = MinimalTestSuiteBase.class.getSimpleName();
+    private String classPath = MinimalSourceTestSuiteBase.class.getSimpleName();
     private JavaView javaView;
     private JavaProject project;
 
@@ -49,9 +49,6 @@ public abstract class MinimalTestSuiteBase {
       String prevClassDirName = getTestDirectoryName(getClassPath());
       setClassPath(description.getClassName());
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        // WalaClassLoader loader =new WalaClassLoader(baseDir + File.separator +
-        // getTestDirectoryName(getClassPath()) + File.separator,        null);
-
         project =
             JavaProject.builder(new JavaLanguage(8))
                 .addClassPath(
