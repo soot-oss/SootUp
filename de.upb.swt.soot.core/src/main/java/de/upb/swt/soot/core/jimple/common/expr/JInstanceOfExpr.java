@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** An expression that checks whether a value is of a certain type. */
 public final class JInstanceOfExpr implements Expr, Copyable {
 
   private final ValueBox opBox;

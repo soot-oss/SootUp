@@ -1,3 +1,7 @@
+
+/** @author: Hasitha Rajapakse */
+
+
 public class MethodAcceptingVar {
     public void shortVariable(short a) {
         a++;
@@ -17,7 +21,6 @@ public class MethodAcceptingVar {
 
     public void longVariable(long e) {
         e = 123456777;
-
     }
 
     public void floatVariable(float f) {

@@ -34,6 +34,7 @@ import de.upb.swt.soot.core.types.UnknownType;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/** An expression that shifts its operand to the left (<<). */
 public final class JShlExpr extends AbstractIntLongBinopExpr implements Copyable {
 
   public JShlExpr(Value op1, Value op2) {
@@ -55,11 +56,11 @@ public final class JShlExpr extends AbstractIntLongBinopExpr implements Copyable
     Value op1 = getOp1();
     Value op2 = getOp2();
 
-    if (!isIntLikeType(op2.getType())) {
+    if (!PrimitiveType.isIntLikeType(op2.getType())) {
       return UnknownType.getInstance();
     }
 
-    if (isIntLikeType(op1.getType())) {
+    if (PrimitiveType.isIntLikeType(op1.getType())) {
       return PrimitiveType.getInt();
     }
     if (op1.getType().equals(PrimitiveType.getLong())) {

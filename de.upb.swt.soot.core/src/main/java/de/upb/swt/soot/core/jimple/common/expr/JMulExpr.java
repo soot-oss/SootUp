@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/** An expression that multiplies two numbers. */
 public final class JMulExpr extends AbstractFloatBinopExpr implements Copyable {
 
   public JMulExpr(Value op1, Value op2) {

@@ -25,7 +25,6 @@
 
 package de.upb.swt.soot.core.jimple.common.ref;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -37,7 +36,11 @@ import java.util.List;
 
 public final class JCaughtExceptionRef implements IdentityRef, Copyable {
 
-  public JCaughtExceptionRef() {}
+  private final Type type;
+
+  public JCaughtExceptionRef(Type type) {
+    this.type = type;
+  }
 
   @Override
   public boolean equivTo(Object o, JimpleComparator comparator) {
@@ -67,8 +70,7 @@ public final class JCaughtExceptionRef implements IdentityRef, Copyable {
 
   @Override
   public Type getType() {
-    // TODO: [JMP] Get cached instance
-    return DefaultIdentifierFactory.getInstance().getType("java.lang.Throwable");
+    return type;
   }
 
   @Override

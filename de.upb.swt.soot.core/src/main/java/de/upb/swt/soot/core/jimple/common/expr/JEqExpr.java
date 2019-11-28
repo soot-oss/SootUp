@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/** An expression that checks whether two value are equal. */
 public final class JEqExpr extends AbstractConditionExpr implements Copyable {
 
   public JEqExpr(Value op1, Value op2) {

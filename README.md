@@ -10,9 +10,9 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 ## FutureSoot provides
 - New Improved API
 - Multiple Scenes
-- Full Java 11 Support
 - Up-to-Date SourceCode Frontend
 - Full-Diff Support for Classes
+- Full Java 11 Support
 - Incremental Updates of Program Representation
 - Fully-Parallelized/Distributed Architecture using [Akka](https://akka.io/)
 
@@ -21,10 +21,6 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 [Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
 
 [Notizen zum kick-off meeting](../../wiki/kickoff-meeting)
-
-[Design of update mechanism](../../wiki/Design-of-update-mechanism)
-
-[Actor model for new soot ](../../wiki/Actor-model-for-new-soot)
 
 ## Contributors (alphabetized by surname)
 

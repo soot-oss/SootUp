@@ -35,6 +35,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** An expression that invokes an interface method. */
 public final class JInterfaceInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
   /**

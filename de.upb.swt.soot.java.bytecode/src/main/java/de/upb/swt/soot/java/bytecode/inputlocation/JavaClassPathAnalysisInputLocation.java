@@ -26,11 +26,10 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
-import de.upb.swt.soot.core.inputlocation.PathUtils;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.PathUtils;
 import de.upb.swt.soot.core.util.StreamUtils;
 import java.io.File;
 import java.io.IOException;
@@ -58,24 +57,20 @@ import org.slf4j.LoggerFactory;
  *
  * @author Manuel Benz created on 22.05.18
  */
-public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLocation {
+public class JavaClassPathAnalysisInputLocation implements BytecodeAnalysisInputLocation {
   private static final @Nonnull Logger logger =
       LoggerFactory.getLogger(JavaClassPathAnalysisInputLocation.class);
   private static final @Nonnull String WILDCARD_CHAR = "*";
 
-  protected @Nonnull Collection<AbstractAnalysisInputLocation> cpEntries;
+  @Nonnull private final Collection<AnalysisInputLocation> cpEntries;
 
   /**
    * Creates a {@link JavaClassPathAnalysisInputLocation} which locates classes in the given class
    * path.
    *
    * @param classPath The class path to search in
-   * @param provider who knows how to retrieve the classes
    */
-  public JavaClassPathAnalysisInputLocation(
-      @Nonnull String classPath, @Nonnull ClassProvider provider) {
-    super(provider);
-
+  public JavaClassPathAnalysisInputLocation(@Nonnull String classPath) {
     if (isNullOrEmpty(classPath)) {
       throw new InvalidClassPathException("Empty class path given");
     }
@@ -83,7 +78,7 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
     try {
       cpEntries =
           explode(classPath)
-              .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp, provider)))
+              .flatMap(cp -> StreamUtils.optionalToStream(nsForPath(cp)))
               .collect(Collectors.toList());
     } catch (IllegalArgumentException e) {
       throw new InvalidClassPathException("Malformed class path given: " + classPath, e);
@@ -102,7 +97,7 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
    * @param paths entries as one string
    * @return path entries
    */
-  public static @Nonnull Stream<Path> explode(@Nonnull String paths) {
+  static @Nonnull Stream<Path> explode(@Nonnull String paths) {
     // the classpath is split at every path separator which is not escaped
     String regex = "(?<!\\\\)" + Pattern.quote(File.pathSeparator);
     final Stream<Path> exploded =
@@ -136,21 +131,23 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
 
   @Override
   public @Nonnull Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nullable ClassLoadingOptions classLoadingOptions) {
     // By using a set here, already added classes won't be overwritten and the class which is found
     // first will be kept
     Set<AbstractClassSource> found = new HashSet<>();
-    for (AbstractAnalysisInputLocation ns : cpEntries) {
-      found.addAll(ns.getClassSources(identifierFactory));
+    for (AnalysisInputLocation inputLocation : cpEntries) {
+      found.addAll(inputLocation.getClassSources(identifierFactory, classLoadingOptions));
     }
     return found;
   }
 
   @Override
   public @Nonnull Optional<? extends AbstractClassSource> getClassSource(
-      @Nonnull JavaClassType signature) {
-    for (AbstractAnalysisInputLocation ns : cpEntries) {
-      final Optional<? extends AbstractClassSource> classSource = ns.getClassSource(signature);
+      @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
+    for (AnalysisInputLocation inputLocation : cpEntries) {
+      final Optional<? extends AbstractClassSource> classSource =
+          inputLocation.getClassSource(type, classLoadingOptions);
       if (classSource.isPresent()) {
         return classSource;
       }
@@ -158,10 +155,8 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
     return Optional.empty();
   }
 
-  private @Nonnull Optional<AbstractAnalysisInputLocation> nsForPath(
-      @Nonnull Path path, ClassProvider provider) {
-    if (Files.exists(path)
-        && (java.nio.file.Files.isDirectory(path) || PathUtils.isArchive(path))) {
+  private @Nonnull Optional<AnalysisInputLocation> nsForPath(@Nonnull Path path) {
+    if (Files.exists(path) && (Files.isDirectory(path) || PathUtils.isArchive(path))) {
       return Optional.of(PathBasedAnalysisInputLocation.createForClassContainer(path));
     } else {
       logger.warn("Invalid/Unknown class path entry: " + path);
@@ -171,11 +166,11 @@ public class JavaClassPathAnalysisInputLocation extends AbstractAnalysisInputLoc
 
   protected static final class InvalidClassPathException extends IllegalArgumentException {
 
-    public InvalidClassPathException(@Nullable String message) {
+    InvalidClassPathException(@Nullable String message) {
       super(message);
     }
 
-    public InvalidClassPathException(@Nullable String message, @Nullable Throwable cause) {
+    InvalidClassPathException(@Nullable String message, @Nullable Throwable cause) {
       super(message, cause);
     }
 

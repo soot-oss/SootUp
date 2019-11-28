@@ -1,6 +1,6 @@
 package de.upb.swt.soot.core.signatures;
 
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import javax.annotation.Nonnull;
 
@@ -12,12 +12,12 @@ import javax.annotation.Nonnull;
  */
 public class FieldSignature extends AbstractClassMemberSignature {
 
-  public FieldSignature(final JavaClassType declaringClass, final String name, final Type type) {
+  public FieldSignature(final ClassType declaringClass, final String name, final Type type) {
     this(declaringClass, new FieldSubSignature(name, type));
   }
 
   public FieldSignature(
-      @Nonnull JavaClassType declaringClass, @Nonnull FieldSubSignature subSignature) {
+      @Nonnull ClassType declaringClass, @Nonnull FieldSubSignature subSignature) {
     super(declaringClass, subSignature);
 
     this._subSignature = subSignature;

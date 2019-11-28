@@ -37,6 +37,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** An expression that invokes a static method. */
 public final class JStaticInvokeExpr extends AbstractInvokeExpr implements Copyable {
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */

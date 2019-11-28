@@ -25,7 +25,6 @@
 
 package de.upb.swt.soot.core.jimple.common.constant;
 
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.jimple.visitor.ConstantVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.Type;
@@ -34,19 +33,17 @@ import de.upb.swt.soot.core.util.StringTools;
 public class StringConstant implements Constant {
 
   private final String value;
+  private final Type type;
 
-  private StringConstant(String s) {
-    this.value = s;
-  }
-
-  public static StringConstant getInstance(String value) {
-    return new StringConstant(value);
+  public StringConstant(String str, Type type) {
+    this.type = type;
+    this.value = str;
   }
 
   // In this case, equals should be structural equality.
   @Override
   public boolean equals(Object c) {
-    return (c instanceof StringConstant && ((StringConstant) c).value.equals(this.value));
+    return (c instanceof StringConstant && ((StringConstant) c).value.equals(value));
   }
 
   /** Returns a hash code for this StringConstant object. */
@@ -57,8 +54,7 @@ public class StringConstant implements Constant {
 
   @Override
   public Type getType() {
-    // TODO: [JMP] Use cached type from somewhere.
-    return DefaultIdentifierFactory.getInstance().getType("java.lang.String");
+    return type;
   }
 
   @Override

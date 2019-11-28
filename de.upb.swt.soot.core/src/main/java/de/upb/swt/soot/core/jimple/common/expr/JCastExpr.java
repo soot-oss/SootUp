@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** An expression that casts a value to a certain type. */
 public final class JCastExpr implements Expr, Copyable {
 
   private final ValueBox opBox;

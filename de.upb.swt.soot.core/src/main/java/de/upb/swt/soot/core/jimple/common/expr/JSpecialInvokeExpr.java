@@ -36,6 +36,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+/** An expression that invokes a special method (e.g. private methods). */
 public final class JSpecialInvokeExpr extends AbstractInstanceInvokeExpr implements Copyable {
 
   public JSpecialInvokeExpr(Local base, MethodSignature method, List<? extends Value> args) {
