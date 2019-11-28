@@ -29,7 +29,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   private List<IntConstant> lookupValues;
 
   public JSwitchStmt(
-      PositionInfo positionInfo,
+      StmtPositionInfo positionInfo,
       ValueBox keyBox,
       StmtBox defaultTargetBox,
       StmtBox... targetBoxes) {
@@ -52,7 +52,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       int highIndex,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     this(
         Jimple.newImmediateBox(key),
         lowIndex,
@@ -68,7 +68,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       int highIndex,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     this(
         Jimple.newImmediateBox(key),
         lowIndex,
@@ -84,7 +84,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       int highIndex,
       StmtBox[] targetBoxes,
       StmtBox defaultTargetBox,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     this(positionInfo, keyBox, defaultTargetBox, targetBoxes);
 
     if (lowIndex > highIndex) {
@@ -97,7 +97,12 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     }
 
     List<IntConstant> buildlookupValues = new ArrayList<>();
-    for (int i = lowIndex; i < highIndex; i++) {
+    int i;
+    // "<=" is not possible; possible overflow would wrap i resulting in an infinite loop
+    for (i = lowIndex; i < highIndex; i++) {
+      buildlookupValues.add(IntConstant.getInstance(i));
+    }
+    if (i == highIndex) {
       buildlookupValues.add(IntConstant.getInstance(i));
     }
     lookupValues = buildlookupValues;
@@ -109,7 +114,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       List<IntConstant> lookupValues,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     this(
         Jimple.newImmediateBox(key),
         lookupValues,
@@ -124,7 +129,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       List<IntConstant> lookupValues,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     this(
         Jimple.newImmediateBox(key),
         lookupValues,
@@ -138,7 +143,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       List<IntConstant> lookupValues,
       StmtBox[] targetBoxes,
       StmtBox defaultTargetBox,
-      PositionInfo positionInfo) {
+      StmtPositionInfo positionInfo) {
     this(positionInfo, keyBox, defaultTargetBox, targetBoxes);
     this.lookupValues = Collections.unmodifiableList(new ArrayList<>(lookupValues));
   }
@@ -348,7 +353,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   }
 
   @Nonnull
-  public JSwitchStmt withPositionInfo(PositionInfo positionInfo) {
+  public JSwitchStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JSwitchStmt(getKey(), getValues(), getTargets(), getDefaultTarget(), positionInfo);
   }
 

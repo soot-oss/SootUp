@@ -3,14 +3,12 @@ package de.upb.swt.soot.java.bytecode.interceptors;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Trap;
 import de.upb.swt.soot.core.jimple.common.expr.JCastExpr;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
 import java.util.ArrayList;
@@ -137,8 +135,8 @@ public class CastAndReturnInliner implements BodyInterceptor {
       if (toFixGotoStmt.getTarget() == gotoStmt) {
         return toFixGotoStmt.withTarget(newStmt);
       }
-    } else if (toFixStmt instanceof AbstractSwitchStmt) {
-      AbstractSwitchStmt toFixSwitchStmt = (AbstractSwitchStmt) toFixStmt;
+    } else if (toFixStmt instanceof JSwitchStmt) {
+      JSwitchStmt toFixSwitchStmt = (JSwitchStmt) toFixStmt;
       List<Stmt> targets = toFixSwitchStmt.getTargets();
       List<Stmt> copiedTargets = null;
       for (int k = 0; k < targets.size(); k++) {
@@ -151,13 +149,7 @@ public class CastAndReturnInliner implements BodyInterceptor {
         }
       }
       if (copiedTargets != null) {
-        if (toFixSwitchStmt instanceof JTableSwitchStmt) {
-          return ((JTableSwitchStmt) toFixSwitchStmt).withTargets(copiedTargets);
-        } else if (toFixSwitchStmt instanceof JLookupSwitchStmt) {
-          return ((JLookupSwitchStmt) toFixSwitchStmt).withTargets(copiedTargets);
-        } else {
-          throw new RuntimeException("Unknown switch type!");
-        }
+        return toFixSwitchStmt.withTargets(copiedTargets);
       }
     }
 
