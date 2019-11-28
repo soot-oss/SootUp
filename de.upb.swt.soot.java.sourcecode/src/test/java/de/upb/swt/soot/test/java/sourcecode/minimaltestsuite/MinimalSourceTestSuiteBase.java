@@ -13,7 +13,7 @@ import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
-import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
+import de.upb.swt.soot.core.util.Utils;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
