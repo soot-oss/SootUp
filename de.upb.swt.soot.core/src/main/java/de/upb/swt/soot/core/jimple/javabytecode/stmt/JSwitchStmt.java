@@ -16,11 +16,13 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 
 /*
- * Handles lookup- / table-switch statements
- */
-public final class JSwitchStmt extends AbstractStmt implements Copyable {
-  private final StmtBox defaultTargetBox;
+* Switch Statements (combining LookupSwitch/TableSwitch)
 
+* @author Markus Schmidt
+*/
+public final class JSwitchStmt extends AbstractStmt implements Copyable {
+
+  private final StmtBox defaultTargetBox;
   private final ValueBox keyBox;
   private final List<StmtBox> stmtBoxes;
   private final StmtBox[] targetBoxes;

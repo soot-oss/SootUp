@@ -72,7 +72,6 @@ import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractSwitchStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
@@ -80,7 +79,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.signatures.FieldSignature;
@@ -114,9 +113,9 @@ public class InstructionConverter {
   // <ifStmt, iindex>
   private final Map<JIfStmt, Integer> targetsOfIfStmts;
   private final Map<JGotoStmt, Integer> targetsOfGotoStmts;
-  private final Map<JLookupSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
-  private final Map<JLookupSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
-  protected Map<JLookupSwitchStmt, List<Stmt>> targetStmtsOfLookUpSwitchStmts;
+  private final Map<JSwitchStmt, List<Integer>> targetsOfLookUpSwitchStmts;
+  private final Map<JSwitchStmt, Integer> defaultOfLookUpSwitchStmts;
+  protected Map<JSwitchStmt, List<Stmt>> targetStmtsOfLookUpSwitchStmts;
   private final Map<Integer, Local> locals;
   private final IdentifierFactory identifierFactory;
 
@@ -562,7 +561,7 @@ public class InstructionConverter {
     // operandPos[i] = debugInfo.getOperandPosition(inst.iIndex(), ); // lookups
     // operandPos[i] = debugInfo.getOperandPosition(inst.iIndex(), ); // targets
 
-    JLookupSwitchStmt stmt =
+    JSwitchStmt stmt =
         Jimple.newLookupSwitchStmt(
             local,
             lookupValues,
@@ -1121,13 +1120,13 @@ public class InstructionConverter {
       }
     }
     if (this.defaultOfLookUpSwitchStmts.containsValue(iindex)) {
-      for (JLookupSwitchStmt lookupSwitch : this.defaultOfLookUpSwitchStmts.keySet()) {
+      for (JSwitchStmt lookupSwitch : this.defaultOfLookUpSwitchStmts.keySet()) {
         if (this.defaultOfLookUpSwitchStmts.get(lookupSwitch).equals(iindex)) {
-          AbstractSwitchStmt.$Accessor.setDefaultTarget(lookupSwitch, stmt);
+          JSwitchStmt.$Accessor.setDefaultTarget(lookupSwitch, stmt);
         }
       }
     }
-    for (JLookupSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()) {
+    for (JSwitchStmt lookupSwitch : this.targetsOfLookUpSwitchStmts.keySet()) {
       if (this.targetsOfLookUpSwitchStmts.get(lookupSwitch).contains(iindex)) {
         List<Stmt> targets = lookupSwitch.getTargets();
         if (targets.contains(null)) { // targets only contains
@@ -1135,7 +1134,7 @@ public class InstructionConverter {
           targets = new ArrayList<>();
         }
         targets.add(stmt);
-        AbstractSwitchStmt.$Accessor.setTargets(lookupSwitch, targets);
+        JSwitchStmt.$Accessor.setTargets(lookupSwitch, targets);
       }
     }
   }

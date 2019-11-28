@@ -33,7 +33,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
 import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -49,13 +48,12 @@ public class JLookupSwitchStmtTest {
     ArrayList<Stmt> targets = new ArrayList<>();
 
     Stmt stmt =
-        new JLookupSwitchStmt(
-            IntConstant.getInstance(42), lookupValues, targets, new JNopStmt(nop), nop);
+        new JSwitchStmt(IntConstant.getInstance(42), lookupValues, targets, new JNopStmt(nop), nop);
     Stmt stmtDifferentKey =
-        new JLookupSwitchStmt(
+        new JSwitchStmt(
             IntConstant.getInstance(123), lookupValues, targets, new JNopStmt(nop), nop);
     Stmt stmtDifferentDefault =
-        new JLookupSwitchStmt(
+        new JSwitchStmt(
             IntConstant.getInstance(42),
             lookupValues,
             targets,
@@ -72,7 +70,7 @@ public class JLookupSwitchStmtTest {
     lookupValues.add(IntConstant.getInstance(33102));
 
     Stmt stmtDifferentLookupAndTarget =
-        new JLookupSwitchStmt(
+        new JSwitchStmt(
             IntConstant.getInstance(123), lookupValues, targets, new JNopStmt(nop), nop);
     assertEquals(
         "lookupswitch(123) {     case 42: goto return;     case 33102: goto nop;     default: goto nop; }",

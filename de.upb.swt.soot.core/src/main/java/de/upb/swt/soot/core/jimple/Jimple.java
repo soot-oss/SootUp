@@ -581,35 +581,35 @@ public class Jimple {
     return new JInvokeStmt(op, posInfo);
   }
 
-  public static JTableSwitchStmt newTableSwitchStmt(
+  public static JSwitchStmt newTableSwitchStmt(
       Value key,
       int lowIndex,
       int highIndex,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
       PositionInfo posInfo) {
-    return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
+    return new JSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
 
   /**
    * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
    */
-  public static JLookupSwitchStmt newLookupSwitchStmt(
+  public static JSwitchStmt newLookupSwitchStmt(
       Value key,
       List<IntConstant> lookupValues,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
       PositionInfo posInfo) {
-    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
+    return new JSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
 
-  public static JLookupSwitchStmt newLookupSwitchStmt(
+  public static JSwitchStmt newLookupSwitchStmt(
       Value key,
       List<IntConstant> lookupValues,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
       PositionInfo posInfo) {
-    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
+    return new JSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
 
   /** Constructs a Local with the given name and type. */

@@ -32,12 +32,14 @@ import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import java.util.ArrayList;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Markus Schmidt & Linghui Luo */
+
+// TODO: [ms] adapt to JSwitchStmt
 @Category(Java8Test.class)
 public class JTableSwitchStmtTest {
 
@@ -50,7 +52,7 @@ public class JTableSwitchStmtTest {
     targets.add(new JReturnStmt(IntConstant.getInstance(3), nop));
     targets.add(new JNopStmt(nop));
     Stmt stmt =
-        new JTableSwitchStmt(
+        new JSwitchStmt(
             IntConstant.getInstance(123),
             1,
             4,
@@ -64,7 +66,7 @@ public class JTableSwitchStmtTest {
     targets.add(new JNopStmt(nop));
     targets.add(new JReturnStmt(IntConstant.getInstance(3), nop));
     Stmt stmt2 =
-        new JTableSwitchStmt(
+        new JSwitchStmt(
             IntConstant.getInstance(123),
             1,
             4,
@@ -72,7 +74,7 @@ public class JTableSwitchStmtTest {
             new JReturnStmt(IntConstant.getInstance(666), nop),
             nop);
     Stmt stmt3 =
-        new JTableSwitchStmt(
+        new JSwitchStmt(
             IntConstant.getInstance(456),
             1,
             4,
@@ -80,7 +82,7 @@ public class JTableSwitchStmtTest {
             new JReturnStmt(IntConstant.getInstance(666), nop),
             nop);
     Stmt stmt4 =
-        new JTableSwitchStmt(
+        new JSwitchStmt(
             IntConstant.getInstance(123),
             2,
             4,
@@ -88,7 +90,7 @@ public class JTableSwitchStmtTest {
             new JReturnStmt(IntConstant.getInstance(666), nop),
             nop);
     Stmt stmt5 =
-        new JTableSwitchStmt(
+        new JSwitchStmt(
             IntConstant.getInstance(123),
             1,
             5,
@@ -96,7 +98,7 @@ public class JTableSwitchStmtTest {
             new JReturnStmt(IntConstant.getInstance(666), nop),
             nop);
     Stmt stmt6 =
-        new JTableSwitchStmt(IntConstant.getInstance(123), 1, 4, targets, new JNopStmt(nop), nop);
+        new JSwitchStmt(IntConstant.getInstance(123), 1, 4, targets, new JNopStmt(nop), nop);
 
     // toString
     assertEquals(
