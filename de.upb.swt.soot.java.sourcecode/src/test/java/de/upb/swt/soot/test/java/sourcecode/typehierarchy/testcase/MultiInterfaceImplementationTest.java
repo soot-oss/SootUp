@@ -13,17 +13,19 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
-/** @author: Hasitha Rajapakse **/
-
+/** @author: Hasitha Rajapakse * */
 
 @Category(Java8Test.class)
 public class MultiInterfaceImplementationTest extends JavaTypeHierarchyBase {
-    @Test
-    public void method(){
-        ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
-        Set<ClassType> interfaceSet = new HashSet<>();
-        interfaceSet.add(getClassType("InterfaceA"));
-        interfaceSet.add(getClassType("InterfaceB"));
-        assertEquals(typeHierarchy.implementedInterfacesOf(getClassType(customTestWatcher.getClassName())),interfaceSet);
-    }
+  @Test
+  public void method() {
+    ViewTypeHierarchy typeHierarchy =
+        (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
+    Set<ClassType> interfaceSet = new HashSet<>();
+    interfaceSet.add(getClassType("InterfaceA"));
+    interfaceSet.add(getClassType("InterfaceB"));
+    assertEquals(
+        typeHierarchy.implementedInterfacesOf(getClassType(customTestWatcher.getClassName())),
+        interfaceSet);
+  }
 }
