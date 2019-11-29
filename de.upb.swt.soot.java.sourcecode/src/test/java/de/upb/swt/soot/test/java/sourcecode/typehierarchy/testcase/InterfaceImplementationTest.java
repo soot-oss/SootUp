@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.java.sourcecode.typehierarchy.testcase;
+package de.upb.swt.soot.test.java.sourcecode.typehierarchytestsuite.testcase;
 
 import static org.junit.Assert.assertEquals;
 
@@ -6,7 +6,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.test.java.sourcecode.typehierarchy.JavaTypeHierarchyBase;
+import de.upb.swt.soot.test.java.sourcecode.typehierarchytestsuite.JavaTypeHierarchyBase;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
