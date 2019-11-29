@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /** @author: Hasitha Rajapakse * */
+
 @Category(Java8Test.class)
 public class AbstractClassInheritenceTest extends JavaTypeHierarchyBase {
   @Test
