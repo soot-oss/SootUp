@@ -193,8 +193,6 @@ public class IdentifierFactoryTest {
     boolean sameObject = classSignature1 == classSignature2;
     assertFalse(sameObject);
     assertEquals(classSignature1, classSignature2);
-    assertTrue(classSignature1.isInnerClass());
-    assertTrue(classSignature2.isInnerClass());
   }
 
   @Test
