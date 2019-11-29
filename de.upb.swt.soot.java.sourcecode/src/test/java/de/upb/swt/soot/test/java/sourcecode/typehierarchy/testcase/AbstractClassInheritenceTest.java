@@ -11,17 +11,30 @@ import org.junit.experimental.categories.Category;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-/** @author: Hasitha Rajapakse **/
-
+/** @author: Hasitha Rajapakse * */
 @Category(Java8Test.class)
 public class AbstractClassInheritenceTest extends JavaTypeHierarchyBase {
-    @Test
-    public void method(){
-        SootClass sootClass = (SootClass) customTestWatcher.getView().getClass(customTestWatcher.getView().getIdentifierFactory().getClassType(customTestWatcher.getClassName())).get();
-        assertTrue(sootClass.hasSuperclass());
-        SootClass superClass = (SootClass) customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
-        assertTrue(superClass.isAbstract());
-        ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
-        assertEquals(typeHierarchy.superClassOf(getClassType(customTestWatcher.getClassName())),getClassType("AbstractClass"));
-    }
+  @Test
+  public void method() {
+    ViewTypeHierarchy typeHierarchy =
+            (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
+    assertEquals(
+            typeHierarchy.superClassOf(getClassType(customTestWatcher.getClassName())),
+            getClassType("AbstractClass"));
+
+    SootClass sootClass =
+        (SootClass)
+            customTestWatcher
+                .getView()
+                .getClass(
+                    customTestWatcher
+                        .getView()
+                        .getIdentifierFactory()
+                        .getClassType(customTestWatcher.getClassName()))
+                .get();
+    assertTrue(sootClass.hasSuperclass());
+    SootClass superClass =
+        (SootClass) customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
+    assertTrue(superClass.isAbstract());
+  }
 }
