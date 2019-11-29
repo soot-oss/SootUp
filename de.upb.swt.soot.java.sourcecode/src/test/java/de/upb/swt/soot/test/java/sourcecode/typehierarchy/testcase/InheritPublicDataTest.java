@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.java.sourcecode.typehierarchytestsuite.testcase;
+package de.upb.swt.soot.test.java.sourcecode.typehierarchy.testcase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -11,7 +11,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
-import de.upb.swt.soot.test.java.sourcecode.typehierarchytestsuite.JavaTypeHierarchyBase;
+import de.upb.swt.soot.test.java.sourcecode.typehierarchy.JavaTypeHierarchyBase;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
