@@ -4,7 +4,7 @@
 public class SuperClass{
     private int num = 5;
 
-    public int getnum(){
+    protected int getnum(){
         return this.num;
     }
 }
