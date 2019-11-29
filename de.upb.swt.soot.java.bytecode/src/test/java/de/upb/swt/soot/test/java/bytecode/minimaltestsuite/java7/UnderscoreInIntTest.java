@@ -20,7 +20,7 @@ public class UnderscoreInIntTest extends MinimalBytecodeTestSuiteBase {
 
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("l0 := @this: UnderscoreInInt","l1 = 2147483647","return")
+    return Stream.of("l0 := @this: UnderscoreInInt", "l1 = 2147483647", "return")
         .collect(Collectors.toList());
   }
 }

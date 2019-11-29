@@ -21,7 +21,7 @@ public class BinaryLiteralInIntTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "l0 := @this: BinaryLiteralInInt","l1 = -1589272251","l2 = 5","l3 = 5","return")
+            "l0 := @this: BinaryLiteralInInt", "l1 = -1589272251", "l2 = 5", "l3 = 5", "return")
         .collect(Collectors.toList());
   }
 }
