@@ -13,19 +13,19 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
-
-/** @author: Hasitha Rajapakse **/
-
+/** @author: Hasitha Rajapakse * */
 
 @Category(Java8Test.class)
 public class InheritenceTransitivityTest extends JavaTypeHierarchyBase {
 
-    @Test
-    public void method(){
-        ViewTypeHierarchy typeHierarchy = (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
-        Set<ClassType> subClassSet = new HashSet<>();
-        subClassSet.add(getClassType("SubClassA"));
-        subClassSet.add(getClassType("SubClassB"));
-        assertEquals(typeHierarchy.subclassesOf(getClassType(customTestWatcher.getClassName())),subClassSet);
-    }
+  @Test
+  public void method() {
+    ViewTypeHierarchy typeHierarchy =
+        (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
+    Set<ClassType> subClassSet = new HashSet<>();
+    subClassSet.add(getClassType("SubClassA"));
+    subClassSet.add(getClassType("SubClassB"));
+    assertEquals(
+        typeHierarchy.subclassesOf(getClassType(customTestWatcher.getClassName())), subClassSet);
+  }
 }
