@@ -2,7 +2,8 @@
 ### Java template
 # Compiled class file
 *.class
-!src/test/resources/**/*.class
+#!src/test/resources/**/*.class
+!shared-test-resources/minimaltestsuite/sourcecode
 
 # Log file
 *.log
