@@ -31,7 +31,6 @@ public class JavaTypeHierarchyBase {
         private JavaView view;
         private JavaProject project;
 
-        /** Load WalaClassLoader once for each test directory */
         @Override
         protected void starting(Description description) {
             String prevClassName = getClassName();
