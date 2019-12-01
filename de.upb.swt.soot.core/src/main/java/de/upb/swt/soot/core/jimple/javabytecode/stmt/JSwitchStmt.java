@@ -26,9 +26,9 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   private final ValueBox keyBox;
   private final List<StmtBox> stmtBoxes;
   private final StmtBox[] targetBoxes;
-  private List<IntConstant> lookupValues;
+  private List<IntConstant> values;
 
-  public JSwitchStmt(
+  private JSwitchStmt(
       StmtPositionInfo positionInfo,
       ValueBox keyBox,
       StmtBox defaultTargetBox,
@@ -89,23 +89,22 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
 
     if (lowIndex > highIndex) {
       throw new RuntimeException(
-          "Error creating tableswitch: lowIndex("
+          "Error creating switch: lowIndex("
               + lowIndex
               + ") can't be greater than highIndex("
               + highIndex
               + ").");
     }
 
-    List<IntConstant> buildlookupValues = new ArrayList<>();
+    values = new ArrayList<>();
     int i;
     // "<=" is not possible; possible overflow would wrap i resulting in an infinite loop
     for (i = lowIndex; i < highIndex; i++) {
-      buildlookupValues.add(IntConstant.getInstance(i));
+      values.add(IntConstant.getInstance(i));
     }
     if (i == highIndex) {
-      buildlookupValues.add(IntConstant.getInstance(i));
+      values.add(IntConstant.getInstance(i));
     }
-    lookupValues = buildlookupValues;
   }
 
   /** Constructs a new JSwitchStmt. lookupValues should be a list of IntConst s. */
@@ -145,7 +144,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       StmtBox defaultTargetBox,
       StmtPositionInfo positionInfo) {
     this(positionInfo, keyBox, defaultTargetBox, targetBoxes);
-    this.lookupValues = Collections.unmodifiableList(new ArrayList<>(lookupValues));
+    values = Collections.unmodifiableList(new ArrayList<>(lookupValues));
   }
 
   private static StmtBox[] getTargetBoxesArray(List<? extends Stmt> targets) {
@@ -246,15 +245,15 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   }
 
   public int getValueCount() {
-    return lookupValues.size();
+    return values.size();
   }
 
   public int getValue(int index) {
-    return lookupValues.get(index).getValue();
+    return values.get(index).getValue();
   }
 
   public List<IntConstant> getValues() {
-    return Collections.unmodifiableList(lookupValues);
+    return Collections.unmodifiableList(values);
   }
 
   @Override
@@ -280,10 +279,10 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
         .append("{")
         .append(endOfLine);
 
-    for (int i = 0; i < lookupValues.size(); i++) {
+    for (int i = 0; i < values.size(); i++) {
       Stmt target = getTarget(i);
       sb.append("    " + Jimple.CASE + " ")
-          .append(lookupValues.get(i))
+          .append(values.get(i))
           .append(": ")
           .append(Jimple.GOTO)
           .append(" ")
@@ -312,12 +311,12 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
     up.newline();
     up.literal("{");
     up.newline();
-    final int size = lookupValues.size();
+    final int size = values.size();
     for (int i = 0; i < size; i++) {
       up.literal("    ");
       up.literal(Jimple.CASE);
       up.literal(" ");
-      up.constant(lookupValues.get(i));
+      up.constant(values.get(i));
       up.literal(": ");
       up.literal(Jimple.GOTO);
       up.literal(" ");
