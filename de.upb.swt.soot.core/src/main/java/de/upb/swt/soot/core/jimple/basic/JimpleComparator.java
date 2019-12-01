@@ -44,16 +44,7 @@ import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 import java.util.Iterator;
 
@@ -170,30 +161,38 @@ public class JimpleComparator {
     if (!(o instanceof JSwitchStmt)) {
       return false;
     }
+    JSwitchStmt otherSwitchStmt = (JSwitchStmt) o;
 
-    JSwitchStmt lookupSwitchStmt = (JSwitchStmt) o;
-    if (stmt.getValueCount() != lookupSwitchStmt.getValueCount()) {
+    if (stmt.getKey() != otherSwitchStmt.getKey()
+        || stmt.getDefaultTarget() != otherSwitchStmt.getDefaultTarget()) {
       return false;
     }
-    Iterator<IntConstant> lvIterator = stmt.getValues().iterator();
-    for (IntConstant lvOther : lookupSwitchStmt.getValues()) {
-      if (!lvOther.equivTo(lvIterator.next(), this)) {
+
+    if (stmt.getValueCount() != otherSwitchStmt.getValueCount()) {
+      return false;
+    }
+    // TODO: [MS] maybe obsolete - is the following case possible? stmt.getValueCount() !=
+    // stmt.getTargetCount()
+    if (stmt.getTargetCount() != otherSwitchStmt.getTargetCount()) {
+      return false;
+    }
+
+    // [MS] assumes that different sequence of (otherwise equivalent) cases means it is not
+    // equivalent
+    Iterator<IntConstant> valueIterator = stmt.getValues().iterator();
+    for (IntConstant valuesOther : otherSwitchStmt.getValues()) {
+      if (!valuesOther.equivTo(valueIterator.next(), this)) {
         return false;
       }
     }
 
-    if (stmt.getKey() != lookupSwitchStmt.getKey()
-        || stmt.getDefaultTarget() != lookupSwitchStmt.getDefaultTarget()) {
-      return false;
-    }
-    if (stmt.getTargetCount() != lookupSwitchStmt.getTargetCount()) {
-      return false;
-    }
-    for (int i = stmt.getTargetCount() - 1; i >= 0; i--) {
-      if (!stmt.getTarget(i).equivTo(lookupSwitchStmt.getTarget(i), this)) {
+    Iterator<Stmt> targetIterator = stmt.getTargets().iterator();
+    for (Stmt targetOther : otherSwitchStmt.getTargets()) {
+      if (!targetOther.equivTo(targetIterator.next(), this)) {
         return false;
       }
     }
+
     return true;
   }
 
