@@ -1,5 +1,8 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.Collections;
@@ -17,7 +20,12 @@ public class NativeMethodTest extends MinimalTestSuiteBase {
   }
 
   @Test
-  public void defaultTest() {}
+  public void defaultTest() {
+    /** TODO Check whether we can implement this methodSootMethod method = loadMethod(getMethodSignature());
+     * assertJimpleStmts(method, expectedBodyStmts());
+     * assertTrue(method.isNative());
+     * */
+  }
 
   @Ignore
   public void ignoreTest() {
