@@ -49,9 +49,6 @@ public abstract class MinimalTestSuiteBase {
       String prevClassDirName = getTestDirectoryName(getClassPath());
       setClassPath(description.getClassName());
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        // WalaClassLoader loader =new WalaClassLoader(baseDir + File.separator +
-        // getTestDirectoryName(getClassPath()) + File.separator,        null);
-
         project =
             JavaProject.builder(new JavaLanguage(8))
                 .addClassPath(

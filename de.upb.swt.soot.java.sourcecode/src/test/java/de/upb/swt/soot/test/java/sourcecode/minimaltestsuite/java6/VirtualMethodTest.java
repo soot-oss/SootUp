@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /** @author Kaustubh Kelkar */
 public class VirtualMethodTest extends MinimalTestSuiteBase {
 
-  // @Override
+  @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
         "virtualMethodDemo", getDeclaredClassSignature(), "void", Collections.emptyList());
