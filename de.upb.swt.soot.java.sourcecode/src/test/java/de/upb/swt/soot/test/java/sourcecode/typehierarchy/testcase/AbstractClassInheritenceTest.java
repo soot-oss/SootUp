@@ -16,12 +16,6 @@ import org.junit.experimental.categories.Category;
 public class AbstractClassInheritenceTest extends JavaTypeHierarchyBase {
   @Test
   public void method() {
-    ViewTypeHierarchy typeHierarchy =
-        (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
-    assertEquals(
-        typeHierarchy.superClassOf(getClassType(customTestWatcher.getClassName())),
-        getClassType("AbstractClass"));
-
     SootClass sootClass =
         (SootClass)
             customTestWatcher
@@ -36,5 +30,11 @@ public class AbstractClassInheritenceTest extends JavaTypeHierarchyBase {
     SootClass superClass =
         (SootClass) customTestWatcher.getView().getClass(sootClass.getSuperclass().get()).get();
     assertTrue(superClass.isAbstract());
+
+    ViewTypeHierarchy typeHierarchy =
+        (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
+    assertEquals(
+        typeHierarchy.superClassOf(getClassType(customTestWatcher.getClassName())),
+        getClassType("AbstractClass"));
   }
 }
