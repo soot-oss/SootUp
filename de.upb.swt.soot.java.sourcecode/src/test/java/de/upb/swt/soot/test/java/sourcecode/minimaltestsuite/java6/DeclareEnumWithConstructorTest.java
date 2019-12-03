@@ -2,6 +2,7 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.Collections;
@@ -14,18 +15,26 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class DeclareEnumWithConstructorTest extends MinimalTestSuiteBase {
 
-  @Override
-  public MethodSignature getMethodSignature() {
+  public MethodSignature getInitMethodSignature() {
     return identifierFactory.getMethodSignature(
         "<init>", getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
+
+  public MethodSignature getMethodSignature() {
+    return identifierFactory.getMethodSignature(
+        "getValue", getDeclaredClassSignature(), "int", Collections.emptyList());
   }
 
   @Override
   public void defaultTest() {
     super.defaultTest();
-    SootClass clazz = loadClass(getDeclaredClassSignature());
+    SootMethod sootMethod = loadMethod(getInitMethodSignature());
+    assertJimpleStmts(sootMethod, expectedBodyStmts());
+    SootClass sootClass = loadClass(getDeclaredClassSignature());
+
     /**
-     * TODO check whether object holds ENUM value assertTrue(clazz.getFields().stream().anyMatch());
+     * TODO check whether object holds ENUM value sootClass.isEnum() return false as it checks for
+     * the DeclareEnumConstrucor class.
      */
   }
 
