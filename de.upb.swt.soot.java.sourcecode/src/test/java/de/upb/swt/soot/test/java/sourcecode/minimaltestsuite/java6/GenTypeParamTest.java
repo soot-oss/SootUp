@@ -15,6 +15,7 @@ public class GenTypeParamTest extends MinimalTestSuiteBase {
         "geneTypeParamDisplay", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  /** Jimple code will change when Generics are incorporated */
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
