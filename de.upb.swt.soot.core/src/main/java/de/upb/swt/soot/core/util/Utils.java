@@ -4,7 +4,6 @@ import de.upb.swt.soot.core.jimple.basic.EquivTo;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.util.EscapedWriter;
 import de.upb.swt.soot.core.util.printer.Printer;
 import de.upb.swt.soot.core.util.printer.Printer.Option;
 import java.io.File;
