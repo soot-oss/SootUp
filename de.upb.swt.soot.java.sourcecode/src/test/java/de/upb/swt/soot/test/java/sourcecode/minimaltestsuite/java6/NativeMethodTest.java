@@ -16,25 +16,28 @@ public class NativeMethodTest extends MinimalTestSuiteBase {
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(
-        "nullVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
+        "returnResult", getDeclaredClassSignature(), "int", Collections.singletonList("int"));
   }
 
   @Test
   public void defaultTest() {
-    /** TODO Check whether we can implement this methodSootMethod method = loadMethod(getMethodSignature());
-     * assertJimpleStmts(method, expectedBodyStmts());
-     * assertTrue(method.isNative());
-     * */
+    /**
+     * Can not pass assertJimpleStmts() as body for native method is empty and current check does nt
+     * allow that
+     */
   }
 
   @Ignore
   public void ignoreTest() {
-    /** Can not check Native code feature */
+
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
+    assertTrue(method.isNative());
   }
 
   @Override
   public List<String> expectedBodyStmts() {
-    return Stream.of("r0 := @this: NullVariable", "$r1 = null", "return")
+    return Stream.of("r0 := @this: NativeMethod", "$r1 = null", "return")
         .collect(Collectors.toList());
   }
 }
