@@ -1,7 +1,6 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
@@ -27,14 +26,11 @@ public class DeclareEnumWithConstructorTest extends MinimalTestSuiteBase {
 
   @Override
   public void defaultTest() {
-    super.defaultTest();
     SootMethod sootMethod = loadMethod(getInitMethodSignature());
     assertJimpleStmts(sootMethod, expectedBodyStmts());
-    SootClass sootClass = loadClass(getDeclaredClassSignature());
 
     /**
-     * TODO check whether object holds ENUM value sootClass.isEnum() return false as it checks for
-     * the DeclareEnumConstrucor class.
+     * TODO sootClass.isEnum() return false as it checks for if the DeclareEnumConstructor class.
      */
   }
 
