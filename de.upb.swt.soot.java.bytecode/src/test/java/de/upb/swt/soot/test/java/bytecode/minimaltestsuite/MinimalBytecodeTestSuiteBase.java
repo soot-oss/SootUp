@@ -46,7 +46,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
     private JavaView javaView;
     private JavaProject project;
 
-    /** Load WalaClassLoader once for each test directory */
+    /** Load View once for each test directory */
     @Override
     protected void starting(Description description) {
       String prevClassDirName = getTestDirectoryName(getClassPath());
