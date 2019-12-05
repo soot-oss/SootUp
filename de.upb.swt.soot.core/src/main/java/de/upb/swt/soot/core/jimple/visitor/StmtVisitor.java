@@ -34,12 +34,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JRetStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 
 public interface StmtVisitor extends Visitor {
   void caseBreakpointStmt(JBreakpointStmt stmt);
@@ -58,8 +53,6 @@ public interface StmtVisitor extends Visitor {
 
   void caseIfStmt(JIfStmt stmt);
 
-  void caseLookupSwitchStmt(JLookupSwitchStmt stmt);
-
   void caseNopStmt(JNopStmt stmt);
 
   void caseRetStmt(JRetStmt stmt);
@@ -68,7 +61,7 @@ public interface StmtVisitor extends Visitor {
 
   void caseReturnVoidStmt(JReturnVoidStmt stmt);
 
-  void caseTableSwitchStmt(JTableSwitchStmt stmt);
+  void caseSwitchStmt(JSwitchStmt stmt);
 
   void caseThrowStmt(JThrowStmt stmt);
 

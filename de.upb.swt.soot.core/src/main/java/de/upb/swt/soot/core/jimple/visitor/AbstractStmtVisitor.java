@@ -34,12 +34,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JRetStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 
 public abstract class AbstractStmtVisitor implements StmtVisitor {
   Object result;
@@ -85,11 +80,6 @@ public abstract class AbstractStmtVisitor implements StmtVisitor {
   }
 
   @Override
-  public void caseLookupSwitchStmt(JLookupSwitchStmt stmt) {
-    defaultCase(stmt);
-  }
-
-  @Override
   public void caseNopStmt(JNopStmt stmt) {
     defaultCase(stmt);
   }
@@ -110,7 +100,7 @@ public abstract class AbstractStmtVisitor implements StmtVisitor {
   }
 
   @Override
-  public void caseTableSwitchStmt(JTableSwitchStmt stmt) {
+  public void caseSwitchStmt(JSwitchStmt stmt) {
     defaultCase(stmt);
   }
 
