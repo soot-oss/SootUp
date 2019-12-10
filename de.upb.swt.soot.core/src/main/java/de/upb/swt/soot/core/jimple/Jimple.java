@@ -86,12 +86,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JRetStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.*;
@@ -117,7 +112,6 @@ public abstract class Jimple {
   public static final String SPECIALINVOKE = "specialinvoke";
   public static final String DYNAMICINVOKE = "dynamicinvoke";
   public static final String STATICINVOKE = "staticinvoke";
-  public static final String TABLESWITCH = "tableswitch";
   public static final String VIRTUALINVOKE = "virtualinvoke";
   public static final String NULL_TYPE = "null_type";
   public static final String UNKNOWN = "unknown";
@@ -128,7 +122,6 @@ public abstract class Jimple {
   public static final String EXITMONITOR = "exitmonitor";
   public static final String INTERFACEINVOKE = "interfaceinvoke";
   public static final String LENGTHOF = "lengthof";
-  public static final String LOOKUPSWITCH = "lookupswitch";
   public static final String NEG = "neg";
   public static final String IF = "if";
   public static final String ABSTRACT = "abstract";
@@ -166,6 +159,7 @@ public abstract class Jimple {
   public static final String INSTANCEOF = "instanceof";
   public static final String NEW = "new";
   public static final String RETURN = "return";
+  public static final String SWITCH = "switch";
   public static final String THROW = "throw";
   public static final String THROWS = "throws";
   public static final String NULL = "null";
@@ -187,7 +181,7 @@ public abstract class Jimple {
         RET,
         SPECIALINVOKE,
         STATICINVOKE,
-        TABLESWITCH,
+        SWITCH,
         VIRTUALINVOKE,
         NULL_TYPE,
         UNKNOWN,
@@ -198,7 +192,6 @@ public abstract class Jimple {
         EXITMONITOR,
         INTERFACEINVOKE,
         LENGTHOF,
-        LOOKUPSWITCH,
         NEG,
         IF,
         ABSTRACT,
@@ -575,45 +568,45 @@ public abstract class Jimple {
   }
 
   /** Constructs a TableSwitchStmt(Immediate, int, int, List of Unit, Stmt) grammar chunk. */
-  public static JTableSwitchStmt newTableSwitchStmt(
+  public static JSwitchStmt newTableSwitchStmt(
       Value key,
       int lowIndex,
       int highIndex,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
       StmtPositionInfo posInfo) {
-    return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
+    return new JSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
 
-  public static JTableSwitchStmt newTableSwitchStmt(
+  public static JSwitchStmt newTableSwitchStmt(
       Value key,
       int lowIndex,
       int highIndex,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
       StmtPositionInfo posInfo) {
-    return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
+    return new JSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
 
   /**
    * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
    */
-  public static JLookupSwitchStmt newLookupSwitchStmt(
+  public static JSwitchStmt newLookupSwitchStmt(
       Value key,
       List<IntConstant> lookupValues,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
       StmtPositionInfo posInfo) {
-    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
+    return new JSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
 
-  public static JLookupSwitchStmt newLookupSwitchStmt(
+  public static JSwitchStmt newLookupSwitchStmt(
       Value key,
       List<IntConstant> lookupValues,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
       StmtPositionInfo posInfo) {
-    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
+    return new JSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
 
   /** Constructs a Local with the given name and type. */
