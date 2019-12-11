@@ -25,11 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -45,7 +41,7 @@ public final class JInvokeStmt extends AbstractStmt implements Copyable {
   private final ValueBox invokeExprBox;
 
   public JInvokeStmt(Value invokeExpr, StmtPositionInfo positionInfo) {
-    this(Jimple.newInvokeExprBox(invokeExpr), positionInfo);
+    this(new InvokeExprBox(invokeExpr), positionInfo);
   }
 
   private JInvokeStmt(ValueBox invokeExprBox, StmtPositionInfo positionInfo) {

@@ -1,12 +1,12 @@
 package de.upb.swt.soot.java.bytecode.frontend;
 
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.util.ArrayList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -97,12 +97,13 @@ final class StackFrame {
         if (newOp.stack == null) {
           newOp.stack = stack;
           JAssignStmt as =
-              Jimple.newAssignStmt(stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
+              JavaJimple.newAssignStmt(
+                  stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
           src.setUnit(newOp.insn, as);
           newOp.updateBoxes();
         } else {
           JAssignStmt as =
-              Jimple.newAssignStmt(
+              JavaJimple.newAssignStmt(
                   stack, newOp.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
           src.mergeUnits(newOp.insn, as);
           newOp.addBox(as.getRightOpBox());
@@ -131,7 +132,7 @@ final class StackFrame {
           if (prevOp.stack == null) {
             prevOp.stack = stack;
             JAssignStmt as =
-                Jimple.newAssignStmt(
+                JavaJimple.newAssignStmt(
                     stack, prevOp.value, StmtPositionInfo.createNoStmtPositionInfo());
             src.setUnit(prevOp.insn, as);
           } else {
@@ -150,7 +151,7 @@ final class StackFrame {
           if (newOp.stack == null) {
             newOp.stack = stack;
             JAssignStmt as =
-                Jimple.newAssignStmt(
+                JavaJimple.newAssignStmt(
                     stack, newOp.value, StmtPositionInfo.createNoStmtPositionInfo());
             src.setUnit(newOp.insn, as);
           } else {

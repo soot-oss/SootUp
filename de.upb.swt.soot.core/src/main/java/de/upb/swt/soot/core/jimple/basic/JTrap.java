@@ -39,11 +39,7 @@ import javax.annotation.Nonnull;
 public final class JTrap extends AbstractTrap implements Copyable {
 
   public JTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
-    super(
-        exception,
-        Jimple.newStmtBox(beginStmt),
-        Jimple.newStmtBox(endStmt),
-        Jimple.newStmtBox(handlerStmt));
+    super(exception, new JStmtBox(beginStmt), new JStmtBox(endStmt), new JStmtBox(handlerStmt));
   }
 
   public JTrap(ClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {

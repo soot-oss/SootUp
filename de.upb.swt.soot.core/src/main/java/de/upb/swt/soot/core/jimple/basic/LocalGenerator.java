@@ -1,6 +1,5 @@
 package de.upb.swt.soot.core.jimple.basic;
 
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.ReferenceType;
 import de.upb.swt.soot.core.types.Type;
@@ -179,7 +178,7 @@ public class LocalGenerator {
   }
 
   private Local createLocal(String name, Type sootType) {
-    Local sootLocal = Jimple.newLocal(name, sootType);
+    Local sootLocal = new Local(name, sootType);
     locals.add(sootLocal);
     return sootLocal;
   }

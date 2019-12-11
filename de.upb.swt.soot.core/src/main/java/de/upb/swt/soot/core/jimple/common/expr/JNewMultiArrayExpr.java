@@ -26,6 +26,7 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.ImmediateBox;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
@@ -56,7 +57,7 @@ public final class JNewMultiArrayExpr implements Expr, Copyable {
     this.baseType = type;
     this.sizeBoxes = new ValueBox[sizes.size()];
     for (int i = 0; i < sizes.size(); i++) {
-      sizeBoxes[i] = Jimple.newImmediateBox(sizes.get(i));
+      sizeBoxes[i] = new ImmediateBox(sizes.get(i));
     }
   }
 

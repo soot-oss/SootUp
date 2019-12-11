@@ -25,7 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
-import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.ImmediateBox;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
@@ -45,7 +45,7 @@ public final class JCastExpr implements Expr, Copyable {
   private final Type type;
 
   public JCastExpr(Value op, Type type) {
-    this.opBox = Jimple.newImmediateBox(op);
+    this.opBox = new ImmediateBox(op);
     this.type = type;
   }
 

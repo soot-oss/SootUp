@@ -54,11 +54,11 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       Stmt defaultTarget,
       StmtPositionInfo positionInfo) {
     this(
-        Jimple.newImmediateBox(key),
+        new ImmediateBox(key),
         lowIndex,
         highIndex,
         getTargetBoxesArray(targets),
-        Jimple.newStmtBox(defaultTarget),
+        new JStmtBox(defaultTarget),
         positionInfo);
   }
 
@@ -70,7 +70,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       StmtBox defaultTarget,
       StmtPositionInfo positionInfo) {
     this(
-        Jimple.newImmediateBox(key),
+        new ImmediateBox(key),
         lowIndex,
         highIndex,
         targets.toArray(new StmtBox[0]),
@@ -115,10 +115,10 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       Stmt defaultTarget,
       StmtPositionInfo positionInfo) {
     this(
-        Jimple.newImmediateBox(key),
+        new ImmediateBox(key),
         lookupValues,
         getTargetBoxesArray(targets),
-        Jimple.newStmtBox(defaultTarget),
+        new JStmtBox(defaultTarget),
         positionInfo);
   }
 
@@ -130,7 +130,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
       StmtBox defaultTarget,
       StmtPositionInfo positionInfo) {
     this(
-        Jimple.newImmediateBox(key),
+        new ImmediateBox(key),
         lookupValues,
         targets.toArray(new StmtBox[0]),
         defaultTarget,
@@ -150,7 +150,7 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   private static StmtBox[] getTargetBoxesArray(List<? extends Stmt> targets) {
     StmtBox[] targetBoxes = new StmtBox[targets.size()];
     for (int i = 0; i < targetBoxes.length; i++) {
-      targetBoxes[i] = Jimple.newStmtBox(targets.get(i));
+      targetBoxes[i] = new JStmtBox(targets.get(i));
     }
     return targetBoxes;
   }

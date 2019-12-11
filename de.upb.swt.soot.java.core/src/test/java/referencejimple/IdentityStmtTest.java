@@ -4,7 +4,6 @@ import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
@@ -25,6 +24,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.VoidType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -112,15 +112,17 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
     //    RefType type = RefType.getInstance("de.upb.soot.instructions.stmt.IdentityStmt");
 
     Local r0 = generator.generateField(typeSignature);
-    stmts.add(Jimple.newIdentityStmt(r0, Jimple.newThisRef(typeSignature), nop));
+    stmts.add(JavaJimple.newIdentityStmt(r0, JavaJimple.newThisRef(typeSignature), nop));
 
     // TODO: how to add expr to body?
     // add(JavaJimple.getInstance().newSpecialInvokeExpr( r0 , currentMethod ));
 
     Value value = IntConstant.getInstance(42);
-    stmts.add(Jimple.newAssignStmt(Jimple.newInstanceFieldRef(r0, initFieldSignature), value, nop));
+    stmts.add(
+        JavaJimple.newAssignStmt(
+            JavaJimple.newInstanceFieldRef(r0, initFieldSignature), value, nop));
 
-    stmts.add(Jimple.newReturnVoidStmt(nop));
+    stmts.add(JavaJimple.newReturnVoidStmt(nop));
 
     Body body = new Body(locals, traps, stmts, NoPositionInformation.getInstance());
     MethodSource methodSource = new OverridingMethodSource(methodSignature, body);

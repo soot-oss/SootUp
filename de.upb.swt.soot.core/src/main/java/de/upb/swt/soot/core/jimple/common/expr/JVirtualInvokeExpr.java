@@ -28,6 +28,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.LocalBox;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.Copyable;
@@ -40,7 +41,7 @@ public final class JVirtualInvokeExpr extends AbstractInstanceInvokeExpr impleme
 
   /** Stores the values of new ImmediateBox to the argBoxes array. */
   public JVirtualInvokeExpr(Value base, MethodSignature method, List<? extends Value> args) {
-    super(Jimple.newLocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
+    super(new LocalBox(base), method, ValueBoxUtils.toValueBoxes(args));
   }
 
   @Override

@@ -26,10 +26,7 @@
 package de.upb.swt.soot.core.jimple.common.ref;
 
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.NullType;
@@ -48,7 +45,7 @@ public final class JArrayRef implements ConcreteRef, Copyable {
   private final IdentifierFactory identifierFactory;
 
   public JArrayRef(Value base, Value index, IdentifierFactory identifierFactory) {
-    this(Jimple.newLocalBox(base), Jimple.newImmediateBox(index), identifierFactory);
+    this(new LocalBox(base), new ImmediateBox(index), identifierFactory);
   }
 
   private JArrayRef(ValueBox baseBox, ValueBox indexBox, IdentifierFactory identifierFactory) {

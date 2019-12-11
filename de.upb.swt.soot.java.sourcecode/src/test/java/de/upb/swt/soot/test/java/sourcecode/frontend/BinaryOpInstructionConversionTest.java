@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.constant.BooleanConstant;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
@@ -40,6 +39,7 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import java.util.Arrays;
@@ -89,7 +89,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -98,7 +98,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$b0", PrimitiveType.getByte()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getByte(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getByte(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -106,7 +106,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$b1", PrimitiveType.getByte()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getByte(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getByte(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -183,7 +183,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -192,7 +192,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$d0", PrimitiveType.getDouble()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getDouble(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getDouble(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -200,7 +200,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$f0", PrimitiveType.getFloat()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getFloat(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getFloat(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -257,7 +257,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -266,7 +266,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$d0", PrimitiveType.getDouble()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getDouble(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getDouble(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -274,7 +274,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$d1", PrimitiveType.getDouble()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getDouble(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getDouble(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -321,7 +321,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -330,7 +330,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$c0", PrimitiveType.getChar()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -338,7 +338,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$c1", PrimitiveType.getChar()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -413,7 +413,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -422,7 +422,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$s0", PrimitiveType.getShort()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getShort(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getShort(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -430,7 +430,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$s1", PrimitiveType.getShort()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getShort(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getShort(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -505,7 +505,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -514,7 +514,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -522,7 +522,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -567,7 +567,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -576,7 +576,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$c0", PrimitiveType.getChar()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -584,7 +584,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$c1", PrimitiveType.getChar()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -660,7 +660,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -669,7 +669,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$s0", PrimitiveType.getShort()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getShort(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getShort(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -729,7 +729,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -738,7 +738,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -791,7 +791,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -800,7 +800,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$l0", PrimitiveType.getLong()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getLong(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getLong(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -808,7 +808,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$l1", PrimitiveType.getLong()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getLong(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getLong(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -853,7 +853,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -862,7 +862,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -870,7 +870,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -915,7 +915,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -924,7 +924,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$c0", PrimitiveType.getChar()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -932,7 +932,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$c1", PrimitiveType.getChar()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1007,7 +1007,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1016,7 +1016,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$b0", PrimitiveType.getByte()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getByte(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getByte(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1079,7 +1079,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1088,7 +1088,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$s0", PrimitiveType.getShort()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getShort(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getShort(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1096,7 +1096,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1162,7 +1162,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1171,7 +1171,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$l0", PrimitiveType.getLong()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getLong(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getLong(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1213,7 +1213,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1222,7 +1222,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1230,7 +1230,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1276,7 +1276,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1285,7 +1285,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getBoolean(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getBoolean(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1293,7 +1293,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$z1", PrimitiveType.getBoolean()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getBoolean(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getBoolean(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1368,7 +1368,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1377,7 +1377,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getBoolean(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getBoolean(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1385,7 +1385,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$z1", PrimitiveType.getBoolean()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getBoolean(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getBoolean(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1462,7 +1462,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1471,7 +1471,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$z0", PrimitiveType.getBoolean()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getBoolean(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getBoolean(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1515,7 +1515,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1524,7 +1524,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$i0", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getInt(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1532,7 +1532,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$i1", PrimitiveType.getInt()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getInt(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1581,7 +1581,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1590,7 +1590,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$f0", PrimitiveType.getFloat()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getFloat(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getFloat(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1598,7 +1598,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$f1", PrimitiveType.getFloat()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getFloat(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getFloat(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1647,7 +1647,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1656,7 +1656,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$d0", PrimitiveType.getDouble()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getDouble(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getDouble(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1664,7 +1664,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$d1", PrimitiveType.getDouble()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getDouble(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getDouble(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1713,7 +1713,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1722,7 +1722,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$l0", PrimitiveType.getLong()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getLong(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getLong(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1730,7 +1730,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$l1", PrimitiveType.getLong()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getLong(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getLong(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1779,7 +1779,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1788,7 +1788,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$c0", PrimitiveType.getChar()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getChar(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1796,7 +1796,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$c1", PrimitiveType.getChar()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getChar(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1865,7 +1865,7 @@ public class BinaryOpInstructionConversionTest {
               new Local("r0", identifierFactory.getClassType("BinaryOperations")),
               stmt.getLeftOp());
           assertEquiv(
-              Jimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
+              JavaJimple.newThisRef(identifierFactory.getClassType("BinaryOperations")),
               stmt.getRightOp());
         });
 
@@ -1874,7 +1874,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$b0", PrimitiveType.getByte()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getByte(), 0), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getByte(), 0), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(
@@ -1882,7 +1882,7 @@ public class BinaryOpInstructionConversionTest {
         JIdentityStmt.class,
         stmt -> {
           assertEquiv(new Local("$b1", PrimitiveType.getByte()), stmt.getLeftOp());
-          assertEquiv(Jimple.newParameterRef(PrimitiveType.getByte(), 1), stmt.getRightOp());
+          assertEquiv(JavaJimple.newParameterRef(PrimitiveType.getByte(), 1), stmt.getRightOp());
         });
 
     assertInstanceOfSatisfying(

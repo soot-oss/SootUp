@@ -23,7 +23,6 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.core.frontend.MethodSource;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
@@ -217,7 +216,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     /* retrieve all trap handlers */
     for (TryCatchBlockNode tc : tryCatchBlocks) {
-      trapHandlers.put(tc.handler, Jimple.newStmtBox(null));
+      trapHandlers.put(tc.handler, JavaJimple.newStmtBox(null));
     }
     /* convert instructions */
     try {
@@ -292,7 +291,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       } else {
         name = "l" + idx;
       }
-      l = Jimple.newLocal(name, UnknownType.getInstance());
+      l = JavaJimple.newLocal(name, UnknownType.getInstance());
       locals.put(i, l);
     }
     return l;
@@ -346,7 +345,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Local l = o.stack;
     if (l == null && !(v instanceof Local)) {
       l = o.stack = newStackLocal();
-      setUnit(o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
+      setUnit(o.insn, JavaJimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
       o.updateBoxes();
     }
     return o;
@@ -358,7 +357,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Local l = o.stack;
     if (l == null && !(v instanceof Local) && !(v instanceof Constant)) {
       l = o.stack = newStackLocal();
-      setUnit(o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
+      setUnit(o.insn, JavaJimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
       o.updateBoxes();
     }
     return o;
@@ -370,7 +369,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Local l = o.stack;
     if (l == null && !(v instanceof Constant)) {
       l = o.stack = newStackLocal();
-      setUnit(o.insn, Jimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
+      setUnit(o.insn, JavaJimple.newAssignStmt(l, v, StmtPositionInfo.createNoStmtPositionInfo()));
       o.updateBoxes();
     }
     return o;
@@ -443,7 +442,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   @Nonnull
   Local newStackLocal() {
     int idx = nextLocal++;
-    Local l = Jimple.newLocal("$stack" + idx, UnknownType.getInstance());
+    Local l = JavaJimple.newLocal("$stack" + idx, UnknownType.getInstance());
     locals.put(idx, l);
     return l;
   }
@@ -488,7 +487,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Local stack = newStackLocal();
       opr.stack = stack;
       JAssignStmt as =
-          Jimple.newAssignStmt(stack, opr.value, StmtPositionInfo.createNoStmtPositionInfo());
+          JavaJimple.newAssignStmt(stack, opr.value, StmtPositionInfo.createNoStmtPositionInfo());
       opr.updateBoxes();
       setUnit(opr.insn, as);
     }
@@ -512,12 +511,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (insn.getOpcode() == GETSTATIC) {
         // ref = Scene.v().makeFieldRef(declClass, insn.name, type, true);
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
-        val = Jimple.newStaticFieldRef(ref);
+        val = JavaJimple.newStaticFieldRef(ref);
       } else {
         Operand base = popLocal();
         // ref = Scene.v().makeFieldRef(declClass, insn.name, type, false);
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
-        JInstanceFieldRef ifr = Jimple.newInstanceFieldRef(base.stackOrValue(), ref);
+        JInstanceFieldRef ifr = JavaJimple.newInstanceFieldRef(base.stackOrValue(), ref);
         val = ifr;
         base.addBox(ifr.getBaseBox());
         frame.in(base);
@@ -555,13 +554,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (!instance) {
         // ref = Scene.v().makeFieldRef(declClass, insn.name, type, true);
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
-        val = Jimple.newStaticFieldRef(ref);
+        val = JavaJimple.newStaticFieldRef(ref);
         frame.in(rvalue);
       } else {
         Operand base = popLocal();
         // ref = Scene.v().makeFieldRef(declClass, insn.name, type, false);
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
-        JInstanceFieldRef ifr = Jimple.newInstanceFieldRef(base.stackOrValue(), ref);
+        JInstanceFieldRef ifr = JavaJimple.newInstanceFieldRef(base.stackOrValue(), ref);
         val = ifr;
         base.addBox(ifr.getBaseBox());
         frame.in(rvalue, base);
@@ -569,7 +568,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       opr = new Operand(insn, val);
       frame.out(opr);
       JAssignStmt as =
-          Jimple.newAssignStmt(
+          JavaJimple.newAssignStmt(
               val, rvalue.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       rvalue.addBox(as.getRightOpBox());
       if (!instance) {
@@ -610,8 +609,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Local local = getLocal(insn.var);
     assignReadOps(local);
     if (!units.containsKey(insn)) {
-      JAddExpr add = Jimple.newAddExpr(local, IntConstant.getInstance(insn.incr));
-      setUnit(insn, Jimple.newAssignStmt(local, add, StmtPositionInfo.createNoStmtPositionInfo()));
+      JAddExpr add = JavaJimple.newAddExpr(local, IntConstant.getInstance(insn.incr));
+      setUnit(
+          insn, JavaJimple.newAssignStmt(local, add, StmtPositionInfo.createNoStmtPositionInfo()));
     }
   }
 
@@ -810,33 +810,33 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Value v2 = op2.stackOrValue();
       AbstractBinopExpr binop;
       if (op >= IADD && op <= DADD) {
-        binop = Jimple.newAddExpr(v1, v2);
+        binop = JavaJimple.newAddExpr(v1, v2);
       } else if (op >= ISUB && op <= DSUB) {
-        binop = Jimple.newSubExpr(v1, v2);
+        binop = JavaJimple.newSubExpr(v1, v2);
       } else if (op >= IMUL && op <= DMUL) {
-        binop = Jimple.newMulExpr(v1, v2);
+        binop = JavaJimple.newMulExpr(v1, v2);
       } else if (op >= IDIV && op <= DDIV) {
-        binop = Jimple.newDivExpr(v1, v2);
+        binop = JavaJimple.newDivExpr(v1, v2);
       } else if (op >= IREM && op <= DREM) {
-        binop = Jimple.newRemExpr(v1, v2);
+        binop = JavaJimple.newRemExpr(v1, v2);
       } else if (op >= ISHL && op <= LSHL) {
-        binop = Jimple.newShlExpr(v1, v2);
+        binop = JavaJimple.newShlExpr(v1, v2);
       } else if (op >= ISHR && op <= LSHR) {
-        binop = Jimple.newShrExpr(v1, v2);
+        binop = JavaJimple.newShrExpr(v1, v2);
       } else if (op >= IUSHR && op <= LUSHR) {
-        binop = Jimple.newUshrExpr(v1, v2);
+        binop = JavaJimple.newUshrExpr(v1, v2);
       } else if (op >= IAND && op <= LAND) {
-        binop = Jimple.newAndExpr(v1, v2);
+        binop = JavaJimple.newAndExpr(v1, v2);
       } else if (op >= IOR && op <= LOR) {
-        binop = Jimple.newOrExpr(v1, v2);
+        binop = JavaJimple.newOrExpr(v1, v2);
       } else if (op >= IXOR && op <= LXOR) {
-        binop = Jimple.newXorExpr(v1, v2);
+        binop = JavaJimple.newXorExpr(v1, v2);
       } else if (op == LCMP) {
-        binop = Jimple.newCmpExpr(v1, v2);
+        binop = JavaJimple.newCmpExpr(v1, v2);
       } else if (op == FCMPL || op == DCMPL) {
-        binop = Jimple.newCmplExpr(v1, v2);
+        binop = JavaJimple.newCmplExpr(v1, v2);
       } else if (op == FCMPG || op == DCMPG) {
-        binop = Jimple.newCmpgExpr(v1, v2);
+        binop = JavaJimple.newCmpgExpr(v1, v2);
       } else {
         throw new AssertionError("Unknown binop: " + op);
       }
@@ -876,9 +876,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Value v1 = op1.stackOrValue();
       AbstractUnopExpr unop;
       if (op >= INEG && op <= DNEG) {
-        unop = Jimple.newNegExpr(v1);
+        unop = JavaJimple.newNegExpr(v1);
       } else if (op == ARRAYLENGTH) {
-        unop = Jimple.newLengthExpr(v1);
+        unop = JavaJimple.newLengthExpr(v1);
       } else {
         throw new AssertionError("Unknown unop: " + op);
       }
@@ -925,7 +925,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         throw new AssertionError("Unknonw prim cast op: " + op);
       }
       Operand val = fromd ? popImmediateDual() : popImmediate();
-      JCastExpr cast = Jimple.newCastExpr(val.stackOrValue(), totype);
+      JCastExpr cast = JavaJimple.newCastExpr(val.stackOrValue(), totype);
       opr = new Operand(insn, cast);
       val.addBox(cast.getOpBox());
       frame.in(val);
@@ -949,7 +949,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     if (!units.containsKey(insn)) {
       Operand val = dword ? popImmediateDual() : popImmediate();
       JReturnStmt ret =
-          Jimple.newReturnStmt(val.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
+          JavaJimple.newReturnStmt(val.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       val.addBox(ret.getOpBox());
       frame.in(val);
       frame.boxes(ret.getOpBox());
@@ -966,7 +966,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
        * We can ignore NOP instructions, but for completeness, we handle them
        */
       if (!units.containsKey(insn)) {
-        units.put(insn, Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
+        units.put(insn, JavaJimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo()));
       }
     } else if (op >= ACONST_NULL && op <= DCONST_1) {
       convertConstInsn(insn);
@@ -1002,7 +1002,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       convertReturnInsn(insn);
     } else if (op == RETURN) {
       if (!units.containsKey(insn)) {
-        setUnit(insn, Jimple.newReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo()));
+        setUnit(insn, JavaJimple.newReturnVoidStmt(StmtPositionInfo.createNoStmtPositionInfo()));
       }
     } else if (op == ATHROW) {
       StackFrame frame = getFrame(insn);
@@ -1010,7 +1010,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (!units.containsKey(insn)) {
         opr = popImmediate();
         JThrowStmt ts =
-            Jimple.newThrowStmt(opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
+            JavaJimple.newThrowStmt(
+                opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
         opr.addBox(ts.getOpBox());
         frame.in(opr);
         frame.out(opr);
@@ -1027,9 +1028,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         Operand opr = popStackConst();
         AbstractOpStmt ts =
             op == MONITORENTER
-                ? Jimple.newEnterMonitorStmt(
+                ? JavaJimple.newEnterMonitorStmt(
                     opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo())
-                : Jimple.newExitMonitorStmt(
+                : JavaJimple.newExitMonitorStmt(
                     opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
         opr.addBox(ts.getOpBox());
         frame.in(opr);
@@ -1105,9 +1106,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     int op = insn.getOpcode();
     if (op == GOTO) {
       if (!units.containsKey(insn)) {
-        StmtBox box = Jimple.newStmtBox(null);
+        StmtBox box = JavaJimple.newStmtBox(null);
         labels.put(insn.label, box);
-        setUnit(insn, Jimple.newGotoStmt(box, StmtPositionInfo.createNoStmtPositionInfo()));
+        setUnit(insn, JavaJimple.newGotoStmt(box, StmtPositionInfo.createNoStmtPositionInfo()));
       }
       return;
     }
@@ -1121,21 +1122,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         Operand val1 = popImmediate();
         Value v1 = val1.stackOrValue();
         if (op == IF_ICMPEQ) {
-          cond = Jimple.newEqExpr(v1, v);
+          cond = JavaJimple.newEqExpr(v1, v);
         } else if (op == IF_ICMPNE) {
-          cond = Jimple.newNeExpr(v1, v);
+          cond = JavaJimple.newNeExpr(v1, v);
         } else if (op == IF_ICMPLT) {
-          cond = Jimple.newLtExpr(v1, v);
+          cond = JavaJimple.newLtExpr(v1, v);
         } else if (op == IF_ICMPGE) {
-          cond = Jimple.newGeExpr(v1, v);
+          cond = JavaJimple.newGeExpr(v1, v);
         } else if (op == IF_ICMPGT) {
-          cond = Jimple.newGtExpr(v1, v);
+          cond = JavaJimple.newGtExpr(v1, v);
         } else if (op == IF_ICMPLE) {
-          cond = Jimple.newLeExpr(v1, v);
+          cond = JavaJimple.newLeExpr(v1, v);
         } else if (op == IF_ACMPEQ) {
-          cond = Jimple.newEqExpr(v1, v);
+          cond = JavaJimple.newEqExpr(v1, v);
         } else if (op == IF_ACMPNE) {
-          cond = Jimple.newNeExpr(v1, v);
+          cond = JavaJimple.newNeExpr(v1, v);
         } else {
           throw new AssertionError("Unknown if op: " + op);
         }
@@ -1145,21 +1146,21 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         frame.in(val, val1);
       } else {
         if (op == IFEQ) {
-          cond = Jimple.newEqExpr(v, IntConstant.getInstance(0));
+          cond = JavaJimple.newEqExpr(v, IntConstant.getInstance(0));
         } else if (op == IFNE) {
-          cond = Jimple.newNeExpr(v, IntConstant.getInstance(0));
+          cond = JavaJimple.newNeExpr(v, IntConstant.getInstance(0));
         } else if (op == IFLT) {
-          cond = Jimple.newLtExpr(v, IntConstant.getInstance(0));
+          cond = JavaJimple.newLtExpr(v, IntConstant.getInstance(0));
         } else if (op == IFGE) {
-          cond = Jimple.newGeExpr(v, IntConstant.getInstance(0));
+          cond = JavaJimple.newGeExpr(v, IntConstant.getInstance(0));
         } else if (op == IFGT) {
-          cond = Jimple.newGtExpr(v, IntConstant.getInstance(0));
+          cond = JavaJimple.newGtExpr(v, IntConstant.getInstance(0));
         } else if (op == IFLE) {
-          cond = Jimple.newLeExpr(v, IntConstant.getInstance(0));
+          cond = JavaJimple.newLeExpr(v, IntConstant.getInstance(0));
         } else if (op == IFNULL) {
-          cond = Jimple.newEqExpr(v, NullConstant.getInstance());
+          cond = JavaJimple.newEqExpr(v, NullConstant.getInstance());
         } else if (op == IFNONNULL) {
-          cond = Jimple.newNeExpr(v, NullConstant.getInstance());
+          cond = JavaJimple.newNeExpr(v, NullConstant.getInstance());
         } else {
           throw new AssertionError("Unknown if op: " + op);
         }
@@ -1167,9 +1168,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         frame.boxes(cond.getOp1Box());
         frame.in(val);
       }
-      StmtBox box = Jimple.newStmtBox(null);
+      StmtBox box = JavaJimple.newStmtBox(null);
       labels.put(insn.label, box);
-      setUnit(insn, Jimple.newIfStmt(cond, box, StmtPositionInfo.createNoStmtPositionInfo()));
+      setUnit(insn, JavaJimple.newIfStmt(cond, box, StmtPositionInfo.createNoStmtPositionInfo()));
     } else {
       if (op >= IF_ICMPEQ && op <= IF_ACMPNE) {
         frame.mergeIn(pop(), pop());
@@ -1249,10 +1250,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         JavaIdentifierFactory.getInstance().getFieldSignature(methodHandle.getName(), bsmCls, t);
     if (kind == MethodHandle.Kind.REF_GET_FIELD_STATIC.getValue()
         || kind == MethodHandle.Kind.REF_PUT_FIELD_STATIC.getValue()) {
-      return Jimple.newStaticFieldRef(fieldSignature);
+      return JavaJimple.newStaticFieldRef(fieldSignature);
     } else {
       Operand base = popLocal();
-      return Jimple.newInstanceFieldRef(base.stackOrValue(), fieldSignature);
+      return JavaJimple.newInstanceFieldRef(base.stackOrValue(), fieldSignature);
     }
   }
 
@@ -1272,12 +1273,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       return;
     }
     Operand key = popImmediate();
-    StmtBox dflt = Jimple.newStmtBox(null);
+    StmtBox dflt = JavaJimple.newStmtBox(null);
 
     List<StmtBox> targets = new ArrayList<>(insn.labels.size());
     labels.put(insn.dflt, dflt);
     for (LabelNode ln : insn.labels) {
-      StmtBox box = Jimple.newStmtBox(null);
+      StmtBox box = JavaJimple.newStmtBox(null);
       targets.add(box);
       labels.put(ln, box);
     }
@@ -1288,7 +1289,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
 
     JSwitchStmt lss =
-        Jimple.newLookupSwitchStmt(
+        JavaJimple.newLookupSwitchStmt(
             key.stackOrValue(), keys, targets, dflt, StmtPositionInfo.createNoStmtPositionInfo());
     key.addBox(lss.getKeyBox());
     frame.in(key);
@@ -1350,16 +1351,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       ValueBox[] boxes = args == null ? null : new ValueBox[args.length];
       AbstractInvokeExpr invoke;
       if (!instance) {
-        invoke = Jimple.newStaticInvokeExpr(methodSignature, argList);
+        invoke = JavaJimple.newStaticInvokeExpr(methodSignature, argList);
       } else {
         Local base = (Local) args[args.length - 1].stackOrValue();
         AbstractInstanceInvokeExpr iinvoke;
         if (op == INVOKESPECIAL) {
-          iinvoke = Jimple.newSpecialInvokeExpr(base, methodSignature, argList);
+          iinvoke = JavaJimple.newSpecialInvokeExpr(base, methodSignature, argList);
         } else if (op == INVOKEVIRTUAL) {
-          iinvoke = Jimple.newVirtualInvokeExpr(base, methodSignature, argList);
+          iinvoke = JavaJimple.newVirtualInvokeExpr(base, methodSignature, argList);
         } else if (op == INVOKEINTERFACE) {
-          iinvoke = Jimple.newInterfaceInvokeExpr(base, methodSignature, argList);
+          iinvoke = JavaJimple.newInterfaceInvokeExpr(base, methodSignature, argList);
         } else {
           throw new AssertionError("Unknown invoke op:" + op);
         }
@@ -1405,7 +1406,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     } else if (!(returnType == VoidType.getInstance())) {
       push(opr);
     } else if (!units.containsKey(insn)) {
-      setUnit(insn, Jimple.newInvokeStmt(opr.value, StmtPositionInfo.createNoStmtPositionInfo()));
+      setUnit(
+          insn, JavaJimple.newInvokeStmt(opr.value, StmtPositionInfo.createNoStmtPositionInfo()));
     }
     /*
      * assign all read ops in case the methodRef modifies any of the fields
@@ -1460,7 +1462,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
               .getMethodSignature(insn.name, bclass, returnType, parameterTypes);
 
       JDynamicInvokeExpr indy =
-          Jimple.newDynamicInvokeExpr(
+          JavaJimple.newDynamicInvokeExpr(
               bsmMethodRef, bsmMethodArgs, methodRef, insn.bsm.getTag(), methodArgs);
       for (int i = 0; i < types.size() - 1; i++) {
         boxes[i] = indy.getArgBox(i);
@@ -1499,7 +1501,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       push(opr);
     } else if (!units.containsKey(insn)) {
       // FIXME: [JMP] Set correct position information
-      setUnit(insn, Jimple.newInvokeStmt(opr.value, StmtPositionInfo.createNoStmtPositionInfo()));
+      setUnit(
+          insn, JavaJimple.newInvokeStmt(opr.value, StmtPositionInfo.createNoStmtPositionInfo()));
     }
     /*
      * assign all read ops in case the method modifies any of the fields
@@ -1547,7 +1550,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         sizes[dims] = popImmediate();
         sizeVals[dims] = sizes[dims].stackOrValue();
       }
-      JNewMultiArrayExpr nm = Jimple.newNewMultiArrayExpr(t, Arrays.asList(sizeVals));
+      JNewMultiArrayExpr nm = JavaJimple.newNewMultiArrayExpr(t, Arrays.asList(sizeVals));
       for (int i = 0; i != boxes.length; i++) {
         ValueBox vb = nm.getSizeBox(i);
         sizes[i].addBox(vb);
@@ -1576,16 +1579,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       return;
     }
     Operand key = popImmediate();
-    StmtBox dflt = Jimple.newStmtBox(null);
+    StmtBox dflt = JavaJimple.newStmtBox(null);
     List<StmtBox> targets = new ArrayList<>(insn.labels.size());
     labels.put(insn.dflt, dflt);
     for (LabelNode ln : insn.labels) {
-      StmtBox box = Jimple.newStmtBox(null);
+      StmtBox box = JavaJimple.newStmtBox(null);
       targets.add(box);
       labels.put(ln, box);
     }
     JSwitchStmt tss =
-        Jimple.newTableSwitchStmt(
+        JavaJimple.newTableSwitchStmt(
             key.stackOrValue(),
             insn.min,
             insn.max,
@@ -1607,7 +1610,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Type t = JavaIdentifierFactory.getInstance().getType(insn.desc);
       Value val;
       if (op == NEW) {
-        val = Jimple.newNewExpr((ReferenceType) t);
+        val = JavaJimple.newNewExpr((ReferenceType) t);
       } else {
         Operand op1 = popImmediate();
         Value v1 = op1.stackOrValue();
@@ -1617,11 +1620,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           vb = expr.getSizeBox();
           val = expr;
         } else if (op == CHECKCAST) {
-          JCastExpr expr = Jimple.newCastExpr(v1, t);
+          JCastExpr expr = JavaJimple.newCastExpr(v1, t);
           vb = expr.getOpBox();
           val = expr;
         } else if (op == INSTANCEOF) {
-          JInstanceOfExpr expr = Jimple.newInstanceOfExpr(v1, t);
+          JInstanceOfExpr expr = JavaJimple.newInstanceOfExpr(v1, t);
           vb = expr.getOpBox();
           val = expr;
         } else {
@@ -1669,7 +1672,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Local local = getLocal(insn.var);
     if (!units.containsKey(insn)) {
       AbstractDefinitionStmt as =
-          Jimple.newAssignStmt(
+          JavaJimple.newAssignStmt(
               local, opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       opr.addBox(as.getRightOpBox());
       frame.boxes(as.getRightOpBox());
@@ -1692,7 +1695,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (!units.containsKey(insn)) {
         setUnit(
             insn,
-            Jimple.newRetStmt(getLocal(insn.var), StmtPositionInfo.createNoStmtPositionInfo()));
+            JavaJimple.newRetStmt(getLocal(insn.var), StmtPositionInfo.createNoStmtPositionInfo()));
       }
     } else {
       throw new AssertionError("Unknown var op: " + op);
@@ -1709,7 +1712,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     // code
     if (inlineExceptionLabels.contains(ln)) {
       if (!units.containsKey(ln)) {
-        JNopStmt nop = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+        JNopStmt nop = JavaJimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
         setUnit(ln, nop);
       }
       return;
@@ -1722,7 +1725,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
       Local stack = newStackLocal();
       AbstractDefinitionStmt as =
-          Jimple.newIdentityStmt(stack, ref, StmtPositionInfo.createNoStmtPositionInfo());
+          JavaJimple.newIdentityStmt(stack, ref, StmtPositionInfo.createNoStmtPositionInfo());
       opr = new Operand(ln, ref);
       opr.stack = stack;
       frame.out(opr);
@@ -1898,7 +1901,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
     Local local = newStackLocal();
     AbstractDefinitionStmt as =
-        Jimple.newIdentityStmt(local, ref, StmtPositionInfo.createNoStmtPositionInfo());
+        JavaJimple.newIdentityStmt(local, ref, StmtPositionInfo.createNoStmtPositionInfo());
 
     Operand opr = new Operand(ln, ref);
     opr.stack = local;
@@ -1947,15 +1950,19 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     if (!lazyModifiers.get().contains(Modifier.STATIC)) {
       Local l = getLocal(iloc++);
       jbu.add(
-          Jimple.newIdentityStmt(
-              l, Jimple.newThisRef(declaringClass), StmtPositionInfo.createNoStmtPositionInfo()));
+          JavaJimple.newIdentityStmt(
+              l,
+              JavaJimple.newThisRef(declaringClass),
+              StmtPositionInfo.createNoStmtPositionInfo()));
     }
     int nrp = 0;
     for (Type ot : methodSignature.getParameterTypes()) {
       Local l = getLocal(iloc);
       jbu.add(
-          Jimple.newIdentityStmt(
-              l, Jimple.newParameterRef(ot, nrp++), StmtPositionInfo.createNoStmtPositionInfo()));
+          JavaJimple.newIdentityStmt(
+              l,
+              JavaJimple.newParameterRef(ot, nrp++),
+              StmtPositionInfo.createNoStmtPositionInfo()));
       if (AsmUtil.isDWord(ot)) {
         iloc += 2;
       } else {
@@ -1972,8 +1979,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
     Map<LabelNode, Iterator<StmtBox>> handlers = new HashMap<>(tryCatchBlocks.size());
     for (TryCatchBlockNode tc : tryCatchBlocks) {
-      StmtBox start = Jimple.newStmtBox(null);
-      StmtBox end = Jimple.newStmtBox(null);
+      StmtBox start = JavaJimple.newStmtBox(null);
+      StmtBox end = JavaJimple.newStmtBox(null);
       Iterator<StmtBox> hitr = handlers.get(tc.handler);
       if (hitr == null) {
         hitr = trapHandlers.get(tc.handler).iterator();
@@ -1988,7 +1995,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
         cls = JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(tc.type));
       }
-      Trap trap = Jimple.newTrap(cls, start, end, handler);
+      Trap trap = JavaJimple.newTrap(cls, start, end, handler);
       traps.add(trap);
       labels.put(tc.start, start);
       labels.put(tc.end, end);
@@ -2071,7 +2078,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       // We need to jump to the original implementation
       Stmt targetUnit = units.get(ln);
       JGotoStmt gotoImpl =
-          Jimple.newGotoStmt(targetUnit, StmtPositionInfo.createNoStmtPositionInfo());
+          JavaJimple.newGotoStmt(targetUnit, StmtPositionInfo.createNoStmtPositionInfo());
       bodyStmts.add(gotoImpl);
     }
 
@@ -2079,7 +2086,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     if (labls.isEmpty()) {
       return;
     }
-    Stmt end = Jimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
+    Stmt end = JavaJimple.newNopStmt(StmtPositionInfo.createNoStmtPositionInfo());
     bodyStmts.add(end);
     while (!labls.isEmpty()) {
       LabelNode ln = labls.poll();

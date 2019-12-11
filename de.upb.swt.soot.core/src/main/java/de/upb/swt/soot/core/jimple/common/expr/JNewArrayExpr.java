@@ -27,6 +27,7 @@ package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.ImmediateBox;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
@@ -49,7 +50,7 @@ public final class JNewArrayExpr implements Expr, Copyable {
 
   public JNewArrayExpr(Type baseType, Value size, IdentifierFactory identifierFactory) {
     this.baseType = baseType;
-    this.sizeBox = Jimple.newImmediateBox(size);
+    this.sizeBox = new ImmediateBox(size);
     this.identifierFactory = identifierFactory;
   }
 

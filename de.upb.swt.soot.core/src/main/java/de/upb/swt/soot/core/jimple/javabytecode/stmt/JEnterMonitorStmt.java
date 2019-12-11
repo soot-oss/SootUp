@@ -26,10 +26,7 @@
 package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -41,7 +38,7 @@ import javax.annotation.Nonnull;
 public final class JEnterMonitorStmt extends AbstractOpStmt implements Copyable {
 
   public JEnterMonitorStmt(Value op, StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(op), positionInfo);
+    this(new ImmediateBox(op), positionInfo);
   }
 
   private JEnterMonitorStmt(ValueBox opBox, StmtPositionInfo positionInfo) {

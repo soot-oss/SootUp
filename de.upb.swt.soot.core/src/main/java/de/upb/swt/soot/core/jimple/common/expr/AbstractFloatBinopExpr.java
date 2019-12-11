@@ -25,7 +25,7 @@
 
 package de.upb.swt.soot.core.jimple.common.expr;
 
-import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.ImmediateBox;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.types.PrimitiveType;
@@ -35,7 +35,7 @@ import de.upb.swt.soot.core.types.UnknownType;
 public abstract class AbstractFloatBinopExpr extends AbstractBinopExpr {
 
   AbstractFloatBinopExpr(Value op1, Value op2) {
-    this(Jimple.newArgBox(op1), Jimple.newArgBox(op2));
+    this(new ImmediateBox(op1), new ImmediateBox(op2));
   }
 
   private AbstractFloatBinopExpr(ValueBox op1Box, ValueBox op2Box) {

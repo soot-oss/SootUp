@@ -26,6 +26,7 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.ImmediateBox;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.visitor.ExprVisitor;
@@ -41,7 +42,7 @@ import javax.annotation.Nonnull;
 public final class JNegExpr extends AbstractUnopExpr implements Copyable {
 
   public JNegExpr(Value op) {
-    super(Jimple.newImmediateBox(op));
+    super(new ImmediateBox(op));
   }
 
   @Override

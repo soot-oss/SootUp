@@ -26,6 +26,7 @@
 package de.upb.swt.soot.core.jimple.common.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.JStmtBox;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
@@ -44,7 +45,7 @@ public final class JGotoStmt extends AbstractStmt implements Copyable {
   private final List<StmtBox> targetBoxes;
 
   public JGotoStmt(Stmt target, StmtPositionInfo positionInfo) {
-    this(Jimple.newStmtBox(target), positionInfo);
+    this(new JStmtBox(target), positionInfo);
   }
 
   public JGotoStmt(StmtBox box, StmtPositionInfo positionInfo) {

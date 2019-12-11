@@ -27,6 +27,7 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.ImmediateBox;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
@@ -68,7 +69,7 @@ public final class JDynamicInvokeExpr extends AbstractInvokeExpr implements Copy
     this.tag = tag;
 
     for (int i = 0; i < bootstrapArgs.size(); i++) {
-      this.bootstrapMethodSignatureArgBoxes[i] = Jimple.newImmediateBox(bootstrapArgs.get(i));
+      this.bootstrapMethodSignatureArgBoxes[i] = new ImmediateBox(bootstrapArgs.get(i));
     }
   }
 

@@ -8,7 +8,6 @@ import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -21,6 +20,7 @@ import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,14 +44,14 @@ public class SootMethodTest {
     List<Stmt> stmts = new ArrayList<>();
     LocalGenerator generator = new LocalGenerator(new HashSet<>());
     stmts.add(
-        Jimple.newIdentityStmt(
+        JavaJimple.newIdentityStmt(
             generator.generateLocal(type),
-            Jimple.newParameterRef(type, 0),
+            JavaJimple.newParameterRef(type, 0),
             StmtPositionInfo.createNoStmtPositionInfo()));
     stmts.add(
-        Jimple.newAssignStmt(
+        JavaJimple.newAssignStmt(
             generator.generateLocal(type),
-            Jimple.newNewExpr(type),
+            JavaJimple.newNewExpr(type),
             StmtPositionInfo.createNoStmtPositionInfo()));
 
     Body body = new Body(generator.getLocals(), Collections.emptyList(), stmts, null);

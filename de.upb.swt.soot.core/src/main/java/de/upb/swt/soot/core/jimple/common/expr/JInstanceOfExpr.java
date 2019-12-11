@@ -26,6 +26,7 @@
 package de.upb.swt.soot.core.jimple.common.expr;
 
 import de.upb.swt.soot.core.jimple.Jimple;
+import de.upb.swt.soot.core.jimple.basic.ImmediateBox;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
@@ -46,7 +47,7 @@ public final class JInstanceOfExpr implements Expr, Copyable {
   private final Type checkType;
 
   public JInstanceOfExpr(Value op, Type checkType) {
-    this.opBox = Jimple.newImmediateBox(op);
+    this.opBox = new ImmediateBox(op);
     this.checkType = checkType;
   }
 

@@ -11,8 +11,8 @@
 
 package de.upb.swt.soot.core.jimple.common.ref;
 
-import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
+import de.upb.swt.soot.core.jimple.basic.LocalBox;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -35,7 +35,7 @@ public final class JInstanceFieldRef extends FieldRef implements Copyable {
    */
   public JInstanceFieldRef(Value base, FieldSignature fieldSig) {
     super(fieldSig);
-    this.baseBox = Jimple.newLocalBox(base);
+    this.baseBox = new LocalBox(base);
   }
 
   @Override

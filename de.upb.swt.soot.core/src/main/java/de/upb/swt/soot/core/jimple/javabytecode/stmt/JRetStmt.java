@@ -26,10 +26,7 @@
 package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractStmt;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
@@ -46,7 +43,7 @@ public final class JRetStmt extends AbstractStmt implements Copyable {
   // List useBoxes;
 
   public JRetStmt(Value stmtAddress, StmtPositionInfo positionInfo) {
-    this(Jimple.newImmediateBox(stmtAddress), positionInfo);
+    this(new ImmediateBox(stmtAddress), positionInfo);
   }
 
   private JRetStmt(ValueBox stmtAddressBox, StmtPositionInfo positionInfo) {
