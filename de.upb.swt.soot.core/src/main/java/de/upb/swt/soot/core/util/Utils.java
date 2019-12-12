@@ -1,4 +1,4 @@
-package de.upb.swt.soot.test.java.sourcecode.frontend;
+package de.upb.swt.soot.core.util;
 
 import de.upb.swt.soot.core.jimple.basic.EquivTo;
 import de.upb.swt.soot.core.model.Body;
