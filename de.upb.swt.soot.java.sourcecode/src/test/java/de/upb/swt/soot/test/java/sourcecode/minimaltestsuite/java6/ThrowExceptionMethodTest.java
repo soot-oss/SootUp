@@ -20,6 +20,11 @@ public class ThrowExceptionMethodTest extends MinimalTestSuiteBase {
         "divideByZero", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
+  public MethodSignature getThrowCustomExceptionSignature() {
+    return identifierFactory.getMethodSignature(
+        "throwCustomException", getDeclaredClassSignature(), "void", Collections.emptyList());
+  }
+
   @Override
   public void defaultTest() {
     super.defaultTest();
@@ -28,13 +33,12 @@ public class ThrowExceptionMethodTest extends MinimalTestSuiteBase {
     assertTrue(
         method.getExceptionSignatures().stream()
             .anyMatch(classType -> classType.getClassName().equals("ArithmeticException")));
-
     /** TODO can not detect the custom exception a */
   }
 
   @Ignore
   public void ignoreTest() {
-    SootMethod method = loadMethod(getMethodSignature());
+    SootMethod method = loadMethod(getThrowCustomExceptionSignature());
     assertJimpleStmts(method, expectedBodyStmts1());
     assertTrue(
         method.getExceptionSignatures().stream()
