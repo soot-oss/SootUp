@@ -44,23 +44,8 @@ import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.AbstractSwitchStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JAssignStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JIfStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JInvokeStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
-import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JRetStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.*;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 import java.util.Iterator;
 
 /**
@@ -172,37 +157,43 @@ public class JimpleComparator {
         && stmt.getTarget().equivTo(ifStmt.getTarget(), this);
   }
 
-  protected boolean caseAbstractSwitchStmt(AbstractSwitchStmt obj, AbstractSwitchStmt o) {
-    if (obj.getKey() != o.getKey() || obj.getDefaultTarget() != o.getDefaultTarget()) {
+  public boolean caseSwitchStmt(JSwitchStmt stmt, Object o) {
+    if (!(o instanceof JSwitchStmt)) {
       return false;
     }
-    if (obj.getTargetCount() != o.getTargetCount()) {
+    JSwitchStmt otherSwitchStmt = (JSwitchStmt) o;
+
+    if (stmt.getKey() != otherSwitchStmt.getKey()
+        || stmt.getDefaultTarget() != otherSwitchStmt.getDefaultTarget()) {
       return false;
     }
-    for (int i = obj.getTargetCount() - 1; i >= 0; i--) {
-      if (!obj.getTarget(i).equivTo(o.getTarget(i), this)) {
+
+    if (stmt.getValueCount() != otherSwitchStmt.getValueCount()) {
+      return false;
+    }
+    // TODO: [MS] maybe obsolete - is the following case possible? stmt.getValueCount() !=
+    // stmt.getTargetCount()
+    if (stmt.getTargetCount() != otherSwitchStmt.getTargetCount()) {
+      return false;
+    }
+
+    // [MS] assumes that different sequence of (otherwise equivalent) cases means it is not
+    // equivalent
+    Iterator<IntConstant> valueIterator = stmt.getValues().iterator();
+    for (IntConstant valuesOther : otherSwitchStmt.getValues()) {
+      if (!valuesOther.equivTo(valueIterator.next(), this)) {
         return false;
       }
     }
+
+    Iterator<Stmt> targetIterator = stmt.getTargets().iterator();
+    for (Stmt targetOther : otherSwitchStmt.getTargets()) {
+      if (!targetOther.equivTo(targetIterator.next(), this)) {
+        return false;
+      }
+    }
+
     return true;
-  }
-
-  public boolean caseLookupSwitchStmt(JLookupSwitchStmt stmt, Object o) {
-    if (!(o instanceof JLookupSwitchStmt)) {
-      return false;
-    }
-
-    JLookupSwitchStmt lookupSwitchStmt = (JLookupSwitchStmt) o;
-    if (stmt.getLookupValueCount() != lookupSwitchStmt.getLookupValueCount()) {
-      return false;
-    }
-    Iterator<IntConstant> lvIterator = stmt.getLookupValues().iterator();
-    for (IntConstant lvOther : lookupSwitchStmt.getLookupValues()) {
-      if (!lvOther.equivTo(lvIterator.next(), this)) {
-        return false;
-      }
-    }
-    return caseAbstractSwitchStmt(stmt, lookupSwitchStmt);
   }
 
   public boolean caseNopStmt(JNopStmt stmt, Object o) {
@@ -225,18 +216,6 @@ public class JimpleComparator {
 
   public boolean caseReturnVoidStmt(JReturnVoidStmt stmt, Object o) {
     return (o instanceof JReturnVoidStmt);
-  }
-
-  public boolean caseTableSwitchStmt(JTableSwitchStmt stmt, Object o) {
-    if (!(o instanceof JTableSwitchStmt)) {
-      return false;
-    }
-    JTableSwitchStmt tableSwitchStmt = (JTableSwitchStmt) o;
-    if (stmt.getLowIndex() != tableSwitchStmt.getLowIndex()
-        || stmt.getHighIndex() != tableSwitchStmt.getHighIndex()) {
-      return false;
-    }
-    return caseAbstractSwitchStmt(stmt, tableSwitchStmt);
   }
 
   public boolean caseThrowStmt(JThrowStmt stmt, Object o) {

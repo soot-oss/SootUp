@@ -64,8 +64,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
@@ -1288,7 +1287,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       keys.add(IntConstant.getInstance(i));
     }
 
-    JLookupSwitchStmt lss =
+    JSwitchStmt lss =
         Jimple.newLookupSwitchStmt(
             key.stackOrValue(), keys, targets, dflt, StmtPositionInfo.createNoStmtPositionInfo());
     key.addBox(lss.getKeyBox());
@@ -1585,7 +1584,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       targets.add(box);
       labels.put(ln, box);
     }
-    JTableSwitchStmt tss =
+    JSwitchStmt tss =
         Jimple.newTableSwitchStmt(
             key.stackOrValue(),
             insn.min,
