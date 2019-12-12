@@ -1,8 +1,8 @@
 package de.upb.swt.soot.java.sourcecode.frontend;
 
 import de.upb.swt.soot.core.frontend.ClassProvider;
-import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.types.ClassType;
@@ -27,7 +27,7 @@ public class WalaJavaClassProvider implements ClassProvider {
   }
 
   @Override
-  public ClassSource createClassSource(
+  public SootClassSource createClassSource(
       AnalysisInputLocation srcNamespace, Path sourcePath, ClassType type) {
     return new WalaClassLoader(sourcePath.toString(), exclusionFilePath)
         .getClassSource(type)

@@ -23,11 +23,11 @@ public interface View {
 
   /** Return all classes in the view. */
   @Nonnull
-  Collection<AbstractClass<? extends AbstractClassSource>> getClasses();
+  Collection<? extends AbstractClass<? extends AbstractClassSource>> getClasses();
 
   /** Return all classes in the view. */
   @Nonnull
-  default Stream<AbstractClass<? extends AbstractClassSource>> getClassesStream() {
+  default Stream<? extends AbstractClass<? extends AbstractClassSource>> getClassesStream() {
     return getClasses().stream();
   }
 
@@ -37,7 +37,8 @@ public interface View {
    * @return A class with given signature.
    */
   @Nonnull
-  Optional<AbstractClass<? extends AbstractClassSource>> getClass(@Nonnull ClassType signature);
+  Optional<? extends AbstractClass<? extends AbstractClassSource>> getClass(
+      @Nonnull ClassType signature);
 
   /**
    * Returns the scope if the view is scoped.

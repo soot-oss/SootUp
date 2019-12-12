@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
-import de.upb.swt.soot.core.frontend.ClassSource;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
@@ -40,9 +40,9 @@ public class JavaSourcePathNamespaceTest {
 
     AbstractClassSource content = classSource;
     assertNotNull(content);
-    assertTrue(content instanceof ClassSource);
-    assertEquals(3, ((ClassSource) content).resolveMethods().size());
-    assertEquals(0, ((ClassSource) content).resolveFields().size());
+    assertTrue(content instanceof SootClassSource);
+    assertEquals(3, ((SootClassSource) content).resolveMethods().size());
+    assertEquals(0, ((SootClassSource) content).resolveFields().size());
   }
 
   @Test

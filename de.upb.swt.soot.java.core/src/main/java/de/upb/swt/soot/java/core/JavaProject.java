@@ -6,7 +6,6 @@ import de.upb.swt.soot.core.SourceTypeSpecifier;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.inputlocation.DefaultSourceTypeSpecifier;
-import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ public class JavaProject extends Project {
 
   @Nonnull
   @Override
-  public View createOnDemandView(
+  public JavaView createOnDemandView(
       @Nonnull Function<AnalysisInputLocation, ClassLoadingOptions> classLoadingOptionsSpecifier) {
     return viewBuilder.createOnDemandView(classLoadingOptionsSpecifier);
   }

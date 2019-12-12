@@ -18,8 +18,8 @@ import com.ibm.wala.types.TypeName;
 import com.ibm.wala.util.config.FileOfClasses;
 import com.ibm.wala.util.warnings.Warnings;
 import de.upb.swt.soot.core.SourceTypeSpecifier;
-import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -48,7 +48,7 @@ public class WalaClassLoader {
   private Set<String> sourcePath;
   private IClassHierarchy classHierarchy;
   private List<SootClass> sootClasses;
-  private List<ClassSource> classSources;
+  private List<SootClassSource> classSources;
   private AnalysisScope scope;
   private ClassLoaderFactory factory;
   private final File walaPropertiesFile = new File("target/classes/wala.properties");
@@ -206,7 +206,7 @@ public class WalaClassLoader {
    *
    * @return list of classes
    */
-  public List<ClassSource> getClassSources() {
+  public List<SootClassSource> getClassSources() {
     Iterator<IClass> it = iterateWalaClasses();
     if (classSources == null) {
       classSources = new ArrayList<>();
@@ -214,7 +214,7 @@ public class WalaClassLoader {
     WalaIRToJimpleConverter walaToSoot = new WalaIRToJimpleConverter(this.sourcePath);
     while (it.hasNext()) {
       JavaClass walaClass = (JavaClass) it.next();
-      ClassSource sootClass = walaToSoot.convertToClassSource(walaClass);
+      SootClassSource sootClass = walaToSoot.convertToClassSource(walaClass);
       classSources.add(sootClass);
     }
     return classSources;
@@ -270,7 +270,7 @@ public class WalaClassLoader {
   }
 
   /** Return a ClassSource with the given signature converted from a WALA class. */
-  public Optional<ClassSource> getClassSource(ClassType signature) {
+  public Optional<SootClassSource> getClassSource(ClassType signature) {
     if (classHierarchy == null) {
       buildClassHierachy();
     }
