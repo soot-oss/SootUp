@@ -1,6 +1,6 @@
 package de.upb.swt.soot.java.core;
 
-import de.upb.swt.soot.core.frontend.ClassSource;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
 
@@ -10,7 +10,7 @@ public class JavaSootClass extends SootClass {
     return this.classSignature.isBuiltInClass();
   }
 
-  public JavaSootClass(ClassSource classSource, SourceType sourceType) {
+  public JavaSootClass(SootClassSource classSource, SourceType sourceType) {
     super(classSource, sourceType);
   }
 }

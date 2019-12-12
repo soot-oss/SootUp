@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.frontend.ClassSource;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.util.ImmutableUtils;
@@ -31,11 +31,12 @@ public class WalaJavaClassProviderTest {
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
     WalaJavaClassProvider provider = new WalaJavaClassProvider(exclusionFilePath);
-    ClassSource classSource = provider.createClassSource(inputLocation, Paths.get(srcDir), type);
+    SootClassSource classSource =
+        provider.createClassSource(inputLocation, Paths.get(srcDir), type);
 
     Assert.assertEquals(type, classSource.getClassType());
 
-    ClassSource content = classSource;
+    SootClassSource content = classSource;
     assertNotNull(content);
     assertEquals(3, content.resolveMethods().size());
     assertEquals(0, content.resolveFields().size());

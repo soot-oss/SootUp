@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.frontend.ClassSource;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
@@ -40,7 +40,7 @@ public class WitherTest {
 
   @Test
   public void testWithers() {
-    Optional<ClassSource> classSource = loader.getClassSource(declareClassSig);
+    Optional<SootClassSource> classSource = loader.getClassSource(declareClassSig);
     assertTrue(classSource.isPresent());
     SootClass sootClass = new SootClass(classSource.get(), SourceType.Application);
 
