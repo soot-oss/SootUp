@@ -49,14 +49,14 @@ public abstract class MinimalSourceTestSuiteBase {
       String prevClassDirName = getTestDirectoryName(getClassPath());
       setClassPath(description.getClassName());
       if (!prevClassDirName.equals(getTestDirectoryName(getClassPath()))) {
-        project =
-            JavaProject.builder(new JavaLanguage(8))
-                .addClassPath(
-                    new JavaSourcePathAnalysisInputLocation(
-                        baseDir
-                            + File.separator
-                            + getTestDirectoryName(getClassPath())
-                            + File.separator))
+//        project =
+//            JavaProject.builder(new JavaLanguage(8))
+//                .addClassPath(
+//                    new JavaSourcePathAnalysisInputLocation(
+//                        baseDir
+//                            + File.separator
+//                            + getTestDirectoryName(getClassPath())
+//                            + File.separator))
                 .build();
         javaView = project.createOnDemandView();
         setJavaView(javaView);

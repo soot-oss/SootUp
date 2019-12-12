@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -49,14 +50,14 @@ public class InheritDataWithPublicMethodTest extends JavaTypeHierarchyBase {
     Body body = sootMethod.getBody();
     assertNotNull(body);
 
-//    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-//    List<String> expectedStmts =
-//        Stream.of(
-//                "r0 := @this: InheritDataWithPublicMethod",
-//                "$i0 = specialinvoke r0.<SuperClass: int getnum()>()",
-//                "return")
-//            .collect(Collectors.toList());
-//
-//    assertEquals(expectedStmts, actualStmts);
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: InheritDataWithPublicMethod",
+                "$i0 = specialinvoke r0.<SuperClass: int getnum()>()",
+                "return")
+            .collect(Collectors.toList());
+
+    assertEquals(expectedStmts, actualStmts);
   }
 }

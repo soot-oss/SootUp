@@ -10,6 +10,7 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
 import java.util.Collections;
 import java.util.List;
@@ -48,14 +49,14 @@ public class InheritDataWithProtectedMethodTest extends JavaTypeHierarchyBase {
     Body body = sootMethod.getBody();
     assertNotNull(body);
 
-//    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-//    List<String> expectedStmts =
-//        Stream.of(
-//                "r0 := @this: InheritDataWithProtectedMethod",
-//                "$i0 = specialinvoke r0.<SuperClass: int getnum()>()",
-//                "return")
-//            .collect(Collectors.toList());
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
+    List<String> expectedStmts =
+        Stream.of(
+                "r0 := @this: InheritDataWithProtectedMethod",
+                "$i0 = specialinvoke r0.<SuperClass: int getnum()>()",
+                "return")
+            .collect(Collectors.toList());
 
-//    assertEquals(expectedStmts, actualStmts);
+    assertEquals(expectedStmts, actualStmts);
   }
 }
