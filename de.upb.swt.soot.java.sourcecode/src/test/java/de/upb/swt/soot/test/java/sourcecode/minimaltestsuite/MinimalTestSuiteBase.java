@@ -3,11 +3,9 @@ package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite;
 import static org.junit.Assert.*;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -129,10 +127,9 @@ public abstract class MinimalTestSuiteBase {
   }
 
   public SootClass loadClass(ClassType clazz) {
-    Optional<SootClassSource> cs = customTestWatcher.getLoader().getClassSource(clazz);
+    Optional<SootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
-    SootClassSource classSource = cs.get();
-    return new SootClass(classSource, SourceType.Application);
+    return cs.get();
   }
 
   public SootMethod loadMethod(MethodSignature methodSignature) {
