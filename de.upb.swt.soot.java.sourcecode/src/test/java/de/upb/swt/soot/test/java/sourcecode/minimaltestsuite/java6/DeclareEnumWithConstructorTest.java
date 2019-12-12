@@ -1,6 +1,9 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
@@ -23,14 +26,29 @@ public class DeclareEnumWithConstructorTest extends MinimalTestSuiteBase {
     return identifierFactory.getMethodSignature(
         "getValue", getDeclaredClassSignature(), "int", Collections.emptyList());
   }
+
   public MethodSignature getMainMethodSignature() {
     return identifierFactory.getMethodSignature(
-            "main", getDeclaredClassSignature(), "void", Collections.singletonList("String[]"));
+        "main",
+        getDeclaredClassSignature(),
+        "void",
+        Collections.singletonList("java.lang.String[]"));
   }
 
-  public MethodSignature getMainMethodSignature1() {
+  public MethodSignature getEnumConstructorSignature() {
     return identifierFactory.getMethodSignature(
-            "main", identifierFactory.getClassType("DeclareEnumWithConstructor$Number"), "void", Collections.singletonList("String[]"));
+        "<clinit>",
+        identifierFactory.getClassType("DeclareEnumWithConstructor$Number"),
+        "void",
+        Collections.emptyList());
+  }
+
+  public MethodSignature getEnumGetValueSignature() {
+    return identifierFactory.getMethodSignature(
+        "getValue",
+        identifierFactory.getClassType("DeclareEnumWithConstructor$Number"),
+        "int",
+        Collections.emptyList());
   }
 
   @Override
@@ -41,9 +59,16 @@ public class DeclareEnumWithConstructorTest extends MinimalTestSuiteBase {
     sootMethod = loadMethod(getMainMethodSignature());
     assertJimpleStmts(sootMethod, expectedMainBodyStmts());
 
-    /**
-     * TODO sootClass.isEnum() return false as it checks for if the DeclareEnumConstructor class.
-     */
+    sootMethod = loadMethod(getEnumConstructorSignature());
+    assertJimpleStmts(sootMethod, expectedEnumConstructorStmts());
+
+    sootMethod = loadMethod(getEnumGetValueSignature());
+    assertJimpleStmts(sootMethod, expectedGetValueStmts());
+
+    SootClass sootClass =
+        loadClass(identifierFactory.getClassType("DeclareEnumWithConstructor$Number"));
+    System.out.println(sootClass.getModifiers());
+    assertTrue(sootClass.isEnum());
   }
 
   @Override
@@ -57,9 +82,38 @@ public class DeclareEnumWithConstructorTest extends MinimalTestSuiteBase {
 
   public List<String> expectedMainBodyStmts() {
     return Stream.of(
-            "r0 := @this: DeclareEnumWithConstructor",
-            "specialinvoke r0.<java.lang.Object: void <init>()>()",
+            "$r0 := @parameter0: java.lang.String[]",
+            "$r1 = <DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ONE>",
+            "$r2 = <java.lang.System: java.io.PrintStream out>",
+            "$i0 = specialinvoke $r1.<DeclareEnumWithConstructor$Number: int getValue()>()",
+            "virtualinvoke $r2.<java.io.PrintStream: void println(int)>($i0)",
             "return")
-            .collect(Collectors.toList());
+        .collect(Collectors.toList());
+  }
+
+  public List<String> expectedEnumConstructorStmts() {
+    return Stream.of(
+            "$r0 = new DeclareEnumWithConstructor$Number",
+            "specialinvoke $r0.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"ZERO\", 0, 0)",
+            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ZERO> = $r0",
+            "$r1 = new DeclareEnumWithConstructor$Number",
+            "specialinvoke $r1.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"ONE\", 1, 1)",
+            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number ONE> = $r1",
+            "$r2 = new DeclareEnumWithConstructor$Number",
+            "specialinvoke $r2.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"TWO\", 2, 2)",
+            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number TWO> = $r2",
+            "$r3 = new DeclareEnumWithConstructor$Number",
+            "specialinvoke $r3.<DeclareEnumWithConstructor$Number: void <init>(java.lang.String,int,int)>(\"THREE\", 3, 3)",
+            "<DeclareEnumWithConstructor$Number: DeclareEnumWithConstructor$Number THREE> = $r3",
+            "return")
+        .collect(Collectors.toList());
+  }
+
+  public List<String> expectedGetValueStmts() {
+    return Stream.of(
+            "r0 := @this: DeclareEnumWithConstructor$Number",
+            "$i0 = r0.<DeclareEnumWithConstructor$Number: int value>",
+            "return $i0")
+        .collect(Collectors.toList());
   }
 }

@@ -387,8 +387,10 @@ public class WalaIRToJimpleConverter {
     if (klass.isInterface()) {
       modifiers.add(Modifier.INTERFACE);
     }
-
-    // TODO: final, enum, annotation
+    if (klass.getSuperclass().getName().toString().equals("Ljava/lang/Enum")) {
+      modifiers.add(Modifier.ENUM);
+    }
+    // TODO: final, annotation
     return modifiers;
   }
 
