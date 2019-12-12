@@ -33,7 +33,7 @@ import org.junit.runner.Description;
 @Category(Java8Test.class)
 public abstract class MinimalSourceTestSuiteBase {
 
-  static final String baseDir = "../shared-test-resources/minimaltestsuite/sourcecode";
+  static final String baseDir = "../shared-test-resources/miniTestSuite";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
   @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
