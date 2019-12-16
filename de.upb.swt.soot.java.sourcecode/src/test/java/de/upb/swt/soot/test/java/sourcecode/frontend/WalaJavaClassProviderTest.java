@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.SootClassSource;
-import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.core.types.JavaClassType;
@@ -42,10 +41,5 @@ public class WalaJavaClassProviderTest {
     assertEquals(0, content.resolveFields().size());
 
     assertEquals(content, (classSource));
-  }
-
-  @Test
-  public void testGetHandledFileType() {
-    Assert.assertEquals(FileType.JAVA, new WalaJavaClassProvider().getHandledFileType());
   }
 }

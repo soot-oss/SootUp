@@ -6,7 +6,7 @@ import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,14 +15,14 @@ import org.junit.experimental.categories.Category;
 /** @author Linghui Luo */
 @Category(Java8Test.class)
 public class Java7EnhancementsTest {
-  private WalaClassLoader loader;
+  private WalaJavaClassProvider loader;
   private JavaIdentifierFactory typeFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/java-target/java7";
-    loader = new WalaClassLoader(srcDir);
+    loader = new WalaJavaClassProvider(srcDir);
     typeFactory = JavaIdentifierFactory.getInstance();
   }
 
