@@ -29,7 +29,7 @@ public class WalaJavaClassProviderTest {
             ImmutableUtils.immutableSet(srcDir), exclusionFilePath);
     JavaClassType type = new JavaClassType("Array1", PackageName.DEFAULT_PACKAGE);
 
-    WalaJavaClassProvider provider = new WalaJavaClassProvider(exclusionFilePath);
+    WalaJavaClassProvider provider = new WalaJavaClassProvider(srcDir, exclusionFilePath);
     SootClassSource classSource =
         provider.createClassSource(inputLocation, Paths.get(srcDir), type);
 

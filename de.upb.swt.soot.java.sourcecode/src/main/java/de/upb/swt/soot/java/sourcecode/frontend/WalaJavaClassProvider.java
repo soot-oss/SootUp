@@ -323,7 +323,10 @@ public class WalaJavaClassProvider implements ClassProvider {
   public SootClassSource createClassSource(
       AnalysisInputLocation srcNamespace, Path sourcePath, ClassType type) {
     return getClassSource(type)
-        .orElseThrow(() -> new ResolveException("Could not resolve " + type + " in " + sourcePath));
+        .orElseThrow(
+            () ->
+                new ResolveException(
+                    "Could not resolve " + type + " in " + classSources.toString()));
   }
 
   @Override
