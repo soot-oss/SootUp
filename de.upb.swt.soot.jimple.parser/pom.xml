@@ -53,8 +53,14 @@
             <version>4.0.0-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>de.upb.swt</groupId>
+            <artifactId>soot.java.sourcecode</artifactId>
+            <version>4.0.0-SNAPSHOT</version>
+        </dependency>
 
-        <!-- TODO: it should be language independent -->
+
+        <!-- TODO: it should be language independent - think how to integrate the specific identifierfactory-->
         <dependency>
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.java.core</artifactId>
