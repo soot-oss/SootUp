@@ -29,7 +29,9 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - Andreas Dann andreas.dann@uni-paderborn.de
 - Julian Dolby dolby@us.ibm.com 
 - Ben Hermann ben.hermann@uni-paderborn.de
+- Kaustubh Kelkar kskelkar@mail.upb.de 
 - Linghui Luo linghui.luo@uni-paderborn.de
 - Jan Martin Persch jmpersch@hni.upb.de
+- Hasitha Rajapakse herajapakse@gmail.com
 - Markus Schmidt smarkus@mail.upb.de
 
