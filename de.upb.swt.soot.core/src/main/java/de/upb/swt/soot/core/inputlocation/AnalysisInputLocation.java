@@ -35,6 +35,7 @@ public interface AnalysisInputLocation {
   /**
    * Scan the input location and create ClassSources for every compilation / interpretation unit.
    */
+  // TODO [ms] does that paramter make any sense
   @Nonnull
   Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory);

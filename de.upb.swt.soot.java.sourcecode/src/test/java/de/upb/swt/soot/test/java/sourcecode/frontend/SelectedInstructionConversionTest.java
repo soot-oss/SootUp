@@ -10,7 +10,7 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +26,7 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class SelectedInstructionConversionTest {
 
-  private WalaClassLoader loader;
+  private WalaJavaClassProvider loader;
 
   private JavaIdentifierFactory identifierFactory;
   private JavaClassType declareClassSig;
@@ -34,7 +34,7 @@ public class SelectedInstructionConversionTest {
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/wala-tests/";
-    loader = new WalaClassLoader(srcDir);
+    loader = new WalaJavaClassProvider(srcDir);
     identifierFactory = JavaIdentifierFactory.getInstance();
   }
 

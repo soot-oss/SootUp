@@ -2,6 +2,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.*;
@@ -13,33 +14,35 @@ public class MethodReturningVarTest extends MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    loadMethod(
-        expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 10", "return $i0"),
-        getMethodSignature("short"));
+    SootMethod method = loadMethod(getMethodSignature("short"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 10", "return $i0"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 0", "return $i0"),
-        getMethodSignature("byte"));
+    method = loadMethod(getMethodSignature("byte"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 0", "return $i0"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 97", "return $i0"),
-        getMethodSignature("char"));
+    method = loadMethod(getMethodSignature("char"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 97", "return $i0"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 512", "return $i0"),
-        getMethodSignature("int"));
+    method = loadMethod(getMethodSignature("int"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 512", "return $i0"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 123456789", "return $i0"),
-        getMethodSignature("long"));
+    method = loadMethod(getMethodSignature("long"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts("r0 := @this: MethodReturningVar", "$i0 = 123456789", "return $i0"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: MethodReturningVar", "$f0 = 3.14F", "return $f0"),
-        getMethodSignature("float"));
+    method = loadMethod(getMethodSignature("float"));
+    assertJimpleStmts(
+        method, expectedBodyStmts("r0 := @this: MethodReturningVar", "$f0 = 3.14F", "return $f0"));
 
-    loadMethod(
-        expectedBodyStmts("r0 := @this: MethodReturningVar", "$d0 = 1.96969654", "return $d0"),
-        getMethodSignature("double"));
+    method = loadMethod(getMethodSignature("double"));
+    assertJimpleStmts(
+        method,
+        expectedBodyStmts("r0 := @this: MethodReturningVar", "$d0 = 1.96969654", "return $d0"));
   }
 
   public MethodSignature getMethodSignature(String datatype) {

@@ -3,7 +3,7 @@ class StaticMethodInterfaceImpl implements StaticMethodInterface{
     static public void initStatic(){
         System.out.println("Inside initStatic - StaticmethodInterfaceImpl");
     }
-    public void methodStaticMethodInterfaceImpl(){
+    public void display(){
         System.out.println("Inside display - StaticmethodInterfaceImpl");
     }
     public static void main(String[] args){

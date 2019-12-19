@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileReader;
 
+/** @author Kaustubh Kelkar */
 public class TryWithResourcesConcise{
 
     public void printFile() throws Exception {

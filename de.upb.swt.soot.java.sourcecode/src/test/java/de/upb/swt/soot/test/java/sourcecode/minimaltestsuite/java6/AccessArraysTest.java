@@ -2,6 +2,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.*;
@@ -13,7 +14,9 @@ public class AccessArraysTest extends MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    loadMethod(
+    SootMethod method = loadMethod(getMethodSignature("intArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: AccessArrays",
             "$r1 = newarray (int[])[3]",
@@ -34,10 +37,11 @@ public class AccessArraysTest extends MinimalTestSuiteBase {
             "$i1 = $i4",
             "goto label1",
             "label2:",
-            "return"),
-        getMethodSignature("intArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("byteArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: AccessArrays",
             "$r1 = newarray (byte[])[3]",
@@ -58,10 +62,10 @@ public class AccessArraysTest extends MinimalTestSuiteBase {
             "$i1 = $i4",
             "goto label1",
             "label2:",
-            "return"),
-        getMethodSignature("byteArrays"));
-
-    loadMethod(
+            "return"));
+    method = loadMethod(getMethodSignature("shortArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: AccessArrays",
             "$r1 = newarray (short[])[3]",
@@ -82,10 +86,11 @@ public class AccessArraysTest extends MinimalTestSuiteBase {
             "$i1 = $i4",
             "goto label1",
             "label2:",
-            "return"),
-        getMethodSignature("shortArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("longArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: AccessArrays",
             "$r1 = newarray (long[])[3]",
@@ -106,10 +111,11 @@ public class AccessArraysTest extends MinimalTestSuiteBase {
             "$i1 = $i4",
             "goto label1",
             "label2:",
-            "return"),
-        getMethodSignature("longArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("floatArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: AccessArrays",
             "$r1 = newarray (float[])[4]",
@@ -131,10 +137,11 @@ public class AccessArraysTest extends MinimalTestSuiteBase {
             "$i0 = $i3",
             "goto label1",
             "label2:",
-            "return"),
-        getMethodSignature("floatArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("doubleArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: AccessArrays",
             "$r1 = newarray (double[])[2]",
@@ -154,10 +161,10 @@ public class AccessArraysTest extends MinimalTestSuiteBase {
             "$i0 = $i3",
             "goto label1",
             "label2:",
-            "return"),
-        getMethodSignature("doubleArrays"));
-
-    loadMethod(
+            "return"));
+    method = loadMethod(getMethodSignature("booleanArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: AccessArrays",
             "$r1 = newarray (boolean[])[2]",
@@ -177,10 +184,10 @@ public class AccessArraysTest extends MinimalTestSuiteBase {
             "$i0 = $i3",
             "goto label1",
             "label2:",
-            "return"),
-        getMethodSignature("booleanArrays"));
-
-    loadMethod(
+            "return"));
+    method = loadMethod(getMethodSignature("charArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: AccessArrays",
             "$r1 = newarray (char[])[3]",
@@ -201,10 +208,11 @@ public class AccessArraysTest extends MinimalTestSuiteBase {
             "$i1 = $i4",
             "goto label1",
             "label2:",
-            "return"),
-        getMethodSignature("charArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("stringArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: AccessArrays",
             "$r1 = newarray (java.lang.String[])[2]",
@@ -224,8 +232,7 @@ public class AccessArraysTest extends MinimalTestSuiteBase {
             "$i0 = $i3",
             "goto label1",
             "label2:",
-            "return"),
-        getMethodSignature("stringArrays"));
+            "return"));
   }
 
   public MethodSignature getMethodSignature(String methodName) {
