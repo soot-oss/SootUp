@@ -13,7 +13,7 @@
   </parent>
 
   <properties>
-    <wala.version>1.5.4.1</wala.version>
+    <wala.version>1.5.4</wala.version>
   </properties>
 
   <dependencies>
@@ -65,23 +65,9 @@
       <artifactId>com.ibm.wala.dalvik</artifactId>
       <version>${wala.version}</version>
     </dependency>
-    <!--eclipse jdt, used by wala java source front end -->
-    <dependency>
-      <groupId>org.eclipse.jdt</groupId>
-      <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.15.0</version>
-    </dependency>
 
   </dependencies>
 
-  <repositories>
-    <!-- include wala repo -->
-    <repository>
-      <id>wala</id>
-      <name>wala snapshots</name>
-      <url>https://soot-build.cs.uni-paderborn.de/nexus/repository/wala/</url>
-    </repository>
-  </repositories>
 
   <distributionManagement>
     <repository>
