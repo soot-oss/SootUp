@@ -9,6 +9,7 @@ import com.ibm.wala.cfg.AbstractCFG;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.shrikeCT.ClassConstants;
 import com.ibm.wala.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
@@ -356,13 +357,7 @@ public class WalaIRToJimpleConverter {
       modifiers.add(Modifier.SYNTHETIC);
     }
     if (method.isBridge()) {
-      // TODO: what is this?
-    }
-    if (method.isInit()) {
-      // TODO:
-    }
-    if (method.isClinit()) {
-      // TODO:
+      modifiers.add(Modifier.VOLATILE);
     }
     // TODO: strictfp and annotation
     return modifiers;
@@ -389,7 +384,8 @@ public class WalaIRToJimpleConverter {
     if (klass.getSuperclass().getName().toString().equals("Ljava/lang/Enum")) {
       modifiers.add(Modifier.ENUM);
     }
-    // TODO: final, annotation
+    if ((modif & ClassConstants.ACC_FINAL) != 0) modifiers.add(Modifier.FINAL);
+    // TODO:  annotation
     return modifiers;
   }
 

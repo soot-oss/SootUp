@@ -22,7 +22,6 @@ import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
 import com.ibm.wala.ssa.SSAArrayStoreInstruction;
 import com.ibm.wala.ssa.SSABinaryOpInstruction;
 import com.ibm.wala.ssa.SSACheckCastInstruction;
-import com.ibm.wala.ssa.SSAComparisonInstruction;
 import com.ibm.wala.ssa.SSAConditionalBranchInstruction;
 import com.ibm.wala.ssa.SSAConversionInstruction;
 import com.ibm.wala.ssa.SSAFieldAccessInstruction;
@@ -96,7 +95,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import scala.Char;
 
 /**
  * This class converts wala instruction to jimple statement.
@@ -692,14 +690,6 @@ public class InstructionConverter {
             debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
-  private Stmt convertComparisonInstruction(
-      DebuggingInformation debugInfo, SSAComparisonInstruction inst) {
-    // TODO imlement
-    return Jimple.newNopStmt(
-        WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iIndex()), null));
-  }
-
   private Stmt convertInstanceofInstruction(
       DebuggingInformation debugInfo, SSAInstanceofInstruction inst) {
     int result = inst.getDef();
@@ -1041,10 +1031,7 @@ public class InstructionConverter {
     Object value = symbolTable.getConstantValue(valueNumber);
     if (value instanceof Boolean) {
       return BooleanConstant.getInstance((boolean) value);
-    } else if (value instanceof Byte
-        || value instanceof Char
-        || value instanceof Short
-        || value instanceof Integer) {
+    } else if (value instanceof Byte || value instanceof Short || value instanceof Integer) {
       return IntConstant.getInstance((int) value);
     } else if (symbolTable.isLongConstant(valueNumber)) {
       return LongConstant.getInstance((long) value);
