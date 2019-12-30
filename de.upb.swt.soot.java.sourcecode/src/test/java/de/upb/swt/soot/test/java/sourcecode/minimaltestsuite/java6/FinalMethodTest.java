@@ -19,7 +19,8 @@ public class FinalMethodTest extends MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    SootMethod method = loadMethod(expectedBodyStmts(), getMethodSignature());
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
     assertTrue(method.isFinal());
   }
 

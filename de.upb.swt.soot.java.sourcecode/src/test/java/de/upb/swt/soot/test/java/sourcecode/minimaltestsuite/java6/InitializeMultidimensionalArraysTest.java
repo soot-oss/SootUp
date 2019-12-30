@@ -2,6 +2,7 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
 import categories.Java8Test;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.*;
@@ -13,7 +14,10 @@ public class InitializeMultidimensionalArraysTest extends MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    loadMethod(
+
+    SootMethod method = loadMethod(getMethodSignature("intArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: InitializeMultidimensionalArrays",
             "$r1 = newarray (int[][])[3]",
@@ -31,10 +35,12 @@ public class InitializeMultidimensionalArraysTest extends MinimalTestSuiteBase {
             "$r4[1] = 8",
             "$r4[2] = 9",
             "$r1[2] = $r4",
-            "return"),
-        getMethodSignature("intArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("byteArrays"));
+
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: InitializeMultidimensionalArrays",
             "$r1 = newarray (byte[][])[2]",
@@ -45,10 +51,11 @@ public class InitializeMultidimensionalArraysTest extends MinimalTestSuiteBase {
             "$r3 = newarray (byte[])[1]",
             "$r3[0] = 2",
             "$r1[1] = $r3",
-            "return"),
-        getMethodSignature("byteArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("shortArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: InitializeMultidimensionalArrays",
             "$r1 = newarray (short[][])[2]",
@@ -60,10 +67,11 @@ public class InitializeMultidimensionalArraysTest extends MinimalTestSuiteBase {
             "$r3 = newarray (short[])[1]",
             "$r3[0] = 40",
             "$r1[1] = $r3",
-            "return"),
-        getMethodSignature("shortArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("longArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: InitializeMultidimensionalArrays",
             "$r1 = newarray (long[][])[3]",
@@ -80,10 +88,12 @@ public class InitializeMultidimensionalArraysTest extends MinimalTestSuiteBase {
             "$r4[0] = 34565L",
             "$r4[1] = 234L",
             "$r1[2] = $r4",
-            "return"),
-        getMethodSignature("longArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("floatArrays"));
+
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: InitializeMultidimensionalArrays",
             "$r1 = newarray (float[][])[2]",
@@ -95,10 +105,11 @@ public class InitializeMultidimensionalArraysTest extends MinimalTestSuiteBase {
             "$r3[0] = 2.987F",
             "$r3[1] = 4.87F",
             "$r1[1] = $r3",
-            "return"),
-        getMethodSignature("floatArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("doubleArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: InitializeMultidimensionalArrays",
             "$r1 = newarray (double[][])[3]",
@@ -113,10 +124,11 @@ public class InitializeMultidimensionalArraysTest extends MinimalTestSuiteBase {
             "$r4[0] = 3.5656",
             "$r4[1] = 68.234234",
             "$r1[2] = $r4",
-            "return"),
-        getMethodSignature("doubleArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("booleanArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: InitializeMultidimensionalArrays",
             "$r1 = newarray (boolean[][])[2]",
@@ -127,10 +139,11 @@ public class InitializeMultidimensionalArraysTest extends MinimalTestSuiteBase {
             "$r3 = newarray (boolean[])[1]",
             "$r3[0] = 1",
             "$r1[1] = $r3",
-            "return"),
-        getMethodSignature("booleanArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("charArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: InitializeMultidimensionalArrays",
             "$r1 = newarray (char[][])[3]",
@@ -147,10 +160,11 @@ public class InitializeMultidimensionalArraysTest extends MinimalTestSuiteBase {
             "$r4[0] = 50",
             "$r4[1] = 71",
             "$r1[2] = $r4",
-            "return"),
-        getMethodSignature("charArrays"));
+            "return"));
 
-    loadMethod(
+    method = loadMethod(getMethodSignature("stringArrays"));
+    assertJimpleStmts(
+        method,
         expectedBodyStmts(
             "r0 := @this: InitializeMultidimensionalArrays",
             "$r1 = newarray (java.lang.String[][])[2]",
@@ -161,8 +175,7 @@ public class InitializeMultidimensionalArraysTest extends MinimalTestSuiteBase {
             "$r3[0] = \"Greetings\"",
             "$r3[1] = \"Welcome\"",
             "$r1[1] = $r3",
-            "return"),
-        getMethodSignature("stringArrays"));
+            "return"));
   }
 
   public MethodSignature getMethodSignature(String methodName) {

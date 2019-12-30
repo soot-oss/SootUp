@@ -25,7 +25,8 @@ public class StaticMethodTest extends MinimalTestSuiteBase {
   @Override
   public void defaultTest() {
     super.defaultTest();
-    SootMethod method = loadMethod(expectedBodyStmts(), getMethodSignature());
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
     assertTrue(method.isStatic());
   }
 

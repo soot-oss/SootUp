@@ -22,7 +22,8 @@ public class StaticImportTest extends MinimalTestSuiteBase {
   @Test
   @Override
   public void defaultTest() {
-    SootMethod method = loadMethod(expectedBodyStmts(), getMethodSignature());
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     /** TODO check for static import of methods */
     assertTrue(

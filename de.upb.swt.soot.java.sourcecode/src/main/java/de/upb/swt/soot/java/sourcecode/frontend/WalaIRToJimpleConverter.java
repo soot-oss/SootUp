@@ -9,15 +9,15 @@ import com.ibm.wala.cfg.AbstractCFG;
 import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.classLoader.IField;
 import com.ibm.wala.classLoader.IMethod;
+import com.ibm.wala.shrikeCT.ClassConstants;
 import com.ibm.wala.shrikeCT.InvalidClassFileException;
 import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
-import de.upb.swt.soot.core.frontend.*;
-import de.upb.swt.soot.core.frontend.ClassSource;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -85,12 +85,12 @@ public class WalaIRToJimpleConverter {
    */
   @Deprecated
   public SootClass convertClass(AstClass walaClass) {
-    ClassSource classSource = convertToClassSource(walaClass);
+    SootClassSource classSource = convertToClassSource(walaClass);
     // TODO fix fixed SourceType - get it from project
     return new JavaSootClass(classSource, SourceType.Application);
   }
 
-  ClassSource convertToClassSource(AstClass walaClass) {
+  SootClassSource convertToClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSig = identifierFactory.getClassType(fullyQualifiedClassName);
     // get super class
@@ -357,13 +357,7 @@ public class WalaIRToJimpleConverter {
       modifiers.add(Modifier.SYNTHETIC);
     }
     if (method.isBridge()) {
-      // TODO: what is this?
-    }
-    if (method.isInit()) {
-      // TODO:
-    }
-    if (method.isClinit()) {
-      // TODO:
+      modifiers.add(Modifier.VOLATILE);
     }
     // TODO: strictfp and annotation
     return modifiers;
@@ -387,8 +381,11 @@ public class WalaIRToJimpleConverter {
     if (klass.isInterface()) {
       modifiers.add(Modifier.INTERFACE);
     }
-
-    // TODO: final, enum, annotation
+    if (klass.getSuperclass().getName().toString().equals("Ljava/lang/Enum")) {
+      modifiers.add(Modifier.ENUM);
+    }
+    if ((modif & ClassConstants.ACC_FINAL) != 0) modifiers.add(Modifier.FINAL);
+    // TODO:  annotation
     return modifiers;
   }
 

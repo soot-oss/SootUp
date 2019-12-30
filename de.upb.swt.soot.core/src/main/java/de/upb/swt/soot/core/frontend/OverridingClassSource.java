@@ -24,15 +24,15 @@ import javax.annotation.Nullable;
  * classes that are batchparsed like .java files using wala java source frontend or in tests where
  * all information is already existing.
  *
- * <p>When replacing specific parts of a class by default, it delegates to the {@link ClassSource}
- * delegate provided in the constructor.
+ * <p>When replacing specific parts of a class by default, it delegates to the {@link
+ * SootClassSource} delegate provided in the constructor.
  *
  * <p>To alter the results of invocations to e.g. {@link #resolveFields()}, simply call {@link
  * #withFields(Collection)} to obtain a new {@link OverridingClassSource}. The new instance will
  * then use the supplied value instead of calling {@link #resolveFields()} on the delegate.
  */
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "OptionalAssignedToNull"})
-public class OverridingClassSource extends ClassSource {
+public class OverridingClassSource extends SootClassSource {
 
   @Nullable private final Collection<SootMethod> overriddenSootMethods;
   @Nullable private final Collection<SootField> overriddenSootFields;
@@ -46,9 +46,9 @@ public class OverridingClassSource extends ClassSource {
   private final boolean overriddenPosition;
   @Nullable private final Position position;
 
-  private final ClassSource delegate;
+  private final SootClassSource delegate;
 
-  public OverridingClassSource(@Nonnull ClassSource delegate) {
+  public OverridingClassSource(@Nonnull SootClassSource delegate) {
     super(delegate.srcNamespace, delegate.classSignature, delegate.sourcePath);
     this.delegate = delegate;
     overriddenSootMethods = null;
@@ -70,7 +70,7 @@ public class OverridingClassSource extends ClassSource {
       @Nullable Optional<ClassType> overriddenOuterClass,
       boolean overriddenPosition,
       @Nullable Position position,
-      @Nonnull ClassSource delegate) {
+      @Nonnull SootClassSource delegate) {
     super(delegate.srcNamespace, delegate.classSignature, delegate.sourcePath);
     this.overriddenSootMethods = overriddenSootMethods;
     this.overriddenSootFields = overriddenSootFields;

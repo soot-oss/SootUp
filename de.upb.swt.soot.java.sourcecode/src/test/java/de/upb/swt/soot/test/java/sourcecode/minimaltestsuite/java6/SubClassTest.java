@@ -1,5 +1,9 @@
 package de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.java6;
 
+import static org.junit.Assert.assertTrue;
+
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.ArrayList;
@@ -24,7 +28,10 @@ public class SubClassTest extends MinimalTestSuiteBase {
 
   @Test
   public void testSuperClassStmts() {
-    loadMethod(expectedBodyStmts1(), getMethodSignature1());
+    SootMethod m = loadMethod(getMethodSignature1());
+    assertJimpleStmts(m, expectedBodyStmts1());
+    SootClass sootClass = loadClass(getDeclaredClassSignature());
+    assertTrue(sootClass.getSuperclass().get().getClassName().equals("SuperClass"));
   }
 
   @Override

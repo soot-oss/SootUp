@@ -36,9 +36,9 @@ public class AbstractClassTest extends MinimalTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: AbstractClass",
-            "r0 = new AbstractClass",
-            "specialinvoke $u0.<AbstractClass: void <init>()>()",
-            "virtualinvoke $u0.<A: void a()>()",
+            "$r1 = new AbstractClass",
+            "specialinvoke $r1.<AbstractClass: void <init>()>()",
+            "virtualinvoke $r1.<A: void a()>()",
             "return")
         .collect(Collectors.toList());
   }

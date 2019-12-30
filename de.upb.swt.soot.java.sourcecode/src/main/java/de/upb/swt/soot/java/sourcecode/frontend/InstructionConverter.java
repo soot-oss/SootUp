@@ -22,7 +22,6 @@ import com.ibm.wala.ssa.SSAArrayReferenceInstruction;
 import com.ibm.wala.ssa.SSAArrayStoreInstruction;
 import com.ibm.wala.ssa.SSABinaryOpInstruction;
 import com.ibm.wala.ssa.SSACheckCastInstruction;
-import com.ibm.wala.ssa.SSAComparisonInstruction;
 import com.ibm.wala.ssa.SSAConditionalBranchInstruction;
 import com.ibm.wala.ssa.SSAConversionInstruction;
 import com.ibm.wala.ssa.SSAFieldAccessInstruction;
@@ -96,7 +95,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import scala.Char;
 
 /**
  * This class converts wala instruction to jimple statement.
@@ -692,14 +690,6 @@ public class InstructionConverter {
             debugInfo.getInstructionPosition(inst.iIndex()), operandPos));
   }
 
-  private Stmt convertComparisonInstruction(
-      DebuggingInformation debugInfo, SSAComparisonInstruction inst) {
-    // TODO imlement
-    return Jimple.newNopStmt(
-        WalaIRToJimpleConverter.convertPositionInfo(
-            debugInfo.getInstructionPosition(inst.iIndex()), null));
-  }
-
   private Stmt convertInstanceofInstruction(
       DebuggingInformation debugInfo, SSAInstanceofInstruction inst) {
     int result = inst.getDef();
@@ -804,9 +794,6 @@ public class InstructionConverter {
       Type classType = converter.convertType(target.getDeclaringClass());
       Local base = getLocal(classType, receiver);
       if (callee.isSpecial()) {
-        Type baseType = UnknownType.getInstance();
-        // TODO. baseType could be a problem.
-        base = getLocal(baseType, receiver);
         invoke = Jimple.newSpecialInvokeExpr(base, methodSig, args); // constructor
       } else if (callee.isVirtual()) {
         invoke = Jimple.newVirtualInvokeExpr(base, methodSig, args);
@@ -1041,10 +1028,7 @@ public class InstructionConverter {
     Object value = symbolTable.getConstantValue(valueNumber);
     if (value instanceof Boolean) {
       return BooleanConstant.getInstance((boolean) value);
-    } else if (value instanceof Byte
-        || value instanceof Char
-        || value instanceof Short
-        || value instanceof Integer) {
+    } else if (value instanceof Byte || value instanceof Short || value instanceof Integer) {
       return IntConstant.getInstance((int) value);
     } else if (symbolTable.isLongConstant(valueNumber)) {
       return LongConstant.getInstance((long) value);
@@ -1065,11 +1049,13 @@ public class InstructionConverter {
     if (locals.containsKey(valueNumber)) {
       return locals.get(valueNumber);
     }
-    if (valueNumber == 1 || type.equals(methodSignature.getDeclClassType())) {
+    if (valueNumber == 1) {
       // in wala symbol numbers start at 1 ... the "this" parameter will be symbol number 1 in a
       // non-static method.
       if (!walaMethod.isStatic()) {
-        return localGenerator.getThisLocal();
+        Local thisLocal = localGenerator.getThisLocal();
+        locals.put(valueNumber, thisLocal);
+        return thisLocal;
       }
     }
     if (symbolTable.isParameter(valueNumber)) {

@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import categories.Java8Test;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.model.AbstractClass;
+import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
@@ -90,7 +91,7 @@ public class JavaViewTest {
 
   @Ignore
   public void testResolveAll() {
-    Collection<AbstractClass<? extends AbstractClassSource>> classes = this.view.getClasses();
+    Collection<SootClass> classes = this.view.getClasses();
 
     assertEquals(classes.size(), this.signatures.size());
 

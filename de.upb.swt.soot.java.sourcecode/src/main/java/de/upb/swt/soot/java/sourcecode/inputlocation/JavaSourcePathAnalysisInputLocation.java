@@ -6,10 +6,10 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -30,6 +30,8 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
       LoggerFactory.getLogger(JavaSourcePathAnalysisInputLocation.class);
 
   @Nonnull private final Set<String> sourcePaths;
+  @Nonnull private final WalaJavaClassProvider classProvider;
+
   private final String exclusionFilePath;
 
   /**
@@ -42,6 +44,10 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
     this(sourcePaths, null);
   }
 
+  public JavaSourcePathAnalysisInputLocation(@Nonnull String sourcePath) {
+    this(Collections.singleton(sourcePath), null);
+  }
+
   /**
    * Create a {@link JavaSourcePathAnalysisInputLocation} which locates java source code in the
    * given source path.
@@ -52,6 +58,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
       @Nonnull Set<String> sourcePaths, @Nullable String exclusionFilePath) {
     this.sourcePaths = sourcePaths;
     this.exclusionFilePath = exclusionFilePath;
+    this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
   }
 
   @Nonnull
@@ -72,7 +79,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
   public Collection<? extends AbstractClassSource> getClassSources(
       @Nonnull IdentifierFactory identifierFactory,
       @Nonnull ClassLoadingOptions classLoadingOptions) {
-    return new WalaClassLoader(sourcePaths, exclusionFilePath).getClassSources();
+    return classProvider.getClassSources();
   }
 
   @Override
@@ -81,9 +88,7 @@ public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocatio
       @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
     for (String path : sourcePaths) {
       try {
-        return Optional.of(
-            new WalaJavaClassProvider(exclusionFilePath)
-                .createClassSource(this, Paths.get(path), type));
+        return Optional.of(classProvider.createClassSource(this, Paths.get(path), type));
       } catch (ResolveException e) {
         log.debug(type + " not found in sourcePath " + path, e);
       }
