@@ -37,7 +37,7 @@ import org.junit.runner.Description;
  * @author Kaustubh Kelkar
  */
 @Category(Java8Test.class)
-public abstract class MinimalSourceTestSuiteBase {
+public abstract class MinimalTestSuiteBase {
 
   static final String baseDir = "../shared-test-resources/minimaltestsuite/";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
@@ -46,7 +46,7 @@ public abstract class MinimalSourceTestSuiteBase {
 
   public static class CustomTestWatcher extends TestWatcher {
 
-    private String classPath = MinimalSourceTestSuiteBase.class.getSimpleName();
+    private String classPath = MinimalTestSuiteBase.class.getSimpleName();
     private JavaView javaView;
     private JavaProject project = null;
 
