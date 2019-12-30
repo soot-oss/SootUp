@@ -30,11 +30,11 @@ public class InstanceOfCheckTest extends MinimalTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "r0 := @this: InstanceOfCheck",
-            "r0 = new InstanceOfCheck",
-            "specialinvoke $u0.<InstanceOfCheck: void <init>()>()",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "$z0 = $u0 instanceof InstanceOfCheckSuper",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(boolean)>($z0)",
+            "$r1 = new InstanceOfCheck",
+            "specialinvoke $r1.<InstanceOfCheck: void <init>()>()",
+            "$r2 = <java.lang.System: java.io.PrintStream out>",
+            "$z0 = $r1 instanceof InstanceOfCheckSuper",
+            "virtualinvoke $r2.<java.io.PrintStream: void println(boolean)>($z0)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }

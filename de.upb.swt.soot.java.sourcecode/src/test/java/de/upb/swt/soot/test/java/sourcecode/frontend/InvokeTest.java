@@ -259,13 +259,12 @@ public class InvokeTest {
     assertNotNull(body);
 
     List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
-
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: InvokeVirtual",
                 "$r1 := @parameter0: InvokeVirtual",
                 "$r2 = r0.<InvokeVirtual: java.lang.String x>",
-                "$r3 = r0.<InvokeVirtual: java.lang.String x>",
+                "$r3 = $r1.<InvokeVirtual: java.lang.String x>",
                 "$z0 = virtualinvoke $r2.<java.lang.String: boolean equals(java.lang.Object)>($r3)",
                 "return $z0")
             .collect(Collectors.toCollection(ArrayList::new));

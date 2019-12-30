@@ -794,9 +794,6 @@ public class InstructionConverter {
       Type classType = converter.convertType(target.getDeclaringClass());
       Local base = getLocal(classType, receiver);
       if (callee.isSpecial()) {
-        Type baseType = UnknownType.getInstance();
-        // TODO. baseType could be a problem.
-        base = getLocal(baseType, receiver);
         invoke = Jimple.newSpecialInvokeExpr(base, methodSig, args); // constructor
       } else if (callee.isVirtual()) {
         invoke = Jimple.newVirtualInvokeExpr(base, methodSig, args);
@@ -1052,11 +1049,13 @@ public class InstructionConverter {
     if (locals.containsKey(valueNumber)) {
       return locals.get(valueNumber);
     }
-    if (valueNumber == 1 || type.equals(methodSignature.getDeclClassType())) {
+    if (valueNumber == 1) {
       // in wala symbol numbers start at 1 ... the "this" parameter will be symbol number 1 in a
       // non-static method.
       if (!walaMethod.isStatic()) {
-        return localGenerator.getThisLocal();
+        Local thisLocal = localGenerator.getThisLocal();
+        locals.put(valueNumber, thisLocal);
+        return thisLocal;
       }
     }
     if (symbolTable.isParameter(valueNumber)) {

@@ -27,13 +27,13 @@ public class GenTypeParamTest extends MinimalTestSuiteBase {
             "$r2[1] = 2",
             "$r2[2] = 3",
             "$r3 = staticinvoke <java.util.Arrays: java.util.List asList(java.lang.Object[])>($r2)",
-            "r0 = new GenTypeParam",
-            "specialinvoke $u0.<GenTypeParam: void <init>()>()",
-            "virtualinvoke $u0.<GenTypeParam: void copy(java.util.List,java.util.List)>($r1, $r3)",
-            "$r4 = <java.lang.System: java.io.PrintStream out>",
-            "$r5 = virtualinvoke $u0.<GenTypeParam: java.lang.Number largestNum(java.lang.Number,java.lang.Number,java.lang.Number)>(2, 8, 3)",
-            "$r6 = (java.lang.Integer) $r5",
-            "virtualinvoke $r4.<java.io.PrintStream: void println(java.lang.Object)>($r6)",
+            "$r4 = new GenTypeParam",
+            "specialinvoke $r4.<GenTypeParam: void <init>()>()",
+            "virtualinvoke $r4.<GenTypeParam: void copy(java.util.List,java.util.List)>($r1, $r3)",
+            "$r5 = <java.lang.System: java.io.PrintStream out>",
+            "$r6 = virtualinvoke $r4.<GenTypeParam: java.lang.Number largestNum(java.lang.Number,java.lang.Number,java.lang.Number)>(2, 8, 3)",
+            "$r7 = (java.lang.Integer) $r6",
+            "virtualinvoke $r5.<java.io.PrintStream: void println(java.lang.Object)>($r7)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
