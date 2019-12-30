@@ -9,9 +9,8 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.ClassType;
-import java.util.Collections;
-
 import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
+import java.util.Collections;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 

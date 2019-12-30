@@ -10,13 +10,12 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.Utils;
+import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import de.upb.swt.soot.core.util.Utils;
-import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 

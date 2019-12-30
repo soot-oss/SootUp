@@ -6,10 +6,9 @@ import categories.Java8Test;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
 import java.util.HashSet;
 import java.util.Set;
-
-import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
