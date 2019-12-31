@@ -18,22 +18,17 @@ public class MultiInterfaceImplementationTest extends JavaTypeHierarchyBase {
   @Test
   public void method() {
     ViewTypeHierarchy typeHierarchy =
-            (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
+        (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
     Set<ClassType> interfaceSet = new HashSet<>();
     interfaceSet.add(getClassType("InterfaceA"));
     interfaceSet.add(getClassType("InterfaceB"));
     assertEquals(
-            typeHierarchy.implementedInterfacesOf(getClassType("MultiInterfaceImplementation")),
-            interfaceSet);
+        typeHierarchy.implementedInterfacesOf(getClassType("MultiInterfaceImplementation")),
+        interfaceSet);
     Set<ClassType> implementerSet = new HashSet<>();
     implementerSet.add(getClassType("MultiInterfaceImplementation"));
-    assertEquals(
-            typeHierarchy.implementersOf(getClassType("InterfaceA")),
-            implementerSet);
-    assertEquals(
-            typeHierarchy.implementersOf(getClassType("InterfaceB")),
-            implementerSet);
-    assertEquals(
-            typeHierarchy.subtypesOf(getClassType("InterfaceB")), implementerSet);
+    assertEquals(typeHierarchy.implementersOf(getClassType("InterfaceA")), implementerSet);
+    assertEquals(typeHierarchy.implementersOf(getClassType("InterfaceB")), implementerSet);
+    assertEquals(typeHierarchy.subtypesOf(getClassType("InterfaceB")), implementerSet);
   }
 }
