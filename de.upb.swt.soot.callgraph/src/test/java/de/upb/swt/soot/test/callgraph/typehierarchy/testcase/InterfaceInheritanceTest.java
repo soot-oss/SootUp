@@ -23,7 +23,12 @@ public class InterfaceInheritanceTest extends JavaTypeHierarchyBase {
     interfaceSet.add(getClassType("InterfaceA"));
     interfaceSet.add(getClassType("InterfaceB"));
     assertEquals(
-        typeHierarchy.implementedInterfacesOf(getClassType(customTestWatcher.getClassName())),
-        interfaceSet);
+        typeHierarchy.implementedInterfacesOf(getClassType("InterfaceInheritance")), interfaceSet);
+    Set<ClassType> implementerSet = new HashSet<>();
+    implementerSet.add(getClassType("InterfaceInheritance"));
+    implementerSet.add(getClassType("InterfaceB"));
+    assertEquals(typeHierarchy.implementersOf(getClassType("InterfaceA")), implementerSet);
+
+    assertEquals(typeHierarchy.subtypesOf(getClassType("InterfaceA")), implementerSet);
   }
 }
