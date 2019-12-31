@@ -23,7 +23,12 @@ public class InheritanceTransitivityTest extends JavaTypeHierarchyBase {
     Set<ClassType> subClassSet = new HashSet<>();
     subClassSet.add(getClassType("SubClassA"));
     subClassSet.add(getClassType("SubClassB"));
+    assertEquals(typeHierarchy.subclassesOf(getClassType("InheritanceTransitivity")), subClassSet);
+    assertEquals(typeHierarchy.superClassOf(getClassType("SubClassB")), getClassType("SubClassA"));
     assertEquals(
-        typeHierarchy.subclassesOf(getClassType(customTestWatcher.getClassName())), subClassSet);
+        typeHierarchy.superClassOf(getClassType("SubClassA")),
+        getClassType("InheritanceTransitivity"));
+
+    assertEquals(typeHierarchy.subtypesOf(getClassType("InheritanceTransitivity")), subClassSet);
   }
 }
