@@ -7,7 +7,10 @@ import categories.Java8Test;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
 import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.test.callgraph.typehierarchy.JavaTypeHierarchyBase;
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -34,7 +37,15 @@ public class AbstractClassInheritanceTest extends JavaTypeHierarchyBase {
     ViewTypeHierarchy typeHierarchy =
         (ViewTypeHierarchy) TypeHierarchy.fromView(customTestWatcher.getView());
     assertEquals(
-        typeHierarchy.superClassOf(getClassType(customTestWatcher.getClassName())),
+        typeHierarchy.superClassOf(getClassType("AbstractClassInheritance")),
         getClassType("AbstractClass"));
+
+    Set<ClassType> subclassSet = new HashSet<>();
+    subclassSet.add(getClassType("AbstractClassInheritance"));
+    assertEquals(typeHierarchy.subclassesOf(getClassType("AbstractClass")), subclassSet);
+
+    assertTrue(
+        typeHierarchy.isSubtype(
+            getClassType("AbstractClass"), getClassType("AbstractClassInheritance")));
   }
 }
