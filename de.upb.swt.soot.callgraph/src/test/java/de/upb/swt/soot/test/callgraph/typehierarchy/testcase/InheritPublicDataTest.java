@@ -1,7 +1,6 @@
 package de.upb.swt.soot.test.callgraph.typehierarchy.testcase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import categories.Java8Test;
 import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
@@ -29,6 +28,7 @@ public class InheritPublicDataTest extends JavaTypeHierarchyBase {
     ClassType sootClassType = getClassType(customTestWatcher.getClassName());
 
     assertEquals(typeHierarchy.superClassOf(sootClassType), getClassType("SuperClass"));
+    assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
 
     SootClass sootClass =
         (SootClass)
