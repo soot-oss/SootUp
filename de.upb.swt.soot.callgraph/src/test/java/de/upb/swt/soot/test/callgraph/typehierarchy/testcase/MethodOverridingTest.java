@@ -24,6 +24,7 @@ public class MethodOverridingTest extends JavaTypeHierarchyBase {
     ClassType sootClassType = getClassType(customTestWatcher.getClassName());
 
     assertEquals(typeHierarchy.superClassOf(sootClassType), getClassType("SuperClass"));
+    assertTrue(typeHierarchy.isSubtype(getClassType("SuperClass"), sootClassType));
 
     SootClass sootClass =
         (SootClass)
