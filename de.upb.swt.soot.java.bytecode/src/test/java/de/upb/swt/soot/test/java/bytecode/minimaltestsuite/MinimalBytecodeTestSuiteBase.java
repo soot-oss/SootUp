@@ -36,7 +36,7 @@ import org.junit.runner.Description;
 @Category(Java8Test.class)
 public abstract class MinimalBytecodeTestSuiteBase {
 
-  static final String baseDir = "../shared-test-resources/minimaltestsuite/bytecode/";
+  static final String baseDir = "../shared-test-resources/miniTestSuite";
   protected JavaIdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
 
   @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
