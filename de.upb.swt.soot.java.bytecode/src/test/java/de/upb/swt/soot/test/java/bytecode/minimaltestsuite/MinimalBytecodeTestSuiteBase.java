@@ -59,6 +59,8 @@ public abstract class MinimalBytecodeTestSuiteBase {
                         baseDir
                             + File.separator
                             + getTestDirectoryName(getClassPath())
+                            + File.separator
+                            + "binary"
                             + File.separator))
                 .build();
         javaView = project.createOnDemandView();
