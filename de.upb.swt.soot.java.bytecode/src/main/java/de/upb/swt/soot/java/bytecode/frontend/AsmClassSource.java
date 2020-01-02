@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -135,7 +134,7 @@ class AsmClassSource extends SootClassSource {
     return Optional.ofNullable(AsmUtil.asmIDToSignature(classNode.outerClass));
   }
 
-  @NonNull
+  @Nonnull
   public Position resolvePosition() {
     return NoPositionInformation.getInstance();
   }

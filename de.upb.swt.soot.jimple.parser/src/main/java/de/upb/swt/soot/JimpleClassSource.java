@@ -4,6 +4,7 @@ import de.upb.swt.soot.core.frontend.ClassProvider;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
 import de.upb.swt.soot.core.model.SootField;
@@ -82,8 +83,8 @@ public class JimpleClassSource extends SootClassSource {
   }
 
   @Override
+  @Nonnull
   public Position resolvePosition() {
-    // TODO: implement
-    return null;
+    return NoPositionInformation.getInstance();
   }
 }

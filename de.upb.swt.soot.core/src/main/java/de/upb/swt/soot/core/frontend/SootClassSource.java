@@ -88,5 +88,6 @@ public abstract class SootClassSource extends AbstractClassSource {
    * Reads from the source to retrieve its position in the source code. This may be an expensive
    * operation.
    */
+  @Nonnull
   public abstract Position resolvePosition();
 }

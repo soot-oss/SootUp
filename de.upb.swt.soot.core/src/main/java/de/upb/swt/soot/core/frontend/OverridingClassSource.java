@@ -41,10 +41,7 @@ public class OverridingClassSource extends SootClassSource {
   @Nullable private final Optional<ClassType> overriddenSuperclass;
   @Nullable private final Optional<ClassType> overriddenOuterClass;
 
-  // Since resolvePosition may return null, we cannot use `null` here to indicate that `position`
-  // is not overridden.
-  private final boolean overriddenPosition;
-  @Nullable private final Position position;
+  private final Position overriddenPosition;
 
   private final SootClassSource delegate;
 
@@ -57,19 +54,17 @@ public class OverridingClassSource extends SootClassSource {
     overriddenInterfaces = null;
     overriddenSuperclass = null;
     overriddenOuterClass = null;
-    overriddenPosition = false;
-    position = null;
+    overriddenPosition = null;
   }
 
-  private OverridingClassSource(
+  public OverridingClassSource(
       @Nullable Collection<SootMethod> overriddenSootMethods,
       @Nullable Collection<SootField> overriddenSootFields,
       @Nullable Set<Modifier> overriddenModifiers,
       @Nullable Set<ClassType> overriddenInterfaces,
       @Nullable Optional<ClassType> overriddenSuperclass,
       @Nullable Optional<ClassType> overriddenOuterClass,
-      boolean overriddenPosition,
-      @Nullable Position position,
+      @Nullable Position overriddenPosition,
       @Nonnull SootClassSource delegate) {
     super(delegate.srcNamespace, delegate.classSignature, delegate.sourcePath);
     this.overriddenSootMethods = overriddenSootMethods;
@@ -79,7 +74,6 @@ public class OverridingClassSource extends SootClassSource {
     this.overriddenSuperclass = overriddenSuperclass;
     this.overriddenOuterClass = overriddenOuterClass;
     this.overriddenPosition = overriddenPosition;
-    this.position = position;
     this.delegate = delegate;
   }
 
@@ -104,8 +98,7 @@ public class OverridingClassSource extends SootClassSource {
     this.overriddenInterfaces = interfaces;
     this.overriddenSuperclass = Optional.ofNullable(superClass);
     this.overriddenOuterClass = Optional.ofNullable(outerClass);
-    this.overriddenPosition = true;
-    this.position = position;
+    this.overriddenPosition = position;
   }
 
   @Nonnull
@@ -146,7 +139,7 @@ public class OverridingClassSource extends SootClassSource {
 
   @Override
   public Position resolvePosition() {
-    return overriddenPosition ? position : delegate.resolvePosition();
+    return overriddenPosition != null ? overriddenPosition : delegate.resolvePosition();
   }
 
   /** */
@@ -164,7 +157,7 @@ public class OverridingClassSource extends SootClassSource {
         && Objects.equals(this.overriddenOuterClass, that.overriddenOuterClass)
         && Objects.equals(this.overriddenSootFields, that.overriddenSootFields)
         && Objects.equals(this.overriddenSootMethods, that.overriddenSootMethods)
-        && Objects.equals(position, that.position)
+        && Objects.equals(this.overriddenPosition, that.overriddenPosition)
         && Objects.equals(this.overriddenModifiers, that.overriddenModifiers)
         && Objects.equals(this.classSignature, that.classSignature);
   }
@@ -177,7 +170,7 @@ public class OverridingClassSource extends SootClassSource {
         this.overriddenOuterClass,
         this.overriddenSootFields,
         this.overriddenSootMethods,
-        this.position,
+        this.overriddenPosition,
         this.overriddenModifiers,
         this.classSignature);
   }
@@ -196,7 +189,7 @@ public class OverridingClassSource extends SootClassSource {
         + ", sootMethods="
         + this.overriddenSootMethods
         + ", position="
-        + this.position
+        + this.overriddenPosition
         + ", modifiers="
         + this.overriddenModifiers
         + ", classType="
@@ -222,7 +215,6 @@ public class OverridingClassSource extends SootClassSource {
         overriddenSuperclass,
         overriddenOuterClass,
         overriddenPosition,
-        position,
         delegate);
   }
 
@@ -244,7 +236,6 @@ public class OverridingClassSource extends SootClassSource {
         overriddenSuperclass,
         overriddenOuterClass,
         overriddenPosition,
-        position,
         delegate);
   }
 
@@ -258,7 +249,6 @@ public class OverridingClassSource extends SootClassSource {
         overriddenSuperclass,
         overriddenOuterClass,
         overriddenPosition,
-        position,
         delegate);
   }
 
@@ -272,7 +262,6 @@ public class OverridingClassSource extends SootClassSource {
         overriddenSuperclass,
         overriddenOuterClass,
         overriddenPosition,
-        position,
         delegate);
   }
 
@@ -286,7 +275,6 @@ public class OverridingClassSource extends SootClassSource {
         overriddenSuperclass,
         overriddenOuterClass,
         overriddenPosition,
-        position,
         delegate);
   }
 
@@ -300,7 +288,6 @@ public class OverridingClassSource extends SootClassSource {
         overriddenSuperclass,
         overriddenOuterClass,
         overriddenPosition,
-        position,
         delegate);
   }
 
@@ -313,7 +300,6 @@ public class OverridingClassSource extends SootClassSource {
         overriddenInterfaces,
         overriddenSuperclass,
         overriddenOuterClass,
-        true,
         position,
         delegate);
   }

@@ -1,4 +1,5 @@
 grammar Jimple;
+
 /*
  * Lexer Rules
  */
@@ -9,7 +10,7 @@ grammar Jimple;
   fragment HEX_DIGIT : DEC_DIGIT | [A-Fa-f];
   fragment HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
 
-  fragment OCT_DIGIT : '[0-7]';
+  fragment OCT_DIGIT : [0-7];
   fragment OCT_CONSTANT : '0' OCT_DIGIT+;
 
   fragment QUOTE : '\'';
@@ -34,11 +35,11 @@ grammar Jimple;
   fragment LINE_COMMENT : '//' NOT_CR_LF*;
   fragment LONG_COMMENT : '/*' NOT_STAR* '*'+ (NOT_STAR_SLASH NOT_STAR* '*'+)* '/';
 
-  fragment BLANK : (' ' | '\u0009' | '\u0013' | '\u0010')+;
+  BLANK : [ \t\r\n] -> skip;
 
 
-  fragment ABSTRACT : 'abstract';
-  fragment FINAL : 'final';
+  ABSTRACT : 'abstract';
+  FINAL : 'final';
   NATIVE : 'native';
   PUBLIC : 'public';
   PROTECTED : 'protected';
@@ -103,23 +104,23 @@ grammar Jimple;
   WITH : 'with';
   CLS : 'cls';
 
-  COMMA : ',';
-  L_BRACE : '{';
-  R_BRACE : '}';
-  SEMICOLON : ';';
-  L_BRACKET : '[';
-  R_BRACKET : ']';
-  L_PAREN : '(';
-  R_PAREN : ')';
-  COLON : ':';
-  DOT : '.';
-  fragment COLON_EQUALS : '::';
+  fragment COMMA : ',';
+  fragment L_BRACE : '{';
+  fragment R_BRACE : '}';
+  fragment SEMICOLON : ';';
+  fragment L_BRACKET : '[';
+  fragment R_BRACKET : ']';
+  fragment L_PAREN : '(';
+  fragment R_PAREN : ')';
+  fragment COLON : ':';
+  fragment DOT : '.';
+  COLON_EQUALS : '::';
   EQUALS : ':';
   AND : '&';
   OR : '|';
   XOR : '^';
   MOD : '%';
-  fragment CMPEQ : '::';
+  CMPEQ : '::';
   CMPNE : '!:';
   CMPGT : '>';
   CMPGE : '>:';
@@ -134,7 +135,7 @@ grammar Jimple;
   DIV : '/';
 
 
-    /* FIXME this is java specific */
+    /* FIXME generify - this is java specific */
   FULL_IDENTIFIER :
       ((FIRST_ID_CHAR | ESCAPE_CHAR) (SIMPLE_ID_CHAR | ESCAPE_CHAR)* DOT)+  (FIRST_ID_CHAR | ESCAPE_CHAR) (SIMPLE_ID_CHAR | ESCAPE_CHAR)*;
   QUOTED_NAME : QUOTE QUOTABLE_CHAR+ QUOTE;
@@ -150,14 +151,13 @@ grammar Jimple;
 
 
 
-
-/*
+ /*
   * Parser Rules
   */
 
 
-  file :
-    clazzmodifier=modifier* file_type clazzname=class_name clazzextends=extends_clause? clazzimplements=implements_clause? file_body;
+  clazz:
+    modifier* file_type class_name extends_clause? implements_clause? L_BRACE member* R_BRACE;
 
   modifier :
     /* abstract */     'abstract' |
@@ -184,20 +184,22 @@ grammar Jimple;
   implements_clause :
     'implements' class_name_list;
 
-  file_body :
-    L_BRACE member* R_BRACE;
-
   name_list :
     /*single*/ name |
     /*multi*/  name COMMA name_list;
 
-class_name_list :
+  class_name_list :
     /*class_name_single*/ class_name |
     /*class_name_multi*/  class_name COMMA class_name_list;
 
-  member :
-    /*field*/  modifier* type name SEMICOLON |
-    /*method*/ modifier* type name L_PAREN parameter_list? R_PAREN throws_clause? method_body;
+  member:
+        field | method;
+
+  field:
+        modifier* type name SEMICOLON;
+
+  method:
+     modifier* type name L_PAREN parameter_list? R_PAREN throws_clause? method_body;
 
   type :
     /*void*/   'void' |
@@ -231,6 +233,7 @@ class_name_list :
   base_type :
                     base_type_no_name |
     /*class_name*/    class_name;
+
   nonvoid_type :
     /*base*/   base_type_no_name array_brackets* |
     /*quoted*/ QUOTED_NAME array_brackets* |
@@ -245,7 +248,7 @@ class_name_list :
     L_BRACKET R_BRACKET;
 
   method_body :
-    /*empty*/ SEMICOLON |
+    /*empty*/ SEMICOLON |               // TODO: check wheter thats the case
     /*full*/  L_BRACE declaration* statement* catch_clause* R_BRACE;
 
   declaration :
@@ -331,7 +334,7 @@ class_name_list :
                                               bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
 
   binop_expr :
-    left=immediate binop right=immediate;
+    left=immediate op=binop right=immediate;
 
   unop_expr :
     unop immediate;
