@@ -2,7 +2,7 @@
 ### Java template
 # Compiled class file
 *.class
-!shared-test-resources/miniTestSuite
+!shared-test-resources/miniTestSuite/**/*.class
 
 # Log file
 *.log
