@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse */
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class PublicClassTest extends MinimalBytecodeTestSuiteBase {
 

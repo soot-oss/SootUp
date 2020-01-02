@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse * */
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class GenericTypeParamOnClassTest extends MinimalBytecodeTestSuiteBase {
   @Override

@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertEquals;
@@ -14,7 +13,7 @@ import java.util.EnumSet;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-/** @author: Hasitha Rajapakse */
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class NoModifierClassTest extends MinimalBytecodeTestSuiteBase {
 

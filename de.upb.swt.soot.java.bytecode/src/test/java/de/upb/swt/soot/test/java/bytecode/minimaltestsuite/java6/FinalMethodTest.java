@@ -1,4 +1,3 @@
-/** @author: Hasitha Rajapakse */
 package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertTrue;
@@ -14,6 +13,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+/** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class FinalMethodTest extends MinimalBytecodeTestSuiteBase {
 
