@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
@@ -23,11 +22,7 @@ public class PrivateMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase
   }
 
   @Test
-  public void defaultTest() {}
-
-  @Ignore
-  /** TODO WALA does not support Java9 constructs */
-  public void ignoreTest() {
+  public void defaultTest() {
     super.defaultTest();
     SootClass sootClass = loadClass(getDeclaredClassSignature());
     assertTrue(
@@ -40,8 +35,8 @@ public class PrivateMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: PrivateMethodInterfaceImpl",
-            "interfaceinvoke r0.<PrivateMethodInterface: void methodInterface(int,int)>(4, 2)",
+            "l0 := @this: PrivateMethodInterfaceImpl",
+            "virtualinvoke l0.<PrivateMethodInterfaceImpl: void methodInterface(int,int)>(4, 2)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
