@@ -21,15 +21,8 @@ public class MethodReferenceTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: MethodReference",
-            "$stack3 = <java.lang.System: java.io.PrintStream; out>",
-            "virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.String)>(\"Instance Method\")",
-            "$stack4 = new MethodReference",
-            "specialinvoke $stack4.<MethodReference: void <init>()>()",
-            "l1 = $stack4",
-            "$stack5 = staticinvoke <java.util.Objects: java.lang.Object requireNonNull(java.lang.Object)>(l1)",
-            "$stack6 = dynamicinvoke \"display\" <MyInterface display(MethodReference)>(l1) <java.lang.invoke.LambdaMetafactory: java.lang.invoke.CallSite metafactory(java.lang.invoke.MethodHandles$Lookup,java.lang.String,java.lang.invoke.MethodType,java.lang.invoke.MethodType,java.lang.invoke.MethodHandle,java.lang.invoke.MethodType)>(de.upb.swt.soot.core.jimple.common.constant.MethodType@5b8e3cb1, handle: <MethodReference: void methodRefMethod()>, de.upb.swt.soot.core.jimple.common.constant.MethodType@5b8e3cb1)",
-            "l2 = $stack6",
-            "interfaceinvoke l2.<MyInterface: void display()>()",
+            "$stack1 = <java.lang.System: java.io.PrintStream; out>",
+            "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"Instance Method\")",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
