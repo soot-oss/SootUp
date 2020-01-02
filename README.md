@@ -4,7 +4,6 @@
 ![Logo](logo.png)
 
 This is the home of the **FutureSoot** project.
-
 A complete overhaul of the good, old static analysis framework [Soot](https://github.com/Sable/soot).
 
 ## FutureSoot provides
