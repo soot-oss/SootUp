@@ -6,17 +6,13 @@ import static org.junit.Assert.assertTrue;
 
 import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.Project;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.expr.JSpecialInvokeExpr;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
-import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaJimple;
-import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.io.File;
 import java.lang.management.ManagementFactory;
 import java.util.Arrays;
@@ -28,11 +24,11 @@ import org.junit.Test;
 public class MethodDispatchResolverTest {
 
   private View view;
-//  public static final String jarFile = "../shared-test-resources/Soot-4.0-SNAPSHOT.jar";
+  //  public static final String jarFile = "../shared-test-resources/Soot-4.0-SNAPSHOT.jar";
 
   @Before
   public void setUp() {
-//    assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
+    //    assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
     String currentClassPath =
         System.getProperty("java.class.path")
             + File.pathSeparator
@@ -42,11 +38,11 @@ public class MethodDispatchResolverTest {
             .filter(pathEntry -> pathEntry.endsWith(File.separator + "rt.jar"))
             .distinct()
             .collect(Collectors.joining(File.pathSeparator));
-//    JavaClassPathAnalysisInputLocation analysisInputLocation =
-//        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
-//    Project p =
-//        JavaProject.builder(new JavaLanguage(8)).addClassPath(analysisInputLocation).build();
-//    view = p.createOnDemandView();
+    //    JavaClassPathAnalysisInputLocation analysisInputLocation =
+    //        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
+    //    Project p =
+    //        JavaProject.builder(new JavaLanguage(8)).addClassPath(analysisInputLocation).build();
+    //    view = p.createOnDemandView();
   }
 
   @Test
