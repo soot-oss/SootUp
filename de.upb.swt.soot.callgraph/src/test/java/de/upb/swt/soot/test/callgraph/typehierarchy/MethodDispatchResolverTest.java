@@ -28,11 +28,11 @@ import org.junit.Test;
 public class MethodDispatchResolverTest {
 
   private View view;
-  public static final String jarFile = "../shared-test-resources/Soot-4.0-SNAPSHOT.jar";
+//  public static final String jarFile = "../shared-test-resources/Soot-4.0-SNAPSHOT.jar";
 
   @Before
   public void setUp() {
-    assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
+//    assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
     String currentClassPath =
         System.getProperty("java.class.path")
             + File.pathSeparator
@@ -42,11 +42,11 @@ public class MethodDispatchResolverTest {
             .filter(pathEntry -> pathEntry.endsWith(File.separator + "rt.jar"))
             .distinct()
             .collect(Collectors.joining(File.pathSeparator));
-    JavaClassPathAnalysisInputLocation analysisInputLocation =
-        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
-    Project p =
-        JavaProject.builder(new JavaLanguage(8)).addClassPath(analysisInputLocation).build();
-    view = p.createOnDemandView();
+//    JavaClassPathAnalysisInputLocation analysisInputLocation =
+//        new JavaClassPathAnalysisInputLocation(jarFile + File.pathSeparator + rtJarClassPath);
+//    Project p =
+//        JavaProject.builder(new JavaLanguage(8)).addClassPath(analysisInputLocation).build();
+//    view = p.createOnDemandView();
   }
 
   @Test
