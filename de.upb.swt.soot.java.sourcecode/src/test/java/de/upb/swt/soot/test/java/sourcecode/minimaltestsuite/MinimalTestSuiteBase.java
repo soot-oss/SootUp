@@ -11,13 +11,13 @@ import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
+import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.core.views.JavaView;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
-import de.upb.swt.soot.test.java.sourcecode.frontend.Utils;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +45,7 @@ public abstract class MinimalTestSuiteBase {
   @ClassRule public static CustomTestWatcher customTestWatcher = new CustomTestWatcher();
 
   public static class CustomTestWatcher extends TestWatcher {
+
     private String classPath = MinimalTestSuiteBase.class.getSimpleName();
     private JavaView javaView;
     private JavaProject project = null;
@@ -52,6 +53,7 @@ public abstract class MinimalTestSuiteBase {
     /** Load WalaJavaClassProvider once */
     @Override
     protected void starting(Description description) {
+
       this.classPath = description.getClassName();
       if (project == null) {
         Set<String> locationSet =
@@ -119,6 +121,7 @@ public abstract class MinimalTestSuiteBase {
   }
 
   public SootClass loadClass(ClassType clazz) {
+
     Optional<SootClass> cs = customTestWatcher.getJavaView().getClass(clazz);
     assertTrue("no matching class signature found", cs.isPresent());
     return cs.get();

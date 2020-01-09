@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.util.Utils;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
