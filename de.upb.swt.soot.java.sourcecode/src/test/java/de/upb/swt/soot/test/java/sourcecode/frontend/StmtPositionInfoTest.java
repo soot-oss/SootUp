@@ -404,7 +404,7 @@ public class StmtPositionInfoTest {
     loadCurrentMethod("test", declareClassSig, "void", Arrays.asList("int", "int"));
     List<Stmt> stmts = new ArrayList<>(method.getBody().getStmts());
 
-    Stmt stmt = stmts.get(30);
+    Stmt stmt = stmts.get(33);
     StmtPositionInfo info = stmt.getPositionInfo();
 
     Position stmtPos = info.getStmtPosition();
