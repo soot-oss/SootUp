@@ -133,6 +133,8 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   /** Retrieves the active body for this methodRef. */
   @Nullable
   public Body getBody() {
+    if( "".equalsIgnoreCase(this._lazyBody.get().toString()))
+      System.out.println("Lazy body for the method: \n"+this._lazyBody.get());
     return this._lazyBody.get(); // TODO: [JMP] Refactor to return `.getAsOptional()`
   }
 
