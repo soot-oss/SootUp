@@ -32,12 +32,9 @@ public class CharLiteralsTest extends MinimalBytecodeTestSuiteBase {
     method = loadMethod(getMethodSignature("charUnicode"));
     assertJimpleStmts(method, expectedBodyStmts("l0 := @this: CharLiterals", "l1 = 937", "return"));
 
-    // TODO : Recompile original source code after uncommenting source code ^TM, update class files
-    // and
-    // uncomment this method from Linux
-    /*method = loadMethod(getMethodSignature("specialChar"));
+    method = loadMethod(getMethodSignature("specialChar"));
     assertJimpleStmts(
-        method, expectedBodyStmts("l0 := @this: CharLiterals", "l1 = 8482", "return"));*/
+        method, expectedBodyStmts("l0 := @this: CharLiterals", "l1 = 8482", "return"));
   }
 
   public MethodSignature getMethodSignature(String methodName) {
