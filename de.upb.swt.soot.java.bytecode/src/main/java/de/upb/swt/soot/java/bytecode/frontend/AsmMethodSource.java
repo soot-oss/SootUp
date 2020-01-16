@@ -329,7 +329,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private Operand popDual() {
     Operand o = pop();
     Operand o2 = pop();
-    if (o2 != DWORD_DUMMY && o2 != o) {
+    System.out.println();
+    // if (o2 != DWORD_DUMMY && o2 != o) {
+    if (!o2.equivTo(DWORD_DUMMY) && o2.equivTo(o)) {
       throw new AssertionError("Not dummy operand, " + o2.value + " -- " + o.value);
     }
     return o;
@@ -1338,8 +1340,22 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         }
       }
       while (nrArgs-- != 0) {
+        System.out.println("\nPrinting before popImmediate() ");
+        for (Operand var : args) {
+          System.out.print(var + "  ");
+        }
+
+        System.out.println("\nget type of numArgs :" + sigTypes.get(nrArgs));
         args[nrArgs] = popImmediate(sigTypes.get(nrArgs));
+
+        System.out.println("\nPrinting after popImmediate() ");
+        for (Operand var : args) {
+          System.out.println(var + "  ");
+        }
         argList.add(args[nrArgs].stackOrValue());
+
+        System.out.println("Size of argList: " + argList.size());
+        System.out.println(argList);
       }
       if (argList.size() > 1) {
         Collections.reverse(argList);

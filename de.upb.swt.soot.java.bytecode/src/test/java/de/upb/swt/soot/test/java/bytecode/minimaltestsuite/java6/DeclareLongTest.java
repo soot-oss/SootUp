@@ -22,13 +22,13 @@ public class DeclareLongTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: DeclareLong",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "$l0 = r0.<DeclareLong: long l1>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(long)>($l0)",
-            "$r2 = <java.lang.System: java.io.PrintStream out>",
-            "$l1 = r0.<DeclareLong: long l2>",
-            "virtualinvoke $r2.<java.io.PrintStream: void println(long)>($l1)",
+            "l0 := @this: DeclareLong",
+            "$stack2 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack1 = l0.<DeclareLong: L l1>",
+            "virtualinvoke $stack2.<java.io.PrintStream: void println(long)>($stack1)",
+            "$stack4 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack3 = l0.<DeclareLong: L l2>",
+            "virtualinvoke $stack4.<java.io.PrintStream: void println(long)>($stack3)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
