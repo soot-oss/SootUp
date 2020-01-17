@@ -65,6 +65,10 @@ public final class AsmUtil {
    * @return fully qualified name.
    */
   public static String toQualifiedName(@Nonnull String internal) {
+    final int endpos = internal.length() - 1;
+    if (endpos > 2 && internal.charAt(endpos) == ';' && internal.charAt(0) == 'L') {
+      internal = internal.substring(1, endpos);
+    }
     return internal.replace('/', '.');
   }
 

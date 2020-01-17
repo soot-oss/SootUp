@@ -53,7 +53,7 @@ public class SwitchCaseStatementTest extends MinimalSourceTestSuiteBase {
             "r0 := @this: SwitchCaseStatement",
             "$i0 = 2",
             "$r1 = null",
-            "lookupswitch($i0)",
+            "switch($i0)",
             "case 1: goto label2",
             "case 2: goto [?= null]",
             "case 3: goto [?= null]",
