@@ -329,8 +329,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private Operand popDual() {
     Operand o = pop();
     Operand o2 = pop();
-     if (o2 != DWORD_DUMMY && o2 != o) {
-    //TODO check if need this if (!o2.equivTo(DWORD_DUMMY) && !o2.equivTo(o)) {
+    if (o2 != DWORD_DUMMY && o2 != o) {
+      // TODO check if need this if (!o2.equivTo(DWORD_DUMMY) && !o2.equivTo(o)) {
       throw new AssertionError("Not dummy operand, " + o2.value + " -- " + o.value);
     }
     System.out.println("Dummy operand, " + o2.value + " -- " + o.value);
@@ -683,8 +683,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     if (out == null) {
       Operand indx = popImmediate();
       Operand base = popImmediate();
-      System.out.println("indx: "+indx);
-      System.out.println("base: "+base);
+      System.out.println("indx: " + indx);
+      System.out.println("base: " + base);
       JArrayRef ar = JavaJimple.getInstance().newArrayRef(base.stackOrValue(), indx.stackOrValue());
       indx.addBox(ar.getIndexBox());
       base.addBox(ar.getBaseBox());
