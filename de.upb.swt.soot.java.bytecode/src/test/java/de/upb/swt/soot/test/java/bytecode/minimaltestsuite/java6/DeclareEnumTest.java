@@ -32,7 +32,7 @@ public class DeclareEnumTest extends MinimalBytecodeTestSuiteBase {
             "$stack7 = l2",
             "if $stack8 >= $stack7 goto label2",
             "l4 = l1[l3]",
-            "$stack6 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack6 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack6.<java.io.PrintStream: void println(java.lang.Object)>(l4)",
             "l3 = l3 + 1",
             "goto label1",

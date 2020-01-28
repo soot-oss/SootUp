@@ -27,7 +27,7 @@ public class MethodOverridingTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: MethodOverridingSubclass",
-            "$stack1 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"Inside MethodOverridingSubclass-calculateArea()\")",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));

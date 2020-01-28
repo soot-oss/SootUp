@@ -42,7 +42,7 @@ public class GenTypeParamTest extends MinimalBytecodeTestSuiteBase {
             "specialinvoke $stack16.<GenTypeParam: void <init>()>()",
             "l3 = $stack16",
             "virtualinvoke l3.<GenTypeParam: void copy(java.util.List,java.util.List)>(l1, l2)",
-            "$stack17 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack17 = <java.lang.System: java.io.PrintStream out>",
             "$stack18 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(2)",
             "$stack19 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(8)",
             "$stack20 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(3)",

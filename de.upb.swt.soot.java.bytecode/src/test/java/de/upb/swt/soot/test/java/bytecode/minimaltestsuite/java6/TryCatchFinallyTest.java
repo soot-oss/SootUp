@@ -27,7 +27,7 @@ public class TryCatchFinallyTest extends MinimalBytecodeTestSuiteBase {
             "l1 = \"this is try block\"",
             "l2 = 0",
             "l2 = l2 + 1",
-            "$stack4 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack4 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack4.<java.io.PrintStream: void println(int)>(l2)",
             "label2:",
             "l1 = \"this is finally block\"",

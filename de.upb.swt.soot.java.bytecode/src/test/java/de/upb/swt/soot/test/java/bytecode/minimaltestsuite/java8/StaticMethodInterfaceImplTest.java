@@ -51,7 +51,7 @@ public class StaticMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase 
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$stack0 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack0 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack0.<java.io.PrintStream: void println(java.lang.String)>(\"Inside initStatic - StaticmethodInterfaceImpl\")",
             "return")
         .collect(Collectors.toList());
@@ -59,7 +59,7 @@ public class StaticMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase 
 
   public List<String> expectedBodyStmts1() {
     return Stream.of(
-            "$stack0 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack0 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack0.<java.io.PrintStream: void println(java.lang.String)>(\"Inside initStatic - StaticmethodInterfaceImpl\")",
             "return")
         .collect(Collectors.toList());

@@ -24,12 +24,12 @@ public class SynchronizedBlockTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: SynchronizedBlock",
-            "$stack3 = l0.<SynchronizedBlock: LSender; sender>",
+            "$stack3 = l0.<SynchronizedBlock: Sender sender>",
             "l1 = $stack3",
             "entermonitor $stack3",
             "label1:",
-            "$stack5 = l0.<SynchronizedBlock: LSender; sender>",
-            "$stack4 = l0.<SynchronizedBlock: java.lang.String; msg>",
+            "$stack5 = l0.<SynchronizedBlock: Sender sender>",
+            "$stack4 = l0.<SynchronizedBlock: java.lang.String msg>",
             "virtualinvoke $stack5.<Sender: void send(java.lang.String)>($stack4)",
             "$stack6 = l1",
             "exitmonitor $stack6",

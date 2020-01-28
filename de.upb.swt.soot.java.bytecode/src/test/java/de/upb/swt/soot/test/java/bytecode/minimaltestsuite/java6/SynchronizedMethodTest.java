@@ -29,8 +29,8 @@ public class SynchronizedMethodTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: SynchronizedMethod",
-            "$stack2 = l0.<SynchronizedMethod: LSenderMethod; sender>",
-            "$stack1 = l0.<SynchronizedMethod: java.lang.String; msg>",
+            "$stack2 = l0.<SynchronizedMethod: SenderMethod sender>",
+            "$stack1 = l0.<SynchronizedMethod: java.lang.String msg>",
             "virtualinvoke $stack2.<SenderMethod: void send(java.lang.String)>($stack1)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));

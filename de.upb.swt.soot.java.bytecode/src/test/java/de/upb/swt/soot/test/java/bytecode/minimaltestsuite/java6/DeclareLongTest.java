@@ -23,10 +23,10 @@ public class DeclareLongTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: DeclareLong",
-            "$stack2 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack2 = <java.lang.System: java.io.PrintStream out>",
             "$stack1 = l0.<DeclareLong: L l1>",
             "virtualinvoke $stack2.<java.io.PrintStream: void println(long)>($stack1)",
-            "$stack4 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack4 = <java.lang.System: java.io.PrintStream out>",
             "$stack3 = l0.<DeclareLong: L l2>",
             "virtualinvoke $stack4.<java.io.PrintStream: void println(long)>($stack3)",
             "return")

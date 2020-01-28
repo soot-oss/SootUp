@@ -36,7 +36,7 @@ public class InstanceOfCheckTest extends MinimalBytecodeTestSuiteBase {
             "$stack2 = new InstanceOfCheck",
             "specialinvoke $stack2.<InstanceOfCheck: void <init>()>()",
             "l1 = $stack2",
-            "$stack4 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack4 = <java.lang.System: java.io.PrintStream out>",
             "$stack3 = l1 instanceof InstanceOfCheckSuper",
             "virtualinvoke $stack4.<java.io.PrintStream: void println(boolean)>($stack3)",
             "return")

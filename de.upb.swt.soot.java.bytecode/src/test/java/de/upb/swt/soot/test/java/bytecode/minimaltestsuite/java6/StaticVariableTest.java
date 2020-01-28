@@ -39,7 +39,7 @@ public class StaticVariableTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$stack1 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "$stack0 = <StaticVariable: I num>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(int)>($stack0)",
             "return")

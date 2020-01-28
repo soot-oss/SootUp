@@ -34,7 +34,7 @@ public class StaticMethodTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "$stack0 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack0 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack0.<java.io.PrintStream: void println(java.lang.String)>(\"static method\")",
             "return")
         .collect(Collectors.toList());

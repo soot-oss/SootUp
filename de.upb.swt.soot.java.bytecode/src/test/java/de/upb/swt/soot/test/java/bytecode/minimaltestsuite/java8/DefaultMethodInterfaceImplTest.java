@@ -51,7 +51,7 @@ public class DefaultMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: DefaultMethodInterfaceImpl",
-            "$stack1 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"Method interfaceMethod() is implemented\")",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
@@ -61,7 +61,7 @@ public class DefaultMethodInterfaceImplTest extends MinimalBytecodeTestSuiteBase
     return Stream.of(
             "l0 := @this: DefaultMethodInterfaceImpl",
             "specialinvoke l0.<DefaultMethodInterface: void defaultInterfaceMethod()>()",
-            "$stack1 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack1 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(java.lang.String)>(\"Method defaultInterfaceMethod() is implemented\")",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));

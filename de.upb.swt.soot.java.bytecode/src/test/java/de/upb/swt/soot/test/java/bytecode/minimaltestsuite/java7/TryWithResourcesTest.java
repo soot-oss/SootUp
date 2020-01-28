@@ -37,7 +37,7 @@ public class TryWithResourcesTest extends MinimalBytecodeTestSuiteBase {
             "$stack8 = virtualinvoke $stack10.<java.io.BufferedReader: java.lang.String readLine()>()",
             "l3 = $stack8",
             "if $stack8 == null goto label03",
-            "$stack9 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack9 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack9.<java.io.PrintStream: void println(java.lang.String)>(l3)",
             "goto label02",
             "label03:",

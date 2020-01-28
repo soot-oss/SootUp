@@ -37,7 +37,7 @@ public class TypeInferenceTest extends MinimalBytecodeTestSuiteBase {
             "$stack7 = virtualinvoke $stack9.<java.io.BufferedReader: java.lang.String readLine()>()",
             "l2 = $stack7",
             "if $stack7 == null goto label2",
-            "$stack8 = <java.lang.System: java.io.PrintStream; out>",
+            "$stack8 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack8.<java.io.PrintStream: void println(java.lang.String)>(l2)",
             "goto label1",
             "label2:",
