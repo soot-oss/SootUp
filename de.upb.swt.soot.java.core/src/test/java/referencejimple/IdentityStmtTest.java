@@ -86,7 +86,8 @@ public class IdentityStmtTest extends JimpleInstructionsTestBase {
             fields,
             methods,
             NoPositionInformation.getInstance(),
-            EnumSet.of(Modifier.PUBLIC));
+            EnumSet.of(Modifier.PUBLIC),
+            Collections.emptyList());
 
     sootClass = new SootClass(javaClassSource, SourceType.Application);
   }

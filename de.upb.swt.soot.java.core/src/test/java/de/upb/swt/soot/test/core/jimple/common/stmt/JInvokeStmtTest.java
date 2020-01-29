@@ -83,7 +83,8 @@ public class JInvokeStmtTest {
             fields,
             methods,
             NoPositionInformation.getInstance(),
-            EnumSet.of(Modifier.PUBLIC));
+            EnumSet.of(Modifier.PUBLIC),
+            Collections.emptyList());
 
     SootClass sootClass = new SootClass(javaClassSource, SourceType.Application);
 

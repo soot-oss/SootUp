@@ -197,7 +197,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   }
 
   @Override
-  @Nullable
+  @Nonnull
   public Body resolveBody() throws AsmFrontendException {
     Set<Local> bodyLocals = new HashSet<>();
     List<Trap> bodyTraps = new ArrayList<>();

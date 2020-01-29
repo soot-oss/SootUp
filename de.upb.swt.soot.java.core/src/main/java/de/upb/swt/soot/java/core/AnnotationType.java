@@ -20,6 +20,6 @@ public class AnnotationType extends JavaClassType {
    * @param packageName the corresponding package
    */
   public AnnotationType(String className, PackageName packageName) {
-    super("@interface_" + className, packageName);
+    super("@interface" + className, packageName);
   }
 }

@@ -61,7 +61,8 @@ public class FieldRefTest {
                 Collections.singleton(field),
                 Collections.emptySet(),
                 null,
-                EnumSet.of(Modifier.PUBLIC)),
+                EnumSet.of(Modifier.PUBLIC),
+                Collections.emptyList()),
             SourceType.Application);
     JStaticFieldRef ref = Jimple.newStaticFieldRef(fieldSig);
     assertEquals("<dummyMainClass: int dummyField>", ref.toString());
@@ -92,7 +93,8 @@ public class FieldRefTest {
                 Collections.singleton(field),
                 Collections.emptySet(),
                 null,
-                EnumSet.of(Modifier.PUBLIC)),
+                EnumSet.of(Modifier.PUBLIC),
+                Collections.emptyList()),
             SourceType.Application);
     Local base = new Local("obj", declaringClassSignature);
     JInstanceFieldRef ref = Jimple.newInstanceFieldRef(base, fieldSig);

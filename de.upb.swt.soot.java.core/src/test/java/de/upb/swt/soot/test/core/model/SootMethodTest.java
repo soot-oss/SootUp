@@ -80,7 +80,8 @@ public class SootMethodTest {
                 Collections.emptySet(),
                 Collections.singleton(dummyMainMethod),
                 null,
-                EnumSet.of(Modifier.PUBLIC)),
+                EnumSet.of(Modifier.PUBLIC),
+                Collections.emptyList()),
             SourceType.Application);
 
     assertEquals(mainClass.getMethods().size(), 1);

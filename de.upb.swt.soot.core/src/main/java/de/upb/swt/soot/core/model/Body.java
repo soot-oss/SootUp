@@ -21,11 +21,7 @@ package de.upb.swt.soot.core.model;
  * #L%
  */
 
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.LocalGenerator;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
-import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.jimple.common.stmt.JIdentityStmt;
@@ -63,6 +59,14 @@ import javax.annotation.Nullable;
  * @author Linghui Luo
  */
 public final class Body implements Copyable {
+
+  public static Body EMPTY_BODY =
+      new Body(
+          Collections.emptySet(),
+          Collections.emptyList(),
+          Collections.emptyList(),
+          NoPositionInformation.getInstance());
+
   /** The locals for this Body. */
   private final Set<Local> locals;
 
@@ -71,6 +75,9 @@ public final class Body implements Copyable {
 
   /** The stmts for this Body. */
   private final List<Stmt> stmts;
+
+  /** The methodRef associated with this Body. */
+  @Nullable private volatile SootMethod _method;
 
   @Nullable private final Position position;
 
@@ -107,8 +114,10 @@ public final class Body implements Copyable {
     checkInit();
   }
 
-  /** The methodRef associated with this Body. */
-  @Nullable private volatile SootMethod _method;
+  @Nonnull
+  public static Body getNoBody() {
+    return EMPTY_BODY;
+  }
 
   /**
    * Returns the methodRef associated with this Body.

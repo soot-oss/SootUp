@@ -68,7 +68,6 @@ import javax.annotation.Nullable;
 public class SootClass extends AbstractClass<SootClassSource> {
 
   @Nonnull protected final SourceType sourceType;
-
   @Nonnull protected final ClassType classSignature;
 
   public SootClass(SootClassSource classSource, SourceType sourceType) {

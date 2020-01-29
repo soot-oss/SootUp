@@ -240,7 +240,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   }
 
   @Nonnull
-  public SootMethod withBody(@Nullable Body body) {
+  public SootMethod withBody(@Nonnull Body body) {
     return new SootMethod(
         new OverridingMethodSource(methodSource).withBody(body),
         getSignature(),

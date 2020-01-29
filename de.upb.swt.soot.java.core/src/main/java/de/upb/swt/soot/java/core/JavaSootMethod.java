@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public class JavaSootMethod extends SootMethod {
   @Nonnull protected static final String CONSTRUCTOR_NAME = "<init>";
@@ -82,7 +81,7 @@ public class JavaSootMethod extends SootMethod {
   }
 
   @Nonnull
-  public JavaSootMethod withBody(@Nullable Body body) {
+  public JavaSootMethod withBody(@Nonnull Body body) {
     return new JavaSootMethod(
         new OverridingMethodSource(methodSource).withBody(body),
         getSignature(),
