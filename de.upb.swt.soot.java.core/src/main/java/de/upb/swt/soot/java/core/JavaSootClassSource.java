@@ -15,6 +15,10 @@ public abstract class JavaSootClassSource extends SootClassSource {
     super(srcNamespace, classSignature, sourcePath);
   }
 
+  protected JavaSootClassSource(SootClassSource delegate) {
+    super(delegate);
+  }
+
   public abstract Iterable<AnnotationType> resolveAnnotations();
 
   public abstract Iterable<AnnotationType> resolveMethodAnnotations();

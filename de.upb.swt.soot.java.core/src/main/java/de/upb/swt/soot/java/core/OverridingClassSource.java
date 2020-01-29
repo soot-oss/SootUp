@@ -1,5 +1,7 @@
-package de.upb.swt.soot.core.frontend;
+package de.upb.swt.soot.java.core;
 
+import de.upb.swt.soot.core.frontend.ResolveException;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.Position;
@@ -16,7 +18,6 @@ import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import sun.reflect.annotation.AnnotationType;
 
 /**
  * Allows for replacing specific parts of a class, such as fields and methods or, allows to resolve
@@ -33,7 +34,7 @@ import sun.reflect.annotation.AnnotationType;
  * @author Christian Brüggemann, Hasitha Rajapakse
  */
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "OptionalAssignedToNull"})
-public class OverridingClassSource extends SootClassSource {
+public class OverridingClassSource extends JavaSootClassSource {
 
   @Nullable private final Collection<SootMethod> overriddenSootMethods;
   @Nullable private final Collection<SootField> overriddenSootFields;
@@ -47,8 +48,8 @@ public class OverridingClassSource extends SootClassSource {
   private final Iterable<AnnotationType> annotations;
   // TODO: [ms]  private final Iterable<AnnotationType> fieldAnnotations;
 
-  public OverridingClassSource(@Nonnull SootClassSource delegate) {
-    super(delegate.srcNamespace, delegate.classSignature, delegate.sourcePath);
+  public OverridingClassSource(@Nonnull JavaSootClassSource delegate) {
+    super(delegate);
     this.delegate = delegate;
     overriddenSootMethods = null;
     overriddenSootFields = null;
@@ -70,7 +71,7 @@ public class OverridingClassSource extends SootClassSource {
       @Nullable Position position,
       @Nullable Iterable<AnnotationType> annotations,
       @Nonnull SootClassSource delegate) {
-    super(delegate.srcNamespace, delegate.classSignature, delegate.sourcePath);
+    super(delegate);
     this.overriddenSootMethods = overriddenSootMethods;
     this.overriddenSootFields = overriddenSootFields;
     this.overriddenModifiers = overriddenModifiers;
@@ -150,21 +151,27 @@ public class OverridingClassSource extends SootClassSource {
     return position != null ? position : delegate.resolvePosition();
   }
 
-  /*
-   TODO: [ms] implement here?
-
   @Nonnull
   @Override
   public Iterable<AnnotationType> resolveAnnotations() {
-    return annotations != null ? annotations : delegate.resolveAnnotations();
+    //  return annotations != null ? annotations : delegate.resolveAnnotations();
+    // TODO: [ms] implement
+    return null;
+  }
+
+  @Override
+  public Iterable<de.upb.swt.soot.java.core.AnnotationType> resolveMethodAnnotations() {
+    // TODO: [ms] implement
+    return null;
   }
 
   @Nonnull
   @Override
   public Iterable<AnnotationType> resolveFieldAnnotations() {
-    return fieldAnnotations != null ? fieldAnnotations : delegate.resolveFieldAnnotations();
+    //  return fieldAnnotations != null ? fieldAnnotations : delegate.resolveFieldAnnotations();
+    // TODO: [ms] implement
+    return null;
   }
-  */
 
   @Override
   public boolean equals(Object o) {

@@ -23,7 +23,6 @@ package de.upb.swt.soot.core.model;
 
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
-import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
@@ -32,13 +31,10 @@ import de.upb.swt.soot.core.signatures.MethodSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /*
  * Incomplete and inefficient implementation.
@@ -377,18 +373,6 @@ public class SootClass extends AbstractClass<SootClassSource> {
     return this.classSignature.getFullyQualifiedName();
   }
 
-  /**
-   * Creates a new SootClass based on a new {@link OverridingClassSource}. This is useful to change
-   * selected parts of a {@link SootClass} without recreating a {@link SootClassSource} completely.
-   * {@link OverridingClassSource} allows for replacing specific parts of a class, such as fields
-   * and methods.
-   */
-  @Nonnull
-  public SootClass withOverridingClassSource(
-      Function<OverridingClassSource, OverridingClassSource> overrider) {
-    return new SootClass(overrider.apply(new OverridingClassSource(classSource)), sourceType);
-  }
-
   @Nonnull
   public SootClass withClassSource(SootClassSource classSource) {
     return new SootClass(classSource, sourceType);
@@ -399,7 +383,21 @@ public class SootClass extends AbstractClass<SootClassSource> {
     return new SootClass(classSource, sourceType);
   }
 
+  /* TODO: refactor the withers..
   // Convenience withers that delegate to an OverridingClassSource
+
+  /**
+   * Creates a new SootClass based on a new {@link OverridingClassSource}. This is useful to change
+   * selected parts of a {@link SootClass} without recreating a {@link SootClassSource} completely.
+   * {@link OverridingClassSource} allows for replacing specific parts of a class, such as fields
+   * and methods.
+   *
+  @Nonnull
+  public SootClass withOverridingClassSource(
+          Function<OverridingClassSource, OverridingClassSource> overrider) {
+    return new SootClass(overrider.apply(new OverridingClassSource(classSource)), sourceType);
+  }
+
 
   @Nonnull
   public SootClass withReplacedMethod(
@@ -450,4 +448,6 @@ public class SootClass extends AbstractClass<SootClassSource> {
   public SootClass withPosition(@Nullable Position position) {
     return new SootClass(new OverridingClassSource(classSource).withPosition(position), sourceType);
   }
+
+  */
 }

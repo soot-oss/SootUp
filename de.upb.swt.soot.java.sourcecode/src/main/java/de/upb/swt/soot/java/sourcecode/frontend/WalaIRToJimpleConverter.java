@@ -15,9 +15,7 @@ import com.ibm.wala.ssa.SSAInstruction;
 import com.ibm.wala.types.TypeReference;
 import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
-import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
-import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -39,21 +37,17 @@ import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.java.core.AnnotationType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.JavaSootClassSource;
+import de.upb.swt.soot.java.core.OverridingClassSource;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -72,7 +66,7 @@ public class WalaIRToJimpleConverter {
 
   public WalaIRToJimpleConverter(@Nonnull Set<String> sourceDirPath) {
     srcNamespace = new JavaSourcePathAnalysisInputLocation(sourceDirPath);
-    // TODO: [ms] get it from view - view can hold a different implementation
+    // TODO: [ms] get identifierFactory from view - view can hold a different implementation
     identifierFactory = JavaIdentifierFactory.getInstance();
     clsWithInnerCls = new HashMap<>();
     walaToSootNameTable = new HashMap<>();
@@ -83,14 +77,15 @@ public class WalaIRToJimpleConverter {
    *
    * @return A SootClass converted from walaClass
    */
+  // TODO: remove deprecated
   @Deprecated
   public SootClass convertClass(AstClass walaClass) {
-    SootClassSource classSource = convertToClassSource(walaClass);
-    // TODO fix fixed SourceType - get it from project
+    JavaSootClassSource classSource = convertToClassSource(walaClass);
+    // TODO: [ms] fix fixed SourceType - get it from project
     return new JavaSootClass(classSource, SourceType.Application);
   }
 
-  SootClassSource convertToClassSource(AstClass walaClass) {
+  JavaSootClassSource convertToClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSig = identifierFactory.getClassType(fullyQualifiedClassName);
     // get super class
@@ -160,13 +155,12 @@ public class WalaIRToJimpleConverter {
         sootFields,
         sootMethods,
         position,
-        modifiers);
+        modifiers,
+        Collections.emptyList() // TODO:[ms] implement annotations);
+        );
   }
 
-  /**
-   * Create a {@link de.upb.swt.soot.core.frontend.OverridingClassSource} object for the given
-   * walaClass.
-   */
+  /** Create a {@link OverridingClassSource} object for the given walaClass. */
   public OverridingClassSource createClassSource(
       AstClass walaClass,
       JavaClassType superClass,
@@ -175,7 +169,8 @@ public class WalaIRToJimpleConverter {
       Set<SootField> sootFields,
       Set<SootMethod> sootMethods,
       Position position,
-      EnumSet<Modifier> modifiers) {
+      EnumSet<Modifier> modifiers,
+      Iterable<AnnotationType> annotations) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSignature = identifierFactory.getClassType(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
@@ -190,7 +185,9 @@ public class WalaIRToJimpleConverter {
         sootFields,
         sootMethods,
         convertPosition(position),
-        modifiers);
+        modifiers,
+        Collections.emptyList() // TODO:[ms] implement annotations
+        );
   }
 
   /**
