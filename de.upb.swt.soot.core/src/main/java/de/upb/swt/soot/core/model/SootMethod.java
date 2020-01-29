@@ -33,10 +33,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -234,7 +231,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
   @Nonnull
   public SootMethod withModifiers(Iterable<Modifier> modifiers) {
-    return new SootMethod(methodSource, getSignature(), getModifiers(), exceptions);
+    return new SootMethod(methodSource, getSignature(), modifiers, getExceptionSignatures());
   }
 
   @Nonnull
@@ -413,7 +410,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
       return this;
     }
 
-    @Nullable private Iterable<ClassType> _thrownExceptions = Collections.emptyList();
+    @Nullable private Iterable<ClassType> thrownExceptions = Collections.emptyList();
 
     /**
      * Gets the thrown exceptions.
@@ -422,7 +419,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
      */
     @Nonnull
     protected Iterable<ClassType> getThrownExceptions() {
-      return ensureValue(this._thrownExceptions, "thrownExceptions");
+      return ensureValue(this.thrownExceptions, "thrownExceptions");
     }
 
     /**
@@ -432,16 +429,14 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
      */
     @Nonnull
     public Builder withThrownExceptions(@Nonnull Iterable<ClassType> value) {
-      this._thrownExceptions = value;
-
+      this.thrownExceptions = value;
       return this;
     }
 
     @Override
     @Nonnull
     public SootMethod build() {
-      return new SootMethod(
-          this.getSource(), this.getSignature(), this.getModifiers(), this.getThrownExceptions());
+      return new SootMethod(getSource(), getSignature(), getModifiers(), getThrownExceptions());
     }
   }
 }
