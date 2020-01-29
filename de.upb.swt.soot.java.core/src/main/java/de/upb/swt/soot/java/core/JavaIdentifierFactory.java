@@ -177,13 +177,10 @@ public class JavaIdentifierFactory implements IdentifierFactory {
    *     the default package.
    */
   @Override
-  public PackageName getPackageName(final String packageName) {
+  public PackageName getPackageName(@Nonnull final String packageName) {
     Preconditions.checkNotNull(packageName);
-    PackageName packageIdentifier = packages.get(packageName);
-    if (packageIdentifier == null) {
-      packageIdentifier = new PackageName(packageName);
-      packages.put(packageName, packageIdentifier);
-    }
+    PackageName packageIdentifier =
+        packages.computeIfAbsent(packageName, (name) -> new PackageName(name));
     return packageIdentifier;
   }
 

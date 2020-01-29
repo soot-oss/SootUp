@@ -67,12 +67,12 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
   }
 
   @Nonnull
-  public SootField withSignature(FieldSignature signature) {
+  public SootField withSignature(@Nonnull FieldSignature signature) {
     return new SootField(signature, getModifiers());
   }
 
   @Nonnull
-  public SootField withModifiers(Iterable<Modifier> modifiers) {
+  public SootField withModifiers(@Nonnull Iterable<Modifier> modifiers) {
     return new SootField(getSignature(), modifiers);
   }
 
@@ -117,7 +117,7 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
   }
 
   /**
-   * Defines a {@link SootMethod} builder that provides a fluent API.
+   * Defines a {@link SootMethod} builder to provide a fluent API.
    *
    * @author Jan Martin Persch
    */
@@ -129,58 +129,36 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
       super(SootField.class);
     }
 
-    @Nullable private FieldSignature _signature;
+    @Nullable private FieldSignature signature;
 
-    /**
-     * Gets the field sub-signature.
-     *
-     * @return The value to get.
-     */
     @Nonnull
     protected FieldSignature getSignature() {
-      return ensureValue(this._signature, "signature");
+      return ensureValue(this.signature, "signature");
     }
 
-    /**
-     * Sets the field sub-signature.
-     *
-     * @param value The value to set.
-     */
     @Nonnull
-    public ModifiersStep withSignature(@Nonnull FieldSignature value) {
-      this._signature = value;
-
+    public ModifiersStep withSignature(@Nonnull FieldSignature signature) {
+      this.signature = signature;
       return this;
     }
 
-    @Nullable private Iterable<Modifier> _modifiers;
+    @Nullable private Iterable<Modifier> modifiers;
 
-    /**
-     * Gets the modifiers.
-     *
-     * @return The value to get.
-     */
     @Nonnull
     protected Iterable<Modifier> getModifiers() {
-      return ensureValue(this._modifiers, "modifiers");
+      return ensureValue(modifiers, "modifiers");
     }
 
-    /**
-     * Sets the modifiers.
-     *
-     * @param value The value to set.
-     */
     @Nonnull
-    public Builder withModifiers(@Nonnull Iterable<Modifier> value) {
-      this._modifiers = value;
-
+    public Builder withModifiers(@Nonnull Iterable<Modifier> modifiers) {
+      this.modifiers = modifiers;
       return this;
     }
 
     @Override
     @Nonnull
     public SootField build() {
-      return new SootField(this.getSignature(), this.getModifiers());
+      return new SootField(getSignature(), getModifiers());
     }
   }
 }

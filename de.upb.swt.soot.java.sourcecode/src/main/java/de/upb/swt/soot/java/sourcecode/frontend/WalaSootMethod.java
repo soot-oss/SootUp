@@ -8,6 +8,7 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaSootMethod;
+import java.util.ArrayList;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -30,7 +31,14 @@ public class WalaSootMethod extends JavaSootMethod {
       @Nonnull Iterable<Modifier> modifiers,
       @Nonnull Iterable<ClassType> thrownExceptions,
       DebuggingInformation debugInfo) {
-    super(source, methodSignature, modifiers, thrownExceptions);
+
+    super(
+        source,
+        methodSignature,
+        modifiers,
+        thrownExceptions,
+        new ArrayList() // TODO: [ms] implement annotations
+        );
     this.debugInfo = debugInfo;
   }
 
@@ -44,7 +52,7 @@ public class WalaSootMethod extends JavaSootMethod {
   }
 
   @Nonnull
-  public SootMethod withOverridingMethodSource(
+  public JavaSootMethod withOverridingMethodSource(
       Function<OverridingMethodSource, OverridingMethodSource> overrider) {
     return new WalaSootMethod(
         overrider.apply(new OverridingMethodSource(methodSource)),
@@ -54,19 +62,18 @@ public class WalaSootMethod extends JavaSootMethod {
         debugInfo);
   }
 
-  // TODO: check if withers are used by javasourcecodefrontend
   @Nonnull
-  public SootMethod withSource(MethodSource source) {
+  public JavaSootMethod withSource(MethodSource source) {
     return new WalaSootMethod(source, getSignature(), getModifiers(), exceptions, debugInfo);
   }
 
   @Nonnull
-  public SootMethod withModifiers(Iterable<Modifier> modifiers) {
+  public JavaSootMethod withModifiers(Iterable<Modifier> modifiers) {
     return new WalaSootMethod(methodSource, getSignature(), getModifiers(), exceptions, debugInfo);
   }
 
   @Nonnull
-  public SootMethod withThrownExceptions(Iterable<ClassType> thrownExceptions) {
+  public JavaSootMethod withThrownExceptions(Iterable<ClassType> thrownExceptions) {
     return new WalaSootMethod(
         methodSource, getSignature(), getModifiers(), thrownExceptions, debugInfo);
   }

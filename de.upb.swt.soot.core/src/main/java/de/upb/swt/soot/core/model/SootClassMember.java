@@ -27,6 +27,7 @@ import de.upb.swt.soot.core.signatures.AbstractClassMemberSubSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -88,10 +89,8 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
   }
 
   /** Returns a hash code for this methodRef consistent with structural equality. */
-  // TODO: check whether modifiers.hashcode() does what its meant for; former: "modifiers"/int bit
-  // flags representing the set
   public int equivHashCode() {
-    return _modifiers.hashCode() * 17 + _signature.hashCode();
+    return Objects.hash(_modifiers, _signature);
   }
 
   /** Returns the signature of this methodRef. */
