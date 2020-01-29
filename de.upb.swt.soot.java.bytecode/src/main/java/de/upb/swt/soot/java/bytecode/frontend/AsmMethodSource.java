@@ -683,9 +683,13 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     if (out == null) {
       Operand indx = popImmediate();
       Operand base = popImmediate();
-      System.out.println("indx: " + indx);
+      /*DEBUG CODE*/
+	  System.out.println("indx: " + indx);
       System.out.println("base: " + base);
-      JArrayRef ar = JavaJimple.getInstance().newArrayRef(base.stackOrValue(), indx.stackOrValue());
+      System.out.println("base stackValue: "+base.stackOrValue());
+      System.out.println("indx stackValue: "+indx.stackOrValue());
+      /*DEBUG CODE*/
+	  JArrayRef ar = JavaJimple.getInstance().newArrayRef(base.stackOrValue(), indx.stackOrValue());
       indx.addBox(ar.getIndexBox());
       base.addBox(ar.getBaseBox());
       opr = new Operand(insn, ar);
