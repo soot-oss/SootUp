@@ -53,7 +53,6 @@ import de.upb.swt.soot.core.jimple.common.expr.JStaticInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
-import de.upb.swt.soot.core.jimple.common.ref.JFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractDefinitionStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
@@ -507,7 +506,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       // type = AsmUtil.toJimpleType(insn.desc);
       type = JavaIdentifierFactory.getInstance().getType((AsmUtil.toQualifiedName(insn.desc)));
       Value val;
-      // JFieldRef ref;
+      // FieldRef ref;
       FieldSignature ref;
       if (insn.getOpcode() == GETSTATIC) {
         // ref = Scene.v().makeFieldRef(declClass, insn.name, type, true);
@@ -527,7 +526,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       frame.out(opr);
     } else {
       opr = out[0];
-      type = opr.<JFieldRef>value().getFieldSignature().getType();
+      type = opr.<FieldRef>value().getFieldSignature().getType();
       if (insn.getOpcode() == GETFIELD) {
         frame.mergeIn(pop());
       }
@@ -580,7 +579,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       setUnit(insn, as);
     } else {
       opr = out[0];
-      type = opr.<JFieldRef>value().getFieldSignature().getType();
+      type = opr.<FieldRef>value().getFieldSignature().getType();
       rvalue = pop(type);
       if (!instance) {
         /* PUTSTATIC only needs one operand on the stack, the rvalue */
