@@ -1,7 +1,6 @@
 package de.upb.swt.soot.test.java.bytecode.minimaltestsuite.java6;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
 import de.upb.swt.soot.core.model.SootClass;
@@ -27,7 +26,7 @@ public class InstanceOfCheckTest extends MinimalBytecodeTestSuiteBase {
   public void defaultTest() {
     super.defaultTest();
     SootClass sootClass = loadClass(getDeclaredClassSignature());
-    if(sootClass.getSuperclass().isPresent()){
+    if (sootClass.getSuperclass().isPresent()) {
       assertEquals("InstanceOfCheckSuper", sootClass.getSuperclass().get().getClassName());
     }
   }
