@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 /** @author Kaustubh Kelkar */
@@ -23,14 +23,8 @@ public class TransientVariableTest extends MinimalBytecodeTestSuiteBase {
         "transientVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Override
+  @Test
   public void defaultTest() {
-    // TODO: once the transient bug is fixed replace with the body of ignoredTest - can not @Ignore
-    // the overriden @Test method
-  }
-
-  @Ignore
-  public void ignoredTest() {
     super.defaultTest();
     SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
@@ -44,10 +38,10 @@ public class TransientVariableTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: TransientVariable",
-            "$r1 = <java.lang.System: java.io.PrintStream out>",
-            "$i0 = r0.<TransientVariable: int transientVar>",
-            "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0)",
+            "l0 := @this: TransientVariable",
+            "$stack2 = <java.lang.System: java.io.PrintStream out>",
+            "$stack1 = l0.<TransientVariable: I transientVar>",
+            "virtualinvoke $stack2.<java.io.PrintStream: void println(int)>($stack1)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
