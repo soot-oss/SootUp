@@ -42,10 +42,9 @@ public class NativeMethodTest extends MinimalBytecodeTestSuiteBase {
   @Override
   public List<String> expectedBodyStmts() {
     return Stream.of(
-            "r0 := @this: NativeMethod",
-            "l1 := @parameter0: int",
-            "$stack2 = l1 + l1",
-            "return $stack2")
+            "l0 := @this: NativeMethod",
+            "specialinvoke l0.<java.lang.Object: void <init>()>();",
+            "return")
         .collect(Collectors.toList());
   }
 }
