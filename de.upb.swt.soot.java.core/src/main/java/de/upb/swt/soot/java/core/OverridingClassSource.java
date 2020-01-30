@@ -44,9 +44,10 @@ public class OverridingClassSource extends JavaSootClassSource {
   @Nullable private final Optional<ClassType> overriddenOuterClass;
   @Nullable private final Position position;
 
-  private final SootClassSource delegate;
-  private final Iterable<AnnotationType> annotations;
-  // TODO: [ms]  private final Iterable<AnnotationType> fieldAnnotations;
+  @Nullable private final SootClassSource delegate;
+  @Nullable private final Iterable<AnnotationType> annotations;
+  // TODO: [ms] how to instantiate in a good way.. @Nullable private final Iterable<AnnotationType>
+  // fieldAnnotations;
 
   public OverridingClassSource(@Nonnull JavaSootClassSource delegate) {
     super(delegate);

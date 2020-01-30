@@ -33,7 +33,6 @@ public interface MethodSource {
   @Nonnull
   Body resolveBody() throws ResolveException;
 
-  // FIXME: [JMP] This method is never used
   @Nonnull
   MethodSignature getSignature();
 }
