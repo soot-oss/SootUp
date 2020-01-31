@@ -19,44 +19,44 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (int[])[3]",
-            "$r1[0] = 1",
-            "$r1[1] = 2",
-            "$r1[2] = 3",
+            "l0 := @this: InitializeArraysWithIndex",
+            "l1 = newarray (int)[3]",
+            "l1[0] = 1",
+            "l1[1] = 2",
+            "l1[2] = 3",
             "return"));
 
     method = loadMethod(getMethodSignature("byteArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (byte[])[3]",
-            "$r1[0] = 4",
-            "$r1[1] = 5",
-            "$r1[2] = 6",
+            "l0 := @this: InitializeArraysWithIndex",
+            "l1 = newarray (byte)[3]",
+            "l1[0] = 4",
+            "l1[1] = 5",
+            "l1[2] = 6",
             "return"));
 
     method = loadMethod(getMethodSignature("shortArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (short[])[3]",
-            "$r1[0] = 10",
-            "$r1[1] = 20",
-            "$r1[2] = 30",
+            "l0 := @this: InitializeArraysWithIndex",
+            "l1 = newarray (short)[3]",
+            "l1[0] = 10",
+            "l1[1] = 20",
+            "l1[2] = 30",
             "return"));
 
     method = loadMethod(getMethodSignature("longArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (long[])[3]",
-            "$r1[0] = 547087L",
-            "$r1[1] = 564645L",
-            "$r1[2] = 654786L",
+            "l0 := @this: InitializeArraysWithIndex",
+            "l1 = newarray (long)[3]",
+            "l1[0] = 547087L",
+            "l1[1] = 564645L",
+            "l1[2] = 654786L",
             "return"));
 
     method = loadMethod(getMethodSignature("floatArrays"));
@@ -64,53 +64,53 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (float[])[4]",
-            "$r1[0] = 3.14F",
-            "$r1[1] = 5.46F",
-            "$r1[2] = 2.987F",
-            "$r1[3] = 4.87F",
+            "l0 := @this: InitializeArraysWithIndex",
+            "l1 = newarray (float)[4]",
+            "l1[0] = 3.14F",
+            "l1[1] = 5.46F",
+            "l1[2] = 2.987F",
+            "l1[3] = 4.87F",
             "return"));
 
     method = loadMethod(getMethodSignature("doubleArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (double[])[2]",
-            "$r1[0] = 6.765414",
-            "$r1[1] = 9.676565646",
+            "l0 := @this: InitializeArraysWithIndex",
+            "l1 = newarray (double)[2]",
+            "l1[0] = 6.765414",
+            "l1[1] = 9.676565646",
             "return"));
 
     method = loadMethod(getMethodSignature("booleanArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (boolean[])[2]",
-            "$r1[0] = 1",
-            "$r1[1] = 0",
+            "l0 := @this: InitializeArraysWithIndex",
+            "l1 = newarray (boolean)[2]",
+            "l1[0] = 1",
+            "l1[1] = 0",
             "return"));
 
     method = loadMethod(getMethodSignature("charArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (char[])[3]",
-            "$r1[0] = 65",
-            "$r1[1] = 98",
-            "$r1[2] = 38",
+            "l0 := @this: InitializeArraysWithIndex",
+            "l1 = newarray (char)[3]",
+            "l1[0] = 65",
+            "l1[1] = 98",
+            "l1[2] = 38",
             "return"));
 
     method = loadMethod(getMethodSignature("stringArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeArraysWithIndex",
-            "$r1 = newarray (java.lang.String[])[2]",
-            "$r1[0] = \"Hello World\"",
-            "$r1[1] = \"Greetings\"",
+            "l0 := @this: InitializeArraysWithIndex",
+            "l1 = newarray (java/lang/String)[2]",
+            "l1[0] = \"Hello World\"",
+            "l1[1] = \"Greetings\"",
             "return"));
   }
 
