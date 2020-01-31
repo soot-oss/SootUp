@@ -29,7 +29,7 @@ public class GenTypeParamTest extends MinimalBytecodeTestSuiteBase {
             "$stack5 = newarray (java/lang/Integer)[3]",
             "$stack6 = 0",
             "$stack7 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(1)",
-            "$stack8 = $stack6[$stack7]",// Ideally $stack8[$stack6] = $stack7
+            "$stack8 = $stack6[$stack7]", // Ideally $stack8[$stack6] = $stack7
             "$stack9 = 1",
             "$stack10 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(2)",
             "$stack11 = $stack9[$stack10]",

@@ -24,13 +24,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import de.upb.swt.soot.core.frontend.MethodSource;
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.NoPositionInformation;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.constant.Constant;
 import de.upb.swt.soot.core.jimple.common.constant.DoubleConstant;
 import de.upb.swt.soot.core.jimple.common.constant.FloatConstant;
@@ -676,35 +670,26 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
   }
 
-  private void convertArrayStoreInsn(@Nonnull InsnNode insn) {
+  private void convertArrayStoreInsn(InsnNode insn) {
+    int op = insn.getOpcode();
+    boolean dword = op == LASTORE || op == DASTORE;
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
-    Operand opr;
-    if (out == null) {
+    if (!units.containsKey(insn)) {
+      Operand valu = dword ? popImmediateDual() : popImmediate();
       Operand indx = popImmediate();
-      Operand base = popImmediate();
-      /*DEBUG CODE*/
-	  System.out.println("indx: " + indx);
-      System.out.println("base: " + base);
-      System.out.println("base stackValue: "+base.stackOrValue());
-      System.out.println("indx stackValue: "+indx.stackOrValue());
-      /*DEBUG CODE*/
-	  JArrayRef ar = JavaJimple.getInstance().newArrayRef(base.stackOrValue(), indx.stackOrValue());
+      Operand base = popLocal();
+      JArrayRef ar = JavaJimple.getInstance().newArrayRef(base.stackOrValue(), indx.stackOrValue());
       indx.addBox(ar.getIndexBox());
       base.addBox(ar.getBaseBox());
-      opr = new Operand(insn, ar);
-      frame.in(indx, base);
-      frame.boxes(ar.getIndexBox(), ar.getBaseBox());
-      frame.out(opr);
+      JAssignStmt as =
+          JavaJimple.getInstance()
+              .newAssignStmt(ar, valu.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
+      valu.addBox(as.getRightOpBox());
+      frame.in(valu, indx, base);
+      frame.boxes(as.getRightOpBox(), ar.getIndexBox(), ar.getBaseBox());
+      setUnit(insn, as);
     } else {
-      opr = out[0];
-      frame.mergeIn(pop(), pop());
-    }
-    int op = insn.getOpcode();
-    if (op == DALOAD || op == LALOAD) {
-      pushDual(opr);
-    } else {
-      push(opr);
+      frame.mergeIn(dword ? popDual() : pop(), pop(), pop());
     }
   }
 
@@ -1092,6 +1077,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             throw new AssertionError("Unknown NEWARRAY type!");
         }
         Operand size = popImmediate();
+        // TODO: [ms] RETHINK? simplify: why needs getArraytype(...) and newNewArrayExpr(...) the
+        // dimensions
+        // TODO: [ms] which is the supposed jimple? difference in sourcecode/bytecode frontend ->
+        // newarray (int[])[5] vs newarray (int)[5]
         JNewArrayExpr anew = JavaJimple.getInstance().newNewArrayExpr(type, size.stackOrValue());
         size.addBox(anew.getSizeBox());
         frame.in(size);

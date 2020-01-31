@@ -40,9 +40,6 @@ public abstract class ValueBox {
   private Value value;
 
   public ValueBox(Value value) {
-    /*DEBUG CODE*/
-	System.out.println("Value => "+value+" <= in ValueBox");
-	/*DEBUG CODE*/
     setValue(value);
   }
 

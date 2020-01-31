@@ -144,6 +144,7 @@ public final class AsmUtil {
 
   @Nonnull
   public static List<Type> toJimpleSignatureDesc(@Nonnull String desc) {
+    // TODO: [ms] check to improve/simplify this method
     List<Type> types = new ArrayList<>(2);
     int len = desc.length();
     int idx = 0;
