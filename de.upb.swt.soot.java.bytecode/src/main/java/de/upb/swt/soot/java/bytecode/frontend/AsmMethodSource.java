@@ -223,7 +223,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     /* build body (add units, locals, traps, etc.) */
     emitLocals(bodyLocals, bodyStmts);
     emitTraps(bodyTraps);
-    emitUnits(bodyStmts);
+    emitStmts(bodyStmts);
 
     /* clean up */
     locals = null;
@@ -668,7 +668,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
   }
 
-  private void convertArrayStoreInsn(InsnNode insn) {
+  private void convertArrayStoreInsn(@Nonnull InsnNode insn) {
     int op = insn.getOpcode();
     boolean dword = op == LASTORE || op == DASTORE;
     StackFrame frame = getFrame(insn);
@@ -1991,17 +1991,17 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
   }
 
-  private void emitUnits(@Nonnull List<Stmt> bodyStmts, @Nonnull Stmt u) {
+  private void emitStmts(@Nonnull List<Stmt> bodyStmts, @Nonnull Stmt u) {
     if (u instanceof StmtContainer) {
       for (Stmt uu : ((StmtContainer) u).units) {
-        emitUnits(bodyStmts, uu);
+        emitStmts(bodyStmts, uu);
       }
     } else {
       bodyStmts.add(u);
     }
   }
 
-  private void emitUnits(@Nonnull List<Stmt> bodyStmts) {
+  private void emitStmts(@Nonnull List<Stmt> bodyStmts) {
     AbstractInsnNode insn = instructions.getFirst();
     ArrayDeque<LabelNode> labls = new ArrayDeque<>();
 
@@ -2018,7 +2018,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         continue;
       }
 
-      emitUnits(bodyStmts, u);
+      emitStmts(bodyStmts, u);
 
       // If this is an exception handler, register the starting Stmt for it
       {
@@ -2057,7 +2057,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     // Emit the inline exception handlers
     for (LabelNode ln : this.inlineExceptionHandlers.keySet()) {
       Stmt handler = this.inlineExceptionHandlers.get(ln);
-      emitUnits(bodyStmts, handler);
+      emitStmts(bodyStmts, handler);
 
       Collection<StmtBox> traps = trapHandlers.get(ln);
       for (StmtBox ub : traps) {
