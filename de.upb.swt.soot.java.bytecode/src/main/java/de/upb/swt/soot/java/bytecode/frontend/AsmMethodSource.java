@@ -1600,7 +1600,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Operand[] out = frame.out();
     Operand opr;
     if (out == null) {
-      Type t = JavaIdentifierFactory.getInstance().getType(insn.desc);
+      Type t = AsmUtil.toJimpleType(insn.desc);
+      ;
       Value val;
       if (op == NEW) {
         val = Jimple.newNewExpr((ReferenceType) t);
@@ -1980,8 +1981,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (tc.type == null) {
         cls = throwable;
       } else {
-        // Scene.v().getSootClass(AsmUtil.toQualifiedName(tc.type));
-
         cls = JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(tc.type));
       }
       Trap trap = Jimple.newTrap(cls, start, end, handler);
