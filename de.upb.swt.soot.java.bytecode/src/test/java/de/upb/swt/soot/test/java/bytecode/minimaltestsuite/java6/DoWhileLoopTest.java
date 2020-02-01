@@ -12,7 +12,6 @@ import org.junit.experimental.categories.Category;
 /** @author Kaustubh Kelkar */
 @Category(Java8Test.class)
 public class DoWhileLoopTest extends MinimalBytecodeTestSuiteBase {
-  // TODO extends MinimalBytecodeTestSuiteBase
   @Override
   public MethodSignature getMethodSignature() {
     return identifierFactory.getMethodSignature(

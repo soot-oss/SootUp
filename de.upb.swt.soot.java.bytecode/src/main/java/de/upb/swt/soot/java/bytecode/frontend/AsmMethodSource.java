@@ -448,20 +448,19 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     return (A) units.get(insn);
   }
 
-  private void assignReadOps(@Nullable Local l) {
-    if (stack.isEmpty()) {
-      return;
-    }
-    for (Operand opr : stack) {
-      if (opr == DWORD_DUMMY || opr.stack != null || (l == null && opr.value instanceof Local)) {
+  private void assignReadOps(@Nullable Local local) {
+    for (Operand operand : stack) {
+      if (operand == DWORD_DUMMY
+          || operand.stack != null
+          || (local == null && operand.value instanceof Local)) {
         continue;
       }
-      if (l != null && !opr.value.equivTo(l)) {
-        List<ValueBox> uses = opr.value.getUseBoxes();
+      if (local != null && !operand.value.equivTo(local)) {
+        List<ValueBox> uses = operand.value.getUseBoxes();
         boolean noref = true;
         for (ValueBox use : uses) {
           Value val = use.getValue();
-          if (val.equivTo(l)) {
+          if (val.equivTo(local)) {
             noref = false;
             break;
           }
@@ -470,22 +469,22 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           continue;
         }
       }
-      int op = opr.insn.getOpcode();
+      int op = operand.insn.getOpcode();
 
       // FIXME: [JMP] The IF condition is always false.
       //        Shouldn't it be `l == null && op != GETFIELD && op != GETSTATIC && (op < IALOAD ||
       // op > SALOAD)`?
       //                                                                                        ^^
       // logical OR here
-      if (l == null && op != GETFIELD && op != GETSTATIC && (op < IALOAD && op > SALOAD)) {
+      if (local == null && op != GETFIELD && op != GETSTATIC && (op < IALOAD && op > SALOAD)) {
         continue;
       }
       Local stack = newStackLocal();
-      opr.stack = stack;
+      operand.stack = stack;
       JAssignStmt as =
-          Jimple.newAssignStmt(stack, opr.value, StmtPositionInfo.createNoStmtPositionInfo());
-      opr.updateBoxes();
-      setUnit(opr.insn, as);
+          Jimple.newAssignStmt(stack, operand.value, StmtPositionInfo.createNoStmtPositionInfo());
+      operand.updateBoxes();
+      setUnit(operand.insn, as);
     }
   }
 
@@ -548,13 +547,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       FieldSignature ref;
       rvalue = popImmediate(type);
       if (!instance) {
-        // ref = Scene.v().makeFieldRef(declClass, insn.name, type, true);
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
         val = Jimple.newStaticFieldRef(ref);
         frame.in(rvalue);
       } else {
         Operand base = popLocal();
-        // ref = Scene.v().makeFieldRef(declClass, insn.name, type, false);
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
         JInstanceFieldRef ifr = Jimple.newInstanceFieldRef(base.stackOrValue(), ref);
         val = ifr;
@@ -1045,6 +1042,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (op == BIPUSH || op == SIPUSH) {
         v = IntConstant.getInstance(insn.operand);
       } else {
+        // assert(op == NEWARRAY)
         Type type;
         switch (insn.operand) {
           case T_BOOLEAN:
@@ -1294,27 +1292,19 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.out();
     Operand opr;
-    // Type returnType;
     Type returnType;
     if (out == null) {
       String clsName = AsmUtil.toQualifiedName(insn.owner);
       if (clsName.charAt(0) == '[') {
         clsName = "java.lang.Object";
       }
-      // SootClass cls = Scene.v().getSootClass(clsName);
       JavaClassType cls =
           JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(clsName));
-      // List<Type> sigTypes = AsmUtil.toJimpleDesc(insn.desc);
       List<Type> sigTypes = AsmUtil.toJimpleSignatureDesc(insn.desc);
-      // returnType = sigTypes.remove(sigTypes.size() - 1);
       returnType = sigTypes.remove((sigTypes.size() - 1));
-      // SootMethodRef ref = Scene.v().makeMethodRef(cls, insn.name, sigTypes,
-      // returnType,
-      // !instance);
       MethodSignature methodSignature =
           JavaIdentifierFactory.getInstance()
               .getMethodSignature(insn.name, cls, returnType, sigTypes);
-      // MethodRef ref = JavaJimple.getInstance().newMethodRef(view, methodSignature, !instance);
       int nrArgs = sigTypes.size();
       final Operand[] args;
       List<Value> argList = Collections.emptyList();
