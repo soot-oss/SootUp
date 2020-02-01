@@ -84,6 +84,18 @@ public final class AsmUtil {
     return modifierEnumSet;
   }
 
+  /**
+   * Converts a type descriptor to a Jimple reference type.
+   *
+   * @param desc the descriptor.
+   * @return the reference type.
+   */
+  public static Type toJimpleClassType(String desc) {
+    return desc.charAt(0) == '['
+        ? toJimpleType(desc)
+        : JavaIdentifierFactory.getInstance().getClassType(toQualifiedName(desc));
+  }
+
   @Nonnull
   public static Type toJimpleType(@Nonnull String desc) {
     int idx = desc.lastIndexOf('[');

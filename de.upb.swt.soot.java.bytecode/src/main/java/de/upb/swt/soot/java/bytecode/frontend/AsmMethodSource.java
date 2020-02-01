@@ -1075,10 +1075,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             throw new AssertionError("Unknown NEWARRAY type!");
         }
         Operand size = popImmediate();
-        // TODO: [ms] RETHINK? simplify: why needs getArraytype(...) and newNewArrayExpr(...) the
-        // dimensions
-        // TODO: [ms] which is the supposed jimple? difference in sourcecode/bytecode frontend ->
-        // newarray (int[])[5] vs newarray (int)[5]
         JNewArrayExpr anew = JavaJimple.getInstance().newNewArrayExpr(type, size.stackOrValue());
         size.addBox(anew.getSizeBox());
         frame.in(size);
@@ -1600,8 +1596,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Operand[] out = frame.out();
     Operand opr;
     if (out == null) {
-      Type t = AsmUtil.toJimpleType(insn.desc);
-      ;
+      Type t = AsmUtil.toJimpleClassType(insn.desc);
       Value val;
       if (op == NEW) {
         val = Jimple.newNewExpr((ReferenceType) t);
@@ -1736,7 +1731,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   /* Conversion */
 
-  // FIXME: is it reasonable to get rid of it?
+  // FIXME: [AD] is it reasonable to get rid of it?
   private final class Edge {
     /* edge endpoint */
     final AbstractInsnNode insn;
