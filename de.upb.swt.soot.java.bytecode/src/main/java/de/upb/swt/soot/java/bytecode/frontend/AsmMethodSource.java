@@ -448,6 +448,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     return (A) units.get(insn);
   }
 
+  // TODO: [ms] purpose of this method?
   private void assignReadOps(@Nullable Local local) {
     for (Operand operand : stack) {
       if (operand == DWORD_DUMMY
@@ -471,11 +472,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       }
       int op = operand.insn.getOpcode();
 
-      // FIXME: [JMP] The IF condition is always false.
-      //        Shouldn't it be `l == null && op != GETFIELD && op != GETSTATIC && (op < IALOAD ||
-      // op > SALOAD)`?
-      //                                                                                        ^^
-      // logical OR here
+      // FIXME: [JMP] The IF condition is always false. --> [ms]: *ALOAD are array load instructions
+      // -> include or exclude them?
       if (local == null && op != GETFIELD && op != GETSTATIC && (op < IALOAD && op > SALOAD)) {
         continue;
       }
@@ -490,7 +488,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void convertGetFieldInsn(@Nonnull FieldInsnNode insn) {
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     Type type;
     if (out == null) {
@@ -515,10 +513,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         val = ifr;
         base.addBox(ifr.getBaseBox());
         frame.in(base);
-        frame.boxes(ifr.getBaseBox());
+        frame.setBoxes(ifr.getBaseBox());
       }
       opr = new Operand(insn, val);
-      frame.out(opr);
+      frame.setOut(opr);
     } else {
       opr = out[0];
       type = opr.<JFieldRef>value().getFieldSignature().getType();
@@ -532,7 +530,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private void convertPutFieldInsn(@Nonnull FieldInsnNode insn) {
     boolean instance = insn.getOpcode() == PUTFIELD;
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr, rvalue;
     Type type;
     if (out == null) {
@@ -559,15 +557,15 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         frame.in(rvalue, base);
       }
       opr = new Operand(insn, val);
-      frame.out(opr);
+      frame.setOut(opr);
       JAssignStmt as =
           Jimple.newAssignStmt(
               val, rvalue.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       rvalue.addBox(as.getRightOpBox());
       if (!instance) {
-        frame.boxes(as.getRightOpBox());
+        frame.setBoxes(as.getRightOpBox());
       } else {
-        frame.boxes(as.getRightOpBox(), ((JInstanceFieldRef) val).getBaseBox());
+        frame.setBoxes(as.getRightOpBox(), ((JInstanceFieldRef) val).getBaseBox());
       }
       setUnit(insn, as);
     } else {
@@ -610,7 +608,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private void convertConstInsn(@Nonnull InsnNode insn) {
     int op = insn.getOpcode();
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
       Value v;
@@ -628,7 +626,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         throw new AssertionError("Unknown constant opcode: " + op);
       }
       opr = new Operand(insn, v);
-      frame.out(opr);
+      frame.setOut(opr);
     } else {
       opr = out[0];
     }
@@ -641,7 +639,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void convertArrayLoadInsn(@Nonnull InsnNode insn) {
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
       Operand indx = popImmediate();
@@ -651,8 +649,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       base.addBox(ar.getBaseBox());
       opr = new Operand(insn, ar);
       frame.in(indx, base);
-      frame.boxes(ar.getIndexBox(), ar.getBaseBox());
-      frame.out(opr);
+      frame.setBoxes(ar.getIndexBox(), ar.getBaseBox());
+      frame.setOut(opr);
     } else {
       opr = out[0];
       frame.mergeIn(pop(), pop());
@@ -681,7 +679,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
               .newAssignStmt(ar, valu.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       valu.addBox(as.getRightOpBox());
       frame.in(valu, indx, base);
-      frame.boxes(as.getRightOpBox(), ar.getIndexBox(), ar.getBaseBox());
+      frame.setBoxes(as.getRightOpBox(), ar.getIndexBox(), ar.getBaseBox());
       setUnit(insn, as);
     } else {
       frame.mergeIn(dword ? popDual() : pop(), pop(), pop());
@@ -789,7 +787,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             || op == DCMPL
             || op == DCMPG;
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
       Operand op2 =
@@ -833,8 +831,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       op2.addBox(binop.getOp2Box());
       opr = new Operand(insn, binop);
       frame.in(op2, op1);
-      frame.boxes(binop.getOp2Box(), binop.getOp1Box());
-      frame.out(opr);
+      frame.setBoxes(binop.getOp2Box(), binop.getOp1Box());
+      frame.setOut(opr);
     } else {
       opr = out[0];
       if (dword) {
@@ -858,7 +856,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     int op = insn.getOpcode();
     boolean dword = op == LNEG || op == DNEG;
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
       Operand op1 = dword ? popImmediateDual() : popImmediate();
@@ -874,8 +872,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       op1.addBox(unop.getOpBox());
       opr = new Operand(insn, unop);
       frame.in(op1);
-      frame.boxes(unop.getOpBox());
-      frame.out(opr);
+      frame.setBoxes(unop.getOpBox());
+      frame.setOut(opr);
     } else {
       opr = out[0];
       frame.mergeIn(dword ? popDual() : pop());
@@ -892,7 +890,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     boolean tod = op == I2L || op == I2D || op == F2L || op == F2D || op == D2L || op == L2D;
     boolean fromd = op == D2L || op == L2D || op == D2I || op == L2I || op == D2F || op == L2F;
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
       Type totype;
@@ -918,8 +916,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       opr = new Operand(insn, cast);
       val.addBox(cast.getOpBox());
       frame.in(val);
-      frame.boxes(cast.getOpBox());
-      frame.out(opr);
+      frame.setBoxes(cast.getOpBox());
+      frame.setOut(opr);
     } else {
       opr = out[0];
       frame.mergeIn(fromd ? popDual() : pop());
@@ -941,7 +939,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           Jimple.newReturnStmt(val.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       val.addBox(ret.getOpBox());
       frame.in(val);
-      frame.boxes(ret.getOpBox());
+      frame.setBoxes(ret.getOpBox());
       setUnit(insn, ret);
     } else {
       frame.mergeIn(dword ? popDual() : pop());
@@ -1002,8 +1000,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             Jimple.newThrowStmt(opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
         opr.addBox(ts.getOpBox());
         frame.in(opr);
-        frame.out(opr);
-        frame.boxes(ts.getOpBox());
+        frame.setOut(opr);
+        frame.setBoxes(ts.getOpBox());
         setUnit(insn, ts);
       } else {
         opr = pop();
@@ -1022,7 +1020,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
                     opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
         opr.addBox(ts.getOpBox());
         frame.in(opr);
-        frame.boxes(ts.getOpBox());
+        frame.setBoxes(ts.getOpBox());
         setUnit(insn, ts);
       } else {
         frame.mergeIn(pop());
@@ -1035,7 +1033,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   private void convertIntInsn(@Nonnull IntInsnNode insn) {
     int op = insn.getOpcode();
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
       Value v;
@@ -1076,11 +1074,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         JNewArrayExpr anew = JavaJimple.getInstance().newNewArrayExpr(type, size.stackOrValue());
         size.addBox(anew.getSizeBox());
         frame.in(size);
-        frame.boxes(anew.getSizeBox());
+        frame.setBoxes(anew.getSizeBox());
         v = anew;
       }
       opr = new Operand(insn, v);
-      frame.out(opr);
+      frame.setOut(opr);
     } else {
       opr = out[0];
       if (op == NEWARRAY) {
@@ -1131,7 +1129,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         }
         val1.addBox(cond.getOp1Box());
         val.addBox(cond.getOp2Box());
-        frame.boxes(cond.getOp2Box(), cond.getOp1Box());
+        frame.setBoxes(cond.getOp2Box(), cond.getOp1Box());
         frame.in(val, val1);
       } else {
         if (op == IFEQ) {
@@ -1154,7 +1152,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           throw new AssertionError("Unknown if op: " + op);
         }
         val.addBox(cond.getOp1Box());
-        frame.boxes(cond.getOp1Box());
+        frame.setBoxes(cond.getOp1Box());
         frame.in(val);
       }
       StmtBox box = Jimple.newStmtBox(null);
@@ -1173,12 +1171,12 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Object val = insn.cst;
     boolean dword = val instanceof Long || val instanceof Double;
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
       Value v = toSootValue(val);
       opr = new Operand(insn, v);
-      frame.out(opr);
+      frame.setOut(opr);
     } else {
       opr = out[0];
     }
@@ -1282,7 +1280,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             key.stackOrValue(), keys, targets, dflt, StmtPositionInfo.createNoStmtPositionInfo());
     key.addBox(lss.getKeyBox());
     frame.in(key);
-    frame.boxes(lss.getKeyBox());
+    frame.setBoxes(lss.getKeyBox());
     setUnit(insn, lss);
   }
 
@@ -1290,7 +1288,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     int op = insn.getOpcode();
     boolean instance = op != INVOKESTATIC;
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     Type returnType;
     if (out == null) {
@@ -1354,11 +1352,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           boxes[i] = invoke.getArgBox(i);
           args[i].addBox(boxes[i]);
         }
-        frame.boxes(boxes);
+        frame.setBoxes(boxes);
         frame.in(args);
       }
       opr = new Operand(insn, invoke);
-      frame.out(opr);
+      frame.setOut(opr);
     } else {
       opr = out[0];
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
@@ -1397,7 +1395,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void convertInvokeDynamicInsn(@Nonnull InvokeDynamicInsnNode insn) {
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     Type returnType;
     if (out == null) {
@@ -1449,10 +1447,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         args[i].addBox(boxes[i]);
       }
 
-      frame.boxes(boxes);
+      frame.setBoxes(boxes);
       frame.in(args);
       opr = new Operand(insn, indy);
-      frame.out(opr);
+      frame.setOut(opr);
     } else {
       opr = out[0];
       AbstractInvokeExpr expr = (AbstractInvokeExpr) opr.value;
@@ -1517,7 +1515,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
 
   private void convertMultiANewArrayInsn(@Nonnull MultiANewArrayInsnNode insn) {
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
       ArrayType t = (ArrayType) AsmUtil.toJimpleType(insn.desc);
@@ -1535,10 +1533,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         sizes[i].addBox(vb);
         boxes[i] = vb;
       }
-      frame.boxes(boxes);
+      frame.setBoxes(boxes);
       frame.in(sizes);
       opr = new Operand(insn, nm);
-      frame.out(opr);
+      frame.setOut(opr);
     } else {
       opr = out[0];
       int dims = insn.dims;
@@ -1576,14 +1574,14 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
             StmtPositionInfo.createNoStmtPositionInfo());
     key.addBox(tss.getKeyBox());
     frame.in(key);
-    frame.boxes(tss.getKeyBox());
+    frame.setBoxes(tss.getKeyBox());
     setUnit(insn, tss);
   }
 
   private void convertTypeInsn(@Nonnull TypeInsnNode insn) {
     int op = insn.getOpcode();
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
       Type t = AsmUtil.toJimpleClassType(insn.desc);
@@ -1611,10 +1609,10 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         }
         op1.addBox(vb);
         frame.in(op1);
-        frame.boxes(vb);
+        frame.setBoxes(vb);
       }
       opr = new Operand(insn, val);
-      frame.out(opr);
+      frame.setOut(opr);
     } else {
       opr = out[0];
       if (op != NEW) {
@@ -1628,11 +1626,11 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     int op = insn.getOpcode();
     boolean dword = op == LLOAD || op == DLOAD;
     StackFrame frame = getFrame(insn);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
       opr = new Operand(insn, getLocal(insn.var));
-      frame.out(opr);
+      frame.setOut(opr);
     } else {
       opr = out[0];
     }
@@ -1654,7 +1652,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           Jimple.newAssignStmt(
               local, opr.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       opr.addBox(as.getRightOpBox());
-      frame.boxes(as.getRightOpBox());
+      frame.setBoxes(as.getRightOpBox());
       frame.in(opr);
       setUnit(insn, as);
     } else {
@@ -1698,7 +1696,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
 
     StackFrame frame = getFrame(ln);
-    Operand[] out = frame.out();
+    Operand[] out = frame.getOut();
     Operand opr;
     if (out == null) {
       JCaughtExceptionRef ref = JavaJimple.getInstance().newCaughtExceptionRef();
@@ -1707,7 +1705,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           Jimple.newIdentityStmt(stack, ref, StmtPositionInfo.createNoStmtPositionInfo());
       opr = new Operand(ln, ref);
       opr.stack = stack;
-      frame.out(opr);
+      frame.setOut(opr);
       setUnit(ln, as);
     } else {
       opr = out[0];
@@ -2039,8 +2037,8 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     }
 
     // Emit the inline exception handlers
-    for (LabelNode ln : this.inlineExceptionHandlers.keySet()) {
-      Stmt handler = this.inlineExceptionHandlers.get(ln);
+    for (LabelNode ln : inlineExceptionHandlers.keySet()) {
+      Stmt handler = inlineExceptionHandlers.get(ln);
       emitStmts(bodyStmts, handler);
 
       Collection<StmtBox> traps = trapHandlers.get(ln);

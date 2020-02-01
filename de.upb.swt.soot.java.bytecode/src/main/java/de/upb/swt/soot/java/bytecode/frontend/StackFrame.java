@@ -35,7 +35,7 @@ final class StackFrame {
 
   /** @return operands produced by this frame. */
   @Nullable
-  Operand[] out() {
+  Operand[] getOut() {
     return out;
   }
 
@@ -60,7 +60,7 @@ final class StackFrame {
    *
    * @param boxes the boxes.
    */
-  void boxes(ValueBox... boxes) {
+  void setBoxes(ValueBox... boxes) {
     this.boxes = boxes;
   }
 
@@ -69,7 +69,7 @@ final class StackFrame {
    *
    * @param oprs the operands.
    */
-  void out(Operand... oprs) {
+  void setOut(Operand... oprs) {
     out = oprs;
   }
 
