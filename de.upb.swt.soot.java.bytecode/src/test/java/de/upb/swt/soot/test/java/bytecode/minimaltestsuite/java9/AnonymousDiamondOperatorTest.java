@@ -30,7 +30,7 @@ public class AnonymousDiamondOperatorTest extends MinimalBytecodeTestSuiteBase {
             "$stack4 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(22)",
             "$stack5 = staticinvoke <java.lang.Integer: java.lang.Integer valueOf(int)>(23)",
             "$stack6 = virtualinvoke l1.<MyClass: java.lang.Object add(java.lang.Object,java.lang.Object)>($stack4, $stack5)",
-            "l2 = (java/lang/Integer) $stack6",
+            "l2 = (java.lang.Integer) $stack6",
             "$stack7 = virtualinvoke l2.<java.lang.Integer: int intValue()>()",
             "return $stack7")
         .collect(Collectors.toCollection(ArrayList::new));

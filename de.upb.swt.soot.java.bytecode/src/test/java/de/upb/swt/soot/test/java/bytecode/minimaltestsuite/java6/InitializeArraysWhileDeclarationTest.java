@@ -114,7 +114,7 @@ public class InitializeArraysWhileDeclarationTest extends MinimalBytecodeTestSui
         method,
         expectedBodyStmts(
             "l0 := @this: InitializeArraysWhileDeclaration",
-            "$stack2 = newarray (java/lang/String)[2]",
+            "$stack2 = newarray (java.lang.String)[2]",
             "$stack2[0] = \"Hello World\"",
             "$stack2[1] = \"Greetings\"",
             "l1 = $stack2",

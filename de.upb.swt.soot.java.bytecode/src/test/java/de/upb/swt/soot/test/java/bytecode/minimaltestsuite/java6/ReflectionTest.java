@@ -30,7 +30,7 @@ public class ReflectionTest extends MinimalBytecodeTestSuiteBase {
             "l2 = class \"LReflection;\"",
             "$stack5 = <java.lang.System: java.io.PrintStream out>",
             "virtualinvoke $stack5.<java.io.PrintStream: void println(java.lang.Object)>(l2)",
-            "$stack6 = newarray (java/lang/Class)[0]",
+            "$stack6 = newarray (java.lang.Class)[0]",
             "$stack7 = virtualinvoke l2.<java.lang.Class: java.lang.reflect.Constructor getConstructor(java.lang.Class[])>($stack6)",
             "l3 = $stack7",
             "$stack8 = <java.lang.System: java.io.PrintStream out>",

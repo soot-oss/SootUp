@@ -25,7 +25,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
             "$stack1 = <AssertStatement: Z $assertionsDisabled>",
             "if $stack1 != 0 goto label1",
             "if \"\" != null goto label1",
-            "$stack2 = new java/lang/AssertionError",
+            "$stack2 = new java.lang.AssertionError",
             "specialinvoke $stack2.<java.lang.AssertionError: void <init>()>()",
             "throw $stack2",
             "label1:",

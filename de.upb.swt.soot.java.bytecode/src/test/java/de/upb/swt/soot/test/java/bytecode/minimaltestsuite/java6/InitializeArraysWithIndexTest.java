@@ -108,7 +108,7 @@ public class InitializeArraysWithIndexTest extends MinimalBytecodeTestSuiteBase 
         method,
         expectedBodyStmts(
             "l0 := @this: InitializeArraysWithIndex",
-            "l1 = newarray (java/lang/String)[2]",
+            "l1 = newarray (java.lang.String)[2]",
             "l1[0] = \"Hello World\"",
             "l1[1] = \"Greetings\"",
             "return"));

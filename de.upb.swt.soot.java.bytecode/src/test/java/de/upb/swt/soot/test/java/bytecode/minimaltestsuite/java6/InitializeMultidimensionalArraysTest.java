@@ -19,163 +19,57 @@ public class InitializeMultidimensionalArraysTest extends MinimalBytecodeTestSui
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeMultidimensionalArrays",
-            "$r1 = newarray (int[][])[3]",
-            "$r2 = newarray (int[])[3]",
-            "$r2[0] = 1",
-            "$r2[1] = 2",
-            "$r2[2] = 3",
-            "$r1[0] = $r2",
-            "$r3 = newarray (int[])[2]",
-            "$r3[0] = 5",
-            "$r3[1] = 6",
-            "$r1[1] = $r3",
-            "$r4 = newarray (int[])[3]",
-            "$r4[0] = 7",
-            "$r4[1] = 8",
-            "$r4[2] = 9",
-            "$r1[2] = $r4",
-            "return"));
+                "l0 := @this: InitializeMultidimensionalArrays","$stack2 = newarray (int[])[3]","$stack3 = newarray (int)[3]","$stack3[0] = 1","$stack3[1] = 2","$stack3[2] = 3","$stack2[0] = $stack3","$stack4 = newarray (int)[2]","$stack4[0] = 5","$stack4[1] = 6","$stack2[1] = $stack4","$stack5 = newarray (int)[3]","$stack5[0] = 7","$stack5[1] = 8","$stack5[2] = 9","$stack2[2] = $stack5","l1 = $stack2","return"));
 
     method = loadMethod(getMethodSignature("byteArrays"));
 
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeMultidimensionalArrays",
-            "$r1 = newarray (byte[][])[2]",
-            "$r2 = newarray (byte[])[2]",
-            "$r2[0] = 4",
-            "$r2[1] = 5",
-            "$r1[0] = $r2",
-            "$r3 = newarray (byte[])[1]",
-            "$r3[0] = 2",
-            "$r1[1] = $r3",
-            "return"));
+                "l0 := @this: InitializeMultidimensionalArrays","$stack2 = newarray (byte[])[2]","$stack3 = newarray (byte)[2]","$stack3[0] = 4","$stack3[1] = 5","$stack2[0] = $stack3","$stack4 = newarray (byte)[1]","$stack4[0] = 2","$stack2[1] = $stack4","l1 = $stack2","return"));
 
     method = loadMethod(getMethodSignature("shortArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeMultidimensionalArrays",
-            "$r1 = newarray (short[][])[2]",
-            "$r2 = newarray (short[])[3]",
-            "$r2[0] = 10",
-            "$r2[1] = 20",
-            "$r2[2] = 30",
-            "$r1[0] = $r2",
-            "$r3 = newarray (short[])[1]",
-            "$r3[0] = 40",
-            "$r1[1] = $r3",
-            "return"));
+                "l0 := @this: InitializeMultidimensionalArrays","$stack2 = newarray (short[])[2]","$stack3 = newarray (short)[3]","$stack3[0] = 10","$stack3[1] = 20","$stack3[2] = 30","$stack2[0] = $stack3","$stack4 = newarray (short)[1]","$stack4[0] = 40","$stack2[1] = $stack4","l1 = $stack2","return"));
 
     method = loadMethod(getMethodSignature("longArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeMultidimensionalArrays",
-            "$r1 = newarray (long[][])[3]",
-            "$r2 = newarray (long[])[2]",
-            "$r2[0] = 547087L",
-            "$r2[1] = 654786L",
-            "$r1[0] = $r2",
-            "$r3 = newarray (long[])[3]",
-            "$r3[0] = 547287L",
-            "$r3[1] = 864645L",
-            "$r3[2] = 6533786L",
-            "$r1[1] = $r3",
-            "$r4 = newarray (long[])[2]",
-            "$r4[0] = 34565L",
-            "$r4[1] = 234L",
-            "$r1[2] = $r4",
-            "return"));
+                "l0 := @this: InitializeMultidimensionalArrays","$stack2 = newarray (long[])[3]","$stack3 = newarray (long)[2]","$stack3[0] = 547087L","$stack3[1] = 654786L","$stack2[0] = $stack3","$stack4 = newarray (long)[3]","$stack4[0] = 547287L","$stack4[1] = 864645L","$stack4[2] = 6533786L","$stack2[1] = $stack4","$stack5 = newarray (long)[2]","$stack5[0] = 34565L","$stack5[1] = 234L","$stack2[2] = $stack5","l1 = $stack2","return"));
 
     method = loadMethod(getMethodSignature("floatArrays"));
 
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeMultidimensionalArrays",
-            "$r1 = newarray (float[][])[2]",
-            "$r2 = newarray (float[])[2]",
-            "$r2[0] = 3.14F",
-            "$r2[1] = 5.46F",
-            "$r1[0] = $r2",
-            "$r3 = newarray (float[])[2]",
-            "$r3[0] = 2.987F",
-            "$r3[1] = 4.87F",
-            "$r1[1] = $r3",
-            "return"));
+                "l0 := @this: InitializeMultidimensionalArrays","$stack2 = newarray (float[])[2]","$stack3 = newarray (float)[2]","$stack3[0] = 3.14F","$stack3[1] = 5.46F","$stack2[0] = $stack3","$stack4 = newarray (float)[2]","$stack4[0] = 2.987F","$stack4[1] = 4.87F","$stack2[1] = $stack4","l1 = $stack2","return"));
 
     method = loadMethod(getMethodSignature("doubleArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeMultidimensionalArrays",
-            "$r1 = newarray (double[][])[3]",
-            "$r2 = newarray (double[])[2]",
-            "$r2[0] = 6.765414",
-            "$r2[1] = 9.676565646",
-            "$r1[0] = $r2",
-            "$r3 = newarray (double[])[1]",
-            "$r3[0] = 45.345435",
-            "$r1[1] = $r3",
-            "$r4 = newarray (double[])[2]",
-            "$r4[0] = 3.5656",
-            "$r4[1] = 68.234234",
-            "$r1[2] = $r4",
-            "return"));
+                "l0 := @this: InitializeMultidimensionalArrays","$stack2 = newarray (double[])[3]","$stack3 = newarray (double)[2]","$stack3[0] = 6.765414","$stack3[1] = 9.676565646","$stack2[0] = $stack3","$stack4 = newarray (double)[1]","$stack4[0] = 45.345435","$stack2[1] = $stack4","$stack5 = newarray (double)[2]","$stack5[0] = 3.5656","$stack5[1] = 68.234234","$stack2[2] = $stack5","l1 = $stack2","return"));
 
     method = loadMethod(getMethodSignature("booleanArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeMultidimensionalArrays",
-            "$r1 = newarray (boolean[][])[2]",
-            "$r2 = newarray (boolean[])[2]",
-            "$r2[0] = 1",
-            "$r2[1] = 0",
-            "$r1[0] = $r2",
-            "$r3 = newarray (boolean[])[1]",
-            "$r3[0] = 1",
-            "$r1[1] = $r3",
-            "return"));
+                "l0 := @this: InitializeMultidimensionalArrays","$stack2 = newarray (boolean[])[2]","$stack3 = newarray (boolean)[2]","$stack3[0] = 1","$stack3[1] = 0","$stack2[0] = $stack3","$stack4 = newarray (boolean)[1]","$stack4[0] = 1","$stack2[1] = $stack4","l1 = $stack2","return"));
 
     method = loadMethod(getMethodSignature("charArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeMultidimensionalArrays",
-            "$r1 = newarray (char[][])[3]",
-            "$r2 = newarray (char[])[3]",
-            "$r2[0] = 65",
-            "$r2[1] = 98",
-            "$r2[2] = 38",
-            "$r1[0] = $r2",
-            "$r3 = newarray (char[])[2]",
-            "$r3[0] = 99",
-            "$r3[1] = 36",
-            "$r1[1] = $r3",
-            "$r4 = newarray (char[])[2]",
-            "$r4[0] = 50",
-            "$r4[1] = 71",
-            "$r1[2] = $r4",
-            "return"));
+                "l0 := @this: InitializeMultidimensionalArrays","$stack2 = newarray (char[])[3]","$stack3 = newarray (char)[3]","$stack3[0] = 65","$stack3[1] = 98","$stack3[2] = 38","$stack2[0] = $stack3","$stack4 = newarray (char)[2]","$stack4[0] = 99","$stack4[1] = 36","$stack2[1] = $stack4","$stack5 = newarray (char)[2]","$stack5[0] = 50","$stack5[1] = 71","$stack2[2] = $stack5","l1 = $stack2","return"));
 
     method = loadMethod(getMethodSignature("stringArrays"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
-            "r0 := @this: InitializeMultidimensionalArrays",
-            "$r1 = newarray (java.lang.String[][])[2]",
-            "$r2 = newarray (java.lang.String[])[1]",
-            "$r2[0] = \"Hello World\"",
-            "$r1[0] = $r2",
-            "$r3 = newarray (java.lang.String[])[2]",
-            "$r3[0] = \"Greetings\"",
-            "$r3[1] = \"Welcome\"",
-            "$r1[1] = $r3",
-            "return"));
+                "l0 := @this: InitializeMultidimensionalArrays","$stack2 = newarray (java.lang.String[])[2]","$stack3 = newarray (java.lang.String)[1]","$stack3[0] = \"Hello World\"","$stack2[0] = $stack3","$stack4 = newarray (java.lang.String)[2]","$stack4[0] = \"Greetings\"","$stack4[1] = \"Welcome\"","$stack2[1] = $stack4","l1 = $stack2","return"));
   }
 
   public MethodSignature getMethodSignature(String methodName) {

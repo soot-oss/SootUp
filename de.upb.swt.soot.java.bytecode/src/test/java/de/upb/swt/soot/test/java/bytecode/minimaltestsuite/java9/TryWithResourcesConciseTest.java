@@ -24,8 +24,8 @@ public class TryWithResourcesConciseTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: TryWithResourcesConcise",
-            "$stack5 = new java/io/BufferedReader",
-            "$stack6 = new java/io/FileReader",
+            "$stack5 = new java.io.BufferedReader",
+            "$stack6 = new java.io.FileReader",
             "specialinvoke $stack6.<java.io.FileReader: void <init>(java.lang.String)>(\"file.txt\")",
             "specialinvoke $stack5.<java.io.BufferedReader: void <init>(java.io.Reader)>($stack6)",
             "l1 = $stack5",

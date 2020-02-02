@@ -43,7 +43,7 @@ public class VolatileVariableTest extends MinimalBytecodeTestSuiteBase {
             "l0 := @this: VolatileVariable",
             "$stack1 = l0.<VolatileVariable: I counter>",
             "$stack2 = $stack1 + 1",
-            "l0.<VolatileVariable: I counter> = $stack2",
+            "l0.<VolatileVariable: int counter> = $stack2",
             "return $stack1")
         .collect(Collectors.toCollection(ArrayList::new));
   }

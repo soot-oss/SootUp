@@ -207,7 +207,7 @@ public class AccessArraysTest extends MinimalBytecodeTestSuiteBase {
         method,
         expectedBodyStmts(
             "l0 := @this: AccessArrays",
-            "$stack7 = newarray (java/lang/String)[2]",
+            "$stack7 = newarray (java.lang.String)[2]",
             "$stack7[0] = \"Hello World\"",
             "$stack7[1] = \"Greetings\"",
             "l1 = $stack7",
