@@ -82,11 +82,9 @@ final class StackFrame {
       throw new IllegalArgumentException("Invalid in operands length!");
     }
     int nrIn = in.size();
-    boolean diff = false;
-    for (int i = 0; i != oprs.length; i++) {
+    for (int i = 0; i < oprs.length; i++) {
       Operand newOp = oprs[i];
 
-      diff = true;
       /* merge, since prevOp != newOp */
       Local stack = inStackLocals[i];
       if (stack != null) {
@@ -182,7 +180,8 @@ final class StackFrame {
        * newOp.stackOrValue()); src.mergeUnits(newOp.insn, as); } newOp.addBox(as.getRightOpBox());
        */
     }
-    if (diff) {
+    // add if there is a difference
+    if (0 < oprs.length) {
       in.add(oprs);
     }
   }
