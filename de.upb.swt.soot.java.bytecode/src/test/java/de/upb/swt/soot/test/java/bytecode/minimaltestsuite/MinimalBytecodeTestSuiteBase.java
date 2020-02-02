@@ -154,7 +154,7 @@ public abstract class MinimalBytecodeTestSuiteBase {
     /** Code to create expected statements */
     StringBuffer stringBuffer = new StringBuffer();
     for (String s : actualStmts) {
-      stringBuffer.append("\"" + s + "\",\n");
+      stringBuffer.append("\"" + s + "\",");
     }
     System.out.println(stringBuffer);
     /** *********************************** */
