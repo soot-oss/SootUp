@@ -21,7 +21,7 @@ final class StackFrame {
   @Nullable private Operand[] out;
   @Nullable private Local[] inStackLocals;
   @Nullable private ValueBox[] boxes;
-  @Nullable private ArrayList<Operand[]> in;
+  @Nullable private ArrayList<Operand[]> in = new ArrayList<>(1);
   @Nonnull private final AsmMethodSource src;
 
   /**
@@ -45,12 +45,7 @@ final class StackFrame {
    * @param oprs the operands.
    */
   void in(@Nonnull Operand... oprs) {
-    ArrayList<Operand[]> in = this.in;
-    if (in == null) {
-      in = this.in = new ArrayList<>(1);
-    } else {
-      in.clear();
-    }
+    in.clear();
     in.add(oprs);
     inStackLocals = new Local[oprs.length];
   }
@@ -81,7 +76,6 @@ final class StackFrame {
    *     old operands.
    */
   void mergeIn(@Nonnull Operand... oprs) {
-    ArrayList<Operand[]> in = this.in;
     if (in.get(0).length != oprs.length) {
       throw new IllegalArgumentException("Invalid in operands length!");
     }
