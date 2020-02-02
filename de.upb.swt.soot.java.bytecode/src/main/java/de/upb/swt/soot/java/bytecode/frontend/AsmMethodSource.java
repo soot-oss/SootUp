@@ -885,22 +885,38 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Operand opr;
     if (out == null) {
       Type totype;
-      if (op == I2L || op == F2L || op == D2L) {
-        totype = PrimitiveType.getLong();
-      } else if (op == L2I || op == F2I || op == D2I) {
-        totype = PrimitiveType.getInt();
-      } else if (op == I2F || op == L2F || op == D2F) {
-        totype = PrimitiveType.getFloat();
-      } else if (op == I2D || op == L2D || op == F2D) {
-        totype = PrimitiveType.getDouble();
-      } else if (op == I2B) {
-        totype = PrimitiveType.getByte();
-      } else if (op == I2S) {
-        totype = PrimitiveType.getShort();
-      } else if (op == I2C) {
-        totype = PrimitiveType.getChar();
-      } else {
-        throw new AssertionError("Unknonw prim cast op: " + op);
+      switch (op) {
+        case I2L:
+        case F2L:
+        case D2L:
+          totype = PrimitiveType.getLong();
+          break;
+        case L2I:
+        case F2I:
+        case D2I:
+          totype = PrimitiveType.getInt();
+          break;
+        case I2F:
+        case L2F:
+        case D2F:
+          totype = PrimitiveType.getFloat();
+          break;
+        case I2D:
+        case L2D:
+        case F2D:
+          totype = PrimitiveType.getDouble();
+          break;
+        case I2B:
+          totype = PrimitiveType.getByte();
+          break;
+        case I2S:
+          totype = PrimitiveType.getShort();
+          break;
+        case I2C:
+          totype = PrimitiveType.getChar();
+          break;
+        default:
+          throw new AssertionError("Unknonw prim cast op: " + op);
       }
       Operand val = fromd ? popImmediateDual() : popImmediate();
       JCastExpr cast = Jimple.newCastExpr(val.stackOrValue(), totype);
@@ -1099,48 +1115,66 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       if (op >= IF_ICMPEQ && op <= IF_ACMPNE) {
         Operand val1 = popImmediate();
         Value v1 = val1.stackOrValue();
-        if (op == IF_ICMPEQ) {
-          cond = Jimple.newEqExpr(v1, v);
-        } else if (op == IF_ICMPNE) {
-          cond = Jimple.newNeExpr(v1, v);
-        } else if (op == IF_ICMPLT) {
-          cond = Jimple.newLtExpr(v1, v);
-        } else if (op == IF_ICMPGE) {
-          cond = Jimple.newGeExpr(v1, v);
-        } else if (op == IF_ICMPGT) {
-          cond = Jimple.newGtExpr(v1, v);
-        } else if (op == IF_ICMPLE) {
-          cond = Jimple.newLeExpr(v1, v);
-        } else if (op == IF_ACMPEQ) {
-          cond = Jimple.newEqExpr(v1, v);
-        } else if (op == IF_ACMPNE) {
-          cond = Jimple.newNeExpr(v1, v);
-        } else {
-          throw new AssertionError("Unknown if op: " + op);
+        switch (op) {
+          case IF_ICMPEQ:
+            cond = Jimple.newEqExpr(v1, v);
+            break;
+          case IF_ICMPNE:
+            cond = Jimple.newNeExpr(v1, v);
+            break;
+          case IF_ICMPLT:
+            cond = Jimple.newLtExpr(v1, v);
+            break;
+          case IF_ICMPGE:
+            cond = Jimple.newGeExpr(v1, v);
+            break;
+          case IF_ICMPGT:
+            cond = Jimple.newGtExpr(v1, v);
+            break;
+          case IF_ICMPLE:
+            cond = Jimple.newLeExpr(v1, v);
+            break;
+          case IF_ACMPEQ:
+            cond = Jimple.newEqExpr(v1, v);
+            break;
+          case IF_ACMPNE:
+            cond = Jimple.newNeExpr(v1, v);
+            break;
+          default:
+            throw new AssertionError("Unknown if op: " + op);
         }
         val1.addBox(cond.getOp1Box());
         val.addBox(cond.getOp2Box());
         frame.setBoxes(cond.getOp2Box(), cond.getOp1Box());
         frame.setIn(val, val1);
       } else {
-        if (op == IFEQ) {
-          cond = Jimple.newEqExpr(v, IntConstant.getInstance(0));
-        } else if (op == IFNE) {
-          cond = Jimple.newNeExpr(v, IntConstant.getInstance(0));
-        } else if (op == IFLT) {
-          cond = Jimple.newLtExpr(v, IntConstant.getInstance(0));
-        } else if (op == IFGE) {
-          cond = Jimple.newGeExpr(v, IntConstant.getInstance(0));
-        } else if (op == IFGT) {
-          cond = Jimple.newGtExpr(v, IntConstant.getInstance(0));
-        } else if (op == IFLE) {
-          cond = Jimple.newLeExpr(v, IntConstant.getInstance(0));
-        } else if (op == IFNULL) {
-          cond = Jimple.newEqExpr(v, NullConstant.getInstance());
-        } else if (op == IFNONNULL) {
-          cond = Jimple.newNeExpr(v, NullConstant.getInstance());
-        } else {
-          throw new AssertionError("Unknown if op: " + op);
+        switch (op) {
+          case IFEQ:
+            cond = Jimple.newEqExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFNE:
+            cond = Jimple.newNeExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFLT:
+            cond = Jimple.newLtExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFGE:
+            cond = Jimple.newGeExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFGT:
+            cond = Jimple.newGtExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFLE:
+            cond = Jimple.newLeExpr(v, IntConstant.getInstance(0));
+            break;
+          case IFNULL:
+            cond = Jimple.newEqExpr(v, NullConstant.getInstance());
+            break;
+          case IFNONNULL:
+            cond = Jimple.newNeExpr(v, NullConstant.getInstance());
+            break;
+          default:
+            throw new AssertionError("Unknown if op: " + op);
         }
         val.addBox(cond.getOp1Box());
         frame.setBoxes(cond.getOp1Box());
@@ -1325,14 +1359,18 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       } else {
         Local base = (Local) args[args.length - 1].stackOrValue();
         AbstractInstanceInvokeExpr iinvoke;
-        if (op == INVOKESPECIAL) {
-          iinvoke = Jimple.newSpecialInvokeExpr(base, methodSignature, argList);
-        } else if (op == INVOKEVIRTUAL) {
-          iinvoke = Jimple.newVirtualInvokeExpr(base, methodSignature, argList);
-        } else if (op == INVOKEINTERFACE) {
-          iinvoke = Jimple.newInterfaceInvokeExpr(base, methodSignature, argList);
-        } else {
-          throw new AssertionError("Unknown invoke op:" + op);
+        switch (op) {
+          case INVOKESPECIAL:
+            iinvoke = Jimple.newSpecialInvokeExpr(base, methodSignature, argList);
+            break;
+          case INVOKEVIRTUAL:
+            iinvoke = Jimple.newVirtualInvokeExpr(base, methodSignature, argList);
+            break;
+          case INVOKEINTERFACE:
+            iinvoke = Jimple.newInterfaceInvokeExpr(base, methodSignature, argList);
+            break;
+          default:
+            throw new AssertionError("Unknown invoke op:" + op);
         }
         boxes[boxes.length - 1] = iinvoke.getBaseBox();
         args[args.length - 1].addBox(boxes[boxes.length - 1]);
@@ -1583,20 +1621,30 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
         Operand op1 = popImmediate();
         Value v1 = op1.stackOrValue();
         ValueBox vb;
-        if (op == ANEWARRAY) {
-          JNewArrayExpr expr = JavaJimple.getInstance().newNewArrayExpr(t, v1);
-          vb = expr.getSizeBox();
-          val = expr;
-        } else if (op == CHECKCAST) {
-          JCastExpr expr = Jimple.newCastExpr(v1, t);
-          vb = expr.getOpBox();
-          val = expr;
-        } else if (op == INSTANCEOF) {
-          JInstanceOfExpr expr = Jimple.newInstanceOfExpr(v1, t);
-          vb = expr.getOpBox();
-          val = expr;
-        } else {
-          throw new AssertionError("Unknown type op: " + op);
+        switch (op) {
+          case ANEWARRAY:
+            {
+              JNewArrayExpr expr = JavaJimple.getInstance().newNewArrayExpr(t, v1);
+              vb = expr.getSizeBox();
+              val = expr;
+              break;
+            }
+          case CHECKCAST:
+            {
+              JCastExpr expr = Jimple.newCastExpr(v1, t);
+              vb = expr.getOpBox();
+              val = expr;
+              break;
+            }
+          case INSTANCEOF:
+            {
+              JInstanceOfExpr expr = Jimple.newInstanceOfExpr(v1, t);
+              vb = expr.getOpBox();
+              val = expr;
+              break;
+            }
+          default:
+            throw new AssertionError("Unknown type op: " + op);
         }
         op1.addBox(vb);
         frame.setIn(op1);
