@@ -492,22 +492,16 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Operand opr;
     Type type;
     if (out == null) {
-      // SootClass declClass =
-      // Scene.v().getSootClass(AsmUtil.toQualifiedName(insn.owner));
       JavaClassType declClass =
           JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(insn.owner));
-      // type = AsmUtil.toJimpleType(insn.desc);
       type = JavaIdentifierFactory.getInstance().getType((AsmUtil.toQualifiedName(insn.desc)));
       Value val;
-      // JFieldRef ref;
       FieldSignature ref;
       if (insn.getOpcode() == GETSTATIC) {
-        // ref = Scene.v().makeFieldRef(declClass, insn.name, type, true);
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
         val = Jimple.newStaticFieldRef(ref);
       } else {
         Operand base = popLocal();
-        // ref = Scene.v().makeFieldRef(declClass, insn.name, type, false);
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
         JInstanceFieldRef ifr = Jimple.newInstanceFieldRef(base.stackOrValue(), ref);
         val = ifr;
@@ -534,12 +528,9 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Operand opr, rvalue;
     Type type;
     if (out == null) {
-      // SootClass declClass =
-      // Scene.v().getSootClass(AsmUtil.toQualifiedName(insn.owner));
       JavaClassType declClass =
           JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(insn.owner));
-      // type = AsmUtil.toJimpleType(insn.desc);
-      type = JavaIdentifierFactory.getInstance().getType((AsmUtil.toQualifiedName(insn.desc)));
+      type = AsmUtil.toJimpleType(insn.desc);
 
       Value val;
       FieldSignature ref;
