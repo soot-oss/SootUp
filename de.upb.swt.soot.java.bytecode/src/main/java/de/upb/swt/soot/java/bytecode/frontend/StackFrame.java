@@ -44,8 +44,10 @@ final class StackFrame {
    *
    * @param oprs the operands.
    */
-  void in(@Nonnull Operand... oprs) {
+  void setIn(@Nonnull Operand... oprs) {
     in.clear();
+    // TODO: [ms] check if its ever called multiple times
+    // -> is .clear() / the ArrayList necessary?
     in.add(oprs);
     inStackLocals = new Local[oprs.length];
   }
