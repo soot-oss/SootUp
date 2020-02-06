@@ -10,8 +10,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
-// https://github.com/Sable/soot/blob/master/src/main/java/soot/jimple/toolkits/scalar/NopEliminator.java
-
 public class NopEliminator implements BodyInterceptor {
 
   /**
@@ -24,7 +22,8 @@ public class NopEliminator implements BodyInterceptor {
   public Body interceptBody(@Nonnull Body originalBody) {
 
     List<Stmt> stmtList = originalBody.getStmts();
-    List<Stmt> copyList = new ArrayList<>();
+    List<Stmt> copyList = new ArrayList<>(stmtList.size());
+    copyList.addAll(stmtList);
 
     for(Stmt stmt : stmtList){
       if(stmt instanceof JNopStmt){
@@ -36,8 +35,8 @@ public class NopEliminator implements BodyInterceptor {
             }
           }
         }
-        if(keepNop){
-          copyList.add(stmt);
+        if(!keepNop){
+          copyList.remove(stmt);
         }
       }
     }
