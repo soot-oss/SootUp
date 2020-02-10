@@ -5,15 +5,15 @@ import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.transform.BodyInterceptor;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 public class NopEliminator implements BodyInterceptor {
 
   /**
    * Removes {@link JNopStmt}s from the passed body.
+   *
    * @param originalBody The current body before transformation.
    * @return The transformed body.
    */
@@ -22,25 +22,31 @@ public class NopEliminator implements BodyInterceptor {
   public Body interceptBody(@Nonnull Body originalBody) {
 
     List<Stmt> stmtList = originalBody.getStmts();
-    List<Stmt> copyList = new ArrayList<>(stmtList.size());
-    copyList.addAll(stmtList);
+    // TODO: [ms] check whether its possible to collect the original collection if nothing changed
+    List<Stmt> newStmtList =
+        stmtList.stream()
+            .parallel()
+            .filter(stmt -> !(stmt instanceof JNopStmt))
+            .collect(Collectors.toList());
 
-    for(Stmt stmt : stmtList){
-      if(stmt instanceof JNopStmt){
-        boolean keepNop = false;
-        if(stmtList.get(stmtList.size()-1) == stmt){
-          for(Trap trap : originalBody.getTraps()){
-            if(trap.getEndStmt() == stmt){
-              keepNop = true;
-            }
-          }
+    Stmt lastStmt = stmtList.get(stmtList.size() - 1);
+    // keep (-> add) the last Stmt if it is (already filtered) JNopStmt and the target of a trap
+    if (lastStmt instanceof JNopStmt) {
+      boolean keepLastStmt = false;
+      for (Trap trap : originalBody.getTraps()) {
+        if (trap.getEndStmt() == lastStmt) {
+          keepLastStmt = true;
+          break;
         }
-        if(!keepNop){
-          copyList.remove(stmt);
-        }
+      }
+      if (keepLastStmt) {
+        newStmtList.add(lastStmt);
       }
     }
 
-    return originalBody.withStmts(copyList);
+    // replace the Body if the lists of Stmts differ - here: the length is different
+    return stmtList.size() != newStmtList.size()
+        ? originalBody.withStmts(newStmtList)
+        : originalBody;
   }
 }
