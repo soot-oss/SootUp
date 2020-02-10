@@ -22,15 +22,13 @@ public class NopEliminator implements BodyInterceptor {
   public Body interceptBody(@Nonnull Body originalBody) {
 
     List<Stmt> stmtList = originalBody.getStmts();
-    // TODO: [ms] check whether its possible to collect the original collection if nothing changed
+    // [ms] possible performance improvement: if sth changed, initialize/copy relevant stmts "by
+    // hand" otherwise reference original list
     List<Stmt> newStmtList =
-        stmtList.stream()
-            .parallel()
-            .filter(stmt -> !(stmt instanceof JNopStmt))
-            .collect(Collectors.toList());
+        stmtList.stream().filter(stmt -> !(stmt instanceof JNopStmt)).collect(Collectors.toList());
 
     Stmt lastStmt = stmtList.get(stmtList.size() - 1);
-    // keep (-> add) the last Stmt if it is (already filtered) JNopStmt and the target of a trap
+    // keep (-> add) the last Stmt if it is a JNopStmt (-> already filtered) but used in a trap
     if (lastStmt instanceof JNopStmt) {
       boolean keepLastStmt = false;
       for (Trap trap : originalBody.getTraps()) {
