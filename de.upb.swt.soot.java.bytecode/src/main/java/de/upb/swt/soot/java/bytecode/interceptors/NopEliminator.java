@@ -10,18 +10,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
-/**
- * Removes {@link JNopStmt}s from given {@link Body}. Complexity is linear with respect to the
- * statements.
- *
- * @author Marcus Nachtigall, Markus Schmidt
- */
+/** @author Marcus Nachtigall, Markus Schmidt */
 public class NopEliminator implements BodyInterceptor {
 
   /**
-   * Removes {@link JNopStmt}s from the passed body.
+   * Removes {@link JNopStmt}s from the List of Stmts of the given {@link Body}. Complexity is
+   * linear with respect to the statements.
    *
-   * @param originalBody The current body before transformation.
+   * @param originalBody The current body before interception.
    * @return The transformed body.
    */
   @Nonnull
@@ -42,7 +38,7 @@ public class NopEliminator implements BodyInterceptor {
       }
     }
 
-    // [ms] possible performance hint? iterate && filter only once; remember index positions of
+    // [ms] possible performance hint: iterate && filter only once; remember index positions of
     // relevant sequences; add them "by hand" -> last stmt could be excluded from loop, too
     final int newSize =
         (int) stmtList.parallelStream().filter(stmt -> !(stmt instanceof JNopStmt)).count()
