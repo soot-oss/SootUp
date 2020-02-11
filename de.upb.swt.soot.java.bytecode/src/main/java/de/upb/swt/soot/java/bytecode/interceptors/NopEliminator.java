@@ -10,6 +10,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
+/**
+ * Removes {@link JNopStmt}s from given {@link Body}. Complexity is linear with respect to the
+ * statements.
+ *
+ * @author Marcus Nachtigall, Markus Schmidt
+ */
 public class NopEliminator implements BodyInterceptor {
 
   /**
@@ -25,37 +31,36 @@ public class NopEliminator implements BodyInterceptor {
     List<Stmt> stmtList = originalBody.getStmts();
     final Stmt lastStmt = stmtList.get(stmtList.size() - 1);
     final boolean isLastStmtJNop = lastStmt instanceof JNopStmt;
-    boolean keepLastStmt = !isLastStmtJNop;
+    boolean copyLastStmt = false;
 
     if (isLastStmtJNop) {
       for (Trap trap : originalBody.getTraps()) {
         if (trap.getEndStmt() == lastStmt) {
-          keepLastStmt = true;
+          copyLastStmt = true;
           break;
         }
       }
     }
 
     // [ms] possible performance hint? iterate && filter only once; remember index positions of
-    // relevant sequences; add them "by hand"
-    long size = stmtList.parallelStream().filter(stmt -> !(stmt instanceof JNopStmt)).count();
-    if (keepLastStmt) {
-      size++;
-    }
+    // relevant sequences; add them "by hand" -> last stmt could be excluded from loop, too
+    final int newSize =
+        (int) stmtList.parallelStream().filter(stmt -> !(stmt instanceof JNopStmt)).count()
+            + (copyLastStmt ? 1 : 0);
 
-    List<Stmt> newStmtList;
-    if (stmtList.size() == size) {
+    // nothing changed due to this interceptor
+    if (stmtList.size() == newSize) {
       return originalBody;
     }
 
-    long finalSize = size;
-    newStmtList =
+    List<Stmt> newStmtList =
         stmtList
             .parallelStream()
             .filter(stmt -> !(stmt instanceof JNopStmt))
-            .collect(Collectors.toCollection(() -> new ArrayList<Stmt>((int) finalSize)));
-    // keep (-> add) the last Stmt if it is a JNopStmt (-> filtered) but used in a trap
-    if (keepLastStmt) {
+            .collect(Collectors.toCollection(() -> new ArrayList<>(newSize)));
+
+    // keep (-> copy) the last Stmt if it is a JNopStmt (-> already filtered) but used in a trap
+    if (copyLastStmt) {
       newStmtList.add(lastStmt);
     }
     return originalBody.withStmts(newStmtList);
