@@ -1,7 +1,6 @@
 package de.upb.swt.soot.java.core.types;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.inputlocation.FileType;
 import de.upb.swt.soot.core.signatures.PackageName;
@@ -71,9 +70,8 @@ public class JavaClassType extends ClassType {
    */
   public String getFullyQualifiedName() {
     StringBuilder sb = new StringBuilder();
-    // TODO: [ms] enforce at signature generation?
-    if (!Strings.isNullOrEmpty(packageName.getPackageName())) {
-      sb.append(packageName.toString());
+    if (!packageName.getPackageName().isEmpty()) {
+      sb.append(packageName);
       sb.append('.');
     }
     sb.append(className);
