@@ -15,6 +15,9 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - Incremental Updates of Program Representation
 - Fully-Parallelized/Distributed Architecture
 
+## What is done and what needs to be done
+https://github.com/secure-software-engineering/soot-reloaded/wiki/TODOs
+
 ## Contribution Guidelines 
 
 [Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
