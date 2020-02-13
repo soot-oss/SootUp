@@ -25,6 +25,9 @@ public class NopEliminator implements BodyInterceptor {
   public Body interceptBody(@Nonnull Body originalBody) {
 
     List<Stmt> stmtList = originalBody.getStmts();
+    if(originalBody.getStmts().isEmpty()){
+      return originalBody;
+    }
     final Stmt lastStmt = stmtList.get(stmtList.size() - 1);
     final boolean isLastStmtJNop = lastStmt instanceof JNopStmt;
     boolean copyLastStmt = false;
