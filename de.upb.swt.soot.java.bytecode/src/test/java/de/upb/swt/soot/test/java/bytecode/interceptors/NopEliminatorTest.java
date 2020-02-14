@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -44,9 +45,11 @@ public class NopEliminatorTest {
     Body testBody = createBody(true, false);
     Body processedBody = new NopEliminator().interceptBody(testBody);
 
-    assertEquals(testBody.getStmts().size() - 1, processedBody.getStmts().size());
+    List<Stmt> expectedList = testBody.getStmts();
+    List<Stmt> actualList = processedBody.getStmts();
+    assertEquals(expectedList.size() - 1, actualList.size());
     for (int i = 0; i < testBody.getStmts().size() - 1; i++) {
-      assertTrue(testBody.getStmts().get(i).equivTo(processedBody.getStmts().get(i)));
+      assertSame(expectedList.get(i), actualList.get(i));
     }
   }
 
