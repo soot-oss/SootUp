@@ -1,12 +1,22 @@
-public class MyClass {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.List;
+
+public class AnnotationData {
     private @FutureSootAnnotation
     String str;
     private @FutureSootAnnotation
-    List<String> mylist;
+    List<String> stringlist;
     private @FutureSootAnnotation
-    char[] chars; //on char
+    char[] charArray; //on char
     private @FutureSootAnnotation
-    char[][] chars2;//on char
-    private char @FutureSootAnnotation [] chars3;//on char array, char[]
-    private char[] @FutureSootAnnotation [] chars4; //on char array, char[] which is component of char[][]
+    char[][] charArray2D;//on char
+    private char @FutureSootAnnotation [] charArr;//on char array, char[]
+    private char[] @FutureSootAnnotation [] charArrNew; //on char array, char[] which is component of char[][]
+
+    @Target({ElementType.TYPE_USE,ElementType.TYPE_PARAMETER})
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface FutureSootAnnotation{}
 }

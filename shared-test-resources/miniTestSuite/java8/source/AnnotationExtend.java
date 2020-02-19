@@ -1,3 +1,6 @@
-public class AnnotationExtend extends @FutureSootAnnotation Thread {
-    AnnotationExtend.@FutureSootAnnotation NestedClass nestedClass;//NestedClass is nested class of MyClass
+public class AnnotationExtend extends @AnnotationData.FutureSootAnnotation Thread {
+    AnnotationExtend.@AnnotationData.FutureSootAnnotation NestedClass nestedClass;//NestedClass is nested class of AnnotationExtend
+
+    public class NestedClass {
+    }
 }
