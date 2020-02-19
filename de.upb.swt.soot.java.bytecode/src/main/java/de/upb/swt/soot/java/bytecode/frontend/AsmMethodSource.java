@@ -324,7 +324,6 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     Operand o = pop();
     Operand o2 = pop();
     if (o2 != DWORD_DUMMY && o2 != o) {
-      // TODO: [kk] check if need this if (!o2.equivTo(DWORD_DUMMY) && !o2.equivTo(o)) {
       throw new AssertionError("Not dummy operand, " + o2.value + " -- " + o.value);
     }
     return o;
@@ -494,7 +493,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
     if (out == null) {
       JavaClassType declClass =
           JavaIdentifierFactory.getInstance().getClassType(AsmUtil.toQualifiedName(insn.owner));
-      type = JavaIdentifierFactory.getInstance().getType((AsmUtil.toQualifiedName(insn.desc)));
+      type = AsmUtil.toJimpleType(insn.desc);
       Value val;
       FieldSignature ref;
       if (insn.getOpcode() == GETSTATIC) {
