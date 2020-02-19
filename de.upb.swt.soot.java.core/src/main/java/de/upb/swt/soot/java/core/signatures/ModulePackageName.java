@@ -24,10 +24,10 @@ package de.upb.swt.soot.java.core.signatures;
 
 import com.google.common.base.Objects;
 import de.upb.swt.soot.core.IdentifierFactory;
-import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.java.core.JavaPackageName;
 
 /** Represents the signature of a Java 9 package, referencing its module. */
-public class ModulePackageName extends PackageName {
+public class ModulePackageName extends JavaPackageName {
 
   private final ModuleSignature moduleSignature;
 

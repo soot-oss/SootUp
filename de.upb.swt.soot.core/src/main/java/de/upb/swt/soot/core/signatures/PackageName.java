@@ -35,6 +35,8 @@ public class PackageName {
   /** Represents the default package. */
   public static final PackageName DEFAULT_PACKAGE = new PackageName("");
 
+  public static final String PACKAGE_INFO = "package-info";
+
   private final String packageName;
 
   /**
