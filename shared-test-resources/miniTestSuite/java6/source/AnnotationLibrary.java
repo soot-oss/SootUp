@@ -1,4 +1,4 @@
-@interface AnnotationLibrary{
+public @interface AnnotationLibrary{
 
     String author();
     String genre();
