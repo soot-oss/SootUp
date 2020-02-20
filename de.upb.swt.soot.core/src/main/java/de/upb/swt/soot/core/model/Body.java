@@ -250,7 +250,7 @@ public final class Body implements Copyable {
    * @return the statements in this Body
    */
   public List<Stmt> getStmts() {
-    return Collections.unmodifiableList(stmts);
+    return stmts;
   }
 
   private void checkInit() {
