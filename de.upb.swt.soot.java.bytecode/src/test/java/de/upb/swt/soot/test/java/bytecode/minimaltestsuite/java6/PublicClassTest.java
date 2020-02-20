@@ -24,10 +24,7 @@ public class PublicClassTest extends MinimalBytecodeTestSuiteBase {
   @Test
   public void defaultTest() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
-    assertEquals(
-        EnumSet.of(
-            Modifier.PUBLIC, Modifier.SYNCHRONIZED, Modifier.OPEN, Modifier.REQUIRES_TRANSITIVE),
-        clazz.getModifiers());
+    assertEquals(EnumSet.of(Modifier.PUBLIC, Modifier.SYNCHRONIZED), clazz.getModifiers());
 
     SootMethod method;
     method = clazz.getMethod(getMethodSignature("private")).get();
