@@ -24,10 +24,10 @@ public class DeclareFloatTest extends MinimalBytecodeTestSuiteBase {
     return Stream.of(
             "l0 := @this: DeclareFloat",
             "$stack2 = <java.lang.System: java.io.PrintStream out>",
-            "$stack1 = l0.<DeclareFloat: F f1>",
+            "$stack1 = l0.<DeclareFloat: float f1>",
             "virtualinvoke $stack2.<java.io.PrintStream: void println(float)>($stack1)",
             "$stack4 = <java.lang.System: java.io.PrintStream out>",
-            "$stack3 = l0.<DeclareFloat: F f2>",
+            "$stack3 = l0.<DeclareFloat: float f2>",
             "virtualinvoke $stack4.<java.io.PrintStream: void println(float)>($stack3)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));

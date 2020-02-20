@@ -37,7 +37,7 @@ public class StaticInitializerTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "$stack1 = <java.lang.System: java.io.PrintStream out>",
-            "$stack0 = <StaticInitializer: I i>",
+            "$stack0 = <StaticInitializer: int i>",
             "virtualinvoke $stack1.<java.io.PrintStream: void println(int)>($stack0)",
             "return")
         .collect(Collectors.toList());

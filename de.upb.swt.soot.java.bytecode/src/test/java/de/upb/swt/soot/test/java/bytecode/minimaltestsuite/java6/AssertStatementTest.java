@@ -22,7 +22,7 @@ public class AssertStatementTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: AssertStatement",
-            "$stack1 = <AssertStatement: Z $assertionsDisabled>",
+            "$stack1 = <AssertStatement: boolean $assertionsDisabled>",
             "if $stack1 != 0 goto label1",
             "if \"\" != null goto label1",
             "$stack2 = new java.lang.AssertionError",

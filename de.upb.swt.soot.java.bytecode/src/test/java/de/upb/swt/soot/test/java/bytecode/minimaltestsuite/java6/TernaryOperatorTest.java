@@ -23,7 +23,7 @@ public class TernaryOperatorTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: TernaryOperator",
-            "$stack1 = l0.<TernaryOperator: I num>",
+            "$stack1 = l0.<TernaryOperator: int num>",
             "if $stack1 >= 0 goto label1",
             "$stack2 = 0",
             "goto label2",

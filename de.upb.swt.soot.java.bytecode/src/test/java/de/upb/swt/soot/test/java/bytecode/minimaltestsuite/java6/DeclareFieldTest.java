@@ -70,7 +70,7 @@ public class DeclareFieldTest extends MinimalBytecodeTestSuiteBase {
     return Stream.of(
             "l0 := @this: DeclareField",
             "$stack2 = <java.lang.System: java.io.PrintStream out>",
-            "$stack1 = <DeclareField: I i>",
+            "$stack1 = <DeclareField: int i>",
             "virtualinvoke $stack2.<java.io.PrintStream: void println(int)>($stack1)",
             "return")
         .collect(Collectors.toCollection(ArrayList::new));

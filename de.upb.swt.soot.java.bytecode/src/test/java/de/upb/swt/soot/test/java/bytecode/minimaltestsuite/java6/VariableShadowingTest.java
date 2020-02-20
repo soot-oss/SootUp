@@ -22,7 +22,7 @@ public class VariableShadowingTest extends MinimalBytecodeTestSuiteBase {
   public List<String> expectedBodyStmts() {
     return Stream.of(
             "l0 := @this: VariableShadowing",
-            "l1 = l0.<VariableShadowing: I num>",
+            "l1 = l0.<VariableShadowing: int num>",
             "l2 = 10",
             "return")
         .collect(Collectors.toList());
