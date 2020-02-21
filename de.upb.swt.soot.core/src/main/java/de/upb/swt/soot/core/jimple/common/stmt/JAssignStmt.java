@@ -11,15 +11,7 @@
 
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.basic.Immediate;
-import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.RValueBox;
-import de.upb.swt.soot.core.jimple.basic.StmtBox;
-import de.upb.swt.soot.core.jimple.basic.StmtBoxOwner;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Value;
-import de.upb.swt.soot.core.jimple.basic.ValueBox;
-import de.upb.swt.soot.core.jimple.basic.VariableBox;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.AbstractInvokeExpr;
 import de.upb.swt.soot.core.jimple.common.ref.FieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JArrayRef;
@@ -286,10 +278,13 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
   public List<StmtBox> getStmtBoxes() {
     // handle possible PhiExpr's
     Value rvalue = getRightBox().getValue();
-    if (rvalue instanceof StmtBoxOwner) {
-      return ((StmtBoxOwner) rvalue).getStmtBoxes();
+    if (rvalue instanceof Stmt
+        || rvalue
+            instanceof
+            Trap) { // PERFORMANCE: [ms] check whether Trap is a necessary/possible condition that
+      // can occur
+      return ((Stmt) rvalue).getStmtBoxes();
     }
-
     return super.getStmtBoxes();
   }
 

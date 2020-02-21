@@ -34,9 +34,9 @@ import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.visitor.StmtVisitor;
 import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
+import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 
@@ -45,8 +45,6 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
 
   private final ValueBox conditionBox;
   private final StmtBox targetBox;
-
-  private final List<StmtBox> targetBoxes;
 
   public JIfStmt(Value condition, Stmt target, StmtPositionInfo positionInfo) {
     this(condition, Jimple.newStmtBox(target), positionInfo);
@@ -60,8 +58,6 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
     super(positionInfo);
     this.conditionBox = conditionBox;
     this.targetBox = targetBox;
-
-    targetBoxes = Collections.singletonList(targetBox);
   }
 
   @Override
@@ -118,7 +114,7 @@ public final class JIfStmt extends AbstractStmt implements Copyable {
 
   @Override
   public final List<StmtBox> getStmtBoxes() {
-    return targetBoxes;
+    return ImmutableUtils.immutableList(targetBox);
   }
 
   @Override
