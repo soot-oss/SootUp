@@ -282,7 +282,7 @@ public final class JAssignStmt extends AbstractDefinitionStmt implements Copyabl
         || rvalue
             instanceof
             Trap) { // PERFORMANCE: [ms] check whether Trap is a necessary/possible condition that
-      // can occur
+      // can occur <- check was from StmtBoxOwner
       return ((Stmt) rvalue).getStmtBoxes();
     }
     return super.getStmtBoxes();
