@@ -43,8 +43,7 @@ import javax.annotation.Nonnull;
  *
  * @author Linghui Luo
  */
-public final class Local implements Value, Immediate, Copyable {
-  // This class is final since it implements equals and hashCode
+public class Local implements Value, Immediate, Copyable {
 
   @Nonnull private final String name;
   @Nonnull private final Type type;
