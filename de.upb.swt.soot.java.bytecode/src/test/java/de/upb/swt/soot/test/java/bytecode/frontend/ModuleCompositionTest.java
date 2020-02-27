@@ -19,7 +19,7 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.OverridingClassSource;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
@@ -108,7 +108,7 @@ public class ModuleCompositionTest {
 
     SootClass c =
         new SootClass(
-            new OverridingClassSource(
+            new OverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 classSignature,

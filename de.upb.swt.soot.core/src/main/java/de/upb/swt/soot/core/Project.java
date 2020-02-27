@@ -22,7 +22,9 @@ import javax.annotation.Nonnull;
  */
 public abstract class Project {
 
-  @Nonnull private final IdentifierFactory identifierFactory;
+  @Nonnull
+  private final IdentifierFactory identifierFactory; // THINK:[ms] is this really necessary?
+
   @Nonnull private final List<AnalysisInputLocation> inputLocations;
   @Nonnull private final SourceTypeSpecifier sourceTypeSpecifier;
   @Nonnull private final Language language;

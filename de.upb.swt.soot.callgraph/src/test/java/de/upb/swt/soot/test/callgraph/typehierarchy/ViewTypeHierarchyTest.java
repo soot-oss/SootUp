@@ -21,7 +21,7 @@ import de.upb.swt.soot.core.util.ImmutableUtils;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
 import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.OverridingClassSource;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -202,8 +202,8 @@ public class ViewTypeHierarchyTest {
   @Test
   public void addType() {
     IdentifierFactory factory = view.getIdentifierFactory();
-    OverridingClassSource classSource =
-        new OverridingClassSource(
+    OverridingJavaClassSource classSource =
+        new OverridingJavaClassSource(
             analysisInputLocation,
             null,
             factory.getClassType("adummytype.Type"),

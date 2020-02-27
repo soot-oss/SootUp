@@ -10,12 +10,7 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.CollectionUtils;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -28,13 +23,13 @@ import javax.annotation.Nullable;
  * SootClassSource} delegate provided in the constructor.
  *
  * <p>To alter the results of invocations to e.g. {@link #resolveFields()}, simply call {@link
- * #withFields(Collection)} to obtain a new {@link OverridingClassSource}. The new instance will
+ * #withFields(Collection)} to obtain a new {@link OverridingJavaClassSource}. The new instance will
  * then use the supplied value instead of calling {@link #resolveFields()} on the delegate.
  *
  * @author Christian Brüggemann, Hasitha Rajapakse
  */
 @SuppressWarnings({"OptionalUsedAsFieldOrParameterType", "OptionalAssignedToNull"})
-public class OverridingClassSource extends JavaSootClassSource {
+public class OverridingJavaClassSource extends JavaSootClassSource {
 
   @Nullable private final Collection<SootMethod> overriddenSootMethods;
   @Nullable private final Collection<SootField> overriddenSootFields;
@@ -44,12 +39,12 @@ public class OverridingClassSource extends JavaSootClassSource {
   @Nullable private final Optional<ClassType> overriddenOuterClass;
   @Nullable private final Position position;
 
-  @Nullable private final SootClassSource delegate;
+  @Nullable private final JavaSootClassSource delegate;
   @Nullable private final Iterable<AnnotationType> annotations;
   // TODO: [ms] how to instantiate in a good way.. @Nullable private final Iterable<AnnotationType>
   // fieldAnnotations;
 
-  public OverridingClassSource(@Nonnull JavaSootClassSource delegate) {
+  public OverridingJavaClassSource(@Nonnull JavaSootClassSource delegate) {
     super(delegate);
     this.delegate = delegate;
     overriddenSootMethods = null;
@@ -62,7 +57,7 @@ public class OverridingClassSource extends JavaSootClassSource {
     annotations = null;
   }
 
-  private OverridingClassSource(
+  private OverridingJavaClassSource(
       @Nullable Collection<SootMethod> overriddenSootMethods,
       @Nullable Collection<SootField> overriddenSootFields,
       @Nullable Set<Modifier> overriddenModifiers,
@@ -71,7 +66,7 @@ public class OverridingClassSource extends JavaSootClassSource {
       @Nullable Optional<ClassType> overriddenOuterClass,
       @Nullable Position position,
       @Nullable Iterable<AnnotationType> annotations,
-      @Nonnull SootClassSource delegate) {
+      @Nonnull JavaSootClassSource delegate) {
     super(delegate);
     this.overriddenSootMethods = overriddenSootMethods;
     this.overriddenSootFields = overriddenSootFields;
@@ -85,7 +80,7 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   /** Class source where all information already available */
-  public OverridingClassSource(
+  public OverridingJavaClassSource(
       @Nonnull AnalysisInputLocation srcNamespace,
       @Nonnull Path sourcePath,
       @Nonnull ClassType classType,
@@ -161,7 +156,7 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   @Override
-  public Iterable<de.upb.swt.soot.java.core.AnnotationType> resolveMethodAnnotations() {
+  public Iterable<AnnotationType> resolveMethodAnnotations() {
     // TODO: [ms] implement
     return null;
   }
@@ -182,7 +177,7 @@ public class OverridingClassSource extends JavaSootClassSource {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    OverridingClassSource that = (OverridingClassSource) o;
+    OverridingJavaClassSource that = (OverridingJavaClassSource) o;
     return Objects.equals(this.overriddenSuperclass, that.overriddenSuperclass)
         && Objects.equals(this.overriddenInterfaces, that.overriddenInterfaces)
         && Objects.equals(this.overriddenOuterClass, that.overriddenOuterClass)
@@ -229,7 +224,7 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withReplacedMethod(
+  public OverridingJavaClassSource withReplacedMethod(
       @Nonnull SootMethod toReplace, @Nonnull SootMethod replacement) {
     Set<SootMethod> newMethods = new HashSet<>(resolveMethods());
     CollectionUtils.replace(newMethods, toReplace, replacement);
@@ -237,8 +232,9 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withMethods(@Nonnull Collection<SootMethod> overriddenSootMethods) {
-    return new OverridingClassSource(
+  public OverridingJavaClassSource withMethods(
+      @Nonnull Collection<SootMethod> overriddenSootMethods) {
+    return new OverridingJavaClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -251,7 +247,7 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withReplacedField(
+  public OverridingJavaClassSource withReplacedField(
       @Nonnull SootField toReplace, @Nonnull SootField replacement) {
     Set<SootField> newFields = new HashSet<>(resolveFields());
     CollectionUtils.replace(newFields, toReplace, replacement);
@@ -259,8 +255,8 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withFields(@Nonnull Collection<SootField> overriddenSootFields) {
-    return new OverridingClassSource(
+  public OverridingJavaClassSource withFields(@Nonnull Collection<SootField> overriddenSootFields) {
+    return new OverridingJavaClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -273,8 +269,8 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withModifiers(@Nonnull Set<Modifier> overriddenModifiers) {
-    return new OverridingClassSource(
+  public OverridingJavaClassSource withModifiers(@Nonnull Set<Modifier> overriddenModifiers) {
+    return new OverridingJavaClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -287,8 +283,8 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withInterfaces(@Nonnull Set<ClassType> overriddenInterfaces) {
-    return new OverridingClassSource(
+  public OverridingJavaClassSource withInterfaces(@Nonnull Set<ClassType> overriddenInterfaces) {
+    return new OverridingJavaClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -301,8 +297,9 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withSuperclass(@Nonnull Optional<ClassType> overriddenSuperclass) {
-    return new OverridingClassSource(
+  public OverridingJavaClassSource withSuperclass(
+      @Nonnull Optional<ClassType> overriddenSuperclass) {
+    return new OverridingJavaClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -315,8 +312,9 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withOuterClass(@Nonnull Optional<ClassType> overriddenOuterClass) {
-    return new OverridingClassSource(
+  public OverridingJavaClassSource withOuterClass(
+      @Nonnull Optional<ClassType> overriddenOuterClass) {
+    return new OverridingJavaClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,
@@ -329,8 +327,8 @@ public class OverridingClassSource extends JavaSootClassSource {
   }
 
   @Nonnull
-  public OverridingClassSource withPosition(@Nullable Position position) {
-    return new OverridingClassSource(
+  public OverridingJavaClassSource withPosition(@Nullable Position position) {
+    return new OverridingJavaClassSource(
         overriddenSootMethods,
         overriddenSootFields,
         overriddenModifiers,

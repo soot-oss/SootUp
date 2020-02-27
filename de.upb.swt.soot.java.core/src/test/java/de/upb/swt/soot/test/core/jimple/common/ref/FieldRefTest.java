@@ -12,7 +12,6 @@ import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
 import de.upb.swt.soot.core.jimple.common.ref.JStaticFieldRef;
 import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSignature;
@@ -20,7 +19,8 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.OverridingClassSource;
+import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -49,9 +49,9 @@ public class FieldRefTest {
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 
-    SootClass mainClass =
-        new SootClass(
-            new OverridingClassSource(
+    JavaSootClass mainClass =
+        new JavaSootClass(
+            new OverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 declaringClassSignature,
@@ -81,9 +81,9 @@ public class FieldRefTest {
     FieldSignature fieldSig = fact.getFieldSignature("dummyField", declaringClassSignature, "int");
     SootField field = new SootField(fieldSig, EnumSet.of(Modifier.FINAL));
 
-    SootClass mainClass =
-        new SootClass(
-            new OverridingClassSource(
+    JavaSootClass mainClass =
+        new JavaSootClass(
+            new OverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 declaringClassSignature,

@@ -43,7 +43,7 @@ import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.OverridingClassSource;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaJimple;
 import java.net.URI;
 import java.nio.file.Path;
@@ -72,8 +72,8 @@ public class JInvokeStmtTest {
     ClassType superClassSignature = dif.getClassType("java.lang.Object");
     Set<SootField> fields = new LinkedHashSet<>();
     Set<SootMethod> methods = new LinkedHashSet<>();
-    OverridingClassSource javaClassSource =
-        new OverridingClassSource(
+    OverridingJavaClassSource javaClassSource =
+        new OverridingJavaClassSource(
             new EagerInputLocation(),
             dummyPath,
             dif.getClassType("de.upb.soot.instructions.stmt.IdentityStmt"),

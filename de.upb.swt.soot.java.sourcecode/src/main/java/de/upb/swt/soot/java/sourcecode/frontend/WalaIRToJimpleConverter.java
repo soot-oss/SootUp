@@ -37,11 +37,8 @@ import de.upb.swt.soot.core.types.NullType;
 import de.upb.swt.soot.core.types.PrimitiveType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.types.VoidType;
-import de.upb.swt.soot.java.core.AnnotationType;
-import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.JavaSootClass;
-import de.upb.swt.soot.java.core.JavaSootClassSource;
-import de.upb.swt.soot.java.core.OverridingClassSource;
+import de.upb.swt.soot.java.core.*;
+import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.java.core.types.JavaClassType;
 import de.upb.swt.soot.java.sourcecode.inputlocation.JavaSourcePathAnalysisInputLocation;
 import java.net.URL;
@@ -161,7 +158,7 @@ public class WalaIRToJimpleConverter {
   }
 
   /** Create a {@link OverridingClassSource} object for the given walaClass. */
-  public OverridingClassSource createClassSource(
+  public OverridingJavaClassSource createClassSource(
       AstClass walaClass,
       JavaClassType superClass,
       Set<ClassType> interfaces,
@@ -175,7 +172,7 @@ public class WalaIRToJimpleConverter {
     JavaClassType classSignature = identifierFactory.getClassType(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
-    return new OverridingClassSource(
+    return new OverridingJavaClassSource(
         srcNamespace,
         sourcePath,
         classSignature,

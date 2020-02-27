@@ -13,14 +13,14 @@ import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
-import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.views.View;
 import de.upb.swt.soot.java.core.JavaProject;
-import de.upb.swt.soot.java.core.OverridingClassSource;
+import de.upb.swt.soot.java.core.JavaSootClass;
+import de.upb.swt.soot.java.core.OverridingJavaClassSource;
 import de.upb.swt.soot.java.core.language.JavaLanguage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,9 +68,9 @@ public class SootMethodTest {
             EnumSet.of(Modifier.PUBLIC, Modifier.STATIC),
             Collections.emptyList());
 
-    SootClass mainClass =
-        new SootClass(
-            new OverridingClassSource(
+    JavaSootClass mainClass =
+        new JavaSootClass(
+            new OverridingJavaClassSource(
                 new EagerInputLocation(),
                 null,
                 view.getIdentifierFactory().getClassType("dummyMain"),
