@@ -50,7 +50,7 @@ public class Local implements Value, Immediate, Copyable {
 
   /** Constructs a JimpleLocal of the given name and type. */
   public Local(@Nonnull String name, @Nonnull Type type) {
-    this.name = name.intern();
+    this.name = name;
     this.type = type;
   }
 

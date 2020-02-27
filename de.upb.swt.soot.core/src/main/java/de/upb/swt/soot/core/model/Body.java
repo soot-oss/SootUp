@@ -58,9 +58,9 @@ import javax.annotation.Nullable;
  *
  * @author Linghui Luo
  */
-public final class Body implements Copyable {
+public class Body implements Copyable {
 
-  public static Body EMPTY_BODY =
+  public static final Body EMPTY_BODY =
       new Body(
           Collections.emptySet(),
           Collections.emptyList(),
