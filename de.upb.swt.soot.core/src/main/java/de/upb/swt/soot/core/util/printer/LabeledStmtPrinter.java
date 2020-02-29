@@ -137,18 +137,20 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public void methodSignature(MethodSignature methodSig) {
     if (useImports) {
 
-      output.append(
-          "<"
-              + (addImport(methodSig.getDeclClassType())
+      output
+          .append("<")
+          .append(
+              addImport(methodSig.getDeclClassType())
                   ? methodSig.getDeclClassType().getClassName()
                   : methodSig.getDeclClassType())
-              + ": "
-              + (methodSig.getType() instanceof ClassType && addImport(methodSig.getType())
+          .append(": ")
+          .append(
+              methodSig.getType() instanceof ClassType && addImport(methodSig.getType())
                   ? ((ClassType) methodSig.getType()).getClassName()
                   : methodSig.getType())
-              + " "
-              + methodSig.getName()
-              + "(");
+          .append(" ")
+          .append(methodSig.getName())
+          .append("(");
 
       for (Type parameterType : methodSig.getSubSignature().getParameterTypes()) {
         if (parameterType instanceof ClassType && addImport(parameterType)) {
@@ -170,17 +172,19 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     if (useImports) {
       boolean shortenDecl = addImport(fieldSig.getDeclClassType());
       boolean shortenFieldType = addImport(fieldSig.getSubSignature().getType());
-      output.append(
-          "<"
-              + (shortenDecl
+      output
+          .append("<")
+          .append(
+              shortenDecl
                   ? fieldSig.getDeclClassType().getClassName()
                   : fieldSig.getDeclClassType().toString())
-              + ": "
-              + (shortenFieldType && fieldSig.getSubSignature().getType() instanceof ClassType
+          .append(": ")
+          .append(
+              shortenFieldType && fieldSig.getSubSignature().getType() instanceof ClassType
                   ? ((ClassType) fieldSig.getSubSignature().getType()).getClassName()
                       + " "
                       + fieldSig.getSubSignature().getName()
-                  : fieldSig.getSubSignature()));
+                  : fieldSig.getSubSignature());
       output.append('>');
     } else {
       output.append(fieldSig.toString());
