@@ -57,7 +57,8 @@ public class Printer {
   public enum Option {
     UseAbbreviations,
     OmitLocalsDeclaration,
-    AddJimpleLn
+    AddJimpleLn,
+    UseImports
   }
 
   private final Set<Option> options = EnumSet.noneOf(Option.class);
@@ -106,6 +107,11 @@ public class Printer {
   public void printTo(SootClass cl, PrintWriter out, LabeledStmtPrinter printer) {
     // add jimple line number tags
     setJimpleLnNum(1);
+
+    // print imports if enabled
+    if (options.contains(Option.UseImports)) {
+      printer.getImports().stream().forEach((item) -> out.print("import " + item.toString() + ";"));
+    }
 
     // Print class name + modifiers
     {

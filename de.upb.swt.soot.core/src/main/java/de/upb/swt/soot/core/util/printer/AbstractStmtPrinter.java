@@ -29,7 +29,9 @@ import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
+import java.util.Collection;
 import java.util.HashSet;
 
 /** Partial default StmtPrinter implementation. */
@@ -38,7 +40,15 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   protected boolean startOfLine = true;
   protected String indent = "        ";
   protected StringBuilder output = new StringBuilder();
-  protected HashSet<String> quotableLocals;
+  private HashSet<ClassType> imports = new HashSet<>();
+
+  public void addImport(ClassType referencedImport) {
+    imports.add(referencedImport);
+  }
+
+  public Collection<ClassType> getImports() {
+    return imports; // TODO: [ms] THINK: immutable ?!
+  }
 
   @Override
   public void startStmt(Stmt u) {
