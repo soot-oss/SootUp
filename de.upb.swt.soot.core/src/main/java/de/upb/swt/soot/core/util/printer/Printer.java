@@ -293,7 +293,7 @@ public class Printer {
         if (currentStmt != units.iterator().next()) {
           if (unitGraph.getSuccsOf(previousStmt).size() != 1
               || unitGraph.getPredsOf(currentStmt).size() != 1
-              || up.labels().containsKey(currentStmt)) {
+              || up.getLabels().containsKey(currentStmt)) {
             up.newline();
           } else {
             // Or if the previous node does not have body statement as a successor.
@@ -306,13 +306,13 @@ public class Printer {
           }
         }
 
-        if (up.labels().containsKey(currentStmt)) {
+        if (up.getLabels().containsKey(currentStmt)) {
           up.stmtRef(currentStmt, true);
           up.literal(":");
           up.newline();
         }
 
-        if (up.references().containsKey(currentStmt)) {
+        if (up.getReferences().containsKey(currentStmt)) {
           up.stmtRef(currentStmt, false);
         }
       }
@@ -342,11 +342,11 @@ public class Printer {
             "        catch "
                 + trap.getExceptionType()
                 + " from "
-                + up.labels().get(trap.getBeginStmt())
+                + up.getLabels().get(trap.getBeginStmt())
                 + " to "
-                + up.labels().get(trap.getEndStmt())
+                + up.getLabels().get(trap.getEndStmt())
                 + " with "
-                + up.labels().get(trap.getHandlerStmt())
+                + up.getLabels().get(trap.getHandlerStmt())
                 + ";");
 
         incJimpleLnNum();
