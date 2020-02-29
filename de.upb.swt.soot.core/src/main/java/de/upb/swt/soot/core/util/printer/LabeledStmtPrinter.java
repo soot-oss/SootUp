@@ -137,11 +137,21 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
   @Override
   public void methodSignature(MethodSignature methodSig) {
-    output.append(useImports ? "<importTODO>" : methodSig.toString());
+    if (useImports) {
+      addImport(methodSig.getDeclClassType());
+      output.append("<" + methodSig.getSubSignature() + '>');
+    } else {
+      output.append(methodSig.toString());
+    }
   }
 
   @Override
   public void fieldSignature(FieldSignature fieldSig) {
-    output.append(useImports ? "<importTODO>" : fieldSig.toString());
+    if (useImports) {
+      addImport(fieldSig.getDeclClassType());
+      output.append("<" + fieldSig.getSubSignature() + '>');
+    } else {
+      output.append(fieldSig.toString());
+    }
   }
 }
