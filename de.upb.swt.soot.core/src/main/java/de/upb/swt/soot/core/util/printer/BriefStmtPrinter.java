@@ -9,7 +9,6 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.Type;
 
 /** StmtPrinter implementation for normal Jimple */
 public class BriefStmtPrinter extends LabeledStmtPrinter {
@@ -78,11 +77,5 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
     }
 
     output.append(s);
-  }
-
-  @Override
-  public void typeSignature(Type t) {
-    handleIndent();
-    output.append(t.toString());
   }
 }

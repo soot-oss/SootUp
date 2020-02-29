@@ -50,7 +50,11 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public abstract void identityRef(IdentityRef r);
 
   @Override
-  public abstract void typeSignature(Type t);
+  public void typeSignature(Type t) {
+    handleIndent();
+    String s = t == null ? "<null>" : t.toString();
+    output.append(s);
+  }
 
   @Override
   public void stmtRef(Stmt u, boolean branchTarget) {

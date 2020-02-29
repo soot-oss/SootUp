@@ -7,7 +7,6 @@ import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.Type;
 
 /** StmtPrinter implementation for normal (full) Jimple */
 public class NormalStmtPrinter extends LabeledStmtPrinter {
@@ -16,13 +15,6 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
 
   public NormalStmtPrinter(Body b) {
     super(b);
-  }
-
-  @Override
-  public void typeSignature(Type t) {
-    handleIndent();
-    String s = t == null ? "<null>" : t.toString();
-    output.append(s);
   }
 
   @Override
