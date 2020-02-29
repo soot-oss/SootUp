@@ -6,6 +6,8 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import java.util.Collection;
 import java.util.HashMap;
@@ -121,5 +123,15 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
         references.put(s, Integer.toString(refCount++));
       }
     }
+  }
+
+  @Override
+  public void methodSignature(MethodSignature sig) {
+    output.append(sig.toString());
+  }
+
+  @Override
+  public void fieldSignature(FieldSignature fieldSig) {
+    output.append(fieldSig.toString());
   }
 }
