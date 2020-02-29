@@ -41,6 +41,7 @@ public class FieldSubSignature extends AbstractClassMemberSubSignature
     return super.compareTo(o);
   }
 
+  // TODO: [ms] i dont think this method is necessary -> use identifierfactory for it
   @Override
   @Nonnull
   public FieldSignature toFullSignature(@Nonnull ClassType declClassSignature) {

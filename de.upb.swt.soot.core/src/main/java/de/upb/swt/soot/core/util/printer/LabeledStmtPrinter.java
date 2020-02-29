@@ -8,6 +8,7 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.util.Collection;
 import java.util.HashMap;
@@ -138,18 +139,37 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   @Override
   public void methodSignature(MethodSignature methodSig) {
     if (useImports) {
-      addImport(methodSig.getDeclClassType());
-      output.append("<" + methodSig.getSubSignature() + '>');
-    } else {
-      output.append(methodSig.toString());
+      if (addImport(methodSig.getDeclClassType())) {
+        output.append(
+            "<"
+                + methodSig.getDeclClassType().getClassName()
+                + " "
+                + methodSig.getSubSignature()
+                + '>');
+        return;
+      }
     }
+    output.append(methodSig.toString());
   }
 
   @Override
   public void fieldSignature(FieldSignature fieldSig) {
     if (useImports) {
-      addImport(fieldSig.getDeclClassType());
-      output.append("<" + fieldSig.getSubSignature() + '>');
+      boolean shortenDecl = addImport(fieldSig.getDeclClassType());
+      boolean shortenFieldType = addImport(fieldSig.getSubSignature().getType());
+      output.append(
+          "<"
+              + (shortenDecl
+                  ? fieldSig.getDeclClassType().getClassName()
+                  : fieldSig.getDeclClassType().toString())
+              + ": ");
+      output.append(
+          shortenFieldType && fieldSig.getSubSignature().getType() instanceof ClassType
+              ? ((ClassType) fieldSig.getSubSignature().getType()).getClassName()
+                  + " "
+                  + fieldSig.getSubSignature().getName()
+              : fieldSig.getSubSignature());
+      output.append('>');
     } else {
       output.append(fieldSig.toString());
     }

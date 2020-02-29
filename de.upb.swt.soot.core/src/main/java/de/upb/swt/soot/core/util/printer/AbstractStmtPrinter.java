@@ -29,10 +29,11 @@ import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Partial default StmtPrinter implementation. */
 public abstract class AbstractStmtPrinter implements StmtPrinter {
@@ -40,14 +41,26 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   protected boolean startOfLine = true;
   protected String indent = "        ";
   protected StringBuilder output = new StringBuilder();
-  private HashSet<ClassType> imports = new HashSet<>();
+  private HashMap<String, PackageName> imports = new HashMap<>();
 
-  public void addImport(ClassType referencedImport) {
-    imports.add(referencedImport);
+  public boolean addImport(Type referencedImport) {
+    if (referencedImport instanceof ClassType) {
+      final String referencedClassName = ((ClassType) referencedImport).getClassName();
+      final PackageName referencedPackageName = ((ClassType) referencedImport).getPackageName();
+      // handle ClassName/import collisions
+      final PackageName packageName = imports.get(referencedClassName);
+      if (packageName == referencedPackageName) {
+        return true;
+      } else if (packageName == null) {
+        imports.put(referencedClassName, referencedPackageName);
+        return true;
+      }
+    }
+    return false;
   }
 
-  public Collection<ClassType> getImports() {
-    return imports; // TODO: [ms] THINK: immutable ?!
+  public Map<String, PackageName> getImports() {
+    return imports;
   }
 
   @Override

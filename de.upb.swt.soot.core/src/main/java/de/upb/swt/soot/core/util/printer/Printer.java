@@ -33,6 +33,7 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.io.PrintWriter;
@@ -111,7 +112,9 @@ public class Printer {
 
     // print imports if enabled
     if (options.contains(Option.UseImports)) {
-      printer.getImports().stream().forEach((item) -> out.print("import " + item.toString() + ";"));
+      for (Map.Entry<String, PackageName> item : printer.getImports().entrySet()) {
+        out.print("import " + item.toString() + ";");
+      }
     }
 
     // Print class name + modifiers
