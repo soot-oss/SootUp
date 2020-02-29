@@ -23,10 +23,16 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
   protected String labelIndent = "\u0020\u0020\u0020\u0020\u0020";
 
+  boolean useImports = false;
+
   public LabeledStmtPrinter() {}
 
   public LabeledStmtPrinter(Body b) {
     createLabelMaps(b);
+  }
+
+  void enableImports(boolean enable) {
+    useImports = enable;
   }
 
   public Map<Stmt, String> labels() {
@@ -130,12 +136,12 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   }
 
   @Override
-  public void methodSignature(MethodSignature sig) {
-    output.append(sig.toString());
+  public void methodSignature(MethodSignature methodSig) {
+    output.append(useImports ? "<importTODO>" : methodSig.toString());
   }
 
   @Override
   public void fieldSignature(FieldSignature fieldSig) {
-    output.append(fieldSig.toString());
+    output.append(useImports ? "<importTODO>" : fieldSig.toString());
   }
 }

@@ -101,6 +101,7 @@ public class Printer {
     } else {
       printer = new NormalStmtPrinter();
     }
+    printer.enableImports(options.contains(Option.UseImports));
     printTo(cl, out, printer);
   }
 
@@ -238,6 +239,7 @@ public class Printer {
     } else {
       printer = new NormalStmtPrinter(b);
     }
+    printer.enableImports(options.contains(Option.UseImports));
     printTo(b, out, printer);
   }
 
