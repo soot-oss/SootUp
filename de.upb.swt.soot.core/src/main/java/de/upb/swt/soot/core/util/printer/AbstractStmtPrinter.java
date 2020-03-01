@@ -43,6 +43,12 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   protected StringBuilder output = new StringBuilder();
   private HashMap<String, PackageName> imports = new HashMap<>();
 
+  boolean useImports = false;
+
+  void enableImports(boolean enable) {
+    useImports = enable;
+  }
+
   /**
    * * addImport keeps track of imported Packages/Classes
    *
@@ -63,6 +69,13 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
       }
     }
     return false;
+  }
+
+  public String shortenType(Type type) {
+    // TODO: [ms] e.g. implement for ArrayType base, too
+    return useImports && type instanceof ClassType && addImport(type)
+        ? ((ClassType) type).getClassName()
+        : type.toString();
   }
 
   public Map<String, PackageName> getImports() {

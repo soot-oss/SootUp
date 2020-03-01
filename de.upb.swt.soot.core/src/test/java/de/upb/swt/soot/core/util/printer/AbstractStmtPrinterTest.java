@@ -10,7 +10,7 @@ import org.junit.Test;
 public class AbstractStmtPrinterTest {
 
   @Test
-  public void addImport() {
+  public void addImportTest() {
     NormalStmtPrinter p = new NormalStmtPrinter();
     p.enableImports(true);
 

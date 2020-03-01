@@ -8,7 +8,6 @@ import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.util.*;
 
@@ -20,16 +19,10 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
   protected String labelIndent = "\u0020\u0020\u0020\u0020\u0020";
 
-  boolean useImports = false;
-
   public LabeledStmtPrinter() {}
 
   public LabeledStmtPrinter(Body b) {
     createLabelMaps(b);
-  }
-
-  void enableImports(boolean enable) {
-    useImports = enable;
   }
 
   public Map<Stmt, String> getLabels() {
@@ -55,7 +48,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   @Override
   public void typeSignature(Type t) {
     handleIndent();
-    String s = t == null ? "<null>" : t.toString();
+    String s = t == null ? "<null>" : shortenType(t);
     output.append(s);
   }
 
@@ -139,25 +132,15 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
       output
           .append("<")
-          .append(
-              addImport(methodSig.getDeclClassType())
-                  ? methodSig.getDeclClassType().getClassName()
-                  : methodSig.getDeclClassType())
+          .append(shortenType(methodSig.getDeclClassType()))
           .append(": ")
-          .append(
-              methodSig.getType() instanceof ClassType && addImport(methodSig.getType())
-                  ? ((ClassType) methodSig.getType()).getClassName()
-                  : methodSig.getType())
+          .append(shortenType(methodSig.getType()))
           .append(" ")
           .append(methodSig.getName())
           .append("(");
 
       for (Type parameterType : methodSig.getSubSignature().getParameterTypes()) {
-        if (parameterType instanceof ClassType && addImport(parameterType)) {
-          output.append(((ClassType) parameterType).getClassName());
-        } else {
-          output.append(parameterType);
-        }
+        output.append(shortenType(parameterType));
         output.append(',');
       }
       output.setLength(output.length() - 1);
@@ -170,22 +153,14 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   @Override
   public void fieldSignature(FieldSignature fieldSig) {
     if (useImports) {
-      boolean shortenDecl = addImport(fieldSig.getDeclClassType());
-      boolean shortenFieldType = addImport(fieldSig.getSubSignature().getType());
       output
           .append("<")
-          .append(
-              shortenDecl
-                  ? fieldSig.getDeclClassType().getClassName()
-                  : fieldSig.getDeclClassType().toString())
+          .append(shortenType(fieldSig.getDeclClassType()))
           .append(": ")
-          .append(
-              shortenFieldType && fieldSig.getSubSignature().getType() instanceof ClassType
-                  ? ((ClassType) fieldSig.getSubSignature().getType()).getClassName()
-                      + " "
-                      + fieldSig.getSubSignature().getName()
-                  : fieldSig.getSubSignature());
-      output.append('>');
+          .append(shortenType(fieldSig.getSubSignature().getType()))
+          .append(" ")
+          .append(fieldSig.getSubSignature().getName())
+          .append('>');
     } else {
       output.append(fieldSig.toString());
     }

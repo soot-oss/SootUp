@@ -119,23 +119,19 @@ public class Printer {
 
     // Print class name + modifiers
     {
-      StringTokenizer st = new StringTokenizer(Modifier.toString(cl.getModifiers()));
-      while (st.hasMoreTokens()) {
-        String tok = st.nextToken();
-        if (cl.isInterface() && tok.equals("abstract")) {
-          continue;
-        }
-        output.print(tok + " ");
+      EnumSet<Modifier> modifiers = EnumSet.copyOf(cl.getModifiers());
+      // remove unwanted modifier combinations
+      if (cl.isInterface() && modifiers.contains("abstract")) {
+        modifiers.remove(Modifier.ABSTRACT);
       }
+      output.print(Modifier.toString(modifiers));
+      output.print(" ");
 
-      String classPrefix = "";
+      // TODO: CHECK: why is an interface not called interface?!
+      // TODO: [ms] exclude Annotation, too when annotation branch is merged
+      String classType = cl.isInterface() ? "" : "class";
 
-      if (!cl.isInterface()) {
-        classPrefix = classPrefix + " class";
-        classPrefix = classPrefix.trim();
-      }
-
-      output.print(classPrefix + " " + cl.getType() + "");
+      output.print(classType + " " + cl.getType() + "");
     }
 
     // Print extension
@@ -143,7 +139,10 @@ public class Printer {
       Optional<ClassType> superclassSignature = cl.getSuperclass();
 
       superclassSignature.ifPresent(
-          javaClassSignature -> output.print(" extends " + javaClassSignature));
+          javaClassSignature -> {
+            output.print(" extends ");
+            output.print(printer.shortenType(javaClassSignature));
+          });
     }
 
     // Print interfaces
@@ -151,13 +150,18 @@ public class Printer {
       Iterator<ClassType> interfaceIt = cl.getInterfaces().iterator();
 
       if (interfaceIt.hasNext()) {
+
         output.print(" implements ");
 
-        output.print(interfaceIt.next());
+        printer.noIndent();
+        printer.typeSignature(interfaceIt.next());
+        output.print(printer.toString());
 
         while (interfaceIt.hasNext()) {
-          output.print(",");
-          output.print(" " + interfaceIt.next());
+          output.print(", ");
+          printer.noIndent();
+          printer.typeSignature(interfaceIt.next());
+          output.print(printer.toString());
         }
       }
     }
@@ -184,15 +188,18 @@ public class Printer {
     }
 
     // Print methods
-    printMethod(cl, output, printer);
+    printMethods(cl, output, printer);
 
     output.println("}");
     incJimpleLnNum();
 
-    // if enabled: print list of imports and append class contents
+    // if enabled: print the list of imports and append class contents
     if (options.contains(Option.UseImports)) {
+      Map<String, PackageName> entries = printer.getImports();
+      // remove current class itself from imports
+      entries.remove(cl.getType().getClassName());
 
-      for (Map.Entry<String, PackageName> item : printer.getImports().entrySet()) {
+      for (Map.Entry<String, PackageName> item : entries.entrySet()) {
         out.println("import " + item.getValue() + "." + item.getKey() + ";");
       }
       out.println();
@@ -200,7 +207,7 @@ public class Printer {
     }
   }
 
-  private void printMethod(SootClass cl, PrintWriter out, LabeledStmtPrinter printer) {
+  private void printMethods(SootClass cl, PrintWriter out, LabeledStmtPrinter printer) {
     Iterator<? extends Method> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       if (cl.getMethods().size() != 0) {
@@ -218,7 +225,7 @@ public class Printer {
 
         } else {
           out.print("    ");
-          out.print(method.getDeclaration());
+          method.getDeclaration(printer);
           out.println(";");
           incJimpleLnNum();
         }
@@ -257,9 +264,11 @@ public class Printer {
    */
   public void printTo(Body b, PrintWriter out, LabeledStmtPrinter printer) {
 
-    String decl = b.getMethod().getDeclaration();
+    b.getMethod().getDeclaration(printer);
 
-    out.println("    " + decl);
+    out.print("    ");
+    out.println(printer.toString());
+
     if (addJimpleLn()) {
       setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethod()));
     }
@@ -401,9 +410,9 @@ public class Printer {
           final int len = localList.size();
           if (len > 0) {
             up.local(localList.get(0));
-            for (int k = 1; k < len; k++) {
+            for (int i = 1; i < len; i++) {
               up.literal(", ");
-              up.local(localList.get(k));
+              up.local(localList.get(i));
             }
           }
 

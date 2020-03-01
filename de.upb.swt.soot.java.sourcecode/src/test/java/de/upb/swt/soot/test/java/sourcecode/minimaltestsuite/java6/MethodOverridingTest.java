@@ -36,6 +36,7 @@ public class MethodOverridingTest extends MinimalTestSuiteBase {
         .collect(Collectors.toCollection(ArrayList::new));
   }
 
+  // TODO [ms]: move test to an appropriate place
   @Test
   public void testSth() {
     SootClass clazz = loadClass(getDeclaredClassSignature());

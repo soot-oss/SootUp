@@ -33,10 +33,10 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.ImmutableUtils;
+import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -165,7 +165,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   public boolean isMain() {
     return isPublic()
         && isStatic()
-        && this.getSubSignature().toString().equals("void main(java.lang.String[])");
+        && getSubSignature().toString().equals("void main(java.lang.String[])");
   }
 
   /** We rely on the JDK class recognition to decide if a method is JDK method. */
@@ -177,39 +177,31 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    * Returns the declaration of this method, as used at the top of textual body representations
    * (before the {}'s containing the code for representation.)
    */
-  public String getDeclaration() {
-    StringBuilder builder = new StringBuilder();
+  public void getDeclaration(StmtPrinter printer) {
 
     // modifiers
-    StringTokenizer st = new StringTokenizer(Modifier.toString(this.getModifiers()));
-    if (st.hasMoreTokens()) {
-      builder.append(st.nextToken());
-    }
-
-    while (st.hasMoreTokens()) {
-      builder.append(" ").append(st.nextToken());
-    }
-
-    if (builder.length() != 0) {
-      builder.append(" ");
+    for (Modifier mod : getModifiers()) {
+      printer.literal(mod.toString().toLowerCase());
+      printer.literal(" ");
     }
 
     // return type + name
-
-    builder.append(this.getSubSignature().toString());
+    getSubSignature().toString(printer);
 
     // Print exceptions
-    Iterator<ClassType> exceptionIt = this.getExceptionSignatures().iterator();
-
+    Iterator<ClassType> exceptionIt = getExceptionSignatures().iterator();
     if (exceptionIt.hasNext()) {
-      builder.append(" throws ").append(exceptionIt.next());
+      printer.literal(" throws ");
+      printer.noIndent();
+      printer.typeSignature(exceptionIt.next());
 
       while (exceptionIt.hasNext()) {
-        builder.append(", ").append(exceptionIt.next());
+        printer.literal(", ");
+        printer.typeSignature(exceptionIt.next());
       }
     }
 
-    return builder.toString().intern();
+    printer.newline();
   }
 
   /**
