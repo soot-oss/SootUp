@@ -327,6 +327,7 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
+        // TODO: [ms] use imports for exception/trap too
         out.println(
             "        catch "
                 + trap.getExceptionType()
