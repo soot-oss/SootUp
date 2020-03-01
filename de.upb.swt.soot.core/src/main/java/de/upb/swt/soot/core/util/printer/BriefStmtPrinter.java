@@ -5,7 +5,6 @@ import de.upb.swt.soot.core.jimple.common.ref.IdentityRef;
 import de.upb.swt.soot.core.jimple.common.ref.JCaughtExceptionRef;
 import de.upb.swt.soot.core.jimple.common.ref.JParameterRef;
 import de.upb.swt.soot.core.jimple.common.ref.JThisRef;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
@@ -17,11 +16,6 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
 
   public BriefStmtPrinter(Body body) {
     super(body);
-  }
-
-  @Override
-  public void startStmt(Stmt u) {
-    super.startStmt(u);
   }
 
   @Override
