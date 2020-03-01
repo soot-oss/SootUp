@@ -43,16 +43,22 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   protected StringBuilder output = new StringBuilder();
   private HashMap<String, PackageName> imports = new HashMap<>();
 
+  /**
+   * * addImport keeps track of imported Packages/Classes
+   *
+   * @return whether this ClassName does not collide with another ClassName from a different package
+   *     that was already added
+   */
   public boolean addImport(Type referencedImport) {
     if (referencedImport instanceof ClassType) {
       final String referencedClassName = ((ClassType) referencedImport).getClassName();
       final PackageName referencedPackageName = ((ClassType) referencedImport).getPackageName();
       // handle ClassName/import collisions
       final PackageName packageName = imports.get(referencedClassName);
-      if (packageName == referencedPackageName) {
-        return true;
-      } else if (packageName == null) {
+      if (packageName == null) {
         imports.put(referencedClassName, referencedPackageName);
+        return true;
+      } else if (packageName.equals(referencedPackageName)) {
         return true;
       }
     }

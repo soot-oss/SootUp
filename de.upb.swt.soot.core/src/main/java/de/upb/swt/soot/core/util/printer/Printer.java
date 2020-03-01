@@ -37,16 +37,7 @@ import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Prints out a class and all its methods.
@@ -65,7 +56,9 @@ public class Printer {
   private final Set<Option> options = EnumSet.noneOf(Option.class);
   private static int jimpleLnNum = 0; // actual line number
 
-  public Printer() {}
+  public Printer(Option... options) {
+    this.options.addAll(Arrays.asList(options));
+  }
 
   private boolean useAbbreviations() {
     return options.contains(Option.UseAbbreviations);
