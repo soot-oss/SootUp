@@ -5,6 +5,8 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -108,6 +110,23 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
   @Nonnull
   public String toString() {
     return _cachedToString.get();
+  }
+
+  @Override
+  public void toString(StmtPrinter printer) {
+    printer.typeSignature(getType());
+    printer.literal(" ");
+    printer.literal(getName());
+    printer.literal("(");
+
+    Iterator<Type> it = getParameterTypes().iterator();
+    if (it.hasNext()) {
+      printer.typeSignature(it.next());
+      while (it.hasNext()) printer.literal(",");
+      printer.typeSignature(it.next());
+    }
+
+    printer.literal(")");
   }
 
   // endregion /Methods/

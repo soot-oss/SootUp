@@ -1,7 +1,10 @@
 package de.upb.swt.soot.core.signatures;
 
+import com.google.common.base.Suppliers;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.util.printer.StmtPrinter;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
 /**
@@ -46,6 +49,22 @@ public class FieldSubSignature extends AbstractClassMemberSubSignature
   @Nonnull
   public FieldSignature toFullSignature(@Nonnull ClassType declClassSignature) {
     return new FieldSignature(declClassSignature, this);
+  }
+
+  private final Supplier<String> _cachedToString =
+      Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));
+
+  @Override
+  @Nonnull
+  public String toString() {
+    return _cachedToString.get();
+  }
+
+  @Override
+  public void toString(StmtPrinter printer) {
+    printer.typeSignature(getType());
+    printer.literal(" ");
+    printer.literal(getName());
   }
 
   // endregion /Methods/

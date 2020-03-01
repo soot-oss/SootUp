@@ -1,10 +1,9 @@
 package de.upb.swt.soot.core.signatures;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Suppliers;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
-import java.util.function.Supplier;
+import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -91,14 +90,7 @@ public abstract class AbstractClassMemberSubSignature {
   public abstract AbstractClassMemberSignature toFullSignature(
       @Nonnull ClassType declClassSignature);
 
-  private final Supplier<String> _cachedToString =
-      Suppliers.memoize(() -> String.format("%s %s", getType(), getName()));
-
-  @Override
-  @Nonnull
-  public String toString() {
-    return _cachedToString.get();
-  }
+  public abstract void toString(StmtPrinter printer);
 
   // endregion /Methods/
 }

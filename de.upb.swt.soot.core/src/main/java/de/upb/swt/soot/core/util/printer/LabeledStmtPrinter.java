@@ -15,7 +15,7 @@ import java.util.*;
 public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   /** branch targets * */
   protected Map<Stmt, String> labels;
-  /** for unit references in Phi nodes * */
+  /** for stmt references in Phi nodes * */
   protected Map<Stmt, String> references;
 
   protected String labelIndent = "\u0020\u0020\u0020\u0020\u0020";
@@ -74,7 +74,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       }
       output.append(label);
     }
-    // TODO: [ms] still necessary (-> only jimple)
+    // TODO: [ms] still necessary? (-> now its only jimple)
     // refs to control flow predecessors (for Shimple)
     else {
       String ref = references.get(u);
