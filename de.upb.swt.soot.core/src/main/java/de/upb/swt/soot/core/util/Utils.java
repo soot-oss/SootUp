@@ -85,7 +85,6 @@ public class Utils {
     try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
       Printer printer = new Printer();
       printer.setOption(Option.OmitLocalsDeclaration);
-      printer.setOption(Option.UseImports);
       printer.printTo(body, writerOut);
     }
 
