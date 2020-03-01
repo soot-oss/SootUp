@@ -103,10 +103,10 @@ public class Printer {
     // add jimple line number tags
     setJimpleLnNum(1);
 
-    // print imports if enabled
+    // if enabled: print list of imports
     if (options.contains(Option.UseImports)) {
       for (Map.Entry<String, PackageName> item : printer.getImports().entrySet()) {
-        out.print("import " + item.toString() + ";");
+        out.println("import " + item.toString() + ";");
       }
     }
 
