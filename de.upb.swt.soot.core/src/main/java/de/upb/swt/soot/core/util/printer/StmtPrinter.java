@@ -53,10 +53,6 @@ public interface StmtPrinter {
 
   void noIndent();
 
-  void setIndent(String newIndent);
-
-  String getIndent();
-
   String type(Type t);
 
   void literal(String s);

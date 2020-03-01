@@ -36,9 +36,7 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.util.EscapedWriter;
 import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -47,7 +45,8 @@ import java.util.*;
  * <p>modified by Linghui Luo, 11.10.2018
  */
 
-// TODO: [ms] clean up or implement sth with addJimpleLn,getJimpleLnNum,addJimpleLnTags etc.
+// TODO: [ms] clean up or implement sth with addJimpleLn,getJimpleLnNum,addJimpleLnTags etc. check
+// old soot for intention
 
 public class Printer {
 
@@ -108,30 +107,21 @@ public class Printer {
     // add jimple line number tags
     setJimpleLnNum(1);
 
-    PrintWriter output;
-    StringWriter writer = new StringWriter();
-    if (options.contains(Option.UseImports)) {
-      // cache output to prepend the import list later
-      output = new PrintWriter(new EscapedWriter(writer));
-    } else {
-      output = out;
-    }
-
     // Print class name + modifiers
     {
       EnumSet<Modifier> modifiers = EnumSet.copyOf(cl.getModifiers());
       // remove unwanted modifier combinations
-      if (cl.isInterface() && modifiers.contains("abstract")) {
+      if (cl.isInterface() && Modifier.isAbstract(modifiers)) {
         modifiers.remove(Modifier.ABSTRACT);
       }
-      output.print(Modifier.toString(modifiers));
-      output.print(" ");
+      printer.literal(Modifier.toString(modifiers));
+      printer.literal(modifiers.size() == 0 ? "" : " ");
 
       // TODO: CHECK: why is an interface not called interface?!
       // TODO: [ms] exclude Annotation, too when annotation branch is merged
-      String classType = cl.isInterface() ? "" : "class";
 
-      output.print(classType + " " + cl.getType() + "");
+      printer.literal(cl.isInterface() ? "" : "class ");
+      printer.literal(printer.type(cl.getType()));
     }
 
     // Print extension
@@ -140,8 +130,8 @@ public class Printer {
 
       superclassSignature.ifPresent(
           javaClassSignature -> {
-            output.print(" extends ");
-            output.print(printer.type(javaClassSignature));
+            printer.literal(" extends ");
+            printer.literal(printer.type(javaClassSignature));
           });
     }
 
@@ -151,19 +141,19 @@ public class Printer {
 
       if (interfaceIt.hasNext()) {
 
-        output.print(" implements ");
-        output.print(printer.type(interfaceIt.next()));
+        printer.literal(" implements ");
+        printer.literal(printer.type(interfaceIt.next()));
 
         while (interfaceIt.hasNext()) {
-          output.print(", ");
-          output.print(printer.type(interfaceIt.next()));
+          printer.literal(", ");
+          printer.literal(printer.type(interfaceIt.next()));
         }
       }
     }
 
-    output.println();
+    printer.newline();
     incJimpleLnNum();
-    output.println("{");
+    printer.literal("{");
     incJimpleLnNum();
 
     // Print fields
@@ -174,7 +164,8 @@ public class Printer {
         while (fieldIt.hasNext()) {
           SootField f = (SootField) fieldIt.next();
 
-          output.println("    " + f.getDeclaration() + ";");
+          printer.literal("    " + f.getDeclaration() + ";");
+          printer.newline();
           if (addJimpleLn()) {
             setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f));
           }
@@ -183,9 +174,10 @@ public class Printer {
     }
 
     // Print methods
-    printMethods(cl, output, printer);
+    printMethods(cl, printer);
+    printer.literal("}");
 
-    output.println("}");
+    printer.newline();
     incJimpleLnNum();
 
     // if enabled: print the list of imports and append class contents
@@ -198,15 +190,19 @@ public class Printer {
         out.println("import " + item.getValue() + "." + item.getKey() + ";");
       }
       out.println();
-      out.print(writer.toString());
     }
+
+    out.println(printer.output().toString());
   }
 
-  private void printMethods(SootClass cl, PrintWriter out, LabeledStmtPrinter printer) {
+  private void printMethods(SootClass cl, LabeledStmtPrinter printer) {
     Iterator<? extends Method> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
+      printer.incIndent();
+
+      // TODO: remove check -> is already true
       if (cl.getMethods().size() != 0) {
-        out.println();
+        printer.newline();
         incJimpleLnNum();
       }
 
@@ -216,28 +212,27 @@ public class Printer {
         if (method.hasBody()) {
           Body body = method.getBody();
           printer.createLabelMaps(body);
-          printTo(body, out, printer);
+          printTo(body, printer);
 
         } else {
-          out.print("    ");
+          printer.handleIndent();
           method.toString(printer);
-          out.println(";");
+          printer.literal(";");
           incJimpleLnNum();
         }
 
         if (methodIt.hasNext()) {
-          out.println();
+          printer.newline();
           incJimpleLnNum();
         }
       }
+      printer.decIndent();
     }
   }
 
   /**
    * Prints out the methodRef corresponding to b Body, (declaration and body), in the textual format
    * corresponding to the IR used to encode b body.
-   *
-   * @param out a PrintWriter instance to print to.
    */
   public void printTo(Body b, PrintWriter out) {
     LabeledStmtPrinter printer;
@@ -247,41 +242,49 @@ public class Printer {
       printer = new NormalStmtPrinter(b);
     }
     printer.enableImports(options.contains(Option.UseImports));
-    printTo(b, out, printer);
+    printTo(b, printer);
+    out.print(printer);
   }
 
   /**
    * Prints out the methodRef corresponding to b Body, (declaration and body), in the textual format
    * corresponding to the IR used to encode b body.
    *
-   * @param out a PrintWriter instance to print to.
    * @param printer the StmtPrinter that determines how to print the statements
    */
-  public void printTo(Body b, PrintWriter out, LabeledStmtPrinter printer) {
+  public void printTo(Body b, LabeledStmtPrinter printer) {
 
     b.getMethod().toString(printer);
-    out.println(printer.toString());
 
     if (addJimpleLn()) {
       setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), b.getMethod()));
     }
-    out.println("    {");
+
+    printer.handleIndent();
+    printer.literal("{");
+    printer.newline();
     incJimpleLnNum();
+
+    printer.incIndent();
 
     AbstractStmtGraph unitGraph = new BriefStmtGraph(b);
 
     if (!options.contains(Option.OmitLocalsDeclaration)) {
       printLocalsInBody(b, printer);
     }
-    printStatementsInBody(b, out, printer, unitGraph);
+    printStatementsInBody(b, printer, unitGraph);
 
-    out.println("    }");
+    printer.decIndent();
+
+    printer.handleIndent();
+    printer.literal("}");
     incJimpleLnNum();
+    printer.newline();
   }
 
   /** Prints the given <code>JimpleBody</code> to the specified <code>PrintWriter</code>. */
   private void printStatementsInBody(
-      Body body, PrintWriter out, LabeledStmtPrinter up, AbstractStmtGraph unitGraph) {
+      Body body, LabeledStmtPrinter printer, AbstractStmtGraph unitGraph) {
     Collection<Stmt> units = body.getStmts();
     Stmt previousStmt;
 
@@ -297,60 +300,61 @@ public class Printer {
         if (currentStmt != units.iterator().next()) {
           if (unitGraph.getSuccsOf(previousStmt).size() != 1
               || unitGraph.getPredsOf(currentStmt).size() != 1
-              || up.getLabels().containsKey(currentStmt)) {
-            up.newline();
+              || printer.getLabels().containsKey(currentStmt)) {
+            printer.newline();
           } else {
             // Or if the previous node does not have body statement as a successor.
 
             List<Stmt> succs = unitGraph.getSuccsOf(previousStmt);
 
             if (succs.get(0) != currentStmt) {
-              up.newline();
+              printer.newline();
             }
           }
         }
 
-        if (up.getLabels().containsKey(currentStmt)) {
-          up.stmtRef(currentStmt, true);
-          up.literal(":");
-          up.newline();
+        if (printer.getLabels().containsKey(currentStmt)) {
+          printer.stmtRef(currentStmt, true);
+          printer.literal(":");
+          printer.newline();
         }
 
-        if (up.getReferences().containsKey(currentStmt)) {
-          up.stmtRef(currentStmt, false);
+        if (printer.getReferences().containsKey(currentStmt)) {
+          printer.stmtRef(currentStmt, false);
         }
       }
 
-      up.startStmt(currentStmt);
-      currentStmt.toString(up);
-      up.endStmt(currentStmt);
+      printer.startStmt(currentStmt);
+      currentStmt.toString(printer);
+      printer.endStmt(currentStmt);
 
-      up.literal(";");
-      up.newline();
+      printer.literal(";");
+      printer.newline();
     }
-    out.print(up.toString());
+    //    out.print(printer.toString());
 
     // Print out exceptions
     {
       Iterator<Trap> trapIt = body.getTraps().iterator();
 
       if (trapIt.hasNext()) {
-        out.println();
+        printer.newline();
         incJimpleLnNum();
       }
 
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        out.println(
+        // TODO: dont stringconcat -> single literal calls
+        printer.literal(
             "        catch "
-                + up.type(trap.getExceptionType())
+                + printer.type(trap.getExceptionType())
                 + " from "
-                + up.getLabels().get(trap.getBeginStmt())
+                + printer.getLabels().get(trap.getBeginStmt())
                 + " to "
-                + up.getLabels().get(trap.getEndStmt())
+                + printer.getLabels().get(trap.getEndStmt())
                 + " with "
-                + up.getLabels().get(trap.getHandlerStmt())
+                + printer.getLabels().get(trap.getHandlerStmt())
                 + ";");
 
         incJimpleLnNum();

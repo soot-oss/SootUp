@@ -37,6 +37,7 @@ import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -180,8 +181,9 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
   public void toString(StmtPrinter printer) {
 
     // modifiers
-    printer.literal(Modifier.toString(getModifiers()));
-    printer.literal(" ");
+    final Set<Modifier> modifiers = getModifiers();
+    printer.literal(Modifier.toString(modifiers));
+    printer.literal(modifiers.size() == 0 ? "" : " ");
 
     // return type + name
     getSubSignature().toString(printer);

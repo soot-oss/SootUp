@@ -17,7 +17,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   /** for stmt references in Phi nodes * */
   protected Map<Stmt, String> references;
 
-  protected String labelIndent = "\u0020\u0020\u0020\u0020\u0020";
+  protected int labelIndent = 5;
 
   public LabeledStmtPrinter() {}
 
@@ -54,30 +54,24 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
   @Override
   public void stmtRef(Stmt u, boolean branchTarget) {
-    String oldIndent = getIndent();
 
     // normal case, ie labels
     if (branchTarget) {
-      setIndent(labelIndent);
-      handleIndent();
-      setIndent(oldIndent);
+      output.append(labelIndent);
       String label = labels.get(u);
       if (label == null || "<unnamed>".equals(label)) {
         label = "[?= " + u + "]";
       }
       output.append(label);
     }
-    // TODO: [ms] still necessary? (-> now its only jimple)
+    // TODO: [ms] still necessary? (-> shimple is not supported anymore)
     // refs to control flow predecessors (for Shimple)
     else {
       String ref = references.get(u);
 
+      // TODO: [ms] intention? -> deciding on startOfLine?!
       if (startOfLine) {
-        String newIndent = "(" + ref + ")" + indent.substring(ref.length() + 2);
-
-        setIndent(newIndent);
-        handleIndent();
-        setIndent(oldIndent);
+        output.append("(" + ref + ")");
       } else {
         output.append(ref);
       }
@@ -151,6 +145,8 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   }
 
   @Override
+  // TODO: [ms] check whether its now duplicate code in methodsignature/methodSubSignature and
+  // field(sub)signature
   public void fieldSignature(FieldSignature fieldSig) {
     if (useImports) {
       output

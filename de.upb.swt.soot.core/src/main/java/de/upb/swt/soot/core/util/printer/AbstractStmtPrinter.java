@@ -39,7 +39,10 @@ import java.util.Map;
 public abstract class AbstractStmtPrinter implements StmtPrinter {
 
   protected boolean startOfLine = true;
-  protected String indent = "        ";
+
+  protected final String indentStep = "\u0020\u0020\u0020\u0020";
+  protected int indent = 0;
+
   protected StringBuilder output = new StringBuilder();
   private HashMap<String, PackageName> imports = new HashMap<>();
 
@@ -73,9 +76,10 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
 
   public String type(Type type) {
     // TODO: [ms] e.g. implement for ArrayType base, too
-    return useImports && type instanceof ClassType && addImport(type)
-        ? ((ClassType) type).getClassName()
-        : type.toString();
+    if (useImports && type instanceof ClassType && addImport(type)) {
+      return ((ClassType) type).getClassName();
+    }
+    return type.toString();
   }
 
   public Map<String, PackageName> getImports() {
@@ -113,24 +117,12 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
 
   @Override
   public void incIndent() {
-    indent = indent + "    ";
+    indent++;
   }
 
   @Override
   public void decIndent() {
-    if (indent.length() >= 4) {
-      indent = indent.substring(4);
-    }
-  }
-
-  @Override
-  public void setIndent(String indent) {
-    this.indent = indent;
-  }
-
-  @Override
-  public String getIndent() {
-    return indent;
+    indent--;
   }
 
   @Override
@@ -171,9 +163,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
 
   @Override
   public String toString() {
-    String ret = output.toString();
-    output = new StringBuilder();
-    return ret;
+    return output.toString();
   }
 
   @Override
@@ -183,7 +173,9 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
 
   protected void handleIndent() {
     if (startOfLine) {
-      output.append(indent);
+      for (int i = indent; i > 0; i--) {
+        output.append(indentStep);
+      }
     }
     startOfLine = false;
   }
