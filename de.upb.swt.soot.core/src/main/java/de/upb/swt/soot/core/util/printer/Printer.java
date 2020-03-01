@@ -36,7 +36,9 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.util.EscapedWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -106,6 +108,15 @@ public class Printer {
     // add jimple line number tags
     setJimpleLnNum(1);
 
+    PrintWriter output;
+    StringWriter writer = new StringWriter();
+    if (options.contains(Option.UseImports)) {
+      // cache output to prepend the import list later
+      output = new PrintWriter(new EscapedWriter(writer));
+    } else {
+      output = out;
+    }
+
     // Print class name + modifiers
     {
       StringTokenizer st = new StringTokenizer(Modifier.toString(cl.getModifiers()));
@@ -114,7 +125,7 @@ public class Printer {
         if (cl.isInterface() && tok.equals("abstract")) {
           continue;
         }
-        out.print(tok + " ");
+        output.print(tok + " ");
       }
 
       String classPrefix = "";
@@ -124,7 +135,7 @@ public class Printer {
         classPrefix = classPrefix.trim();
       }
 
-      out.print(classPrefix + " " + cl.getType() + "");
+      output.print(classPrefix + " " + cl.getType() + "");
     }
 
     // Print extension
@@ -132,7 +143,7 @@ public class Printer {
       Optional<ClassType> superclassSignature = cl.getSuperclass();
 
       superclassSignature.ifPresent(
-          javaClassSignature -> out.print(" extends " + javaClassSignature));
+          javaClassSignature -> output.print(" extends " + javaClassSignature));
     }
 
     // Print interfaces
@@ -140,20 +151,20 @@ public class Printer {
       Iterator<ClassType> interfaceIt = cl.getInterfaces().iterator();
 
       if (interfaceIt.hasNext()) {
-        out.print(" implements ");
+        output.print(" implements ");
 
-        out.print(interfaceIt.next());
+        output.print(interfaceIt.next());
 
         while (interfaceIt.hasNext()) {
-          out.print(",");
-          out.print(" " + interfaceIt.next());
+          output.print(",");
+          output.print(" " + interfaceIt.next());
         }
       }
     }
 
-    out.println();
+    output.println();
     incJimpleLnNum();
-    out.println("{");
+    output.println("{");
     incJimpleLnNum();
 
     // Print fields
@@ -164,7 +175,7 @@ public class Printer {
         while (fieldIt.hasNext()) {
           SootField f = (SootField) fieldIt.next();
 
-          out.println("    " + f.getDeclaration() + ";");
+          output.println("    " + f.getDeclaration() + ";");
           if (addJimpleLn()) {
             setJimpleLnNum(addJimpleLnTags(getJimpleLnNum(), f));
           }
@@ -173,17 +184,19 @@ public class Printer {
     }
 
     // Print methods
-    printMethod(cl, out, printer);
+    printMethod(cl, output, printer);
 
-    out.println("}");
+    output.println("}");
     incJimpleLnNum();
 
-    // if enabled: print list of imports
+    // if enabled: print list of imports and append class contents
     if (options.contains(Option.UseImports)) {
-      out.println();
+
       for (Map.Entry<String, PackageName> item : printer.getImports().entrySet()) {
         out.println("import " + item.getValue() + "." + item.getKey() + ";");
       }
+      out.println();
+      out.print(writer.toString());
     }
   }
 
