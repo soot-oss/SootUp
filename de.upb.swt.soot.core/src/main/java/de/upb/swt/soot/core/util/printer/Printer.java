@@ -341,17 +341,15 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        // TODO: dont stringconcat -> single literal calls
-        printer.literal(
-            "        catch "
-                + printer.type(trap.getExceptionType())
-                + " from "
-                + printer.getLabels().get(trap.getBeginStmt())
-                + " to "
-                + printer.getLabels().get(trap.getEndStmt())
-                + " with "
-                + printer.getLabels().get(trap.getHandlerStmt())
-                + ";");
+        printer.literal("        catch ");
+        printer.literal(printer.type(trap.getExceptionType()));
+        printer.literal(" from ");
+        printer.literal(printer.getLabels().get(trap.getBeginStmt()));
+        printer.literal(" to ");
+        printer.literal(printer.getLabels().get(trap.getEndStmt()));
+        printer.literal(" with ");
+        printer.literal(printer.getLabels().get(trap.getHandlerStmt()));
+        printer.literal(";");
 
         incJimpleLnNum();
       }
