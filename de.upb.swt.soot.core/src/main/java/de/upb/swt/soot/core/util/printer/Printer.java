@@ -198,12 +198,7 @@ public class Printer {
       while (methodIt.hasNext()) {
         SootMethod method = (SootMethod) methodIt.next();
 
-        if (!Modifier.isAbstract(method.getModifiers())
-            && !Modifier.isNative(method.getModifiers())) {
-          if (!method.hasBody()) {
-            throw new RuntimeException("method " + method.getName() + " has no body!");
-          }
-
+        if (method.hasBody()) {
           Body body = method.getBody();
           printer.createLabelMaps(body);
           printTo(body, out, printer);
