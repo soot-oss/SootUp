@@ -203,19 +203,16 @@ public class Printer {
           printer.createLabelMaps(body);
           printTo(body, out, printer);
 
-          if (methodIt.hasNext()) {
-            out.println();
-            incJimpleLnNum();
-          }
         } else {
           out.print("    ");
           out.print(method.getDeclaration());
           out.println(";");
           incJimpleLnNum();
-          if (methodIt.hasNext()) {
-            out.println();
-            incJimpleLnNum();
-          }
+        }
+
+        if (methodIt.hasNext()) {
+          out.println();
+          incJimpleLnNum();
         }
       }
     }
