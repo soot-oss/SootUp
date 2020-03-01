@@ -199,12 +199,8 @@ public class Printer {
     Iterator<? extends Method> methodIt = cl.getMethods().iterator();
     if (methodIt.hasNext()) {
       printer.incIndent();
-
-      // TODO: remove check -> is already true
-      if (cl.getMethods().size() != 0) {
-        printer.newline();
-        incJimpleLnNum();
-      }
+      printer.newline();
+      incJimpleLnNum();
 
       while (methodIt.hasNext()) {
         SootMethod method = (SootMethod) methodIt.next();
