@@ -260,7 +260,6 @@ public class Printer {
   public void printTo(Body b, PrintWriter out, LabeledStmtPrinter printer) {
 
     b.getMethod().toString(printer);
-
     out.println(printer.toString());
 
     if (addJimpleLn()) {
@@ -343,10 +342,9 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
-        // TODO: [ms] use imports for exception/trap too
         out.println(
             "        catch "
-                + trap.getExceptionType()
+                + up.type(trap.getExceptionType())
                 + " from "
                 + up.getLabels().get(trap.getBeginStmt())
                 + " to "

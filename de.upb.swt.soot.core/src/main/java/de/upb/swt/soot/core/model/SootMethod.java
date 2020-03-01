@@ -190,11 +190,11 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     Iterator<ClassType> exceptionIt = getExceptionSignatures().iterator();
     if (exceptionIt.hasNext()) {
       printer.literal(" throws ");
-      printer.type(exceptionIt.next());
+      printer.literal(printer.type(exceptionIt.next()));
 
       while (exceptionIt.hasNext()) {
         printer.literal(", ");
-        printer.type(exceptionIt.next());
+        printer.literal(printer.type(exceptionIt.next()));
       }
     }
 
