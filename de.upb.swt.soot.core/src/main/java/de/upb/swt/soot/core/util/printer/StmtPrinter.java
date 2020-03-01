@@ -57,6 +57,8 @@ public interface StmtPrinter {
 
   String getIndent();
 
+  String type(Type t);
+
   void literal(String s);
 
   void newline();

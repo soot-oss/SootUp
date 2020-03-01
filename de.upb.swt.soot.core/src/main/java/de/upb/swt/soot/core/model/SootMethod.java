@@ -177,13 +177,11 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    * Returns the declaration of this method, as used at the top of textual body representations
    * (before the {}'s containing the code for representation.)
    */
-  public void getDeclaration(StmtPrinter printer) {
+  public void toString(StmtPrinter printer) {
 
     // modifiers
-    for (Modifier mod : getModifiers()) {
-      printer.literal(mod.toString().toLowerCase());
-      printer.literal(" ");
-    }
+    printer.literal(Modifier.toString(getModifiers()));
+    printer.literal(" ");
 
     // return type + name
     getSubSignature().toString(printer);
@@ -192,12 +190,11 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
     Iterator<ClassType> exceptionIt = getExceptionSignatures().iterator();
     if (exceptionIt.hasNext()) {
       printer.literal(" throws ");
-      printer.noIndent();
-      printer.typeSignature(exceptionIt.next());
+      printer.type(exceptionIt.next());
 
       while (exceptionIt.hasNext()) {
         printer.literal(", ");
-        printer.typeSignature(exceptionIt.next());
+        printer.type(exceptionIt.next());
       }
     }
 

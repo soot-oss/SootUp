@@ -48,7 +48,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   @Override
   public void typeSignature(Type t) {
     handleIndent();
-    String s = t == null ? "<null>" : shortenType(t);
+    String s = t == null ? "<null>" : type(t);
     output.append(s);
   }
 
@@ -132,15 +132,15 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
       output
           .append("<")
-          .append(shortenType(methodSig.getDeclClassType()))
+          .append(type(methodSig.getDeclClassType()))
           .append(": ")
-          .append(shortenType(methodSig.getType()))
+          .append(type(methodSig.getType()))
           .append(" ")
           .append(methodSig.getName())
           .append("(");
 
       for (Type parameterType : methodSig.getSubSignature().getParameterTypes()) {
-        output.append(shortenType(parameterType));
+        output.append(type(parameterType));
         output.append(',');
       }
       output.setLength(output.length() - 1);
@@ -155,9 +155,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     if (useImports) {
       output
           .append("<")
-          .append(shortenType(fieldSig.getDeclClassType()))
+          .append(type(fieldSig.getDeclClassType()))
           .append(": ")
-          .append(shortenType(fieldSig.getSubSignature().getType()))
+          .append(type(fieldSig.getSubSignature().getType()))
           .append(" ")
           .append(fieldSig.getSubSignature().getName())
           .append('>');

@@ -207,7 +207,7 @@ public enum Modifier {
 
     // trim
     final int lastCharPos = builder.length() - 1;
-    if (builder.charAt(lastCharPos) == ' ') {
+    if (lastCharPos > 0 && builder.charAt(lastCharPos) == ' ') {
       builder.setLength(lastCharPos);
     }
     return builder.toString();

@@ -141,7 +141,7 @@ public class Printer {
       superclassSignature.ifPresent(
           javaClassSignature -> {
             output.print(" extends ");
-            output.print(printer.shortenType(javaClassSignature));
+            output.print(printer.type(javaClassSignature));
           });
     }
 
@@ -152,16 +152,11 @@ public class Printer {
       if (interfaceIt.hasNext()) {
 
         output.print(" implements ");
-
-        printer.noIndent();
-        printer.typeSignature(interfaceIt.next());
-        output.print(printer.toString());
+        output.print(printer.type(interfaceIt.next()));
 
         while (interfaceIt.hasNext()) {
           output.print(", ");
-          printer.noIndent();
-          printer.typeSignature(interfaceIt.next());
-          output.print(printer.toString());
+          output.print(printer.type(interfaceIt.next()));
         }
       }
     }
@@ -225,7 +220,7 @@ public class Printer {
 
         } else {
           out.print("    ");
-          method.getDeclaration(printer);
+          method.toString(printer);
           out.println(";");
           incJimpleLnNum();
         }
@@ -264,9 +259,8 @@ public class Printer {
    */
   public void printTo(Body b, PrintWriter out, LabeledStmtPrinter printer) {
 
-    b.getMethod().getDeclaration(printer);
+    b.getMethod().toString(printer);
 
-    out.print("    ");
     out.println(printer.toString());
 
     if (addJimpleLn()) {

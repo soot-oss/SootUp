@@ -71,7 +71,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
     return false;
   }
 
-  public String shortenType(Type type) {
+  public String type(Type type) {
     // TODO: [ms] e.g. implement for ArrayType base, too
     return useImports && type instanceof ClassType && addImport(type)
         ? ((ClassType) type).getClassName()
