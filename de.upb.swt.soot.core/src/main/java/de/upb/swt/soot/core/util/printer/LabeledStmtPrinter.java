@@ -7,6 +7,7 @@ import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
+import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.Type;
 import java.util.*;
@@ -123,7 +124,6 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   @Override
   public void methodSignature(MethodSignature methodSig) {
     if (useImports) {
-
       output.append("<");
       typeSignature(methodSig.getDeclClassType());
       output.append(": ");
@@ -150,8 +150,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       output.append("<");
       typeSignature(fieldSig.getDeclClassType());
       output.append(": ");
-      typeSignature(fieldSig.getSubSignature().getType());
-      output.append(" ").append(fieldSig.getSubSignature().getName()).append('>');
+      final FieldSubSignature subSignature = fieldSig.getSubSignature();
+      typeSignature(subSignature.getType());
+      output.append(" ").append(subSignature.getName()).append('>');
     } else {
       output.append(fieldSig.toString());
     }
