@@ -17,8 +17,6 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   /** for stmt references in Phi nodes * */
   protected Map<Stmt, String> references;
 
-  protected int labelIndent = 5;
-
   public LabeledStmtPrinter() {}
 
   public LabeledStmtPrinter(Body b) {
@@ -58,8 +56,12 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     // normal case, ie labels
     if (branchTarget) {
 
-      for (int i = labelIndent; i > 0; i--) {
-        output.append(labelIndent);
+      // is it a label? (otherwise its a target of a goto stmt)
+      if (startOfLine) {
+        decIndent();
+        handleIndent();
+        output.append(indentStep).append(indentStep);
+        incIndent();
       }
 
       String label = labels.get(u);
@@ -73,8 +75,12 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     else {
       String ref = references.get(u);
 
-      // TODO: [ms] intention? -> deciding on startOfLine?!
       if (startOfLine) {
+        decIndent();
+        handleIndent();
+        output.append(indentStep).append(indentStep);
+        incIndent();
+
         output.append("(" + ref + ")");
       } else {
         output.append(ref);
