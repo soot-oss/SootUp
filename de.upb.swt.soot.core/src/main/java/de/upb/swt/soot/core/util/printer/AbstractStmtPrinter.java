@@ -84,14 +84,8 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
           return;
         }
       } else if (type instanceof ArrayType) {
-        Type baseType = ((ArrayType) type).getBaseType();
-        if (baseType instanceof ClassType && addImport(baseType)) {
-          literal(((ClassType) baseType).getClassName());
-          for (int i = ((ArrayType) type).getDimension(); i > 0; i--) {
-            literal("[]");
-          }
-          return;
-        }
+        ((ArrayType) type).toString(this);
+        return;
       }
     }
     literal(type.toString());
