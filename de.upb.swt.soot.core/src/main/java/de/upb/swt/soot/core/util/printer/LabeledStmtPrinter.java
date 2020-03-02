@@ -44,27 +44,14 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public abstract void identityRef(IdentityRef r);
 
   @Override
-  public void typeSignature(Type t) {
-    handleIndent();
-    if (t == null) {
-      output.append("<null>");
-    } else {
-      type(t);
-    }
-  }
-
-  @Override
   public void stmtRef(Stmt u, boolean branchTarget) {
 
     // normal case, ie labels
     if (branchTarget) {
 
-      // is it a label? (otherwise its a target of a goto stmt)
-      if (startOfLine) {
-        setIndent(-indentStep / 2);
-        handleIndent();
-        setIndent(indentStep / 2);
-      }
+      setIndent(-indentStep / 2);
+      handleIndent();
+      setIndent(indentStep / 2);
 
       String label = labels.get(u);
       if (label == null || "<unnamed>".equals(label)) {
@@ -138,14 +125,14 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
     if (useImports) {
 
       output.append("<");
-      type(methodSig.getDeclClassType());
+      typeSignature(methodSig.getDeclClassType());
       output.append(": ");
-      type(methodSig.getType());
+      typeSignature(methodSig.getType());
       output.append(" ").append(methodSig.getName()).append("(");
 
       final List<Type> parameterTypes = methodSig.getSubSignature().getParameterTypes();
       for (Type parameterType : parameterTypes) {
-        type(parameterType);
+        typeSignature(parameterType);
         output.append(',');
       }
       if (parameterTypes.size() > 0) {
@@ -161,9 +148,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   public void fieldSignature(FieldSignature fieldSig) {
     if (useImports) {
       output.append("<");
-      type(fieldSig.getDeclClassType());
+      typeSignature(fieldSig.getDeclClassType());
       output.append(": ");
-      type(fieldSig.getSubSignature().getType());
+      typeSignature(fieldSig.getSubSignature().getType());
       output.append(" ").append(fieldSig.getSubSignature().getName()).append('>');
     } else {
       output.append(fieldSig.toString());

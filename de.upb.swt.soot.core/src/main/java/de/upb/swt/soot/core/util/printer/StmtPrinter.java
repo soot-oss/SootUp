@@ -61,8 +61,6 @@ public interface StmtPrinter {
 
   void local(Local jimpleLocal);
 
-  void type(Type t);
-
   void typeSignature(Type t);
 
   void methodSignature(MethodSignature sig);

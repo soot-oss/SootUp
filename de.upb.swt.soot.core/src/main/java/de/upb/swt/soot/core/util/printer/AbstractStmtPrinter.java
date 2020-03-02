@@ -76,21 +76,6 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
     return false;
   }
 
-  public void type(Type type) {
-    if (useImports) {
-      if (type instanceof ClassType) {
-        if (addImport(type)) {
-          literal(((ClassType) type).getClassName());
-          return;
-        }
-      } else if (type instanceof ArrayType) {
-        ((ArrayType) type).toString(this);
-        return;
-      }
-    }
-    literal(type.toString());
-  }
-
   public Map<String, PackageName> getImports() {
     return imports;
   }
@@ -143,7 +128,23 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   public abstract void literal(String s);
 
   @Override
-  public abstract void typeSignature(Type t);
+  public void typeSignature(Type type) {
+    handleIndent();
+    if (type == null) {
+      output.append("<null>");
+    } else if (useImports) {
+      if (type instanceof ClassType) {
+        if (addImport(type)) {
+          output.append(((ClassType) type).getClassName());
+          return;
+        }
+      } else if (type instanceof ArrayType) {
+        ((ArrayType) type).toString(this);
+        return;
+      }
+    }
+    output.append(type.toString());
+  }
 
   @Override
   public abstract void method(SootMethod m);

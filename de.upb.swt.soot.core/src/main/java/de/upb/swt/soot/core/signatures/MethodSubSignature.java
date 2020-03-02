@@ -94,17 +94,17 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
 
   @Override
   public void toString(StmtPrinter printer) {
-    printer.type(getType());
+    printer.typeSignature(getType());
     printer.literal(" ");
     printer.literal(getName());
     printer.literal("(");
 
     Iterator<Type> it = getParameterTypes().iterator();
     if (it.hasNext()) {
-      printer.type(it.next());
+      printer.typeSignature(it.next());
       while (it.hasNext()) {
         printer.literal(",");
-        printer.type(it.next());
+        printer.typeSignature(it.next());
       }
     }
 

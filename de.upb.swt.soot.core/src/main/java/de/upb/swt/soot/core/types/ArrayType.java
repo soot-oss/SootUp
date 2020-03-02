@@ -29,7 +29,7 @@ public class ArrayType extends ReferenceType {
   }
 
   public void toString(StmtPrinter printer) {
-    printer.type(baseType);
+    printer.typeSignature(baseType);
     for (int i = 0; i < dimension; i++) {
       printer.literal("[]");
     }

@@ -121,7 +121,7 @@ public class Printer {
       // TODO: [ms] exclude Annotation, too when annotation branch is merged
 
       printer.literal(cl.isInterface() ? "" : "class ");
-      printer.type(cl.getType());
+      printer.typeSignature(cl.getType());
     }
 
     // Print extension
@@ -131,7 +131,7 @@ public class Printer {
       superclassSignature.ifPresent(
           javaClassSignature -> {
             printer.literal(" extends ");
-            printer.type(javaClassSignature);
+            printer.typeSignature(javaClassSignature);
           });
     }
 
@@ -142,11 +142,11 @@ public class Printer {
       if (interfaceIt.hasNext()) {
 
         printer.literal(" implements ");
-        printer.type(interfaceIt.next());
+        printer.typeSignature(interfaceIt.next());
 
         while (interfaceIt.hasNext()) {
           printer.literal(", ");
-          printer.type(interfaceIt.next());
+          printer.typeSignature(interfaceIt.next());
         }
       }
     }
@@ -343,7 +343,7 @@ public class Printer {
 
         // TODO: [ms] set indent here?
         printer.literal("        catch ");
-        printer.type(trap.getExceptionType());
+        printer.typeSignature(trap.getExceptionType());
         printer.literal(" from ");
         printer.literal(printer.getLabels().get(trap.getBeginStmt()));
         printer.literal(" to ");
