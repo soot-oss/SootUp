@@ -58,10 +58,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
       // is it a label? (otherwise its a target of a goto stmt)
       if (startOfLine) {
-        decIndent();
+        setIndent(-indentStep / 2);
         handleIndent();
-        output.append(indentStep).append(indentStep);
-        incIndent();
+        setIndent(indentStep / 2);
       }
 
       String label = labels.get(u);
@@ -78,10 +77,9 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
       String ref = references.get(u);
 
       if (startOfLine) {
-        decIndent();
+        setIndent(-indentStep / 2);
         handleIndent();
-        output.append(indentStep).append(indentStep);
-        incIndent();
+        setIndent(indentStep / 2);
 
         output.append("(").append(ref).append(")");
       } else {

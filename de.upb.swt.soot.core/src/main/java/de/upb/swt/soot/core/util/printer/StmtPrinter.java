@@ -47,6 +47,8 @@ public interface StmtPrinter {
 
   void endValueBox(ValueBox u);
 
+  void setIndent(int offset);
+
   void incIndent();
 
   void decIndent();

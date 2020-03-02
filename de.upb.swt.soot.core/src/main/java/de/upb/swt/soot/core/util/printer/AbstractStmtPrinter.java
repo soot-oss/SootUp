@@ -41,7 +41,8 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
 
   protected boolean startOfLine = true;
 
-  protected final char indentStep = '\u0020';
+  protected final char indentChar = '\u0020';
+  protected final int indentStep = 4;
   protected int indent = 0;
 
   protected StringBuilder output = new StringBuilder();
@@ -125,13 +126,18 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   }
 
   @Override
+  public void setIndent(int offset) {
+    indent += offset;
+  }
+
+  @Override
   public void incIndent() {
-    indent += 4;
+    indent += indentStep;
   }
 
   @Override
   public void decIndent() {
-    indent -= 4;
+    indent -= indentStep;
   }
 
   @Override
@@ -183,7 +189,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   protected void handleIndent() {
     if (startOfLine) {
       for (int i = indent; i > 0; i--) {
-        output.append(indentStep);
+        output.append(indentChar);
       }
     }
     startOfLine = false;
