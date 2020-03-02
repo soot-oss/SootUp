@@ -17,8 +17,6 @@ public class ArrayType extends ReferenceType {
     this.dimension = dimension;
   }
 
-  // TODO: [ms] implement toString( StmtPrinter )
-
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();

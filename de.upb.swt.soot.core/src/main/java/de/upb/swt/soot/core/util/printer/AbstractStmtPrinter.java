@@ -30,6 +30,7 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.SootField;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.PackageName;
+import de.upb.swt.soot.core.types.ArrayType;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.util.HashMap;
@@ -75,9 +76,17 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   }
 
   public String type(Type type) {
-    // TODO: [ms] e.g. implement for ArrayType base, too
-    if (useImports && type instanceof ClassType && addImport(type)) {
-      return ((ClassType) type).getClassName();
+    if (useImports) {
+      if (type instanceof ClassType) {
+        if (addImport(type)) {
+          return ((ClassType) type).getClassName();
+        }
+      } else if (type instanceof ArrayType) {
+        Type baseType = ((ArrayType) type).getBaseType();
+        if (baseType instanceof ClassType && addImport(baseType)) {
+          return ((ClassType) baseType).getClassName();
+        }
+      }
     }
     return type.toString();
   }
