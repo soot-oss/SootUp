@@ -207,14 +207,14 @@ public enum Modifier {
 
     // trim
     final int lastCharPos = builder.length() - 1;
-    if (lastCharPos > 0 && builder.charAt(lastCharPos) == ' ') {
+    if (lastCharPos > 0) {
       builder.setLength(lastCharPos);
     }
     return builder.toString();
   }
 
   @Nonnull
-  // depends on the natural order of the Enums
+  // depends on the natural order of the Enums!
   public static String toString(@Nonnull EnumSet<Modifier> m) {
     return m.stream().map((mod) -> mod.name().toLowerCase()).collect(Collectors.joining(" "));
   }
