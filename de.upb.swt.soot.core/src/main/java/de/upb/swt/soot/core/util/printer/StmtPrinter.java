@@ -55,13 +55,13 @@ public interface StmtPrinter {
 
   void noIndent();
 
-  String type(Type t);
-
   void literal(String s);
 
   void newline();
 
   void local(Local jimpleLocal);
+
+  void type(Type t);
 
   void typeSignature(Type t);
 

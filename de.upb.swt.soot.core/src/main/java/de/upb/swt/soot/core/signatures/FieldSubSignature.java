@@ -40,7 +40,7 @@ public class FieldSubSignature extends AbstractClassMemberSubSignature
 
   @Override
   public void toString(StmtPrinter printer) {
-    printer.literal(printer.type(getType()));
+    printer.type(getType());
     printer.literal(" ");
     printer.literal(getName());
   }
