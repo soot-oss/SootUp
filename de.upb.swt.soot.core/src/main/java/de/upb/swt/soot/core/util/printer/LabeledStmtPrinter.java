@@ -66,9 +66,11 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
       String label = labels.get(u);
       if (label == null || "<unnamed>".equals(label)) {
-        label = "[?= " + u + "]";
+        output.append("[?= ").append(u).append("]");
+      } else {
+        output.append(label);
       }
-      output.append(label);
+
     }
     // TODO: [ms] still necessary? (-> shimple is not supported anymore)
     // refs to control flow predecessors (for Shimple)
@@ -81,7 +83,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
         output.append(indentStep).append(indentStep);
         incIndent();
 
-        output.append("(" + ref + ")");
+        output.append("(").append(ref).append(")");
       } else {
         output.append(ref);
       }
