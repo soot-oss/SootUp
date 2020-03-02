@@ -180,14 +180,14 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
    */
   public void toString(StmtPrinter printer) {
 
-    // modifiers
+    // print modifiers
     final Set<Modifier> modifiers = getModifiers();
     printer.literal(Modifier.toString(modifiers));
     if (modifiers.size() != 0) {
       printer.literal(" ");
     }
 
-    // return type + name
+    // print returnType + name + ( parameterList )
     getSubSignature().toString(printer);
 
     // Print exceptions

@@ -152,8 +152,6 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   }
 
   @Override
-  // TODO: [ms] check whether its now duplicate code in methodsignature/methodSubSignature and
-  // field(sub)signature
   public void fieldSignature(FieldSignature fieldSig) {
     if (useImports) {
       output

@@ -3,7 +3,6 @@ package de.upb.swt.soot.core.signatures;
 import com.google.common.base.Objects;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
-import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import java.util.Iterator;
@@ -20,11 +19,6 @@ import javax.annotation.Nonnull;
  */
 public class MethodSubSignature extends AbstractClassMemberSubSignature
     implements Comparable<MethodSubSignature> {
-  // region Fields
-
-  // endregion /Fields/
-
-  // region Constructor
 
   /**
    * Creates a new instance of the {@link FieldSubSignature} class.
@@ -40,10 +34,6 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
     this.parameterTypes = ImmutableList.copyOf(parameterTypes);
   }
 
-  // endregion /Constructor/
-
-  // region Properties
-
   @Nonnull private final List<Type> parameterTypes;
 
   /**
@@ -53,12 +43,8 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
    */
   @Nonnull
   public List<Type> getParameterTypes() {
-    return this.parameterTypes;
+    return parameterTypes;
   }
-
-  // endregion /Properties/
-
-  // region Methods
 
   @Override
   public boolean equals(Object o) {
@@ -87,12 +73,6 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
   @Override
   public int compareTo(@Nonnull MethodSubSignature o) {
     return super.compareTo(o);
-  }
-
-  @Override
-  @Nonnull
-  public MethodSignature toFullSignature(@Nonnull ClassType declClassSignature) {
-    return new MethodSignature(declClassSignature, this);
   }
 
   private final Supplier<String> _cachedToString =
@@ -130,6 +110,4 @@ public class MethodSubSignature extends AbstractClassMemberSubSignature
 
     printer.literal(")");
   }
-
-  // endregion /Methods/
 }
