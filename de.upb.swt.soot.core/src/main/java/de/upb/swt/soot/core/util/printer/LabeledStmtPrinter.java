@@ -57,7 +57,11 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
     // normal case, ie labels
     if (branchTarget) {
-      output.append(labelIndent);
+
+      for (int i = labelIndent; i > 0; i--) {
+        output.append(labelIndent);
+      }
+
       String label = labels.get(u);
       if (label == null || "<unnamed>".equals(label)) {
         label = "[?= " + u + "]";

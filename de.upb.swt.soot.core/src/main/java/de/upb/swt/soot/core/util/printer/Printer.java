@@ -341,6 +341,7 @@ public class Printer {
       while (trapIt.hasNext()) {
         Trap trap = trapIt.next();
 
+        // TODO: [ms] set indent here?
         printer.literal("        catch ");
         printer.literal(printer.type(trap.getExceptionType()));
         printer.literal(" from ");
