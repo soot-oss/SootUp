@@ -291,14 +291,34 @@ public final class Body implements Copyable {
     return o;
   }
 
+  /**
+   * Returns the results of iterating through all Stmts in this Body and querying them for ValueBoxes defined.
+   * All of the ValueBoxes found are then returned as a List.
+   *
+   * @return a List of all the ValueBoxes for Values defined by this Body's Stmts.
+   */
   public Collection<ValueBox> getUseBoxes() {
-    // TODO Auto-generated methodRef stub
-    return null;
+    ArrayList<ValueBox> useBoxList = new ArrayList<>();
+
+    for (Stmt stmt : stmts) {
+      useBoxList.addAll(stmt.getDefBoxes());
+    }
+    return useBoxList;
   }
 
+  /**
+   * Returns the results of iterating through all Stmts in this Body and querying them for ValueBoxes defined.
+   * All of the ValueBoxes found are then returned as a List.
+   *
+   * @return a List of all the ValueBoxes for Values defined by this Body's Stmts.
+   */
   public Collection<ValueBox> getDefBoxes() {
-    // TODO Auto-generated methodRef stub
-    return null;
+    ArrayList<ValueBox> defBoxList = new ArrayList<>();
+
+    for (Stmt stmt : stmts) {
+      defBoxList.addAll(stmt.getDefBoxes());
+    }
+    return defBoxList;
   }
 
   /**
