@@ -10,7 +10,6 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
 import de.upb.swt.soot.java.core.views.JavaView;
-import java.io.File;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
