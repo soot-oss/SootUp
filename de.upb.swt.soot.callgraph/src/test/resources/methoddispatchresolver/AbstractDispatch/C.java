@@ -1,8 +1,8 @@
 
 /** @author: Hasitha Rajapakse **/
 
-public class A extends B{
+public class C extends A{
     public void method(){
-        int num = 10;
+        int num = 20;
     }
 }

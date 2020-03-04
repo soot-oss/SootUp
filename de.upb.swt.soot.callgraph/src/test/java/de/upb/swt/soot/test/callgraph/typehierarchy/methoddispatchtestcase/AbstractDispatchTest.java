@@ -2,8 +2,12 @@ package de.upb.swt.soot.test.callgraph.typehierarchy.methoddispatchtestcase;
 
 
 import categories.Java8Test;
+import de.upb.swt.soot.callgraph.typehierarchy.MethodDispatchResolver;
+import de.upb.swt.soot.callgraph.typehierarchy.TypeHierarchy;
+import de.upb.swt.soot.callgraph.typehierarchy.ViewTypeHierarchy;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SootMethod;
+import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.test.callgraph.typehierarchy.MethodDispatchBase;
 import org.junit.Test;
@@ -11,6 +15,7 @@ import org.junit.experimental.categories.Category;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -20,28 +25,24 @@ import static org.junit.Assert.*;
 public class AbstractDispatchTest extends MethodDispatchBase {
     @Test
     public void method() {
+
         ClassType sootClassTypeA = getClassType("A");
         ClassType sootClassTypeB = getClassType("B");
-        SootClass sootClassA = customTestWatcher.getView().getClass(sootClassTypeA).get();
-        SootClass sootClassB = customTestWatcher.getView().getClass(sootClassTypeB).get();
+        ClassType sootClassTypeC = getClassType("C");
+        ClassType sootClassTypeAbstract = getClassType("AbstractClass");
 
-        assertEquals(sootClassA.getSuperclass(),sootClassB.getSuperclass());
+        MethodSignature sootMethodA = identifierFactory.getMethodSignature("method", sootClassTypeA, "void", Collections.emptyList());
+        MethodSignature sootMethodB = identifierFactory.getMethodSignature("method", sootClassTypeB, "void", Collections.emptyList());
+        MethodSignature sootMethodC = identifierFactory.getMethodSignature("method", sootClassTypeC, "void", Collections.emptyList());
 
-        SootMethod sootMethodA1 = sootClassA.getMethod(identifierFactory.getMethodSignature("method", sootClassTypeA, "void", Collections.emptyList())).get();
-        SootMethod sootMethodB1 = sootClassB.getMethod(identifierFactory.getMethodSignature("method", sootClassTypeB, "void", Collections.emptyList())).get();
+        Set<MethodSignature> candidatesAbstract = MethodDispatchResolver.resolveAbstractDispatch(customTestWatcher.getView(), identifierFactory.getMethodSignature("method", sootClassTypeAbstract, "void", Collections.emptyList()));
+        assertTrue(candidatesAbstract.contains(sootMethodA));
+        assertTrue(candidatesAbstract.contains(sootMethodB));
+        assertTrue(candidatesAbstract.contains(sootMethodC));
 
-        SootMethod sootMethodA2 = sootClassA.getMethod(identifierFactory.getMethodSignature("intmethod", sootClassTypeA, "int", Collections.emptyList())).get();
-        SootMethod sootMethodB2 = sootClassB.getMethod(identifierFactory.getMethodSignature("intmethod", sootClassTypeB, "int", Collections.emptyList())).get();
+        Set<MethodSignature> candidatesSuper = MethodDispatchResolver.resolveAbstractDispatch(customTestWatcher.getView(), identifierFactory.getMethodSignature("method", sootClassTypeA, "void", Collections.emptyList()));
+        assertTrue(candidatesSuper.contains(sootMethodB));
+        assertTrue(candidatesSuper.contains(sootMethodC));
 
-        SootMethod sootMethodA3 = sootClassA.getMethod(identifierFactory.getMethodSignature("parammethod", sootClassTypeA, "void", Collections.singletonList("int"))).get();
-        SootMethod sootMethodB3 = sootClassB.getMethod(identifierFactory.getMethodSignature("parammethod", sootClassTypeB, "void", Collections.singletonList("int"))).get();
-
-        SootMethod sootMethodA4 = sootClassA.getMethod(identifierFactory.getMethodSignature("combmethod", sootClassTypeA, "int", Collections.singletonList("int"))).get();
-        SootMethod sootMethodB4 = sootClassB.getMethod(identifierFactory.getMethodSignature("combmethod", sootClassTypeB, "int", Collections.singletonList("int"))).get();
-
-        assertNotEquals(sootMethodA1.getBody(),sootMethodB1.getBody());
-        assertNotEquals(sootMethodA2.getBody(),sootMethodB2.getBody());
-        assertNotEquals(sootMethodA3.getBody(),sootMethodB3.getBody());
-        assertNotEquals(sootMethodA4.getBody(),sootMethodB4.getBody());
     }
 }
