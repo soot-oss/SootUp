@@ -19,7 +19,7 @@ public class Initialize3DimensionalArrays {
 
     }
     public void floatArrays(){
-        float[][][] floatrray3D = {{{3.14f, 5.46f}, {2.987f, 4.87f}},{{651f,6541f},{1651f,5814f}}};
+        float[][][] floatrray3D = {{{3.14f, 5.46f}, {2.987f, 4.87f}},{{65.15f,854.18f},{16.51f,58.14f}}};
 
     }
     public void doubleArrays(){

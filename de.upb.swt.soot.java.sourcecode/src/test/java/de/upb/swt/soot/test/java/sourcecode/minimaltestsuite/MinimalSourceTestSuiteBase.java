@@ -56,6 +56,8 @@ public abstract class MinimalSourceTestSuiteBase {
                         baseDir
                             + File.separator
                             + getTestDirectoryName(getClassPath())
+                            + File.separator
+                            + "source"
                             + File.separator))
                 .build();
         javaView = project.createOnDemandView();
