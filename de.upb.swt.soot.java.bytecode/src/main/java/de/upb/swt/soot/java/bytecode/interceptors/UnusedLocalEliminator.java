@@ -12,13 +12,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A BodyTransformer that removes all unused local variables from a given Body. Implemented as a
- * singleton.
+ * A BodyTransformer that removes all unused local variables from a given Body.
  *
  * @author Marcus Nachtigall
  */
 public class UnusedLocalEliminator implements BodyInterceptor {
 
+  /**
+   * Removes unused local variables from the List of Stmts of the given {@link Body}. Complexity is
+   * linear with respect to the statements.
+   *
+   * @param originalBody The current body before interception.
+   * @return The transformed body.
+   */
   @Nonnull
   @Override
   public Body interceptBody(@Nonnull Body originalBody) {
@@ -26,6 +32,7 @@ public class UnusedLocalEliminator implements BodyInterceptor {
     Set<Local> originalLocals = originalBody.getLocals();
     Set<Local> locals = new HashSet<>();
 
+    // Traverse statements copying all used uses and defs
     for (Stmt stmt : originalBody.getStmts()) {
       for (ValueBox valueBox : stmt.getUseBoxes()) {
         Value value = valueBox.getValue();
