@@ -23,11 +23,8 @@ import de.upb.swt.soot.core.frontend.ResolveException;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.core.types.JavaClassType;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,16 +52,25 @@ public class WalaClassLoader {
 
   /** Create wala.properties to class path */
   private void createWalaproperties() {
-    if (!walaPropertiesFile.exists()) {
-      PrintWriter pw;
-      try {
+    // normalize windows path to a mature path format
+    String content =
+        "java_runtime_dir = "
+            + new File(System.getProperty("java.home")).toString().replace('\\', '/');
+
+    // check whether the already cached/written wala.properties (still) matches the current
+    // configuration otherwise overwrite it
+    // e.g. some IDEs allow it to use a different java version than declared globally which leads to
+    // problems
+    try {
+      if (!walaPropertiesFile.exists()
+          || Files.readAllLines(walaPropertiesFile.toPath()).equals(content)) {
+        PrintWriter pw;
         pw = new PrintWriter(walaPropertiesFile);
-        String jdkPath = System.getProperty("java.home");
-        pw.println("java_runtime_dir = " + new File(jdkPath).toString().replace("\\", "/"));
+        pw.println(content);
         pw.close();
-      } catch (FileNotFoundException e) {
-        throw new RuntimeException(e);
       }
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
