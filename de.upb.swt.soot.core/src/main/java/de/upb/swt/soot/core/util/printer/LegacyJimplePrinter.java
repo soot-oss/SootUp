@@ -4,13 +4,17 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.jimple.javabytecode.stmt.JSwitchStmt;
 import de.upb.swt.soot.core.model.Body;
 
-/** StmtPrinter implementation for normal (full) Jimple for OldSoot */
+/**
+ * StmtPrinter implementation for normal (full) Jimple for OldSoot
+ *
+ * @author Markus Schmidt
+ */
 /*
- *  List of differences between old and current Jimple:
+ * List of differences between old and current Jimple:
  * - tableswitch and lookupswitch got merged into switch
  * - now imports are possible - disabled
- * */
-
+ *
+ */
 public class LegacyJimplePrinter extends NormalStmtPrinter {
 
   public LegacyJimplePrinter(Body b) {

@@ -227,7 +227,7 @@ public class Printer {
   }
 
   /**
-   * Prints out the methodRef corresponding to b Body, (declaration and body), in the textual format
+   * Prints out the method corresponding to b Body, (declaration and body), in the textual format
    * corresponding to the IR used to encode b body.
    */
   public void printTo(Body b, PrintWriter out) {
@@ -243,7 +243,7 @@ public class Printer {
   }
 
   /**
-   * Prints out the methodRef corresponding to b Body, (declaration and body), in the textual format
+   * Prints out the method corresponding to b Body, (declaration and body), in the textual format
    * corresponding to the IR used to encode b body.
    *
    * @param printer the StmtPrinter that determines how to print the statements
