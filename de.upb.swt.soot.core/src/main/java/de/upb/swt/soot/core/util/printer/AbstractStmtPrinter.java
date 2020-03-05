@@ -35,6 +35,7 @@ import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 /** Partial default StmtPrinter implementation. */
 public abstract class AbstractStmtPrinter implements StmtPrinter {
@@ -128,10 +129,11 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   public abstract void literal(String s);
 
   @Override
-  public void typeSignature(Type type) {
+  public void typeSignature(@Nonnull Type type) {
     handleIndent();
     if (type == null) {
       output.append("<null>");
+      return;
     } else if (useImports) {
       if (type instanceof ClassType) {
         if (addImport(type)) {
@@ -176,16 +178,6 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
     output.append(c.toString());
   }
 
-  @Override
-  public String toString() {
-    return output.toString();
-  }
-
-  @Override
-  public StringBuilder output() {
-    return output;
-  }
-
   protected void handleIndent() {
     if (startOfLine) {
       for (int i = indent; i > 0; i--) {
@@ -193,5 +185,10 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
       }
     }
     startOfLine = false;
+  }
+
+  @Override
+  public String toString() {
+    return output.toString();
   }
 }

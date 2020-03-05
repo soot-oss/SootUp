@@ -76,6 +76,4 @@ public interface StmtPrinter {
   void stmtRef(Stmt u, boolean branchTarget);
 
   void identityRef(IdentityRef r);
-
-  StringBuilder output();
 }

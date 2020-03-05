@@ -192,7 +192,7 @@ public class Printer {
       out.println();
     }
 
-    out.println(printer.output().toString());
+    out.println(printer.toString());
   }
 
   private void printMethods(SootClass cl, LabeledStmtPrinter printer) {

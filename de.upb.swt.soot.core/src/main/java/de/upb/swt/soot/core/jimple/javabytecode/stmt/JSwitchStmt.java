@@ -269,15 +269,14 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    String endOfLine = " ";
 
     sb.append(Jimple.SWITCH)
         .append("(")
         .append(getKey().toString())
         .append(")")
-        .append(endOfLine)
+        .append(" ")
         .append("{")
-        .append(endOfLine);
+        .append(" ");
 
     for (int i = 0; i < values.size(); i++) {
       Stmt target = getTarget(i);
@@ -288,14 +287,14 @@ public final class JSwitchStmt extends AbstractStmt implements Copyable {
           .append(" ")
           .append(target == this ? "self" : target)
           .append(";")
-          .append(endOfLine);
+          .append(" ");
     }
 
     Stmt target = getDefaultTarget();
     sb.append("    " + Jimple.DEFAULT + ": " + Jimple.GOTO + " ")
         .append(target == this ? "self" : target)
         .append(";")
-        .append(endOfLine);
+        .append(" ");
 
     sb.append("}");
 
