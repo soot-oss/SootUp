@@ -8,14 +8,21 @@ import de.upb.swt.soot.core.model.Body;
 /*
  *  List of differences between old and current Jimple:
  * - tableswitch and lookupswitch got merged into switch
- * - now imports are possible
- *
+ * - now imports are possible - disabled
  * */
 
 public class LegacyJimplePrinter extends NormalStmtPrinter {
 
   public LegacyJimplePrinter(Body b) {
     super(b);
+  }
+
+  @Override
+  void enableImports(boolean enable) {
+    if (enable) {
+      throw new RuntimeException(
+          "Imports are not supported in Legacy Jimple: don't enable UseImports");
+    }
   }
 
   @Override
