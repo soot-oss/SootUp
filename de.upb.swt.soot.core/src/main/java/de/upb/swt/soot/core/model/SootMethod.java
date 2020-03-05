@@ -182,7 +182,7 @@ public class SootMethod extends SootClassMember<MethodSignature> implements Meth
 
     // print modifiers
     final Set<Modifier> modifiers = getModifiers();
-    printer.literal(Modifier.toString(modifiers));
+    printer.modifier(Modifier.toString(modifiers));
     if (modifiers.size() != 0) {
       printer.literal(" ");
     }

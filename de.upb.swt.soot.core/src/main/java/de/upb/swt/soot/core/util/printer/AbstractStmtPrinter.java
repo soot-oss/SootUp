@@ -136,6 +136,11 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   @Override
   public abstract void literal(String s);
 
+  public void modifier(String str) {
+    handleIndent();
+    output.append(str);
+  };
+
   @Override
   public void typeSignature(@Nonnull Type type) {
     handleIndent();

@@ -114,7 +114,7 @@ public class Printer {
       if (cl.isInterface() && Modifier.isAbstract(modifiers)) {
         modifiers.remove(Modifier.ABSTRACT);
       }
-      printer.literal(Modifier.toString(modifiers));
+      printer.modifier(Modifier.toString(modifiers));
       printer.literal(modifiers.size() == 0 ? "" : " ");
 
       // TODO: CHECK: why is an interface not called interface?!
