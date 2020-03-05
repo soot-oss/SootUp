@@ -521,7 +521,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
   }
 
   private void convertPutFieldInsn(@Nonnull FieldInsnNode insn) {
-    boolean instance = insn.getOpcode() == PUTFIELD;
+    boolean notInstance = insn.getOpcode() != PUTFIELD;
     StackFrame frame = getFrame(insn);
     Operand[] out = frame.getOut();
     Operand opr, rvalue;
@@ -534,7 +534,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       Value val;
       FieldSignature ref;
       rvalue = popImmediate(type);
-      if (!instance) {
+      if (notInstance) {
         ref = JavaIdentifierFactory.getInstance().getFieldSignature(insn.name, declClass, type);
         val = Jimple.newStaticFieldRef(ref);
         frame.setIn(rvalue);
@@ -552,7 +552,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
           Jimple.newAssignStmt(
               val, rvalue.stackOrValue(), StmtPositionInfo.createNoStmtPositionInfo());
       rvalue.addBox(as.getRightOpBox());
-      if (!instance) {
+      if (notInstance) {
         frame.setBoxes(as.getRightOpBox());
       } else {
         frame.setBoxes(as.getRightOpBox(), ((JInstanceFieldRef) val).getBaseBox());
@@ -562,7 +562,7 @@ public class AsmMethodSource extends JSRInlinerAdapter implements MethodSource {
       opr = out[0];
       type = opr.<JFieldRef>value().getFieldSignature().getType();
       rvalue = pop(type);
-      if (!instance) {
+      if (notInstance) {
         /* PUTSTATIC only needs one operand on the stack, the rvalue */
         frame.mergeIn(rvalue);
       } else {
