@@ -124,6 +124,8 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
    */
   public interface Builder<S extends AbstractClassMemberSignature, T extends SootClassMember<S>> {
 
+    // TODO: [ms] add SignatureStep consistently
+
     interface ModifiersStep<B> {
       /**
        * Sets the {@link Modifier modifiers}.
@@ -163,16 +165,8 @@ public abstract class SootClassMember<S extends AbstractClassMemberSignature> {
    * @author Jan Martin Persch
    */
   abstract static class SootClassMemberBuilder<
-          S extends AbstractClassMemberSignature, T extends SootClassMember<S>>
-      extends AbstractBuilder<T> {
+      S extends AbstractClassMemberSignature, T extends SootClassMember<S>> {
+    // TODO [ms] make sth with the remaining
 
-    /**
-     * Creates a new instance of the {@link SootMethod.SootMethodBuilder} class.
-     *
-     * @param buildableClass The type of the class to build.
-     */
-    SootClassMemberBuilder(@Nonnull Class<T> buildableClass) {
-      super(buildableClass);
-    }
   }
 }

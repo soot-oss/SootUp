@@ -82,8 +82,8 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
    * @return A {@link SootField} builder.
    */
   @Nonnull
-  public static Builder.SignatureStep builder() {
-    return new SootFieldBuilder();
+  public static SignatureStep builder() {
+    return new SootFieldBuildStep();
   }
 
   /**
@@ -92,20 +92,23 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
    * @see #builder()
    * @author Jan Martin Persch
    */
-  public interface Builder extends SootClassMember.Builder<FieldSignature, SootField> {
-    interface SignatureStep {
-      /**
-       * Sets the {@link FieldSignature}.
-       *
-       * @param value The value to set.
-       * @return This fluent builder.
-       */
-      @Nonnull
-      ModifiersStep withSignature(@Nonnull FieldSignature value);
-    }
+  interface SignatureStep {
+    /**
+     * Sets the {@link FieldSignature}.
+     *
+     * @param value The value to set.
+     * @return This fluent builder.
+     */
+    @Nonnull
+    ModifiersStep withSignature(@Nonnull FieldSignature value);
+  }
 
-    interface ModifiersStep extends SootClassMember.Builder.ModifiersStep<Builder> {}
+  interface ModifiersStep extends SootClassMember.Builder.ModifiersStep<BuildStep> {
+    @Nonnull
+    BuildStep withModifiers(@Nonnull Iterable<Modifier> modifiers);
+  }
 
+  interface BuildStep extends SootClassMember.Builder<FieldSignature, SootField> {
     /**
      * Builds the {@link SootField}.
      *
@@ -117,23 +120,25 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
   }
 
   /**
-   * Defines a {@link SootMethod} builder to provide a fluent API.
+   * Defines a {@link SootField} builder to provide a fluent API.
    *
    * @author Jan Martin Persch
    */
-  protected static class SootFieldBuilder extends SootClassMemberBuilder<FieldSignature, SootField>
-      implements Builder.SignatureStep, Builder.ModifiersStep, Builder {
-
-    /** Creates a new instance of the {@link SootMethod.SootMethodBuilder} class. */
-    SootFieldBuilder() {
-      super(SootField.class);
-    }
+  protected static class SootFieldBuildStep
+      extends SootClassMemberBuilder<FieldSignature, SootField>
+      implements SignatureStep, ModifiersStep, BuildStep {
 
     @Nullable private FieldSignature signature;
+    @Nullable private Iterable<Modifier> modifiers;
 
     @Nonnull
     protected FieldSignature getSignature() {
-      return ensureValue(this.signature, "signature");
+      return signature;
+    }
+
+    @Nonnull
+    protected Iterable<Modifier> getModifiers() {
+      return modifiers;
     }
 
     @Nonnull
@@ -142,15 +147,8 @@ public class SootField extends SootClassMember<FieldSignature> implements Field 
       return this;
     }
 
-    @Nullable private Iterable<Modifier> modifiers;
-
     @Nonnull
-    protected Iterable<Modifier> getModifiers() {
-      return ensureValue(modifiers, "modifiers");
-    }
-
-    @Nonnull
-    public Builder withModifiers(@Nonnull Iterable<Modifier> modifiers) {
+    public BuildStep withModifiers(@Nonnull Iterable<Modifier> modifiers) {
       this.modifiers = modifiers;
       return this;
     }
