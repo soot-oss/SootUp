@@ -56,7 +56,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
 
       String label = labels.get(u);
       if (label == null || "<unnamed>".equals(label)) {
-        output.append("[?= ").append(u).append("]");
+        output.append("[?= ").append(u).append(']');
       } else {
         output.append(label);
       }
@@ -72,7 +72,7 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
         handleIndent();
         setIndent(indentStep / 2);
 
-        output.append("(").append(ref).append(")");
+        output.append('(').append(ref).append(')');
       } else {
         output.append(ref);
       }
@@ -124,11 +124,11 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   @Override
   public void methodSignature(MethodSignature methodSig) {
     if (useImports) {
-      output.append("<");
+      output.append('<');
       typeSignature(methodSig.getDeclClassType());
       output.append(": ");
       typeSignature(methodSig.getType());
-      output.append(" ").append(methodSig.getName()).append("(");
+      output.append(' ').append(methodSig.getName()).append('(');
 
       final List<Type> parameterTypes = methodSig.getSubSignature().getParameterTypes();
       for (Type parameterType : parameterTypes) {
@@ -147,12 +147,12 @@ public abstract class LabeledStmtPrinter extends AbstractStmtPrinter {
   @Override
   public void fieldSignature(FieldSignature fieldSig) {
     if (useImports) {
-      output.append("<");
+      output.append('<');
       typeSignature(fieldSig.getDeclClassType());
       output.append(": ");
       final FieldSubSignature subSignature = fieldSig.getSubSignature();
       typeSignature(subSignature.getType());
-      output.append(" ").append(subSignature.getName()).append('>');
+      output.append(' ').append(subSignature.getName()).append('>');
     } else {
       output.append(fieldSig.toString());
     }
