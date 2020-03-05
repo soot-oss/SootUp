@@ -23,7 +23,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
     handleIndent();
     if (m.isStatic()) {
       output.append(m.getDeclaringClassType().getFullyQualifiedName());
-      literal(".");
+      output.append(".");
     }
     output.append(m.getSignature().getName());
   }
@@ -33,7 +33,7 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
     handleIndent();
     if (f.isStatic()) {
       output.append(f.getDeclaringClassType().getFullyQualifiedName());
-      literal(".");
+      output.append(".");
     }
     output.append(f.getSignature().getName());
   }
@@ -42,12 +42,12 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
   public void identityRef(IdentityRef r) {
     handleIndent();
     if (r instanceof JThisRef) {
-      literal("@this");
+      output.append("@this");
     } else if (r instanceof JParameterRef) {
       JParameterRef pr = (JParameterRef) r;
-      literal("@parameter" + pr.getIndex());
+      output.append("@parameter" + pr.getIndex());
     } else if (r instanceof JCaughtExceptionRef) {
-      literal("@caughtexception");
+      output.append("@caughtexception");
     } else {
       throw new RuntimeException();
     }
@@ -57,7 +57,6 @@ public class BriefStmtPrinter extends LabeledStmtPrinter {
 
   @Override
   public void literal(String s) {
-    handleIndent();
     if (eatSpace && s.equals(" ")) {
       eatSpace = false;
       return;

@@ -33,14 +33,14 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
   public void identityRef(IdentityRef r) {
     handleIndent();
     if (r instanceof JThisRef) {
-      literal("@this: ");
+      output.append("@this: ");
       typeSignature(r.getType());
     } else if (r instanceof JParameterRef) {
       JParameterRef pr = (JParameterRef) r;
-      literal("@parameter" + pr.getIndex() + ": ");
+      output.append("@parameter" + pr.getIndex() + ": ");
       typeSignature(r.getType());
     } else if (r instanceof JCaughtExceptionRef) {
-      literal("@caughtexception");
+      output.append("@caughtexception");
     } else {
       throw new RuntimeException();
     }
@@ -48,7 +48,6 @@ public class NormalStmtPrinter extends LabeledStmtPrinter {
 
   @Override
   public void literal(String s) {
-    handleIndent();
     output.append(s);
   }
 }

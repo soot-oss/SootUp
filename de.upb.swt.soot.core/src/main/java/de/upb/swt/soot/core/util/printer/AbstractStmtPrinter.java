@@ -81,6 +81,14 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
     return imports;
   }
 
+  public void stmt(Stmt currentStmt) {
+    startStmt(currentStmt);
+    currentStmt.toString(this);
+    endStmt(currentStmt);
+    output.append(";");
+    newline();
+  }
+
   @Override
   public void startStmt(Stmt u) {
     handleIndent();
@@ -145,7 +153,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
         return;
       }
     }
-    output.append(type.toString());
+    output.append(type);
   }
 
   @Override
@@ -175,7 +183,7 @@ public abstract class AbstractStmtPrinter implements StmtPrinter {
   @Override
   public void constant(Constant c) {
     handleIndent();
-    output.append(c.toString());
+    output.append(c);
   }
 
   protected void handleIndent() {

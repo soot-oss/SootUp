@@ -320,14 +320,8 @@ public class Printer {
         }
       }
 
-      printer.startStmt(currentStmt);
-      currentStmt.toString(printer);
-      printer.endStmt(currentStmt);
-
-      printer.literal(";");
-      printer.newline();
+      printer.stmt(currentStmt);
     }
-    //    out.print(printer.toString());
 
     // Print out exceptions
     {
