@@ -1,5 +1,5 @@
 
-/** @author: Hasitha Rajapakse **/
+/** @author Hasitha Rajapakse **/
 
 public class GenericTypeParamOnMethod{
     public <T> void a(T val){

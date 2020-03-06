@@ -1,5 +1,5 @@
 
-/** @author: Hasitha Rajapakse */
+/** @author Hasitha Rajapakse */
 
 public class TryCatchFinally {
     public void tryCatchFinally() {

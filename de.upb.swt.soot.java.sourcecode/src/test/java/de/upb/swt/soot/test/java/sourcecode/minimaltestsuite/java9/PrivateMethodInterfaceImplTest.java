@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Ignore;
-import org.junit.Test;
 
 /** @author Kaustubh Kelkar */
 public class PrivateMethodInterfaceImplTest extends MinimalTestSuiteBase {
@@ -22,9 +21,6 @@ public class PrivateMethodInterfaceImplTest extends MinimalTestSuiteBase {
     return identifierFactory.getMethodSignature(
         "methodInterfaceImpl", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
-
-  @Test
-  public void defaultTest() {}
 
   @Ignore
   /** TODO WALA does not support Java9 constructs */

@@ -1,5 +1,5 @@
 
-/** @author: Hasitha Rajapakse **/
+/** @author Hasitha Rajapakse **/
 
 public class UnderscoreInInt{
     public void underscoreInInt(){
