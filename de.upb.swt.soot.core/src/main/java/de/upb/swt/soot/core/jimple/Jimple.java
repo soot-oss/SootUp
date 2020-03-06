@@ -24,6 +24,7 @@
 
 package de.upb.swt.soot.core.jimple;
 
+import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.jimple.basic.ConditionExprBox;
 import de.upb.swt.soot.core.jimple.basic.IdentityRefBox;
 import de.upb.swt.soot.core.jimple.basic.ImmediateBox;
@@ -32,8 +33,8 @@ import de.upb.swt.soot.core.jimple.basic.JStmtBox;
 import de.upb.swt.soot.core.jimple.basic.JTrap;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.LocalBox;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
 import de.upb.swt.soot.core.jimple.basic.StmtBox;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.constant.IntConstant;
@@ -85,21 +86,10 @@ import de.upb.swt.soot.core.jimple.common.stmt.JReturnStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JReturnVoidStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.JThrowStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JEnterMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JExitMonitorStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JLookupSwitchStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JRetStmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JTableSwitchStmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.*;
 import de.upb.swt.soot.core.signatures.FieldSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
-import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.types.NullType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.ReferenceType;
-import de.upb.swt.soot.core.types.Type;
-import de.upb.swt.soot.core.types.VoidType;
+import de.upb.swt.soot.core.types.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -114,7 +104,7 @@ import java.util.List;
  * RValue -> Local | Constant | ConcreteRef | Expr<br>
  * Variable -> Local | ArrayRef | InstanceFieldRef | StaticFieldRef <br>
  */
-public class Jimple {
+public abstract class Jimple {
   public static final String NEWARRAY = "newarray";
   public static final String NEWMULTIARRAY = "newmultiarray";
   public static final String NOP = "nop";
@@ -122,7 +112,6 @@ public class Jimple {
   public static final String SPECIALINVOKE = "specialinvoke";
   public static final String DYNAMICINVOKE = "dynamicinvoke";
   public static final String STATICINVOKE = "staticinvoke";
-  public static final String TABLESWITCH = "tableswitch";
   public static final String VIRTUALINVOKE = "virtualinvoke";
   public static final String NULL_TYPE = "null_type";
   public static final String UNKNOWN = "unknown";
@@ -133,7 +122,6 @@ public class Jimple {
   public static final String EXITMONITOR = "exitmonitor";
   public static final String INTERFACEINVOKE = "interfaceinvoke";
   public static final String LENGTHOF = "lengthof";
-  public static final String LOOKUPSWITCH = "lookupswitch";
   public static final String NEG = "neg";
   public static final String IF = "if";
   public static final String ABSTRACT = "abstract";
@@ -171,6 +159,7 @@ public class Jimple {
   public static final String INSTANCEOF = "instanceof";
   public static final String NEW = "new";
   public static final String RETURN = "return";
+  public static final String SWITCH = "switch";
   public static final String THROW = "throw";
   public static final String THROWS = "throws";
   public static final String NULL = "null";
@@ -192,7 +181,7 @@ public class Jimple {
         RET,
         SPECIALINVOKE,
         STATICINVOKE,
-        TABLESWITCH,
+        SWITCH,
         VIRTUALINVOKE,
         NULL_TYPE,
         UNKNOWN,
@@ -203,7 +192,6 @@ public class Jimple {
         EXITMONITOR,
         INTERFACEINVOKE,
         LENGTHOF,
-        LOOKUPSWITCH,
         NEG,
         IF,
         ABSTRACT,
@@ -253,15 +241,7 @@ public class Jimple {
     return l;
   }
 
-  public static boolean isJavaKeywordType(Type t) {
-    // TODO: Ensure that the check is complete.
-    return t instanceof PrimitiveType || t instanceof VoidType || t instanceof NullType;
-  }
-
-  public static Value cloneIfNecessary(Value val) {
-    // TODO: [JMP] Clone, if necessary
-    return val;
-  }
+  public abstract IdentifierFactory getIdentifierFactory();
 
   /** Constructs a XorExpr(Immediate, Immediate) grammar chunk. */
   public static JXorExpr newXorExpr(Value op1, Value op2) {
@@ -384,8 +364,8 @@ public class Jimple {
   }
 
   /** Constructs a NewArrayExpr(Type, Immediate) grammar chunk. */
-  public static JNewArrayExpr newNewArrayExpr(Type type, Value size) {
-    return new JNewArrayExpr(type, size);
+  public JNewArrayExpr newNewArrayExpr(Type type, Value size) {
+    return new JNewArrayExpr(type, size, getIdentifierFactory());
   }
 
   /** Constructs a NewStaticInvokeExpr(ArrayType, List of Immediate) grammar chunk. */
@@ -513,120 +493,120 @@ public class Jimple {
   }
 
   /** Constructs a ThrowStmt(Immediate) grammar chunk. */
-  public static JThrowStmt newThrowStmt(Value op, PositionInfo posInfo) {
+  public static JThrowStmt newThrowStmt(Value op, StmtPositionInfo posInfo) {
     return new JThrowStmt(op, posInfo);
   }
 
   /** Constructs a ExitMonitorStmt(Immediate) grammar chunk. */
-  public static JExitMonitorStmt newExitMonitorStmt(Value op, PositionInfo posInfo) {
+  public static JExitMonitorStmt newExitMonitorStmt(Value op, StmtPositionInfo posInfo) {
     return new JExitMonitorStmt(op, posInfo);
   }
 
   /** Constructs a EnterMonitorStmt(Immediate) grammar chunk. */
-  public static JEnterMonitorStmt newEnterMonitorStmt(Value op, PositionInfo posInfo) {
+  public static JEnterMonitorStmt newEnterMonitorStmt(Value op, StmtPositionInfo posInfo) {
     return new JEnterMonitorStmt(op, posInfo);
   }
 
   /** Constructs a BreakpointStmt() grammar chunk. */
-  public static JBreakpointStmt newBreakpointStmt(PositionInfo posInfo) {
+  public static JBreakpointStmt newBreakpointStmt(StmtPositionInfo posInfo) {
     return new JBreakpointStmt(posInfo);
   }
 
   /** Constructs a GotoStmt(Stmt) grammar chunk. */
-  public static JGotoStmt newGotoStmt(Stmt target, PositionInfo posInfo) {
+  public static JGotoStmt newGotoStmt(Stmt target, StmtPositionInfo posInfo) {
     return new JGotoStmt(target, posInfo);
   }
 
-  public static JGotoStmt newGotoStmt(StmtBox stmtBox, PositionInfo posInfo) {
+  public static JGotoStmt newGotoStmt(StmtBox stmtBox, StmtPositionInfo posInfo) {
     return new JGotoStmt(stmtBox, posInfo);
   }
 
   /** Constructs a NopStmt() grammar chunk. */
-  public static JNopStmt newNopStmt(PositionInfo posInfo) {
+  public static JNopStmt newNopStmt(StmtPositionInfo posInfo) {
     return new JNopStmt(posInfo);
   }
 
   /** Constructs a ReturnVoidStmt() grammar chunk. */
-  public static JReturnVoidStmt newReturnVoidStmt(PositionInfo posInfo) {
+  public static JReturnVoidStmt newReturnVoidStmt(StmtPositionInfo posInfo) {
     return new JReturnVoidStmt(posInfo);
   }
 
   /** Constructs a ReturnStmt(Immediate) grammar chunk. */
-  public static JReturnStmt newReturnStmt(Value op, PositionInfo posInfo) {
+  public static JReturnStmt newReturnStmt(Value op, StmtPositionInfo posInfo) {
     return new JReturnStmt(op, posInfo);
   }
 
   /** Constructs a RetStmt(Local) grammar chunk. */
-  public static JRetStmt newRetStmt(Value stmtAddress, PositionInfo posInfo) {
+  public static JRetStmt newRetStmt(Value stmtAddress, StmtPositionInfo posInfo) {
     return new JRetStmt(stmtAddress, posInfo);
   }
 
   /** Constructs a IfStmt(Condition, Stmt) grammar chunk. */
-  public static JIfStmt newIfStmt(Value condition, Stmt target, PositionInfo posInfo) {
+  public static JIfStmt newIfStmt(Value condition, Stmt target, StmtPositionInfo posInfo) {
     return new JIfStmt(condition, target, posInfo);
   }
 
   /** Constructs a IfStmt(Condition, UnitBox) grammar chunk. */
-  public static JIfStmt newIfStmt(Value condition, StmtBox target, PositionInfo posInfo) {
+  public static JIfStmt newIfStmt(Value condition, StmtBox target, StmtPositionInfo posInfo) {
     return new JIfStmt(condition, target, posInfo);
   }
 
   /** Constructs a IdentityStmt(Local, IdentityRef) grammar chunk. */
   public static JIdentityStmt newIdentityStmt(
-      Value local, Value identityRef, PositionInfo posInfo) {
+      Value local, Value identityRef, StmtPositionInfo posInfo) {
     return new JIdentityStmt(local, identityRef, posInfo);
   }
 
   /** Constructs a AssignStmt(Variable, RValue) grammar chunk. */
-  public static JAssignStmt newAssignStmt(Value variable, Value rvalue, PositionInfo posInfo) {
+  public static JAssignStmt newAssignStmt(Value variable, Value rvalue, StmtPositionInfo posInfo) {
     return new JAssignStmt(variable, rvalue, posInfo);
   }
 
   /** Constructs a InvokeStmt(InvokeExpr) grammar chunk. */
-  public static JInvokeStmt newInvokeStmt(Value op, PositionInfo posInfo) {
+  public static JInvokeStmt newInvokeStmt(Value op, StmtPositionInfo posInfo) {
     return new JInvokeStmt(op, posInfo);
   }
 
   /** Constructs a TableSwitchStmt(Immediate, int, int, List of Unit, Stmt) grammar chunk. */
-  public static JTableSwitchStmt newTableSwitchStmt(
+  public static JSwitchStmt newTableSwitchStmt(
       Value key,
       int lowIndex,
       int highIndex,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
-      PositionInfo posInfo) {
-    return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
+      StmtPositionInfo posInfo) {
+    return new JSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
 
-  public static JTableSwitchStmt newTableSwitchStmt(
+  public static JSwitchStmt newTableSwitchStmt(
       Value key,
       int lowIndex,
       int highIndex,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
-      PositionInfo posInfo) {
-    return new JTableSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
+      StmtPositionInfo posInfo) {
+    return new JSwitchStmt(key, lowIndex, highIndex, targets, defaultTarget, posInfo);
   }
 
   /**
    * Constructs a LookupSwitchStmt(Immediate, List of Immediate, List of Unit, Stmt) grammar chunk.
    */
-  public static JLookupSwitchStmt newLookupSwitchStmt(
+  public static JSwitchStmt newLookupSwitchStmt(
       Value key,
       List<IntConstant> lookupValues,
       List<? extends Stmt> targets,
       Stmt defaultTarget,
-      PositionInfo posInfo) {
-    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
+      StmtPositionInfo posInfo) {
+    return new JSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
 
-  public static JLookupSwitchStmt newLookupSwitchStmt(
+  public static JSwitchStmt newLookupSwitchStmt(
       Value key,
       List<IntConstant> lookupValues,
       List<? extends StmtBox> targets,
       StmtBox defaultTarget,
-      PositionInfo posInfo) {
-    return new JLookupSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
+      StmtPositionInfo posInfo) {
+    return new JSwitchStmt(key, lookupValues, targets, defaultTarget, posInfo);
   }
 
   /** Constructs a Local with the given name and type. */
@@ -655,14 +635,12 @@ public class Jimple {
   }
 
   /** Constructs a ArrayRef(Local, Immediate) grammar chunk. */
-  public static JArrayRef newArrayRef(Value base, Value index) {
-    return new JArrayRef(base, index);
+  public JArrayRef newArrayRef(Value base, Value index) {
+    return new JArrayRef(base, index, getIdentifierFactory());
   }
 
   /** Constructs a CaughtExceptionRef() grammar chunk. */
-  public static JCaughtExceptionRef newCaughtExceptionRef() {
-    return new JCaughtExceptionRef();
-  }
+  public abstract JCaughtExceptionRef newCaughtExceptionRef();
 
   public static ValueBox newArgBox(Value value) {
     return new ImmediateBox(value);
@@ -703,7 +681,7 @@ public class Jimple {
   }
 
   public static JTrap newTrap(
-      JavaClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
+      ClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
     return new JTrap(exception, beginStmt, endStmt, handlerStmt);
   }
 }

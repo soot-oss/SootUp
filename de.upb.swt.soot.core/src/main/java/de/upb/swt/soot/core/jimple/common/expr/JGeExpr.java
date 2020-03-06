@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/** An expression that checks whether operand 1 >= operand 2. */
 public final class JGeExpr extends AbstractConditionExpr implements Copyable {
 
   public JGeExpr(Value op1, Value op2) {

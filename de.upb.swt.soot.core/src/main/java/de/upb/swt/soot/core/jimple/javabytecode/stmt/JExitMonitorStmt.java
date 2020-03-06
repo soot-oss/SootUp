@@ -27,7 +27,7 @@ package de.upb.swt.soot.core.jimple.javabytecode.stmt;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.JimpleComparator;
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Value;
 import de.upb.swt.soot.core.jimple.basic.ValueBox;
 import de.upb.swt.soot.core.jimple.common.stmt.AbstractOpStmt;
@@ -37,13 +37,14 @@ import de.upb.swt.soot.core.util.Copyable;
 import de.upb.swt.soot.core.util.printer.StmtPrinter;
 import javax.annotation.Nonnull;
 
+/** A statement that exits a JVM monitor, thereby ending synchronization. */
 public final class JExitMonitorStmt extends AbstractOpStmt implements Copyable {
 
-  public JExitMonitorStmt(Value op, PositionInfo positionInfo) {
+  public JExitMonitorStmt(Value op, StmtPositionInfo positionInfo) {
     this(Jimple.newImmediateBox(op), positionInfo);
   }
 
-  private JExitMonitorStmt(ValueBox opBox, PositionInfo positionInfo) {
+  private JExitMonitorStmt(ValueBox opBox, StmtPositionInfo positionInfo) {
     super(opBox, positionInfo);
   }
 
@@ -85,7 +86,7 @@ public final class JExitMonitorStmt extends AbstractOpStmt implements Copyable {
   }
 
   @Nonnull
-  public JExitMonitorStmt withPositionInfo(PositionInfo positionInfo) {
+  public JExitMonitorStmt withPositionInfo(StmtPositionInfo positionInfo) {
     return new JExitMonitorStmt(getOp(), positionInfo);
   }
 }

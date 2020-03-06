@@ -3,12 +3,13 @@ package de.upb.swt.soot.java.sourcecode.inputlocation;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.AbstractClassSource;
 import de.upb.swt.soot.core.frontend.ResolveException;
-import de.upb.swt.soot.core.inputlocation.AbstractAnalysisInputLocation;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.inputlocation.ClassLoadingOptions;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -17,17 +18,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of the {@link AbstractAnalysisInputLocation} interface for the Java source code
- * path.
+ * An implementation of the {@link AnalysisInputLocation} interface for the Java source code path.
+ *
+ * <p>Provides default {@link ClassLoadingOptions} from {@link SourcecodeClassLoadingOptions}.
  *
  * @author Linghui Luo
  */
-public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLocation {
+public class JavaSourcePathAnalysisInputLocation implements AnalysisInputLocation {
 
   private static final Logger log =
       LoggerFactory.getLogger(JavaSourcePathAnalysisInputLocation.class);
 
   @Nonnull private final Set<String> sourcePaths;
+  @Nonnull private final WalaJavaClassProvider classProvider;
+
   private final String exclusionFilePath;
 
   /**
@@ -40,6 +44,10 @@ public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLo
     this(sourcePaths, null);
   }
 
+  public JavaSourcePathAnalysisInputLocation(@Nonnull String sourcePath) {
+    this(Collections.singleton(sourcePath), null);
+  }
+
   /**
    * Create a {@link JavaSourcePathAnalysisInputLocation} which locates java source code in the
    * given source path.
@@ -48,25 +56,37 @@ public class JavaSourcePathAnalysisInputLocation extends AbstractAnalysisInputLo
    */
   public JavaSourcePathAnalysisInputLocation(
       @Nonnull Set<String> sourcePaths, @Nullable String exclusionFilePath) {
-    super(new WalaJavaClassProvider());
-
     this.sourcePaths = sourcePaths;
     this.exclusionFilePath = exclusionFilePath;
+    this.classProvider = new WalaJavaClassProvider(sourcePaths, exclusionFilePath);
+  }
+
+  @Override
+  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull ClassType type) {
+    return getClassSource(type, SourcecodeClassLoadingOptions.Default);
+  }
+
+  @Nonnull
+  public Collection<? extends AbstractClassSource> getClassSources(
+      @Nonnull IdentifierFactory identifierFactory) {
+    return getClassSources(identifierFactory, SourcecodeClassLoadingOptions.Default);
   }
 
   @Override
   @Nonnull
   public Collection<? extends AbstractClassSource> getClassSources(
-      @Nonnull IdentifierFactory identifierFactory) {
-    return new WalaClassLoader(sourcePaths, exclusionFilePath).getClassSources();
+      @Nonnull IdentifierFactory identifierFactory,
+      @Nonnull ClassLoadingOptions classLoadingOptions) {
+    return classProvider.getClassSources();
   }
 
   @Override
   @Nonnull
-  public Optional<? extends AbstractClassSource> getClassSource(@Nonnull JavaClassType type) {
+  public Optional<? extends AbstractClassSource> getClassSource(
+      @Nonnull ClassType type, @Nonnull ClassLoadingOptions classLoadingOptions) {
     for (String path : sourcePaths) {
       try {
-        return Optional.of(getClassProvider().createClassSource(this, Paths.get(path), type));
+        return Optional.of(classProvider.createClassSource(this, Paths.get(path), type));
       } catch (ResolveException e) {
         log.debug(type + " not found in sourcePath " + path, e);
       }

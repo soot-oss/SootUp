@@ -25,18 +25,18 @@
 
 package de.upb.swt.soot.core.jimple.common.stmt;
 
-import de.upb.swt.soot.core.jimple.basic.PositionInfo;
+import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 
 public abstract class AbstractStmt extends Stmt {
 
-  private final PositionInfo positionInfo;
+  private final StmtPositionInfo positionInfo;
 
-  public AbstractStmt(PositionInfo positionInfo) {
+  public AbstractStmt(StmtPositionInfo positionInfo) {
     this.positionInfo = positionInfo;
   }
 
   @Override
-  public PositionInfo getPositionInfo() {
+  public StmtPositionInfo getPositionInfo() {
     return positionInfo;
   }
 }

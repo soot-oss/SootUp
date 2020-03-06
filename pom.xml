@@ -14,6 +14,7 @@
   <modules>
     <!-- !!! When adding a module here, it's important to also add it to the sootmodules of the Jenkinsfile !!! -->
     <module>de.upb.swt.soot.core</module>
+    <module>de.upb.swt.soot.java.core</module>
     <module>de.upb.swt.soot.java.bytecode</module>
     <module>de.upb.swt.soot.java.sourcecode</module>
     <module>de.upb.swt.soot.tests</module>
@@ -225,8 +226,9 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <groupId>org.apache.maven.plugins</groupId>
-        <version>2.10.3</version>
+        <version>3.1.1</version>
         <configuration>
+          <additionalOptions>-html5</additionalOptions>
           <fixTags>author</fixTags>
           <force>true</force>
           <fixFieldComment>false</fixFieldComment>

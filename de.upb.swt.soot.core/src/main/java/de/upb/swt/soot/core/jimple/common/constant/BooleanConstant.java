@@ -16,17 +16,26 @@ import javax.annotation.Nonnull;
 public class BooleanConstant
     implements LogicalConstant<BooleanConstant>, ComparableConstant<BooleanConstant> {
 
-  private static final BooleanConstant FALSE = new BooleanConstant(0);
-  private static final BooleanConstant TRUE = new BooleanConstant(1);
+  private static final BooleanConstant FALSE = new BooleanConstant(false);
+  private static final BooleanConstant TRUE = new BooleanConstant(true);
 
-  private final int value;
+  private final boolean value;
 
-  private BooleanConstant(int value) {
+  private BooleanConstant(boolean value) {
     this.value = value;
   }
 
   public static BooleanConstant getInstance(boolean value) {
     return value ? TRUE : FALSE;
+  }
+
+  public static BooleanConstant getInstance(int value) {
+    if (value == 1) {
+      return TRUE;
+    } else if (value == 0) {
+      return FALSE;
+    }
+    throw new RuntimeException("The value of boolean constant can only be 1 or 0");
   }
 
   public static BooleanConstant getTrue() {
@@ -35,13 +44,6 @@ public class BooleanConstant
 
   public static BooleanConstant getFalse() {
     return FALSE;
-  }
-
-  public static BooleanConstant getInstance(int value) {
-    if (value != 1 && value != 0) {
-      throw new RuntimeException("The value of boolean constant can only be 1 or 0");
-    }
-    return value == 1 ? TRUE : FALSE;
   }
 
   @Override
@@ -57,34 +59,34 @@ public class BooleanConstant
   @Nonnull
   @Override
   public BooleanConstant equalEqual(@Nonnull BooleanConstant c) {
-    return BooleanConstant.getInstance(this.value == c.value);
+    return BooleanConstant.getInstance(value == c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant notEqual(@Nonnull BooleanConstant c) {
-    return BooleanConstant.getInstance(this.value != c.value);
+    return BooleanConstant.getInstance(value != c.value);
   }
 
   @Nonnull
   public BooleanConstant and(@Nonnull BooleanConstant c) {
-    return BooleanConstant.getInstance(this.value & c.value);
+    return BooleanConstant.getInstance(value & c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant or(@Nonnull BooleanConstant c) {
-    return BooleanConstant.getInstance(this.value | c.value);
+    return BooleanConstant.getInstance(value | c.value);
   }
 
   @Nonnull
   @Override
   public BooleanConstant xor(@Nonnull BooleanConstant c) {
-    return BooleanConstant.getInstance(this.value ^ c.value);
+    return BooleanConstant.getInstance(value ^ c.value);
   }
 
   @Override
   public String toString() {
-    return Integer.toString(value);
+    return value ? "1" : "0";
   }
 }

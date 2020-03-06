@@ -3,10 +3,8 @@ package de.upb.swt.soot.test.java.bytecode.frontend;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.Project;
-import de.upb.swt.soot.core.frontend.EagerJavaClassSource;
 import de.upb.swt.soot.core.frontend.MethodSource;
+import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.inputlocation.EagerInputLocation;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.Modifier;
@@ -17,11 +15,13 @@ import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.signatures.FieldSubSignature;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.MethodSubSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.ImmutableUtils;
-import de.upb.swt.soot.core.views.View;
-import de.upb.swt.soot.java.bytecode.frontend.AsmJavaClassProvider;
 import de.upb.swt.soot.java.bytecode.inputlocation.JavaClassPathAnalysisInputLocation;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.JavaProject;
+import de.upb.swt.soot.java.core.language.JavaLanguage;
+import de.upb.swt.soot.java.core.views.JavaView;
 import java.io.File;
 import java.util.EnumSet;
 import javax.annotation.Nonnull;
@@ -49,18 +49,19 @@ public class ModuleCompositionTest {
     assertTrue("File " + jarFile + " not found.", new File(jarFile).exists());
 
     // Create a project
-    Project<JavaClassPathAnalysisInputLocation> p =
-        new Project<>(new JavaClassPathAnalysisInputLocation(jarFile, new AsmJavaClassProvider()));
+    JavaProject p =
+        JavaProject.builder(new JavaLanguage(8))
+            .addClassPath(new JavaClassPathAnalysisInputLocation(jarFile))
+            .build();
 
     // Get the view
-    View view = p.createOnDemandView();
+    JavaView view = p.createOnDemandView();
 
     // Create java class signature
-    JavaClassType utilsClassSignature = p.getIdentifierFactory().getClassType("de.upb.soot.Utils");
+    ClassType utilsClassSignature = p.getIdentifierFactory().getClassType("de.upb.soot.Utils");
 
     // Resolve signature to `SootClass`
-    SootClass utilsClass =
-        utilsClassSignature.resolve(view).orElseThrow(IllegalStateException::new);
+    SootClass utilsClass = view.getClass(utilsClassSignature).get();
 
     // Print all methods that are loaded on-demand
     // System.out.println("Methods of " + utilsClassSignature + " class:");
@@ -70,7 +71,7 @@ public class ModuleCompositionTest {
 
     // Parse sub-signature for "optionalToStream" method
     MethodSubSignature optionalToStreamMethodSubSignature =
-        DefaultIdentifierFactory.getInstance()
+        JavaIdentifierFactory.getInstance()
             .parseMethodSubSignature(
                 "java.util.stream.Stream optionalToStream(java.util.Optional)");
 
@@ -98,16 +99,16 @@ public class ModuleCompositionTest {
 
     // Parse sub-signature for "name" field
     FieldSubSignature nameFieldSubSignature =
-        DefaultIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String name");
+        JavaIdentifierFactory.getInstance().parseFieldSubSignature("java.lang.String name");
 
     // Create the class signature
-    JavaClassType classSignature = view.getIdentifierFactory().getClassType("x.y.z.foo.Bar");
+    ClassType classSignature = view.getIdentifierFactory().getClassType("x.y.z.foo.Bar");
 
     // Build a soot class
 
     SootClass c =
         new SootClass(
-            new EagerJavaClassSource(
+            new OverridingClassSource(
                 new EagerInputLocation(),
                 null,
                 classSignature,
@@ -132,7 +133,7 @@ public class ModuleCompositionTest {
                               @Override
                               @Nonnull
                               public MethodSignature getSignature() {
-                                return DefaultIdentifierFactory.getInstance()
+                                return JavaIdentifierFactory.getInstance()
                                     .getMethodSignature(
                                         utilsClass, optionalToStreamMethodSubSignature);
                               }

@@ -4,27 +4,23 @@
 ![Logo](logo.png)
 
 This is the home of the **FutureSoot** project.
-
 A complete overhaul of the good, old static analysis framework [Soot](https://github.com/Sable/soot).
 
 ## FutureSoot provides
 - New Improved API
-- Multiple Scenes
-- Full Java 11 Support
+- Multiple Views (Scenes)
 - Up-to-Date SourceCode Frontend
 - Full-Diff Support for Classes
+- Full Java 11 Support
 - Incremental Updates of Program Representation
-- Fully-Parallelized/Distributed Architecture using [Akka](https://akka.io/)
+- Fully-Parallelized/Distributed Architecture
 
-## Coding Guidelines & Misc.
+## What is done and what needs to be done
+https://github.com/secure-software-engineering/soot-reloaded/wiki/TODOs
+
+## Contribution Guidelines 
 
 [Coding guidelines and contributors notice!](../../wiki/contribution-to-soot-reloaded)
-
-[Notizen zum kick-off meeting](../../wiki/kickoff-meeting)
-
-[Design of update mechanism](../../wiki/Design-of-update-mechanism)
-
-[Actor model for new soot ](../../wiki/Actor-model-for-new-soot)
 
 ## Contributors (alphabetized by surname)
 
@@ -33,7 +29,9 @@ A complete overhaul of the good, old static analysis framework [Soot](https://gi
 - Andreas Dann andreas.dann@uni-paderborn.de
 - Julian Dolby dolby@us.ibm.com 
 - Ben Hermann ben.hermann@uni-paderborn.de
+- Kaustubh Kelkar kskelkar@mail.upb.de 
 - Linghui Luo linghui.luo@uni-paderborn.de
 - Jan Martin Persch jmpersch@hni.upb.de
+- Hasitha Rajapakse herajapakse@gmail.com
 - Markus Schmidt smarkus@mail.upb.de
 

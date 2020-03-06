@@ -1,12 +1,7 @@
 package de.upb.swt.soot.callgraph.typehierarchy;
 
 import com.google.common.base.Suppliers;
-import de.upb.swt.soot.core.types.ArrayType;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.core.types.NullType;
-import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.core.types.ReferenceType;
-import de.upb.swt.soot.core.types.Type;
+import de.upb.swt.soot.core.types.*;
 import de.upb.swt.soot.core.views.View;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +34,7 @@ public interface TypeHierarchy {
    * implementations of methods.
    */
   @Nonnull
-  Set<JavaClassType> implementersOf(@Nonnull JavaClassType interfaceType);
+  Set<ClassType> implementersOf(@Nonnull ClassType interfaceType);
 
   /**
    * Returns all classes that extend the specified class. This is transitive: If <code>A extends B
@@ -47,7 +42,7 @@ public interface TypeHierarchy {
    * extenders of <code>classType</code>.
    */
   @Nonnull
-  Set<JavaClassType> subclassesOf(@Nonnull JavaClassType classType);
+  Set<ClassType> subclassesOf(@Nonnull ClassType classType);
 
   /**
    * Returns the interfaces implemented by <code>type</code> if it is a class or extended by <code>
@@ -57,28 +52,28 @@ public interface TypeHierarchy {
    * </code>. <code>I2</code> will be considered an implemented interface of <code>classType</code>.
    */
   @Nonnull
-  Set<JavaClassType> implementedInterfacesOf(@Nonnull JavaClassType type);
+  Set<ClassType> implementedInterfacesOf(@Nonnull ClassType type);
 
   /**
-   * For an interface type, this does the same as {@link #implementersOf(JavaClassType)}. For a
-   * class type, this does the same as {@link #subclassesOf(JavaClassType)}.
+   * For an interface type, this does the same as {@link #implementersOf(ClassType)}. For a class
+   * type, this does the same as {@link #subclassesOf(ClassType)}.
    */
   @Nonnull
-  Set<JavaClassType> subtypesOf(@Nonnull JavaClassType type);
+  Set<ClassType> subtypesOf(@Nonnull ClassType type);
 
   /**
    * Returns the direct superclass of <code>classType</code>. If <code>classType == java.lang.Object
    * </code>, this method returns null.
    */
   @Nullable
-  JavaClassType superClassOf(@Nonnull JavaClassType classType);
+  ClassType superClassOf(@Nonnull ClassType classType);
 
   /**
    * Returns true if <code>potentialSubtype</code> is a subtype of <code>supertype</code>. If they
    * are identical, this will return false.
    *
-   * <p>This method relies on {@link #implementedInterfacesOf(JavaClassType)} and {@link
-   * #superClassOf(JavaClassType)}.
+   * <p>This method relies on {@link #implementedInterfacesOf(ClassType)} and {@link
+   * #superClassOf(ClassType)}.
    */
   default boolean isSubtype(@Nonnull Type supertype, @Nonnull Type potentialSubtype) {
     if (!(supertype instanceof ReferenceType) || !(potentialSubtype instanceof ReferenceType)) {
@@ -117,14 +112,14 @@ public interface TypeHierarchy {
           && potentialSubArrayType.getDimension() == superArrayType.getDimension()) {
         // Arrays are covariant: Object[] x = new String[0];
         return true;
-      } else if (superArrayType.getBaseType() instanceof JavaClassType
-          && (((JavaClassType) superArrayType.getBaseType())
+      } else if (superArrayType.getBaseType() instanceof ClassType
+          && (((ClassType) superArrayType.getBaseType())
                   .getFullyQualifiedName()
                   .equals("java.lang.Object")
-              || ((JavaClassType) superArrayType.getBaseType())
+              || ((ClassType) superArrayType.getBaseType())
                   .getFullyQualifiedName()
                   .equals("java.io.Serializable")
-              || ((JavaClassType) superArrayType.getBaseType())
+              || ((ClassType) superArrayType.getBaseType())
                   .getFullyQualifiedName()
                   .equals("java.lang.Cloneable"))) {
         // Special case: Object[] x = new double[0][0], Object[][] y = new double[0][0][0], ...
@@ -140,15 +135,15 @@ public interface TypeHierarchy {
       } else {
         return false;
       }
-    } else if (supertype instanceof JavaClassType) {
-      if (potentialSubtype instanceof JavaClassType) {
+    } else if (supertype instanceof ClassType) {
+      if (potentialSubtype instanceof ClassType) {
         // First condition is a fast path
-        return supertype.equals(superClassOf((JavaClassType) potentialSubtype))
-            || superClassesOf((JavaClassType) potentialSubtype).contains(supertype)
-            || implementedInterfacesOf((JavaClassType) potentialSubtype).contains(supertype);
+        return supertype.equals(superClassOf((ClassType) potentialSubtype))
+            || superClassesOf((ClassType) potentialSubtype).contains(supertype)
+            || implementedInterfacesOf((ClassType) potentialSubtype).contains(supertype);
       } else if (potentialSubtype instanceof ArrayType) {
         // Arrays are subtypes of java.lang.Object, java.io.Serializable and java.lang.Cloneable
-        String fullyQualifiedName = ((JavaClassType) supertype).getFullyQualifiedName();
+        String fullyQualifiedName = ((ClassType) supertype).getFullyQualifiedName();
         return fullyQualifiedName.equals("java.lang.Object")
             || fullyQualifiedName.equals("java.io.Serializable")
             || fullyQualifiedName.equals("java.lang.Cloneable");
@@ -165,9 +160,9 @@ public interface TypeHierarchy {
    * will be the last entry in the list.
    */
   @Nonnull
-  default List<JavaClassType> superClassesOf(@Nonnull JavaClassType classType) {
-    List<JavaClassType> superClasses = new ArrayList<>();
-    JavaClassType currentSuperClass = superClassOf(classType);
+  default List<ClassType> superClassesOf(@Nonnull ClassType classType) {
+    List<ClassType> superClasses = new ArrayList<>();
+    ClassType currentSuperClass = superClassOf(classType);
     while (currentSuperClass != null) {
       superClasses.add(currentSuperClass);
       currentSuperClass = superClassOf(currentSuperClass);

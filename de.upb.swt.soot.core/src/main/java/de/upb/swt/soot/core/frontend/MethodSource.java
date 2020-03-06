@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 /** A class which knows how to produce Body's for SootMethods. */
 public interface MethodSource {
 
-  /** Returns a filled-out body for the given SootMethod. */
+  /** Returns a filled-out body for the given SootMethod. This may be an expensive operation. */
   @Nullable
   Body resolveBody() throws ResolveException;
 

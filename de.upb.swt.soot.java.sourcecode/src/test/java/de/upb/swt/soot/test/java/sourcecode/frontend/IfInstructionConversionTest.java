@@ -5,12 +5,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
-import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
-import de.upb.swt.soot.core.types.JavaClassType;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.core.util.Utils;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,16 +28,16 @@ public class IfInstructionConversionTest {
 
   // TODO: Failed tests
 
-  private WalaClassLoader loader;
+  private WalaJavaClassProvider loader;
 
-  private DefaultIdentifierFactory typeFactory;
+  private JavaIdentifierFactory typeFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/selected-java-target/";
-    loader = new WalaClassLoader(srcDir, null);
-    typeFactory = DefaultIdentifierFactory.getInstance();
+    loader = new WalaJavaClassProvider(srcDir);
+    typeFactory = JavaIdentifierFactory.getInstance();
     declareClassSig =
         typeFactory.getClassType("de.upb.soot.concrete.controlStatements.ControlStatements");
   }
@@ -58,10 +58,7 @@ public class IfInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -70,17 +67,20 @@ public class IfInstructionConversionTest {
                 "$i1 := @parameter1: int",
                 "$i2 := @parameter2: int",
                 "$z0 = $i0 < $i1",
-                "if $z0 == 0 goto $z1 = $i0 < $i2",
+                "if $z0 == 0 goto label1",
                 "$r1 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r1.<java.io.PrintStream: void println(int)>($i0)",
-                "goto [?= return]",
+                "goto label3",
+                "label1:",
                 "$z1 = $i0 < $i2",
-                "if $z1 == 0 goto $r3 = <java.lang.System: java.io.PrintStream out>",
+                "if $z1 == 0 goto label2",
                 "$r2 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r2.<java.io.PrintStream: void println(int)>($i1)",
-                "goto [?= return]",
+                "goto label3",
+                "label2:",
                 "$r3 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r3.<java.io.PrintStream: void println(int)>($i2)",
+                "label3:",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -100,10 +100,7 @@ public class IfInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -111,8 +108,9 @@ public class IfInstructionConversionTest {
                 "$i0 := @parameter0: int",
                 "$i1 := @parameter1: int",
                 "$z0 = $i0 == $i1",
-                "if $z0 == 0 goto return 0",
+                "if $z0 == 0 goto label1",
                 "return 1",
+                "label1:",
                 "return 0")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -132,10 +130,7 @@ public class IfInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -145,8 +140,9 @@ public class IfInstructionConversionTest {
                 "$i0 = (int) $z0",
                 "$i1 = (int) $z1",
                 "$z2 = $i0 != $i1",
-                "if $z2 == 0 goto return 0",
+                "if $z2 == 0 goto label1",
                 "return 1",
+                "label1:",
                 "return 0")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -169,18 +165,16 @@ public class IfInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
                 "r0 := @this: de.upb.soot.concrete.controlStatements.ControlStatements",
                 "$r1 := @parameter0: java.lang.String",
                 "$z0 = $r1 == null",
-                "if $z0 == 0 goto return 1",
+                "if $z0 == 0 goto label1",
                 "return 0",
+                "label1:",
                 "return 1")
             .collect(Collectors.toCollection(ArrayList::new));
 
@@ -202,10 +196,7 @@ public class IfInstructionConversionTest {
     Body body = method.getBody();
     assertNotNull(body);
 
-    List<String> actualStmts =
-        body.getStmts().stream()
-            .map(Stmt::toString)
-            .collect(Collectors.toCollection(ArrayList::new));
+    List<String> actualStmts = Utils.bodyStmtsAsStrings(body);
 
     List<String> expectedStmts =
         Stream.of(
@@ -214,17 +205,20 @@ public class IfInstructionConversionTest {
                 "$d1 := @parameter1: double",
                 "$d2 := @parameter2: double",
                 "$z0 = $d0 < $d1",
-                "if $z0 == 0 goto $z1 = $d0 < $d2",
+                "if $z0 == 0 goto label1",
                 "$r1 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r1.<java.io.PrintStream: void println(double)>($d0)",
-                "goto [?= return]",
+                "goto label3",
+                "label1:",
                 "$z1 = $d0 < $d2",
-                "if $z1 == 0 goto $r3 = <java.lang.System: java.io.PrintStream out>",
+                "if $z1 == 0 goto label2",
                 "$r2 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r2.<java.io.PrintStream: void println(double)>($d1)",
-                "goto [?= return]",
+                "goto label3",
+                "label2:",
                 "$r3 = <java.lang.System: java.io.PrintStream out>",
                 "virtualinvoke $r3.<java.io.PrintStream: void println(double)>($d2)",
+                "label3:",
                 "return")
             .collect(Collectors.toCollection(ArrayList::new));
 

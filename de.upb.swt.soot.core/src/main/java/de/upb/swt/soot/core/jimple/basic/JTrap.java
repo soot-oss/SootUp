@@ -27,13 +27,18 @@ package de.upb.swt.soot.core.jimple.basic;
 
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.types.JavaClassType;
+import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/**
+ * Represents a try-catch construct.
+ *
+ * <p>Prefer to use the factory methods in {@link Jimple}.
+ */
 public final class JTrap extends AbstractTrap implements Copyable {
 
-  public JTrap(JavaClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
+  public JTrap(ClassType exception, Stmt beginStmt, Stmt endStmt, Stmt handlerStmt) {
     super(
         exception,
         Jimple.newStmtBox(beginStmt),
@@ -41,7 +46,7 @@ public final class JTrap extends AbstractTrap implements Copyable {
         Jimple.newStmtBox(handlerStmt));
   }
 
-  public JTrap(JavaClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
+  public JTrap(ClassType exception, StmtBox beginStmt, StmtBox endStmt, StmtBox handlerStmt) {
     super(exception, beginStmt, endStmt, handlerStmt);
   }
 
@@ -58,22 +63,22 @@ public final class JTrap extends AbstractTrap implements Copyable {
   }
 
   @Nonnull
-  public JTrap withException(JavaClassType exception) {
+  public JTrap withException(ClassType exception) {
     return new JTrap(exception, getBeginStmt(), getEndStmt(), getHandlerStmt());
   }
 
   @Nonnull
   public JTrap withBeginStmt(Stmt beginStmt) {
-    return new JTrap(getException(), beginStmt, getEndStmt(), getHandlerStmt());
+    return new JTrap(getExceptionType(), beginStmt, getEndStmt(), getHandlerStmt());
   }
 
   @Nonnull
   public JTrap withHandlerStmt(Stmt handlerStmt) {
-    return new JTrap(getException(), getBeginStmt(), getEndStmt(), handlerStmt);
+    return new JTrap(getExceptionType(), getBeginStmt(), getEndStmt(), handlerStmt);
   }
 
   @Nonnull
   public JTrap withEndStmt(Stmt endStmt) {
-    return new JTrap(getException(), getBeginStmt(), endStmt, getHandlerStmt());
+    return new JTrap(getExceptionType(), getBeginStmt(), endStmt, getHandlerStmt());
   }
 }

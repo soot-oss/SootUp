@@ -1,13 +1,12 @@
 package de.upb.swt.soot.test.java.sourcecode.frontend;
 
-import static de.upb.swt.soot.test.java.sourcecode.frontend.Utils.assertEquiv;
-import static de.upb.swt.soot.test.java.sourcecode.frontend.Utils.assertInstanceOfSatisfying;
+import static de.upb.swt.soot.core.util.Utils.assertEquiv;
+import static de.upb.swt.soot.core.util.Utils.assertInstanceOfSatisfying;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import categories.Java8Test;
-import de.upb.swt.soot.core.DefaultIdentifierFactory;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.common.ref.JInstanceFieldRef;
@@ -18,9 +17,10 @@ import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
 import de.upb.swt.soot.core.model.Body;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.FieldSignature;
-import de.upb.swt.soot.core.types.JavaClassType;
 import de.upb.swt.soot.core.types.PrimitiveType;
-import de.upb.swt.soot.java.sourcecode.frontend.WalaClassLoader;
+import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.types.JavaClassType;
+import de.upb.swt.soot.java.sourcecode.frontend.WalaJavaClassProvider;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -33,15 +33,15 @@ import org.junit.experimental.categories.Category;
 @Category(Java8Test.class)
 public class GetInstructionConversionTest {
 
-  private WalaClassLoader loader;
-  private DefaultIdentifierFactory typeFactory;
+  private WalaJavaClassProvider loader;
+  private JavaIdentifierFactory typeFactory;
   private JavaClassType declareClassSig;
 
   @Before
   public void loadClassesWithWala() {
     String srcDir = "../shared-test-resources/wala-tests/";
-    loader = new WalaClassLoader(srcDir, null);
-    typeFactory = DefaultIdentifierFactory.getInstance();
+    loader = new WalaJavaClassProvider(srcDir);
+    typeFactory = JavaIdentifierFactory.getInstance();
     declareClassSig = typeFactory.getClassType("alreadywalaunittests.InnerClassAA");
   }
 

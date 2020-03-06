@@ -46,9 +46,8 @@ import de.upb.swt.soot.core.validation.TrapsValidator;
 import de.upb.swt.soot.core.validation.UsesValidator;
 import de.upb.swt.soot.core.validation.ValidationException;
 import de.upb.swt.soot.core.validation.ValueBoxesValidator;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -132,7 +131,7 @@ public final class Body implements Copyable {
    *
    * @param value the methodRef that owns this body.
    */
-  protected synchronized void setMethod(@Nullable SootMethod value) {
+  synchronized void setMethod(@Nullable SootMethod value) {
     if (this._method != null) {
       throw new IllegalStateException(
           "The declaring class of this soot class member has already been set.");
@@ -251,7 +250,7 @@ public final class Body implements Copyable {
    * @return the statements in this Body
    */
   public List<Stmt> getStmts() {
-    return Collections.unmodifiableList(stmts);
+    return stmts;
   }
 
   private void checkInit() {
@@ -261,56 +260,17 @@ public final class Body implements Copyable {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    ByteArrayOutputStream streamOut = new ByteArrayOutputStream();
-    PrintWriter writerOut = new PrintWriter(new EscapedWriter(new OutputStreamWriter(streamOut)));
-    try {
+    StringWriter writer = new StringWriter();
+    try (PrintWriter writerOut = new PrintWriter(new EscapedWriter(writer))) {
       new Printer().printTo(this, writerOut);
-    } catch (RuntimeException e) {
-      throw new RuntimeException();
     }
-    writerOut.flush();
-    writerOut.close();
-    return streamOut.toString();
+    return writer.toString();
   }
 
   @Nullable
   public Position getPosition() {
     return this.position;
   }
-
-  // FIXME "This code does not work and has to be adapted in future features."
-  //   https://github.com/secure-software-engineering/soot-reloaded/pull/89#discussion_r267259693
-  //
-  //  /**
-  //   * Make sure that the JimpleBody is well formed. If not, throw an exception. Right now,
-  // performs only a handful of checks.
-  //   */
-  //  public void validate() {
-  //    final List<ValidationException> exceptionList = new ArrayList<>();
-  //    validate(exceptionList);
-  //    if (!exceptionList.isEmpty()) {
-  //      throw exceptionList.get(0);
-  //    }
-  //  }
-
-  //  /**
-  //   * Validates the jimple body and saves a list of all validation errors
-  //   *
-  //   * @param exceptionList
-  //   *          the list of validation errors
-  //   */
-  //  public void validate(List<ValidationException> exceptionList) {
-  //    validate(exceptionList);
-  //    final boolean runAllValidators
-  //        = this.method.getView().getOptions().debug() ||
-  // this.method.getView().getOptions().validate();
-  //    for (BodyValidator validator : validators) {
-  //      if (!validator.isBasicValidator() && !runAllValidators) {
-  //        continue;
-  //      }
-  //      validator.validate(this, exceptionList);
-  //    }
-  //  }
 
   public void validateIdentityStatements() {
     runValidation(new IdentityStatementsValidator());

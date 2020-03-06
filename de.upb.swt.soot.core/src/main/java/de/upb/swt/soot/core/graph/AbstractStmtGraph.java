@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * Represents a CFG where the nodes are {@link Stmt} instances and edges represent unexceptional and
- * (possibly) exceptional control flow between <tt>Stmt</tt>s.
+ * (possibly) exceptional control flow between {@code Stmts}.
  *
  * <p>This is an abstract class, providing the facilities used to build CFGs for specific purposes.
  */
@@ -29,7 +29,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
   protected Collection<Stmt> orderedStmts;
 
   /**
-   * Performs the work that is required to construct any sort of <tt>IStmtGraph</tt>.
+   * Performs the work that is required to construct any sort of {@code IStmtGraph}.
    *
    * @param body The body of the methodRef for which to construct a control flow graph.
    */
@@ -40,17 +40,17 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
   }
 
   /**
-   * Utility methodRef for <tt>IStmtGraph</tt> constructors. It computes the edges corresponding to
+   * Utility methodRef for {@code IStmtGraph} constructors. It computes the edges corresponding to
    * unexceptional control flow.
    *
    * @param stmtToSuccs A {@link Map} from {@link Stmt}s to {@link List}s of {@link Stmt}s. This is
-   *     an ``out parameter''; callers must pass an empty {@link Map}.
-   *     <tt>buildUnexceptionalEdges</tt> will add a mapping for every <tt>Stmt</tt> in the body to
-   *     a list of its unexceptional successors.
+   *     an ``out parameter''; callers must pass an empty {@link Map}. {@code
+   *     buildUnexceptionalEdges} will add a mapping for every {@code Stmt} in the body to a list of
+   *     its unexceptional successors.
    * @param stmtToPreds A {@link Map} from {@link Stmt}s to {@link List}s of {@link Stmt}s. This is
-   *     an ``out parameter''; callers must pass an empty {@link Map}.
-   *     <tt>buildUnexceptionalEdges</tt> will add a mapping for every <tt>Stmt</tt> in the body to
-   *     a list of its unexceptional predecessors.
+   *     an ``out parameter''; callers must pass an empty {@link Map}. {@code
+   *     buildUnexceptionalEdges} will add a mapping for every {@code Stmt} in the body to a list of
+   *     its unexceptional predecessors.
    */
   protected void buildUnexceptionalEdges(
       Map<Stmt, List<Stmt>> stmtToSuccs, Map<Stmt, List<Stmt>> stmtToPreds) {
@@ -103,8 +103,8 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
    *
    * <p><code>IStmtGraph</code> provides an implementation of <code>buildHeadsAndTails()</code>
    * which defines the graph's set of heads to include the first {@link Stmt} in the graph's body,
-   * together with any other <tt>Stmt</tt> which has no predecessors. It defines the graph's set of
-   * tails to include all <tt>Stmt</tt>s with no successors. Subclasses of <code>IStmtGraph</code>
+   * together with any other {@code Stmt} which has no predecessors. It defines the graph's set of
+   * tails to include all {@code Stmt}s with no successors. Subclasses of <code>IStmtGraph</code>
    * may override this methodRef to change the criteria for classifying a node as a head or tail.
    */
   protected void buildHeadsAndTails() {
@@ -137,7 +137,7 @@ public abstract class AbstractStmtGraph implements DirectedGraph<Stmt> {
    * union of the values stored in the two argument {@link Map}s, used to combine the maps of
    * exceptional and unexceptional predecessors and successors into maps of all predecessors and
    * successors. The values stored in both argument maps must be {@link List}s of {@link Stmt}s,
-   * which are assumed not to contain any duplicate <tt>Stmt</tt>s.
+   * which are assumed not to contain any duplicate {@code Stmt}s.
    *
    * @param mapA The first map to be combined.
    * @param mapB The second map to be combined.

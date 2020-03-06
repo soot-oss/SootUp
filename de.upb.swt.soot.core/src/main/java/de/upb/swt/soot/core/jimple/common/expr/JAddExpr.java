@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/** An expression that adds two numbers. */
 public final class JAddExpr extends AbstractFloatBinopExpr implements Copyable {
 
   public JAddExpr(Value op1, Value op2) {

@@ -31,6 +31,7 @@ import de.upb.swt.soot.core.jimple.visitor.Visitor;
 import de.upb.swt.soot.core.util.Copyable;
 import javax.annotation.Nonnull;
 
+/** An expression that computes a % b. */
 public final class JRemExpr extends AbstractFloatBinopExpr implements Copyable {
 
   public JRemExpr(Value op1, Value op2) {
