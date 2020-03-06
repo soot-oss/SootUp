@@ -498,11 +498,12 @@ public class WalaIRToJimpleConverter {
           isSpecial = true;
           break;
         }
-        if (i != 0) {
-          sb.append(".");
-        }
-        sb.append(subName);
+        sb.append(subName).append(".");
       }
+      if (subNames.length != 0) {
+        sb.setLength(sb.length() - 1);
+      }
+
       if (isSpecial) {
         String lastSubName = subNames[subNames.length - 1];
         String[] temp = lastSubName.split(">");
@@ -563,15 +564,14 @@ public class WalaIRToJimpleConverter {
     de.upb.swt.soot.core.model.Position[] operandPos =
         Arrays.stream(operandPosition)
             .map(
-                instrPos -> {
-                  return instrPos == null
-                      ? null
-                      : new de.upb.swt.soot.core.model.Position(
-                          instrPos.getFirstLine(),
-                          instrPos.getFirstCol(),
-                          instrPos.getLastLine(),
-                          instrPos.getLastCol());
-                })
+                instrPos ->
+                    instrPos == null
+                        ? null
+                        : new de.upb.swt.soot.core.model.Position(
+                            instrPos.getFirstLine(),
+                            instrPos.getFirstCol(),
+                            instrPos.getLastLine(),
+                            instrPos.getLastCol()))
             .toArray(de.upb.swt.soot.core.model.Position[]::new);
 
     return new StmtPositionInfo(convertPosition(instructionPosition), operandPos);
