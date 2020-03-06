@@ -416,23 +416,16 @@ public class WalaIRToJimpleConverter {
           stmts.add(stmt);
         }
 
-        int startPara = 0;
-        if (!walaMethod.isStatic()) {
-          // wala's first parameter is this reference for non-static methodRef
-          startPara = 1;
-        }
-        for (; startPara < walaMethod.getNumberOfParameters(); startPara++) {
-          TypeReference t = walaMethod.getParameterType(startPara);
+        // wala's first parameter is the "this" reference for non-static methods
+        for (int i = walaMethod.isStatic() ? 0 : 1; i < walaMethod.getNumberOfParameters(); i++) {
+          TypeReference t = walaMethod.getParameterType(i);
           Type type = convertType(t);
-          Local paraLocal = localGenerator.generateParameterLocal(type, startPara);
-          int index = startPara;
-          if (!walaMethod.isStatic()) {
-            index = startPara - 1;
-          }
+          Local paraLocal = localGenerator.generateParameterLocal(type, i);
+
           Stmt stmt =
               Jimple.newIdentityStmt(
                   paraLocal,
-                  Jimple.newParameterRef(type, index),
+                  Jimple.newParameterRef(type, walaMethod.isStatic() ? i : i - 1),
                   convertPositionInfo(debugInfo.getInstructionPosition(0), null));
           stmts.add(stmt);
         }
