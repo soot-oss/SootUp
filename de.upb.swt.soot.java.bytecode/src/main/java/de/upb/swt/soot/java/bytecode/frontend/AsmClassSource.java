@@ -89,12 +89,8 @@ class AsmClassSource extends JavaSootClassSource {
               MethodSignature methodSignature =
                   signatureFactory.getMethodSignature(methodName, cs, retType, sigTypes);
 
-              return SootMethod.builder()
-                  .withSource(asmClassClassSourceContent)
-                  .withSignature(methodSignature)
-                  .withModifiers(modifiers)
-                  .withThrownExceptions(exceptions)
-                  .build();
+              return new SootMethod(
+                  asmClassClassSourceContent, methodSignature, modifiers, exceptions);
             });
   }
 
