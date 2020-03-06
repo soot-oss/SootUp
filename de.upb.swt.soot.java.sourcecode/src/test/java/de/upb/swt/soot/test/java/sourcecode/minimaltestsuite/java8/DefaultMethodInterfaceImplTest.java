@@ -29,9 +29,9 @@ public class DefaultMethodInterfaceImplTest extends MinimalTestSuiteBase {
 
   /** TODO Update the source code once default methods in WALA are supported */
   @Test
-  @Override
   public void defaultTest() {
-    super.defaultTest();
+    SootMethod method1 = loadMethod(getMethodSignature());
+    assertJimpleStmts(method1, expectedBodyStmts());
     SootMethod method = loadMethod(getMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts());
     method = loadMethod(getDefaultMethodSignature());

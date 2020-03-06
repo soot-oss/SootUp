@@ -28,7 +28,6 @@ public class StaticMethodInterfaceImplTest extends MinimalTestSuiteBase {
   }
 
   @Test
-  @Override
   public void defaultTest() {
     SootMethod method = loadMethod(getStaticMethodSignature());
     assertJimpleStmts(method, expectedBodyStmts1());

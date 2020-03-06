@@ -24,7 +24,6 @@ public class DeclareConstructorTest extends MinimalTestSuiteBase {
   }
 
   @Test
-  @Override
   public void defaultTest() {
     SootMethod method = loadMethod(getMethodSignatureInitOneParam());
     assertJimpleStmts(method, expectedBodyStmts());

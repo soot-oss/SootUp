@@ -56,4 +56,10 @@ public class SubClassTest extends MinimalTestSuiteBase {
             "return")
         .collect(Collectors.toCollection(ArrayList::new));
   }
+
+  @Test
+  public void defaultTest() {
+    SootMethod method = loadMethod(getMethodSignature());
+    assertJimpleStmts(method, expectedBodyStmts());
+  }
 }

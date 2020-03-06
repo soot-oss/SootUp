@@ -6,7 +6,6 @@ import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.test.java.sourcecode.minimaltestsuite.MinimalTestSuiteBase;
 import java.util.*;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
@@ -15,11 +14,6 @@ public class SwitchCaseStatementTest extends MinimalTestSuiteBase {
 
   @Test
   public void defaultTest() {
-    // add test after fixing jimple
-  }
-
-  @Ignore
-  public void defaultTest2() {
     SootMethod method = loadMethod(getMethodSignature("switchCaseStatementEnum"));
     assertJimpleStmts(
         method,
@@ -46,17 +40,27 @@ public class SwitchCaseStatementTest extends MinimalTestSuiteBase {
             "goto label4",
             "label4:",
             "return"));
-    method = loadMethod(getMethodSignature("switchCaseStatementInt"));
+  }
+
+  @Test
+  public void testSwitchWithInt() {
+    // FIXME: [ms] Jimple is not correct
+    // 1. goto label is null
+    // 2. default label is missing
+    // 3. order: the assignment of case 2 is after *goto label* and before another label
+    // 4. $r1 ( should be "String str;" ) has Null as type
+
+    SootMethod method = loadMethod(getMethodSignature("switchCaseStatementInt"));
     assertJimpleStmts(
         method,
         expectedBodyStmts(
             "r0 := @this: SwitchCaseStatement",
             "$i0 = 2",
             "$r1 = null",
-            "lookupswitch($i0)",
+            "switch($i0)",
             "case 1: goto label2",
-            "case 2: goto [?= null]",
-            "case 3: goto [?= null]",
+            "case 2: goto [?= label3]",
+            "case 3: goto [?= label4]",
             "default: goto label1",
             "label1:",
             "$r1 = \"number 1 detected\"",

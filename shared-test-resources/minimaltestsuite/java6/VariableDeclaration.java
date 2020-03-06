@@ -32,4 +32,8 @@ public class VariableDeclaration {
         double g = 1.96969654d;
     }
 
+    public void classTypeDefWithoutAssignment(){
+        String str;
+    }
+
 }

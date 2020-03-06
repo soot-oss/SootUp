@@ -7,12 +7,13 @@ import de.upb.swt.soot.core.model.Modifier;
 import de.upb.swt.soot.core.model.SootMethod;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.types.ClassType;
-import de.upb.swt.soot.java.core.JavaSootMethod;
 import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class WalaSootMethod extends JavaSootMethod {
+// TODO: [ms] is it possible to get rid of this class? necessity to hold DebuggingInformation
+// (getDebugInfo is not called)
+public class WalaSootMethod extends SootMethod {
 
   @Nullable private final DebuggingInformation debugInfo;
 
@@ -54,7 +55,7 @@ public class WalaSootMethod extends JavaSootMethod {
         debugInfo);
   }
 
-  // TODO: check if withers are used by javasourcecodefrontend
+  // TODO: [ms] check if withers are used by javasourcecodefrontend -> otherwise superfluous
   @Nonnull
   public SootMethod withSource(MethodSource source) {
     return new WalaSootMethod(source, getSignature(), getModifiers(), exceptions, debugInfo);

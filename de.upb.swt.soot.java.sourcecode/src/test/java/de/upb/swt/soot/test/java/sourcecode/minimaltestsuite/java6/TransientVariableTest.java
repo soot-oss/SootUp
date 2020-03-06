@@ -20,15 +20,8 @@ public class TransientVariableTest extends MinimalTestSuiteBase {
         "transientVariable", getDeclaredClassSignature(), "void", Collections.emptyList());
   }
 
-  @Override
-  public void defaultTest() {
-    // TODO: once the transient bug is fixed replace with the body of ignoredTest - can not @Ignore
-    // the overriden @Test method
-  }
-
   @Ignore
-  public void ignoredTest() {
-    super.defaultTest();
+  public void testTransientVar() {
     SootClass clazz = loadClass(getDeclaredClassSignature());
     assertTrue(
         clazz.getFields().stream()
