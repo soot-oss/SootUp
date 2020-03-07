@@ -578,7 +578,7 @@ public class InstructionConverter {
     }
 
     type = op.getType();
-    // is it just (ReferenceType) variable declaration?
+    // is it just variable declaration?
     if (type == NullType.getInstance()) {
       // FIXME: [ms] determine type of def side
       type = UnknownType.getInstance();

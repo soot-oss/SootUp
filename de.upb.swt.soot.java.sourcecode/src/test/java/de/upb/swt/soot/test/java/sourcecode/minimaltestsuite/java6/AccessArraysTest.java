@@ -170,7 +170,7 @@ public class AccessArraysTest extends MinimalTestSuiteBase {
             "$r1 = newarray (boolean[])[2]",
             "$r1[0] = 1",
             "$r1[1] = 0",
-            "$r2 = null",
+            "$l2 = null", // TODO:[ms] CHECK! should this be null? --> "long val;"
             "$r3 = $r1",
             "$i0 = 0",
             "label1:",

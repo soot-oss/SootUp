@@ -25,7 +25,8 @@ public class SwitchCaseStatementWithStringTest extends MinimalTestSuiteBase {
 
   @Override
   public List<String> expectedBodyStmts() {
-    // TODO: INFO: the generated jimple contains a bug - $i1,$i1,$i3 are undefined/not set
+    // TODO: [ms] the generated jimple is not correct: $i1,$i1,$i3 are undefined/not assigned to
+    // anything
     return Stream.of(
             "r0 := @this: SwitchCaseStatementWithString",
             "$r1 = \"something\"",
