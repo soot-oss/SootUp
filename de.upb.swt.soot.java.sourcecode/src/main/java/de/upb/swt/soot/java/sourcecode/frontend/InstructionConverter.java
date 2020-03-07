@@ -76,6 +76,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import scala.Char;
 
 /**
  * This class converts wala instruction to jimple statement.
@@ -570,15 +571,18 @@ public class InstructionConverter {
     int use = inst.getUse(0);
     Value op;
     Type type = UnknownType.getInstance();
-    if (symbolTable.isNullConstant(use)) {
-      // FIXME: [ms] determine type of def side
-      op = getLocal(type, use);
-    } else if (symbolTable.isConstant(use)) {
+    if (symbolTable.isConstant(use)) {
       op = getConstant(use);
     } else {
       op = getLocal(type, use);
     }
+
     type = op.getType();
+    // is it just (ReferenceType) variable declaration?
+    if (type == NullType.getInstance()) {
+      // FIXME: [ms] determine type of def side
+      type = UnknownType.getInstance();
+    }
     Local left = getLocal(type, def);
 
     Position[] operandPos = new Position[2];
