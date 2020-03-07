@@ -571,7 +571,10 @@ public class InstructionConverter {
     int use = inst.getUse(0);
     Value op;
     Type type = UnknownType.getInstance();
-    if (symbolTable.isConstant(use)) {
+    if (symbolTable.isNullConstant(use)) {
+      // FIXME: [ms] determine type of def side
+      op = getLocal(type, use);
+    } else if (symbolTable.isConstant(use)) {
       op = getConstant(use);
     } else {
       op = getLocal(type, use);
