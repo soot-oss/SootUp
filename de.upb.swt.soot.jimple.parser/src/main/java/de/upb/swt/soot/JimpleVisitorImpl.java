@@ -1,22 +1,27 @@
 package de.upb.swt.soot;
 
+import com.sun.org.apache.bcel.internal.generic.*;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
+import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
 import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
 import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.common.expr.Expr;
+import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.common.expr.*;
 import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
+import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
+import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.jimple.JimpleBaseVisitor;
 import de.upb.swt.soot.jimple.JimpleLexer;
 import de.upb.swt.soot.jimple.JimpleParser;
@@ -266,11 +271,55 @@ class JimpleVisitorImpl {
     }
   }
 
-  private static class StmtVisitor extends JimpleBaseVisitor<Stmt> {
+  private static class ValueVisitor extends JimpleBaseVisitor<Value> {
+    @Override
+    public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
+
+
+
+    }
+  }
+
+
+
+    private static class StmtVisitor extends JimpleBaseVisitor<Stmt> {
 
     @Override
     @Nonnull
     public Stmt visitStatement(JimpleParser.StatementContext ctx) {
+
+      StmtPositionInfo pos = new StmtPositionInfo(ctx.start.getLine() );
+
+      if( ctx.BREAKPOINT() != null ){
+        return Jimple.newBreakpointStmt( pos );
+      }else if( ctx.ENTERMONITOR() != null ){
+        return Jimple.newEnterMonitorStmt( ctx.immediate().accept(new ValueVisitor() ), pos);
+      }else if( ctx.EXITMONITOR() != null ){
+        return Jimple.newExitMonitorStmt( ctx.immediate().accept(new ValueVisitor() ),  pos);
+      }else if( ctx.SWITCH() != null ){
+        // TODO: determine lookup/tableswitch if possible
+        ctx.
+        return Jimple.newLookupSwitchStmt()
+      }else if( ctx.assignments() != null ){
+        // TODO
+        return ctx.assignments().;
+      }else if( ctx.IF() != null ){
+        return Jimple.new
+      }else if( ctx.goto_stmt()  != null ){
+        return Jimple.newGotoStmt(, pos);
+      }else if( ctx.NOP() != null ){
+        return Jimple.new
+      }else if( ctx.RET() != null ){
+        return Jimple.new
+      }else if( ctx.RETURN() != null ){
+        return Jimple.new
+      }else if( ctx.THROW() != null ){
+        return Jimple.new
+      }else if( ctx.invoke_expr() != null ){
+        return Jimple.new
+      }
+
+
 
       // FIXME: statement
       // FIXME: position
@@ -287,4 +336,63 @@ class JimpleVisitorImpl {
     }
     */
   }
+
+
+
+  private static class BinOpVisitor extends JimpleBaseVisitor<AbstractBinopExpr> {
+
+    @Override
+    public AbstractBinopExpr visitBinop_expr(JimpleParser.Binop_exprContext ctx) {
+
+      // FIXME
+      Value left = null; // ctx.left.accept();
+      Value right = null; //ctx.right.accept();
+
+      JimpleParser.BinopContext binopctx = ctx.op;
+
+      if( binopctx.AND() != null){
+        return new JAndExpr(left,right);
+      }else if( binopctx.OR() != null){
+        return new JOrExpr(left,right);
+      }else if( binopctx.MOD() != null){
+        return new JRemExpr(left,right);
+      }else if( binopctx.CMP() != null){
+        return new JCmpExpr(left,right);
+      }else if( binopctx.CMPG() != null){
+        return new JCmpgExpr(left,right);
+      }else if( binopctx.CMPL() != null){
+        return new JCmplExpr(left,right);
+      }else if( binopctx.CMPEQ() != null){
+        return new JEqExpr(left,right);
+      }else if( binopctx.CMPNE() != null){
+        return new JNeExpr(left,right);
+      }else if( binopctx.CMPGT() != null){
+        return new JGtExpr(left,right);
+      }else if( binopctx.CMPGE() != null){
+        return new JGeExpr(left,right);
+      }else if( binopctx.CMPLT() != null){
+        return new JLtExpr(left,right);
+      }else if( binopctx.CMPLE() != null){
+        return new JLeExpr(left,right);
+      }else if( binopctx.SHL() != null){
+        return new JShlExpr(left,right);
+      }else if( binopctx.SHR() != null){
+        return new JShrExpr(left,right);
+      }else if( binopctx.USHR() != null){
+        return new JUshrExpr(left,right);
+      }else if( binopctx.PLUS() != null){
+        return new JAddExpr(left,right);
+      }else if( binopctx.MINUS() != null){
+        return new JSubExpr(left,right);
+      }else if( binopctx.MULT() != null){
+        return new JMulExpr(left,right);
+      }else if( binopctx.DIV() != null){
+        return new JDivExpr(left,right);
+      }
+    }
+  }
+
+
+
+
 }

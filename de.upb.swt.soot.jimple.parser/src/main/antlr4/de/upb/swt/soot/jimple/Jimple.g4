@@ -85,7 +85,7 @@ grammar Jimple;
   INTERFACEINVOKE : 'interfaceinvoke';
   LENGTHOF : 'lengthof';
   // possibility to read old Jimple
-  SWITCH : ('lookup'|'table')'switch';
+  SWITCH : 'lookupswitch' | 'tableswitch' | 'switch';
   NEG : 'neg';
   NEW : 'new';
   NEWARRAY : 'newarray';
@@ -105,28 +105,28 @@ grammar Jimple;
   WITH : 'with';
   CLS : 'cls';
 
-  fragment COMMA : ',';
-  fragment L_BRACE : '{';
-  fragment R_BRACE : '}';
-  fragment SEMICOLON : ';';
-  fragment L_BRACKET : '[';
-  fragment R_BRACKET : ']';
-  fragment L_PAREN : '(';
-  fragment R_PAREN : ')';
-  fragment COLON : ':';
-  fragment DOT : '.';
-  COLON_EQUALS : '::';
-  EQUALS : ':';
+  COMMA : ',';
+  L_BRACE : '{';
+  R_BRACE : '}';
+  SEMICOLON : ';';
+  L_BRACKET : '[';
+  R_BRACKET : ']';
+  L_PAREN : '(';
+  R_PAREN : ')';
+  COLON : ':';
+  DOT : '.';
+  EQUALS : '=';
+  COLON_EQUALS : ':=';
   AND : '&';
   OR : '|';
   XOR : '^';
   MOD : '%';
-  CMPEQ : '::';
-  CMPNE : '!:';
+  CMPEQ : '==';
+  CMPNE : '!=';
   CMPGT : '>';
-  CMPGE : '>:';
+  CMPGE : '>=';
   CMPLT : '<';
-  CMPLE : '<:';
+  CMPLE : '<=';
   SHL : '<<';
   SHR : '>>';
   USHR : '>>>';
@@ -259,9 +259,7 @@ grammar Jimple;
     /*entermonitor*/ ENTERMONITOR immediate SEMICOLON |
     /*exitmonitor*/  EXITMONITOR immediate SEMICOLON |
     /*switch*/       SWITCH L_PAREN immediate R_PAREN L_BRACE case_stmt+ R_BRACE SEMICOLON |
-    /*identity*/     local_name COLON_EQUALS AT_IDENTIFIER type SEMICOLON |
-    /*identity_no_type*/  local_name COLON_EQUALS AT_IDENTIFIER SEMICOLON |
-    /*assign*/       variable EQUALS expression SEMICOLON |
+                     assignments |
     /*if*/           IF bool_expr goto_stmt |
     /*goto*/         goto_stmt |
     /*nop*/          NOP SEMICOLON |
@@ -269,6 +267,11 @@ grammar Jimple;
     /*return*/       RETURN immediate? SEMICOLON |
     /*throw*/        THROW immediate SEMICOLON |
     /*invoke*/       invoke_expr SEMICOLON;
+
+    assignments:
+    /*identity*/     local_name COLON_EQUALS AT_IDENTIFIER type SEMICOLON |
+    /*identity_no_type*/  local_name COLON_EQUALS AT_IDENTIFIER SEMICOLON |
+    /*assign*/       variable EQUALS expression SEMICOLON;
 
   label_name :
     IDENTIFIER;
@@ -336,15 +339,15 @@ grammar Jimple;
     CMPLT class_name2=class_name first=COLON type method_name=name  L_PAREN parameter_list? R_PAREN CMPGT;
 
   reference :
-    /*array*/ ARRAY_REF |
+    /*array*/ array_ref |
     /*field*/ field_ref;
 
   array_ref :
-    /*ident*/ IDENTIFIER FIXED_ARRAY_DESCRIPTOR |
+    /*ident*/ IDENTIFIER fixed_array_descriptor |
     /*quoted*/ QUOTED_NAME fixed_array_descriptor;
 
   field_ref :
-    /*local*/ local_name DOT FIELD_SIGNATURE |
+    /*local*/ local_name DOT field_signature |
     /*sig*/   field_signature;
 
   field_signature :
@@ -358,7 +361,7 @@ grammar Jimple;
     /*multi*/  immediate COMMA arg_list;
 
   immediate :
-    /*local*/    LOCAL_NAME |
+    /*local*/    local_name |
     /*constant*/ constant;
 
   constant :
