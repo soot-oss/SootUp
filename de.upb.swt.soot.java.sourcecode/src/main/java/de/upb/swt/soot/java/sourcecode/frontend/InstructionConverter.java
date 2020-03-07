@@ -76,7 +76,6 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import scala.Char;
 
 /**
  * This class converts wala instruction to jimple statement.

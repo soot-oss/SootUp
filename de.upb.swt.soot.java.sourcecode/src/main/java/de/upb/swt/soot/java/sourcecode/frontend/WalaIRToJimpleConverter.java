@@ -17,6 +17,7 @@ import com.ibm.wala.util.collections.HashSetFactory;
 import com.ibm.wala.util.intset.FixedSizeBitVector;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
+import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
 import de.upb.swt.soot.core.jimple.basic.Local;
@@ -77,12 +78,12 @@ public class WalaIRToJimpleConverter {
   // TODO: remove deprecated
   @Deprecated
   public SootClass convertClass(AstClass walaClass) {
-    JavaSootClassSource classSource = convertToClassSource(walaClass);
+    SootClassSource classSource = convertToClassSource(walaClass);
     // TODO: [ms] fix fixed SourceType - get it from project
-    return new JavaSootClass(classSource, SourceType.Application);
+    return new SootClass(classSource, SourceType.Application);
   }
 
-  JavaSootClassSource convertToClassSource(AstClass walaClass) {
+  SootClassSource convertToClassSource(AstClass walaClass) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSig = identifierFactory.getClassType(fullyQualifiedClassName);
     // get super class
@@ -152,13 +153,11 @@ public class WalaIRToJimpleConverter {
         sootFields,
         sootMethods,
         position,
-        modifiers,
-        Collections.emptyList() // TODO:[ms] implement annotations);
-        );
+        modifiers);
   }
 
   /** Create a {@link OverridingClassSource} object for the given walaClass. */
-  public OverridingJavaClassSource createClassSource(
+  public OverridingClassSource createClassSource(
       AstClass walaClass,
       JavaClassType superClass,
       Set<ClassType> interfaces,
@@ -166,13 +165,12 @@ public class WalaIRToJimpleConverter {
       Set<SootField> sootFields,
       Set<SootMethod> sootMethods,
       Position position,
-      EnumSet<Modifier> modifiers,
-      Iterable<AnnotationType> annotations) {
+      EnumSet<Modifier> modifiers) {
     String fullyQualifiedClassName = convertClassNameFromWala(walaClass.getName().toString());
     JavaClassType classSignature = identifierFactory.getClassType(fullyQualifiedClassName);
     URL url = walaClass.getSourceURL();
     Path sourcePath = Paths.get(url.getPath());
-    return new OverridingJavaClassSource(
+    return new OverridingClassSource(
         srcNamespace,
         sourcePath,
         classSignature,
@@ -182,9 +180,7 @@ public class WalaIRToJimpleConverter {
         sootFields,
         sootMethods,
         convertPosition(position),
-        modifiers,
-        Collections.emptyList() // TODO:[ms] implement annotations
-        );
+        modifiers);
   }
 
   /**
