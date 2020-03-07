@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>Soot Jimple Parser</name>
+    <name>Soot Jimple Frontend</name>
     <artifactId>de.upb.swt.soot.jimple.parser</artifactId>
     <packaging>jar</packaging>
     <parent>
@@ -60,7 +60,7 @@
         </dependency>
 
 
-        <!-- TODO: it should be language independent - think how to integrate the specific identifierfactory-->
+        <!-- FIXME: it should be language independent - think how to integrate the specific identifierfactory-->
         <dependency>
             <groupId>de.upb.swt</groupId>
             <artifactId>soot.java.core</artifactId>
@@ -74,6 +74,19 @@
             <version>4.7.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>magpiebridge</groupId>
+            <artifactId>magpiebridge</artifactId>
+            <version>0.0.6</version>
+        </dependency>
+
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>GitHub MagpieBridge Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/MagpieBridge/MagpieBridge</url>
+        </repository>
+    </repositories>
 </project>

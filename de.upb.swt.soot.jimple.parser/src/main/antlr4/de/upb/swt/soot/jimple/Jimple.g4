@@ -35,7 +35,7 @@ grammar Jimple;
   fragment LINE_COMMENT : '//' NOT_CR_LF*;
   fragment LONG_COMMENT : '/*' NOT_STAR* '*'+ (NOT_STAR_SLASH NOT_STAR* '*'+)* '/';
 
-  BLANK : [ \t\r\n] -> skip;
+  BLANK : [ \t\r\n];        // ->skipt --->problem w/Strings ;)
 
 
   ABSTRACT : 'abstract';
@@ -84,7 +84,8 @@ grammar Jimple;
   INSTANCEOF : 'instanceof';
   INTERFACEINVOKE : 'interfaceinvoke';
   LENGTHOF : 'lengthof';
-  SWITCH : 'switch' /* TODO: think about to support old jimple version? | 'lookupswitch' | 'tableswitch'   */ ;
+  // possibility to read old Jimple
+  SWITCH : ('lookup'|'table')'switch';
   NEG : 'neg';
   NEW : 'new';
   NEWARRAY : 'newarray';
@@ -135,7 +136,7 @@ grammar Jimple;
   DIV : '/';
 
 
-    /* FIXME generify - this is java specific */
+    /* FIXME: generify - this is java specific */
   FULL_IDENTIFIER :
       ((FIRST_ID_CHAR | ESCAPE_CHAR) (SIMPLE_ID_CHAR | ESCAPE_CHAR)* DOT)+  (FIRST_ID_CHAR | ESCAPE_CHAR) (SIMPLE_ID_CHAR | ESCAPE_CHAR)*;
   QUOTED_NAME : QUOTE QUOTABLE_CHAR+ QUOTE;
@@ -147,7 +148,7 @@ grammar Jimple;
   BOOL_CONSTANT : 'true' | 'false';
   INTEGER_CONSTANT : (DEC_CONSTANT | HEX_CONSTANT | OCT_CONSTANT) 'L'?;
   FLOAT_CONSTANT : ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
-  STRING_CONSTANT : '"' STRING_CONSTANT* '"';
+  STRING_CONSTANT : '"' STRING_CHAR* '"';
 
 
 
@@ -155,34 +156,18 @@ grammar Jimple;
   * Parser Rules
   */
 
+  file:
+    importItem* modifier* file_type class_name extends_clause? implements_clause? L_BRACE member* R_BRACE;
 
-  clazz:
-    modifier* file_type class_name extends_clause? implements_clause? L_BRACE member* R_BRACE;
+  importItem: 'import' location=STRING_CONSTANT ';';
 
-  modifier :
-    /* abstract */     'abstract' |
-    /* final */        'final' |
-    /* native */       'native' |
-    /* public */       'public' |
-    /* protected */    'protected' |
-    /* private */      'private' |
-    /* static */       'static' |
-    /* synchronized */ 'synchronized' |
-    /* transient */    'transient' |
-    /* volatile */     'volatile' |
-    /* strictfp */     'strictfp' |
-    /* enum */         'enum' |
-    /* annotation */   'annotation';
+  modifier : 'abstract' | 'final' | 'native' | 'public' | 'protected' | 'private' | 'static' | 'synchronized' | 'transient' |'volatile' | 'strictfp' | 'enum' | 'annotation';
 
-  file_type :
-    /*class*/     'class' |
-    /*interface*/ 'interface';
+  file_type : 'class' | 'interface' | 'annotation';
 
-  extends_clause :
-    'extends' class_name;
+  extends_clause : 'extends' class_name;
 
-  implements_clause :
-    'implements' class_name_list;
+  implements_clause :    'implements' class_name_list;
 
   name_list :
     /*single*/ name |
@@ -248,7 +233,7 @@ grammar Jimple;
     L_BRACKET R_BRACKET;
 
   method_body :
-    /*empty*/ SEMICOLON |               // TODO: check wheter thats the case
+    /*empty*/ SEMICOLON |
     /*full*/  L_BRACE declaration* statement* catch_clause* R_BRACE;
 
   declaration :
