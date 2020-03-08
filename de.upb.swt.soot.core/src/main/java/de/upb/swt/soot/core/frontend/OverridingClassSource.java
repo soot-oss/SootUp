@@ -77,7 +77,7 @@ public class OverridingClassSource extends SootClassSource {
     this.delegate = delegate;
   }
 
-  /** Class source where all information already available */
+  /** Class source where all information is already available */
   public OverridingClassSource(
       AnalysisInputLocation srcNamespace,
       Path sourcePath,

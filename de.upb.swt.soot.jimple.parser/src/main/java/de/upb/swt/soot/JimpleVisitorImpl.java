@@ -71,9 +71,9 @@ class JimpleVisitorImpl {
 
       Set<SootField> fields = new HashSet<>();
       Set<SootMethod> methods = new HashSet<>();
-
-      ClassType superclass = null;
-      Set<ClassType> interfaces = null;
+      ClassType superclass;
+      Set<ClassType> interfaces;
+      // FIXME implement outerclass
       ClassType outerclass = null;
 
       // position
@@ -87,11 +87,7 @@ class JimpleVisitorImpl {
               .map(item -> identifierFactory.getClassType(item.location.getText()))
               .collect(Collectors.toMap(e -> e.getClassName(), e -> e.getPackageName()));
 
-      Set<Modifier> modifierSet =
-          ctx.modifier().stream()
-              .map(modifierContext -> Modifier.valueOf(modifierContext.getText()))
-              .collect(Collectors.toSet());
-      EnumSet<Modifier> modifier = EnumSet.copyOf(modifierSet);
+      EnumSet<Modifier> modifier = getModifiers(ctx.modifier());
 
       // file_type
       if (ctx.file_type().getText().equals("interface")) {
@@ -108,11 +104,16 @@ class JimpleVisitorImpl {
       // extends_clause
       if (ctx.extends_clause() != null) {
         superclass = getClassType(ctx.extends_clause().class_name().getText());
+      } else {
+        // TODO:
+        superclass = null;
       }
 
       // implements_clause
       if (ctx.implements_clause() != null) {
         interfaces = ctx.implements_clause().accept(new ClassnameVisitor());
+      } else {
+        interfaces = Collections.emptySet();
       }
 
       // member
@@ -154,7 +155,7 @@ class JimpleVisitorImpl {
       do {
         interfaces.add(
             identifierFactory.getClassType(class_name_listContextIterator.class_name().getText()));
-        class_name_listContextIterator = ctx.class_name_list();
+        class_name_listContextIterator = class_name_listContextIterator.class_name_list();
       } while (class_name_listContextIterator != null);
 
       return interfaces;
@@ -197,16 +198,20 @@ class JimpleVisitorImpl {
     @Override
     public SootField visitField(JimpleParser.FieldContext ctx) {
 
-      Set<Modifier> modifierSet =
-          ctx.modifier().stream()
-              .map(modifierContext -> Modifier.valueOf(modifierContext.getText()))
-              .collect(Collectors.toSet());
-      EnumSet<Modifier> modifier = EnumSet.copyOf(modifierSet);
+      EnumSet<Modifier> modifier = getModifiers(ctx.modifier());
 
       return new SootField(
           identifierFactory.getFieldSignature(ctx.name().getText(), clazz, ctx.type().getText()),
           modifier);
     }
+  }
+
+  private static EnumSet<Modifier> getModifiers(List<JimpleParser.ModifierContext> modifier) {
+    Set<Modifier> modifierSet =
+        modifier.stream()
+            .map(modifierContext -> Modifier.valueOf(modifierContext.getText().toUpperCase()))
+            .collect(Collectors.toSet());
+    return modifierSet.isEmpty() ? EnumSet.noneOf(Modifier.class) : EnumSet.copyOf(modifierSet);
   }
 
   private static class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
@@ -234,20 +239,22 @@ class JimpleVisitorImpl {
               ctx.stop.getCharPositionInLine());
 
       Body b = new Body(locals, traps, stmts, position);
-      List<Type> params = ctx.accept(new ParameterListVisitor());
+      List<Type> params =
+          ctx.parameter_list() == null
+              ? Collections.emptyList()
+              : ctx.parameter_list().accept(new ParameterListVisitor());
       MethodSignature methodSignature =
           identifierFactory.getMethodSignature(
               ctx.name().getText(), clazz, getType(ctx.type().getText()), params);
 
       OverridingMethodSource oms = new OverridingMethodSource(methodSignature, b);
 
-      List<ClassType> exceptions = ctx.throws_clause().accept(new ExceptionListVisitor());
+      List<ClassType> exceptions =
+          ctx.throws_clause() == null
+              ? Collections.emptyList()
+              : ctx.throws_clause().accept(new ExceptionListVisitor());
 
-      Set<Modifier> modifierSet =
-          ctx.modifier().stream()
-              .map(modifierContext -> Modifier.valueOf(modifierContext.getText()))
-              .collect(Collectors.toSet());
-      EnumSet<Modifier> modifier = EnumSet.copyOf(modifierSet);
+      EnumSet<Modifier> modifier = getModifiers(ctx.modifier());
 
       // TODO: associate labels with goto boxes
       for (Map.Entry<String, Stmt> item : unresolvedGotoStmts.entrySet()) {
@@ -285,15 +292,6 @@ class JimpleVisitorImpl {
     }
   }
 
-  private static class ValueVisitor extends JimpleBaseVisitor<Value> {
-    @Override
-    public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
-
-      // FIXME
-      return null;
-    }
-  }
-
   private static class StmtVisitor extends JimpleBaseVisitor<Stmt> {
 
     @Override
@@ -319,14 +317,31 @@ class JimpleVisitorImpl {
         return Jimple.newExitMonitorStmt(ctx.immediate().accept(new ValueVisitor()), pos);
       } else if (ctx.SWITCH() != null) {
         // TODO: determine tableswitch if possible
+        /*
         if (false) {
           return Jimple.newTableSwitchStmt();
         } else {
           return Jimple.newLookupSwitchStmt();
         }
+        */
       } else if (ctx.assignments() != null) {
-        // TODO
-        return ctx.assignments().EQUALS();
+        if (ctx.assignments().EQUALS() == null) {
+          if (ctx.assignments().type() != null) {
+            // TODO: WHAT :D
+            ctx.assignments().type();
+            //    return Jimple.newIdentityStmt( ctx.assignments().local_name().accept(new
+            // ValueVisitor()), , pos);
+          } else {
+            ctx.assignments().local_name().accept(new ValueVisitor());
+            //     return Jimple.newIdentityStmt(,,pos);
+          }
+        } else {
+          return Jimple.newAssignStmt(
+              ctx.assignments().variable().accept(new ValueVisitor()),
+              ctx.assignments().expression().accept(new ValueVisitor()),
+              pos);
+        }
+
       } else if (ctx.IF() != null) {
         JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
         final Stmt stmt = Jimple.newIfStmt(ctx.bool_expr().accept(new ValueVisitor()), target, pos);
@@ -351,30 +366,92 @@ class JimpleVisitorImpl {
         return Jimple.newThrowStmt(ctx.immediate().accept(new ValueVisitor()), pos);
       } else if (ctx.invoke_expr() != null) {
         // TODO
-        return Jimple.newSpecialInvokeExpr();
+        // return Jimple.newSpecialInvokeExpr();
       }
       throw new RuntimeException("Unknown Stmt");
     }
   }
 
-  private static class ExprVisitor extends JimpleBaseVisitor<Expr> {
-    /*   @Override
-
-    public Expr visitBinop_expr(JimpleParser.Binop_exprContext ctx) {
-      // TODO implement
-      return new JAddExpr(ctx.left, ctx.right);
+  private static class ValueVisitor extends JimpleBaseVisitor<Value> {
+    @Override
+    public Value visitConstant(JimpleParser.ConstantContext ctx) {
+      // FIXME
+      return super.visitConstant(ctx);
     }
-    */
+
+    @Override
+    public Value visitExpression(JimpleParser.ExpressionContext ctx) {
+      /*if(  ctx.NEW() != null ){
+
+
+              return Jimple.newNewExpr()  ctx.new_expr().accept(new ExprVisitor());
+            }else if( ctx.L_PAREN() != null ){
+              ctx.nonvoid_type().accept(new ExprVisitor());
+              ctx.nonvoid_type().accept(new ExprVisitor());
+
+
+            }else if(  ctx. != null ){
+              ctx..accept(new ExprVisitor());
+            }else if(  ctx. != null ){
+              ctx..accept(new ExprVisitor());
+            }else if(  ctx. != null ){
+              ctx..accept(new ExprVisitor());
+            }else if(  ctx. != null ){
+              ctx..accept(new ExprVisitor());
+            }else if(  ctx. != null ){
+              ctx..accept(new ExprVisitor());
+            }else if(  ctx. != null ){
+              ctx..accept(new ExprVisitor());
+            }else if(  ctx. != null ){
+              ctx..accept(new ExprVisitor());
+            }else
+
+      */
+      return ctx.accept(new ExprVisitor());
+    }
+
+    @Override
+    public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
+
+      // FIXME
+      return null;
+    }
   }
 
-  private static class BinOpVisitor extends JimpleBaseVisitor<AbstractBinopExpr> {
+  private static class ExprVisitor extends JimpleBaseVisitor<Expr> {
+    @Override
+    public Expr visitReference(JimpleParser.ReferenceContext ctx) {
+      // TODO
+      return super.visitReference(ctx);
+    }
+
+    @Override
+    public Expr visitBool_expr(JimpleParser.Bool_exprContext ctx) {
+      // TODO
+      return super.visitBool_expr(ctx);
+    }
+
+    @Override
+    public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
+      // TODO
+      return super.visitInvoke_expr(ctx);
+    }
+
+    @Override
+    public Expr visitUnop_expr(JimpleParser.Unop_exprContext ctx) {
+      Value value = ctx.immediate().accept(new ValueVisitor());
+      if (ctx.unop().NEG() != null) {
+        return Jimple.newNegExpr(value);
+      } else {
+        return Jimple.newLengthExpr(value);
+      }
+    }
 
     @Override
     public AbstractBinopExpr visitBinop_expr(JimpleParser.Binop_exprContext ctx) {
 
-      // FIXME
-      Value left = null; // ctx.left.accept();
-      Value right = null; // ctx.right.accept();
+      Value left = ctx.left.accept(new ValueVisitor());
+      Value right = ctx.right.accept(new ValueVisitor());
 
       JimpleParser.BinopContext binopctx = ctx.op;
 

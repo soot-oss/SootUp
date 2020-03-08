@@ -3,36 +3,118 @@ package de.upb.swt.soot;
 import static org.junit.Assert.*;
 
 import de.upb.swt.soot.core.frontend.SootClassSource;
-import java.io.IOException;
+import de.upb.swt.soot.core.model.SootClass;
+import de.upb.swt.soot.core.model.SourceType;
+import de.upb.swt.soot.core.util.printer.Printer;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.Test;
 
 public class JimpleVisitorImplTest {
 
-  void checkJimpleClass(String filename) {
-    // load from file
+  void checkJimpleClass(CharStream cs) {
+
     JimpleVisitorImpl parser = new JimpleVisitorImpl();
-    CharStream charStream;
-    try {
-      charStream = CharStreams.fromFileName(filename);
-    } catch (IOException e) {
-      e.printStackTrace();
-      assert (false);
-      return;
-    }
-    final SootClassSource parse = parser.parse(charStream);
+    final SootClassSource sc = parser.parse(cs);
+
+    StringWriter output = new StringWriter();
+    ;
+
+    Printer p = new Printer();
+    p.printTo(new SootClass(sc, SourceType.Application), new PrintWriter(output));
+
+    System.out.println(output);
 
     // TODO: compare printed jimple with loaded file
 
   }
 
   @Test
-  public void parse() {
+  public void parseMinimalClass() {
 
-    JimpleVisitorImpl parser = new JimpleVisitorImpl();
-    parser.parse(
+    CharStream cs = CharStreams.fromString("class MinClass \n { }");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseEmptyClass() {
+    CharStream cs =
         CharStreams.fromString(
-            "public class EmptyClass extends java.lang.Object\n" + " { " + " \n " + "  " + "} "));
+            "public class EmptyClass extends java.lang.Object\n" + " { " + " \n " + "  " + "} ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseClassWField() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class EmptyClass extends java.lang.Object\n"
+                + " {      static int globalCounter;\n } ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseClassWFields() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class EmptyClass extends java.lang.Object\n"
+                + " {     static int globalCounter;\n long sth;} ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseClassWMethod() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class EmptyClass extends java.lang.Object \n { public void <init>(){}  } ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseClassWMethods() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class EmptyClass extends java.lang.Object \n { public void <init>(){}"
+                + "private void another(){}  } ");
+
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void parseInterleavingClassMembers() {
+    CharStream cs1 =
+        CharStreams.fromString(
+            "public class Interleaving1 extends java.lang.Object \n { public void <init>(){} static int globalCounter; protected void another(){}  } ");
+    checkJimpleClass(cs1);
+
+    CharStream cs2 =
+        CharStreams.fromString(
+            "public class Interleaving2 extends java.lang.Object \n { private bool flag; void <init>(){} static int globalCounter; protected void another(){}  } ");
+    checkJimpleClass(cs2);
+  }
+
+  @Test
+  public void parseClassImplements() {
+    CharStream cs1 =
+        CharStreams.fromString(
+            "public class Developer implements human.interaction.devices.Typing \n { public void <init>(){}"
+                + "private void another(){}  } ");
+    checkJimpleClass(cs1);
+
+    CharStream cs2 =
+        CharStreams.fromString(
+            "public class Developer implements human.interaction.devices.Typing, human.system.KeepAwake \n { public void <init>(){} } ");
+    checkJimpleClass(cs2);
+  }
+
+  @Test
+  public void parseClassExtends() {
+    CharStream cs =
+        CharStreams.fromString(
+            "public class BigTable extends Small.Table \n { public void <init>(){}"
+                + "private void another(){}  } ");
+    checkJimpleClass(cs);
   }
 }

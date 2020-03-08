@@ -167,7 +167,7 @@ grammar Jimple;
 
   extends_clause : 'extends' class_name;
 
-  implements_clause :    'implements' class_name_list;
+  implements_clause : 'implements' class_name_list;
 
   name_list :
     /*single*/ name |
@@ -294,7 +294,9 @@ grammar Jimple;
     'catch' class_name 'from' label_name 'to' label_name 'with' label_name SEMICOLON;
 
   expression :
-    /*new*/         new_expr |
+    /*new simple*/  NEW base_type |
+    /*new array*/   NEWARRAY L_PAREN nonvoid_type R_PAREN fixed_array_descriptor |
+    /*new multi*/   NEWMULTIARRAY L_PAREN base_type R_PAREN array_descriptor+ |
     /*cast*/        L_PAREN nonvoid_type R_PAREN immediate |
     /*instanceof*/  immediate INSTANCEOF nonvoid_type |
     /*invoke*/      invoke_expr |
@@ -302,11 +304,6 @@ grammar Jimple;
     /*binop*/       binop_expr |
     /*unop*/        unop_expr |
     /*immediate*/   immediate;
-
-  new_expr :
-    /*simple*/ NEW base_type |
-    /*array*/  NEWARRAY L_PAREN nonvoid_type R_PAREN fixed_array_descriptor |
-    /*multi*/  NEWMULTIARRAY L_PAREN base_type R_PAREN array_descriptor+;
 
   array_descriptor :
     L_BRACKET immediate? R_BRACKET;
