@@ -155,10 +155,11 @@ public class JimpleVisitorImplTest {
   }
 
   @Test
-  public void testSinglelineCommentt() {
+  public void testSinglelineComment() {
     CharStream cs =
         CharStreams.fromString(
-            "// SingleLine One \n"
+            "//SingleLine One \n"
+                + "// SecondSingleLine \n"
                 + "import Small.Table; \n"
                 + "// SingleLine Two \n"
                 + "public class BigTable extends Table \n {"
@@ -171,18 +172,46 @@ public class JimpleVisitorImplTest {
   }
 
   @Test
-  public void testMultilineCommentt() {
+  public void testLineComment() {
+    CharStream cs =
+        CharStreams.fromString(
+            "import Medium.Table; \n"
+                + "public class //Chair extends Table \n"
+                + "BigTable extends Table \n {"
+                + "public void <init>(){} \n"
+                + "//private void another(){} \n"
+                + "} ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testSimpleLongComment() {
     CharStream cs =
         CharStreams.fromString(
             "/* One */ \n"
                 + "import Medium.Table; \n"
-                + "/* \n Two */"
                 + "public class BigTable extends Table \n {"
-                + "\n /*\n  Three \n \n */"
+                + " public void <init>(){} \n"
+                + "private void another(){} \n"
+                + "} \n");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testLongComment() {
+    CharStream cs =
+        CharStreams.fromString(
+            "/*One*/ \n"
+                + "/*One */ \n"
+                + "/* One*/ \n"
+                + "import /*Comment*//*more */Medium.Table; \n"
+                + "/* \n Two */"
+                + "public /* Crumble*/ class   BigTable extends Table \n {"
+                // + "\n /*\n  Three \n \n */"
                 + " public void <init>(){}"
                 + "private void another(){}  "
-                + "/* Another opening /* */"
-                + "/* \n End \n */"
+                //    + "/* Another opening /* */"
+                //   + "/* \n End \n */"
                 + "} ");
     checkJimpleClass(cs);
   }

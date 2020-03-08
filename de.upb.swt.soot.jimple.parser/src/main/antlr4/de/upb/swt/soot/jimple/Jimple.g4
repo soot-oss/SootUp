@@ -17,15 +17,6 @@ grammar Jimple;
   // escapes and any char except '\' (92) or '"' (34).
   STRING_CHAR : [^\u0034\u0092] ;
 
-  LINE_COMMENT : '//' NOT_CR_LF* ->skip;
-  LONG_COMMENT : '/*' NOT_STAR* '*/' -> skip;
-
-  BLANK : [ \t\r\n] ->skip;        // TODO: check problem w/Strings?
-
-  fragment NOT_CR_LF : [^\u0010\u0013];
-  fragment NOT_STAR : [^*];
-  ALL_BUT_WS: [A-Za-z0-9.$_<>]+;
-
   ABSTRACT : 'abstract';
   FINAL : 'final';
   NATIVE : 'native';
@@ -130,6 +121,11 @@ grammar Jimple;
   FLOAT_CONSTANT : ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
   STRING_CONSTANT : '"' STRING_CHAR* '"';
 
+  IDENTIFIER: [A-Za-z0-9$.<>_]+;
+  LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
+  LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)* '/' -> skip;
+
+  BLANK : [ \t\r\n] ->skip;        // TODO: check problem w/Strings?
 
 
  /*
@@ -150,7 +146,7 @@ grammar Jimple;
   implements_clause : 'implements' name_list;
 
   name :
-    /*ident*/  ALL_BUT_WS;
+    /*ident*/ IDENTIFIER;
 
   name_list :
     /*single*/ name |

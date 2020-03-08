@@ -35,7 +35,6 @@ class JimpleVisitorImpl {
   private static ClassType clazz = null;
   private static HashMap<String, Stmt> unresolvedGotoStmts = new HashMap<>();
   private static HashMap<String, Stmt> jumpTargets = new HashMap<>();
-  private static String addLabel = null;
 
   private static Type getType(String typename) {
     PackageName packageName = imports.get(typename);
@@ -78,6 +77,14 @@ class JimpleVisitorImpl {
       // FIXME implement outerclass
       ClassType outerclass = null;
 
+      // class_name
+      if (ctx.classname != null) {
+        final String classname = ctx.classname.getText();
+        clazz = getClassType(classname);
+      } else {
+        throw new IllegalStateException("Class is not well formed.");
+      }
+
       // position
       Position position =
           new Position(
@@ -110,12 +117,6 @@ class JimpleVisitorImpl {
         if (ctx.file_type().getText().equals("annotation")) {
           modifier.add(Modifier.ANNOTATION);
         }
-      }
-
-      // class_name
-      if (ctx.classname != null) {
-        final String classname = ctx.classname.getText();
-        clazz = getClassType(classname);
       }
 
       // extends_clause
