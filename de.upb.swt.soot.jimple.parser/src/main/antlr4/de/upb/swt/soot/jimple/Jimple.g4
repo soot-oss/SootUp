@@ -35,7 +35,7 @@ grammar Jimple;
   fragment LINE_COMMENT : '//' NOT_CR_LF*;
   fragment LONG_COMMENT : '/*' NOT_STAR* '*'+ (NOT_STAR_SLASH NOT_STAR* '*'+)* '/';
 
-  BLANK : [ \t\r\n];        // ->skipt --->problem w/Strings ;)
+  BLANK : [ \t\r\n] ->skip;        //  --->problem w/Strings ;)
 
 
   ABSTRACT : 'abstract';
@@ -84,7 +84,7 @@ grammar Jimple;
   INSTANCEOF : 'instanceof';
   INTERFACEINVOKE : 'interfaceinvoke';
   LENGTHOF : 'lengthof';
-  // possibility to read old Jimple
+  // enable to read old Jimple
   SWITCH : 'lookupswitch' | 'tableswitch' | 'switch';
   NEG : 'neg';
   NEW : 'new';
@@ -253,38 +253,42 @@ grammar Jimple;
     /*single*/ local_name |
     /*multi*/  local_name COMMA local_name_list;
 
-  statement :
-    /*label*/        label_name COLON |
-    /*breakpoint*/   BREAKPOINT SEMICOLON |
-    /*entermonitor*/ ENTERMONITOR immediate SEMICOLON |
-    /*exitmonitor*/  EXITMONITOR immediate SEMICOLON |
-    /*switch*/       SWITCH L_PAREN immediate R_PAREN L_BRACE case_stmt+ R_BRACE SEMICOLON |
+
+    statement:
+    /*label*/        label_name COLON stmt SEMICOLON |
+                      stmt SEMICOLON;
+
+  stmt :
+    /*breakpoint*/   BREAKPOINT |
+    /*entermonitor*/ ENTERMONITOR immediate  |
+    /*exitmonitor*/  EXITMONITOR immediate  |
+    /*switch*/       SWITCH L_PAREN immediate R_PAREN L_BRACE case_stmt+ R_BRACE  |
                      assignments |
     /*if*/           IF bool_expr goto_stmt |
     /*goto*/         goto_stmt |
-    /*nop*/          NOP SEMICOLON |
-    /*ret*/          RET immediate? SEMICOLON |
-    /*return*/       RETURN immediate? SEMICOLON |
-    /*throw*/        THROW immediate SEMICOLON |
-    /*invoke*/       invoke_expr SEMICOLON;
+    /*nop*/          NOP |
+    /*ret*/          RET immediate? |
+    /*return*/       RETURN immediate? |
+    /*throw*/        THROW immediate |
+    /*invoke*/       invoke_expr ;
 
     assignments:
-    /*identity*/     local_name COLON_EQUALS AT_IDENTIFIER type SEMICOLON |
-    /*identity_no_type*/  local_name COLON_EQUALS AT_IDENTIFIER SEMICOLON |
-    /*assign*/       variable EQUALS expression SEMICOLON;
+    /*identity*/     local_name COLON_EQUALS AT_IDENTIFIER type  |
+    /*identity_no_type*/  local_name COLON_EQUALS AT_IDENTIFIER  |
+    /*assign*/       variable EQUALS expression ;
 
   label_name :
     IDENTIFIER;
 
   case_stmt :
-    case_label COLON goto_stmt;
+    case_label COLON goto_stmt SEMICOLON;
 
   case_label :
     /*constant*/ CASE MINUS? INTEGER_CONSTANT |
     /*default*/  DEFAULT;
 
   goto_stmt :
-    'goto' label_name SEMICOLON;
+    'goto' label_name;
 
   catch_clause :
     'catch' class_name 'from' label_name 'to' label_name 'with' label_name SEMICOLON;

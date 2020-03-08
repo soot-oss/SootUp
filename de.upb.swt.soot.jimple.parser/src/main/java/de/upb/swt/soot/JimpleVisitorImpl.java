@@ -1,27 +1,21 @@
 package de.upb.swt.soot;
 
-import com.sun.org.apache.bcel.internal.generic.*;
 import de.upb.swt.soot.core.IdentifierFactory;
 import de.upb.swt.soot.core.frontend.OverridingClassSource;
 import de.upb.swt.soot.core.frontend.OverridingMethodSource;
 import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.inputlocation.AnalysisInputLocation;
 import de.upb.swt.soot.core.jimple.Jimple;
-import de.upb.swt.soot.core.jimple.basic.Local;
-import de.upb.swt.soot.core.jimple.basic.StmtPositionInfo;
-import de.upb.swt.soot.core.jimple.basic.Trap;
-import de.upb.swt.soot.core.jimple.basic.Value;
+import de.upb.swt.soot.core.jimple.basic.*;
 import de.upb.swt.soot.core.jimple.common.expr.*;
-import de.upb.swt.soot.core.jimple.common.stmt.JNopStmt;
+import de.upb.swt.soot.core.jimple.common.stmt.JGotoStmt;
 import de.upb.swt.soot.core.jimple.common.stmt.Stmt;
-import de.upb.swt.soot.core.jimple.javabytecode.stmt.JBreakpointStmt;
 import de.upb.swt.soot.core.model.*;
 import de.upb.swt.soot.core.signatures.MethodSignature;
 import de.upb.swt.soot.core.signatures.PackageName;
 import de.upb.swt.soot.core.types.ClassType;
 import de.upb.swt.soot.core.types.Type;
 import de.upb.swt.soot.java.core.JavaIdentifierFactory;
-import de.upb.swt.soot.java.core.language.JavaJimple;
 import de.upb.swt.soot.jimple.JimpleBaseVisitor;
 import de.upb.swt.soot.jimple.JimpleLexer;
 import de.upb.swt.soot.jimple.JimpleParser;
@@ -37,6 +31,9 @@ class JimpleVisitorImpl {
   static final IdentifierFactory identifierFactory = JavaIdentifierFactory.getInstance();
   private static Map<String, PackageName> imports = new HashMap<>();
   private static ClassType clazz = null;
+  private static HashMap<String, Stmt> unresolvedGotoStmts = new HashMap<>();
+  private static HashMap<String, Stmt> jumpTargets = new HashMap<>();
+  private static String addLabel = null;
 
   private static Type getType(String typename) {
     PackageName packageName = imports.get(typename);
@@ -97,10 +94,10 @@ class JimpleVisitorImpl {
       EnumSet<Modifier> modifier = EnumSet.copyOf(modifierSet);
 
       // file_type
-      if (ctx.file_type().equals("interface")) {
+      if (ctx.file_type().getText().equals("interface")) {
         modifier.add(Modifier.INTERFACE);
       }
-      if (ctx.file_type().equals("annotation")) {
+      if (ctx.file_type().getText().equals("annotation")) {
         modifier.add(Modifier.ANNOTATION);
       }
 
@@ -252,6 +249,23 @@ class JimpleVisitorImpl {
               .collect(Collectors.toSet());
       EnumSet<Modifier> modifier = EnumSet.copyOf(modifierSet);
 
+      // TODO: associate labels with goto boxes
+      for (Map.Entry<String, Stmt> item : unresolvedGotoStmts.entrySet()) {
+        final Stmt stmt = jumpTargets.get(item.getKey());
+        if (stmt != null) {
+
+          final Stmt value = item.getValue();
+          if (value instanceof JGotoStmt) {
+            JGotoStmt.$Accessor.setTarget((JGotoStmt) value, stmt);
+          }
+
+        } else {
+          // TODO: choose a better Exception
+          throw new RuntimeException(
+              "dont jump into the space. target Stmt not found i.e. no label: " + item.getKey());
+        }
+      }
+
       return new SootMethod(oms, methodSignature, modifier, exceptions);
     }
   }
@@ -275,55 +289,71 @@ class JimpleVisitorImpl {
     @Override
     public Value visitImmediate(JimpleParser.ImmediateContext ctx) {
 
-
-
+      // FIXME
+      return null;
     }
   }
 
+  private static class StmtVisitor extends JimpleBaseVisitor<Stmt> {
 
-
-    private static class StmtVisitor extends JimpleBaseVisitor<Stmt> {
+    @Override
+    public Stmt visitStatement(JimpleParser.StatementContext ctx) {
+      Stmt stmt = ctx.stmt().accept(new StmtVisitor());
+      if (ctx.label_name() != null) {
+        jumpTargets.put(ctx.label_name().getText(), stmt);
+      }
+      return stmt;
+    }
 
     @Override
     @Nonnull
-    public Stmt visitStatement(JimpleParser.StatementContext ctx) {
+    public Stmt visitStmt(JimpleParser.StmtContext ctx) {
 
-      StmtPositionInfo pos = new StmtPositionInfo(ctx.start.getLine() );
+      StmtPositionInfo pos = new StmtPositionInfo(ctx.start.getLine());
 
-      if( ctx.BREAKPOINT() != null ){
-        return Jimple.newBreakpointStmt( pos );
-      }else if( ctx.ENTERMONITOR() != null ){
-        return Jimple.newEnterMonitorStmt( ctx.immediate().accept(new ValueVisitor() ), pos);
-      }else if( ctx.EXITMONITOR() != null ){
-        return Jimple.newExitMonitorStmt( ctx.immediate().accept(new ValueVisitor() ),  pos);
-      }else if( ctx.SWITCH() != null ){
-        // TODO: determine lookup/tableswitch if possible
-        ctx.
-        return Jimple.newLookupSwitchStmt()
-      }else if( ctx.assignments() != null ){
+      if (ctx.BREAKPOINT() != null) {
+        return Jimple.newBreakpointStmt(pos);
+      } else if (ctx.ENTERMONITOR() != null) {
+        return Jimple.newEnterMonitorStmt(ctx.immediate().accept(new ValueVisitor()), pos);
+      } else if (ctx.EXITMONITOR() != null) {
+        return Jimple.newExitMonitorStmt(ctx.immediate().accept(new ValueVisitor()), pos);
+      } else if (ctx.SWITCH() != null) {
+        // TODO: determine tableswitch if possible
+        if (false) {
+          return Jimple.newTableSwitchStmt();
+        } else {
+          return Jimple.newLookupSwitchStmt();
+        }
+      } else if (ctx.assignments() != null) {
         // TODO
-        return ctx.assignments().;
-      }else if( ctx.IF() != null ){
-        return Jimple.new
-      }else if( ctx.goto_stmt()  != null ){
-        return Jimple.newGotoStmt(, pos);
-      }else if( ctx.NOP() != null ){
-        return Jimple.new
-      }else if( ctx.RET() != null ){
-        return Jimple.new
-      }else if( ctx.RETURN() != null ){
-        return Jimple.new
-      }else if( ctx.THROW() != null ){
-        return Jimple.new
-      }else if( ctx.invoke_expr() != null ){
-        return Jimple.new
+        return ctx.assignments().EQUALS();
+      } else if (ctx.IF() != null) {
+        JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
+        final Stmt stmt = Jimple.newIfStmt(ctx.bool_expr().accept(new ValueVisitor()), target, pos);
+        unresolvedGotoStmts.put(ctx.goto_stmt().label_name().getText(), stmt);
+        return stmt;
+      } else if (ctx.goto_stmt() != null) {
+        JStmtBox target = (JStmtBox) Jimple.newStmtBox(null);
+        final Stmt stmt = Jimple.newGotoStmt(target, pos);
+        unresolvedGotoStmts.put(ctx.goto_stmt().label_name().getText(), stmt);
+        return stmt;
+      } else if (ctx.NOP() != null) {
+        return Jimple.newNopStmt(pos);
+      } else if (ctx.RET() != null) {
+        return Jimple.newRetStmt(ctx.immediate().accept(new ValueVisitor()), pos);
+      } else if (ctx.RETURN() != null) {
+        if (ctx.immediate() == null) {
+          return Jimple.newReturnVoidStmt(pos);
+        } else {
+          return Jimple.newReturnStmt(ctx.immediate().accept(new ValueVisitor()), pos);
+        }
+      } else if (ctx.THROW() != null) {
+        return Jimple.newThrowStmt(ctx.immediate().accept(new ValueVisitor()), pos);
+      } else if (ctx.invoke_expr() != null) {
+        // TODO
+        return Jimple.newSpecialInvokeExpr();
       }
-
-
-
-      // FIXME: statement
-      // FIXME: position
-      return new JNopStmt(new StmtPositionInfo(ctx.start.getLine()));
+      throw new RuntimeException("Unknown Stmt");
     }
   }
 
@@ -337,8 +367,6 @@ class JimpleVisitorImpl {
     */
   }
 
-
-
   private static class BinOpVisitor extends JimpleBaseVisitor<AbstractBinopExpr> {
 
     @Override
@@ -346,53 +374,50 @@ class JimpleVisitorImpl {
 
       // FIXME
       Value left = null; // ctx.left.accept();
-      Value right = null; //ctx.right.accept();
+      Value right = null; // ctx.right.accept();
 
       JimpleParser.BinopContext binopctx = ctx.op;
 
-      if( binopctx.AND() != null){
-        return new JAndExpr(left,right);
-      }else if( binopctx.OR() != null){
-        return new JOrExpr(left,right);
-      }else if( binopctx.MOD() != null){
-        return new JRemExpr(left,right);
-      }else if( binopctx.CMP() != null){
-        return new JCmpExpr(left,right);
-      }else if( binopctx.CMPG() != null){
-        return new JCmpgExpr(left,right);
-      }else if( binopctx.CMPL() != null){
-        return new JCmplExpr(left,right);
-      }else if( binopctx.CMPEQ() != null){
-        return new JEqExpr(left,right);
-      }else if( binopctx.CMPNE() != null){
-        return new JNeExpr(left,right);
-      }else if( binopctx.CMPGT() != null){
-        return new JGtExpr(left,right);
-      }else if( binopctx.CMPGE() != null){
-        return new JGeExpr(left,right);
-      }else if( binopctx.CMPLT() != null){
-        return new JLtExpr(left,right);
-      }else if( binopctx.CMPLE() != null){
-        return new JLeExpr(left,right);
-      }else if( binopctx.SHL() != null){
-        return new JShlExpr(left,right);
-      }else if( binopctx.SHR() != null){
-        return new JShrExpr(left,right);
-      }else if( binopctx.USHR() != null){
-        return new JUshrExpr(left,right);
-      }else if( binopctx.PLUS() != null){
-        return new JAddExpr(left,right);
-      }else if( binopctx.MINUS() != null){
-        return new JSubExpr(left,right);
-      }else if( binopctx.MULT() != null){
-        return new JMulExpr(left,right);
-      }else if( binopctx.DIV() != null){
-        return new JDivExpr(left,right);
+      if (binopctx.AND() != null) {
+        return new JAndExpr(left, right);
+      } else if (binopctx.OR() != null) {
+        return new JOrExpr(left, right);
+      } else if (binopctx.MOD() != null) {
+        return new JRemExpr(left, right);
+      } else if (binopctx.CMP() != null) {
+        return new JCmpExpr(left, right);
+      } else if (binopctx.CMPG() != null) {
+        return new JCmpgExpr(left, right);
+      } else if (binopctx.CMPL() != null) {
+        return new JCmplExpr(left, right);
+      } else if (binopctx.CMPEQ() != null) {
+        return new JEqExpr(left, right);
+      } else if (binopctx.CMPNE() != null) {
+        return new JNeExpr(left, right);
+      } else if (binopctx.CMPGT() != null) {
+        return new JGtExpr(left, right);
+      } else if (binopctx.CMPGE() != null) {
+        return new JGeExpr(left, right);
+      } else if (binopctx.CMPLT() != null) {
+        return new JLtExpr(left, right);
+      } else if (binopctx.CMPLE() != null) {
+        return new JLeExpr(left, right);
+      } else if (binopctx.SHL() != null) {
+        return new JShlExpr(left, right);
+      } else if (binopctx.SHR() != null) {
+        return new JShrExpr(left, right);
+      } else if (binopctx.USHR() != null) {
+        return new JUshrExpr(left, right);
+      } else if (binopctx.PLUS() != null) {
+        return new JAddExpr(left, right);
+      } else if (binopctx.MINUS() != null) {
+        return new JSubExpr(left, right);
+      } else if (binopctx.MULT() != null) {
+        return new JMulExpr(left, right);
+      } else if (binopctx.DIV() != null) {
+        return new JDivExpr(left, right);
       }
+      throw new RuntimeException("Unknown BinOp");
     }
   }
-
-
-
-
 }
