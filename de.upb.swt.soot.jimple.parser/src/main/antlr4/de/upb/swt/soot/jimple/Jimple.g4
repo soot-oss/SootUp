@@ -4,20 +4,8 @@ grammar Jimple;
  * Lexer Rules
  */
 
-  fragment DEC_DIGIT : [0-9];
-  fragment DEC_CONSTANT : DEC_DIGIT+;
 
-  fragment HEX_DIGIT : DEC_DIGIT | [A-Fa-f];
-  fragment HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
-
-  fragment ESCAPABLE_CHAR : '\\' | ' ' | '\'' | '.' | '"' | 'n' | 't' | 'r' | 'b' | 'f';
-  fragment ESCAPE_CODE : 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT;
-  fragment ESCAPE_CHAR : '\\' (ESCAPABLE_CHAR | ESCAPE_CODE);
-
-  // escapes and any char except '\' (92) or '"' (34).
-  STRING_CHAR : [^\u0034\u0092] ;
-
-  ABSTRACT : 'abstract';
+//  ABSTRACT : 'abstract';
   FINAL : 'final';
   NATIVE : 'native';
   PUBLIC : 'public';
@@ -113,6 +101,22 @@ grammar Jimple;
   MINUS : '-';
   MULT : '*';
   DIV : '/';
+
+  fragment DEC_DIGIT : [0-9];
+  fragment DEC_CONSTANT : DEC_DIGIT+;
+
+  fragment HEX_DIGIT : DEC_DIGIT | [A-Fa-f];
+  fragment HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
+
+/*
+  fragment ESCAPABLE_CHAR : '\\' | ' ' | '\'' | '.' | '"' | 'n' | 't' | 'r' | 'b' | 'f';
+  fragment ESCAPE_CODE : 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT;
+  fragment ESCAPE_CHAR : '\\' (ESCAPABLE_CHAR | ESCAPE_CODE);
+*/
+
+  // escapes and any char except '\' (92) or '"' (34).
+  STRING_CHAR : [^\u0034\u0092] ;
+
 
   AT_IDENTIFIER : '@' (('parameter' DEC_DIGIT+ ':') | 'this' ':' | 'caughtexception');
 
@@ -228,7 +232,7 @@ grammar Jimple;
     /*assign*/       variable EQUALS expression ;
 
   label_name :
-    NAME;
+    name;
 
   case_stmt :
     case_label COLON goto_stmt SEMICOLON;
@@ -290,7 +294,7 @@ grammar Jimple;
     CMPLT class_name=name first=COLON type method_name=name  L_PAREN parameter_list? R_PAREN CMPGT;
 
   reference :
-    /*array*/ NAME fixed_array_descriptor |
+    /*array*/ name fixed_array_descriptor |
     /*field*/
     /*local*/ name DOT field_signature |
     /*sig*/   field_signature;
