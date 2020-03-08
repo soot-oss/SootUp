@@ -10,33 +10,21 @@ grammar Jimple;
   fragment HEX_DIGIT : DEC_DIGIT | [A-Fa-f];
   fragment HEX_CONSTANT : '0' ('x' | 'X') HEX_DIGIT+;
 
-  fragment OCT_DIGIT : [0-7];
-  fragment OCT_CONSTANT : '0' OCT_DIGIT+;
-
-  fragment QUOTE : '\'';
-
-  fragment ESCAPABLE_CHAR : '\\' | ' ' | QUOTE | '.' | '"' | 'n' | 't' | 'r' | 'b' | 'f';
+  fragment ESCAPABLE_CHAR : '\\' | ' ' | '\'' | '.' | '"' | 'n' | 't' | 'r' | 'b' | 'f';
   fragment ESCAPE_CODE : 'u' HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT;
   fragment ESCAPE_CHAR : '\\' (ESCAPABLE_CHAR | ESCAPE_CODE);
 
+  // escapes and any char except '\' (92) or '"' (34).
+  STRING_CHAR : [^\u0034\u0092] ;
+
+  LINE_COMMENT : '//' NOT_CR_LF* ->skip;
+  LONG_COMMENT : '/*' NOT_STAR* '*/' -> skip;
+
+  BLANK : [ \t\r\n] ->skip;        // TODO: check problem w/Strings?
+
   fragment NOT_CR_LF : [^\u0010\u0013];
   fragment NOT_STAR : [^*];
-  fragment NOT_STAR_SLASH : [^*\\];
-
-  fragment SIMPLE_ID_CHAR : [a-zA-Z] | DEC_DIGIT | '_' | '$';
-
-  fragment FIRST_ID_CHAR : [a-zA-Z] | '_' | '$';
-
-  fragment QUOTABLE_CHAR : NOT_CR_LF | '\'' ;
-
-  // escapes and any char except '\' (92) or '"' (34).
-  fragment STRING_CHAR : ESCAPE_CHAR | [^\u0034\u0092] ;
-
-  fragment LINE_COMMENT : '//' NOT_CR_LF*;
-  fragment LONG_COMMENT : '/*' NOT_STAR* '*'+ (NOT_STAR_SLASH NOT_STAR* '*'+)* '/';
-
-  BLANK : [ \t\r\n] ->skip;        //  --->problem w/Strings ;)
-
+  ALL_BUT_WS: [A-Za-z0-9.$_<>]+;
 
   ABSTRACT : 'abstract';
   FINAL : 'final';
@@ -135,18 +123,10 @@ grammar Jimple;
   MULT : '*';
   DIV : '/';
 
-
-    /* FIXME: generify - this is java specific */
-  FULL_IDENTIFIER :
-      ((FIRST_ID_CHAR | ESCAPE_CHAR) (SIMPLE_ID_CHAR | ESCAPE_CHAR)* DOT)+  (FIRST_ID_CHAR | ESCAPE_CHAR) (SIMPLE_ID_CHAR | ESCAPE_CHAR)*;
-  QUOTED_NAME : QUOTE QUOTABLE_CHAR+ QUOTE;
-  IDENTIFIER :
-      (FIRST_ID_CHAR | ESCAPE_CHAR) (SIMPLE_ID_CHAR | ESCAPE_CHAR)* | '<clinit>' | '<init>';
-
   AT_IDENTIFIER : '@' (('parameter' DEC_DIGIT+ ':') | 'this' ':' | 'caughtexception');
 
   BOOL_CONSTANT : 'true' | 'false';
-  INTEGER_CONSTANT : (DEC_CONSTANT | HEX_CONSTANT | OCT_CONSTANT) 'L'?;
+  INTEGER_CONSTANT : (DEC_CONSTANT | HEX_CONSTANT ) 'L'?;
   FLOAT_CONSTANT : ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
   STRING_CONSTANT : '"' STRING_CHAR* '"';
 
@@ -157,25 +137,24 @@ grammar Jimple;
   */
 
   file:
-    importItem* modifier* file_type class_name extends_clause? implements_clause? L_BRACE member* R_BRACE;
+    importItem* modifier* file_type classname=name extends_clause? implements_clause? L_BRACE member* R_BRACE;
 
-  importItem: 'import' location=STRING_CONSTANT ';';
+  importItem: 'import' location=name* SEMICOLON;
 
   modifier : 'abstract' | 'final' | 'native' | 'public' | 'protected' | 'private' | 'static' | 'synchronized' | 'transient' |'volatile' | 'strictfp' | 'enum' | 'annotation';
 
   file_type : 'class' | 'interface' | 'annotation';
 
-  extends_clause : 'extends' class_name;
+  extends_clause : 'extends' classname=name;
 
-  implements_clause : 'implements' class_name_list;
+  implements_clause : 'implements' name_list;
+
+  name :
+    /*ident*/  ALL_BUT_WS;
 
   name_list :
     /*single*/ name |
     /*multi*/  name COMMA name_list;
-
-  class_name_list :
-    /*class_name_single*/ class_name |
-    /*class_name_multi*/  class_name COMMA class_name_list;
 
   member:
         field | method;
@@ -191,17 +170,11 @@ grammar Jimple;
     /*novoid*/ nonvoid_type;
 
   parameter_list :
-    /*single*/ parameter |
-    /*multi*/  parameter COMMA parameter_list;
-
-  parameter :
-    nonvoid_type;
+    /*single*/ parameter=nonvoid_type |
+    /*multi*/  parameter=nonvoid_type COMMA parameter_list;
 
   throws_clause :
-    'throws' class_name_list;
-
-
-
+    'throws' name_list;
 
   base_type_no_name :
     /*boolean*/ BOOLEAN |
@@ -215,44 +188,25 @@ grammar Jimple;
     /*null*/    NULL_TYPE;
 
 
-  base_type :
-                    base_type_no_name |
-    /*class_name*/    class_name;
+  base_type: base_type_no_name | /*class_name*/    classname=name;
 
-  nonvoid_type :
+  nonvoid_type:
     /*base*/   base_type_no_name array_brackets* |
-    /*quoted*/ QUOTED_NAME array_brackets* |
-    /*ident*/  IDENTIFIER array_brackets* |
-    /*full_ident*/ FULL_IDENTIFIER array_brackets*;
+    /*ident*/  name array_brackets*;
 
-
-
-
-
-  array_brackets :
+  array_brackets:
     L_BRACKET R_BRACKET;
 
-  method_body :
+  method_body:
     /*empty*/ SEMICOLON |
     /*full*/  L_BRACE declaration* statement* catch_clause* R_BRACE;
 
-  declaration :
-    jimple_type local_name_list SEMICOLON;
+  declaration:
+    jimple_type name_list SEMICOLON;
 
-  jimple_type :
+  jimple_type:
     /*unknown*/ UNKNOWN |
     /*nonvoid*/ nonvoid_type;
-
-  local_name :
-    name;
-
-
-
-
-  local_name_list :
-    /*single*/ local_name |
-    /*multi*/  local_name COMMA local_name_list;
-
 
     statement:
     /*label*/        label_name COLON stmt SEMICOLON |
@@ -273,12 +227,12 @@ grammar Jimple;
     /*invoke*/       invoke_expr ;
 
     assignments:
-    /*identity*/     local_name COLON_EQUALS AT_IDENTIFIER type  |
-    /*identity_no_type*/  local_name COLON_EQUALS AT_IDENTIFIER  |
+    /*identity*/     local=name COLON_EQUALS AT_IDENTIFIER type  |
+    /*identity_no_type*/ local=name COLON_EQUALS AT_IDENTIFIER  |
     /*assign*/       variable EQUALS expression ;
 
   label_name :
-    IDENTIFIER;
+    NAME;
 
   case_stmt :
     case_label COLON goto_stmt SEMICOLON;
@@ -291,7 +245,7 @@ grammar Jimple;
     'goto' label_name;
 
   catch_clause :
-    'catch' class_name 'from' label_name 'to' label_name 'with' label_name SEMICOLON;
+    'catch' classname=name 'from' label_name 'to' label_name 'with' label_name SEMICOLON;
 
   expression :
     /*new simple*/  NEW base_type |
@@ -310,14 +264,14 @@ grammar Jimple;
 
   variable :
     /*reference*/ reference |
-    /*local*/     local_name;
+    /*local*/     local=name;
 
   bool_expr :
     /*binop*/ binop_expr |
     /*unop*/  unop_expr;
 
   invoke_expr :
-    /*nonstatic*/ nonstatic_invoke local_name DOT method_signature L_PAREN arg_list? R_PAREN |
+    /*nonstatic*/ nonstatic_invoke name DOT method_signature L_PAREN arg_list? R_PAREN |
     /*static*/    STATICINVOKE method_signature L_PAREN arg_list? R_PAREN |
     /*dynamic*/   DYNAMICINVOKE STRING_CONSTANT dynmethod=unnamed_method_signature firstl=L_PAREN dynargs=arg_list? firstr=R_PAREN
                                               bsm=method_signature L_PAREN staticargs=arg_list? R_PAREN;
@@ -337,22 +291,16 @@ grammar Jimple;
     CMPLT type L_PAREN parameter_list? R_PAREN CMPGT;
 
   method_signature :
-    CMPLT class_name2=class_name first=COLON type method_name=name  L_PAREN parameter_list? R_PAREN CMPGT;
+    CMPLT class_name=name first=COLON type method_name=name  L_PAREN parameter_list? R_PAREN CMPGT;
 
   reference :
-    /*array*/ array_ref |
-    /*field*/ field_ref;
-
-  array_ref :
-    /*ident*/ IDENTIFIER fixed_array_descriptor |
-    /*quoted*/ QUOTED_NAME fixed_array_descriptor;
-
-  field_ref :
-    /*local*/ local_name DOT field_signature |
+    /*array*/ NAME fixed_array_descriptor |
+    /*field*/
+    /*local*/ name DOT field_signature |
     /*sig*/   field_signature;
 
   field_signature :
-    CMPLT class_signature=class_name first=COLON type field_name=name CMPGT;
+    CMPLT class_signature=name first=COLON type field_name=name CMPGT;
 
   fixed_array_descriptor :
     L_BRACKET immediate R_BRACKET;
@@ -362,14 +310,14 @@ grammar Jimple;
     /*multi*/  immediate COMMA arg_list;
 
   immediate :
-    /*local*/    local_name |
+    /*local*/    local=name |
     /*constant*/ constant;
 
   constant :
     /*integer*/ MINUS? INTEGER_CONSTANT |
     /*float*/   MINUS? FLOAT_CONSTANT |
     /*string*/  STRING_CONSTANT |
-    /*clazz*/   id=CLASS STRING_CONSTANT |
+    /*clazz*/   CLASS STRING_CONSTANT |
     /*null*/    NULL;
 
   binop :
@@ -398,11 +346,3 @@ grammar Jimple;
     /*lengthof*/ LENGTHOF |
     /*neg*/      NEG;
 
-class_name :
-    /*quoted*/ QUOTED_NAME |
-    /*ident*/  IDENTIFIER |
-    /*full_ident*/ FULL_IDENTIFIER;
-
-name :
-    /*quoted*/ QUOTED_NAME |
-    /*ident*/  IDENTIFIER;

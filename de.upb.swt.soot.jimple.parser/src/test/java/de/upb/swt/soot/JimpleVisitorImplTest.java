@@ -6,8 +6,7 @@ import de.upb.swt.soot.core.frontend.SootClassSource;
 import de.upb.swt.soot.core.model.SootClass;
 import de.upb.swt.soot.core.model.SourceType;
 import de.upb.swt.soot.core.util.printer.Printer;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.junit.Test;
@@ -17,18 +16,23 @@ public class JimpleVisitorImplTest {
   void checkJimpleClass(CharStream cs) {
 
     JimpleVisitorImpl parser = new JimpleVisitorImpl();
-    final SootClassSource sc = parser.parse(cs);
+    final SootClassSource scs = parser.parse(cs);
 
     StringWriter output = new StringWriter();
-    ;
-
     Printer p = new Printer();
-    p.printTo(new SootClass(sc, SourceType.Application), new PrintWriter(output));
+    final SootClass sc = new SootClass(scs, SourceType.Application);
+    p.printTo(sc, new PrintWriter(output));
 
     System.out.println(output);
 
-    // TODO: compare printed jimple with loaded file
+    /*
 
+    final List<SootDiff.DiffItem> diff = SootDiff.diff(sc, );
+    if( !diff.isEmpty()){
+      SootDiff.print(diff);
+    }
+    assertTrue(diff.isEmpty());
+    */
   }
 
   @Test
@@ -115,6 +119,71 @@ public class JimpleVisitorImplTest {
         CharStreams.fromString(
             "public class BigTable extends Small.Table \n { public void <init>(){}"
                 + "private void another(){}  } ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testImports() {
+    CharStream cs =
+        CharStreams.fromString(
+            "import Small.Table; \n"
+                + "public class BigTable extends Table \n { public void <init>(){}"
+                + "private void another(){}  } ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testValidDuplicateImports() {
+    CharStream cs =
+        CharStreams.fromString(
+            "import Small.Table; \n"
+                + "import Small.Table; \n"
+                + "public class BigTable extends Table \n { public void <init>(){}"
+                + "private void another(){}  } ");
+    checkJimpleClass(cs);
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void testInvalidDuplicateImports() {
+    CharStream cs =
+        CharStreams.fromString(
+            "import Small.Table; \n"
+                + "import Medium.Table; \n"
+                + "public class BigTable extends Table \n { public void <init>(){}"
+                + "private void another(){}  } ");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testSinglelineCommentt() {
+    CharStream cs =
+        CharStreams.fromString(
+            "// SingleLine One \n"
+                + "import Small.Table; \n"
+                + "// SingleLine Two \n"
+                + "public class BigTable extends Table \n {"
+                + "// SingleLine One \n"
+                + "public void <init>(){}"
+                + "// SingleLine One \n"
+                + " }"
+                + "// SingleLine End");
+    checkJimpleClass(cs);
+  }
+
+  @Test
+  public void testMultilineCommentt() {
+    CharStream cs =
+        CharStreams.fromString(
+            "/* One */ \n"
+                + "import Medium.Table; \n"
+                + "/* \n Two */"
+                + "public class BigTable extends Table \n {"
+                + "\n /*\n  Three \n \n */"
+                + " public void <init>(){}"
+                + "private void another(){}  "
+                + "/* Another opening /* */"
+                + "/* \n End \n */"
+                + "} ");
     checkJimpleClass(cs);
   }
 }
