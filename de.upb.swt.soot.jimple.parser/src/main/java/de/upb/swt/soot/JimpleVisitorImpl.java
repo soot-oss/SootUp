@@ -77,14 +77,6 @@ class JimpleVisitorImpl {
       // FIXME implement outerclass
       ClassType outerclass = null;
 
-      // class_name
-      if (ctx.classname != null) {
-        final String classname = ctx.classname.getText();
-        clazz = getClassType(classname);
-      } else {
-        throw new IllegalStateException("Class is not well formed.");
-      }
-
       // position
       Position position =
           new Position(
@@ -107,8 +99,14 @@ class JimpleVisitorImpl {
                         return b;
                       }));
 
-      EnumSet<Modifier> modifier = getModifiers(ctx.modifier());
+      // class_name
+      if (ctx.classname != null) {
+        clazz = getClassType(ctx.classname.getText());
+      } else {
+        throw new IllegalStateException("Class is not well formed.");
+      }
 
+      EnumSet<Modifier> modifier = getModifiers(ctx.modifier());
       // file_type
       if (ctx.file_type() != null) {
         if (ctx.file_type().getText().equals("interface")) {
@@ -166,14 +164,14 @@ class JimpleVisitorImpl {
   private static class NameListVisitor extends JimpleBaseVisitor<Collection<ClassType>> {
 
     public List<ClassType> visitThrows_clause(JimpleParser.Throws_clauseContext ctx) {
-      List<ClassType> list = new ArrayList();
+      List<ClassType> list = new ArrayList<>();
       iterate(list, ctx.name_list());
       return list;
     }
 
     @Override
     public Set<ClassType> visitImplements_clause(JimpleParser.Implements_clauseContext ctx) {
-      Set<ClassType> interfaces = new HashSet();
+      Set<ClassType> interfaces = new HashSet<>();
       iterate(interfaces, ctx.name_list());
       return interfaces;
     }
@@ -194,21 +192,6 @@ class JimpleVisitorImpl {
   }
 
   private static class MemberVisitor extends JimpleBaseVisitor<SootClassMember> {
-    @Override
-    public SootClassMember visitMember(JimpleParser.MemberContext ctx) {
-      SootClassMember member = null;
-      if (ctx.method() != null) {
-        member = ctx.accept(new MethodVisitor());
-      }
-      if (ctx.field() != null) {
-        member = ctx.accept(new FieldVisitor());
-      }
-      assert (member != null);
-      return member;
-    }
-  }
-
-  private static class FieldVisitor extends JimpleBaseVisitor<SootField> {
 
     @Override
     public SootField visitField(JimpleParser.FieldContext ctx) {
@@ -219,17 +202,6 @@ class JimpleVisitorImpl {
           identifierFactory.getFieldSignature(ctx.name().getText(), clazz, ctx.type().getText()),
           modifier);
     }
-  }
-
-  private static EnumSet<Modifier> getModifiers(List<JimpleParser.ModifierContext> modifier) {
-    Set<Modifier> modifierSet =
-        modifier.stream()
-            .map(modifierContext -> Modifier.valueOf(modifierContext.getText().toUpperCase()))
-            .collect(Collectors.toSet());
-    return modifierSet.isEmpty() ? EnumSet.noneOf(Modifier.class) : EnumSet.copyOf(modifierSet);
-  }
-
-  private static class MethodVisitor extends JimpleBaseVisitor<SootMethod> {
 
     @Override
     @Nonnull
@@ -292,7 +264,30 @@ class JimpleVisitorImpl {
     }
   }
 
+  private static EnumSet<Modifier> getModifiers(List<JimpleParser.ModifierContext> modifier) {
+    Set<Modifier> modifierSet =
+        modifier.stream()
+            .map(modifierContext -> Modifier.valueOf(modifierContext.getText().toUpperCase()))
+            .collect(Collectors.toSet());
+    return modifierSet.isEmpty() ? EnumSet.noneOf(Modifier.class) : EnumSet.copyOf(modifierSet);
+  }
+
   private static class ParameterListVisitor extends JimpleBaseVisitor<List<Type>> {
+    @Override
+    public List<Type> visitParameter_list(JimpleParser.Parameter_listContext ctx) {
+      List<Type> interfaces = new ArrayList<>();
+      JimpleParser.Parameter_listContext class_name_listContextIterator = ctx;
+      do {
+        interfaces.add(
+            identifierFactory.getClassType(class_name_listContextIterator.parameter.getText()));
+        class_name_listContextIterator = ctx.parameter_list();
+      } while (class_name_listContextIterator != null);
+
+      return interfaces;
+    }
+  }
+
+  private static class ArgListVisitor extends JimpleBaseVisitor<List<Type>> {
     @Override
     public List<Type> visitParameter_list(JimpleParser.Parameter_listContext ctx) {
       List<Type> interfaces = new ArrayList<>();
@@ -385,6 +380,25 @@ class JimpleVisitorImpl {
   }
 
   private static class ValueVisitor extends JimpleBaseVisitor<Value> {
+
+    @Override
+    public Expr visitReference(JimpleParser.ReferenceContext ctx) {
+      // TODO
+      return null;
+    }
+
+    @Override
+    public Expr visitBool_expr(JimpleParser.Bool_exprContext ctx) {
+      // TODO
+      return null;
+    }
+
+    @Override
+    public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
+      // TODO
+      return null;
+    }
+
     @Override
     public Constant visitConstant(JimpleParser.ConstantContext ctx) {
 
@@ -406,38 +420,10 @@ class JimpleVisitorImpl {
     }
 
     @Override
-    public Expr visitReference(JimpleParser.ReferenceContext ctx) {
-      // TODO
-      return null;
-    }
-
-    @Override
-    public Expr visitBool_expr(JimpleParser.Bool_exprContext ctx) {
-      // TODO
-      return null;
-    }
-
-    @Override
-    public Expr visitInvoke_expr(JimpleParser.Invoke_exprContext ctx) {
-      // TODO
-      return null;
-    }
-
-    @Override
-    public Expr visitUnop_expr(JimpleParser.Unop_exprContext ctx) {
-      Value value = ctx.immediate().accept(new ValueVisitor());
-      if (ctx.unop().NEG() != null) {
-        return Jimple.newNegExpr(value);
-      } else {
-        return Jimple.newLengthExpr(value);
-      }
-    }
-
-    @Override
     public AbstractBinopExpr visitBinop_expr(JimpleParser.Binop_exprContext ctx) {
 
-      Value left = ctx.left.accept(new ValueVisitor());
-      Value right = ctx.right.accept(new ValueVisitor());
+      Value left = ctx.left.accept(this);
+      Value right = ctx.right.accept(this);
 
       JimpleParser.BinopContext binopctx = ctx.op;
 
@@ -481,6 +467,16 @@ class JimpleVisitorImpl {
         return new JDivExpr(left, right);
       }
       throw new RuntimeException("Unknown BinOp");
+    }
+
+    @Override
+    public Expr visitUnop_expr(JimpleParser.Unop_exprContext ctx) {
+      Value value = ctx.immediate().accept(this);
+      if (ctx.unop().NEG() != null) {
+        return Jimple.newNegExpr(value);
+      } else {
+        return Jimple.newLengthExpr(value);
+      }
     }
   }
 }

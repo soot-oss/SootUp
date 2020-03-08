@@ -125,7 +125,7 @@ grammar Jimple;
   FLOAT_CONSTANT : ((DEC_CONSTANT DOT DEC_CONSTANT) (('e'|'E') (PLUS|MINUS)? DEC_CONSTANT)? ('f'|'F')?)  | ('#' (('-'? 'Infinity') | 'NaN') ('f' | 'F')? ) ;
   STRING_CONSTANT : '"' STRING_CHAR* '"';
 
-  IDENTIFIER: [A-Za-z0-9$.<>_]+;
+  IDENTIFIER: [A-Za-z$_][A-Za-z0-9$._]+;
   LINE_COMMENT : '//' ~('\n'|'\r')* ->skip;
   LONG_COMMENT : '/*' ~('*')* '*'+ ( ~('*' | '/')* ~('*')* '*'+)* '/' -> skip;
 
@@ -150,7 +150,7 @@ grammar Jimple;
   implements_clause : 'implements' name_list;
 
   name :
-    /*ident*/ IDENTIFIER;
+    /*ident*/ IDENTIFIER | '<init>' | '<clinit>';
 
   name_list :
     /*single*/ name |

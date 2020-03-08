@@ -127,6 +127,7 @@ public class JimpleVisitorImplTest {
     CharStream cs =
         CharStreams.fromString(
             "import Small.Table; \n"
+                + "import Huge.BigTable; \n"
                 + "public class BigTable extends Table \n { public void <init>(){}"
                 + "private void another(){}  } ");
     checkJimpleClass(cs);
